@@ -13,14 +13,20 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
-qt_add_executable(${PROJECT_NAME}
+#qt_add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
         main.cpp
+        res.qrc
 )
 
 qt_add_qml_module(${PROJECT_NAME}
         URI tc_server_steam
         VERSION 1.0
-        QML_FILES Main.qml
+        QML_FILES
+            Main.qml
+            test.qml
+            TCButton.qml
+            TCTabView.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
