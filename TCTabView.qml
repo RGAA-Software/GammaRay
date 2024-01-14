@@ -17,13 +17,18 @@ RowLayout {
 
     ColumnLayout {
         spacing: 0
-        Rectangle{width: 1; height: 50;}
+        Rectangle{width: 1; height: 10;}
 
-        Image {
+        Item {
             width: 150
             height: 150
-
-            source: "qrc:/images/resources/tc_icon.png"
+            Image {
+                width: 100
+                height: 100
+                fillMode: Image.Stretch
+                source: "qrc:/resources/tc_icon.png"
+                anchors.centerIn: parent
+            }
         }
 
         TCButton {

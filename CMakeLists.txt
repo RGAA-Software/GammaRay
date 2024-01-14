@@ -19,6 +19,12 @@ add_executable(${PROJECT_NAME}
         res.qrc
 )
 
+qt_add_resources(${PROJECT_NAME} "assets"
+    PREFIX "/"
+    FILES
+        "resources/tc_icon.png"
+)
+
 qt_add_qml_module(${PROJECT_NAME}
         URI tc_server_steam
         VERSION 1.0
