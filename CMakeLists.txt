@@ -17,6 +17,7 @@ qt_standard_project_setup(REQUIRES 6.5)
 add_executable(${PROJECT_NAME}
         main.cpp
         res.qrc
+
 )
 
 qt_add_resources(${PROJECT_NAME} "assets"
@@ -30,9 +31,10 @@ qt_add_qml_module(${PROJECT_NAME}
         VERSION 1.0
         QML_FILES
             Main.qml
-            test.qml
+            Test.qml
             TCButton.qml
             TCTabView.qml
+            TCGameListView.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

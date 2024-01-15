@@ -92,8 +92,7 @@ RowLayout {
         Rectangle {
             width: btnWidth
             height: btnHeight
-            //color: "#999888"
-            anchors.bottom: parent.bottom
+
             Text {
                 id: name
                 width: btnWidth
@@ -114,18 +113,18 @@ RowLayout {
         width: parent.width - 190
         height: parent.height
         currentIndex: 0
-        Rectangle {
-            color: 'teal'
+        TCGameListView {
+            color: '#FFFFFF'
             width: content_layout.width
             height: content_layout.height
         }
         Rectangle {
-            color: 'plum'
+            color: '#eeeeee'
             width: content_layout.width
             height: content_layout.height
         }
         Rectangle {
-            color: '#909876'
+            color: '#ffffff'
             width: content_layout.width
             height: content_layout.height
         }
