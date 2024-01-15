@@ -5,8 +5,8 @@ import QtQuick.Controls.Material 2.15
 
 Rectangle {
 
-    property int gridCellWidth: parent.width/numberOfColumns
-    property int numberOfColumns: 5
+    property int gridCellWidth: 250
+    property int numberOfColumns: parent.width/gridCellWidth
 
 
     ListModel {
@@ -25,7 +25,7 @@ Rectangle {
     GridView {
         id: gridView
         anchors.fill: parent
-        model: model
+        model: game_model
         cellWidth: gridCellWidth
         cellHeight: 165
 
@@ -34,18 +34,12 @@ Rectangle {
             width: gridCellWidth
             height: gridView.cellHeight
 
-            //color: "#eeaaee"
-
             RowLayout {
-                width: 200
+                width: 230
                 height: 150
                 spacing: 0
                 anchors.centerIn: parent
-                // Rectangle{
-                //     width: (gridCellWidth - 150)/2
-                //     height: 5
-                //     color: "#ff55ee"
-                // }
+
                 Rectangle {
                     width: parent.width
                     height: 150
@@ -54,7 +48,7 @@ Rectangle {
 
                     ColumnLayout {
                         spacing: 0
-
+                        anchors.centerIn: parent
                         Item {
                             width: 50
                             height: 50
@@ -66,16 +60,11 @@ Rectangle {
                             }
                         }
                         Text {
-                            text: name;
+                            text: NameRole;
 
                         }
                     }
                 }
-                // Rectangle{
-                //     width: (gridCellWidth - 150)/2
-                //     height: 5
-                //     color: "#0055ee"
-                // }
             }
 
             MouseArea {
@@ -89,13 +78,13 @@ Rectangle {
         focus: true
 
         Component.onCompleted: {
-            gridCellWidth = parent.width/numberOfColumns
-            console.log("width1: ", gridCellWidth);
+            // gridCellWidth = parent.width/numberOfColumns
+            // console.log("width1: ", gridCellWidth);
         }
 
         onWidthChanged: {
-            gridCellWidth = parent.width/numberOfColumns
-            console.log("width: ", gridCellWidth);
+            // gridCellWidth = parent.width/numberOfColumns
+            // console.log("width: ", gridCellWidth);
 
         }
 

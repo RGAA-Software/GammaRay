@@ -18,6 +18,10 @@ add_executable(${PROJECT_NAME}
         main.cpp
         res.qrc
 
+        src/entity/game.cpp
+        src/entity/game.h
+        src/model/game_model.cpp
+        src/model/game_model.h
 )
 
 qt_add_resources(${PROJECT_NAME} "assets"
