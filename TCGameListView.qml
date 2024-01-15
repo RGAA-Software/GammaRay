@@ -27,18 +27,18 @@ Rectangle {
         anchors.fill: parent
         model: model
         cellWidth: gridCellWidth
-        cellHeight: 150
+        cellHeight: 165
 
         delegate: Rectangle {
             id: item
             width: gridCellWidth
-            height: 150
+            height: gridView.cellHeight
 
             //color: "#eeaaee"
 
             RowLayout {
                 width: 200
-                height: item.height
+                height: 150
                 spacing: 0
                 anchors.centerIn: parent
                 // Rectangle{
@@ -49,7 +49,7 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 150
-                    color: ma.containsMouse ? "#cccccc" : "#ffffff"
+                    color: ma.containsMouse ? "#cccccc" : "#dddddd"
                     radius: 10
 
                     ColumnLayout {
@@ -67,7 +67,7 @@ Rectangle {
                         }
                         Text {
                             text: name;
-                            anchors.horizontalCenter: parent.horizontalCenter
+
                         }
                     }
                 }
