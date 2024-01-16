@@ -1,0 +1,6 @@
+[submodule "deps/tc_3rdparty"]
+	path = deps/tc_3rdparty
+	url = git@github.com:RGAA-Software/tc_3rdparty.git
+[submodule "deps/tc_common"]
+	path = deps/tc_common
+	url = git@github.com:RGAA-Software/tc_common.git

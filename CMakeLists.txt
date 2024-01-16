@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.26)
 include(env_settings.cmake)
 set(CMAKE_PREFIX_PATH ${QT_ROOT}/lib/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.5)
+
+add_subdirectory(deps)
 
 #qt_add_executable(${PROJECT_NAME}
 add_executable(${PROJECT_NAME}
