@@ -3,7 +3,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
 import QtQuick.Controls.Material 2.15
 
-
 Window {
     width: 1280
     height: 768
@@ -19,6 +18,8 @@ Window {
     TCTabView {
         windowHeight: parent.height
     }
+
+
 
     // Test {
 
