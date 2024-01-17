@@ -3,10 +3,16 @@
 #include <QQmlContext>
 
 #include "src/model/game_model.h"
+#include "application.h"
+
+using namespace tc;
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    Application application;
+    application.Init();
 
     QQmlApplicationEngine engine;
     QObject::connect(

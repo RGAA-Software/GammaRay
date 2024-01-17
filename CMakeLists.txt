@@ -13,17 +13,19 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
+include_directories(${CMAKE_SOURCE_DIR}/)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/deps)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty)
+
 add_subdirectory(deps)
+add_subdirectory(src)
 
 #qt_add_executable(${PROJECT_NAME}
 add_executable(${PROJECT_NAME}
         main.cpp
         res.qrc
-
-        src/entity/game.cpp
-        src/entity/game.h
-        src/model/game_model.cpp
-        src/model/game_model.h
+        ${MAIN_SRCS}
 )
 
 qt_add_resources(${PROJECT_NAME} "assets"
