@@ -4,12 +4,18 @@
 
 #include "src/model/game_model.h"
 #include "application.h"
+#include "tc_common/log.h"
 
 using namespace tc;
 
 int main(int argc, char *argv[])
 {
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+
     QGuiApplication app(argc, argv);
+
+    Logger::InitLog("app.log", false);
 
     Application application;
     application.Init();

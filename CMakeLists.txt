@@ -10,6 +10,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread)
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    MESSAGE(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
+    MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
+    MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
+endif()
+find_package(fmt CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -17,6 +25,15 @@ include_directories(${CMAKE_SOURCE_DIR}/)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/deps)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty)
+include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
+
+include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
+include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
+
+add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX)
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_subdirectory(deps)
 add_subdirectory(src)
@@ -59,6 +76,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2
 )
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}

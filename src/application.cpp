@@ -4,6 +4,9 @@
 
 #include "application.h"
 
+#include "context.h"
+#include "steam/steam_manager.h"
+
 namespace tc
 {
 
@@ -12,6 +15,11 @@ namespace tc
     }
 
     void Application::Init() {
+        context_ = std::make_shared<Context>();
+
+        steam_mgr_ = SteamManager::Make(context_);
+        steam_mgr_->Init();
+
 
     }
 
