@@ -12,7 +12,7 @@ Window {
     title: qsTr("Thunder Cloud")
 
     Material.theme: Material.Light
-    Material.accent: "#fa8100"
+    Material.accent: "#00d500"
     Material.primary: Material.DeepOrange
 
     TCTabView {

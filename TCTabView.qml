@@ -47,7 +47,7 @@ RowLayout {
                 nav_settings.selected = false
             }
         }
-        Rectangle {width: 1; height: 3}
+        Rectangle {width: 1; height: 6}
 
         TCButton {
             id: nav_added_game
@@ -64,7 +64,7 @@ RowLayout {
                nav_settings.selected = false
             }
         }
-        Rectangle {width: 1; height: 3}
+        Rectangle {width: 1; height: 6}
 
         TCButton {
             id: nav_settings

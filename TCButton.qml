@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
 import QtQuick.Controls.Material 2.15
+import Qt5Compat.GraphicalEffects
 
 Rectangle {
 
@@ -20,6 +21,8 @@ Rectangle {
     }
 
     color: selected || ma.containsMouse ? Material.accent : "#FFFFFF"
+    //border.color: "#84ffa9"
+    //border.width: 1
 
     MouseArea {
         id: ma
@@ -39,5 +42,14 @@ Rectangle {
             selected = true
             parent.clicked(parent.tag);
         }
+    }
+    
+    layer.enabled: true
+    layer.effect: DropShadow {
+        color: "#DDDDDD"
+        transparentBorder: true
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: 4
     }
 }
