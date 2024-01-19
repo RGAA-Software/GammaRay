@@ -25,6 +25,7 @@ include_directories(${CMAKE_SOURCE_DIR}/)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/deps)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/eventbus/src)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
 
 include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
