@@ -11,19 +11,21 @@ namespace tc
 {
 
     class Context;
-    class SteamManager;
+    class GameModel;
 
     class Application {
     public:
 
         Application();
+        ~Application();
 
         void Init();
+        GameModel* GetInstalledModel();
 
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
-        std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
+        GameModel* installed_game_model_ = nullptr;
 
     };
 

@@ -6,7 +6,7 @@ import Qt5Compat.GraphicalEffects
 
 Rectangle {
 
-    property int gridCellWidth: 250
+    property int gridCellWidth: 270
     property int numberOfColumns: parent.width/gridCellWidth
 
 
@@ -26,7 +26,7 @@ Rectangle {
     GridView {
         id: gridView
         anchors.fill: parent
-        model: game_model
+        model: installed_game_model
         cellWidth: gridCellWidth
         cellHeight: 165
 
@@ -36,7 +36,7 @@ Rectangle {
             height: gridView.cellHeight
 
             RowLayout {
-                width: 230
+                width: 250
                 height: 150
                 spacing: 0
                 anchors.centerIn: parent

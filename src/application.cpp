@@ -6,6 +6,7 @@
 
 #include "context.h"
 #include "steam/steam_manager.h"
+#include "model/game_model.h"
 
 namespace tc
 {
@@ -14,13 +15,23 @@ namespace tc
 
     }
 
+    Application::~Application() {
+        delete installed_game_model_;
+    }
+
     void Application::Init() {
         context_ = std::make_shared<Context>();
+        context_->Init();
 
-        steam_mgr_ = SteamManager::Make(context_);
-        steam_mgr_->Init();
+        installed_game_model_ = new GameModel();
 
+        for (auto& game : context_->GetSteamManager()->GetInstalledGames()) {
+            installed_game_model_->AddGame(game);
+        }
+    }
 
+    GameModel* Application::GetInstalledModel() {
+        return installed_game_model_;
     }
 
 }

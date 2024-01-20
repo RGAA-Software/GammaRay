@@ -28,12 +28,7 @@ int main(int argc, char *argv[])
             []() { QCoreApplication::exit(-1); },
             Qt::QueuedConnection);
 
-    auto game_model = new tc::GameModel();
-    for (int i = 0; i < 30; i++) {
-        game_model->AddGame("Good...", 10);
-    }
-
-    engine.rootContext()->setContextProperty("game_model", game_model);
+    engine.rootContext()->setContextProperty("installed_game_model", application.GetInstalledModel());
     engine.loadFromModule("tc_server_steam", "Main");
 
     return app.exec();
