@@ -13,18 +13,22 @@ class GameModel : public QAbstractListModel {
     Q_OBJECT
 public:
 
-    enum Roles{
+    enum Roles {
         NameRole = Qt::UserRole + 1,
-        SteamUrlRole
+        SteamUrlRole,
+        AppIdRole,
+        InstalledRole,
+        RunningRole,
+        UpdatingRole,
     };
 
-    GameModel(QObject* parent = nullptr);
+    explicit GameModel(QObject* parent = nullptr);
 
-    int rowCount(const QModelIndex& parent) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
-    QHash<int, QByteArray> roleNames() const override;
+    [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+    [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
+    [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void AddGame(const QString& name, int age);
+    Q_INVOKABLE void AddGame(const Game& name);
 
 private:
 

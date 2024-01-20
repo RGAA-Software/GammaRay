@@ -10,6 +10,11 @@
 
 #include "context.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+#include "entity/game.h"
+
 namespace tc
 {
 
@@ -20,17 +25,22 @@ namespace tc
 
         static std::shared_ptr<SteamManager> Make(const std::shared_ptr<Context>& ctx);
 
-        SteamManager(const std::shared_ptr<Context>& ctx);
+        explicit SteamManager(const std::shared_ptr<Context>& ctx);
         ~SteamManager();
 
-        bool Init();
+        bool ScanInstalledGames();
+        std::vector<Game> GetInstalledGames();
+        void DumpGamesInfo();
 
     private:
         QString ScanInstalledSteamPath();
+        void QueryInstalledApps(HKEY key);
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
         QString installed_steam_path_;
+        std::wstring steam_app_base_path_;
+        std::vector<Game> games_;
     };
 
 }

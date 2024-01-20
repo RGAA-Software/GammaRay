@@ -4,10 +4,10 @@ import QtQuick.Layouts 2.15
 import QtQuick.Controls.Material 2.15
 
 Window {
-    width: 1280
+    width: 1298
     height: 768
     visible: true
-    minimumWidth: 1280
+    minimumWidth: 1298
     minimumHeight: 768
     title: qsTr("Thunder Cloud")
 
