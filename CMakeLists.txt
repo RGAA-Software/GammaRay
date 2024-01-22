@@ -19,6 +19,7 @@ if(Boost_FOUND)
 endif()
 find_package(fmt CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_path(UWEBSOCKETS_INCLUDE_DIRS "uwebsockets/App.h")
 
 qt_standard_project_setup(REQUIRES 6.5)
 
