@@ -1,6 +1,8 @@
 #include "game_model.h"
 #include "tc_common/log.h"
 
+#include <shellapi.h>
+
 namespace tc
 {
 
@@ -32,6 +34,8 @@ namespace tc
                 return game.app_id_;
             case InstalledRole:
                 return game.installed_;
+            case CoverUrlRole:
+                return game.cover_url_;
             default:
                 break;
         }
@@ -44,6 +48,7 @@ namespace tc
         roleNames.insert(SteamUrlRole, "SteamUrlRole");
         roleNames.insert(AppIdRole, "AppIdRole");
         roleNames.insert(InstalledRole, "InstalledRole");
+        roleNames.insert(CoverUrlRole, "CoverUrlRole");
         return roleNames;
     }
 
@@ -55,6 +60,12 @@ namespace tc
 
     Q_INVOKABLE void GameModel::OnItemClicked(int app_id) {
         LOGI("Clicked: {}", app_id);
+        for (auto& game : games_) {
+            if (game.app_id_ == app_id) {
+                LOGI("will start: {}", game.steam_url_.toStdString());
+                ShellExecuteW(0, 0, game.steam_url_.toStdWString().c_str(), 0, 0 , SW_SHOW );
+            }
+        }
     }
 
 }

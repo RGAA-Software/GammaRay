@@ -54,7 +54,8 @@ Rectangle {
                         height: item_base_rect.height
                         Image {
                             id: image_source
-                            source: "file:///C:/Program Files (x86)/Steam/appcache/librarycache/2184340_header.jpg";
+                            //"file:///C:/Program Files (x86)/Steam/appcache/librarycache/2184340_header.jpg";
+                            source: "file:///" + CoverUrlRole
                             width: parent.width;
                             height: parent.height;
                             // fillMode: Image.PreserveAspectCrop
@@ -65,26 +66,98 @@ Rectangle {
                         Rectangle{
                             id: mask
                             anchors.fill: parent
-                            radius: 5
+                            radius: 7
                             visible: false
                         }
                         OpacityMask {
+                            id: target_mask
                             anchors.fill: parent
                             source: image_source
                             maskSource: mask
                         }
+                        Rectangle {
+                            width: item_base_rect.width
+                            height: item_base_rect.height
+                            radius: 7
+                            color: ma.containsMouse ? "#99FFFFFF" : "#00000000"
+                        }
+                        Rectangle {
+                            id: name_background
+                            width: item_base_rect.width
+                            height: 30
+                            radius: 7
+                            y: item_base_rect.height - height
+                            color: "#CC333333"
+                            RowLayout {
+                                width: parent.width
+                                height: parent.height
+                                Rectangle {
+                                    width: 5
+                                    height:1
+                                    color: "#00000000"
+                                }
+                                Text {
+                                    text: NameRole;
+                                    color: "#FFFFFF"
+                                    font.bold: true
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                    Layout.minimumHeight: 1 // 设定一个最小高度
+                                }
+                            }
+                        }
+                        // Rectangle {
+                        //     width: item_base_rect.width
+                        //     height: 10
+                        //     y: item_base_rect.height - name_background.height
+                        //     color: "#99333333"
+                        // }
+
+                        // FastBlur {
+                        //     id: blurEffect
+                        //     anchors.fill: image_source
+                        //     source: target_mask
+                        //     radius: ma.containsMouse ? 18 : 0 // When mouse is over, set blur radius to 10; otherwise 0
+                        // }
+                        //
+                        // states: [
+                        //     State {
+                        //         name: "blurred"
+                        //         when: mouseArea.containsMouse
+                        //         PropertyChanges { target: blurEffect; radius: 18 }
+                        //     },
+                        //     State {
+                        //         name: "normal"
+                        //         when: !mouseArea.containsMouse
+                        //         PropertyChanges { target: blurEffect; radius: 0 }
+                        //     }
+                        // ]
+                        // transitions: [
+                        //     Transition {
+                        //         from: "normal"
+                        //         to: "blurred"
+                        //         NumberAnimation { properties: "radius"; duration: 200 }
+                        //     },
+                        //     Transition {
+                        //         from: "blurred"
+                        //         to: "normal"
+                        //         NumberAnimation { properties: "radius"; duration: 200 }
+                        //     }
+                        // ]
                     }
 
-                    ColumnLayout {
-                        Text {
-                            text: NameRole;
-                            color: "#FFFFFF"
-                        }
-                        Text {
-                            text: AppIdRole;
-                            color: "#FFFFFF"
-                        }
-                    }
+                    // ColumnLayout {
+                    //     Text {
+                    //         text: NameRole;
+                    //         color: "#FFFFFF"
+                    //     }
+                    //     Text {
+                    //         text: AppIdRole;
+                    //         color: "#FFFFFF"
+                    //     }
+                    // }
 
                     layer.enabled: true
                     layer.effect: DropShadow {
