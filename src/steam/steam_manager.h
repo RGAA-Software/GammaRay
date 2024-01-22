@@ -20,6 +20,20 @@ namespace tc
 
     class Context;
 
+    // 安装的应用使用信息
+    class InstalledAppIdValue{
+    public:
+        int app_id_;
+        // 应该是app占用的空间大小
+        int app_size_;
+    };
+
+    class InstalledFolder {
+    public:
+        std::string path_;
+        std::vector<InstalledAppIdValue> app_id_value_;
+    };
+
     class SteamManager {
     public:
 
@@ -31,16 +45,20 @@ namespace tc
         bool ScanInstalledGames();
         std::vector<Game> GetInstalledGames();
         void DumpGamesInfo();
+        void UpdateAppDetails();
 
     private:
         QString ScanInstalledSteamPath();
         void QueryInstalledApps(HKEY key);
+        void ParseLibraryFolders();
+        void ParseConfigForEachGame();
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
         QString installed_steam_path_;
         std::wstring steam_app_base_path_;
         std::vector<Game> games_;
+        std::vector<InstalledFolder> installed_folders_;
     };
 
 }

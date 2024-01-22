@@ -8,6 +8,7 @@ Rectangle {
 
     property int gridCellWidth: 270
     property int numberOfColumns: parent.width/gridCellWidth
+    property real header_radio: 460.0/ 215.0
 
 
     ListModel {
@@ -28,7 +29,7 @@ Rectangle {
         anchors.fill: parent
         model: installed_game_model
         cellWidth: gridCellWidth
-        cellHeight: 165
+        cellHeight: gridCellWidth/header_radio + 10
 
         delegate: Rectangle {
             id: item
@@ -37,32 +38,51 @@ Rectangle {
 
             RowLayout {
                 width: 250
-                height: 150
+                height: width / header_radio
                 spacing: 0
                 anchors.centerIn: parent
 
                 Rectangle {
+                    id: item_base_rect
                     width: parent.width
-                    height: 150
+                    height: parent.height
                     color: ma.containsMouse ? "#EEEEEE" : "#FFFFFF"
                     radius: 10
 
-                    ColumnLayout {
-                        spacing: 0
-                        anchors.centerIn: parent
-                        Item {
-                            width: 50
-                            height: 50
-                            Image {
-                                source: "qrc:/resources/tc_icon.png";
-                                width: parent.width;
-                                height: parent.height;
-                                fillMode: Image.Stretch
-                            }
+                    Item {
+                        width: item_base_rect.width
+                        height: item_base_rect.height
+                        Image {
+                            id: image_source
+                            source: "file:///C:/Program Files (x86)/Steam/appcache/librarycache/2184340_header.jpg";
+                            width: parent.width;
+                            height: parent.height;
+                            // fillMode: Image.PreserveAspectCrop
+                            smooth: true
+                            visible: false
+                            // clip: true
                         }
+                        Rectangle{
+                            id: mask
+                            anchors.fill: parent
+                            radius: 5
+                            visible: false
+                        }
+                        OpacityMask {
+                            anchors.fill: parent
+                            source: image_source
+                            maskSource: mask
+                        }
+                    }
+
+                    ColumnLayout {
                         Text {
                             text: NameRole;
-
+                            color: "#FFFFFF"
+                        }
+                        Text {
+                            text: AppIdRole;
+                            color: "#FFFFFF"
                         }
                     }
 
@@ -81,6 +101,9 @@ Rectangle {
                 id: ma
                 anchors.fill: parent
                 hoverEnabled: true
+                onDoubleClicked: {
+                    installed_game_model.OnItemClicked(AppIdRole);
+                }
             }
 
         }

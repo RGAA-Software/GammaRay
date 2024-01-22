@@ -13,11 +13,16 @@ namespace tc
                          int running,
                          int update);
 
+        static Game Make(int app_id,
+                         const QString& name,
+                         const QString& installed_path);
+
         std::string Dump();
 
     public:
         QString name_;
         QString steam_url_;
+        QString installed_path_;
         int app_id_;
         int installed_;
         int running_;

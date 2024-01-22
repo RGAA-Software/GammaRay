@@ -18,6 +18,7 @@ if(Boost_FOUND)
     MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
 endif()
 find_package(fmt CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -77,7 +78,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only OpenSSL::SSL OpenSSL::Crypto tc_common)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}

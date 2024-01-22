@@ -1,4 +1,5 @@
 #include "game_model.h"
+#include "tc_common/log.h"
 
 namespace tc
 {
@@ -27,6 +28,8 @@ namespace tc
                 return game.name_;
             case SteamUrlRole:
                 return game.steam_url_;
+            case AppIdRole:
+                return game.app_id_;
             case InstalledRole:
                 return game.installed_;
             default:
@@ -39,6 +42,7 @@ namespace tc
         QHash<int, QByteArray> roleNames;
         roleNames.insert(NameRole, "NameRole");
         roleNames.insert(SteamUrlRole, "SteamUrlRole");
+        roleNames.insert(AppIdRole, "AppIdRole");
         roleNames.insert(InstalledRole, "InstalledRole");
         return roleNames;
     }
@@ -47,6 +51,10 @@ namespace tc
         beginResetModel();
         games_.append(game);
         endResetModel();
+    }
+
+    Q_INVOKABLE void GameModel::OnItemClicked(int app_id) {
+        LOGI("Clicked: {}", app_id);
     }
 
 }
