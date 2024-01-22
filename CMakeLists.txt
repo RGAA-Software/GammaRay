@@ -46,6 +46,7 @@ add_executable(${PROJECT_NAME}
         main.cpp
         res.qrc
         ${MAIN_SRCS}
+        ${NETWORK_SRCS}
         icon.rc
 )
 
@@ -65,6 +66,9 @@ qt_add_qml_module(${PROJECT_NAME}
             TCTabView.qml
             TCGameListView.qml
 )
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/certificate.pem" DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/private.key" DESTINATION ${CMAKE_BINARY_DIR})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
