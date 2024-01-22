@@ -4,3 +4,9 @@
 [submodule "deps/tc_common"]
 	path = deps/tc_common
 	url = git@github.com:RGAA-Software/tc_common.git
+[submodule "deps/tc_client_web"]
+	path = deps/tc_client_web
+	url = git@github.com:RGAA-Software/tc_client_web.git
+[submodule "deps/tc_message"]
+	path = deps/tc_message
+	url = git@github.com:RGAA-Software/tc_message.git
