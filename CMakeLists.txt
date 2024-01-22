@@ -46,6 +46,7 @@ add_executable(${PROJECT_NAME}
         main.cpp
         res.qrc
         ${MAIN_SRCS}
+        icon.rc
 )
 
 qt_add_resources(${PROJECT_NAME} "assets"

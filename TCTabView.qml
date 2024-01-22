@@ -23,8 +23,8 @@ RowLayout {
             width: 150
             height: 150
             Image {
-                width: 90
-                height: 90
+                width: 80
+                height: 80
                 fillMode: Image.Stretch
                 source: "qrc:/resources/tc_icon.png"
                 anchors.centerIn: parent
