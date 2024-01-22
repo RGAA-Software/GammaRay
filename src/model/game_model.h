@@ -18,6 +18,7 @@ public:
         SteamUrlRole,
         AppIdRole,
         InstalledRole,
+        CoverUrlRole,
         RunningRole,
         UpdatingRole,
     };

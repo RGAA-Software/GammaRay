@@ -13,6 +13,9 @@
 
 #include <map>
 #include <Windows.h>
+#include <QFile>
+#include <QDir>
+#include <QDirIterator>
 
 #define MAX_KEY_LENGTH 255
 #define MAX_VALUE_NAME 16383
@@ -181,6 +184,7 @@ namespace tc
 
         ParseLibraryFolders();
         ParseConfigForEachGame();
+        ScanHeaderImageInAppCache();
 
         LOGI("steam path: {}", installed_steam_path_.toStdString());
         return true;
@@ -293,6 +297,37 @@ namespace tc
             }
         }
         LOGI("---Parse completed....");
+    }
+
+    void SteamManager::ScanHeaderImageInAppCache() {
+        QString library_cache_path = installed_steam_path_ + "/appcache/librarycache";
+        QDir dir(library_cache_path);
+        if (!dir.exists()) {
+            LOGE("Cache not exist:{}", library_cache_path.toStdString());
+            return;
+        }
+
+        dir.setFilter(QDir::Files);
+        QDirIterator iterator(dir);
+        std::vector<QString> cached_file_names;
+        while (iterator.hasNext()) {
+            auto file_name = iterator.fileName();
+            iterator.next();
+            if (file_name.isEmpty()) {
+                continue;
+            }
+            cached_file_names.push_back(file_name);
+        }
+
+        for (auto& game : games_) {
+            QString file_prefix = std::format("{}_header", game.app_id_).c_str();
+            for (auto& file_name : cached_file_names) {
+                if (file_name.startsWith(file_prefix)) {
+                    game.cover_url_ = library_cache_path + "/" + file_name;
+                    break;
+                }
+            }
+        }
     }
 
     void SteamManager::UpdateAppDetails() {

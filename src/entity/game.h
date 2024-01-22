@@ -23,6 +23,7 @@ namespace tc
         QString name_;
         QString steam_url_;
         QString installed_path_;
+        QString cover_url_;
         int app_id_;
         int installed_;
         int running_;

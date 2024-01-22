@@ -52,6 +52,7 @@ namespace tc
         void QueryInstalledApps(HKEY key);
         void ParseLibraryFolders();
         void ParseConfigForEachGame();
+        void ScanHeaderImageInAppCache();
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
