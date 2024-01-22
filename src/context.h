@@ -11,6 +11,7 @@ namespace tc
 {
 
     class SteamManager;
+    class TaskRuntime;
 
     class Context : public std::enable_shared_from_this<Context> {
     public:
@@ -18,10 +19,11 @@ namespace tc
 
         void Init();
         std::shared_ptr<SteamManager> GetSteamManager();
+        std::shared_ptr<TaskRuntime> GetTaskRuntime();
 
     private:
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
-
+        std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;
     };
 
 }

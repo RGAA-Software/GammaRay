@@ -29,6 +29,7 @@ public:
     [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void AddGame(const Game& name);
+    Q_INVOKABLE void OnItemClicked(int app_id);
 
 private:
 

@@ -4,7 +4,14 @@
 
 #include "steam_manager.h"
 #include "tc_common/log.h"
+#include "tc_common/task_runtime.h"
+#include "tc_common/http_client.h"
+#include "tc_common/thread.h"
+#include "tc_common/vdf_parser.hpp"
+#include "steam_api.h"
+#include "context.h"
 
+#include <map>
 #include <Windows.h>
 
 #define MAX_KEY_LENGTH 255
@@ -165,12 +172,15 @@ namespace tc
         installed_steam_path_ = ScanInstalledSteamPath();
         steam_app_base_path_ = L"SOFTWARE\\Valve\\Steam\\Apps";
 
-        HKEY hkey;
-        if (::RegOpenKeyEx(HKEY_CURRENT_USER, steam_app_base_path_.c_str(), 0, KEY_READ, &hkey) ==
-            ERROR_SUCCESS) {
-            QueryInstalledApps(hkey);
-        }
-        ::RegCloseKey(hkey);
+//        HKEY hkey;
+//        if (::RegOpenKeyEx(HKEY_CURRENT_USER, steam_app_base_path_.c_str(), 0, KEY_READ, &hkey) ==
+//            ERROR_SUCCESS) {
+//            QueryInstalledApps(hkey);
+//        }
+//        ::RegCloseKey(hkey);
+
+        ParseLibraryFolders();
+        ParseConfigForEachGame();
 
         LOGI("steam path: {}", installed_steam_path_.toStdString());
         return true;
@@ -205,6 +215,95 @@ namespace tc
         for (auto& game : games_) {
             LOGI("Game: {}", game.Dump());
         }
+    }
+
+    void SteamManager::ParseLibraryFolders() {
+        auto library_folders_path = installed_steam_path_ + "/steamapps/libraryfolders.vdf";
+        std::ifstream library_folders(library_folders_path.toStdString());
+
+        bool ok;
+        auto objs = tyti::vdf::read(library_folders, &ok);
+        if (!ok) {
+            LOGE("Parse library folders failed.");
+            return;
+        }
+
+        for (auto& c : objs.childs) {
+            LOGI("key: {}", c.first);
+            auto s = c.second;
+            // path
+            if (s->attribs.find("path") == s->attribs.end()) {
+                continue;
+            }
+            std::string path = s->attribs["path"];
+
+            InstalledFolder installed_folder;
+            installed_folder.path_ = path;
+
+            // apps
+            for (auto& child : s->childs) {
+                if (child.first != "apps") {
+                    continue;
+                }
+                for (auto& app : child.second->attribs) {
+                    LOGI("{} => {}", app.first, app.second);
+                    installed_folder.app_id_value_.push_back(InstalledAppIdValue {
+                        .app_id_ = std::atoi(app.first.c_str()),
+                        .app_size_ = std::atoi(app.second.c_str()),
+                    });
+                }
+            }
+            installed_folders_.push_back(installed_folder);
+        }
+
+//        std::ofstream config_back(path);
+//        tyti::vdf::write(config_back, objs);
+//        config_back.close();
+    }
+
+    void SteamManager::ParseConfigForEachGame() {
+        for (const auto& folder : installed_folders_) {
+            if (folder.path_.empty() || folder.app_id_value_.empty()) {
+                continue;
+            }
+
+            auto installed_path = folder.path_ + "/steamapps";
+            for (const auto& app : folder.app_id_value_) {
+                auto app_cfg = installed_path + "/appmanifest_" + std::to_string(app.app_id_) + ".acf";
+                std::ifstream app_cfg_path(app_cfg);
+                bool ok;
+                auto objs = tyti::vdf::read(app_cfg_path, &ok);
+                if (!ok) {
+                    LOGE("Parse library folders failed.");
+                    return;
+                }
+
+                if (objs.attribs.find("installdir") == objs.attribs.end()) {
+                    continue;
+                }
+                if (objs.attribs.find("name") == objs.attribs.end()) {
+                    continue;
+                }
+
+                auto installed_dir_name = objs.attribs["installdir"];
+                auto installed_dir = "";
+                auto game = Game::Make(app.app_id_, objs.attribs["name"].c_str(), installed_dir);
+                LOGI("game: {}", game.Dump());
+                games_.push_back(game);
+            }
+        }
+        LOGI("---Parse completed....");
+    }
+
+    void SteamManager::UpdateAppDetails() {
+        context_->GetTaskRuntime()->Post(SimpleThreadTask::Make([=, this]() {
+            for (auto& game : games_) {
+                auto path = kApiAppDetails + "?appids=" + std::to_string(game.app_id_);
+                auto client = HttpClient::MakeSSL(kApiBase, path);
+                auto resp = client->Request({});
+                //LOGI("resp : {} {}", resp.status, resp.body);
+            }
+        }));
     }
 
 }
