@@ -18,7 +18,7 @@ namespace tc
                 res.set_content("Hello World!", "text/plain");
             });
 
-            auto ret = server_->set_mount_point("/public", "./htmls");
+            auto ret = server_->set_mount_point("/", "./www");
 
             server_->listen("0.0.0.0", 8080);
         });
