@@ -12,7 +12,6 @@ namespace tc
 
     class Context;
     class GameModel;
-    class AppServer;
     class HttpServer;
 
     class Application {
@@ -29,7 +28,6 @@ namespace tc
         std::shared_ptr<Context> context_ = nullptr;
         GameModel* installed_game_model_ = nullptr;
 
-        std::shared_ptr<AppServer> app_server_ = nullptr;
         std::shared_ptr<HttpServer> http_server_ = nullptr;
 
     };

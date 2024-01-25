@@ -5,19 +5,27 @@
 #ifndef TC_APPLICATION_HTTP_HANDLER_H
 #define TC_APPLICATION_HTTP_HANDLER_H
 
-#include <uwebsockets/App.h>
+#include "http/httplib.h"
 
 namespace tc
 {
 
+    class Context;
+
     class HttpHandler {
     public:
 
-        // GET
-        void HandleSupportApis(uWS::HttpResponse<false> *res, uWS::HttpRequest* req);
+        explicit HttpHandler(const std::shared_ptr<Context>& ctx);
 
-        // POST
-        void HandleReportInfo(uWS::HttpResponse<false> *res, uWS::HttpRequest* req);
+        void HandleSupportApis(const httplib::Request& req, httplib::Response& res);
+        void HandleGames(const httplib::Request& req, httplib::Response& res);
+        void HandleGameStart(const httplib::Request& req, httplib::Response& res);
+        void HandleGameStop(const httplib::Request& req, httplib::Response& res);
+
+    private:
+
+        std::shared_ptr<Context> context_ = nullptr;
+
     };
 
 }

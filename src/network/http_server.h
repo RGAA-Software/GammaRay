@@ -5,14 +5,18 @@
 #include "tc_3rdparty/http/httplib.h"
 
 #include <thread>
+#include <memory>
 
 namespace tc
 {
 
+    class Context;
+    class HttpHandler;
+
     class HttpServer
     {
     public:
-        HttpServer();
+        explicit HttpServer(const std::shared_ptr<Context>& ctx);
         ~HttpServer();
 
         void Start();
@@ -20,8 +24,9 @@ namespace tc
 
     private:
 
-        // HTTPS
+        std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<httplib::SSLServer> server_ = nullptr;
+        std::shared_ptr<HttpHandler> http_handler_ = nullptr;
 
         std::thread server_thread_;
 

@@ -8,16 +8,24 @@
 namespace tc
 {
 
-    // GET
-    void HttpHandler::HandleSupportApis(uWS::HttpResponse<false> *res, uWS::HttpRequest* req) {
-        LOGI("HandleSupportApis: {}", req->getFullUrl());
-//        res->writeHeader("Content-Type", "application/json");
-        res->end(GetSupportedApis());
+    HttpHandler::HttpHandler(const std::shared_ptr<Context>& ctx) {
+        this->context_ = ctx;
     }
 
-    // POST
-    void HttpHandler::HandleReportInfo(uWS::HttpResponse<false> *res, uWS::HttpRequest* req) {
-        LOGI("HandleReportInfo: {}", req->getFullUrl());
-        res->end("YES>>>");
+    void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
+        res.set_content("Good", "text/plain");
     }
+
+    void HttpHandler::HandleGames(const httplib::Request& req, httplib::Response& res) {
+        res.set_content(R"({"aaa":"bbb"})", "application/json");
+    }
+
+    void HttpHandler::HandleGameStart(const httplib::Request& req, httplib::Response& res) {
+
+    }
+
+    void HttpHandler::HandleGameStop(const httplib::Request& req, httplib::Response& res) {
+
+    }
+
 }
