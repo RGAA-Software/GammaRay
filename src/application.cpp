@@ -7,7 +7,6 @@
 #include "context.h"
 #include "steam/steam_manager.h"
 #include "model/game_model.h"
-#include "network/app_server.h"
 #include "network/http_server.h"
 
 namespace tc
@@ -25,10 +24,7 @@ namespace tc
         context_ = std::make_shared<Context>();
         context_->Init();
 
-        // app_server_ = std::make_shared<AppServer>(17080);
-        // app_server_->Start();
-
-        http_server_ = std::make_shared<HttpServer>();
+        http_server_ = std::make_shared<HttpServer>(context_);
         http_server_->Start();
 
         installed_game_model_ = new GameModel();
