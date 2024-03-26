@@ -9,11 +9,11 @@ Window {
     visible: true
     minimumWidth: 1298
     minimumHeight: 768
-    title: qsTr("Thunder Cloud")
+    title: qsTr("GammaRay Server")
 
     Material.theme: Material.Light
-    Material.accent: "#ffc113"
-    Material.primary: Material.DeepOrange
+    Material.accent: "#9adfff"
+    Material.primary: "#69f0ff"
 
     TCTabView {
         windowHeight: parent.height

@@ -1,2 +1,2 @@
 add_subdirectory(tc_3rdparty)
-add_subdirectory(tc_common)
+add_subdirectory(tc_common_new)

@@ -4,7 +4,7 @@
 
 #include "src/model/game_model.h"
 #include "application.h"
-#include "tc_common/log.h"
+#include "tc_common_new/log.h"
 
 using namespace tc;
 

@@ -3,11 +3,11 @@
 //
 
 #include "steam_manager.h"
-#include "tc_common/log.h"
-#include "tc_common/task_runtime.h"
-#include "tc_common/http_client.h"
-#include "tc_common/thread.h"
-#include "tc_common/vdf_parser.hpp"
+#include "tc_common_new/log.h"
+#include "tc_common_new/task_runtime.h"
+#include "tc_common_new/http_client.h"
+#include "tc_common_new/thread.h"
+#include "tc_common_new/vdf_parser.hpp"
 #include "steam_api.h"
 #include "context.h"
 
@@ -321,8 +321,14 @@ namespace tc
 
         for (auto& game : games_) {
             QString file_prefix = std::format("{}_header", game.app_id_).c_str();
+            //2389120_library_header
+            QString file_prefix_2 = std::format("{}_library_header", game.app_id_).c_str();
             for (auto& file_name : cached_file_names) {
                 if (file_name.startsWith(file_prefix)) {
+                    game.cover_url_ = library_cache_path + "/" + file_name;
+                    break;
+                }
+                if (file_name.startsWith(file_prefix_2)) {
                     game.cover_url_ = library_cache_path + "/" + file_name;
                     break;
                 }

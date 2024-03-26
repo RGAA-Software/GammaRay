@@ -1,5 +1,5 @@
 #include "game_model.h"
-#include "tc_common/log.h"
+#include "tc_common_new/log.h"
 
 #include <shellapi.h>
 
