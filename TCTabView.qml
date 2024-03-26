@@ -5,10 +5,11 @@ import QtQuick.Controls.Material 2.15
 
 RowLayout {
 
-    property int btnWidth: 150
+    property int btnWidth: 160
     property int btnHeight: 38
     property int btnRadius: btnHeight/2
     property int windowHeight: 220
+    property int gapHeight: 12
 
     width: parent.width
     height: parent.height
@@ -35,7 +36,7 @@ RowLayout {
         TCButton {
             id: nav_steam_game
             tag: "nav_steam_game"
-            text: qsTr("Steam游戏")
+            text: qsTr("STEAM GAMES")
             width: btnWidth
             height: btnHeight
             radius: btnRadius
@@ -48,12 +49,12 @@ RowLayout {
                 nav_settings.selected = false
             }
         }
-        Rectangle {width: 1; height: 6}
+        Rectangle {width: 1; height: gapHeight}
 
         TCButton {
             id: nav_added_game
             tag: "nav_added_game"
-            text: qsTr("添加的游戏")
+            text: qsTr("CUSTOM GAMES")
             width: btnWidth
             height: btnHeight
             radius: btnRadius
@@ -65,12 +66,12 @@ RowLayout {
                nav_settings.selected = false
             }
         }
-        Rectangle {width: 1; height: 6}
+        Rectangle {width: 1; height: gapHeight}
 
         TCButton {
             id: nav_settings
             tag: "nav_settings"
-            text: qsTr("软件设置")
+            text: qsTr("SETTINGS")
             width: btnWidth
             height: btnHeight
             radius: btnRadius

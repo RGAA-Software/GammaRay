@@ -33,7 +33,10 @@ include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
 include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
-
+if(MSVC)
+    add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
+    add_compile_options("/bigobj")
+endif()
 add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
@@ -54,6 +57,7 @@ qt_add_resources(${PROJECT_NAME} "assets"
     PREFIX "/"
     FILES
         "resources/tc_icon.png"
+        "resources/tc_icon_raw.png"
 )
 
 qt_add_qml_module(${PROJECT_NAME}
@@ -70,7 +74,7 @@ qt_add_qml_module(${PROJECT_NAME}
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/certificate.pem" DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/private.key" DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${CMAKE_BINARY_DIR}/www)
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message/" DESTINATION ${CMAKE_BINARY_DIR}/www)
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE_BINARY_DIR}/www)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
@@ -86,7 +90,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only OpenSSL::SSL OpenSSL::Crypto tc_common)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only OpenSSL::SSL OpenSSL::Crypto tc_common_new)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
@@ -96,7 +100,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${QT_ROOT}/bin/windeployqt.exe $<TARGET_FILE:${PROJECT_NAME}>
+        COMMAND ${QT_ROOT}/bin/windeployqt.exe $<TARGET_FILE:${PROJECT_NAME}> --release
 #        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources"  "${CMAKE_BINARY_DIR}/resources"
 #        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/settings.toml"  "${CMAKE_BINARY_DIR}"
 )
