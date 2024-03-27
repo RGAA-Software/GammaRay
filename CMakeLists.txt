@@ -17,7 +17,7 @@ if(Boost_FOUND)
     MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
     MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
 endif()
-find_package(fmt CONFIG REQUIRED)
+#find_package(fmt CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_path(UWEBSOCKETS_INCLUDE_DIRS "uwebsockets/App.h")
 
@@ -90,7 +90,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only OpenSSL::SSL OpenSSL::Crypto tc_common_new)
+#fmt::fmt-header-only
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
