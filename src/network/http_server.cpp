@@ -1,5 +1,8 @@
 #include "http_server.h"
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "tc_3rdparty/http/httplib.h"
+
 #include "http_handler.h"
 
 using namespace std::placeholders;

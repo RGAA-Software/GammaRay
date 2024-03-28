@@ -4,8 +4,8 @@
 
 #include "context.h"
 
-#include "steam/steam_manager.h"
 #include "tc_common_new/task_runtime.h"
+#include "tc_steam_manager_new/steam_manager.h"
 
 namespace tc
 {
@@ -17,8 +17,7 @@ namespace tc
     void Context::Init() {
         task_runtime_ = std::make_shared<TaskRuntime>();
 
-        // last...
-        steam_mgr_ = SteamManager::Make(shared_from_this());
+        steam_mgr_ = SteamManager::Make(task_runtime_);
         steam_mgr_->ScanInstalledGames();
         steam_mgr_->DumpGamesInfo();
         steam_mgr_->UpdateAppDetails();

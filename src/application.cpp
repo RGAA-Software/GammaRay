@@ -5,7 +5,7 @@
 #include "application.h"
 
 #include "context.h"
-#include "steam/steam_manager.h"
+#include "tc_steam_manager_new/steam_manager.h"
 #include "model/game_model.h"
 #include "network/http_server.h"
 
