@@ -1,11 +1,12 @@
 #ifndef HTTP_SERVER_H
 #define HTTP_SERVER_H
 
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "tc_3rdparty/http/httplib.h"
-
 #include <thread>
 #include <memory>
+
+namespace httplib {
+    class SSLServer;
+}
 
 namespace tc
 {

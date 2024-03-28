@@ -53,6 +53,8 @@ add_executable(${PROJECT_NAME}
         icon.rc
 )
 
+#SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
+
 qt_add_resources(${PROJECT_NAME} "assets"
     PREFIX "/"
     FILES
@@ -91,7 +93,7 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2
 )
 #fmt::fmt-header-only
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}

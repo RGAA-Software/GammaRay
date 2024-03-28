@@ -10,3 +10,6 @@
 [submodule "deps/tc_message_new"]
 	path = deps/tc_message_new
 	url = git@github.com:RGAA-Software/tc_message_new.git
+[submodule "deps/tc_steam_manager_new"]
+	path = deps/tc_steam_manager_new
+	url = git@github.com:RGAA-Software/tc_steam_manager_new.git
