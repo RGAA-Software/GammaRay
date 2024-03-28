@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace httplib {
-    class SSLServer;
+    class Server;
 }
 
 namespace tc
@@ -26,7 +26,7 @@ namespace tc
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
-        std::shared_ptr<httplib::SSLServer> server_ = nullptr;
+        std::shared_ptr<httplib::Server> server_ = nullptr;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
 
         std::thread server_thread_;

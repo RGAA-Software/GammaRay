@@ -23,6 +23,9 @@ namespace tc
         void HandleGameStop(const httplib::Request& req, httplib::Response& res);
 
     private:
+        std::string GetInstalledGamesAsJson();
+
+    private:
 
         std::shared_ptr<Context> context_ = nullptr;
 

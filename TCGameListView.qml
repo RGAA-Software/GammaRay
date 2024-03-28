@@ -6,9 +6,9 @@ import Qt5Compat.GraphicalEffects
 
 Rectangle {
 
-    property int gridCellWidth: 270
+    property int gridCellWidth: 200
     property int numberOfColumns: parent.width/gridCellWidth
-    property real header_radio: 460.0/ 215.0
+    property real header_radio: 600/900.0
 
 
     ListModel {
@@ -37,7 +37,7 @@ Rectangle {
             height: gridView.cellHeight
 
             RowLayout {
-                width: 250
+                width: 180
                 height: width / header_radio
                 spacing: 0
                 anchors.centerIn: parent
