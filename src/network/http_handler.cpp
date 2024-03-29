@@ -47,6 +47,7 @@ namespace tc
             game_obj["app_id"] = game->app_id_;
             game_obj["name"] = game->name_;
             game_obj["cover_name"] = game->cover_name_;
+            game_obj["engine"] = game->engine_type_;
             game_array.push_back(game_obj);
         }
         obj["data"] = game_array;
