@@ -20,7 +20,7 @@ namespace tc
         steam_mgr_ = SteamManager::Make(task_runtime_);
         steam_mgr_->ScanInstalledGames();
         steam_mgr_->DumpGamesInfo();
-        steam_mgr_->UpdateAppDetails();
+        //steam_mgr_->UpdateAppDetails();
     }
 
     std::shared_ptr<SteamManager> Context::GetSteamManager() {

@@ -27,9 +27,9 @@ namespace tc
             //server_ = std::make_shared<httplib::SSLServer>("./certificate.pem", "./private.key");
             server_ = std::make_shared<httplib::Server>();
             server_->Get("/v1/apis", std::bind(&HttpHandler::HandleSupportApis, http_handler_.get(), _1, _2));
-            server_->Get("/v1/games", std::bind(&HttpHandler::HandleGames, http_handler_.get(), _1, _2));
-            server_->Get("/v1/game/start", std::bind(&HttpHandler::HandleGameStart, http_handler_.get(), _1, _2));
-            server_->Get("/v1/game/stop", std::bind(&HttpHandler::HandleGameStop, http_handler_.get(), _1, _2));
+            server_->Get("/v1/apps", std::bind(&HttpHandler::HandleGames, http_handler_.get(), _1, _2));
+            server_->Get("/v1/start/app", std::bind(&HttpHandler::HandleGameStart, http_handler_.get(), _1, _2));
+            server_->Get("/v1/stop/app", std::bind(&HttpHandler::HandleGameStop, http_handler_.get(), _1, _2));
 
             server_->set_mount_point("/", "./www");
             auto steam_manager = context_->GetSteamManager();
