@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2 WebSockets Network)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -53,7 +53,7 @@ add_executable(${PROJECT_NAME}
         icon.rc
 )
 
-#SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
 qt_add_resources(${PROJECT_NAME} "assets"
     PREFIX "/"
@@ -90,7 +90,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_link_libraries(${PROJECT_NAME}
-        PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2
+        PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2 Qt6::WebSockets Qt6::Network
 )
 #fmt::fmt-header-only
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new)

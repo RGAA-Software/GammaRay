@@ -7,6 +7,10 @@ set(MAIN_SRCS
 
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_handler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_server.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/network/ws_server.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/network/udp_broadcaster.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/tc_app_manager.cpp
 
         PARENT_SCOPE
 )
