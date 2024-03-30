@@ -6,6 +6,8 @@
 #define TC_SERVER_STEAM_APPLICATION_H
 
 #include <memory>
+#include <QTimer>
+#include <QObject>
 
 namespace tc
 {
@@ -13,8 +15,11 @@ namespace tc
     class Context;
     class GameModel;
     class HttpServer;
+    class WSServer;
+    class UdpBroadcaster;
+    class AppManager;
 
-    class Application {
+    class Application : QObject {
     public:
 
         Application();
@@ -29,6 +34,11 @@ namespace tc
         GameModel* installed_game_model_ = nullptr;
 
         std::shared_ptr<HttpServer> http_server_ = nullptr;
+        std::shared_ptr<WSServer> ws_server_ = nullptr;
+        std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
+        std::shared_ptr<AppManager> app_manager_ = nullptr;
+
+        QTimer* timer_ = nullptr;
 
     };
 
