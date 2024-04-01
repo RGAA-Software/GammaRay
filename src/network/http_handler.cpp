@@ -8,14 +8,19 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
 #include "tc_3rdparty/json/json.hpp"
+#include "application.h"
+#include "app/tc_app_manager.h"
+#include "tc_common_new/net_resp.h"
+#include "apis.h"
 
 using namespace nlohmann;
 
 namespace tc
 {
 
-    HttpHandler::HttpHandler(const std::shared_ptr<Context>& ctx) {
-        this->context_ = ctx;
+    HttpHandler::HttpHandler(const std::shared_ptr<Application>& app) {
+        this->context_ = app->GetContext();
+        this->app_ = app;
     }
 
     void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
@@ -28,7 +33,10 @@ namespace tc
     }
 
     void HttpHandler::HandleGameStart(const httplib::Request& req, httplib::Response& res) {
-
+        auto app_mgr = app_->GetAppManager();
+        auto resp = app_mgr->Start("");
+        NetResp nr = NetResp::Make(resp.ok_ ? kNetOk : kStartFailed, "start app failed", "");
+        res.set_content(nr.Dump(), "application/json");
     }
 
     void HttpHandler::HandleGameStop(const httplib::Request& req, httplib::Response& res) {

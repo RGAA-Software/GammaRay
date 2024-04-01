@@ -32,7 +32,10 @@ namespace tc
         app_info->pid_ = pid;
         app_info->process_ = process;
         running_apps_.Insert(pid, app_info);
-        
+
+        resp.ok_ = true;
+        resp.value_ = pid;
+
         return resp;
     }
 
