@@ -13,11 +13,12 @@ namespace tc
 
     class Context;
     class HttpHandler;
+    class Application;
 
     class HttpServer
     {
     public:
-        explicit HttpServer(const std::shared_ptr<Context>& ctx);
+        explicit HttpServer(const std::shared_ptr<Application>& app);
         ~HttpServer();
 
         void Start();
@@ -26,6 +27,7 @@ namespace tc
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<httplib::Server> server_ = nullptr;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
 

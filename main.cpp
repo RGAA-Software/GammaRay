@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 
     Logger::InitLog("app.log", false);
 
-    Application application;
-    application.Init();
+    auto application = std::make_shared<Application>();
+    application->Init();
 
     QQmlApplicationEngine engine;
     QObject::connect(
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
             []() { QCoreApplication::exit(-1); },
             Qt::QueuedConnection);
 
-    engine.rootContext()->setContextProperty("installed_game_model", application.GetInstalledModel());
+    engine.rootContext()->setContextProperty("installed_game_model", application->GetInstalledModel());
     engine.loadFromModule("tc_server_steam", "Main");
 
     return app.exec();

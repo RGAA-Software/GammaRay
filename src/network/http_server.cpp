@@ -7,15 +7,17 @@
 #include "context.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
+#include "application.h"
 
 using namespace std::placeholders;
 
 namespace tc
 {
 
-    HttpServer::HttpServer(const std::shared_ptr<Context>& ctx) {
-        context_ = ctx;
-        http_handler_ = std::make_shared<HttpHandler>(ctx);
+    HttpServer::HttpServer(const std::shared_ptr<Application>& app) {
+        context_ = app->GetContext();
+        app_ = app;
+        http_handler_ = std::make_shared<HttpHandler>(app);
     }
 
     HttpServer::~HttpServer() {

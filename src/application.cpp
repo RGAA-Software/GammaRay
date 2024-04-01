@@ -31,7 +31,7 @@ namespace tc
 
         app_manager_ = std::make_shared<AppManager>(context_);
 
-        http_server_ = std::make_shared<HttpServer>(context_);
+        http_server_ = std::make_shared<HttpServer>(shared_from_this());
         http_server_->Start();
 
         ws_server_ = WSServer::Make(context_);
@@ -50,8 +50,6 @@ namespace tc
             udp_broadcaster_->Broadcast("this message is from udp...");
         });
         timer_->start(1000);
-
-        app_manager_->Start("");
     }
 
     GameModel* Application::GetInstalledModel() {

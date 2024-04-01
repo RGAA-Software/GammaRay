@@ -19,14 +19,17 @@ namespace tc
     class UdpBroadcaster;
     class AppManager;
 
-    class Application : QObject {
+    class Application : public QObject, public std::enable_shared_from_this<Application> {
     public:
 
         Application();
-        ~Application();
+        ~Application() override;
 
         void Init();
         GameModel* GetInstalledModel();
+
+        std::shared_ptr<Context> GetContext() { return context_; }
+        std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
 
     private:
 

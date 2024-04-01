@@ -12,6 +12,9 @@ using namespace nlohmann;
 namespace tc
 {
 
+    constexpr auto kNetOk = 200;
+    constexpr auto kStartFailed = 301;
+
     static std::string GetSupportedApis() {
         std::stringstream ss;
         ss << " * 表示参数必须要填写" << std::endl;

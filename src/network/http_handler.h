@@ -11,11 +11,12 @@ namespace tc
 {
 
     class Context;
+    class Application;
 
     class HttpHandler {
     public:
 
-        explicit HttpHandler(const std::shared_ptr<Context>& ctx);
+        explicit HttpHandler(const std::shared_ptr<Application>& app);
 
         void HandleSupportApis(const httplib::Request& req, httplib::Response& res);
         void HandleGames(const httplib::Request& req, httplib::Response& res);
@@ -28,6 +29,7 @@ namespace tc
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<Application> app_ = nullptr;
 
     };
 
