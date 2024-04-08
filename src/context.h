@@ -6,12 +6,15 @@
 #define TC_SERVER_STEAM_CONTEXT_H
 
 #include <memory>
+#include <string>
+#include "network/ip_util.h"
 
 namespace tc
 {
 
     class SteamManager;
     class TaskRuntime;
+    class SharedPreference;
 
     class Context : public std::enable_shared_from_this<Context> {
     public:
@@ -21,9 +24,19 @@ namespace tc
         std::shared_ptr<SteamManager> GetSteamManager();
         std::shared_ptr<TaskRuntime> GetTaskRuntime();
 
+        std::string GetSysUniqueId();
+        std::map<std::string, IPNetworkType> GetIps();
+
     private:
+        void LoadUniqueId();
+        void GenUniqueId();
+
+    private:
+        SharedPreference* sp_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;
+        std::string unique_id_{};
+        std::map<std::string, IPNetworkType> ips_;
     };
 
 }
