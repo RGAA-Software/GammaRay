@@ -4,11 +4,11 @@ import QtQuick.Layouts 2.15
 import QtQuick.Controls.Material 2.15
 
 Window {
-    width: 1450
-    height: 800
+    width: 150
+    height: 80
     visible: true
-    minimumWidth: 1450
-    minimumHeight: 800
+    minimumWidth: 150
+    minimumHeight: 80
     title: qsTr("GammaRay Server")
 
     Material.theme: Material.Light

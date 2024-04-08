@@ -33,6 +33,10 @@ namespace tc
 
     private:
 
+        std::string MakeBroadcastMessage();
+
+    private:
+
         std::shared_ptr<Context> context_ = nullptr;
         GameModel* installed_game_model_ = nullptr;
 
