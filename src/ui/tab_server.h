@@ -7,15 +7,20 @@
 
 #include "tab_base.h"
 
+#include <QListWidget>
+#include <QListWidgetItem>
+
 namespace tc
 {
     class TabServer : public TabBase {
     public:
-        TabServer(QWidget *parent);
+        explicit TabServer(const std::shared_ptr<Context>& ctx, QWidget *parent);
         ~TabServer() override;
 
         void OnTabShow() override;
         void OnTabHide() override;
+
+
 
     };
 }

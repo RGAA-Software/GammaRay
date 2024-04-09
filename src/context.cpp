@@ -15,7 +15,7 @@ namespace tc
 
     constexpr auto kKeySysUniqueId = "sys_unique_id";
 
-    Context::Context() {
+    Context::Context() : QObject(nullptr) {
 
     }
 
@@ -26,11 +26,7 @@ namespace tc
         LoadUniqueId();
 
         task_runtime_ = std::make_shared<TaskRuntime>();
-
         steam_mgr_ = SteamManager::Make(task_runtime_);
-        steam_mgr_->ScanInstalledGames();
-        steam_mgr_->DumpGamesInfo();
-        //steam_mgr_->UpdateAppDetails();
 
         // ips
         ips_ = IPUtil::ScanIPs();
@@ -48,6 +44,16 @@ namespace tc
 
     std::shared_ptr<TaskRuntime> Context::GetTaskRuntime() {
         return task_runtime_;
+    }
+
+    void Context::PostTask(std::function<void()>&& task) {
+        task_runtime_->Post(SimpleThreadTask::Make(std::move(task)));
+    }
+
+    void Context::PostUITask(std::function<void()>&& task) {
+        QMetaObject::invokeMethod(this, [=]() {
+            task();
+        });
     }
 
     void Context::LoadUniqueId() {

@@ -7,10 +7,19 @@
 
 #include <QMainWindow>
 #include <memory>
+#include <QPushButton>
+#include <QStackedWidget>
 
 namespace tc
 {
 
+    enum class TabName {
+        kTabServer,
+        kTabGames,
+        kTabSettings,
+    };
+
+    class TabBase;
     class Application;
 
     class Workspace : public QMainWindow {
@@ -18,7 +27,15 @@ namespace tc
         Workspace();
 
     private:
+        void ChangeTab(const TabName& tn);
+
+    private:
         std::shared_ptr<Application> app_ = nullptr;
+        std::map<TabName, TabBase*> tabs_;
+        QPushButton* btn_tab_server_ = nullptr;
+        QPushButton* btn_tab_games_ = nullptr;
+        QPushButton* btn_tab_settings_ = nullptr;
+        QStackedWidget* stacked_widget_ = nullptr;
     };
 
 }

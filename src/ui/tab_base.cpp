@@ -6,8 +6,8 @@
 
 namespace tc
 {
-    TabBase::TabBase(QWidget* parent) : QWidget(parent) {
-
+    TabBase::TabBase(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+        context_ = ctx;
     }
 
     TabBase::~TabBase() {

@@ -12,12 +12,21 @@
 
 #include "widgets/custom_tab_btn.h"
 #include "widgets/layout_helper.h"
+#include "ui/tab_game.h"
+#include "ui/tab_server.h"
+#include "ui/tab_settings.h"
 
 namespace tc
 {
 
     Workspace::Workspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay Server"));
+
+        app_ = std::make_shared<Application>();
+        app_->Init();
+
+        // background
+        setStyleSheet(R"(QMainWindow {background-color:#FFFFFF;})");
 
         // root
         auto root_layout = new QHBoxLayout();
@@ -28,48 +37,75 @@ namespace tc
             auto layout = new QVBoxLayout();
             LayoutHelper::ClearMargins(layout);
 
-
             // placeholder to extend the width of left area
+            int left_area_width = 220;
             auto extend = new QLabel(this);
-            extend->setFixedSize(170, 2);
-            extend->setStyleSheet("background:#298789;");
+            extend->setFixedSize(left_area_width, 2);
+            //extend->setStyleSheet("background:#298789;");
             layout->addWidget(extend);
 
             // logo
-            auto logo = new QLabel(this);
-            logo->setFixedSize(120, 120);
-            logo->setStyleSheet("background:#009988;");
-            logo->setAlignment(Qt::AlignCenter);
-            layout->addWidget(logo, 0, Qt::AlignHCenter);
+            {
+                auto logo = new QLabel(this);
+                int logo_size = 90;
+                logo->setFixedSize(logo_size, logo_size);
+                QImage image;
+                image.load(":/resources/tc_icon.png");
+                auto pixmap = QPixmap::fromImage(image);
+                pixmap = pixmap.scaled(logo_size, logo_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                logo->setPixmap(pixmap);
+                layout->addSpacing(45);
+                layout->addWidget(logo, 0, Qt::AlignHCenter);
+            }
 
             // buttons
             auto btn_font_color = "#ffffff";
-            auto btn_size = QSize(150, 36);
+            auto btn_size = QSize(left_area_width - 30, 36);
             {
                 auto btn = new CustomTabBtn(this);
+                btn_tab_server_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("SERVER"));
+                btn->SetText(tr("Server"));
                 //btn->setFont(font);
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
-                QObject::connect(btn, &QPushButton::clicked, this, [=]() {
-                    //ChangeTab(tab_type, TabType::kInstalled);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabServer);
                 });
+                layout->addSpacing(30);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
             {
                 auto btn = new CustomTabBtn(this);
+                btn_tab_games_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("GAMES"));
+                btn->SetText(tr("Games"));
                 //btn->setFont(font);
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
-                QObject::connect(btn, &QPushButton::clicked, this, [=]() {
-                    //ChangeTab(tab_type, TabType::kInstalled);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabGames);
                 });
+                layout->addSpacing(10);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
+            {
+                auto btn = new CustomTabBtn(this);
+                btn_tab_settings_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetText(tr("Settings"));
+                //btn->setFont(font);
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabSettings);
+                });
+                layout->addSpacing(10);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
@@ -77,7 +113,10 @@ namespace tc
 
             // version
             {
-
+                auto label = new QLabel(this);
+                label->setText("V 1.0.3");
+                layout->addWidget(label, 0, Qt::AlignHCenter);
+                layout->addSpacing(10);
             }
 
             root_layout->addLayout(layout);
@@ -85,9 +124,22 @@ namespace tc
 
         // right panels
         {
+            // tabs
+            tabs_.insert({TabName::kTabServer, new TabServer(app_->GetContext(), this)});
+            tabs_.insert({TabName::kTabGames, new TabGame(app_->GetContext(), this)});
+            tabs_.insert({TabName::kTabSettings, new TabSettings(app_->GetContext(), this)});
+
+            tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
+            tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
+            tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
+
             auto layout = new QVBoxLayout();
             LayoutHelper::ClearMargins(root_layout);
             auto stack_widget = new QStackedWidget(this);
+            stack_widget->addWidget(tabs_[TabName::kTabServer]);
+            stack_widget->addWidget(tabs_[TabName::kTabGames]);
+            stack_widget->addWidget(tabs_[TabName::kTabSettings]);
+            stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);
             root_layout->addLayout(layout);
         }
@@ -96,8 +148,20 @@ namespace tc
         root_widget->setLayout(root_layout);
         setCentralWidget(root_widget);
 
-//        app_ = std::make_shared<Application>();
-//        app_->Init();
+        ChangeTab(TabName::kTabServer);
+    }
+
+    void Workspace::ChangeTab(const TabName& tn) {
+        for (auto& [name, tab] : tabs_) {
+            if (tn == name) {
+                stacked_widget_->setCurrentWidget(tabs_[tn]);
+                tabs_[tn]->OnTabShow();
+                ((CustomTabBtn*)tabs_[tn]->GetAttach())->ToActiveStatus();
+            } else {
+                tabs_[name]->OnTabShow();
+                ((CustomTabBtn*)tabs_[name]->GetAttach())->ToInActiveStatus();
+            }
+        }
     }
 
 }
