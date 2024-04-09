@@ -58,6 +58,12 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+
+        auto font = painter.font();
+        //font.setBold(true);
+        font.setPixelSize(14);
+        painter.setFont(font);
+
         if (!active) {
             QRadialGradient gradient(width() / 2, height() / 2, width() * 1.2, width() / 3, height() / 2);
             gradient.setColorAt(0, AppSkin::kTabBtnHoverColor);

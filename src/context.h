@@ -9,6 +9,8 @@
 #include <string>
 #include "network/ip_util.h"
 
+#include <QObject>
+
 namespace tc
 {
 
@@ -16,13 +18,15 @@ namespace tc
     class TaskRuntime;
     class SharedPreference;
 
-    class Context : public std::enable_shared_from_this<Context> {
+    class Context : public QObject, public std::enable_shared_from_this<Context> {
     public:
         Context();
 
         void Init();
         std::shared_ptr<SteamManager> GetSteamManager();
         std::shared_ptr<TaskRuntime> GetTaskRuntime();
+        void PostTask(std::function<void()>&& task);
+        void PostUITask(std::function<void()>&& task);
 
         std::string GetSysUniqueId();
         std::map<std::string, IPNetworkType> GetIps();
