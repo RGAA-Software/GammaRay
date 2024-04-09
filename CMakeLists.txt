@@ -5,11 +5,16 @@ set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 project(tc_server_steam VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Quick QuickControls2 WebSockets Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -55,23 +60,23 @@ add_executable(${PROJECT_NAME}
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-qt_add_resources(${PROJECT_NAME} "assets"
-    PREFIX "/"
-    FILES
-        "resources/tc_icon.png"
-        "resources/tc_icon_raw.png"
-)
+#qt_add_resources(${PROJECT_NAME} "assets"
+#    PREFIX "/"
+#    FILES
+#        "resources/tc_icon.png"
+#        "resources/tc_icon_raw.png"
+#)
 
-qt_add_qml_module(${PROJECT_NAME}
-        URI tc_server_steam
-        VERSION 1.0
-        QML_FILES
-            Main.qml
-            Test.qml
-            TCButton.qml
-            TCTabView.qml
-            TCGameListView.qml
-)
+#qt_add_qml_module(${PROJECT_NAME}
+#        URI tc_server_steam
+#        VERSION 1.0
+#        QML_FILES
+#            Main.qml
+#            Test.qml
+#            TCButton.qml
+#            TCTabView.qml
+#            TCGameListView.qml
+#)
 
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/certificate.pem" DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/private.key" DESTINATION ${CMAKE_BINARY_DIR})
@@ -89,9 +94,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(${PROJECT_NAME}
-        PRIVATE Qt6::Quick Qt6::Core Qt6::Qml Qt6::QuickControls2 Qt6::WebSockets Qt6::Network
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network)
 #fmt::fmt-header-only
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new)
 
