@@ -1,9 +1,9 @@
 set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/entity/game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/model/game_model.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/steam/steam_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/context.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/workspace.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_handler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_server.cpp
@@ -16,6 +16,12 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qrcodegen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qrcodegen.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qr_generator.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/app_skin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/custom_tab_btn.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_base.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server.cpp
 
         PARENT_SCOPE
 )
