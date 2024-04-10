@@ -14,7 +14,7 @@ namespace tc
     class QrGenerator {
     public:
 
-        static QPixmap GenQRPixmap(const QString& message);
+        static QPixmap GenQRPixmap(const QString& message, int qr_size);
 
     };
 

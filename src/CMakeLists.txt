@@ -4,6 +4,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/context.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/workspace.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/settings.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_handler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_server.cpp
@@ -28,7 +29,8 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_settings.cpp
 
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/game.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/game_manager.cpp
+
         PARENT_SCOPE
 )
-
-# add_subdirectory(network)

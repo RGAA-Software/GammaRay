@@ -5,6 +5,7 @@
 #include "udp_broadcaster.h"
 #include "tc_common_new/log.h"
 #include "tc_3rdparty/json/json.hpp"
+#include "settings.h"
 
 namespace tc
 {
@@ -21,7 +22,7 @@ namespace tc
 
     void UdpBroadcaster::Broadcast(const std::string& msg) {
         QHostAddress broadcastAddress("255.255.255.255");
-        quint16 broadcastPort = 21034;
+        quint16 broadcastPort = Settings::Instance()->udp_server_port_;
         QByteArray data = msg.c_str();
         udp_socket_->writeDatagram(data, QHostAddress::Broadcast, broadcastPort);
         LOGI("Udp broadcast: {}", msg);

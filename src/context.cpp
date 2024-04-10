@@ -9,6 +9,10 @@
 #include "tc_common_new/uuid.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
+#include "tc_3rdparty/json/json.hpp"
+#include "settings.h"
+
+using namespace nlohmann;
 
 namespace tc
 {
@@ -20,6 +24,7 @@ namespace tc
     }
 
     void Context::Init() {
+        settings_ = Settings::Instance();
         sp_ = SharedPreference::Instance();
         sp_->Init("", "tc_steam.dat");
         // unique id
@@ -77,6 +82,28 @@ namespace tc
 
     std::map<std::string, IPNetworkType> Context::GetIps() {
         return ips_;
+    }
+
+    std::string Context::MakeBroadcastMessage() {
+        json obj;
+        // sys id
+        obj["sys_unique_id"] = this->GetSysUniqueId();
+        // ips
+        auto ip_array = json::array();
+        auto ips = this->GetIps();
+        for (auto& [ip, type] : ips) {
+            json ip_obj;
+            ip_obj["ip"] = ip;
+            ip_obj["type"] = type == IPNetworkType::kWired ? "Wired" : "Wireless";
+            ip_array.push_back(ip_obj);
+        }
+        obj["ips"] = ip_array;
+        // ports
+        obj["http_server_port"] = settings_->http_server_port_;
+        obj["ws_server_port"] = settings_->ws_server_port_;
+        obj["udp_server_port"] = settings_->udp_server_port_;
+
+        return obj.dump();
     }
 
 }

@@ -12,9 +12,9 @@
 #include "network/udp_broadcaster.h"
 #include "app/tc_app_manager.h"
 #include "tc_3rdparty/json/json.hpp"
-#include "qrcode/qr_generator.h"
 
 #include <QTimer>
+#include "settings.h"
 
 using namespace nlohmann;
 
@@ -30,6 +30,9 @@ namespace tc
     }
 
     void Application::Init() {
+        settings_ = Settings::Instance();
+        settings_->Load();
+
         context_ = std::make_shared<Context>();
         context_->Init();
 
@@ -49,14 +52,12 @@ namespace tc
             installed_game_model_->AddGame(game);
         }
 
+        auto broadcast_msg = context_->MakeBroadcastMessage();
         timer_ = new QTimer(this);
         connect(timer_, &QTimer::timeout, this, [=, this]() {
-            udp_broadcaster_->Broadcast(MakeBroadcastMessage());
+            udp_broadcaster_->Broadcast(broadcast_msg);
         });
         timer_->start(1000);
-
-        auto pixmap = QrGenerator::GenQRPixmap("https://www.baidu.com");
-        pixmap.save("1111.jpg");
 
     }
 
@@ -64,19 +65,6 @@ namespace tc
         return installed_game_model_;
     }
 
-    std::string Application::MakeBroadcastMessage() {
-        json obj;
-        obj["sys_unique_id"] = context_->GetSysUniqueId();
-        auto ip_array = json::array();
-        auto ips = context_->GetIps();
-        for (auto& [ip, type] : ips) {
-            json ip_obj;
-            ip_obj["ip"] = ip;
-            ip_obj["type"] = type == IPNetworkType::kWired ? "Wired" : "Wireless";
-            ip_array.push_back(ip_obj);
-        }
-        obj["ips"] = ip_array;
-        return obj.dump();
-    }
+
 
 }
