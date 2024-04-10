@@ -25,6 +25,7 @@ endif()
 #find_package(fmt CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_path(UWEBSOCKETS_INCLUDE_DIRS "uwebsockets/App.h")
+find_package(SqliteOrm CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -48,6 +49,7 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_subdirectory(deps)
 add_subdirectory(src)
+add_subdirectory(src/tests)
 
 #qt_add_executable(${PROJECT_NAME}
 add_executable(${PROJECT_NAME}
@@ -94,9 +96,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network)
 #fmt::fmt-header-only
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new sqlite_orm::sqlite_orm)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}

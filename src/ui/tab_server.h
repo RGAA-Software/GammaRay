@@ -9,6 +9,7 @@
 
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QPixmap>
 
 namespace tc
 {
@@ -20,7 +21,9 @@ namespace tc
         void OnTabShow() override;
         void OnTabHide() override;
 
+    private:
 
+        QPixmap qr_pixmap_;
 
     };
 }

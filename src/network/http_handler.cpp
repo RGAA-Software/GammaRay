@@ -23,6 +23,10 @@ namespace tc
         this->app_ = app;
     }
 
+    void HttpHandler::HandlePing(const httplib::Request &req, httplib::Response &res) {
+        res.set_content("Pong", "text/plain");
+    }
+
     void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
         res.set_content("Good", "text/plain");
     }

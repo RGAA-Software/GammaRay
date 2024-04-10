@@ -3,6 +3,7 @@
 //
 
 #include "ws_server.h"
+#include "settings.h"
 
 namespace tc
 {
@@ -17,8 +18,8 @@ namespace tc
 
     void WSServer::Start() {
         ws_server_ = new QWebSocketServer(QStringLiteral("Echo Server"), QWebSocketServer::NonSecureMode, this);
-        if (ws_server_->listen(QHostAddress::Any, 20369)) {
-            qDebug() << "WebSocket server listening on port" << 20369;
+        if (ws_server_->listen(QHostAddress::Any, Settings::Instance()->ws_server_port_)) {
+            qDebug() << "WebSocket server listening on port" << Settings::Instance()->ws_server_port_;
             connect(ws_server_, &QWebSocketServer::newConnection, this, &WSServer::onNewConnection);
             connect(ws_server_, &QWebSocketServer::closed, this, &WSServer::closed);
         }

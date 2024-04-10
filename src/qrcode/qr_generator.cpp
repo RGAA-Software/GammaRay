@@ -10,12 +10,12 @@ using namespace qrcodegen;
 namespace tc
 {
 
-    QPixmap QrGenerator::GenQRPixmap(const QString &message) {
+    QPixmap QrGenerator::GenQRPixmap(const QString &message, int qr_size) {
         // Manual operation
         std::vector<QrSegment> segs =
                 QrSegment::makeSegments(message.toStdString().c_str());
         QrCode qr1 = QrCode::encodeSegments(
-                segs, QrCode::Ecc::HIGH, 5, 5, 2, false);
+                segs, QrCode::Ecc::QUARTILE, 15, 15, 2, false);
 
         QImage QrCode_Image=QImage(qr1.getSize(),qr1.getSize(),QImage::Format_RGB888);
         QrCode_Image.fill(Qt::transparent);
@@ -30,7 +30,7 @@ namespace tc
         }
 
         //图像大小转换为适当的大小
-        QrCode_Image=QrCode_Image.scaled(100, 100, Qt::KeepAspectRatio);
+        QrCode_Image=QrCode_Image.scaled(qr_size, qr_size, Qt::KeepAspectRatio);
         //转换为QPixmap在Label中显示
         return QPixmap::fromImage(QrCode_Image);
     }

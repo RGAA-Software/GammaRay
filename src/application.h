@@ -18,6 +18,7 @@ namespace tc
     class WSServer;
     class UdpBroadcaster;
     class AppManager;
+    class Settings;
 
     class Application : public QObject, public std::enable_shared_from_this<Application> {
     public:
@@ -33,8 +34,6 @@ namespace tc
 
     private:
 
-        std::string MakeBroadcastMessage();
-
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
@@ -46,6 +45,8 @@ namespace tc
         std::shared_ptr<AppManager> app_manager_ = nullptr;
 
         QTimer* timer_ = nullptr;
+
+        Settings* settings_ = nullptr;
 
     };
 
