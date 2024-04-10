@@ -26,7 +26,6 @@ namespace tc
     private:
         QBitmap mask;
         QPixmap pixmap;
-        QPixmap placeholder;
         int radius;
         std::mutex pixmap_mutex_;
 

@@ -13,7 +13,10 @@ namespace tc
             : QLabel(parent) {
         setFixedSize(width, height);
         this->radius = radius;
-        placeholder = QPixmap(":/images/resources/ic_cover.jpg");
+        pixmap = QPixmap(path);
+        if (!pixmap.isNull()) {
+            pixmap = pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        }
     }
 
     RoundImageDisplay::RoundImageDisplay(const QPixmap &pixmap, int radius, QWidget *parent) : QLabel(parent) {
@@ -40,12 +43,12 @@ namespace tc
     void RoundImageDisplay::paintEvent(QPaintEvent *event) {
         QLabel::paintEvent(event);
         QPainter painter(this);
+        painter.setRenderHints(QPainter::Antialiasing, true);
+        painter.setRenderHints(QPainter::SmoothPixmapTransform, true);
 
         std::lock_guard<std::mutex> guard(pixmap_mutex_);
 
         if (!pixmap.isNull() && painter.isActive()) {
-            painter.setRenderHints(QPainter::Antialiasing, true);
-            painter.setRenderHints(QPainter::SmoothPixmapTransform, true);
             QPainterPath path;
             path.addRoundedRect(mask.rect(), radius, radius);
             painter.setClipPath(path);
