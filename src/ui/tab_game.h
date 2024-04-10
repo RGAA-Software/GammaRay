@@ -26,6 +26,8 @@ namespace tc
     private:
         void ScanInstalledGames();
         QListWidgetItem* AddItem(int idx, const std::shared_ptr<SteamApp>& game);
+        QSize GetItemSize();
+
     private:
         QListWidget* list_widget_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;

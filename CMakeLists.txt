@@ -52,9 +52,10 @@ add_subdirectory(src)
 add_subdirectory(src/tests)
 
 #qt_add_executable(${PROJECT_NAME}
+set(RES resources/font.qrc resources/main.qrc resources/qss.qrc res.qrc)
 add_executable(${PROJECT_NAME}
         main.cpp
-        res.qrc
+        ${RES}
         ${MAIN_SRCS}
         ${NETWORK_SRCS}
         icon.rc

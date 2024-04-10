@@ -85,8 +85,9 @@ namespace tc
                 if (!image.load(QString::fromStdString(game->cover_url_))) {
                     continue;
                 }
+                auto item_size = GetItemSize();
                 auto pixmap = QPixmap::fromImage(image);
-                pixmap = pixmap.scaled(200, 200/ (600.0/900.0), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
                 game->cover_pixmap_ = pixmap;
             }
 
@@ -101,8 +102,9 @@ namespace tc
     QListWidgetItem* TabGame::AddItem(int index, const std::shared_ptr<SteamApp>& game) {
         auto item = new QListWidgetItem(list_widget_);
         int margin = 0;
-        int item_width = 200;
-        int item_height = item_width / (600.0/900.0);
+        auto item_size = GetItemSize();
+        int item_width = item_size.width();
+        int item_height = item_size.height();
         item->setSizeHint(QSize(item_width, item_height));
 
         auto widget = new QWidget(this);
@@ -129,4 +131,11 @@ namespace tc
         list_widget_->setItemWidget(item, widget);
         return item;
     }
+
+    QSize TabGame::GetItemSize() {
+        int item_width = 180;
+        int item_height = item_width / (600.0/900.0);
+        return QSize(item_width, item_height);
+    }
+
 }
