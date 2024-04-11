@@ -26,7 +26,7 @@ namespace tc
     }
 
     Application::~Application() {
-        delete installed_game_model_;
+        //delete installed_game_model_;
     }
 
     void Application::Init() {
@@ -46,12 +46,6 @@ namespace tc
 
         udp_broadcaster_ = UdpBroadcaster::Make(context_);
 
-        installed_game_model_ = new GameModel();
-
-        for (auto& game : context_->GetSteamManager()->GetInstalledGames()) {
-            installed_game_model_->AddGame(game);
-        }
-
         auto broadcast_msg = context_->MakeBroadcastMessage();
         timer_ = new QTimer(this);
         connect(timer_, &QTimer::timeout, this, [=, this]() {
@@ -60,11 +54,6 @@ namespace tc
         timer_->start(1000);
 
     }
-
-    GameModel* Application::GetInstalledModel() {
-        return installed_game_model_;
-    }
-
 
 
 }

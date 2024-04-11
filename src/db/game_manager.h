@@ -22,11 +22,11 @@ namespace tc
         explicit GameManager(const std::shared_ptr<Context>& ctx);
         void Init();
 
-        void SaveOrUpdateGame(const std::shared_ptr<Game>& game);
-        std::shared_ptr<Game> GetGameByGameId(uint64_t gid);
-        std::vector<std::shared_ptr<Game>> GetAllGames();
+        void SaveOrUpdateGame(const std::shared_ptr<TcGame>& game);
+        std::shared_ptr<TcGame> GetGameByGameId(uint64_t gid);
+        std::vector<std::shared_ptr<TcGame>> GetAllGames();
         void DeleteGameByGameId(uint64_t gid);
-        void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<Game>>& games);
+        void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<TcGame>>& games);
 
     private:
         auto GetStorageTypeValue();

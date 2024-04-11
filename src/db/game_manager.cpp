@@ -14,17 +14,17 @@ namespace tc
     auto GameManager::InitAppDatabase(const std::string& name) {
         auto st = make_storage(name,
     make_table("games",
-                make_column("id", &Game::id_, primary_key().autoincrement()),
-                make_column("game_id", &Game::game_id_),
-                make_column("game_name", &Game::game_name_),
-                make_column("game_installed_dir", &Game::game_installed_dir_),
-                make_column("game_exes", &Game::game_exes_),
-                make_column("game_exe_names", &Game::game_exe_names_),
-                make_column("is_installed", &Game::is_installed_),
-                make_column("steam_url", &Game::steam_url_),
-                make_column("cover_name", &Game::cover_name_),
-                make_column("engine_type", &Game::engine_type_),
-                make_column("cover_url", &Game::cover_url_)
+                make_column("id", &TcGame::id_, primary_key().autoincrement()),
+                make_column("game_id", &TcGame::game_id_),
+                make_column("game_name", &TcGame::game_name_),
+                make_column("game_installed_dir", &TcGame::game_installed_dir_),
+                make_column("game_exes", &TcGame::game_exes_),
+                make_column("game_exe_names", &TcGame::game_exe_names_),
+                make_column("is_installed", &TcGame::is_installed_),
+                make_column("steam_url", &TcGame::steam_url_),
+                make_column("cover_name", &TcGame::cover_name_),
+                make_column("engine_type", &TcGame::engine_type_),
+                make_column("cover_url", &TcGame::cover_url_)
             )
         );
         return st;
@@ -41,20 +41,15 @@ namespace tc
         auto type = typeid(storage).name();
     }
 
-    void GameManager::SaveOrUpdateGame(const GamePtr& game) {
+    void GameManager::SaveOrUpdateGame(const TcGamePtr& game) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
 
-        std::vector<Game> games;
-        try {
-            games = storage.get_all<Game>(where(c(&Game::game_id_) == game->game_id_));
-        } catch(std::exception& e) {
-            LOGE("SaveOrUpdate failed: {}", e.what());
-        }
+        auto games = storage.get_all<TcGame>(where(c(&TcGame::game_id_) == game->game_id_));
+        LOGI("Game size: {}", games.size());
 
         if (!games.empty() && game->game_id_ > 0) {
-            for (auto &g: games) {
-                // update fields.
+            for (auto& g : games) {
                 g.AssignFrom(game);
                 storage.update(g);
             }
@@ -63,10 +58,10 @@ namespace tc
         }
     }
 
-    GamePtr GameManager::GetGameByGameId(uint64_t gid) {
+    TcGamePtr GameManager::GetGameByGameId(uint64_t gid) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        auto games = storage.get_all<Game>(where(c(&Game::game_id_) == gid));
+        auto games = storage.get_all<TcGame>(where(c(&TcGame::game_id_) == gid));
         if (games.empty()) {
             return nullptr;
         }
@@ -75,12 +70,12 @@ namespace tc
         return g.AsPtr();
     }
 
-    std::vector<GamePtr> GameManager::GetAllGames() {
+    std::vector<TcGamePtr> GameManager::GetAllGames() {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        std::vector<GamePtr> target_games;
+        std::vector<TcGamePtr> target_games;
         try {
-            auto games = storage.get_all<Game>();
+            auto games = storage.get_all<TcGame>();
             for (auto &g: games) {
                 g.UnpackExePaths();
                 target_games.push_back(g.AsPtr());
@@ -96,13 +91,13 @@ namespace tc
         auto storage = std::any_cast<Storage>(db_storage_);
         // using remove will crash
         try {
-            storage.remove_all<Game>(where(c(&Game::game_id_) == gid));
+            storage.remove_all<TcGame>(where(c(&TcGame::game_id_) == gid));
         } catch(std::exception& e) {
             LOGE("Remove failed: {}, e: {}", gid, e.what());
         }
     }
 
-    void GameManager::BatchSaveOrUpdateGames(const std::vector<GamePtr>& games) {
+    void GameManager::BatchSaveOrUpdateGames(const std::vector<TcGamePtr>& games) {
         for (auto& game : games) {
             SaveOrUpdateGame(game);
         }

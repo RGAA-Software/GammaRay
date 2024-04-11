@@ -26,14 +26,15 @@ namespace tc
         void OnTabHide() override;
     private:
         void ScanInstalledGames();
-        QListWidgetItem* AddItem(int idx, const GamePtr& game);
+        QListWidgetItem* AddItem(int idx, const TcGamePtr& game);
         QSize GetItemSize();
-        void AddItems(const std::vector<GamePtr>& games);
+        void AddItems(const std::vector<TcGamePtr>& games);
+        void LoadCover(const TcGamePtr& game);
 
     private:
         QListWidget* list_widget_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
-        std::vector<GamePtr> games_;
+        std::vector<TcGamePtr> games_;
     };
 
 }

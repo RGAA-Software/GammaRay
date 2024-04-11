@@ -4,35 +4,43 @@
 
 #include "game.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/log.h"
 #include <algorithm>
 
 namespace tc
 {
 
-    void Game::AssignFrom(const std::shared_ptr<Game>& game) {
+    void TcGame::AssignFrom(const std::shared_ptr<TcGame>& game) {
         this->game_name_ = game->game_name_;
         this->game_installed_dir_ = game->game_installed_dir_;
         this->cover_url_ = game->cover_url_;
     }
 
-    void Game::CopyFrom(const std::shared_ptr<SteamApp>& steam) {
+    void TcGame::CopyFrom(const std::shared_ptr<SteamApp>& steam) {
         this->game_id_ = steam->app_id_;
-        this->game_name_ = steam->name_;
-        this->game_installed_dir_ = steam->installed_dir_;
+        this->game_name_ = StringExt::CopyStr(steam->name_);
+        LOGI("origin name: {}, copy name: {}", steam->name_, this->game_name_);
+        this->game_installed_dir_ = StringExt::CopyStr(steam->installed_dir_);
         for (auto& e : steam->exes_) {
-            this->game_exes_ = this->game_exes_.append(e).append(";");
+            this->game_exes_.append(StringExt::CopyStr(e)).append(";");
         }
+
+        std::stringstream ss;
         for (auto& n : steam->exe_names_) {
-            this->game_exe_names_ = this->game_exe_names_.append(n).append(";");
+            ss << StringExt::CopyStr(n) << ";";
+            LOGI("n: {}, copy n: {}", n, StringExt::CopyStr(n));
         }
+        this->game_exe_names_ = ss.str();
+        LOGI("game_exe_names: {}", this->game_exe_names_);
+
         this->is_installed_ = steam->is_installed_;
-        this->steam_url_ = steam->steam_url_;
-        this->cover_name_ = steam->cover_name_;
-        this->engine_type_ = steam->engine_type_;
-        this->cover_url_ = steam->cover_url_;
+        this->steam_url_ = StringExt::CopyStr(steam->steam_url_);
+        this->cover_name_ = StringExt::CopyStr(steam->cover_name_);
+        this->engine_type_ = StringExt::CopyStr(steam->engine_type_);
+        this->cover_url_ = StringExt::CopyStr(steam->cover_url_);
     }
 
-    void Game::UnpackExePaths() {
+    void TcGame::UnpackExePaths() {
         if (!this->game_exes_.empty()) {
             StringExt::Split(this->game_exes_, this->exes_, ";");
             std::erase_if(this->exes_, [](const std::string &item) -> bool {
@@ -47,8 +55,8 @@ namespace tc
         }
     }
 
-    std::shared_ptr<Game> Game::AsPtr() const {
-        auto game = std::make_shared<Game>();
+    std::shared_ptr<TcGame> TcGame::AsPtr() const {
+        auto game = std::make_shared<TcGame>();
         game->id_ = this->id_;
         game->game_id_ = this->game_id_;
         game->game_name_ = this->game_name_;
@@ -61,9 +69,9 @@ namespace tc
         game->engine_type_ = this->engine_type_;
         game->cover_url_ = this->cover_url_;
         // not in database
-//        game->cover_pixmap_ = this->cover_pixmap_;
-//        game->exes_ = this->exes_;
-//        game->exe_names_ = this->exe_names_;
+        game->cover_pixmap_ = this->cover_pixmap_;
+        game->exes_ = this->exes_;
+        game->exe_names_ = this->exe_names_;
         return game;
     }
 

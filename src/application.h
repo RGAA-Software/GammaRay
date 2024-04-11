@@ -27,7 +27,6 @@ namespace tc
         ~Application() override;
 
         void Init();
-        GameModel* GetInstalledModel();
 
         std::shared_ptr<Context> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
@@ -37,7 +36,7 @@ namespace tc
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
-        GameModel* installed_game_model_ = nullptr;
+        //GameModel* installed_game_model_ = nullptr;
 
         std::shared_ptr<HttpServer> http_server_ = nullptr;
         std::shared_ptr<WSServer> ws_server_ = nullptr;

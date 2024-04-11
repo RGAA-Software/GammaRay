@@ -62,7 +62,6 @@ namespace tc
         setLayout(root_layout);
 
         ScanInstalledGames();
-
     }
 
     TabGame::~TabGame() {
@@ -82,51 +81,37 @@ namespace tc
             // 1. load from database
             auto gm = context_->GetGameManager();
             games_ = gm->GetAllGames();
-            AddItems(games_);
+            if (!games_.empty()) {
+                for (auto& game : games_) {
+                    this->LoadCover(game);
+                }
+                AddItems(games_);
+            }
 
             steam_mgr_->ScanInstalledGames();
             steam_mgr_->DumpGamesInfo();
 
             auto steam_apps = steam_mgr_->GetInstalledGames();
-            std::vector<GamePtr> scan_games;
+            std::vector<TcGamePtr> scan_games;
+
             for (auto& app : steam_apps) {
-                auto game = std::make_shared<Game>();
+                auto game = std::make_shared<TcGame>();
                 game->CopyFrom(app);
-
-                QImage image;
-                if (!image.load(QString::fromStdString(game->cover_url_))) {
-                    LOGI("not find cover: {}", game->cover_url_);
-                    continue;
-                }
-                auto item_size = GetItemSize();
-                auto pixmap = QPixmap::fromImage(image);
-                pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-//                game->cover_pixmap_ = pixmap;
-
                 scan_games.push_back(game);
             }
-
             gm->BatchSaveOrUpdateGames(scan_games);
-            auto new_games = gm->GetAllGames();
-            std::vector<GamePtr> diff_games;
-            for (auto& ng : new_games) {
-                bool find = false;
-                for (auto& g : games_) {
-                    if (ng->game_id_ == g->game_id_) {
-                        find = true;
-                        break;
-                    }
+
+            if (games_.empty()) {
+                games_ = scan_games;
+                for (auto& game : games_) {
+                    this->LoadCover(game);
                 }
-                if (!find) {
-                    diff_games.push_back(ng);
-                }
+                AddItems(games_);
             }
-            games_ = new_games;
-            AddItems(diff_games);
         });
     }
 
-    QListWidgetItem* TabGame::AddItem(int index, const GamePtr& game) {
+    QListWidgetItem* TabGame::AddItem(int index, const TcGamePtr& game) {
         auto item = new QListWidgetItem(list_widget_);
         int margin = 0;
         auto item_size = GetItemSize();
@@ -143,10 +128,10 @@ namespace tc
         cover->setObjectName("cover");
         layout->addWidget(cover);
 
-//        if (game.cover_pixmap_.has_value()) {
-//            auto pixmap = std::any_cast<QPixmap>(game.cover_pixmap_);
-//            cover->UpdatePixmap(pixmap);
-//        }
+        if (game->cover_pixmap_.has_value()) {
+            auto pixmap = std::any_cast<QPixmap>(game->cover_pixmap_);
+            cover->UpdatePixmap(pixmap);
+        }
 
         widget->setLayout(layout);
         widget->show();
@@ -165,12 +150,24 @@ namespace tc
         return QSize(item_width, item_height);
     }
 
-    void TabGame::AddItems(const std::vector<GamePtr>& games) {
+    void TabGame::AddItems(const std::vector<TcGamePtr>& games) {
         context_->PostUITask([=, this]() {
             for (int i = 0; i < games.size(); i++) {
                 AddItem(i, games[i]);
             }
         });
+    }
+
+    void TabGame::LoadCover(const tc::TcGamePtr &game) {
+        QImage image;
+        if (!image.load(QString::fromStdString(game->cover_url_))) {
+            LOGI("not find cover: {}", game->cover_url_);
+            return;
+        }
+        auto item_size = GetItemSize();
+        auto pixmap = QPixmap::fromImage(image);
+        pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        game->cover_pixmap_ = pixmap;
     }
 
 }
