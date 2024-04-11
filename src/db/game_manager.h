@@ -19,13 +19,14 @@ namespace tc
 
     class GameManager {
     public:
-        GameManager(const std::shared_ptr<Context>& ctx);
+        explicit GameManager(const std::shared_ptr<Context>& ctx);
         void Init();
 
-        void SaveOrUpdateGame(const Game& game);
-        Game GetGameByGameId(uint64_t gid);
-        std::vector<Game> GetAllGames();
+        void SaveOrUpdateGame(const std::shared_ptr<Game>& game);
+        std::shared_ptr<Game> GetGameByGameId(uint64_t gid);
+        std::vector<std::shared_ptr<Game>> GetAllGames();
         void DeleteGameByGameId(uint64_t gid);
+        void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<Game>>& games);
 
     private:
         auto GetStorageTypeValue();

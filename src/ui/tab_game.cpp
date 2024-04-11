@@ -22,6 +22,9 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
 #include "widgets/layout_helper.h"
+#include "db/game.h"
+#include "db/game_manager.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -76,30 +79,54 @@ namespace tc
 
     void TabGame::ScanInstalledGames() {
         context_->PostTask([=, this]() {
+            // 1. load from database
+            auto gm = context_->GetGameManager();
+            games_ = gm->GetAllGames();
+            AddItems(games_);
+
             steam_mgr_->ScanInstalledGames();
             steam_mgr_->DumpGamesInfo();
 
-            auto games = steam_mgr_->GetInstalledGames();
-            for (auto& game : games) {
+            auto steam_apps = steam_mgr_->GetInstalledGames();
+            std::vector<GamePtr> scan_games;
+            for (auto& app : steam_apps) {
+                auto game = std::make_shared<Game>();
+                game->CopyFrom(app);
+
                 QImage image;
                 if (!image.load(QString::fromStdString(game->cover_url_))) {
+                    LOGI("not find cover: {}", game->cover_url_);
                     continue;
                 }
                 auto item_size = GetItemSize();
                 auto pixmap = QPixmap::fromImage(image);
                 pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                game->cover_pixmap_ = pixmap;
+//                game->cover_pixmap_ = pixmap;
+
+                scan_games.push_back(game);
             }
 
-            context_->PostUITask([=, this]() {
-                for (int i = 0; i < games.size(); i++) {
-                    AddItem(i, games[i]);
+            gm->BatchSaveOrUpdateGames(scan_games);
+            auto new_games = gm->GetAllGames();
+            std::vector<GamePtr> diff_games;
+            for (auto& ng : new_games) {
+                bool find = false;
+                for (auto& g : games_) {
+                    if (ng->game_id_ == g->game_id_) {
+                        find = true;
+                        break;
+                    }
                 }
-            });
+                if (!find) {
+                    diff_games.push_back(ng);
+                }
+            }
+            games_ = new_games;
+            AddItems(diff_games);
         });
     }
 
-    QListWidgetItem* TabGame::AddItem(int index, const std::shared_ptr<SteamApp>& game) {
+    QListWidgetItem* TabGame::AddItem(int index, const GamePtr& game) {
         auto item = new QListWidgetItem(list_widget_);
         int margin = 0;
         auto item_size = GetItemSize();
@@ -116,10 +143,10 @@ namespace tc
         cover->setObjectName("cover");
         layout->addWidget(cover);
 
-        if (game->cover_pixmap_.has_value()) {
-            auto pixmap = std::any_cast<QPixmap>(game->cover_pixmap_);
-            cover->UpdatePixmap(pixmap);
-        }
+//        if (game.cover_pixmap_.has_value()) {
+//            auto pixmap = std::any_cast<QPixmap>(game.cover_pixmap_);
+//            cover->UpdatePixmap(pixmap);
+//        }
 
         widget->setLayout(layout);
         widget->show();
@@ -136,6 +163,14 @@ namespace tc
         int item_width = 180;
         int item_height = item_width / (600.0/900.0);
         return QSize(item_width, item_height);
+    }
+
+    void TabGame::AddItems(const std::vector<GamePtr>& games) {
+        context_->PostUITask([=, this]() {
+            for (int i = 0; i < games.size(); i++) {
+                AddItem(i, games[i]);
+            }
+        });
     }
 
 }

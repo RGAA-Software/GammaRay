@@ -8,6 +8,7 @@
 #include "tab_base.h"
 #include <QListWidget>
 #include <QListWidgetItem>
+#include "db/game.h"
 
 namespace tc
 {
@@ -25,12 +26,14 @@ namespace tc
         void OnTabHide() override;
     private:
         void ScanInstalledGames();
-        QListWidgetItem* AddItem(int idx, const std::shared_ptr<SteamApp>& game);
+        QListWidgetItem* AddItem(int idx, const GamePtr& game);
         QSize GetItemSize();
+        void AddItems(const std::vector<GamePtr>& games);
 
     private:
         QListWidget* list_widget_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
+        std::vector<GamePtr> games_;
     };
 
 }

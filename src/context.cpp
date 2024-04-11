@@ -11,6 +11,7 @@
 #include "tc_common_new/log.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "settings.h"
+#include "db/game_manager.h"
 
 using namespace nlohmann;
 
@@ -41,6 +42,9 @@ namespace tc
         for (auto& [ip, type] : ips_) {
             LOGI("IP: {} -> {}", ip, type == IPNetworkType::kWired ? "Wired" : "Wireless");
         }
+
+        game_manager_ = std::make_shared<GameManager>(shared_from_this());
+        game_manager_->Init();
     }
 
     std::shared_ptr<SteamManager> Context::GetSteamManager() {
@@ -104,6 +108,10 @@ namespace tc
         obj["udp_server_port"] = settings_->udp_server_port_;
 
         return obj.dump();
+    }
+
+    std::shared_ptr<GameManager> Context::GetGameManager() {
+        return game_manager_;
     }
 
 }

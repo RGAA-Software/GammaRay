@@ -31,15 +31,15 @@ TEST(Test_db, read_write) {
         gm->SaveOrUpdateGame(Game{
             .game_id_ = 1023,
             .game_name_ = "test1.9",
-            .game_path_ = "test_path",
-            .cover_path_ = "cover_path"
+            .game_installed_dir_ = "test_path",
+            .cover_url_ = "cover_path"
         });
 
         gm->SaveOrUpdateGame(Game{
             .game_id_ = 1025,
             .game_name_ = "test2",
-            .game_path_ = "xxtest_path",
-            .cover_path_ = "xxcover_path"
+            .game_installed_dir_ = "xxtest_path",
+            .cover_url_ = "xxcover_path"
         });
     }
 
@@ -65,8 +65,8 @@ TEST(Test_db, read_write) {
         gm->SaveOrUpdateGame(Game{
             .game_id_ = 1025,
             .game_name_ = "GGGst2",
-            .game_path_ = "NNNt_path",
-            .cover_path_ = "zzzz"
+            .game_installed_dir_ = "NNNt_path",
+            .cover_url_ = "zzzz"
         });
     }
     fn_query_all();
