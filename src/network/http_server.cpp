@@ -37,8 +37,10 @@ namespace tc
 
             server_->set_mount_point("/", "./www");
             auto steam_manager = context_->GetSteamManager();
-            auto image_cache_path = steam_manager->GetSteamImageCachePath();
-            server_->set_mount_point("/cache", image_cache_path);
+            if (steam_manager) {
+                auto image_cache_path = steam_manager->GetSteamImageCachePath();
+                server_->set_mount_point("/cache", image_cache_path);
+            }
 
             server_->listen("0.0.0.0", Settings::Instance()->http_server_port_);
         });

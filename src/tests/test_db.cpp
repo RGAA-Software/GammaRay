@@ -28,19 +28,23 @@ TEST(Test_db, read_write) {
     auto gm = std::make_shared<GameManager>(ctx);
     gm->Init();
     {
-        gm->SaveOrUpdateGame(Game{
-            .game_id_ = 1023,
-            .game_name_ = "test1.9",
-            .game_installed_dir_ = "test_path",
-            .cover_url_ = "cover_path"
-        });
+        {
+            auto g = std::make_shared<Game>();
+            g->game_id_ = 1023;
+            g->game_name_ = "test1.9";
+            g->game_installed_dir_ = "test_path";
+            g->cover_url_ = "cover_path";
+            gm->SaveOrUpdateGame(g);
+        }
+        {
+            auto g = std::make_shared<Game>();
+            g->game_id_ = 10235656;
+            g->game_name_ = "test1dfsadf.9";
+            g->game_installed_dir_ = "tesdfadst_path";
+            g->cover_url_ = "cover_path";
 
-        gm->SaveOrUpdateGame(Game{
-            .game_id_ = 1025,
-            .game_name_ = "test2",
-            .game_installed_dir_ = "xxtest_path",
-            .cover_url_ = "xxcover_path"
-        });
+            gm->SaveOrUpdateGame(g);
+        }
     }
 
     auto fn_query_all = [=]() {
@@ -48,7 +52,7 @@ TEST(Test_db, read_write) {
         assert(!games.empty());
 
         for (auto& game : games) {
-            std::cout << "id: " << game.id_ << ", game id: " << game.game_id_ << ", name: " << game.game_name_ << std::endl;
+            //std::cout << "id: " << game->id_ << ", game id: " << game->game_id_ << ", name: " << game->game_name_ << std::endl;
         }
     };
 
@@ -62,12 +66,12 @@ TEST(Test_db, read_write) {
 
     std::cout << "will update 1025" << std::endl;
     {
-        gm->SaveOrUpdateGame(Game{
-            .game_id_ = 1025,
-            .game_name_ = "GGGst2",
-            .game_installed_dir_ = "NNNt_path",
-            .cover_url_ = "zzzz"
-        });
+        auto g = std::make_shared<Game>();
+        g->game_id_ = 10235656;
+        g->game_name_ = "tesd=========";
+        g->game_installed_dir_ = "tesdfadst_path";
+        g->cover_url_ = "cover_path";
+        gm->SaveOrUpdateGame(g);
     }
     fn_query_all();
 

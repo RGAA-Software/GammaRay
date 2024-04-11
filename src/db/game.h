@@ -7,16 +7,20 @@
 
 #include <string>
 #include <any>
+#include <QDebug>
 
 #include "tc_steam_manager_new/steam_entities.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
 
-    class Game {
+    class TcGame {
     public:
-        Game() = default;
-        ~Game() = default;
+
+        ~TcGame() {
+
+        }
 
     public:
         int id_{};
@@ -37,14 +41,14 @@ namespace tc
         std::vector<std::string> exe_names_{};
 
     public:
-        void AssignFrom(const std::shared_ptr<Game>& game);
+        void AssignFrom(const std::shared_ptr<TcGame>& game);
         void CopyFrom(const std::shared_ptr<SteamApp>& steam);
         void UnpackExePaths();
-        [[nodiscard]] std::shared_ptr<Game> AsPtr() const;
+        [[nodiscard]] std::shared_ptr<TcGame> AsPtr() const;
 
     };
 
-    using GamePtr = std::shared_ptr<Game>;
+    using TcGamePtr = std::shared_ptr<TcGame>;
 
 }
 
