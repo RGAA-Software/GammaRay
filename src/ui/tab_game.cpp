@@ -25,6 +25,7 @@
 #include "db/game.h"
 #include "db/game_manager.h"
 #include "tc_common_new/log.h"
+#include "widget_decorator.h"
 
 namespace tc
 {
@@ -55,6 +56,60 @@ namespace tc
         format% (25);
         format% (20);
         format% (20);
+
+        //
+        QObject::connect(list_widget_, &QListWidget::clicked, this, [=, this](const QModelIndex& index) {
+            int row = index.row();
+            if (row >= this->games_.size()) {
+                return;
+            }
+            LOGI("click: {}", row);
+        });
+
+        QObject::connect(list_widget_, &QListWidget::doubleClicked, this, [=, this](const QModelIndex& index) {
+            int row = index.row();
+            if (row >= this->games_.size()) {
+                return;
+            }
+            LOGI("double click: {}", row);
+        });
+
+        list_widget_->setContextMenuPolicy(Qt::CustomContextMenu);
+        QObject::connect(list_widget_, &QListWidget::customContextMenuRequested, this, [=, this](const QPoint& pos) {
+            QListWidgetItem* cur_item = list_widget_->itemAt(pos);
+            if (cur_item == nullptr) {
+                return;
+            }
+
+            int index = list_widget_->row(cur_item);
+            if (index < 0 || index >= games_.size()) {
+                return;
+            }
+            auto wp_entity = games_.at(index);
+
+            std::vector<QString> actions {
+                tr("11111111"),
+                tr("33333333"),
+                tr("55555555"),
+                tr("77777777"),
+            };
+            auto pop_menu = new QMenu();
+            //pop_menu->setFont(sk::SysConfig::Instance()->sys_font_9);
+            for (int i = 0; i < actions.size(); i++) {
+                auto action = new QAction(actions.at(i), pop_menu);
+                //action->setFont(sk::SysConfig::Instance()->sys_font_9);
+                WidgetDecorator::DecoratePopMenu(pop_menu);
+                pop_menu->addAction(action);
+
+                QObject::connect(action, &QAction::triggered, this, [=]() {
+
+                });
+            }
+
+            pop_menu->exec(QCursor::pos());
+            delete pop_menu;
+
+        });
 
         list_widget_->setStyleSheet(format.str().c_str());
         list_widget_->show();
