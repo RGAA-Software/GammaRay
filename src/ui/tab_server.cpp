@@ -46,9 +46,11 @@ namespace tc
             // machine code
             {
                 auto layout = new NoMarginVLayout();
-                layout->addSpacing(20);
+                layout->addSpacing(30);
 
-                auto avatar = new RoundImageDisplay(":/icons/1.png", 150, 150, 75);
+                int size = 140;
+                auto img_path = std::format(":/icons/{}.png", std::atoi(context_->GetSysUniqueId().c_str())%30+1);
+                auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
                 layout->addWidget(avatar, 0, Qt::AlignHCenter);
 
                 auto title = new QLabel(this);

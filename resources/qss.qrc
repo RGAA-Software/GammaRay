@@ -25,5 +25,34 @@
         <file>qss/lightblue/radiobutton_unchecked.png</file>
         <file>qss/lightblue/radiobutton_unchecked_disable.png</file>
         <file>icons/1.png</file>
+        <file>icons/2.png</file>
+        <file>icons/3.png</file>
+        <file>icons/4.png</file>
+        <file>icons/5.png</file>
+        <file>icons/6.png</file>
+        <file>icons/7.png</file>
+        <file>icons/8.png</file>
+        <file>icons/9.png</file>
+        <file>icons/10.png</file>
+        <file>icons/11.png</file>
+        <file>icons/12.png</file>
+        <file>icons/13.png</file>
+        <file>icons/14.png</file>
+        <file>icons/15.png</file>
+        <file>icons/16.png</file>
+        <file>icons/17.png</file>
+        <file>icons/18.png</file>
+        <file>icons/19.png</file>
+        <file>icons/20.png</file>
+        <file>icons/21.png</file>
+        <file>icons/22.png</file>
+        <file>icons/23.png</file>
+        <file>icons/24.png</file>
+        <file>icons/25.png</file>
+        <file>icons/26.png</file>
+        <file>icons/27.png</file>
+        <file>icons/28.png</file>
+        <file>icons/29.png</file>
+        <file>icons/30.png</file>
     </qresource>
 </RCC>

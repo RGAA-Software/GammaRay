@@ -9,9 +9,9 @@ namespace tc
     QColor AppSkin::kTabBtnInActiveColor = QColor(0xeeeeee);
 
     QColor AppSkin::kNormalColor = QColor(0x7350ce);
-    QColor AppSkin::kTabBtnNormalColor = QColor(0x2d17bc);
-    QColor AppSkin::kTabBtnHoverColor = QColor(0x4516be);
-    QColor AppSkin::kTabBtnPressedColor = QColor(0x6313c0);
+    QColor AppSkin::kTabBtnNormalColor = QColor(0x486487);
+    QColor AppSkin::kTabBtnHoverColor = QColor(0x386487);
+    QColor AppSkin::kTabBtnPressedColor = QColor(0x286487);
 
     QColor AppSkin::kWebWpColor = QColor(0xed5a65);
     QColor AppSkin::kWebWpHoverColor = QColor(0xe3545e);
