@@ -32,6 +32,7 @@ namespace tc
         void PostUITask(std::function<void()>&& task);
 
         std::string GetSysUniqueId();
+        int GetIndexByUniqueId();
         std::map<std::string, IPNetworkType> GetIps();
 
         std::string MakeBroadcastMessage();

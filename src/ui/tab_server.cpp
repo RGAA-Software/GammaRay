@@ -49,7 +49,7 @@ namespace tc
                 layout->addSpacing(30);
 
                 int size = 140;
-                auto img_path = std::format(":/icons/{}.png", std::atoi(context_->GetSysUniqueId().c_str())%30+1);
+                auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
                 auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
                 layout->addWidget(avatar, 0, Qt::AlignHCenter);
 
