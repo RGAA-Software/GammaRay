@@ -10,6 +10,9 @@
 #include "application.h"
 #include "settings.h"
 
+#include <QString>
+#include <QApplication>
+
 using namespace std::placeholders;
 
 namespace tc
@@ -41,6 +44,9 @@ namespace tc
                 auto image_cache_path = steam_manager->GetSteamImageCachePath();
                 server_->set_mount_point("/cache", image_cache_path);
             }
+
+            auto res_path = QApplication::applicationDirPath() +  "/resources";
+            server_->set_mount_point("/res", res_path.toStdString());
 
             server_->listen("0.0.0.0", Settings::Instance()->http_server_port_);
         });
