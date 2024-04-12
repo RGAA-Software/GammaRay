@@ -88,6 +88,10 @@ namespace tc
         return unique_id_;
     }
 
+    int Context::GetIndexByUniqueId() {
+        return std::atoi(GetSysUniqueId().c_str())%30+1;
+    }
+
     std::map<std::string, IPNetworkType> Context::GetIps() {
         return ips_;
     }
@@ -96,6 +100,7 @@ namespace tc
         json obj;
         // sys id
         obj["sys_unique_id"] = this->GetSysUniqueId();
+        obj["icon_idx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();
         auto ips = this->GetIps();
