@@ -12,6 +12,7 @@
 #include "tc_3rdparty/json/json.hpp"
 #include "settings.h"
 #include "db/game_manager.h"
+#include "res/resource_manager.h"
 
 using namespace nlohmann;
 
@@ -45,6 +46,9 @@ namespace tc
 
         game_manager_ = std::make_shared<GameManager>(shared_from_this());
         game_manager_->Init();
+
+        res_manager_ = std::make_shared<ResourceManager>(shared_from_this());
+        res_manager_->ExtractIconsIfNeeded();
     }
 
     std::shared_ptr<SteamManager> Context::GetSteamManager() {
