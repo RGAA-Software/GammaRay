@@ -33,6 +33,7 @@ namespace tc
             //server_ = std::make_shared<httplib::SSLServer>("./certificate.pem", "./private.key");
             server_ = std::make_shared<httplib::Server>();
             server_->Get("/v1/ping", std::bind(&HttpHandler::HandlePing, http_handler_.get(), _1, _2));
+            server_->Get("/v1/simple/info", std::bind(&HttpHandler::HandleSimpleInfo, http_handler_.get(), _1, _2));
             server_->Get("/v1/apis", std::bind(&HttpHandler::HandleSupportApis, http_handler_.get(), _1, _2));
             server_->Get("/v1/apps", std::bind(&HttpHandler::HandleGames, http_handler_.get(), _1, _2));
             server_->Get("/v1/start/app", std::bind(&HttpHandler::HandleGameStart, http_handler_.get(), _1, _2));
@@ -42,6 +43,7 @@ namespace tc
             auto steam_manager = context_->GetSteamManager();
             if (steam_manager) {
                 auto image_cache_path = steam_manager->GetSteamImageCachePath();
+                LOGI("====> image cache path: {}", image_cache_path);
                 server_->set_mount_point("/cache", image_cache_path);
             }
 

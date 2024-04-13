@@ -19,6 +19,7 @@ namespace tc
         explicit HttpHandler(const std::shared_ptr<Application>& app);
 
         void HandlePing(const httplib::Request& req, httplib::Response& res);
+        void HandleSimpleInfo(const httplib::Request& req, httplib::Response& res);
         void HandleSupportApis(const httplib::Request& req, httplib::Response& res);
         void HandleGames(const httplib::Request& req, httplib::Response& res);
         void HandleGameStart(const httplib::Request& req, httplib::Response& res);
