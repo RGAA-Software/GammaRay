@@ -34,6 +34,7 @@ namespace tc
 
         task_runtime_ = std::make_shared<TaskRuntime>();
         steam_mgr_ = SteamManager::Make(task_runtime_);
+        steam_mgr_->ScanInstalledSteamPath();
 
         // ips
         ips_ = IPUtil::ScanIPs();

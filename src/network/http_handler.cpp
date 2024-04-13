@@ -27,6 +27,15 @@ namespace tc
         res.set_content("Pong", "text/plain");
     }
 
+    void HttpHandler::HandleSimpleInfo(const httplib::Request &req, httplib::Response &res) {
+        auto info = this->context_->MakeBroadcastMessage();
+        json obj;
+        obj["code"] = 200;
+        obj["message"] = "ok";
+        obj["data"] = json::parse(info);
+        res.set_content(obj.dump(), "application/json");
+    }
+
     void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
         res.set_content("Good", "text/plain");
     }
