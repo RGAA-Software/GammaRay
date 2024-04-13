@@ -14,9 +14,11 @@
 #include <QAction>
 #include <boost/format.hpp>
 #include <utility>
+#include <QPushButton>
 
 #include <boost/format.hpp>
 #include "context.h"
+#include "settings.h"
 #include "widgets/main_item_delegate.h"
 #include "qrcode/qr_generator.h"
 #include "widgets/layout_helper.h"
@@ -66,6 +68,146 @@ namespace tc
                 msg->setStyleSheet(R"(font-size: 40px; font-family: ScreenMatrix;)");
                 layout->addSpacing(8);
                 layout->addWidget(msg, 0, Qt::AlignHCenter);
+
+                layout->addSpacing(30);
+
+                // driver status
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(35);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_game_controller.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("ViGEm Driver Status"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto status = new QLabel(this);
+                    status->setAlignment(Qt::AlignCenter);
+                    status->setFixedSize(50, 30);
+                    status->setStyleSheet("font-size: 14px; color:#ffffff; background:#00ff00; border-radius:15px");
+                    status->setText("OK");
+                    item_layout->addWidget(status);
+
+                    auto btn = new QPushButton(this);
+                    btn->setFixedSize(80, 30);
+                    btn->setText(tr("Install"));
+                    item_layout->addSpacing(85);
+                    item_layout->addWidget(btn);
+                    item_layout->addStretch();
+
+                    layout->addLayout(item_layout);
+                }
+
+                auto ips = context_->GetIps();
+                // IPs
+                for (auto& [ip, ip_type] : ips) {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(35);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_network.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Detected IP"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto value = new QLabel(this);
+                    value->setFixedSize(120, 40);
+                    value->setText(ip.c_str());
+                    value->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(value);
+
+                    auto nt_type = new QLabel(this);
+                    nt_type->setFixedSize(80, 40);
+                    nt_type->setText(ip_type == IPNetworkType::kWired ? "Wired" : "Wireless");
+                    nt_type->setStyleSheet("font-size: 14px;");
+                    item_layout->addSpacing(15);
+                    item_layout->addWidget(nt_type);
+
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+
+                // http server port
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(35);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("HTTP Port"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto value = new QLabel(this);
+                    value->setFixedSize(120, 40);
+                    value->setText(std::to_string(settings_->http_server_port_).c_str());
+                    value->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(value);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+
+                // ws server port
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(35);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Websocket Port"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto value = new QLabel(this);
+                    value->setFixedSize(120, 40);
+                    value->setText(std::to_string(settings_->ws_server_port_).c_str());
+                    value->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(value);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+
+                // tc_application server port
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(35);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Streaming Port"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto value = new QLabel(this);
+                    value->setFixedSize(120, 40);
+                    value->setText(std::to_string(settings_->stream_server_port_).c_str());
+                    value->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(value);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+
                 layout->addStretch();
                 left_layout->addLayout(layout);
             }
@@ -115,6 +257,15 @@ namespace tc
 
     void TabServer::OnTabHide() {
         TabBase::OnTabHide();
+    }
+
+    QString TabServer::GetItemIconStyleSheet(const QString &url) {
+        QString style = R"(background-image: url(%1);
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: cover;
+                    )";
+        return style.arg(url);
     }
 
 

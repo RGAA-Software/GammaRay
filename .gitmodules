@@ -13,3 +13,6 @@
 [submodule "deps/tc_steam_manager_new"]
 	path = deps/tc_steam_manager_new
 	url = git@github.com:RGAA-Software/tc_steam_manager_new.git
+[submodule "deps/tc_controller"]
+	path = deps/tc_controller
+	url = git@github.com:RGAA-Software/tc_controller.git

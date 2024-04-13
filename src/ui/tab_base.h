@@ -11,6 +11,7 @@
 namespace tc
 {
     class Context;
+    class Settings;
 
     class TabBase : public QWidget {
     public:
@@ -24,9 +25,8 @@ namespace tc
 
     protected:
         std::shared_ptr<Context> context_ = nullptr;
-
-    private:
         QObject* attach_ = nullptr;
+        Settings* settings_ = nullptr;
     };
 }
 

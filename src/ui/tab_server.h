@@ -13,6 +13,7 @@
 
 namespace tc
 {
+
     class TabServer : public TabBase {
     public:
         explicit TabServer(const std::shared_ptr<Context>& ctx, QWidget *parent);
@@ -23,8 +24,11 @@ namespace tc
 
     private:
 
-        QPixmap qr_pixmap_;
+        QString GetItemIconStyleSheet(const QString& url);
 
+    private:
+
+        QPixmap qr_pixmap_;
     };
 }
 

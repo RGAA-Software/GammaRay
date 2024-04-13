@@ -20,6 +20,7 @@ namespace tc
     class Settings;
     class GameManager;
     class ResourceManager;
+    class SystemMonitor;
 
     class Context : public QObject, public std::enable_shared_from_this<Context> {
     public:
@@ -52,6 +53,7 @@ namespace tc
         std::map<std::string, IPNetworkType> ips_;
         std::shared_ptr<GameManager> game_manager_ = nullptr;
         std::shared_ptr<ResourceManager> res_manager_ = nullptr;
+        std::shared_ptr<SystemMonitor> sys_monitor_ = nullptr;
     };
 
 }

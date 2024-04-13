@@ -3,6 +3,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/context.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/workspace.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/settings.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/system_monitor.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_handler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_server.cpp

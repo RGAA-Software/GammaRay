@@ -6,6 +6,9 @@
 #define TC_APPLICATION_HTTP_HANDLER_H
 
 #include "http/httplib.h"
+#include "tc_3rdparty/json/json.hpp"
+
+using namespace nlohmann;
 
 namespace tc
 {
@@ -27,6 +30,8 @@ namespace tc
 
     private:
         std::string GetInstalledGamesAsJson();
+        std::string WrapBasicInfo(int code, const std::string& msg, const std::string& data);
+        std::string WrapBasicInfo(int code, const std::string& msg, const json& data);
 
     private:
 

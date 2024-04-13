@@ -29,11 +29,8 @@ namespace tc
 
     void HttpHandler::HandleSimpleInfo(const httplib::Request &req, httplib::Response &res) {
         auto info = this->context_->MakeBroadcastMessage();
-        json obj;
-        obj["code"] = 200;
-        obj["message"] = "ok";
-        obj["data"] = json::parse(info);
-        res.set_content(obj.dump(), "application/json");
+        auto resp = WrapBasicInfo(200, "ok", info);
+        res.set_content(resp, "application/json");
     }
 
     void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
@@ -74,4 +71,21 @@ namespace tc
         obj["data"] = game_array;
         return obj.dump();
     }
+
+    std::string HttpHandler::WrapBasicInfo(int code, const std::string& msg, const std::string& data) {
+        json obj;
+        obj["code"] = code;
+        obj["message"] = msg;
+        obj["data"] = json::parse(data);
+        return obj.dump();
+    }
+
+    std::string HttpHandler::WrapBasicInfo(int code, const std::string& msg, const json& data) {
+        json obj;
+        obj["code"] = code;
+        obj["message"] = msg;
+        obj["data"] = data;
+        return obj.dump();
+    }
+
 }

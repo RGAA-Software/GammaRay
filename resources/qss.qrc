@@ -54,5 +54,9 @@
         <file>icons/28.png</file>
         <file>icons/29.png</file>
         <file>icons/30.png</file>
+
+        <file>icons/ic_game_controller.svg</file>
+        <file>icons/ic_network.svg</file>
+        <file>icons/ic_port.svg</file>
     </qresource>
 </RCC>
