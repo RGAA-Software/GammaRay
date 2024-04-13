@@ -25,7 +25,7 @@ namespace tc
         quint16 broadcastPort = Settings::Instance()->udp_server_port_;
         QByteArray data = msg.c_str();
         udp_socket_->writeDatagram(data, QHostAddress::Broadcast, broadcastPort);
-        LOGI("Udp broadcast: {}", msg);
+        //LOGI("Udp broadcast: {}", msg);
     }
 
     void UdpBroadcaster::Exit() {

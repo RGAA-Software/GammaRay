@@ -1,3 +1,4 @@
 add_subdirectory(tc_3rdparty)
 add_subdirectory(tc_common_new)
 add_subdirectory(tc_steam_manager_new)
+add_subdirectory(tc_controller)

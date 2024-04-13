@@ -13,6 +13,7 @@
 #include "settings.h"
 #include "db/game_manager.h"
 #include "res/resource_manager.h"
+#include "system_monitor.h"
 
 using namespace nlohmann;
 
@@ -50,6 +51,9 @@ namespace tc
 
         res_manager_ = std::make_shared<ResourceManager>(shared_from_this());
         res_manager_->ExtractIconsIfNeeded();
+
+        sys_monitor_ = SystemMonitor::Make(shared_from_this());
+        sys_monitor_->Start();
     }
 
     std::shared_ptr<SteamManager> Context::GetSteamManager() {

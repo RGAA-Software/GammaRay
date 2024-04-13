@@ -23,6 +23,7 @@ namespace tc
         int http_server_port_{0};
         int ws_server_port_{0};
         int udp_server_port_{0};
+        int stream_server_port_{0};
 
     };
 
