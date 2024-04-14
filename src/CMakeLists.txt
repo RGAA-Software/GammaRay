@@ -31,6 +31,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_media.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_network.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_encoder.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/widget_decorator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/rn_app.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/rn_empty.cpp

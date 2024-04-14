@@ -13,6 +13,7 @@ namespace tc
 {
 
     enum class StTabName {
+        kStClient,
         kStInput,
         kStMedia,
         kStNetwork,
@@ -35,6 +36,7 @@ namespace tc
 
         std::map<StTabName, TabBase*> tabs_;
         QStackedWidget* stacked_widget_ = nullptr;
+        QPushButton* btn_client_ = nullptr;
         QPushButton* btn_input_ = nullptr;
         QPushButton* btn_media_ = nullptr;
         QPushButton* btn_network_ = nullptr;
