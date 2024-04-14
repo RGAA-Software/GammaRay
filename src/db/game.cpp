@@ -14,6 +14,16 @@ namespace tc
         this->game_name_ = game->game_name_;
         this->game_installed_dir_ = game->game_installed_dir_;
         this->cover_url_ = game->cover_url_;
+        this->engine_type_ = game->engine_type_;
+
+        for (auto& e : game->exes_) {
+            this->game_exes_.append(StringExt::CopyStr(e)).append(";");
+        }
+        std::stringstream ss;
+        for (auto& n : game->exe_names_) {
+            ss << StringExt::CopyStr(n) << ";";
+        }
+        this->game_exe_names_ = ss.str();
     }
 
     void TcGame::CopyFrom(const std::shared_ptr<SteamApp>& steam) {

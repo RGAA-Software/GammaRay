@@ -195,6 +195,23 @@ namespace tc
         cover_widget->setObjectName("cover_mask");
         cover_widget->setFixedSize(item_width, item_height);
 
+        auto name = new QLabel(widget);
+        name->setFixedSize(item_width, 32);
+        name->setStyleSheet(R"(background-color:#333333; border-radius: 7px; color:#ffffff;)");
+        name->setAlignment(Qt::AlignCenter);
+        name->setGeometry(0, item_height-name->height(), item_width, name->height());
+        name->setText(game->game_name_.c_str());
+
+        LOGI("engine type: {}", game->engine_type_);
+        if (game->engine_type_ != "UNKNOWN") {
+            auto engine = new QLabel(widget);
+            engine->setFixedSize(60, 22);
+            engine->setText(game->engine_type_.c_str());
+            engine->setStyleSheet(R"(background-color:#333333; border-radius: 11px; color:#ffffff; font-size:10px;)");
+            engine->setAlignment(Qt::AlignCenter);
+            engine->setGeometry(item_width - engine->width() - 5, 5, engine->width(), engine->height());
+        }
+
         list_widget_->setItemWidget(item, widget);
         return item;
     }
