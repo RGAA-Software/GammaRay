@@ -9,6 +9,7 @@
 #include "ui/st_media.h"
 #include "ui/st_network.h"
 #include "ui/st_encoder.h"
+#include "ui/st_client.h"
 
 namespace tc
 {
@@ -23,6 +24,23 @@ namespace tc
         auto btn_size = QSize(left_area_width - 30, 32);
         auto btn_font_color = "#ffffff";
         int border_radius = btn_size.height()/2;
+        // Client
+        {
+            auto btn = new CustomTabBtn(this);
+            btn_client_ = btn;
+            btn->SetBorderRadius(border_radius);
+            btn->SetText(tr("Client"));
+
+            btn->SetSelectedFontColor(btn_font_color);
+            btn->setFixedSize(btn_size);
+            //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
+            QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                ChangeTab(StTabName::kStClient);
+            });
+            left_button_layout->addSpacing(30);
+            left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
+        }
+
         // INPUT
         {
             auto btn = new CustomTabBtn(this);
@@ -36,7 +54,7 @@ namespace tc
             QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                 ChangeTab(StTabName::kStInput);
             });
-            left_button_layout->addSpacing(30);
+            left_button_layout->addSpacing(10);
             left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
         }
 
@@ -94,11 +112,13 @@ namespace tc
 
         {
             // tabs
+            tabs_.insert({StTabName::kStClient, new StClient(context_, this)});
             tabs_.insert({StTabName::kStInput, new StInput(context_, this)});
             tabs_.insert({StTabName::kStMedia, new StMedia(context_, this)});
             tabs_.insert({StTabName::kStNetwork, new StNetwork(context_, this)});
             tabs_.insert({StTabName::kStEncoder, new StEncoder(context_, this)});
 
+            tabs_[StTabName::kStClient]->SetAttach(btn_client_);
             tabs_[StTabName::kStInput]->SetAttach(btn_input_);
             tabs_[StTabName::kStMedia]->SetAttach(btn_media_);
             tabs_[StTabName::kStNetwork]->SetAttach(btn_network_);
@@ -106,6 +126,7 @@ namespace tc
 
             auto layout = new NoMarginVLayout();
             auto stack_widget = new QStackedWidget(this);
+            stack_widget->addWidget(tabs_[StTabName::kStClient]);
             stack_widget->addWidget(tabs_[StTabName::kStInput]);
             stack_widget->addWidget(tabs_[StTabName::kStMedia]);
             stack_widget->addWidget(tabs_[StTabName::kStNetwork]);
@@ -117,7 +138,7 @@ namespace tc
         }
 
         setLayout(root_layout);
-        ChangeTab(StTabName::kStInput);
+        ChangeTab(StTabName::kStClient);
     }
 
     TabSettings::~TabSettings() {
