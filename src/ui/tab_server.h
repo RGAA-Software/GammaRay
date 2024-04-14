@@ -10,9 +10,12 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QPixmap>
+#include <QStackedWidget>
 
 namespace tc
 {
+    class RnApp;
+    class RnEmpty;
 
     class TabServer : public TabBase {
     public:
@@ -29,6 +32,10 @@ namespace tc
     private:
 
         QPixmap qr_pixmap_;
+        QStackedWidget* rn_stack_ = nullptr;
+        RnApp* rn_app_ = nullptr;
+        RnEmpty* rn_empty_ = nullptr;
+
     };
 }
 

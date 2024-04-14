@@ -24,6 +24,8 @@
 #include "widgets/layout_helper.h"
 #include "widgets/no_margin_layout.h"
 #include "widgets/round_img_display.h"
+#include "rn_app.h"
+#include "rn_empty.h"
 
 namespace tc
 {
@@ -41,8 +43,11 @@ namespace tc
 
         // left part
         {
+            auto left_root = new NoMarginVLayout();
+
             auto left_layout = new NoMarginHLayout();
-            content_layout->addLayout(left_layout);
+            left_root->addLayout(left_layout);
+            content_layout->addLayout(left_root);
             content_layout->addSpacing(20);
 
             // machine code
@@ -68,13 +73,40 @@ namespace tc
                 msg->setStyleSheet(R"(font-size: 40px; font-family: ScreenMatrix;)");
                 layout->addSpacing(8);
                 layout->addWidget(msg, 0, Qt::AlignHCenter);
+                layout->addStretch();
+                left_layout->addLayout(layout);
+            }
 
-                layout->addSpacing(30);
+            left_layout->addSpacing(15);
 
+            {
+                auto layout = new NoMarginVLayout();
+                layout->addSpacing(20);
+                //auto title = new QLabel(this);
+                //title->setFixedWidth(qr_pixmap_.width());
+                //title->setAlignment(Qt::AlignCenter);
+                //title->setText(tr("Server QR Code"));
+                //title->setStyleSheet(R"(font-size: 15px;)");
+                //layout->addWidget(title);
+
+                auto qr_info = new QLabel(this);
+                qr_info->setPixmap(qr_pixmap_);
+                layout->addSpacing(9);
+                layout->addWidget(qr_info);
+                layout->addStretch();
+                left_layout->addLayout(layout);
+            }
+
+            left_root->addSpacing(15);
+
+            {
+                auto layout = new NoMarginVLayout();
+                left_root->addLayout(layout);
+                int margin_left = 40;
                 // driver status
                 {
                     auto item_layout = new NoMarginHLayout();
-                    item_layout->addSpacing(35);
+                    item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
                     icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_game_controller.svg"));
@@ -107,7 +139,7 @@ namespace tc
                 // IPs
                 for (auto& [ip, ip_type] : ips) {
                     auto item_layout = new NoMarginHLayout();
-                    item_layout->addSpacing(35);
+                    item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
                     icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_network.svg"));
@@ -139,7 +171,7 @@ namespace tc
                 // http server port
                 {
                     auto item_layout = new NoMarginHLayout();
-                    item_layout->addSpacing(35);
+                    item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
                     icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
@@ -163,7 +195,7 @@ namespace tc
                 // ws server port
                 {
                     auto item_layout = new NoMarginHLayout();
-                    item_layout->addSpacing(35);
+                    item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
                     icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
@@ -187,7 +219,7 @@ namespace tc
                 // tc_application server port
                 {
                     auto item_layout = new NoMarginHLayout();
-                    item_layout->addSpacing(35);
+                    item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
                     icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
@@ -207,44 +239,31 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
-
-                layout->addStretch();
-                left_layout->addLayout(layout);
             }
 
-            left_layout->addSpacing(15);
-
-            {
-                auto layout = new NoMarginVLayout();
-                layout->addSpacing(20);
-                auto title = new QLabel(this);
-                title->setFixedWidth(qr_pixmap_.width());
-                title->setAlignment(Qt::AlignCenter);
-                title->setText(tr("Server QR Code"));
-                title->setStyleSheet(R"(font-size: 15px;)");
-                layout->addWidget(title);
-
-                auto qr_info = new QLabel(this);
-                qr_info->setPixmap(qr_pixmap_);
-                layout->addSpacing(9);
-                layout->addWidget(qr_info);
-                layout->addStretch();
-                left_layout->addLayout(layout);
-            }
+            left_root->addStretch(120);
         }
 
         // right part
         {
             auto layout = new QVBoxLayout();
             LayoutHelper::ClearMargins(layout);
-            content_layout->addLayout(layout);
+            rn_stack_ = new QStackedWidget(this);
+            rn_app_ = new RnApp(context_, this);
+            rn_empty_ = new RnEmpty(context_, this);
+            rn_stack_->addWidget(rn_app_);
+            rn_stack_->addWidget(rn_empty_);
+
+            content_layout->addWidget(rn_stack_);
         }
 
         //
-        content_layout->addStretch();
+        //content_layout->addStretch(100);
 
         root_layout->addLayout(content_layout);
         setLayout(root_layout);
+
+        rn_stack_->setCurrentIndex(0);
     }
 
     TabServer::~TabServer() {

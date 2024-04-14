@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     LoadStyle("");
 
     Workspace workspace;
-    workspace.resize(1450, 800);
+    workspace.setFixedSize(1820, 960);
     workspace.show();
 
 //    QQmlApplicationEngine engine;
