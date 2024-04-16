@@ -32,12 +32,29 @@ namespace tc
         server_thread_ = std::thread([this]() {
             //server_ = std::make_shared<httplib::SSLServer>("./certificate.pem", "./private.key");
             server_ = std::make_shared<httplib::Server>();
+            // response a "Pong" for checking server state
             server_->Get("/v1/ping", std::bind(&HttpHandler::HandlePing, http_handler_.get(), _1, _2));
+
+            // response the information that equals to the QR Code
             server_->Get("/v1/simple/info", std::bind(&HttpHandler::HandleSimpleInfo, http_handler_.get(), _1, _2));
+
+            // response all apis that we support
             server_->Get("/v1/apis", std::bind(&HttpHandler::HandleSupportApis, http_handler_.get(), _1, _2));
+
+            // response all apps that we find in system and are added by user
             server_->Get("/v1/apps", std::bind(&HttpHandler::HandleGames, http_handler_.get(), _1, _2));
+
+            // start tc_application and game
             server_->Get("/v1/start/app", std::bind(&HttpHandler::HandleGameStart, http_handler_.get(), _1, _2));
+
+            // stop tc_application and game
             server_->Get("/v1/stop/app", std::bind(&HttpHandler::HandleGameStop, http_handler_.get(), _1, _2));
+
+            // starting a game only, that means a tc_application is already running
+            server_->Get("/v1/start/game/only",  std::bind(&HttpHandler::HandleGameStartOnly, http_handler_.get(), _1, _2));
+
+            // stopping a game only, that means a tc_application is already running and continue running
+            server_->Get("/v1/stop/game/only",  std::bind(&HttpHandler::HandleGameStopOnly, http_handler_.get(), _1, _2));
 
             server_->set_mount_point("/", "./www");
             auto steam_manager = context_->GetSteamManager();

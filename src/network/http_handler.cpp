@@ -53,6 +53,14 @@ namespace tc
 
     }
 
+    void HttpHandler::HandleGameStartOnly(const httplib::Request& req, httplib::Response& res) {
+
+    }
+
+    void HttpHandler::HandleGameStopOnly(const httplib::Request& req, httplib::Response& res) {
+
+    }
+
     // impl
     std::string HttpHandler::GetInstalledGamesAsJson() {
         auto games = context_->GetSteamManager()->GetInstalledGames();
