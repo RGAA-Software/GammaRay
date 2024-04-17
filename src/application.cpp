@@ -4,13 +4,13 @@
 
 #include "application.h"
 
-#include "context.h"
+#include "gr_context.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "model/game_model.h"
 #include "network/http_server.h"
 #include "network/ws_server.h"
 #include "network/udp_broadcaster.h"
-#include "app/tc_app_manager.h"
+#include "manager/tc_app_manager.h"
 #include "tc_3rdparty/json/json.hpp"
 
 #include <QTimer>

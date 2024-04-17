@@ -7,7 +7,7 @@
 #include "tc_common_new/log.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "tc_controller/vigem/sdk/ViGEm/Client.h"
-#include "context.h"
+#include "gr_context.h"
 
 namespace tc
 {

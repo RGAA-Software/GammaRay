@@ -14,7 +14,7 @@
 #include <boost/format.hpp>
 #include <utility>
 
-#include "context.h"
+#include "gr_context.h"
 #include "widgets/main_item_delegate.h"
 #include "widgets/round_img_display.h"
 #include "widgets/cover_widget.h"

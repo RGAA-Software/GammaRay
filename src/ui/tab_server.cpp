@@ -17,7 +17,7 @@
 #include <QPushButton>
 
 #include <boost/format.hpp>
-#include "context.h"
+#include "gr_context.h"
 #include "settings.h"
 #include "widgets/main_item_delegate.h"
 #include "qrcode/qr_generator.h"

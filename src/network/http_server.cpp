@@ -4,7 +4,7 @@
 #include "tc_3rdparty/http/httplib.h"
 
 #include "http_handler.h"
-#include "context.h"
+#include "gr_context.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
 #include "application.h"
