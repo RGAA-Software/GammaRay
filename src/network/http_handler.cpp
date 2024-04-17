@@ -63,15 +63,50 @@ namespace tc
 
     // impl
     std::string HttpHandler::GetInstalledGamesAsJson() {
-        auto games = context_->GetSteamManager()->GetInstalledGames();
+        auto steam_mgr = context_->GetSteamManager();
+        auto games = steam_mgr->GetInstalledGames();
         json obj;
         obj["code"] = 200;
         obj["message"] = "ok";
+        obj["steam_installed_dir"] = steam_mgr->GetSteamInstalledPath();
+        obj["steam_cache_dir"] = steam_mgr->GetSteamImageCachePath();
+        obj["steam_exe_path"] = steam_mgr->GetSteamExePath();
         json game_array = json::array();
         for (const auto& game : games) {
             json game_obj;
             game_obj["app_id"] = game->app_id_;
             game_obj["name"] = game->name_;
+            game_obj["installed_dir"] = game->installed_dir_;
+            // exes
+            {
+                auto array = json::array();
+                for (auto &exe: game->exes_) {
+                    array.push_back(exe);
+                }
+                game_obj["exes"] = array;
+            }
+
+            // exe names
+            {
+                auto array = json::array();
+                for (auto& n : game->exe_names_) {
+                    array.push_back(n);
+                }
+                game_obj["exe_names"] = array;
+            }
+
+            // is running
+            game_obj["is_running"] = game->is_running_;
+
+            // is installed
+            game_obj["is_installed"] = game->is_installed_;
+
+            // steam url
+            game_obj["steam_url"] = game->steam_url_;
+
+            // cover url
+            game_obj["cover_url"] = game->cover_url_;
+
             game_obj["cover_name"] = game->cover_name_;
             game_obj["engine"] = game->engine_type_;
             game_array.push_back(game_obj);
