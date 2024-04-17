@@ -11,7 +11,7 @@ namespace tc
 {
 
     RnApp::RnApp(const std::shared_ptr<Context>& ctx, QWidget *parent) : TabBase(ctx, parent) {
-        setStyleSheet("background: #908876;");
+        //setStyleSheet("background: #908876;");
 
         auto root_layout = new NoMarginVLayout();
         auto place_holder = new QLabel();

@@ -15,7 +15,7 @@ add_executable(test_db
         test_db.cpp
         ../db/game.cpp
         ../db/game_manager.cpp
-        ../context.cpp
+        ../gr_context.cpp
         ../network/ip_util.cpp
 )
 target_link_libraries(test_db PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main sqlite_orm::sqlite_orm tc_common_new)

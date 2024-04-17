@@ -16,3 +16,12 @@
 [submodule "deps/tc_controller"]
 	path = deps/tc_controller
 	url = git@github.com:RGAA-Software/tc_controller.git
+[submodule "deps/tc_capture_new"]
+	path = deps/tc_capture_new
+	url = git@github.com:RGAA-Software/tc_capture_new.git
+[submodule "deps/tc_encoder_new"]
+	path = deps/tc_encoder_new
+	url = git@github.com:RGAA-Software/tc_encoder_new.git
+[submodule "deps/tc_opus_codec_new"]
+	path = deps/tc_opus_codec_new
+	url = git@github.com:RGAA-Software/tc_opus_codec_new.git

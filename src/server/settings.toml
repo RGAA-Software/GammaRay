@@ -1,0 +1,135 @@
+[description]
+author = "Thunder Cloud"
+version = "0.0.1"
+
+### 编码器相关的配置
+[encoder]
+# auto 自动选择, 当设为自动时，优先nvenc，再是amf，最后ffmpeg，且默认为hevc(h265)
+# specify 明确指定
+select-type = "auto"
+# nvenc
+# amf
+# ffmpeg
+name = "ffmpeg"
+# h264
+# hevc
+format = "h264"
+# bitrate (M)
+bitrate = 5
+# origin / specify
+encode-resolution-type = "origin"
+#
+encode-width = 1280
+#
+encode-height = 720
+
+### 数据采集相关的设置
+[capture]
+# 是否开启声音采集
+enable-audio = true
+# 声音采集方法
+# hook 程序内部采集
+# global 直接采集当前电脑的声卡
+audio-capture-type = "global"
+# 是否开启图像采集
+enable-video = true
+# 图像采集方法
+# hook 程序内部采集
+# global 直接抓取屏幕
+video-capture-type = "global"
+# 采集到的画面是否通过共享内存发送
+# true 发送共享内存数据I420格式
+# false 发送handle
+send-video-msg-by-shm = false
+
+### 传输相关
+[transmission]
+# 网络类型
+# websocket
+# QUIC
+network-type = "websocket"
+# 端口
+listening-port = 20371
+
+### 应用设置
+[application]
+# 应用路径, 可以是exe路径，也可以是steam://开头的快捷方式路径
+# 1.exe 路径，填写最终执行的游戏/软件的exe，Unity和UE略有区别。此时game-path 和 running-path相同。
+# 2.steam://路径，在桌面快捷方式右键，属性里就能看见
+#game-path = "D:/software/心脏医学可执行/心脏医学可执行/心脏-医学动态展示.exe"
+#game-path = "D:\\Game\\dai_sen_qiu_ji_hua\\A1738 V0.9.27.15033\\Dyson Sphere Program\\DSPGAME.exe"
+#game-path = "C:\\software\\u3d_demo\\u3d_demo\\u3d_shared_window_demo.exe"
+#game-path = "E:\\SteamLibrary\\steamapps\\common\\One Dreamer Prologue\\One Dreamer Prologue.exe"
+#game-path = "D:\\SteamLibrary\\steamapps\\common\\灵境奇谈\\NotesOfSoul\\Binaries\\Win64\\NotesOfSoul-Win64-Shipping.exe"
+#game-path = "D:\\SteamLibrary\\steamapps\\common\\DongBeiZhiXia\\DongBeiZhiXia.exe"
+#game-path = "D:\\Program Files (x86)\\逆战(30)\\Binaries\\Win64\\TGame.exe"
+#game-path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DeathlyStillnessGame\\DeathlyStillnessGame\\Binaries\\Win64\\DeathlyStillnessGame-Win64-Shipping.exe"
+#game-path = "D:\\SteamLibrary\\steamapps\\common\\DeathlyStillnessGame\\DeathlyStillnessGame\\Binaries\\Win64\\DeathlyStillnessGame-Win64-Shipping.exe"
+#game-path = "D:\\software\\CarGame\\CarGame\\Binaries\\Win64\\VehicleGame-Win64-Shipping.exe"
+#game-path = "D:\\software\\TaiYangDemo\\太阳神庙.exe"
+#game-path = "D:\\software\\ShooterGame\\SheJiGame\\Binaries\\Win64\\ShooterGame-Win64-Shipping.exe"
+# 战姬军团
+#game-path = "steam://rungameid/2389120"
+#
+#game-path = "steam://rungameid/2642660"
+# 32bit
+#game-path = "steam://rungameid/331870"
+# 死寂
+#game-path = "steam://rungameid/1727650"
+# action Tainmanin
+#game-path = "steam://rungameid/1335200"
+# 花妖物语
+#game-path = "steam://rungameid/1860860"
+# 东北之夏
+#game-path = "steam://rungameid/2121360"
+# the Hunter
+#game-path = "steam://rungameid/518790"
+#雀魂 32bit
+#game-path = "steam://rungameid/1329410"
+#天使军团
+#game-path = "steam://rungameid/1333350"
+#NFS: Heart
+#game-path = "steam://rungameid/1222680"
+#Steep
+#game-path = "steam://rungameid/460920"
+#Ken Follett's 32
+#game-path = "steam://rungameid/234270"
+#Century
+#game-path = "steam://rungameid/918570"
+#Love or Die
+#game-path = "steam://rungameid/958260"
+# Civalization
+#game-path = "steam://rungameid/289070"
+# Shadow twices 32bit
+#game-path = "steam://rungameid/418240"
+#titan fall
+#game-path = "steam://rungameid/1237970"
+#巫师
+#game-path = "steam://rungameid/292030"
+#ORI
+#game-path = "steam://rungameid/1057090"
+# Steam BIG Picture Mode
+game-path = "steam://open/bigpicture"
+
+# 启动参数
+#game-arguments = ""
+game-arguments = "-force-d3d11 -D3D11 -dx11"
+#game-arguments = "-force-d3d12 -D3D12 -dx12"
+# 跟game-path是exe路径的情况下一样
+#running-path = "C:/Program Files (x86)/Steam/steamapps/common/zjjt/Legion of Valkyrie.exe"
+#running-path = "D:/software/心脏医学可执行/心脏医学可执行/心脏-医学动态展示.exe"
+#running-path = "C:\\software\\u3d_demo\\u3d_demo\\u3d_shared_window_demo.exe"
+# 启动后隐藏
+hide-after-started = false
+#强制全屏
+force-fullscreen = false
+# capture方式
+# prepare => [easy-hook] 打开即刻注入，适用于客户自己开发的Unity，UE程序，这种程序没有防Hook机制，可以直接注入，且此时注入时机早于程序正常运行，可以显卡负载。
+# search => [obs] 寻找程序，再注入。适用于已经启动的steam等游戏，或不需要显卡负载的程序。
+capture-method = "search"
+
+debug-enabled = false
+
+# global 全局事件
+# inner hook内部事件
+event-replay-mode = "global"

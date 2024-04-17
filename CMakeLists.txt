@@ -12,6 +12,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)
@@ -23,21 +25,24 @@ if(Boost_FOUND)
 endif()
 
 find_package(OpenSSL REQUIRED)
-find_path(UWEBSOCKETS_INCLUDE_DIRS "uwebsockets/App.h")
 find_package(SqliteOrm CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
+include_directories(${VK_SDK})
 include_directories(${CMAKE_SOURCE_DIR}/)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/deps)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/eventbus/src)
+include_directories(${CMAKE_BINARY_DIR}/deps/tc_message_new)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
 
-include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
-include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
+link_directories(${VCPKG_ROOT}/packages/poco_x64-windows-static/lib)
+
 if(MSVC)
     add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
     add_compile_options("/bigobj")
@@ -49,9 +54,29 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--stack,83886080")
 endif()
 
-add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX)
+add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX -DENABLE_SSL=0)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
+## Boost
+find_package(Boost REQUIRED COMPONENTS system filesystem thread)
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    MESSAGE(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
+    MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
+    MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
+endif()
+
+find_package(OpenSSL REQUIRED)
+find_package(SqliteOrm CONFIG REQUIRED)
+find_package(gflags CONFIG REQUIRED)
+find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")
+
+### CPY
+file(COPY ${CMAKE_SOURCE_DIR}/src/server/settings.toml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/server/private.key DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/server/certificate.pem DESTINATION ${CMAKE_BINARY_DIR})
+### CPY
 
 add_subdirectory(deps)
 add_subdirectory(src)
@@ -83,7 +108,11 @@ install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+add_custom_target(tc_build_all COMMENT "Build all targets")
+add_dependencies(tc_build_all ${PROJECT_NAME} tc_server tc_capture_library tc_graphics tc_graphics_util
+        tc_message tc_graphics_helper tc_vigem)
+
+add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${QT_ROOT}/bin/windeployqt.exe $<TARGET_FILE:${PROJECT_NAME}> --release
 #        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources"  "${CMAKE_BINARY_DIR}/resources"
 #        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/settings.toml"  "${CMAKE_BINARY_DIR}"

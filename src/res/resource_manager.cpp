@@ -3,7 +3,7 @@
 //
 
 #include "resource_manager.h"
-#include "context.h"
+#include "gr_context.h"
 
 #include <QDir>
 #include <QFile>
