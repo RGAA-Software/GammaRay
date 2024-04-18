@@ -282,7 +282,6 @@ namespace tc
         QString style = R"(background-image: url(%1);
                         background-repeat: no-repeat;
                         background-position: center;
-                        background-size: cover;
                     )";
         return style.arg(url);
     }
