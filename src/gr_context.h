@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "network/ip_util.h"
+#include "tc_common_new/message_notifier.h"
 
 #include <QObject>
 
@@ -40,6 +41,14 @@ namespace tc
 
         std::shared_ptr<GameManager> GetGameManager();
 
+        template<typename T>
+        void SendAppMessage(const T& m) {
+            if (msg_notifier_) {
+                msg_notifier_->SendAppMessage(m);
+            }
+        }
+        std::shared_ptr<MessageNotifier> GetMessageNotifier();
+
     private:
         void LoadUniqueId();
         void GenUniqueId();
@@ -54,6 +63,7 @@ namespace tc
         std::shared_ptr<GameManager> game_manager_ = nullptr;
         std::shared_ptr<ResourceManager> res_manager_ = nullptr;
         std::shared_ptr<SystemMonitor> sys_monitor_ = nullptr;
+        std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
     };
 
 }

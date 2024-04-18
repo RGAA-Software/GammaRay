@@ -37,6 +37,8 @@ namespace tc
         steam_mgr_ = SteamManager::Make(task_runtime_);
         steam_mgr_->ScanInstalledSteamPath();
 
+        msg_notifier_ = std::make_shared<MessageNotifier>();
+
         // ips
         ips_ = IPUtil::ScanIPs();
 
@@ -127,6 +129,10 @@ namespace tc
 
     std::shared_ptr<GameManager> GrContext::GetGameManager() {
         return game_manager_;
+    }
+
+    std::shared_ptr<MessageNotifier> GrContext::GetMessageNotifier() {
+        return msg_notifier_;
     }
 
 }

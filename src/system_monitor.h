@@ -29,6 +29,8 @@ namespace tc
         bool CheckViGEmDriver();
         bool TryConnectViGEmDriver();
         bool GetFileVersion(const std::wstring& filePath, unsigned long& major, unsigned long& minor);
+        void InstallViGem();
+        void NotifyViGEnState(bool ok);
 
     private:
         std::shared_ptr<GrContext> ctx_ = nullptr;

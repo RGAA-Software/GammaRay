@@ -3,11 +3,16 @@
 //
 
 #include "system_monitor.h"
+#include "gr_context.h"
+#include "app_messages.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "tc_controller/vigem/sdk/ViGEm/Client.h"
-#include "gr_context.h"
+#include "tc_common_new/process_util.h"
+#include "tc_common_new/string_ext.h"
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
@@ -28,6 +33,7 @@ namespace tc
 
         if (!CheckViGEmDriver()) {
             // install it
+            InstallViGem();
         }
 
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
@@ -37,12 +43,16 @@ namespace tc
                 if (vigem_installed) {
                     if (!TryConnectViGEmDriver()) {
                         // Connect error
+                        NotifyViGEnState(false);
+                    } else {
+                        NotifyViGEnState(true);
                     }
                 } else {
                     // not installed
+                    NotifyViGEnState(false);
                 }
 
-                LOGI("system checking ...");
+
                 std::this_thread::sleep_for(std::chrono::seconds(5));
             }
         }, "", false);
@@ -95,29 +105,37 @@ namespace tc
     }
 
     bool SystemMonitor::TryConnectViGEmDriver() {
-        // 1. checking vigem driver is installed or not
-        bool detect_ok = false;
-        if (!vigem_driver_manager_->IsVigemDriverInstalled()) {
-            detect_ok = vigem_driver_manager_->Detect();
+        // driver seems already exists, try to connect
+        if (!connect_vigem_success_) {
+            connect_vigem_success_ = vigem_driver_manager_->TryConnect();
         }
 
-        // 2. driver is not exist, to install
-        if (vigem_driver_manager_->IsVigemDriverInstalled() && detect_ok) {
-            // installed & running
-            LOGI("Installed and running");
+        // connect failed
+        if (!connect_vigem_success_) {
+            LOGI("connect failed.");
+            return false;
         } else {
-            // 3. driver seems already exists, try to connect
-            if (!connect_vigem_success_) {
-                connect_vigem_success_ = vigem_driver_manager_->TryConnect();
-            }
-            // 4. connect failed, to install
-            if (!connect_vigem_success_) {
-                LOGI("connect failed.");
-            } else {
-                LOGI("already tested, connect to vigem success.");
-                return true;
-            }
+            LOGI("already tested, connect to vigem success.");
+            return true;
         }
+    }
+
+    void SystemMonitor::InstallViGem() {
+        auto exe_folder_path = boost::filesystem::initial_path<boost::filesystem::path>().string();
+        StringExt::Replace(exe_folder_path, R"(\)", R"(/)");
+        LOGI("exe folder path: {}", exe_folder_path);
+
+        auto cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe /passive /promptrestart", exe_folder_path);
+        LOGI("cmd: {}", cmd);
+        if (!ProcessUtil::StartProcessInWorkDir(exe_folder_path, cmd, {})) {
+            LOGE("Install ViGEm device failed.");
+        }
+    }
+
+    void SystemMonitor::NotifyViGEnState(bool ok) {
+        ctx_->SendAppMessage(MsgViGEmState {
+            .ok_ = ok,
+        });
     }
 
 }
