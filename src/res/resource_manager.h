@@ -12,16 +12,16 @@
 namespace tc
 {
 
-    class Context;
+    class GrContext;
 
     class ResourceManager {
     public:
 
-        explicit ResourceManager(const std::shared_ptr<Context>& ctx);
+        explicit ResourceManager(const std::shared_ptr<GrContext>& ctx);
         void ExtractIconsIfNeeded();
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         QString res_folder_path_;
     };
 

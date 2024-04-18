@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    RnEmpty::RnEmpty(const std::shared_ptr<Context>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    RnEmpty::RnEmpty(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
         setStyleSheet("background: #909090;");
     }
 

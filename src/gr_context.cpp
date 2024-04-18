@@ -10,7 +10,7 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
 #include "tc_3rdparty/json/json.hpp"
-#include "settings.h"
+#include "gr_settings.h"
 #include "db/game_manager.h"
 #include "res/resource_manager.h"
 #include "system_monitor.h"
@@ -22,12 +22,12 @@ namespace tc
 
     constexpr auto kKeySysUniqueId = "sys_unique_id";
 
-    Context::Context() : QObject(nullptr) {
+    GrContext::GrContext() : QObject(nullptr) {
 
     }
 
-    void Context::Init() {
-        settings_ = Settings::Instance();
+    void GrContext::Init() {
+        settings_ = GrSettings::Instance();
         sp_ = SharedPreference::Instance();
         sp_->Init("", "tc_steam.dat");
         // unique id
@@ -56,25 +56,25 @@ namespace tc
         sys_monitor_->Start();
     }
 
-    std::shared_ptr<SteamManager> Context::GetSteamManager() {
+    std::shared_ptr<SteamManager> GrContext::GetSteamManager() {
         return steam_mgr_;
     }
 
-    std::shared_ptr<TaskRuntime> Context::GetTaskRuntime() {
+    std::shared_ptr<TaskRuntime> GrContext::GetTaskRuntime() {
         return task_runtime_;
     }
 
-    void Context::PostTask(std::function<void()>&& task) {
+    void GrContext::PostTask(std::function<void()>&& task) {
         task_runtime_->Post(SimpleThreadTask::Make(std::move(task)));
     }
 
-    void Context::PostUITask(std::function<void()>&& task) {
+    void GrContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [=]() {
             task();
         });
     }
 
-    void Context::LoadUniqueId() {
+    void GrContext::LoadUniqueId() {
         unique_id_ = sp_->Get(kKeySysUniqueId);
         if (unique_id_.empty()) {
             GenUniqueId();
@@ -82,26 +82,26 @@ namespace tc
         }
     }
 
-    void Context::GenUniqueId() {
+    void GrContext::GenUniqueId() {
         auto uuid = GetUUID();
         std::hash<std::string> fn_hash;
         size_t value = fn_hash(uuid);
         unique_id_ = std::to_string(value%1000000);
     }
 
-    std::string Context::GetSysUniqueId() {
+    std::string GrContext::GetSysUniqueId() {
         return unique_id_;
     }
 
-    int Context::GetIndexByUniqueId() {
+    int GrContext::GetIndexByUniqueId() {
         return std::atoi(GetSysUniqueId().c_str())%30+1;
     }
 
-    std::map<std::string, IPNetworkType> Context::GetIps() {
+    std::map<std::string, IPNetworkType> GrContext::GetIps() {
         return ips_;
     }
 
-    std::string Context::MakeBroadcastMessage() {
+    std::string GrContext::MakeBroadcastMessage() {
         json obj;
         // sys id
         obj["sys_unique_id"] = this->GetSysUniqueId();
@@ -125,7 +125,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::shared_ptr<GameManager> Context::GetGameManager() {
+    std::shared_ptr<GameManager> GrContext::GetGameManager() {
         return game_manager_;
     }
 

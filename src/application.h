@@ -12,13 +12,13 @@
 namespace tc
 {
 
-    class Context;
+    class GrContext;
     class GameModel;
     class HttpServer;
     class WSServer;
     class UdpBroadcaster;
     class AppManager;
-    class Settings;
+    class GrSettings;
 
     class Application : public QObject, public std::enable_shared_from_this<Application> {
     public:
@@ -28,14 +28,14 @@ namespace tc
 
         void Init();
 
-        std::shared_ptr<Context> GetContext() { return context_; }
+        std::shared_ptr<GrContext> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
 
     private:
 
     private:
 
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         //GameModel* installed_game_model_ = nullptr;
 
         std::shared_ptr<HttpServer> http_server_ = nullptr;
@@ -45,7 +45,7 @@ namespace tc
 
         QTimer* timer_ = nullptr;
 
-        Settings* settings_ = nullptr;
+        GrSettings* settings_ = nullptr;
 
     };
 

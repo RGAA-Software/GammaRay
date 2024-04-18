@@ -10,7 +10,7 @@
 namespace tc
 {
 
-    RnApp::RnApp(const std::shared_ptr<Context>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    RnApp::RnApp(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
         //setStyleSheet("background: #908876;");
 
         auto root_layout = new NoMarginVLayout();

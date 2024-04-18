@@ -17,14 +17,14 @@ namespace tc
     class SteamManager;
     class TaskRuntime;
     class SharedPreference;
-    class Settings;
+    class GrSettings;
     class GameManager;
     class ResourceManager;
     class SystemMonitor;
 
-    class Context : public QObject, public std::enable_shared_from_this<Context> {
+    class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
-        Context();
+        GrContext();
 
         void Init();
         std::shared_ptr<SteamManager> GetSteamManager();
@@ -45,7 +45,7 @@ namespace tc
         void GenUniqueId();
 
     private:
-        Settings* settings_ = nullptr;
+        GrSettings* settings_ = nullptr;
         SharedPreference* sp_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;

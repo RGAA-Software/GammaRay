@@ -14,7 +14,7 @@
 #include "tc_3rdparty/json/json.hpp"
 
 #include <QTimer>
-#include "settings.h"
+#include "gr_settings.h"
 
 using namespace nlohmann;
 
@@ -30,10 +30,10 @@ namespace tc
     }
 
     void Application::Init() {
-        settings_ = Settings::Instance();
+        settings_ = GrSettings::Instance();
         settings_->Load();
 
-        context_ = std::make_shared<Context>();
+        context_ = std::make_shared<GrContext>();
         context_->Init();
 
         app_manager_ = std::make_shared<AppManager>(context_);

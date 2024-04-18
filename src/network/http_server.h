@@ -11,7 +11,7 @@ namespace httplib {
 namespace tc
 {
 
-    class Context;
+    class GrContext;
     class HttpHandler;
     class Application;
 
@@ -26,7 +26,7 @@ namespace tc
 
     private:
 
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<httplib::Server> server_ = nullptr;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;

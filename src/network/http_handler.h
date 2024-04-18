@@ -13,7 +13,7 @@ using namespace nlohmann;
 namespace tc
 {
 
-    class Context;
+    class GrContext;
     class Application;
 
     class HttpHandler {
@@ -37,7 +37,7 @@ namespace tc
 
     private:
 
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<Application> app_ = nullptr;
 
     };

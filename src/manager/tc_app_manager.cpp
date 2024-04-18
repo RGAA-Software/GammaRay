@@ -12,7 +12,7 @@
 namespace tc
 {
 
-    AppManager::AppManager(const std::shared_ptr<Context>& ctx) {
+    AppManager::AppManager(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
     }
 
@@ -20,8 +20,8 @@ namespace tc
         auto resp = Response<bool, uint32_t>::Make(false, 0, "");
 
         QString current_path = QCoreApplication::applicationDirPath();
-        QString work_dir = current_path + "/publish";
-        current_path = current_path.append("/publish/tc_application.exe");
+        QString work_dir = current_path;
+        current_path = current_path.append("/tc_server.exe");
 
         auto process = std::make_shared<QProcess>();
         process->setWorkingDirectory(work_dir);

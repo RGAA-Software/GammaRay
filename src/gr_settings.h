@@ -2,17 +2,17 @@
 // Created by hy on 2024/4/10.
 //
 
-#ifndef TC_SERVER_STEAM_SETTINGS_H
-#define TC_SERVER_STEAM_SETTINGS_H
+#ifndef TC_SERVER_STEAM_GR_SETTINGS_H
+#define TC_SERVER_STEAM_GR_SETTINGS_H
 
 namespace tc
 {
 
-    class Settings {
+    class GrSettings {
     public:
 
-        static Settings* Instance() {
-            static Settings st;
+        static GrSettings* Instance() {
+            static GrSettings st;
             return &st;
         }
 
@@ -29,4 +29,4 @@ namespace tc
 
 }
 
-#endif //TC_SERVER_STEAM_SETTINGS_H
+#endif //TC_SERVER_STEAM_GR_SETTINGS_H

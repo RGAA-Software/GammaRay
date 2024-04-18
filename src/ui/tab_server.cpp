@@ -18,7 +18,7 @@
 
 #include <boost/format.hpp>
 #include "gr_context.h"
-#include "settings.h"
+#include "gr_settings.h"
 #include "widgets/main_item_delegate.h"
 #include "qrcode/qr_generator.h"
 #include "widgets/layout_helper.h"
@@ -30,7 +30,7 @@
 namespace tc
 {
 
-    TabServer::TabServer(const std::shared_ptr<Context>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    TabServer::TabServer(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
         auto broadcast_msg = ctx->MakeBroadcastMessage();
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
         // root layout

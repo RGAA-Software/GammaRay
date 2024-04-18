@@ -14,7 +14,7 @@
 namespace tc
 {
 
-    TabSettings::TabSettings(const std::shared_ptr<Context>& ctx, QWidget* parent) : TabBase(ctx, parent) {
+    TabSettings::TabSettings(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TabBase(ctx, parent) {
         auto root_layout = new NoMarginHLayout();
 
         auto left_button_layout = new NoMarginVLayout();

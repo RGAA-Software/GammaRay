@@ -12,11 +12,11 @@
 namespace tc
 {
 
-    std::shared_ptr<SystemMonitor> SystemMonitor::Make(const std::shared_ptr<Context>& ctx) {
+    std::shared_ptr<SystemMonitor> SystemMonitor::Make(const std::shared_ptr<GrContext>& ctx) {
         return std::make_shared<SystemMonitor>(ctx);
     }
 
-    SystemMonitor::SystemMonitor(const std::shared_ptr<Context>& ctx) {
+    SystemMonitor::SystemMonitor(const std::shared_ptr<GrContext>& ctx) {
         this->ctx_ = ctx;
     }
 

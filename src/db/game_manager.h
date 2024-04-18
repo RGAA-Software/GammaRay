@@ -15,11 +15,11 @@ using namespace sqlite_orm;
 
 namespace tc
 {
-    class Context;
+    class GrContext;
 
     class GameManager {
     public:
-        explicit GameManager(const std::shared_ptr<Context>& ctx);
+        explicit GameManager(const std::shared_ptr<GrContext>& ctx);
         void Init();
 
         void SaveOrUpdateGame(const std::shared_ptr<TcGame>& game);
@@ -33,7 +33,7 @@ namespace tc
         auto InitAppDatabase(const std::string& name);
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::any db_storage_;
     };
 }

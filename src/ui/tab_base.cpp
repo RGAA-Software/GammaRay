@@ -3,13 +3,13 @@
 //
 
 #include "tab_base.h"
-#include "settings.h"
+#include "gr_settings.h"
 
 namespace tc
 {
-    TabBase::TabBase(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+    TabBase::TabBase(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
-        settings_ = Settings::Instance();
+        settings_ = GrSettings::Instance();
     }
 
     TabBase::~TabBase() {

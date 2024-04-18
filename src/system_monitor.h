@@ -12,20 +12,20 @@ namespace tc
 {
 
     class Thread;
-    class Context;
+    class GrContext;
     class VigemDriverManager;
 
     class SystemMonitor {
     public:
 
-        static std::shared_ptr<SystemMonitor> Make(const std::shared_ptr<Context>& ctx);
+        static std::shared_ptr<SystemMonitor> Make(const std::shared_ptr<GrContext>& ctx);
 
-        explicit SystemMonitor(const std::shared_ptr<Context>& ctx);
+        explicit SystemMonitor(const std::shared_ptr<GrContext>& ctx);
         void Start();
         void Exit();
 
     private:
-        std::shared_ptr<Context> ctx_ = nullptr;
+        std::shared_ptr<GrContext> ctx_ = nullptr;
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         bool exit_ = false;
 

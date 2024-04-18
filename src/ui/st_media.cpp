@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    StMedia::StMedia(const std::shared_ptr<Context>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    StMedia::StMedia(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
         setStyleSheet("background: #009090;");
     }
 

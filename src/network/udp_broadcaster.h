@@ -12,21 +12,21 @@
 
 namespace tc
 {
-    class Context;
+    class GrContext;
 
     class UdpBroadcaster : public QObject {
     public:
 
-        static std::shared_ptr<UdpBroadcaster> Make(const std::shared_ptr<Context>& ctx);
+        static std::shared_ptr<UdpBroadcaster> Make(const std::shared_ptr<GrContext>& ctx);
 
-        explicit UdpBroadcaster(const std::shared_ptr<Context>& ctx);
+        explicit UdpBroadcaster(const std::shared_ptr<GrContext>& ctx);
 
         void Broadcast(const std::string& msg);
         void Exit();
 
     private:
 
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         QUdpSocket* udp_socket_ = nullptr;
     };
 }

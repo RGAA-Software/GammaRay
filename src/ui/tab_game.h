@@ -19,7 +19,7 @@ namespace tc
     class TabGame : public TabBase {
     public:
 
-        explicit TabGame(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        explicit TabGame(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~TabGame() override;
 
         void OnTabShow() override;
