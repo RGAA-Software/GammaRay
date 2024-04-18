@@ -14,12 +14,12 @@ namespace tc
 {
 
     class GrContext;
-    class Application;
+    class GrApplication;
 
     class HttpHandler {
     public:
 
-        explicit HttpHandler(const std::shared_ptr<Application>& app);
+        explicit HttpHandler(const std::shared_ptr<GrApplication>& app);
 
         void HandlePing(const httplib::Request& req, httplib::Response& res);
         void HandleSimpleInfo(const httplib::Request& req, httplib::Response& res);
@@ -38,7 +38,7 @@ namespace tc
     private:
 
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<Application> app_ = nullptr;
+        std::shared_ptr<GrApplication> app_ = nullptr;
 
     };
 

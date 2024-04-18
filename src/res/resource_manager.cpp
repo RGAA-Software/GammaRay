@@ -31,7 +31,6 @@ namespace tc
             for (int i = 1; i <= 30; i++) {
                 QString target_path = res_folder_path_ + "/" + std::format("{}.png", i).c_str();
                 if (QFile::exists(target_path)) {
-                    //LOGI("{}.png already exist.", i);
                     continue;
                 }
                 auto png_name = std::format(":/icons/{}.png", i);

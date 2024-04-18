@@ -7,7 +7,7 @@
 #include "gr_context.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
-#include "application.h"
+#include "gr_application.h"
 #include "gr_settings.h"
 
 #include <QString>
@@ -18,7 +18,7 @@ using namespace std::placeholders;
 namespace tc
 {
 
-    HttpServer::HttpServer(const std::shared_ptr<Application>& app) {
+    HttpServer::HttpServer(const std::shared_ptr<GrApplication>& app) {
         context_ = app->GetContext();
         app_ = app;
         http_handler_ = std::make_shared<HttpHandler>(app);

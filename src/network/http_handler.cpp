@@ -8,7 +8,7 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
 #include "tc_3rdparty/json/json.hpp"
-#include "application.h"
+#include "gr_application.h"
 #include "manager/tc_app_manager.h"
 #include "tc_common_new/net_resp.h"
 #include "apis.h"
@@ -18,7 +18,7 @@ using namespace nlohmann;
 namespace tc
 {
 
-    HttpHandler::HttpHandler(const std::shared_ptr<Application>& app) {
+    HttpHandler::HttpHandler(const std::shared_ptr<GrApplication>& app) {
         this->context_ = app->GetContext();
         this->app_ = app;
     }

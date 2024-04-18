@@ -15,12 +15,12 @@ namespace tc
     class Application;
     class VigemDriverManager;
 
-    class SystemMonitor {
+    class ServerMonitor {
     public:
 
-        static std::shared_ptr<SystemMonitor> Make(const std::shared_ptr<Application>& app);
+        static std::shared_ptr<ServerMonitor> Make(const std::shared_ptr<Application>& app);
 
-        explicit SystemMonitor(const std::shared_ptr<Application>& app);
+        explicit ServerMonitor(const std::shared_ptr<Application>& app);
         void Start();
         void Exit();
 
@@ -28,9 +28,6 @@ namespace tc
         std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         bool exit_ = false;
-
-        std::shared_ptr<VigemDriverManager> vigem_driver_manager_ = nullptr;
-        bool connect_vigem_success_ = false;
     };
 
 }

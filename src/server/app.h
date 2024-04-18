@@ -44,7 +44,7 @@ namespace tc
     class CaptureVideoFrame;
     class VigemController;
     class VigemDriverManager;
-    class SystemMonitor;
+    class ServerMonitor;
 
     class Application : public std::enable_shared_from_this<Application> {
     public:
@@ -122,7 +122,7 @@ namespace tc
         std::shared_ptr<Thread> control_thread_ = nullptr;
         std::shared_ptr<VigemController> vigem_controller_ = nullptr;
 
-        std::shared_ptr<SystemMonitor> system_monitor_ = nullptr;
+        std::shared_ptr<ServerMonitor> server_monitor_ = nullptr;
     };
 
     // Windows

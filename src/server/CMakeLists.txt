@@ -15,7 +15,7 @@ set(SRCS
     app.cpp
     context.cpp
     statistics.cpp
-    system_monitor.cpp
+    server_monitor.cpp
     network/app_server.cpp
     network/ws_media_router.cpp
     network/http_handler.cpp
@@ -45,13 +45,11 @@ else()
 endif()
 
 target_link_libraries(main app_manager tc_message tc_dyn_rtc)
-target_link_libraries(main Dexode::EventBus uv uSockets ZLIB::ZLIB ${OpenCV_LIBS} PocoFoundationmt.lib)
+target_link_libraries(main Dexode::EventBus ZLIB::ZLIB ${OpenCV_LIBS} PocoFoundationmt.lib)
 target_link_libraries(main websocketpp::websocketpp)
 
 add_executable(tc_server main.cpp)
 SET_TARGET_PROPERTIES(tc_server PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
-target_link_libraries(tc_server settings main)
-target_link_libraries(tc_server tc_capture_new tc_common_new tc_message tc_encoder_new) #legacy_encoder
-target_link_libraries(tc_server sqlite_orm::sqlite_orm EasyHook64)
-target_link_libraries(tc_server gflags::gflags tc_steam_manager_new tc_vigem)
+target_link_libraries(tc_server settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem) #legacy_encoder
+target_link_libraries(tc_server sqlite_orm::sqlite_orm EasyHook64 gflags::gflags)
 

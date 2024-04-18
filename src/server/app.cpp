@@ -44,7 +44,7 @@
 #include "tc_common_new/win32/win_helper.h"
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
-#include "system_monitor.h"
+#include "server_monitor.h"
 
 namespace tc
 {
@@ -120,8 +120,8 @@ namespace tc
         }
 
         // system monitor
-        system_monitor_ = SystemMonitor::Make(shared_from_this());
-        system_monitor_->Start();
+        server_monitor_ = ServerMonitor::Make(shared_from_this());
+        server_monitor_->Start();
 
         while (!exit_app_) {
             std::unique_lock<std::mutex> guard(app_msg_cond_mtx_);

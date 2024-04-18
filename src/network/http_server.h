@@ -12,13 +12,13 @@ namespace tc
 {
 
     class GrContext;
+    class GrApplication;
     class HttpHandler;
-    class Application;
 
     class HttpServer
     {
     public:
-        explicit HttpServer(const std::shared_ptr<Application>& app);
+        explicit HttpServer(const std::shared_ptr<GrApplication>& app);
         ~HttpServer();
 
         void Start();
@@ -27,7 +27,7 @@ namespace tc
     private:
 
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<Application> app_ = nullptr;
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<httplib::Server> server_ = nullptr;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
 

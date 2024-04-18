@@ -1,5 +1,5 @@
 set(MAIN_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/application.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/workspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_settings.cpp
