@@ -30,10 +30,11 @@ namespace tc
 
     void SystemMonitor::Start() {
         vigem_driver_manager_ = VigemDriverManager::Make();
+        msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
+        RegisterMessageListener();
 
         if (!CheckViGEmDriver()) {
-            // install it
-            InstallViGem();
+            InstallViGem(true);
         }
 
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
@@ -110,7 +111,6 @@ namespace tc
             connect_vigem_success_ = vigem_driver_manager_->TryConnect();
         }
 
-        // connect failed
         if (!connect_vigem_success_) {
             LOGI("connect failed.");
             return false;
@@ -120,21 +120,48 @@ namespace tc
         }
     }
 
-    void SystemMonitor::InstallViGem() {
+    void SystemMonitor::InstallViGem(bool silent) {
         auto exe_folder_path = boost::filesystem::initial_path<boost::filesystem::path>().string();
         StringExt::Replace(exe_folder_path, R"(\)", R"(/)");
-        LOGI("exe folder path: {}", exe_folder_path);
 
-        auto cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe /passive /promptrestart", exe_folder_path);
-        LOGI("cmd: {}", cmd);
+        std::string cmd;
+        if (silent) {
+            cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe /passive /promptrestart", exe_folder_path);
+        } else {
+            cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe", exe_folder_path);
+        }
+
         if (!ProcessUtil::StartProcessInWorkDir(exe_folder_path, cmd, {})) {
             LOGE("Install ViGEm device failed.");
         }
     }
 
     void SystemMonitor::NotifyViGEnState(bool ok) {
-        ctx_->SendAppMessage(MsgViGEmState {
-            .ok_ = ok,
+        static bool first_emit_state = true;
+        auto task = [=, this]() {
+            ctx_->SendAppMessage(MsgViGEmState {
+                .ok_ = ok,
+            });
+        };
+
+        if (first_emit_state) {
+            first_emit_state = false;
+            LOGI("NotifyViGEnState POST DELAY TASK");
+            ctx_->PostDelayTask([=]() {
+                task();
+                LOGI("NotifyViGEnState FIRST");
+            }, 250);
+        } else {
+            task();
+        }
+    }
+
+    void SystemMonitor::RegisterMessageListener() {
+        msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgInstallViGEm>([=, this](const MsgInstallViGEm& msg) {
+            ctx_->PostTask([this]() {
+                this->InstallViGem(false);
+            });
         });
     }
 

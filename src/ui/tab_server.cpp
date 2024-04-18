@@ -26,6 +26,9 @@
 #include "widgets/round_img_display.h"
 #include "rn_app.h"
 #include "rn_empty.h"
+#include "tc_common_new/message_notifier.h"
+#include "app_messages.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -119,18 +122,22 @@ namespace tc
                     item_layout->addWidget(label);
 
                     auto status = new QLabel(this);
+                    vigem_state_ = status;
                     status->setAlignment(Qt::AlignCenter);
-                    status->setFixedSize(50, 30);
-                    status->setStyleSheet("font-size: 14px; color:#ffffff; background:#00ff00; border-radius:15px");
+                    status->setFixedSize(80, 26);
                     status->setText("OK");
                     item_layout->addWidget(status);
 
                     auto btn = new QPushButton(this);
                     btn->setFixedSize(80, 30);
-                    btn->setText(tr("Install"));
-                    item_layout->addSpacing(85);
+                    btn->setText(tr("INSTALL"));
+                    item_layout->addSpacing(55);
                     item_layout->addWidget(btn);
                     item_layout->addStretch();
+
+                    connect(btn, &QPushButton::clicked, this, [=, this]() {
+                        context_->SendAppMessage(MsgInstallViGEm{});
+                    });
 
                     layout->addLayout(item_layout);
                 }
@@ -159,9 +166,9 @@ namespace tc
 
                     auto nt_type = new QLabel(this);
                     nt_type->setFixedSize(80, 40);
-                    nt_type->setText(ip_type == IPNetworkType::kWired ? "Wired" : "Wireless");
+                    nt_type->setText(ip_type == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
                     nt_type->setStyleSheet("font-size: 14px;");
-                    item_layout->addSpacing(15);
+                    item_layout->addSpacing(18);
                     item_layout->addWidget(nt_type);
 
                     item_layout->addStretch();
@@ -251,8 +258,8 @@ namespace tc
             rn_stack_ = new QStackedWidget(this);
             rn_app_ = new RnApp(context_, this);
             rn_empty_ = new RnEmpty(context_, this);
-            rn_stack_->addWidget(rn_app_);
             rn_stack_->addWidget(rn_empty_);
+            rn_stack_->addWidget(rn_app_);
 
             content_layout->addWidget(rn_stack_);
         }
@@ -264,6 +271,14 @@ namespace tc
         setLayout(root_layout);
 
         rn_stack_->setCurrentIndex(0);
+
+        // messages
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgViGEmState>([=, this](const MsgViGEmState& state) {
+            context_->PostUITask([=, this]() {
+                this->RefreshVigemState(state.ok_);
+            });
+        });
     }
 
     TabServer::~TabServer() {
@@ -286,5 +301,14 @@ namespace tc
         return style.arg(url);
     }
 
+    void TabServer::RefreshVigemState(bool ok) {
+        if (ok) {
+            vigem_state_->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#00cc00; border-radius:13px");
+            vigem_state_->setText("OK");
+        } else {
+            vigem_state_->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#cc0000; border-radius:13px");
+            vigem_state_->setText("ERROR");
+        }
+    }
 
 }

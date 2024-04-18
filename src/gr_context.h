@@ -11,6 +11,7 @@
 #include "tc_common_new/message_notifier.h"
 
 #include <QObject>
+#include <QTimer>
 
 namespace tc
 {
@@ -32,6 +33,7 @@ namespace tc
         std::shared_ptr<TaskRuntime> GetTaskRuntime();
         void PostTask(std::function<void()>&& task);
         void PostUITask(std::function<void()>&& task);
+        void PostDelayTask(std::function<void()>&& task, int ms);
 
         std::string GetSysUniqueId();
         int GetIndexByUniqueId();

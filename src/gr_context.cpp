@@ -45,7 +45,7 @@ namespace tc
         LOGI("Unique Id: {}", unique_id_);
         LOGI("Scan IP size: {}", ips_.size());
         for (auto& [ip, type] : ips_) {
-            LOGI("IP: {} -> {}", ip, type == IPNetworkType::kWired ? "Wired" : "Wireless");
+            LOGI("IP: {} -> {}", ip, type == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
         }
 
         game_manager_ = std::make_shared<GameManager>(shared_from_this());
@@ -73,6 +73,14 @@ namespace tc
     void GrContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [=]() {
             task();
+        });
+    }
+
+    void GrContext::PostDelayTask(std::function<void()>&& task, int ms) {
+        this->PostUITask([ms, t = std::move(task)]() {
+            QTimer::singleShot(ms, [=]() {
+                t();
+            });
         });
     }
 
@@ -114,7 +122,7 @@ namespace tc
         for (auto& [ip, type] : ips) {
             json ip_obj;
             ip_obj["ip"] = ip;
-            ip_obj["type"] = type == IPNetworkType::kWired ? "Wired" : "Wireless";
+            ip_obj["type"] = type == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
             ip_array.push_back(ip_obj);
         }
         obj["ips"] = ip_array;

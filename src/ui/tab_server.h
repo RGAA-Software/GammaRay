@@ -11,11 +11,13 @@
 #include <QListWidgetItem>
 #include <QPixmap>
 #include <QStackedWidget>
+#include <QLabel>
 
 namespace tc
 {
     class RnApp;
     class RnEmpty;
+    class MessageListener;
 
     class TabServer : public TabBase {
     public:
@@ -28,6 +30,7 @@ namespace tc
     private:
 
         QString GetItemIconStyleSheet(const QString& url);
+        void RefreshVigemState(bool ok);
 
     private:
 
@@ -35,6 +38,9 @@ namespace tc
         QStackedWidget* rn_stack_ = nullptr;
         RnApp* rn_app_ = nullptr;
         RnEmpty* rn_empty_ = nullptr;
+        QLabel* vigem_state_ = nullptr;
+
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 
     };
 }
