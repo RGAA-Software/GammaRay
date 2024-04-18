@@ -3,7 +3,7 @@
 //
 
 #include "workspace.h"
-#include "application.h"
+#include "gr_application.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -22,7 +22,7 @@ namespace tc
     Workspace::Workspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay Server"));
 
-        app_ = std::make_shared<Application>();
+        app_ = std::make_shared<GrApplication>();
         app_->Init();
 
         // background

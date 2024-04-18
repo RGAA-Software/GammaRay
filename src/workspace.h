@@ -20,7 +20,7 @@ namespace tc
     };
 
     class TabBase;
-    class Application;
+    class GrApplication;
 
     class Workspace : public QMainWindow {
     public:
@@ -30,7 +30,7 @@ namespace tc
         void ChangeTab(const TabName& tn);
 
     private:
-        std::shared_ptr<Application> app_ = nullptr;
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::map<TabName, TabBase*> tabs_;
         QPushButton* btn_tab_server_ = nullptr;
         QPushButton* btn_tab_games_ = nullptr;
