@@ -14,15 +14,15 @@
 
 namespace tc
 {
-    class Context;
+    class GrContext;
 
     class WSServer : public QObject {
         Q_OBJECT
     public:
 
-        static std::shared_ptr<WSServer> Make(const std::shared_ptr<Context>& ctx);
-        explicit WSServer(const std::shared_ptr<Context>& ctx);
-        ~WSServer();
+        static std::shared_ptr<WSServer> Make(const std::shared_ptr<GrContext>& ctx);
+        explicit WSServer(const std::shared_ptr<GrContext>& ctx);
+        ~WSServer() override;
 
         void Start();
         void Exit();
@@ -38,7 +38,7 @@ namespace tc
     private:
         QWebSocketServer* ws_server_ = nullptr;
         QList<QWebSocket*> clients_;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
     };
 }
 

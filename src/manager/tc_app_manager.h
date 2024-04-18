@@ -14,21 +14,21 @@
 namespace tc
 {
 
-    class Context;
+    class GrContext;
     class RunningAppInfo;
 
-    // 用来管理tc_application
+    // 用来管理tc_server
     class AppManager {
     public:
 
-        explicit AppManager(const std::shared_ptr<Context>& ctx);
+        explicit AppManager(const std::shared_ptr<GrContext>& ctx);
 
         Response<bool, uint32_t> Start(const std::string& args);
         Response<bool, bool> Stop(uint32_t pid);
 
     private:
 
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         tc::ConcurrentHashMap<uint32_t, std::shared_ptr<RunningAppInfo>> running_apps_;
     };
 

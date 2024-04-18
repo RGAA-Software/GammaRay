@@ -12,7 +12,7 @@ namespace tc
 
     class StEncoder : public TabBase {
     public:
-        StEncoder(const std::shared_ptr<Context>& ctx, QWidget *parent);
+        StEncoder(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
         ~StEncoder() = default;
 
         void OnTabShow() override;

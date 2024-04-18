@@ -23,7 +23,7 @@ namespace tc
     class TabSettings : public TabBase {
     public:
 
-        explicit TabSettings(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        explicit TabSettings(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~TabSettings() override;
 
         void OnTabShow() override;

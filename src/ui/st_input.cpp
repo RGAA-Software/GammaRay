@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    StInput::StInput(const std::shared_ptr<Context>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    StInput::StInput(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
         setStyleSheet("background: #900090;");
     }
 

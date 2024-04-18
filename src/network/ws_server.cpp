@@ -3,23 +3,23 @@
 //
 
 #include "ws_server.h"
-#include "settings.h"
+#include "gr_settings.h"
 
 namespace tc
 {
 
-    std::shared_ptr<WSServer> WSServer::Make(const std::shared_ptr<Context> &ctx) {
+    std::shared_ptr<WSServer> WSServer::Make(const std::shared_ptr<GrContext> &ctx) {
         return std::make_shared<WSServer>(ctx);
     }
 
-    WSServer::WSServer(const std::shared_ptr<Context> &ctx) : QObject(nullptr) {
+    WSServer::WSServer(const std::shared_ptr<GrContext> &ctx) : QObject(nullptr) {
         context_ = ctx;
     }
 
     void WSServer::Start() {
         ws_server_ = new QWebSocketServer(QStringLiteral("Echo Server"), QWebSocketServer::NonSecureMode, this);
-        if (ws_server_->listen(QHostAddress::Any, Settings::Instance()->ws_server_port_)) {
-            qDebug() << "WebSocket server listening on port" << Settings::Instance()->ws_server_port_;
+        if (ws_server_->listen(QHostAddress::Any, GrSettings::Instance()->ws_server_port_)) {
+            qDebug() << "WebSocket server listening on port" << GrSettings::Instance()->ws_server_port_;
             connect(ws_server_, &QWebSocketServer::newConnection, this, &WSServer::onNewConnection);
             connect(ws_server_, &QWebSocketServer::closed, this, &WSServer::closed);
         }

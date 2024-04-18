@@ -15,7 +15,7 @@
 namespace tc
 {
 
-    ResourceManager::ResourceManager(const std::shared_ptr<Context>& ctx) {
+    ResourceManager::ResourceManager(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
         res_folder_path_ = QApplication::applicationDirPath() +  "/resources";
         QDir res_dir(res_folder_path_);

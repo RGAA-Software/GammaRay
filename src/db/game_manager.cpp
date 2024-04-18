@@ -7,7 +7,7 @@
 
 namespace tc
 {
-    GameManager::GameManager(const std::shared_ptr<Context>& ctx) {
+    GameManager::GameManager(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
     }
 
