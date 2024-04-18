@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <functional>
+#include <string>
 
 namespace tc
 {
@@ -23,6 +24,11 @@ namespace tc
         explicit SystemMonitor(const std::shared_ptr<GrContext>& ctx);
         void Start();
         void Exit();
+
+    private:
+        bool CheckViGEmDriver();
+        bool TryConnectViGEmDriver();
+        bool GetFileVersion(const std::wstring& filePath, unsigned long& major, unsigned long& minor);
 
     private:
         std::shared_ptr<GrContext> ctx_ = nullptr;
