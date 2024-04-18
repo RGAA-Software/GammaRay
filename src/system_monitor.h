@@ -15,6 +15,7 @@ namespace tc
     class Thread;
     class GrContext;
     class VigemDriverManager;
+    class MessageListener;
 
     class SystemMonitor {
     public:
@@ -26,11 +27,12 @@ namespace tc
         void Exit();
 
     private:
-        bool CheckViGEmDriver();
+        static bool CheckViGEmDriver();
         bool TryConnectViGEmDriver();
-        bool GetFileVersion(const std::wstring& filePath, unsigned long& major, unsigned long& minor);
-        void InstallViGem();
+        static bool GetFileVersion(const std::wstring& filePath, unsigned long& major, unsigned long& minor);
+        void InstallViGem(bool silent);
         void NotifyViGEnState(bool ok);
+        void RegisterMessageListener();
 
     private:
         std::shared_ptr<GrContext> ctx_ = nullptr;
@@ -39,6 +41,8 @@ namespace tc
 
         std::shared_ptr<VigemDriverManager> vigem_driver_manager_ = nullptr;
         bool connect_vigem_success_ = false;
+
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

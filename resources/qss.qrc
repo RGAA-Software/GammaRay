@@ -58,5 +58,6 @@
         <file>icons/ic_game_controller.svg</file>
         <file>icons/ic_network.svg</file>
         <file>icons/ic_port.svg</file>
+        <file>icons/ic_empty.svg</file>
     </qresource>
 </RCC>
