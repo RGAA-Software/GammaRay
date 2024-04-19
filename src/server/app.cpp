@@ -314,6 +314,9 @@ namespace tc
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
+            if (connection_->GetConnectionPeerCount() <= 0) {
+                return;
+            }
             encoder_thread_->Encode(msg.adapter_uid_, msg.handle_, (int)msg.frame_width_,
                                     (int)msg.frame_height_, (int)msg.frame_format_, msg.frame_index_);
         });
