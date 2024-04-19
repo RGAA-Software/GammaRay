@@ -27,14 +27,12 @@ namespace tc
     struct aop_log {
         bool before(http::web_request &req, http::web_response &rep) {
             asio2::ignore_unused(rep);
-            printf("aop_log before %s\n", req.method_string().data());
             return true;
         }
 
         bool after(std::shared_ptr<asio2::http_session> &session_ptr, http::web_request &req, http::web_response &rep) {
             ASIO2_ASSERT(asio2::get_current_caller<std::shared_ptr<asio2::http_session>>().get() == session_ptr.get());
             asio2::ignore_unused(session_ptr, req, rep);
-            printf("aop_log after\n");
             return true;
         }
     };
@@ -47,6 +45,19 @@ namespace tc
 
     void AppServer::Start() {
         http_server_ = std::make_shared<asio2::http_server>(*this->context_->GetAsio2IoPool());
+        http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
+            auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
+            LOGI("client disconnected: {}", socket_fd);
+            if (media_routers_.HasKey(socket_fd)) {
+                media_routers_.Remove(socket_fd);
+                LOGI("App server media close, media router size: {}", media_routers_.Size());
+            } else if (ipc_routers_.HasKey(socket_fd)) {
+                ipc_routers_.Remove(socket_fd);
+                LOGI("App server ipc close, ipc router size: {}",  media_routers_.Size());
+            }
+            this->NotifyPeerDisconnected();
+        });
+
         http_server_->support_websocket(true);
         ws_data_ = std::make_shared<WsData>(WsData{
             .vars_ = {
@@ -142,24 +153,22 @@ namespace tc
             })
             .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
+                LOGI("client closed: {}", socket_fd);
                 if (path == kUrlMedia) {
                     media_routers_.Remove(socket_fd);
                     NotifyMediaClientDisConnected();
-                    LOGI("App server {} close, media router size: {}", path, media_routers_.Size());
                 } else if (path == kUrlControl) {
 
                 } else if (path == kUrlIpc) {
                     ipc_routers_.Remove(socket_fd);
-                    LOGI("App server {} close, ipc router size: {}", path, media_routers_.Size());
                 }
-
                 this->NotifyPeerDisconnected();
             })
             .on_ping([=, this](auto &sess_ptr) {
-                LOGI("App server {} ping", path);
+
             })
             .on_pong([=, this](auto &sess_ptr) {
-                LOGI("App server {} pong", path);
+
             })
         );
     }
