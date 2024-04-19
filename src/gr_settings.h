@@ -55,7 +55,6 @@ namespace tc
         int http_server_port_{0};
         int ws_server_port_{0};
         int udp_server_port_{0};
-        int stream_server_port_{0};
 
         std::string log_file_;
         std::string encoder_select_type_;
@@ -72,7 +71,7 @@ namespace tc
         std::string capture_video_type_;
 
         std::string network_type_;
-        std::string network_listen_port_;
+        int network_listen_port_;
 
     };
 

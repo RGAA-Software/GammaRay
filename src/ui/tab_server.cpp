@@ -240,7 +240,7 @@ namespace tc
 
                     auto value = new QLabel(this);
                     value->setFixedSize(120, 40);
-                    value->setText(std::to_string(settings_->stream_server_port_).c_str());
+                    value->setText(std::to_string(settings_->network_listen_port_).c_str());
                     value->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(value);
                     item_layout->addStretch();

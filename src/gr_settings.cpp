@@ -33,7 +33,7 @@ namespace tc
         network_type_ = sp_->Get(kStNetworkType, "websocket");
         http_server_port_ = sp_->GetInt(kStHttpPort, 20368);
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
-        network_listen_port_ = sp_->Get(kStNetworkListenPort, "20371");
+        network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
 
     }
 
