@@ -10,7 +10,7 @@
 using namespace tc;
 
 DEFINE_int32(steam_app_id, 0, "steam app id");
-DEFINE_bool(logfile, true, "log to file");
+DEFINE_bool(logfile, false, "log to file");
 // encoder
 DEFINE_string(encoder_select_type, "auto", "auto/specify");
 DEFINE_string(encoder_name, "nvenc", "nvenc/amf/ffmpeg");
