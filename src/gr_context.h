@@ -22,7 +22,7 @@ namespace tc
     class GrSettings;
     class GameManager;
     class ResourceManager;
-    class SystemMonitor;
+    class ServerManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -51,6 +51,8 @@ namespace tc
         }
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
 
+        std::shared_ptr<ServerManager> GetServerManager();
+
     private:
         void LoadUniqueId();
         void GenUniqueId();
@@ -64,8 +66,8 @@ namespace tc
         std::map<std::string, IPNetworkType> ips_;
         std::shared_ptr<GameManager> game_manager_ = nullptr;
         std::shared_ptr<ResourceManager> res_manager_ = nullptr;
-        std::shared_ptr<SystemMonitor> sys_monitor_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
+        std::shared_ptr<ServerManager> srv_manager_ = nullptr;
     };
 
 }

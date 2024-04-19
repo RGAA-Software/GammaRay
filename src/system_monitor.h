@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include "tc_common_new/response.h"
 
 namespace tc
 {
@@ -30,9 +31,11 @@ namespace tc
         static bool CheckViGEmDriver();
         bool TryConnectViGEmDriver();
         static bool GetFileVersion(const std::wstring& filePath, unsigned long& major, unsigned long& minor);
-        void InstallViGem(bool silent);
+        static void InstallViGem(bool silent);
         void NotifyViGEnState(bool ok);
         void RegisterMessageListener();
+        Response<bool, bool> CheckServerAlive();
+        void StartServer();
 
     private:
         std::shared_ptr<GrContext> ctx_ = nullptr;

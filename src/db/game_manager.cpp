@@ -46,7 +46,6 @@ namespace tc
         auto storage = std::any_cast<Storage>(db_storage_);
 
         auto games = storage.get_all<TcGame>(where(c(&TcGame::game_id_) == game->game_id_));
-        LOGI("Game size: {}", games.size());
 
         if (!games.empty() && game->game_id_ > 0) {
             for (auto& g : games) {

@@ -43,9 +43,12 @@ namespace tc
     }
 
     void HttpHandler::HandleGameStart(const httplib::Request& req, httplib::Response& res) {
-        auto app_mgr = app_->GetAppManager();
-        auto resp = app_mgr->Start("");
-        NetResp nr = NetResp::Make(resp.ok_ ? kNetOk : kStartFailed, "start app failed", "");
+//        auto app_mgr = app_->GetSrvManager();
+//        auto resp = app_mgr->Start();
+//        NetResp nr = NetResp::Make(resp.ok_ ? kNetOk : kStartFailed, "start app failed", "");
+//        res.set_content(nr.Dump(), "application/json");
+
+        NetResp nr = NetResp::Make(kNetOk, "start app failed", "");
         res.set_content(nr.Dump(), "application/json");
     }
 

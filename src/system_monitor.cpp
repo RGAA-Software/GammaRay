@@ -11,6 +11,8 @@
 #include "tc_controller/vigem/sdk/ViGEm/Client.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/win32/process_helper.h"
+#include "manager/tc_app_manager.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -39,21 +41,50 @@ namespace tc
 
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
             while (!exit_) {
-
-                bool vigem_installed = CheckViGEmDriver();
-                if (vigem_installed) {
-                    if (!TryConnectViGEmDriver()) {
-                        // Connect error
-                        NotifyViGEnState(false);
+                // check vigem
+                {
+                    bool vigem_installed = CheckViGEmDriver();
+                    if (vigem_installed) {
+                        if (!TryConnectViGEmDriver()) {
+                            NotifyViGEnState(false);
+                        } else {
+                            NotifyViGEnState(true);
+                        }
                     } else {
-                        NotifyViGEnState(true);
+                        NotifyViGEnState(false);
                     }
-                } else {
-                    // not installed
-                    NotifyViGEnState(false);
                 }
 
-
+                // check server alive or not
+                {
+                    auto resp = this->CheckServerAlive();
+                    if (resp.ok_) {
+                        if (resp.value_) {
+                            LOGI("server is already running...");
+                            ctx_->SendAppMessage(MsgServerAlive {
+                                .alive_ = true,
+                            });
+                        } else {
+                            LOGI("server is not running, we'll start it.");
+                            this->StartServer();
+                            // check again
+                            ctx_->PostDelayTask([=, this](){
+                                // UI thread
+                                ctx_->PostTask([=, this]() {
+                                    // Background thread
+                                    auto resp = this->CheckServerAlive();
+                                    auto started = resp.ok_ && resp.value_;
+                                    ctx_->SendAppMessage(MsgServerAlive {
+                                        .alive_ = started,
+                                    });
+                                });
+                            }, 250);
+                        }
+                    } else {
+                        // todo
+                        LOGW("Check server alive failed by process, check listening port instead.");
+                    }
+                }
                 std::this_thread::sleep_for(std::chrono::seconds(5));
             }
         }, "", false);
@@ -146,10 +177,8 @@ namespace tc
 
         if (first_emit_state) {
             first_emit_state = false;
-            LOGI("NotifyViGEnState POST DELAY TASK");
             ctx_->PostDelayTask([=]() {
                 task();
-                LOGI("NotifyViGEnState FIRST");
             }, 250);
         } else {
             task();
@@ -160,9 +189,33 @@ namespace tc
         msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgInstallViGEm>([=, this](const MsgInstallViGEm& msg) {
             ctx_->PostTask([this]() {
-                this->InstallViGem(false);
+                tc::SystemMonitor::InstallViGem(false);
             });
         });
+    }
+
+    Response<bool, bool> SystemMonitor::CheckServerAlive() {
+        auto resp = Response<bool, bool>::Make(false, false);
+        auto processes = ProcessHelper::GetProcessList();
+        if (processes.empty()) {
+            return resp;
+        }
+        resp.ok_ = true;
+
+        for (auto& p : processes) {
+            //LOGI("p.exe_name: {}", p.exe_name_);
+            if (p.exe_name_.find("GammaRayServer.exe") != std::string::npos) {
+                resp.value_ = true;
+                LOGI("Yes, find it.");
+                break;
+            }
+        }
+        return resp;
+    }
+
+    void SystemMonitor::StartServer() {
+        auto srv_mgr = ctx_->GetServerManager();
+        srv_mgr->Start();
     }
 
 }

@@ -66,6 +66,7 @@ namespace tc
         enum NetworkType {
             kWebsocket,
             kQUIC,
+            kWebRtc,
         };
 
         NetworkType network_type_;

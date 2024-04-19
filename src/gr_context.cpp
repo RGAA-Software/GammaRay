@@ -13,7 +13,7 @@
 #include "gr_settings.h"
 #include "db/game_manager.h"
 #include "res/resource_manager.h"
-#include "system_monitor.h"
+#include "manager/tc_app_manager.h"
 
 using namespace nlohmann;
 
@@ -29,9 +29,10 @@ namespace tc
     void GrContext::Init() {
         settings_ = GrSettings::Instance();
         sp_ = SharedPreference::Instance();
-        sp_->Init("", "tc_steam.dat");
         // unique id
         LoadUniqueId();
+
+        srv_manager_ = std::make_shared<ServerManager>(shared_from_this());
 
         task_runtime_ = std::make_shared<TaskRuntime>();
         steam_mgr_ = SteamManager::Make(task_runtime_);
@@ -53,9 +54,6 @@ namespace tc
 
         res_manager_ = std::make_shared<ResourceManager>(shared_from_this());
         res_manager_->ExtractIconsIfNeeded();
-
-        sys_monitor_ = SystemMonitor::Make(shared_from_this());
-        sys_monitor_->Start();
     }
 
     std::shared_ptr<SteamManager> GrContext::GetSteamManager() {
@@ -141,6 +139,10 @@ namespace tc
 
     std::shared_ptr<MessageNotifier> GrContext::GetMessageNotifier() {
         return msg_notifier_;
+    }
+
+    std::shared_ptr<ServerManager> GrContext::GetServerManager() {
+        return srv_manager_;
     }
 
 }

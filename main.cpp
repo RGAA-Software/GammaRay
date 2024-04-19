@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    Logger::InitLog("app.log", false);
+    Logger::InitLog("GammaRay.log", false);
 
     int id = QFontDatabase::addApplicationFont(":/resources/font/matrix.ttf");
     auto families = QFontDatabase::applicationFontFamilies(id);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     LoadStyle("");
 
     Workspace workspace;
-    workspace.setFixedSize(1820, 960);
+    workspace.setFixedSize(200, 200);
     workspace.show();
 
     return app.exec();

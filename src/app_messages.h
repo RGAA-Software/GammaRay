@@ -15,6 +15,12 @@ namespace tc
     public:
 
     };
+
+    //
+    class MsgServerAlive {
+    public:
+        bool alive_ = false;
+    };
 }
 
 #endif // APP_MESSAGES_H
