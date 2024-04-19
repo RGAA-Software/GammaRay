@@ -1,4 +1,4 @@
-project(tc_server_steam VERSION 0.1 LANGUAGES CXX)
+project(GammaRay VERSION 0.1 LANGUAGES CXX)
 
 add_subdirectory(settings)
 
