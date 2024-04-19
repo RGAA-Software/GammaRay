@@ -48,8 +48,8 @@ target_link_libraries(main app_manager tc_message tc_dyn_rtc)
 target_link_libraries(main Dexode::EventBus ZLIB::ZLIB ${OpenCV_LIBS} PocoFoundationmt.lib)
 target_link_libraries(main websocketpp::websocketpp)
 
-add_executable(tc_server main.cpp)
-SET_TARGET_PROPERTIES(tc_server PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
-target_link_libraries(tc_server settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem) #legacy_encoder
-target_link_libraries(tc_server sqlite_orm::sqlite_orm EasyHook64 gflags::gflags)
+add_executable(GammaRayServer srv_main.cpp)
+SET_TARGET_PROPERTIES(GammaRayServer PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
+target_link_libraries(GammaRayServer settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem) #legacy_encoder
+target_link_libraries(GammaRayServer sqlite_orm::sqlite_orm EasyHook64 gflags::gflags)
 

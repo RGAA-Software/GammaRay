@@ -10,7 +10,7 @@
 using namespace tc;
 
 DEFINE_int32(steam_app_id, 0, "steam app id");
-DEFINE_bool(logfile, false, "log to file");
+DEFINE_bool(logfile, true, "log to file");
 // encoder
 DEFINE_string(encoder_select_type, "auto", "auto/specify");
 DEFINE_string(encoder_name, "nvenc", "nvenc/amf/ffmpeg");
@@ -35,6 +35,25 @@ DEFINE_string(app_game_path, "", "");
 DEFINE_string(app_game_args, "", "");
 
 void UpdateSettings(Settings* settings) {
+    LOGI("--------------In args begin--------------");
+    LOGI("steam_app_id: {}", FLAGS_steam_app_id);
+    LOGI("logfile: {}", FLAGS_logfile);
+    LOGI("encoder_select_type: {}", FLAGS_encoder_select_type);
+    LOGI("encoder_name: {}", FLAGS_encoder_name);
+    LOGI("encoder_format: {}", FLAGS_encoder_format);
+    LOGI("encoder_bitrate: {}", FLAGS_encoder_bitrate);
+    LOGI("encoder_resolution_type: {}", FLAGS_encoder_resolution_type);
+    LOGI("encoder_width: {}", FLAGS_encoder_width);
+    LOGI("encoder_height: {}", FLAGS_encoder_height);
+    LOGI("capture_audio: {}", FLAGS_capture_audio);
+    LOGI("capture_audio_type: {}", FLAGS_capture_audio_type);
+    LOGI("capture_video: {}", FLAGS_capture_video);
+    LOGI("capture_video_type: {}", FLAGS_capture_video_type);
+    LOGI("network_type: {}", FLAGS_network_type);
+    LOGI("network_listen_port: {}", FLAGS_network_listen_port);
+    LOGI("app_game_path: {}", FLAGS_app_game_path);
+    LOGI("app_game_args: {}", FLAGS_app_game_args);
+    LOGI("--------------In args end----------------");
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
         settings->app_.steam_app_.steam_url_ = std::format("steam://rungameid/{}", FLAGS_steam_app_id);
@@ -86,7 +105,7 @@ void UpdateSettings(Settings* settings) {
         settings->capture_.capture_video_type_ = Capture::CaptureVideoType::kVideoHook;
     }
 
-    // network
+    // network !! only support websocket now
     if (FLAGS_network_type == "websocket") {
         settings->transmission_.network_type_ = Transmission::NetworkType::kWebsocket;
     } else {
@@ -95,8 +114,12 @@ void UpdateSettings(Settings* settings) {
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
 
     // app
-    settings->app_.game_path_ = FLAGS_app_game_path;
-    settings->app_.game_arguments_ = FLAGS_app_game_args;
+    if (!FLAGS_app_game_path.empty()) {
+        settings->app_.game_path_ = FLAGS_app_game_path;
+    }
+    if (!FLAGS_app_game_args.empty()) {
+        settings->app_.game_arguments_ = FLAGS_app_game_args;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -106,12 +129,12 @@ int main(int argc, char** argv) {
 
     // Log
     std::cout << "logfile: " << FLAGS_logfile << std::endl;
-    Logger::InitLog("tc_application.log", FLAGS_logfile);
+    Logger::InitLog("GammaRayServer.log", FLAGS_logfile);
 
     // 1. load from config.toml
     auto settings = Settings::Instance();
     settings->LoadSettings("settings.toml");
-    //UpdateSettings(settings);
+    UpdateSettings(settings);
     auto settings_str = settings->Dump();
     LOGI("\n" + settings_str);
 

@@ -8,10 +8,11 @@
 #include "gr_settings.h"
 #include "network/ws_server.h"
 #include "network/http_server.h"
-#include "manager/tc_app_manager.h"
 #include "network/udp_broadcaster.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_steam_manager_new/steam_manager.h"
+#include "tc_common_new/shared_preference.h"
+#include "system_monitor.h"
 
 #include <QTimer>
 
@@ -28,19 +29,22 @@ namespace tc
     }
 
     void GrApplication::Init() {
+        SharedPreference::Instance()->Init("", "tc_steam.dat");
         settings_ = GrSettings::Instance();
         settings_->Load();
+        settings_->Dump();
 
         context_ = std::make_shared<GrContext>();
         context_->Init();
-
-        app_manager_ = std::make_shared<AppManager>(context_);
 
         http_server_ = std::make_shared<HttpServer>(shared_from_this());
         http_server_->Start();
 
         ws_server_ = WSServer::Make(context_);
         ws_server_->Start();
+
+        sys_monitor_ = SystemMonitor::Make(context_);
+        sys_monitor_->Start();
 
         udp_broadcaster_ = UdpBroadcaster::Make(context_);
 

@@ -109,7 +109,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} tc_server tc_capture_library tc_graphics tc_graphics_util
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRayServer tc_capture_library tc_graphics tc_graphics_util
         tc_message tc_graphics_helper tc_vigem)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
