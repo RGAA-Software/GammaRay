@@ -19,6 +19,7 @@ namespace tc
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto label = new QLabel(this);
+            label->setFixedSize(50, 50);
             QString style = R"(background-image: url(%1);
                         background-repeat: no-repeat;
                         background-position: center;
@@ -28,12 +29,16 @@ namespace tc
             layout->addStretch();
             root_layout->addLayout(layout);
         }
+
+        root_layout->addSpacing(10);
+
         {
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto label = new QLabel(this);
-            label->setText(tr("Empty"));
-            label->setStyleSheet("font-size: 20px;");
+            label->setText(tr("NO RUNNING GAME"));
+            label->setStyleSheet("font-size: 20px; font-family: ScreenMatrix;");
+            layout->addWidget(label);
             layout->addStretch();
             root_layout->addLayout(layout);
         }
