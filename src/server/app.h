@@ -123,6 +123,8 @@ namespace tc
         std::shared_ptr<VigemController> vigem_controller_ = nullptr;
 
         std::shared_ptr<ServerMonitor> server_monitor_ = nullptr;
+
+        uint64_t last_capture_screen_time_ = 0;
     };
 
     // Windows

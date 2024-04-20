@@ -1,13 +1,13 @@
 QPalette{background:#EAF7FF;}*{outline:0px;color:#386487;}
 
 QGraphicsView{
-border:1px solid #C0DCF2;
-qproperty-backgroundBrush:#EAF7FF;
+/*border:1px solid #C0DCF2;
+qproperty-backgroundBrush:#EAF7FF;*/
 }
 
 QWidget[form="true"],QLabel[frameShape="1"],QGraphicsView{
-border:1px solid #C0DCF2;
-border-radius:0px;
+/*border:1px solid #C0DCF2;
+border-radius:0px;*/
 }
 
 QWidget[form="bottom"]{
@@ -15,7 +15,7 @@ background:#DEF0FE;
 }
 
 QWidget[form="bottom"] .QFrame{
-border:1px solid #386487;
+/*border:1px solid #386487;*/
 }
 
 QWidget[form="bottom"] QLabel,QWidget[form="title"] QLabel{

@@ -7,11 +7,7 @@
 // MUST put it here before windows.h
 #include "context.h"
 #include "tc_capture_new/desktop_capture.h"
-#ifdef WIN32
-#include <Windows.h>
-#include "tc_capture_new/win/desktop_capture/win_desktop_capture.h"
-#endif
-
+#include "tc_capture_new/desktop_capture_factory.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
@@ -19,6 +15,7 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/time_ext.h"
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_capture_new/capture_message_maker.h"
@@ -108,7 +105,7 @@ namespace tc
         control_thread_->Poll();
 
         // desktop capture
-        desktop_capture_ = std::make_shared<WinDesktopCapture>(context_->GetMessageNotifier());
+        desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier());
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
@@ -317,6 +314,19 @@ namespace tc
             if (connection_->GetConnectionPeerCount() <= 0) {
                 return;
             }
+
+            // calculate gaps between 2 captured frames.
+            {
+                auto current_time = TimeExt::GetCurrentTimestamp();
+                if (last_capture_screen_time_ == 0) {
+                    last_capture_screen_time_ = current_time;
+                }
+                auto gap = current_time - last_capture_screen_time_;
+                last_capture_screen_time_ = current_time;
+                LOGI("capture screen gap : {}", gap);
+            }
+
+            // to encode
             encoder_thread_->Encode(msg.adapter_uid_, msg.handle_, (int)msg.frame_width_,
                                     (int)msg.frame_height_, (int)msg.frame_format_, msg.frame_index_);
         });

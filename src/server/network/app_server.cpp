@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/3/1.
+// Created by RGAA on 2024/3/1.
 //
 
 #include "app_server.h"
@@ -50,6 +50,7 @@ namespace tc
             LOGI("client disconnected: {}", socket_fd);
             if (media_routers_.HasKey(socket_fd)) {
                 media_routers_.Remove(socket_fd);
+                NotifyMediaClientDisConnected();
                 LOGI("App server media close, media router size: {}", media_routers_.Size());
             } else if (ipc_routers_.HasKey(socket_fd)) {
                 ipc_routers_.Remove(socket_fd);
@@ -131,7 +132,6 @@ namespace tc
             })
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 LOGI("App server {} open", path);
-                // boost socket native_handle指向底层socket的fd
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 WsRouterPtr router = nullptr;
                 if (path == kUrlMedia) {

@@ -109,7 +109,7 @@ listening-port = 20371
 #ORI
 #game-path = "steam://rungameid/1057090"
 # Steam BIG Picture Mode
-game-path = "steam://open/bigpicture"
+#game-path = "steam://open/bigpicture"
 
 # 启动参数
 #game-arguments = ""

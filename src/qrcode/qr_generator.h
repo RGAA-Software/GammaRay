@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/4/8.
+// Created by RGAA on 2024/4/8.
 //
 
 #ifndef TC_SERVER_STEAM_QR_GENERATOR_H
