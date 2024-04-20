@@ -30,7 +30,7 @@ namespace tc
         layout->addWidget(chart_view_);
 
         x_axis_ = new QValueAxis();
-        x_axis_->setTickCount(20);
+        x_axis_->setTickCount(30);
         x_axis_->setRange(0, 120);
         x_axis_->setLabelFormat("%d");
         chart_->addAxis(x_axis_, Qt::AlignBottom);
@@ -39,40 +39,24 @@ namespace tc
         }
 
         y_axis_ = new QValueAxis();
-        y_axis_->setRange(0, 30);
+        y_axis_->setRange(0, 120);
+        y_axis_->setLabelFormat("%d ms");
         chart_->addAxis(y_axis_, Qt::AlignLeft);
         for (auto& [n, s] : series_) {
             s->attachAxis(y_axis_);
         }
 
         setLayout(layout);
-
-        for (auto& [n, s] : series_) {
-            auto timer = new QTimer(this);
-            connect(timer, &QTimer::timeout, this, [=, this]() {
-                int value = QRandomGenerator::global()->generate() %30;
-                if (value_.size() >= 120) {
-                    value_.removeFirst();
-                }
-                value_.push_back(value);
-                QList<QPointF> points;
-                for (int i = 0; i < value_.size(); i++) {
-                    points.push_back(QPointF(i, value_.at(i)));
-                }
-                s->replace(points);
-            });
-            timer->start(100);
-        }
     }
 
-    void StatChart::UpdateLines(const std::map<QString, std::vector<float>>& value) {
+    void StatChart::UpdateLines(const std::map<QString, std::vector<uint32_t>>& value) {
         ctx_->PostUITask([=, this]() {
             for (auto& [in_n, in_v] : value) {
                 for (auto& [n, s] : series_) {
                     if (in_n == n) {
                         QList<QPointF> points;
-                        for (int i = 0; i < value_.size(); i++) {
-                            points.push_back(QPointF(i, value_.at(i)));
+                        for (int i = 0; i < in_v.size(); i++) {
+                            points.push_back(QPointF(i, in_v.at(i)));
                         }
                         s->replace(points);
                         break;

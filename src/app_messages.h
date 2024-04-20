@@ -1,6 +1,8 @@
 #ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
+#include "tc_message.pb.h"
+
 namespace tc
 {
 
@@ -20,6 +22,13 @@ namespace tc
     class MsgServerAlive {
     public:
         bool alive_ = false;
+    };
+
+    // capture statistics
+    class MsgCaptureStatistics {
+    public:
+        std::shared_ptr<tc::Message> msg_ = nullptr;
+        tc::CaptureStatistics statistics_;
     };
 }
 

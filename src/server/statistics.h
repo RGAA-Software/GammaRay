@@ -12,7 +12,7 @@
 namespace tc
 {
 
-    constexpr auto kMaxStatCounts = 120;
+    constexpr auto kMaxStatCounts = 180;
 
     class Statistics {
     public:
@@ -25,8 +25,10 @@ namespace tc
         void IncreaseRunningTime();
         void AppendVideoFrameBytes(int bytes);
         void AppendAudioFrameBytes(int bytes);
-        void AppendEncodeTime(uint32_t time);
+        void AppendEncodeDuration(uint32_t time);
         void AppendFrameGap(uint32_t time);
+
+        std::string AsProtoMessage();
 
     public:
 
@@ -35,7 +37,7 @@ namespace tc
         int64_t video_frame_bytes_{};
         int64_t audio_frame_bytes_{};
 
-        std::vector<uint32_t> encode_times_;
+        std::vector<uint32_t> encode_durations_;
         std::vector<uint32_t> video_frame_gaps_;
 
     };

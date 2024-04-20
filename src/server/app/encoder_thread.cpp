@@ -11,12 +11,6 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
-#ifdef WIN32
-#include <d3d11.h>
-#include <wrl/client.h>
-#include "tc_common_new/win32/d3d_render.h"
-#include "tc_common_new/win32/d3d_debug_helper.h"
-#endif
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_encoder_new/video_encoder.h"
 #include "tc_encoder_new/ffmpeg_video_encoder.h"
@@ -24,6 +18,13 @@
 #include "settings/settings.h"
 #include "app/app_messages.h"
 #include "settings/settings.h"
+#include "server/statistics.h"
+#ifdef WIN32
+#include <d3d11.h>
+#include <wrl/client.h>
+#include "tc_common_new/win32/d3d_render.h"
+#include "tc_common_new/win32/d3d_debug_helper.h"
+#endif
 
 #define DEBUG_FILE 0
 
@@ -109,13 +110,13 @@ namespace tc
             video_encoder_->Encode(image, frame_index);
             auto end = TimeExt::GetCurrentTimestamp();
             auto diff = end - beg;
-            LOGI("encode duration : {}", diff);
+            Statistics::Instance()->AppendEncodeDuration(diff);
         }));
     }
 
     void EncoderThread::Encode(int64_t adapter_uid, uint64_t handle, int width, int height, int format, uint64_t frame_index) {
          //LOGI("EncoderThread::Encode, width = {}, heigth = {}, format = {}, adapter_uid = {}", width, height, format, adapter_uid);
-#if DEBUG_SAVE_D3D11TEXTURE_TO_FILE   // debug test save file
+#if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
         Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
         if(g_render) {
             shared_texture = g_render->OpenSharedTexture(reinterpret_cast<HANDLE>(handle));
@@ -203,7 +204,7 @@ namespace tc
             video_encoder_->Encode(handle, frame_index);
             auto end = TimeExt::GetCurrentTimestamp();
             auto diff = end - beg;
-            //LOGI("encode duration : {}", diff);
+            Statistics::Instance()->AppendEncodeDuration(diff);
         }));
     }
 

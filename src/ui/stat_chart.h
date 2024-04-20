@@ -26,7 +26,7 @@ namespace tc
 
         explicit StatChart(const std::shared_ptr<GrContext>& ctx, const std::vector<QString>& line_names, QWidget* parent = nullptr);
 
-        void UpdateLines(const std::map<QString, std::vector<float>>& value);
+        void UpdateLines(const std::map<QString, std::vector<uint32_t>>& value);
 
     private:
 
@@ -36,8 +36,6 @@ namespace tc
         QValueAxis* x_axis_ = nullptr;
         QValueAxis* y_axis_ = nullptr;
         std::map<QString, QSplineSeries*> series_;
-
-        QList<int> value_;
 
     };
 

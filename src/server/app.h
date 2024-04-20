@@ -45,6 +45,8 @@ namespace tc
     class VigemController;
     class VigemDriverManager;
     class ServerMonitor;
+    class Statistics;
+    class WSClient;
 
     class Application : public std::enable_shared_from_this<Application> {
     public:
@@ -87,6 +89,7 @@ namespace tc
 
     protected:
         Settings* settings_ = nullptr;
+        std::shared_ptr<WSClient> ws_client_ = nullptr;
         std::shared_ptr<Connection> connection_ = nullptr;
         std::shared_ptr<AppManager> app_manager_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
@@ -125,6 +128,7 @@ namespace tc
         std::shared_ptr<ServerMonitor> server_monitor_ = nullptr;
 
         uint64_t last_capture_screen_time_ = 0;
+        Statistics* statistics_ = nullptr;
     };
 
     // Windows

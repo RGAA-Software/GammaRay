@@ -13,6 +13,7 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/shared_preference.h"
 #include "system_monitor.h"
+#include "gr_statistics.h"
 
 #include <QTimer>
 
@@ -36,6 +37,10 @@ namespace tc
 
         context_ = std::make_shared<GrContext>();
         context_->Init();
+
+        auto st = GrStatistics::Instance();
+        st->SetContext(context_);
+        st->RegisterEventListeners();
 
         http_server_ = std::make_shared<HttpServer>(shared_from_this());
         http_server_->Start();

@@ -26,14 +26,15 @@ namespace tc
 
         void Start();
         void Exit();
-    Q_SIGNALS:
-        void closed();
+        void Closed();
 
     private Q_SLOTS:
-        void onNewConnection();
-        void processTextMessage(QString message);
-        void processBinaryMessage(QByteArray message);
-        void socketDisconnected();
+        void OnNewConnection();
+        void ProcessTextMessage(const QString& message);
+        void ProcessBinaryMessage(const QByteArray& message);
+        void SocketDisconnected();
+
+        void ParseBinaryMessage(const QByteArray& msg);
 
     private:
         QWebSocketServer* ws_server_ = nullptr;
