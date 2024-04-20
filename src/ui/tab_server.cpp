@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/4/9.
+// Created by RGAA on 2024/4/9.
 //
 
 #include "tab_server.h"
@@ -257,8 +257,8 @@ namespace tc
             LayoutHelper::ClearMargins(layout);
             rn_stack_ = new QStackedWidget(this);
             rn_app_ = new RnApp(context_, this);
-            rn_empty_ = new RnEmpty(context_, this);
-            rn_stack_->addWidget(rn_empty_);
+            //rn_empty_ = new RnEmpty(context_, this);
+            //rn_stack_->addWidget(rn_empty_);
             rn_stack_->addWidget(rn_app_);
 
             content_layout->addWidget(rn_stack_);

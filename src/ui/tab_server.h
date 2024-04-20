@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/4/9.
+// Created by RGAA on 2024/4/9.
 //
 
 #ifndef TC_SERVER_STEAM_TAB_SERVER_H
@@ -37,7 +37,7 @@ namespace tc
         QPixmap qr_pixmap_;
         QStackedWidget* rn_stack_ = nullptr;
         RnApp* rn_app_ = nullptr;
-        RnEmpty* rn_empty_ = nullptr;
+        //RnEmpty* rn_empty_ = nullptr;
         QLabel* vigem_state_ = nullptr;
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
