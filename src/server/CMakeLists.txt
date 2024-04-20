@@ -24,6 +24,7 @@ set(SRCS
     network/ws_ipc_router.cpp
     network/connection.cpp
     network/message_processor.cpp
+    network/ws_client.cpp
     ipc/host_ipc_manager.cpp
     app/encoder_thread.cpp
     network/message_maker.cpp

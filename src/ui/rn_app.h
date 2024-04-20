@@ -9,6 +9,7 @@
 
 namespace tc
 {
+    class StatChart;
 
     class RnApp : public TabBase {
     public:
@@ -17,6 +18,11 @@ namespace tc
 
         void OnTabShow() override;
         void OnTabHide() override;
+
+        void UpdateUI();
+
+    private:
+        StatChart* stat_chart_ = nullptr;
 
     };
 

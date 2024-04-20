@@ -32,6 +32,7 @@
 #include "app/app_timer.h"
 #include "tc_opus_codec_new/opus_codec.h"
 #include "network/message_processor.h"
+#include "network/ws_client.h"
 #include "app/command_manager.h"
 #include "network/network_factory.h"
 #include "webrtc/dyn_webrtc_server_api.h"
@@ -42,6 +43,7 @@
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "server_monitor.h"
+#include "statistics.h"
 
 namespace tc
 {
@@ -66,12 +68,17 @@ namespace tc
         // presets
         WinHelper::DontCareDPI();
 
+        statistics_ = Statistics::Instance();
+
         // context
         context_ = std::make_shared<Context>();
 
         // websocket server
         connection_ = NetworkFactory::MakeConnection(shared_from_this());
         connection_->Start();
+
+        ws_client_ = std::make_shared<WSClient>(context_);
+        ws_client_->Start();
 
         // app manager
         app_manager_ = AppManagerFactory::Make(context_);
@@ -323,7 +330,7 @@ namespace tc
                 }
                 auto gap = current_time - last_capture_screen_time_;
                 last_capture_screen_time_ = current_time;
-                LOGI("capture screen gap : {}", gap);
+                statistics_->AppendFrameGap(gap);
             }
 
             // to encode

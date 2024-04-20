@@ -100,7 +100,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new sqlite_orm::sqlite_orm tc_vigem)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new sqlite_orm::sqlite_orm tc_vigem tc_message)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
@@ -110,7 +110,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRayServer tc_capture_library tc_graphics tc_graphics_util
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer tc_capture_library tc_graphics tc_graphics_util
         tc_message tc_graphics_helper tc_vigem)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
