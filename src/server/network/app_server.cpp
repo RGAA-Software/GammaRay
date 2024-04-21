@@ -8,6 +8,7 @@
 #include "app.h"
 #include "context.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/time_ext.h"
 #include "ws_media_router.h"
 #include "ws_ipc_router.h"
 #include "tc_common_new/data.h"
@@ -94,6 +95,10 @@ namespace tc
         ipc_routers_.ApplyAll([=](const auto& k, const auto& v) {
             v->PostBinaryMessage(msg);
         });
+
+        {
+
+        }
     }
 
     int AppServer::GetConnectionPeerCount() {
@@ -111,7 +116,9 @@ namespace tc
     template<typename Server>
     void AppServer::AddWebsocketRouter(const std::string &path, const Server &s) {
         auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
-            return (uint64_t)sess_ptr->socket().native_handle();
+            auto& s = sess_ptr->socket();
+            s.set_option(asio::ip::tcp::no_delay(true));
+            return (uint64_t)s.native_handle();
         };
         s->bind(path, websocket::listener<asio2::http_session>{}
             .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {

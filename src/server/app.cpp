@@ -315,6 +315,17 @@ namespace tc
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
                                                               msg.frame_height_, msg.key_frame_);
             connection_->PostMediaMessage(net_msg);
+
+            {
+                auto current_time = TimeExt::GetCurrentTimestamp();
+                if (last_post_video_time_ == 0) {
+                    last_post_video_time_ = current_time;
+                }
+                auto diff = current_time - last_post_video_time_;
+                last_post_video_time_ = current_time;
+                LOGI("Post video diff: {}", diff);
+            }
+
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {

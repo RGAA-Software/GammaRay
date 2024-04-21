@@ -22,6 +22,10 @@ namespace tc
             this->encode_durations_.insert(this->encode_durations_.begin(),
                                            msg.statistics_.encode_durations().begin(),
                                            msg.statistics_.encode_durations().end());
+            this->decode_durations_.clear();
+            this->decode_durations_.insert(this->decode_durations_.begin(),
+                                           msg.statistics_.decode_durations().begin(),
+                                           msg.statistics_.decode_durations().end());
         });
     }
 

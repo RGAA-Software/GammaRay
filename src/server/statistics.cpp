@@ -42,7 +42,7 @@ namespace tc
         auto cst = msg.mutable_capture_statistics();
         cst->mutable_video_frame_gaps()->Add(video_frame_gaps_.begin(), video_frame_gaps_.end());
         cst->mutable_encode_durations()->Add(encode_durations_.begin(), encode_durations_.end());
-
+        cst->mutable_decode_durations()->Add(decode_durations_.begin(), decode_durations_.end());
         return msg.SerializeAsString();
     }
 

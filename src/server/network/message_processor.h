@@ -16,6 +16,7 @@ namespace tc
     class Application;
     class Settings;
     class Data;
+    class Statistics;
 
     class MessageProcessor {
     public :
@@ -25,17 +26,17 @@ namespace tc
     private:
         void ProcessMouseEvent(std::shared_ptr<Message>&& msg);
         void ProcessKeyboardEvent(std::shared_ptr<Message>&& msg);
-
 #if ENABLE_SHM
         void PostIpcMessage(std::shared_ptr<Data>&& data);
 #endif
         void PostIpcMessage(const std::string& msg);
-
         void ProcessGamepadState(std::shared_ptr<Message>&& msg);
+        void ProcessClientStatistics(std::shared_ptr<Message>&& msg);
 
     private:
-        std::shared_ptr<Application> app_;
         Settings* settings_ = nullptr;
+        Statistics* statistics_ = nullptr;
+        std::shared_ptr<Application> app_;
         std::shared_ptr<ControlEventReplayerWin> control_event_replayer_win_;
     };
 }
