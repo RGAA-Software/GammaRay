@@ -58,7 +58,8 @@ namespace tc
         stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
         // update encode durations
         stat_value.insert({kChartEncode, stat->encode_durations_});
-
+        // update decode durations
+        stat_value.insert({kChartDecode, stat->decode_durations_});
         stat_chart_->UpdateLines(stat_value);
     }
 

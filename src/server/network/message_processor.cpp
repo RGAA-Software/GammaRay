@@ -16,12 +16,14 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "app/app_messages.h"
 #include "context.h"
+#include "statistics.h"
 
 namespace tc {
 
     MessageProcessor::MessageProcessor(const std::shared_ptr<Application>& app) {
         this->app_ = app;
         this->settings_ = Settings::Instance();
+        this->statistics_ = Statistics::Instance();
         control_event_replayer_win_ = std::make_shared<ControlEventReplayerWin>();
     }
 
@@ -53,6 +55,10 @@ namespace tc {
             }
             case MessageType::kGamepadState: {
                 ProcessGamepadState(std::move(msg));
+                break;
+            }
+            case MessageType::kClientStatistics: {
+                ProcessClientStatistics(std::move(msg));
                 break;
             }
         }
@@ -143,5 +149,12 @@ namespace tc {
         msg_ctrl_state.state_.sThumbRY = gamepad_state.thumb_ry();
         //app_->GetContext()->SendAppMessage(msg_ctrl_state);
         app_->ProcessGamepadState(msg_ctrl_state);
+    }
+
+    void MessageProcessor::ProcessClientStatistics(std::shared_ptr<Message>&& msg) {
+        auto& cst = msg->client_statistics();
+        statistics_->decode_durations_.insert(statistics_->decode_durations_.begin(),
+                                              cst.decode_durations().begin(),
+                                              cst.decode_durations().end());
     }
 }

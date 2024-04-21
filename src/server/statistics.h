@@ -38,8 +38,8 @@ namespace tc
         int64_t audio_frame_bytes_{};
 
         std::vector<uint32_t> encode_durations_;
+        std::vector<uint32_t> decode_durations_;
         std::vector<uint32_t> video_frame_gaps_;
-
     };
 
 }

@@ -6,39 +6,26 @@
 #define TC_SERVER_STEAM_WS_SERVER_H
 
 #include <memory>
-#include <QtCore/QObject>
-#include <QtCore/QList>
-#include <QtCore/QByteArray>
-#include <QtWebSockets/QWebSocketServer>
-#include <QtWebSockets/QWebSocket>
+#include <asio2/websocket/ws_server.hpp>
 
 namespace tc
 {
     class GrContext;
 
-    class WSServer : public QObject {
-        Q_OBJECT
+    class WSServer {
     public:
 
         static std::shared_ptr<WSServer> Make(const std::shared_ptr<GrContext>& ctx);
         explicit WSServer(const std::shared_ptr<GrContext>& ctx);
-        ~WSServer() override;
+        ~WSServer();
 
         void Start();
         void Exit();
-        void Closed();
 
-    private Q_SLOTS:
-        void OnNewConnection();
-        void ProcessTextMessage(const QString& message);
-        void ProcessBinaryMessage(const QByteArray& message);
-        void SocketDisconnected();
-
-        void ParseBinaryMessage(const QByteArray& msg);
+        void ParseBinaryMessage(std::string_view msg);
 
     private:
-        QWebSocketServer* ws_server_ = nullptr;
-        QList<QWebSocket*> clients_;
+        std::shared_ptr<asio2::ws_server> server_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
     };
 }

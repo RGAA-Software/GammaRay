@@ -35,6 +35,9 @@ namespace tc
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
 
+        // test
+        //encoder_resolution_type_ = "specify";
+        //capture_audio_ = "false";
     }
 
     void GrSettings::Dump() {

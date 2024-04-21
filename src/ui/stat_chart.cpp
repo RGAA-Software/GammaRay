@@ -31,7 +31,7 @@ namespace tc
 
         x_axis_ = new QValueAxis();
         x_axis_->setTickCount(30);
-        x_axis_->setRange(0, 120);
+        x_axis_->setRange(0, 180);
         x_axis_->setLabelFormat("%d");
         chart_->addAxis(x_axis_, Qt::AlignBottom);
         for (auto& [n, s] : series_) {

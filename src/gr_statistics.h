@@ -33,6 +33,7 @@ namespace tc
 
         std::vector<uint32_t> video_frame_gaps_;
         std::vector<uint32_t> encode_durations_;
+        std::vector<uint32_t> decode_durations_;
 
     };
 

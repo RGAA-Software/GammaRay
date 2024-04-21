@@ -128,6 +128,7 @@ namespace tc
         std::shared_ptr<ServerMonitor> server_monitor_ = nullptr;
 
         uint64_t last_capture_screen_time_ = 0;
+        uint64_t last_post_video_time_ = 0;
         Statistics* statistics_ = nullptr;
     };
 
