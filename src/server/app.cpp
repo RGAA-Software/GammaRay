@@ -92,6 +92,8 @@ namespace tc
 
         // app shared info
         app_shared_info_ = AppSharedInfo::Make(context_);
+        //
+        audio_cache_ = Data::Make(nullptr, 1024*16);
 
         // app timer
         InitAppTimer();
@@ -168,8 +170,11 @@ namespace tc
 #endif
         });
 
-        msg_listener_->Listen<MsgTimer1000>([=, this](const MsgTimer1000& msg) {
-
+        msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
+            auto nm = NetMessageMaker::MakeHeartBeatMsg();
+            if (connection_) {
+                connection_->PostMediaMessage(nm);
+            }
         });
 
         msg_listener_->Listen<MsgGamepadState>([=, this](const MsgGamepadState& state) {
@@ -212,8 +217,15 @@ namespace tc
                 static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
                 pcm_file->Append((char*)data->DataAddr(), data->Size());
             }
-            int frame_size = data->Size() / 2 / 2;
-            auto encoded_frames = opus_encoder_->Encode(data->CStr(), data->Size(), frame_size);
+
+            audio_cache_->Append(data->DataAddr(), data->Size());
+            if (++audio_callback_count_ < 6) {
+                return;
+            }
+
+            //int frame_size = data->Size() / 2 / 2;
+            int frame_size = audio_cache_->Offset()/2/2;
+            auto encoded_frames = opus_encoder_->Encode(audio_cache_->CStr(), audio_cache_->Offset(), frame_size);
             for (const auto& ef : encoded_frames) {
                 auto encoded_data = Data::Make((char*)ef.data(), ef.size());
                 auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
@@ -230,6 +242,9 @@ namespace tc
                     pcm_file->Append((char*)pcm_data.data(), pcm_data.size()*2);
                 }
             }
+
+            audio_cache_->Reset();
+            audio_callback_count_ = 0;
         });
 
         audio_capture_thread_ = std::make_shared<Thread>([=, this]() {
@@ -282,7 +297,6 @@ namespace tc
                 debug_encode_file_->Append(msg.image_->data->AsString());
                 LOGI("encoded frame callback, size: {}x{}, buffer size: {}", msg.frame_width_, msg.frame_height_, msg.image_->data->Size());
             }
-
             connection_->PostMediaMessage(net_msg);
         });
 
