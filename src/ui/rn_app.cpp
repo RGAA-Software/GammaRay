@@ -9,7 +9,10 @@
 #include "widgets/no_margin_layout.h"
 #include "stat_chart.h"
 #include "gr_statistics.h"
+#include "gr_context.h"
+#include "app_messages.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/message_notifier.h"
 
 constexpr auto kChartVideoFrameGap = "Video Frame Gap";
 constexpr auto kChartEncode = "Encode";
@@ -35,11 +38,16 @@ namespace tc
 
         setLayout(root_layout);
 
-        auto timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [=, this]() {
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgGrTimer100>([=, this](const MsgGrTimer100& msg) {
             this->UpdateUI();
         });
-        timer->start(100);
+
+//        auto timer = new QTimer(this);
+//        connect(timer, &QTimer::timeout, this, [=, this]() {
+//
+//        });
+//        timer->start(100);
 
     }
 
