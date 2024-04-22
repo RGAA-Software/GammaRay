@@ -8,6 +8,8 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <memory>
+#include "tc_common_new/fps_stat.h"
 
 namespace tc
 {
@@ -22,11 +24,15 @@ namespace tc
             return &st;
         }
 
+        Statistics();
+
         void IncreaseRunningTime();
         void AppendVideoFrameBytes(int bytes);
         void AppendAudioFrameBytes(int bytes);
         void AppendEncodeDuration(uint32_t time);
         void AppendFrameGap(uint32_t time);
+        void AppendFrameSendGap(uint32_t time);
+        void AppendFrameRecvGap(uint32_t time);
 
         std::string AsProtoMessage();
 
@@ -40,6 +46,12 @@ namespace tc
         std::vector<uint32_t> encode_durations_;
         std::vector<uint32_t> decode_durations_;
         std::vector<uint32_t> video_frame_gaps_;
+        std::vector<uint32_t> video_send_gaps_;
+        std::vector<uint32_t> video_recv_gaps_;
+
+        std::shared_ptr<FpsStat> fps_video_capture_{};
+        std::shared_ptr<FpsStat> fps_video_send_{};
+        std::shared_ptr<FpsStat> fps_video_recv_{};
     };
 
 }

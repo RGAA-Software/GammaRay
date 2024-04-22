@@ -5,9 +5,16 @@
 #include "statistics.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/fps_stat.h"
 
 namespace tc
 {
+
+    Statistics::Statistics() {
+        fps_video_capture_ = std::make_shared<FpsStat>();
+        fps_video_send_ = std::make_shared<FpsStat>();
+        fps_video_recv_ = std::make_shared<FpsStat>();
+    }
 
     void Statistics::IncreaseRunningTime() {
         running_time_++;
@@ -33,6 +40,20 @@ namespace tc
             video_frame_gaps_.erase(video_frame_gaps_.begin());
         }
         video_frame_gaps_.push_back(time);
+    }
+
+    void Statistics::AppendFrameSendGap(uint32_t time) {
+        if (video_send_gaps_.size() >= kMaxStatCounts) {
+            video_send_gaps_.erase(video_send_gaps_.begin());
+        }
+        video_send_gaps_.push_back(time);
+    }
+
+    void Statistics::AppendFrameRecvGap(uint32_t time) {
+        if (video_recv_gaps_.size() >= kMaxStatCounts) {
+            video_recv_gaps_.erase(video_recv_gaps_.begin());
+        }
+        video_recv_gaps_.push_back(time);
     }
 
     std::string Statistics::AsProtoMessage() {
