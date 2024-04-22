@@ -10,6 +10,7 @@
 namespace tc
 {
     class StatChart;
+    class MessageListener;
 
     class RnApp : public TabBase {
     public:
@@ -23,7 +24,7 @@ namespace tc
 
     private:
         StatChart* stat_chart_ = nullptr;
-
+        std::shared_ptr<MessageListener> msg_listener_;
     };
 
 }

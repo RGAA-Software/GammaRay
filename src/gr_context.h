@@ -9,6 +9,7 @@
 #include <string>
 #include "network/ip_util.h"
 #include "tc_common_new/message_notifier.h"
+#include <asio2/asio2.hpp>
 
 #include <QObject>
 #include <QTimer>
@@ -56,6 +57,7 @@ namespace tc
     private:
         void LoadUniqueId();
         void GenUniqueId();
+        void StartTimers();
 
     private:
         GrSettings* settings_ = nullptr;
@@ -68,6 +70,7 @@ namespace tc
         std::shared_ptr<ResourceManager> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<ServerManager> srv_manager_ = nullptr;
+        std::shared_ptr<asio2::timer> timer_ = nullptr;
     };
 
 }

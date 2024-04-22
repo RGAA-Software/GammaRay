@@ -153,6 +153,7 @@ namespace tc {
 
     void MessageProcessor::ProcessClientStatistics(std::shared_ptr<Message>&& msg) {
         auto& cst = msg->client_statistics();
+        statistics_->decode_durations_.clear();
         statistics_->decode_durations_.insert(statistics_->decode_durations_.begin(),
                                               cst.decode_durations().begin(),
                                               cst.decode_durations().end());

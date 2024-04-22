@@ -30,6 +30,11 @@ namespace tc
         std::shared_ptr<tc::Message> msg_ = nullptr;
         tc::CaptureStatistics statistics_;
     };
+
+    // timer 100ms
+    class MsgGrTimer100 {
+    public:
+    };
 }
 
 #endif // APP_MESSAGES_H
