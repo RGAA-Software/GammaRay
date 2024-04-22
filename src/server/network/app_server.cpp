@@ -45,7 +45,7 @@ namespace tc
     }
 
     void AppServer::Start() {
-        http_server_ = std::make_shared<asio2::http_server>(*this->context_->GetAsio2IoPool());
+        http_server_ = std::make_shared<asio2::http_server>();//*this->context_->GetAsio2IoPool()
         http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             LOGI("client disconnected: {}", socket_fd);
@@ -82,6 +82,7 @@ namespace tc
     }
 
     void AppServer::PostMediaMessage(const std::string &data) {
+        LOGI("post data size: {}", data.size());
         media_routers_.ApplyAll([=](const auto &k, const auto &v) {
             v->PostBinaryMessage(data);
         });
@@ -117,7 +118,6 @@ namespace tc
     void AppServer::AddWebsocketRouter(const std::string &path, const Server &s) {
         auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
-            s.set_option(asio::ip::tcp::no_delay(true));
             return (uint64_t)s.native_handle();
         };
         s->bind(path, websocket::listener<asio2::http_session>{}
@@ -139,6 +139,14 @@ namespace tc
             })
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 LOGI("App server {} open", path);
+
+                auto& s = sess_ptr->socket();
+                asio::error_code ec;
+                s.set_option(asio::ip::tcp::no_delay(false), ec);
+                //s.set_option(asio::socket_base::send_buffer_size(1024*1024));
+                //s.set_option(asio::socket_base::receive_buffer_size(64));
+                //LOGI("NO DELAY EC: {}, msg: {}", ec.value(), ec.message());
+
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 WsRouterPtr router = nullptr;
                 if (path == kUrlMedia) {
