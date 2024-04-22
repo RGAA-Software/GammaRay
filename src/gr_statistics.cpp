@@ -26,6 +26,10 @@ namespace tc
             this->decode_durations_.insert(this->decode_durations_.begin(),
                                            msg.statistics_.decode_durations().begin(),
                                            msg.statistics_.decode_durations().end());
+            this->client_video_recv_gaps_.clear();
+            this->client_video_recv_gaps_.insert(this->client_video_recv_gaps_.begin(),
+                                           msg.statistics_.client_video_recv_gaps().begin(),
+                                             msg.statistics_.client_video_recv_gaps().end());
         });
     }
 

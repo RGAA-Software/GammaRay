@@ -157,5 +157,12 @@ namespace tc {
         statistics_->decode_durations_.insert(statistics_->decode_durations_.begin(),
                                               cst.decode_durations().begin(),
                                               cst.decode_durations().end());
+        statistics_->client_video_recv_gaps_.clear();
+        statistics_->client_video_recv_gaps_.insert(statistics_->client_video_recv_gaps_.begin(),
+                                                    cst.video_recv_gaps().begin(),
+                                                    cst.video_recv_gaps().end());
+        statistics_->client_fps_video_recv_ = cst.fps_video_recv();
+        statistics_->client_fps_render_ = cst.fps_render();
+        statistics_->client_recv_media_data_ = cst.recv_media_data();
     }
 }

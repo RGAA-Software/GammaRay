@@ -14,9 +14,10 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 
-constexpr auto kChartVideoFrameGap = "Video Frame Gap";
+constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartEncode = "Encode";
 constexpr auto kChartDecode = "Decode";
+constexpr auto kChartRecvVideoFrame = "Recv Video Frame";
 
 namespace tc
 {
@@ -28,7 +29,7 @@ namespace tc
         root_layout->addWidget(place_holder);
 
         {
-            auto chart = new StatChart(ctx, {kChartVideoFrameGap, kChartEncode, kChartDecode}, this);
+            auto chart = new StatChart(ctx, {kChartVideoFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
             stat_chart_ = chart;
             chart->setFixedSize(1100, 400);
             root_layout->addWidget(chart);
@@ -42,12 +43,6 @@ namespace tc
         msg_listener_->Listen<MsgGrTimer100>([=, this](const MsgGrTimer100& msg) {
             this->UpdateUI();
         });
-
-//        auto timer = new QTimer(this);
-//        connect(timer, &QTimer::timeout, this, [=, this]() {
-//
-//        });
-//        timer->start(100);
 
     }
 
@@ -68,6 +63,8 @@ namespace tc
         stat_value.insert({kChartEncode, stat->encode_durations_});
         // update decode durations
         stat_value.insert({kChartDecode, stat->decode_durations_});
+        // update recv video frame gamp
+        stat_value.insert({kChartRecvVideoFrame, stat->client_video_recv_gaps_});
         stat_chart_->UpdateLines(stat_value);
     }
 
