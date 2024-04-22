@@ -83,6 +83,7 @@ namespace tc
 #endif
         void StartProcessWithHook();
         void StartProcessWithScreenCapture();
+        bool HasConnectedPeer();
 
         void InitVigemController();
         void ReleaseVigemController();

@@ -2,9 +2,11 @@
 // Created by RGAA on 2024-04-11.
 //
 
+#include "rn_app.h"
+
 #include <QLabel>
 #include <QTimer>
-#include "rn_app.h"
+#include <QPushButton>
 
 #include "widgets/no_margin_layout.h"
 #include "stat_chart.h"
@@ -13,6 +15,7 @@
 #include "app_messages.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
+#include "widgets/round_img_display.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartAudioFrameGap = "Capture Audio Gap";
@@ -28,6 +31,67 @@ namespace tc
         auto place_holder = new QLabel();
         place_holder->setFixedWidth(1300);
         root_layout->addWidget(place_holder);
+
+        {
+            auto head_layout = new NoMarginHLayout();
+            // image
+            {
+                auto layout = new NoMarginVLayout();
+                int item_width = 135;
+                int item_height = item_width / (600.0 / 900.0);
+                auto cover = new RoundImageDisplay("", item_width, item_height, 9, this);
+                layout->addWidget(cover);
+                layout->addStretch();
+                head_layout->addSpacing(32);
+                head_layout->addLayout(layout);
+            }
+
+            // app info
+            auto label_size = QSize(140, 35);
+            auto btn_height = 25;
+            {
+                auto layout = new NoMarginVLayout();
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Running Game");
+                    label->setStyleSheet("font-size: 14px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    op->setText("Serious");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Stop Game");
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QPushButton(this);
+                    op->setText("STOP");
+                    op->setFixedSize(QSize(70, btn_height));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                layout->addStretch();
+                head_layout->addSpacing(20);
+                head_layout->addLayout(layout);
+            }
+            head_layout->addStretch();
+
+            root_layout->addSpacing(15);
+            root_layout->addLayout(head_layout);
+        }
 
         {
             auto chart = new StatChart(ctx, {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);

@@ -217,6 +217,9 @@ namespace tc
                 static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
                 pcm_file->Append((char*)data->DataAddr(), data->Size());
             }
+            if (!HasConnectedPeer()) {
+                return;
+            }
 
             audio_cache_->Append(data->DataAddr(), data->Size());
             if (++audio_callback_count_ < 6) {
@@ -343,7 +346,7 @@ namespace tc
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
-            if (connection_->GetConnectionPeerCount() <= 0) {
+            if (!HasConnectedPeer()) {
                 return;
             }
 
@@ -397,7 +400,7 @@ namespace tc
 #endif
 
     void Application::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) {
-        if (this->connection_->GetConnectionPeerCount() <= 0) {
+        if (!HasConnectedPeer()) {
             //LOGI("Not have client, return...");
             return;
         }
@@ -406,6 +409,10 @@ namespace tc
         //     msg->adapter_uid_, (int)msg->type_, msg->frame_index_, msg->frame_width_, msg->frame_height_,  0);
         encoder_thread_->Encode(msg->adapter_uid_, msg->handle_, (int) msg->frame_width_,
                                 (int) msg->frame_height_, (int) msg->frame_format_, msg->frame_index_);
+    }
+
+    bool Application::HasConnectedPeer() {
+        return connection_ && connection_->GetConnectionPeerCount() > 0;
     }
 
 #if ENABLE_SHM
