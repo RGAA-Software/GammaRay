@@ -41,11 +41,11 @@ namespace tc
         video_frame_gaps_.push_back(time);
     }
 
-    void Statistics::AppendFrameSendGap(uint32_t time) {
-        if (video_send_gaps_.size() >= kMaxStatCounts) {
-            video_send_gaps_.erase(video_send_gaps_.begin());
+    void Statistics::AppendAudioFrameGap(uint32_t time) {
+        if (audio_frame_gaps_.size() >= kMaxStatCounts) {
+            audio_frame_gaps_.erase(audio_frame_gaps_.begin());
         }
-        video_send_gaps_.push_back(time);
+        audio_frame_gaps_.push_back(time);
     }
 
     std::string Statistics::AsProtoMessage() {
@@ -55,6 +55,8 @@ namespace tc
         auto cst = msg.mutable_capture_statistics();
         cst->mutable_video_frame_gaps()->Add(video_frame_gaps_.begin(), video_frame_gaps_.end());
         cst->mutable_encode_durations()->Add(encode_durations_.begin(), encode_durations_.end());
+        cst->mutable_audio_frame_gaps()->Add(audio_frame_gaps_.begin(), audio_frame_gaps_.end());
+
         cst->mutable_decode_durations()->Add(decode_durations_.begin(), decode_durations_.end());
         cst->mutable_client_video_recv_gaps()->Add(client_video_recv_gaps_.begin(), client_video_recv_gaps_.end());
         cst->set_client_fps_video_recv(client_fps_video_recv_);

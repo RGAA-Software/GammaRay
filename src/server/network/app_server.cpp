@@ -135,9 +135,9 @@ namespace tc
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 LOGI("App server {} open", path);
 
-                auto& s = sess_ptr->socket();
-                asio::error_code ec;
-                s.set_option(asio::ip::tcp::no_delay(false), ec);
+                //auto& s = sess_ptr->socket();
+                //asio::error_code ec;
+                //s.set_option(asio::ip::tcp::no_delay(false), ec);
                 //s.set_option(asio::socket_base::send_buffer_size(1024*1024));
                 //s.set_option(asio::socket_base::receive_buffer_size(64));
                 //LOGI("NO DELAY EC: {}, msg: {}", ec.value(), ec.message());

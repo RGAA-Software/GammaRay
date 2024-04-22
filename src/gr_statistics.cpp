@@ -22,6 +22,10 @@ namespace tc
             this->encode_durations_.insert(this->encode_durations_.begin(),
                                            msg.statistics_.encode_durations().begin(),
                                            msg.statistics_.encode_durations().end());
+            this->audio_frame_gaps_.clear();
+            this->audio_frame_gaps_.insert(this->audio_frame_gaps_.begin(),
+                                           msg.statistics_.audio_frame_gaps().begin(),
+                                           msg.statistics_.audio_frame_gaps().end());
             this->decode_durations_.clear();
             this->decode_durations_.insert(this->decode_durations_.begin(),
                                            msg.statistics_.decode_durations().begin(),
@@ -29,7 +33,7 @@ namespace tc
             this->client_video_recv_gaps_.clear();
             this->client_video_recv_gaps_.insert(this->client_video_recv_gaps_.begin(),
                                            msg.statistics_.client_video_recv_gaps().begin(),
-                                             msg.statistics_.client_video_recv_gaps().end());
+                                           msg.statistics_.client_video_recv_gaps().end());
         });
     }
 

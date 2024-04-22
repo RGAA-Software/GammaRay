@@ -223,6 +223,16 @@ namespace tc
                 return;
             }
 
+            {
+                auto current_time = TimeExt::GetCurrentTimestamp();
+                if (last_post_audio_time_ == 0) {
+                    last_post_audio_time_ = current_time;
+                }
+                auto diff = current_time - last_post_audio_time_;
+                last_post_audio_time_ = current_time;
+                statistics_->AppendAudioFrameGap(diff);
+            }
+
             //int frame_size = data->Size() / 2 / 2;
             int frame_size = audio_cache_->Offset()/2/2;
             auto encoded_frames = opus_encoder_->Encode(audio_cache_->CStr(), audio_cache_->Offset(), frame_size);
@@ -329,18 +339,7 @@ namespace tc
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
                                                               msg.frame_height_, msg.key_frame_);
             connection_->PostMediaMessage(net_msg);
-
-            {
-                auto current_time = TimeExt::GetCurrentTimestamp();
-                if (last_post_video_time_ == 0) {
-                    last_post_video_time_ = current_time;
-                }
-                auto diff = current_time - last_post_video_time_;
-                last_post_video_time_ = current_time;
-                statistics_->AppendFrameSendGap(diff);
-                statistics_->fps_video_send_->Tick();
-            }
-
+            statistics_->fps_video_send_->Tick();
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
