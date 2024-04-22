@@ -323,7 +323,8 @@ namespace tc
                 }
                 auto diff = current_time - last_post_video_time_;
                 last_post_video_time_ = current_time;
-                LOGI("Post video diff: {}", diff);
+                statistics_->AppendFrameSendGap(diff);
+                statistics_->fps_video_send_->Tick();
             }
 
         });

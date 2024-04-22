@@ -14,6 +14,7 @@ namespace tc
     class Thread;
     class Application;
     class VigemDriverManager;
+    class Statistics;
 
     class ServerMonitor {
     public:
@@ -25,9 +26,13 @@ namespace tc
         void Exit();
 
     private:
+        void DumpServerInfo();
+
+    private:
         std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         bool exit_ = false;
+        Statistics* statistics_ = nullptr;
     };
 
 }
