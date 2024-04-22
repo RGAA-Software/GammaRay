@@ -15,9 +15,10 @@
 #include "tc_common_new/message_notifier.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
+constexpr auto kChartAudioFrameGap = "Capture Audio Gap";
 constexpr auto kChartEncode = "Encode";
 constexpr auto kChartDecode = "Decode";
-constexpr auto kChartRecvVideoFrame = "Recv Video Frame";
+constexpr auto kChartRecvVideoFrame = "Recv Video Gap";
 
 namespace tc
 {
@@ -29,7 +30,7 @@ namespace tc
         root_layout->addWidget(place_holder);
 
         {
-            auto chart = new StatChart(ctx, {kChartVideoFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
+            auto chart = new StatChart(ctx, {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
             stat_chart_ = chart;
             chart->setFixedSize(1100, 400);
             root_layout->addWidget(chart);
@@ -65,6 +66,8 @@ namespace tc
         stat_value.insert({kChartDecode, stat->decode_durations_});
         // update recv video frame gamp
         stat_value.insert({kChartRecvVideoFrame, stat->client_video_recv_gaps_});
+        // update audio frame gap
+        stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
         stat_chart_->UpdateLines(stat_value);
     }
 

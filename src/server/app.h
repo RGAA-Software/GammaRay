@@ -129,6 +129,7 @@ namespace tc
 
         uint64_t last_capture_screen_time_ = 0;
         uint64_t last_post_video_time_ = 0;
+        uint64_t last_post_audio_time_ = 0;
         Statistics* statistics_ = nullptr;
 
         std::shared_ptr<Data> audio_cache_ = nullptr;
