@@ -82,7 +82,6 @@ namespace tc
     }
 
     void AppServer::PostMediaMessage(const std::string &data) {
-        LOGI("post data size: {}", data.size());
         media_routers_.ApplyAll([=](const auto &k, const auto &v) {
             v->PostBinaryMessage(data);
         });
@@ -96,10 +95,6 @@ namespace tc
         ipc_routers_.ApplyAll([=](const auto& k, const auto& v) {
             v->PostBinaryMessage(msg);
         });
-
-        {
-
-        }
     }
 
     int AppServer::GetConnectionPeerCount() {

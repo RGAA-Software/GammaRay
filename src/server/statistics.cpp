@@ -13,7 +13,6 @@ namespace tc
     Statistics::Statistics() {
         fps_video_capture_ = std::make_shared<FpsStat>();
         fps_video_send_ = std::make_shared<FpsStat>();
-        fps_video_recv_ = std::make_shared<FpsStat>();
     }
 
     void Statistics::IncreaseRunningTime() {
@@ -49,13 +48,6 @@ namespace tc
         video_send_gaps_.push_back(time);
     }
 
-    void Statistics::AppendFrameRecvGap(uint32_t time) {
-        if (video_recv_gaps_.size() >= kMaxStatCounts) {
-            video_recv_gaps_.erase(video_recv_gaps_.begin());
-        }
-        video_recv_gaps_.push_back(time);
-    }
-
     std::string Statistics::AsProtoMessage() {
         tc::Message msg;
         msg.set_type(tc::MessageType::kCaptureStatistics);
@@ -64,6 +56,10 @@ namespace tc
         cst->mutable_video_frame_gaps()->Add(video_frame_gaps_.begin(), video_frame_gaps_.end());
         cst->mutable_encode_durations()->Add(encode_durations_.begin(), encode_durations_.end());
         cst->mutable_decode_durations()->Add(decode_durations_.begin(), decode_durations_.end());
+        cst->mutable_client_video_recv_gaps()->Add(client_video_recv_gaps_.begin(), client_video_recv_gaps_.end());
+        cst->set_client_fps_video_recv(client_fps_video_recv_);
+        cst->set_client_fps_render(client_fps_render_);
+        cst->set_client_recv_media_data(client_recv_media_data_);
         return msg.SerializeAsString();
     }
 
