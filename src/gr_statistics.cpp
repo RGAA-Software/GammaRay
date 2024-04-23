@@ -37,6 +37,13 @@ namespace tc
             this->client_fps_video_recv_ = msg.statistics_.client_fps_video_recv();
             this->client_fps_render_ = msg.statistics_.client_fps_render();
             this->client_recv_media_data_ = msg.statistics_.client_recv_media_data();
+            // from inner server
+            this->fps_video_encode = msg.statistics_.fps_video_encode();
+            // from inner server
+            this->app_running_time = msg.statistics_.app_running_time();
+            // from inner server
+            this->server_send_media_bytes = msg.statistics_.server_send_media_data();
+
         });
     }
 

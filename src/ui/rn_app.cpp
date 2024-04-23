@@ -15,6 +15,7 @@
 #include "app_messages.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
+#include "tc_common_new/num_formatter.h"
 #include "widgets/round_img_display.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
@@ -98,12 +99,47 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Running Game");
+                    label->setText("App Running");
                     label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
-                    op->setText("Serious");
+                    lbl_app_running_time_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("FPS(Encode)");
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_fps_encode_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Send Data");
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_send_media_bytes_ = op;
+                    op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
                     op->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(op);
@@ -223,7 +259,12 @@ namespace tc
 
         lbl_fps_video_recv_->setText(std::to_string(stat->client_fps_video_recv_).c_str());
         lbl_fps_render_->setText(std::to_string(stat->client_fps_render_).c_str());
-        lbl_recv_media_data_->setText(std::to_string(stat->client_recv_media_data_).c_str());
+        lbl_recv_media_data_->setText(NumFormatter::FormatStorageSize(stat->client_recv_media_data_).c_str());
+
+        lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
+        lbl_fps_encode_->setText(std::to_string(stat->fps_video_encode).c_str());
+        lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
+
     }
 
 }
