@@ -49,6 +49,8 @@ namespace tc
             // app info
             auto label_size = QSize(140, 35);
             auto btn_height = 25;
+
+            // 1st column
             {
                 auto layout = new NoMarginVLayout();
                 {
@@ -56,13 +58,13 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("Running Game");
-                    label->setStyleSheet("font-size: 14px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     op->setText("Serious");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 14px;");
+                    op->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -72,7 +74,7 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("Stop Game");
-                    label->setStyleSheet("font-size: 14px;");
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QPushButton(this);
@@ -85,6 +87,91 @@ namespace tc
                 }
                 layout->addStretch();
                 head_layout->addSpacing(20);
+                head_layout->addLayout(layout);
+            }
+
+            // 2nd column
+            {
+                //
+                auto layout = new NoMarginVLayout();
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Running Game");
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    op->setText("Serious");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                layout->addStretch();
+                head_layout->addSpacing(10);
+                head_layout->addLayout(layout);
+            }
+
+            // 3rd column
+            {
+                //
+                auto layout = new NoMarginVLayout();
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("FPS(Video Receive)");
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_fps_video_recv_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("FPS(Client Render)");
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_fps_render_ = op;
+                    op->setText("Serious");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Client Received Data");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_recv_media_data_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                layout->addStretch();
+                head_layout->addSpacing(10);
                 head_layout->addLayout(layout);
             }
             head_layout->addStretch();
@@ -133,6 +220,10 @@ namespace tc
         // update audio frame gap
         stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
         stat_chart_->UpdateLines(stat_value);
+
+        lbl_fps_video_recv_->setText(std::to_string(stat->client_fps_video_recv_).c_str());
+        lbl_fps_render_->setText(std::to_string(stat->client_fps_render_).c_str());
+        lbl_recv_media_data_->setText(std::to_string(stat->client_recv_media_data_).c_str());
     }
 
 }
