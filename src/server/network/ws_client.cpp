@@ -12,6 +12,8 @@
 namespace tc
 {
 
+    const int kMaxClientQueuedMessage = 4096;
+
     WSClient::WSClient(const std::shared_ptr<Context>& ctx) {
         statistics_ = Statistics::Instance();
         context_ = ctx;
@@ -65,8 +67,15 @@ namespace tc
     }
 
     void WSClient::PostNetMessage(const std::string& msg) {
+        if (queued_msg_count_ > kMaxClientQueuedMessage) {
+            LOGW("too many message in queue, discard the message in WSClient");
+            return;
+        }
+        queued_msg_count_++;
         if (client_ && client_->is_started()) {
-            client_->async_send(msg);
+            client_->async_send(msg, [=, this]() {
+                queued_msg_count_--;
+            });
         }
     }
 

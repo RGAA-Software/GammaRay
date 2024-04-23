@@ -6,13 +6,16 @@
 #define TC_APPLICATION_WS_ROUTER_H
 
 #include <map>
+#include <any>
+#include <atomic>
 #include <string>
 #include <functional>
-#include <any>
 #include <asio2/asio2.hpp>
 
 namespace tc
 {
+
+    constexpr int kMaxQueuedMessage = 4096;
 
     class Data;
 
@@ -70,6 +73,8 @@ namespace tc
 
         std::shared_ptr<WsData> ws_data_ = nullptr;
         std::shared_ptr<asio2::http_session> session_ = nullptr;
+
+        std::atomic_int queued_message_count_ = 0;
 
     };
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <atomic>
 #include <asio2/websocket/ws_client.hpp>
 
 namespace tc
@@ -32,7 +33,7 @@ namespace tc
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-
+        std::atomic_int queued_msg_count_ = 0;
     };
 
 }
