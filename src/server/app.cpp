@@ -177,6 +177,11 @@ namespace tc
             }
         });
 
+        msg_listener_->Listen<MsgTimer1000>([=, this](const MsgTimer1000& msg) {
+            statistics_->TickFps();
+            statistics_->IncreaseRunningTime();
+        });
+
         msg_listener_->Listen<MsgGamepadState>([=, this](const MsgGamepadState& state) {
             this->ProcessGamepadState(state);
         });
@@ -342,7 +347,7 @@ namespace tc
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
                                                               msg.frame_height_, msg.key_frame_);
             connection_->PostMediaMessage(net_msg);
-            statistics_->fps_video_send_->Tick();
+            statistics_->fps_video_encode_->Tick();
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {

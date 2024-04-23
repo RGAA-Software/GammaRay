@@ -38,7 +38,7 @@ namespace tc
 
     void ServerMonitor::DumpServerInfo() {
         LOGI("------------------------Server Info Begin------------------------");
-        LOGI("Video frame send fps: {}", statistics_->fps_video_send_->value());
+        LOGI("Video frame send fps: {}", statistics_->fps_video_encode_value_);
         LOGI("------------------------Server Info End--------------------------");
     }
 

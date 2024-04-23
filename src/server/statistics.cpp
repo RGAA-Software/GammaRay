@@ -11,20 +11,15 @@ namespace tc
 {
 
     Statistics::Statistics() {
-        fps_video_capture_ = std::make_shared<FpsStat>();
-        fps_video_send_ = std::make_shared<FpsStat>();
+        fps_video_encode_ = std::make_shared<FpsStat>();
     }
 
     void Statistics::IncreaseRunningTime() {
         running_time_++;
     }
 
-    void Statistics::AppendVideoFrameBytes(int bytes) {
-        video_frame_bytes_ += bytes;
-    }
-
-    void Statistics::AppendAudioFrameBytes(int bytes) {
-        audio_frame_bytes_ += bytes;
+    void Statistics::AppendMediaBytes(int bytes) {
+        send_media_bytes_ += bytes;
     }
 
     void Statistics::AppendEncodeDuration(uint32_t time) {
@@ -48,6 +43,10 @@ namespace tc
         audio_frame_gaps_.push_back(time);
     }
 
+    void Statistics::TickFps() {
+        fps_video_encode_value_ = fps_video_encode_->value();
+    }
+
     std::string Statistics::AsProtoMessage() {
         tc::Message msg;
         msg.set_type(tc::MessageType::kCaptureStatistics);
@@ -62,6 +61,12 @@ namespace tc
         cst->set_client_fps_video_recv(client_fps_video_recv_);
         cst->set_client_fps_render(client_fps_render_);
         cst->set_client_recv_media_data(client_recv_media_data_);
+        // from inner server
+        cst->set_fps_video_encode(fps_video_encode_value_);
+        // from inner server
+        cst->set_app_running_time(running_time_);
+        // from inner server
+        cst->set_server_send_media_data(send_media_bytes_);
         return msg.SerializeAsString();
     }
 

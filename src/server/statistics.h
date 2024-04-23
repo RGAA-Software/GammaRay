@@ -27,24 +27,26 @@ namespace tc
         Statistics();
 
         void IncreaseRunningTime();
-        void AppendVideoFrameBytes(int bytes);
-        void AppendAudioFrameBytes(int bytes);
+        void AppendMediaBytes(int bytes);
         void AppendEncodeDuration(uint32_t time);
         void AppendFrameGap(uint32_t time);
         void AppendAudioFrameGap(uint32_t time);
 
+        void TickFps();
         std::string AsProtoMessage();
 
     public:
 
         // unit: S
         int64_t running_time_{};
-        int64_t video_frame_bytes_{};
-        int64_t audio_frame_bytes_{};
+        int64_t send_media_bytes_{};
+        std::shared_ptr<FpsStat> fps_video_encode_{};
+        int fps_video_encode_value_{0};
 
         std::vector<uint32_t> encode_durations_;
         std::vector<uint32_t> video_frame_gaps_;
         std::vector<uint32_t> audio_frame_gaps_;
+
         // from client
         std::vector<uint32_t> decode_durations_;
         std::vector<uint32_t> client_video_recv_gaps_;
@@ -52,8 +54,6 @@ namespace tc
         uint32_t client_fps_render_ = 0;
         int64_t client_recv_media_data_ = 0;
 
-        std::shared_ptr<FpsStat> fps_video_capture_{};
-        std::shared_ptr<FpsStat> fps_video_send_{};
     };
 
 }
