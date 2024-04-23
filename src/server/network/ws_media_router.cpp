@@ -36,14 +36,16 @@ namespace tc
     }
 
     void WsMediaRouter::PostBinaryMessage(const std::string &data) {
-        if (queued_message_count_ >= kMaxQueuedMessage) {
-            LOGW("Too many queued message, discard the message in WsMediaRouter.");
-            return;
+        if (session_ && session_->is_started()) {
+            if (queued_message_count_ >= kMaxQueuedMessage) {
+                LOGW("Too many queued message, discard the message in WsMediaRouter.");
+                return;
+            }
+            queued_message_count_++;
+            LOGI("current queued message count: {}", queued_message_count_);
+            session_->async_send(data, [=, this](size_t byte_sent) {
+                queued_message_count_--;
+            });
         }
-        queued_message_count_++;
-        LOGI("current queued message count: {}", queued_message_count_);
-        session_->async_send(data, [=, this](size_t byte_sent) {
-            queued_message_count_--;
-        });
     }
 }

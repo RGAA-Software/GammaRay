@@ -67,12 +67,12 @@ namespace tc
     }
 
     void WSClient::PostNetMessage(const std::string& msg) {
-        if (queued_msg_count_ > kMaxClientQueuedMessage) {
-            LOGW("too many message in queue, discard the message in WSClient");
-            return;
-        }
-        queued_msg_count_++;
         if (client_ && client_->is_started()) {
+            if (queued_msg_count_ > kMaxClientQueuedMessage) {
+                LOGW("too many message in queue, discard the message in WSClient");
+                return;
+            }
+            queued_msg_count_++;
             client_->async_send(msg, [=, this]() {
                 queued_msg_count_--;
             });
