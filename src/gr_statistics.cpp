@@ -34,6 +34,9 @@ namespace tc
             this->client_video_recv_gaps_.insert(this->client_video_recv_gaps_.begin(),
                                            msg.statistics_.client_video_recv_gaps().begin(),
                                            msg.statistics_.client_video_recv_gaps().end());
+            this->client_fps_video_recv_ = msg.statistics_.client_fps_video_recv();
+            this->client_fps_render_ = msg.statistics_.client_fps_render();
+            this->client_recv_media_data_ = msg.statistics_.client_recv_media_data();
         });
     }
 

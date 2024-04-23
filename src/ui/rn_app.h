@@ -6,6 +6,7 @@
 #define TC_SERVER_STEAM_RNST_APP_H
 
 #include "tab_base.h"
+#include <QLabel>
 
 namespace tc
 {
@@ -25,6 +26,10 @@ namespace tc
     private:
         StatChart* stat_chart_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_;
+
+        QLabel* lbl_fps_video_recv_ = nullptr;
+        QLabel* lbl_fps_render_ = nullptr;
+        QLabel* lbl_recv_media_data_ = nullptr;
     };
 
 }
