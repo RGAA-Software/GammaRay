@@ -31,6 +31,12 @@ namespace tc
         tc::CaptureStatistics statistics_;
     };
 
+    class MsgServerAudioSpectrum {
+    public:
+        std::shared_ptr<tc::Message> msg_ = nullptr;
+        tc::ServerAudioSpectrum spectrum_;
+    };
+
     // timer 100ms
     class MsgGrTimer100 {
     public:

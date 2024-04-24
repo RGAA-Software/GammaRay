@@ -57,6 +57,10 @@ namespace tc
         // from inner server
         int32_t capture_height_ = 0;
 
+        // from inner server
+        std::vector<double> left_spectrum_;
+        std::vector<double> right_spectrum_;
+
     };
 
 }

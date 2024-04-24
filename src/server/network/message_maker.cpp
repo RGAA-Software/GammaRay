@@ -6,6 +6,7 @@
 
 #include "tc_common_new/data.h"
 #include "tc_message.pb.h"
+#include "statistics.h"
 
 namespace tc
 {
@@ -64,6 +65,15 @@ namespace tc
         frame->set_bits(bits);
         frame->set_frame_size(frame_size);
         msg->set_allocated_audio_frame(frame);
+        return msg->SerializeAsString();
+    }
+
+    std::string NetMessageMaker::MakeServerAudioSpectrumMsg() {
+        auto st = Statistics::Instance();
+        auto msg = std::make_shared<Message>();
+        msg->set_type(tc::kServerAudioSpectrum);
+        msg->mutable_server_audio_spectrum()->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
+        msg->mutable_server_audio_spectrum()->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
         return msg->SerializeAsString();
     }
 

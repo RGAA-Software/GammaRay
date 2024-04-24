@@ -44,6 +44,7 @@
 #include "tc_controller/vigem_driver_manager.h"
 #include "server_monitor.h"
 #include "statistics.h"
+#include "app/fft_32.h"
 
 namespace tc
 {
@@ -170,11 +171,14 @@ namespace tc
 #endif
         });
 
+        msg_listener_->Listen<MsgTimer20>([=, this](const MsgTimer20& msg) {
+            this->PostGlobalTask([=, this]() {
+                this->ReportAudioSpectrum();
+            });
+        });
+
         msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
-            auto nm = NetMessageMaker::MakeHeartBeatMsg();
-            if (connection_) {
-                connection_->PostMediaMessage(nm);
-            }
+
         });
 
         msg_listener_->Listen<MsgTimer1000>([=, this](const MsgTimer1000& msg) {
@@ -217,6 +221,25 @@ namespace tc
                 opus_encoder_->SetComplexity(8);
             }
         });
+
+        audio_capture_->RegisterSplitDataCallback([=, this](const tc::DataPtr& left, const tc::DataPtr& right) {
+            std::vector<double> fft_left;
+            std::vector<double> fft_right;
+            FFT32::DoFFT(fft_left, left, 960);
+            FFT32::DoFFT(fft_right, right, 960);
+            int cpy_size = 160;
+            if (fft_left.size() < cpy_size || fft_right.size() < cpy_size) {
+                return;
+            }
+            if (statistics_->left_spectrum_.size() != cpy_size) {
+                statistics_->left_spectrum_.resize(cpy_size);
+                statistics_->right_spectrum_.resize(cpy_size);
+            }
+            memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
+            memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
+            LOGI("fft : {} {}", fft_left.size(), fft_right.size());
+        });
+
         audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
             if (debug_opus_decoder_) {
                 static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
@@ -458,6 +481,13 @@ namespace tc
         control_thread_->Post(SimpleThreadTask::Make([=, this]() {
             vigem_controller_->SendGamepadState(0,state.state_);
         }));
+    }
+
+    void Application::ReportAudioSpectrum() {
+        auto msg = NetMessageMaker::MakeServerAudioSpectrumMsg();
+        if (ws_client_) {
+            ws_client_->PostNetMessage(msg);
+        }
     }
 
     void Application::Exit() {

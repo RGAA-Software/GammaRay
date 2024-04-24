@@ -104,11 +104,19 @@ namespace tc
             LOGE("Parse binary message failed.");
             return;
         }
-        auto capture_statistics = proto_msg->capture_statistics();
-        context_->SendAppMessage(MsgCaptureStatistics{
+        if (proto_msg->type() == tc::kCaptureStatistics) {
+            auto capture_statistics = proto_msg->capture_statistics();
+            context_->SendAppMessage(MsgCaptureStatistics{
                 .msg_ = proto_msg,
                 .statistics_ = capture_statistics,
-        });
+            });
+        } else if (proto_msg->type() == tc::kServerAudioSpectrum) {
+            auto spectrum = proto_msg->server_audio_spectrum();
+            context_->SendAppMessage(MsgServerAudioSpectrum {
+                .msg_ = proto_msg,
+                .spectrum_ = spectrum,
+            });
+        }
     }
 
 }

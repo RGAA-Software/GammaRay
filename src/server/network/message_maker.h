@@ -29,6 +29,7 @@ namespace tc
                                              int frame_height, bool key);
         static std::string MakeAudioFrameMsg(const std::shared_ptr<Data>& data,
                                              int samples, int channels, int bits, int frame_size);
+        static std::string MakeServerAudioSpectrumMsg();
 
     };
 

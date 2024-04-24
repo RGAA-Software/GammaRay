@@ -48,6 +48,17 @@ namespace tc
             this->capture_width_ = msg.statistics_.capture_width();
             this->capture_height_ = msg.statistics_.capture_height();
         });
+
+        msg_listener_->Listen<MsgServerAudioSpectrum>([=, this](const MsgServerAudioSpectrum& msg) {
+            this->left_spectrum_.clear();
+            this->left_spectrum_.insert(this->left_spectrum_.begin(),
+                                        msg.spectrum_.left_spectrum().begin(),
+                                        msg.spectrum_.left_spectrum().end());
+            this->right_spectrum_.clear();
+            this->right_spectrum_.insert(this->right_spectrum_.begin(),
+                                         msg.spectrum_.right_spectrum().begin(),
+                                         msg.spectrum_.right_spectrum().end());
+        });
     }
 
 }
