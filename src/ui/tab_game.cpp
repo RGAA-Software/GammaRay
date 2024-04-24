@@ -141,6 +141,8 @@ namespace tc
                     this->LoadCover(game);
                 }
                 AddItems(games_);
+            } else {
+                // todo: 1.loading ....
             }
 
             steam_mgr_->ScanInstalledGames();
@@ -156,6 +158,12 @@ namespace tc
             }
             gm->BatchSaveOrUpdateGames(scan_games);
 
+            if (games_.empty() && scan_games.empty()) {
+                // todo 2.show empty
+            } else {
+                // todo 3.hide loading
+            }
+
             if (games_.empty()) {
                 games_ = scan_games;
                 for (auto& game : games_) {
@@ -163,6 +171,7 @@ namespace tc
                 }
                 AddItems(games_);
             }
+
         });
     }
 

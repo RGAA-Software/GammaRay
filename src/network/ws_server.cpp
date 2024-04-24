@@ -52,9 +52,9 @@ namespace tc
             this->ParseBinaryMessage(data);
 
         }).bind_connect([](auto &session_ptr) {
-            printf("client enter : %s %u %s %u\n",
-                   session_ptr->remote_address().c_str(), session_ptr->remote_port(),
-                   session_ptr->local_address().c_str(), session_ptr->local_port());
+//            printf("client enter : %s %u %s %u\n",
+//                   session_ptr->remote_address().c_str(), session_ptr->remote_port(),
+//                   session_ptr->local_address().c_str(), session_ptr->local_port());
 
         }).bind_disconnect([](auto &session_ptr) {
             asio2::ignore_unused(session_ptr);

@@ -15,39 +15,31 @@ namespace tc
         this->game_installed_dir_ = game->game_installed_dir_;
         this->cover_url_ = game->cover_url_;
         this->engine_type_ = game->engine_type_;
-
-        for (auto& e : game->exes_) {
-            this->game_exes_.append(StringExt::CopyStr(e)).append(";");
-        }
-        std::stringstream ss;
-        for (auto& n : game->exe_names_) {
-            ss << StringExt::CopyStr(n) << ";";
-        }
-        this->game_exe_names_ = ss.str();
+        this->game_exes_ = game->game_exes_;
+         this->game_exe_names_ = game->game_exe_names_;
     }
 
     void TcGame::CopyFrom(const std::shared_ptr<SteamApp>& steam) {
         this->game_id_ = steam->app_id_;
-        this->game_name_ = StringExt::CopyStr(steam->name_);
-        LOGI("origin name: {}, copy name: {}", steam->name_, this->game_name_);
-        this->game_installed_dir_ = StringExt::CopyStr(steam->installed_dir_);
+        this->game_name_ = steam->name_;
+        this->game_installed_dir_ = steam->installed_dir_;
         for (auto& e : steam->exes_) {
-            this->game_exes_.append(StringExt::CopyStr(e)).append(";");
+            this->game_exes_.append(e).append(";");
+            this->exes_.push_back(e);
         }
 
         std::stringstream ss;
         for (auto& n : steam->exe_names_) {
-            ss << StringExt::CopyStr(n) << ";";
-            LOGI("n: {}, copy n: {}", n, StringExt::CopyStr(n));
+            ss << n << ";";
+            this->exe_names_.push_back(n);
         }
         this->game_exe_names_ = ss.str();
-        LOGI("game_exe_names: {}", this->game_exe_names_);
 
         this->is_installed_ = steam->is_installed_;
-        this->steam_url_ = StringExt::CopyStr(steam->steam_url_);
-        this->cover_name_ = StringExt::CopyStr(steam->cover_name_);
-        this->engine_type_ = StringExt::CopyStr(steam->engine_type_);
-        this->cover_url_ = StringExt::CopyStr(steam->cover_url_);
+        this->steam_url_ = steam->steam_url_;
+        this->cover_name_ = steam->cover_name_;
+        this->engine_type_ = steam->engine_type_;
+        this->cover_url_ = steam->cover_url_;
     }
 
     void TcGame::UnpackExePaths() {
