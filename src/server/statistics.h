@@ -46,6 +46,8 @@ namespace tc
         std::vector<uint32_t> encode_durations_;
         std::vector<uint32_t> video_frame_gaps_;
         std::vector<uint32_t> audio_frame_gaps_;
+        int capture_width_ = 0;
+        int capture_height_ = 0;
 
         // from client
         std::vector<uint32_t> decode_durations_;
@@ -53,6 +55,8 @@ namespace tc
         uint32_t client_fps_video_recv_ = 0;
         uint32_t client_fps_render_ = 0;
         int64_t client_recv_media_data_ = 0;
+        int render_width_ = 0;
+        int render_height_ = 0;
 
     };
 

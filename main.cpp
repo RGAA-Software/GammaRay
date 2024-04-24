@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     LoadStyle("");
 
     Workspace workspace;
-    //workspace.setFixedSize(200, 200);
+//    workspace.setFixedSize(200, 200);
     workspace.setFixedSize(1820, 960);
     workspace.show();
 

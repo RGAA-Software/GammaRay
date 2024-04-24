@@ -67,6 +67,10 @@ namespace tc
         cst->set_app_running_time(running_time_);
         // from inner server
         cst->set_server_send_media_data(send_media_bytes_);
+        cst->set_capture_width(capture_width_);
+        cst->set_capture_height(capture_height_);
+        cst->set_render_width(render_width_);
+        cst->set_render_height(render_height_);
         return msg.SerializeAsString();
     }
 

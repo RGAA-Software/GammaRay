@@ -146,6 +146,23 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Capture Size");
+                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_capture_size_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
                 layout->addStretch();
                 head_layout->addSpacing(10);
                 head_layout->addLayout(layout);
@@ -199,6 +216,23 @@ namespace tc
 
                     auto op = new QLabel(this);
                     lbl_recv_media_data_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Client Received Data");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_render_size_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
                     op->setStyleSheet("font-size: 13px;");
@@ -264,6 +298,9 @@ namespace tc
         lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
         lbl_fps_encode_->setText(std::to_string(stat->fps_video_encode).c_str());
         lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
+
+        lbl_capture_size_->setText(std::format("{}x{}", stat->capture_width_, stat->capture_height_).c_str());
+        lbl_render_size_->setText(std::format("{}x{}", stat->render_width_, stat->render_height_).c_str());
 
     }
 
