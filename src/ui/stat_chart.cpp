@@ -21,14 +21,14 @@ namespace tc
         auto layout = new NoMarginVLayout();
         chart_ = new QChart();
         for (auto& n : line_names) {
-            auto s = new QSplineSeries();
+            auto s = new QLineSeries();
             s->setName(n);
             series_.insert({n, s});
             chart_->addSeries(s);
         }
 
         chart_view_ = new QChartView(this);
-        chart_view_->setRenderHint(QPainter::Antialiasing);
+        //chart_view_->setRenderHint(QPainter::Antialiasing);
         chart_view_->setChart(chart_);
         layout->addWidget(chart_view_);
 

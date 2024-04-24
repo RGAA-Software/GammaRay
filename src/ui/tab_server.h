@@ -18,6 +18,7 @@ namespace tc
     class RnApp;
     class RnEmpty;
     class MessageListener;
+    class QtCircle;
 
     class TabServer : public TabBase {
     public:
@@ -41,6 +42,7 @@ namespace tc
         //RnEmpty* rn_empty_ = nullptr;
         QLabel* vigem_state_ = nullptr;
         QLabel* server_state_ = nullptr;
+        QtCircle* spectrum_circle_ = nullptr;
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 

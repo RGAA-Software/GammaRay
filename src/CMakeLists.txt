@@ -37,6 +37,8 @@ set(MAIN_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/rn_app.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/rn_empty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/stat_chart.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt_circle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt_vertical.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/db/game.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/db/game_manager.cpp

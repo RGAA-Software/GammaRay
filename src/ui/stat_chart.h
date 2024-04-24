@@ -35,7 +35,7 @@ namespace tc
         QChartView* chart_view_ = nullptr;
         QValueAxis* x_axis_ = nullptr;
         QValueAxis* y_axis_ = nullptr;
-        std::map<QString, QSplineSeries*> series_;
+        std::map<QString, QLineSeries*> series_;
 
     };
 

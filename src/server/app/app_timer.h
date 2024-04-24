@@ -20,6 +20,7 @@ namespace tc
         kTimerDuration1000 = 1000,
         kTimerDuration2000 = 2000,
         kTimerDuration100 = 100,
+        kTimerDuration20 = 20,
     };
 
     class AppTimer {

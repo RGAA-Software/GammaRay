@@ -48,6 +48,8 @@ namespace tc
         std::vector<uint32_t> audio_frame_gaps_;
         int capture_width_ = 0;
         int capture_height_ = 0;
+        std::vector<double> left_spectrum_;
+        std::vector<double> right_spectrum_;
 
         // from client
         std::vector<uint32_t> decode_durations_;

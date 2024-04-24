@@ -47,6 +47,10 @@ namespace tc
     public:
     };
 
+    class MsgTimer20 {
+    public:
+    };
+
     //
     class MsgBeforeInject {
     public:

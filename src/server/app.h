@@ -87,6 +87,7 @@ namespace tc
 
         void InitVigemController();
         void ReleaseVigemController();
+        void ReportAudioSpectrum();
 
     protected:
         Settings* settings_ = nullptr;

@@ -29,6 +29,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "app_messages.h"
 #include "tc_common_new/log.h"
+#include "qt_circle.h"
 
 namespace tc
 {
@@ -281,6 +282,31 @@ namespace tc
                     item_layout->addWidget(value);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
+                }
+
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(margin_left);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Audio Status(Spectrum)"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+
+                    auto sc_layout = new NoMarginHLayout();
+                    sc_layout->addSpacing(margin_left);
+                    spectrum_circle_ = new QtCircle(this);
+                    spectrum_circle_->setFixedSize(500, 200);
+                    sc_layout->addWidget(spectrum_circle_);
+                    layout->addLayout(sc_layout);
                 }
             }
 
