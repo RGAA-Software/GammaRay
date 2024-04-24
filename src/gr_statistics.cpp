@@ -43,7 +43,10 @@ namespace tc
             this->app_running_time = msg.statistics_.app_running_time();
             // from inner server
             this->server_send_media_bytes = msg.statistics_.server_send_media_data();
-
+            this->render_width_ = msg.statistics_.render_width();
+            this->render_height_ = msg.statistics_.render_height();
+            this->capture_width_ = msg.statistics_.capture_width();
+            this->capture_height_ = msg.statistics_.capture_height();
         });
     }
 

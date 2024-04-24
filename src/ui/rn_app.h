@@ -34,6 +34,9 @@ namespace tc
         QLabel* lbl_app_running_time_ = nullptr;
         QLabel* lbl_fps_encode_ = nullptr;
         QLabel* lbl_send_media_bytes_ = nullptr;
+
+        QLabel* lbl_capture_size_ = nullptr;
+        QLabel* lbl_render_size_ = nullptr;
     };
 
 }

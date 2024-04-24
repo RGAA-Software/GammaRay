@@ -164,5 +164,7 @@ namespace tc {
         statistics_->client_fps_video_recv_ = cst.fps_video_recv();
         statistics_->client_fps_render_ = cst.fps_render();
         statistics_->client_recv_media_data_ = cst.recv_media_data();
+        statistics_->render_width_ = cst.render_width();
+        statistics_->render_height_ = cst.render_height();
     }
 }

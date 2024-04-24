@@ -48,6 +48,15 @@ namespace tc
         uint32_t client_fps_render_ = 0;
         int64_t client_recv_media_data_ = 0;
 
+        // from client
+        int32_t render_width_ = 0;
+        // from client
+        int32_t render_height_ = 0;
+        // from inner server
+        int32_t capture_width_ = 0;
+        // from inner server
+        int32_t capture_height_ = 0;
+
     };
 
 }
