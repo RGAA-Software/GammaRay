@@ -13,7 +13,7 @@ namespace tc
 
     auto GameManager::InitAppDatabase(const std::string& name) {
         auto st = make_storage(name,
-    make_table("games",
+            make_table("games",
                 make_column("id", &TcGame::id_, primary_key().autoincrement()),
                 make_column("game_id", &TcGame::game_id_),
                 make_column("game_name", &TcGame::game_name_),
