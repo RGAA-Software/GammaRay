@@ -142,6 +142,42 @@ namespace tc
                     layout->addLayout(item_layout);
                 }
 
+                // server status
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(margin_left);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_server.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Server Status"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto status = new QLabel(this);
+                    server_state_ = status;
+                    status->setAlignment(Qt::AlignCenter);
+                    status->setFixedSize(80, 26);
+                    status->setText("OK");
+                    item_layout->addWidget(status);
+
+                    auto btn = new QPushButton(this);
+                    btn->setFixedSize(80, 30);
+                    btn->setText(tr("RESTART"));
+                    item_layout->addSpacing(55);
+                    item_layout->addWidget(btn);
+                    item_layout->addStretch();
+
+                    connect(btn, &QPushButton::clicked, this, [=, this]() {
+                       // restart
+                    });
+
+                    layout->addLayout(item_layout);
+                }
+
                 auto ips = context_->GetIps();
                 // IPs
                 for (auto& [ip, ip_type] : ips) {
@@ -279,6 +315,12 @@ namespace tc
                 this->RefreshVigemState(state.ok_);
             });
         });
+
+        msg_listener_->Listen<MsgServerAlive>([=, this](const MsgServerAlive& state) {
+            context_->PostUITask([=, this]() {
+                this->RefreshServerState(state.alive_);
+            });
+        });
     }
 
     TabServer::~TabServer() {
@@ -302,13 +344,20 @@ namespace tc
     }
 
     void TabServer::RefreshVigemState(bool ok) {
-        if (ok) {
-            vigem_state_->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#00cc00; border-radius:13px");
-            vigem_state_->setText("OK");
-        } else {
-            vigem_state_->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#cc0000; border-radius:13px");
-            vigem_state_->setText("ERROR");
-        }
+        RefreshIndicatorState(vigem_state_, ok);
     }
 
+    void TabServer::RefreshServerState(bool ok) {
+        RefreshIndicatorState(server_state_, ok);
+    }
+
+    void TabServer::RefreshIndicatorState(QLabel* indicator, bool ok) {
+        if (ok) {
+            indicator->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#00cc00; border-radius:13px");
+            indicator->setText("OK");
+        } else {
+            indicator->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#cc0000; border-radius:13px");
+            indicator->setText("ERROR");
+        }
+    }
 }

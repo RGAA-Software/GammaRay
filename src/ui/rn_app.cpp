@@ -227,7 +227,7 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Client Received Data");
+                    label->setText("Render Size");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
