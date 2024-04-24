@@ -31,7 +31,8 @@ namespace tc
 
         QString GetItemIconStyleSheet(const QString& url);
         void RefreshVigemState(bool ok);
-
+        void RefreshServerState(bool ok);
+        void RefreshIndicatorState(QLabel* indicator, bool ok);
     private:
 
         QPixmap qr_pixmap_;
@@ -39,6 +40,7 @@ namespace tc
         RnApp* rn_app_ = nullptr;
         //RnEmpty* rn_empty_ = nullptr;
         QLabel* vigem_state_ = nullptr;
+        QLabel* server_state_ = nullptr;
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 

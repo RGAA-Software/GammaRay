@@ -59,5 +59,6 @@
         <file>icons/ic_network.svg</file>
         <file>icons/ic_port.svg</file>
         <file>icons/ic_empty.svg</file>
+        <file>icons/ic_server.svg</file>
     </qresource>
 </RCC>
