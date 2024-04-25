@@ -50,14 +50,15 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgServerAudioSpectrum>([=, this](const MsgServerAudioSpectrum& msg) {
-            this->left_spectrum_.clear();
-            this->left_spectrum_.insert(this->left_spectrum_.begin(),
-                                        msg.spectrum_.left_spectrum().begin(),
-                                        msg.spectrum_.left_spectrum().end());
-            this->right_spectrum_.clear();
-            this->right_spectrum_.insert(this->right_spectrum_.begin(),
-                                         msg.spectrum_.right_spectrum().begin(),
-                                         msg.spectrum_.right_spectrum().end());
+            if (this->left_spectrum_.size() != msg.spectrum_.left_spectrum().size()) {
+                this->left_spectrum_.resize(msg.spectrum_.left_spectrum().size());
+            }
+            memcpy(this->left_spectrum_.data(), msg.spectrum_.left_spectrum().data(), msg.spectrum_.left_spectrum().size() * sizeof(double));
+
+            if (this->right_spectrum_.size() != msg.spectrum_.right_spectrum().size()) {
+                this->right_spectrum_.resize(msg.spectrum_.right_spectrum().size());
+            }
+            memcpy(this->right_spectrum_.data(), msg.spectrum_.right_spectrum().data(), msg.spectrum_.right_spectrum().size() * sizeof(double));
         });
     }
 

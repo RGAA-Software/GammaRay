@@ -12,6 +12,7 @@
 #include "util/audio_filter.h"
 #include "gr_statistics.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/time_ext.h"
 
 namespace tc
 {
@@ -19,7 +20,6 @@ namespace tc
     constexpr auto kMaxBars = 480;
 
     class EffectWidget : public QWidget {
-        //Q_OBJECT
     public:
         explicit EffectWidget(QWidget *parent = nullptr) : QWidget(parent) {
             auto timer = new QTimer(this);
@@ -41,9 +41,8 @@ namespace tc
                 auto new_bar_height = new_bars[i];
                 auto old_bar_height = bars[i];
 
-                float target_height = 0;
-
-                float diff = new_bar_height - old_bar_height;
+                double target_height = 0;
+                double diff = new_bar_height - old_bar_height;
                 target_height = old_bar_height + diff * 1.0f / 2;
 
                 if (target_height < 0) {
