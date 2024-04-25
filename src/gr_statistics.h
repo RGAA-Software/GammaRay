@@ -58,6 +58,9 @@ namespace tc
         int32_t capture_height_ = 0;
 
         // from inner server
+        int32_t audio_samples_{0};
+        int32_t audio_channels_{0};
+        int32_t audio_bits_{0};
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;
 

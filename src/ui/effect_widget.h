@@ -56,7 +56,7 @@ namespace tc
 
         void OnDataComing(const std::vector<double> &left, const std::vector<double> &right) {
             counts++;
-            if (counts % 4 != 0) {
+            if (counts % 3 != 0) {
                 return;
             }
 

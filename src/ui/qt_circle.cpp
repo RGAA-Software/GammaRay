@@ -47,25 +47,25 @@ namespace tc
         auto filter_right_data = right_bars;
 
         QPainter painter(this);
-        //painter.setRenderHints(QPainter::Antialiasing);
+        painter.setRenderHints(QPainter::Antialiasing);
         painter.setBrush(QBrush(0xffffff));
-        painter.drawRect(this->rect());
+        //painter.drawRect(this->rect());
 
         static bool draw = false;
         if (!draw && !pixmap.isNull()) {
             painter.drawPixmap(QRect(0, 0, 1920, 1080), pixmap);
         }
-        QLinearGradient bar_gradient(0, 0, 180, 0);
+        QLinearGradient bar_gradient(0, 0, 60, 0);
         bar_gradient.setColorAt(0.0, QColor(0xff, 0x66, 0x66));
         bar_gradient.setColorAt(1.0, QColor(0xcc, 0xcc, 0xff));
 
-        QLinearGradient circle_bar_gradient(0, 0, 180, 0);
+        QLinearGradient circle_bar_gradient(0, 0, 60, 0);
         circle_bar_gradient.setColorAt(0.0, QColor(0x00, 0xd3, 0x66));
         circle_bar_gradient.setColorAt(1.0, QColor(0xfc, 0xcc, 0x12));
 
         auto inc_extend = 1.6f;
 
-        int circle_bar_size = 150;//(int) (bar_size/* / 2*/);
+        int circle_bar_size = 120;//(int) (bar_size/* / 2*/);
 
         int first_circle_bar_size = circle_bar_size * 2 / 3;
         int second_circle_bar_size = circle_bar_size - first_circle_bar_size;

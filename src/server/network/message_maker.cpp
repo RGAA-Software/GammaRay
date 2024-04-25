@@ -72,8 +72,12 @@ namespace tc
         auto st = Statistics::Instance();
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kServerAudioSpectrum);
-        msg->mutable_server_audio_spectrum()->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
-        msg->mutable_server_audio_spectrum()->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
+        auto sas = msg->mutable_server_audio_spectrum();
+        sas->set_samples(st->audio_samples_);
+        sas->set_bits(st->audio_bits_);
+        sas->set_channels(st->audio_channels_);
+        sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
+        sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
         return msg->SerializeAsString();
     }
 
