@@ -60,5 +60,6 @@
         <file>icons/ic_port.svg</file>
         <file>icons/ic_empty.svg</file>
         <file>icons/ic_server.svg</file>
+        <file>icons/ic_spectrum.svg</file>
     </qresource>
 </RCC>

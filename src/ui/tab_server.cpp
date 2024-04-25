@@ -30,11 +30,13 @@
 #include "app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
+#include "gr_statistics.h"
 
 namespace tc
 {
 
     TabServer::TabServer(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+        statistics_ = GrStatistics::Instance();
         auto broadcast_msg = ctx->MakeBroadcastMessage();
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
         // root layout
@@ -289,7 +291,7 @@ namespace tc
                     item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
-                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_spectrum.svg"));
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
@@ -299,7 +301,7 @@ namespace tc
                     item_layout->addWidget(label);
 
                     auto value = new QLabel(this);
-                    value->setFixedSize(120, 40);
+                    value->setFixedSize(170, 40);
                     value->setStyleSheet("font-size: 14px;");
                     lbl_audio_format_ = value;
                     item_layout->addWidget(value);
@@ -352,6 +354,12 @@ namespace tc
                 this->RefreshServerState(state.alive_);
             });
         });
+
+        msg_listener_->Listen<MsgGrTimer100>([=, this](const auto& m) {
+            context_->PostUITask([=, this]() {
+                this->RefreshUIEverySecond();
+            });
+        });
     }
 
     TabServer::~TabServer() {
@@ -390,5 +398,9 @@ namespace tc
             indicator->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#cc0000; border-radius:13px");
             indicator->setText("ERROR");
         }
+    }
+
+    void TabServer::RefreshUIEverySecond() {
+        this->lbl_audio_format_->setText(std::format("Format: {}/{}/{}", statistics_->audio_samples_, statistics_->audio_channels_, statistics_->audio_bits_).c_str());
     }
 }

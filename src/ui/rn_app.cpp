@@ -133,7 +133,7 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Send Data");
+                    label->setText("Sent Data");
                     label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
                     item_layout->addWidget(label);
 

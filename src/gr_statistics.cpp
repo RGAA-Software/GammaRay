@@ -50,6 +50,9 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgServerAudioSpectrum>([=, this](const MsgServerAudioSpectrum& msg) {
+            this->audio_samples_ = msg.spectrum_.samples();
+            this->audio_channels_ = msg.spectrum_.channels();
+            this->audio_bits_ = msg.spectrum_.bits();
             if (this->left_spectrum_.size() != msg.spectrum_.left_spectrum().size()) {
                 this->left_spectrum_.resize(msg.spectrum_.left_spectrum().size());
             }

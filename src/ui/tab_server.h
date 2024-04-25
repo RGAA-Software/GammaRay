@@ -19,6 +19,7 @@ namespace tc
     class RnEmpty;
     class MessageListener;
     class QtCircle;
+    class GrStatistics;
 
     class TabServer : public TabBase {
     public:
@@ -34,8 +35,10 @@ namespace tc
         void RefreshVigemState(bool ok);
         void RefreshServerState(bool ok);
         void RefreshIndicatorState(QLabel* indicator, bool ok);
-    private:
+        void RefreshUIEverySecond();
 
+    private:
+        GrStatistics* statistics_ = nullptr;
         QPixmap qr_pixmap_;
         QStackedWidget* rn_stack_ = nullptr;
         RnApp* rn_app_ = nullptr;
