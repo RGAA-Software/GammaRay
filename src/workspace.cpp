@@ -20,7 +20,7 @@ namespace tc
 {
 
     Workspace::Workspace() : QMainWindow(nullptr) {
-        setWindowTitle(tr("GammaRay Server"));
+        setWindowTitle(tr("GammaRay"));
 
         app_ = std::make_shared<GrApplication>();
         app_->Init();
