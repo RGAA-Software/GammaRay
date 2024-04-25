@@ -60,6 +60,9 @@ namespace tc
         int render_width_ = 0;
         int render_height_ = 0;
 
+        int32_t audio_samples_{0};
+        int32_t audio_channels_{0};
+        int32_t audio_bits_{0};
     };
 
 }

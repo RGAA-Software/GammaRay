@@ -40,8 +40,9 @@ namespace tc
         QStackedWidget* rn_stack_ = nullptr;
         RnApp* rn_app_ = nullptr;
         //RnEmpty* rn_empty_ = nullptr;
-        QLabel* vigem_state_ = nullptr;
-        QLabel* server_state_ = nullptr;
+        QLabel* lbl_vigem_state_ = nullptr;
+        QLabel* lbl_server_state_ = nullptr;
+        QLabel* lbl_audio_format_ = nullptr;
         QtCircle* spectrum_circle_ = nullptr;
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;

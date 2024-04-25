@@ -216,6 +216,10 @@ namespace tc
         audio_capture_ = AudioCaptureFactory::Make();
         audio_capture_->RegisterFormatCallback([=, this](int samples, int channels, int bits) {
             LOGI("audio format, samples: {}, channels: {}, bits: {}", samples, channels, bits);
+            auto stat = Statistics::Instance();
+            stat->audio_samples_ = samples;
+            stat->audio_channels_ = channels;
+            stat->audio_bits_ = bits;
             opus_encoder_ = std::make_shared<OpusAudioEncoder>(samples, channels, bits, OPUS_APPLICATION_AUDIO);
             if (opus_encoder_->valid()) {
                 opus_encoder_->SetComplexity(8);

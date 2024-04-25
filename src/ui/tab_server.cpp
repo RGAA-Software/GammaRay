@@ -123,7 +123,7 @@ namespace tc
                     item_layout->addWidget(label);
 
                     auto status = new QLabel(this);
-                    vigem_state_ = status;
+                    lbl_vigem_state_ = status;
                     status->setAlignment(Qt::AlignCenter);
                     status->setFixedSize(80, 26);
                     status->setText("OK");
@@ -159,7 +159,7 @@ namespace tc
                     item_layout->addWidget(label);
 
                     auto status = new QLabel(this);
-                    server_state_ = status;
+                    lbl_server_state_ = status;
                     status->setAlignment(Qt::AlignCenter);
                     status->setFixedSize(80, 26);
                     status->setText("OK");
@@ -294,17 +294,22 @@ namespace tc
 
                     auto label = new QLabel(this);
                     label->setFixedSize(170, 40);
-                    label->setText(tr("Audio Status(Spectrum)"));
+                    label->setText(tr("Audio Spectrum"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
 
+                    auto value = new QLabel(this);
+                    value->setFixedSize(120, 40);
+                    value->setStyleSheet("font-size: 14px;");
+                    lbl_audio_format_ = value;
+                    item_layout->addWidget(value);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
 
                     auto sc_layout = new NoMarginHLayout();
                     sc_layout->addSpacing(margin_left);
                     spectrum_circle_ = new QtCircle(this);
-                    spectrum_circle_->setFixedSize(500, 200);
+                    spectrum_circle_->setFixedSize(400, 140);
                     sc_layout->addWidget(spectrum_circle_);
                     layout->addLayout(sc_layout);
                 }
@@ -370,11 +375,11 @@ namespace tc
     }
 
     void TabServer::RefreshVigemState(bool ok) {
-        RefreshIndicatorState(vigem_state_, ok);
+        RefreshIndicatorState(lbl_vigem_state_, ok);
     }
 
     void TabServer::RefreshServerState(bool ok) {
-        RefreshIndicatorState(server_state_, ok);
+        RefreshIndicatorState(lbl_server_state_, ok);
     }
 
     void TabServer::RefreshIndicatorState(QLabel* indicator, bool ok) {
