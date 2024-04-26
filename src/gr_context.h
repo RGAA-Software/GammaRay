@@ -24,6 +24,7 @@ namespace tc
     class DBGameManager;
     class ResourceManager;
     class ServerManager;
+    class RunGameManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -51,8 +52,8 @@ namespace tc
             }
         }
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
-
         std::shared_ptr<ServerManager> GetServerManager();
+        std::shared_ptr<RunGameManager> GetRunGameManager();
 
     private:
         void LoadUniqueId();
@@ -71,6 +72,7 @@ namespace tc
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<ServerManager> srv_manager_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
+        std::shared_ptr<RunGameManager> run_game_manager_ = nullptr;
     };
 
 }

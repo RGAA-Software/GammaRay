@@ -39,12 +39,14 @@ namespace tc
         std::any cover_pixmap_;
         std::vector<std::string> exes_{};
         std::vector<std::string> exe_names_{};
+        std::vector<uint32_t> running_pids_;
 
     public:
         void AssignFrom(const std::shared_ptr<TcDBGame>& game);
         void CopyFrom(const std::shared_ptr<SteamApp>& steam);
         void UnpackExePaths();
         [[nodiscard]] std::shared_ptr<TcDBGame> AsPtr() const;
+        bool IsSteamGame();
 
     };
 

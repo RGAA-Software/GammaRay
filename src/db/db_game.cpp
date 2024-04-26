@@ -77,4 +77,8 @@ namespace tc
         return game;
     }
 
+    bool TcDBGame::IsSteamGame() {
+        return this->game_id_ > 0;
+    }
+
 }

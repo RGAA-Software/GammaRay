@@ -14,6 +14,7 @@
 #include "db/db_game_manager.h"
 #include "res/resource_manager.h"
 #include "manager/gr_server_manager.h"
+#include "manager/run_game_manager.h"
 #include "app_messages.h"
 
 using namespace nlohmann;
@@ -55,6 +56,8 @@ namespace tc
 
         res_manager_ = std::make_shared<ResourceManager>(shared_from_this());
         res_manager_->ExtractIconsIfNeeded();
+
+        run_game_manager_ = std::make_shared<RunGameManager>(shared_from_this());
 
         StartTimers();
     }
@@ -153,6 +156,10 @@ namespace tc
         timer_->start_timer(1, 100, [=, this]() {
             this->SendAppMessage(MsgGrTimer100{});
         });
+    }
+
+    std::shared_ptr<RunGameManager> GrContext::GetRunGameManager() {
+        return run_game_manager_;
     }
 
 }

@@ -13,6 +13,8 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "manager/gr_server_manager.h"
+#include "manager/run_game_manager.h"
+
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -85,6 +87,13 @@ namespace tc
                         LOGW("Check server alive failed by process, check listening port instead.");
                     }
                 }
+
+                // check running game
+                {
+                    auto rgm = ctx_->GetRunGameManager();
+                    rgm->CheckRunningGame();
+                }
+
                 std::this_thread::sleep_for(std::chrono::seconds(5));
             }
         }, "", false);
