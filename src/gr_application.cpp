@@ -30,7 +30,7 @@ namespace tc
     }
 
     void GrApplication::Init() {
-        SharedPreference::Instance()->Init("", "tc_steam.dat");
+        SharedPreference::Instance()->Init("", "game.dat");
         settings_ = GrSettings::Instance();
         settings_->Load();
         settings_->Dump();

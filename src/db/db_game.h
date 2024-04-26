@@ -15,10 +15,10 @@
 namespace tc
 {
 
-    class TcGame {
+    class TcDBGame {
     public:
 
-        ~TcGame() {
+        ~TcDBGame() {
 
         }
 
@@ -41,14 +41,14 @@ namespace tc
         std::vector<std::string> exe_names_{};
 
     public:
-        void AssignFrom(const std::shared_ptr<TcGame>& game);
+        void AssignFrom(const std::shared_ptr<TcDBGame>& game);
         void CopyFrom(const std::shared_ptr<SteamApp>& steam);
         void UnpackExePaths();
-        [[nodiscard]] std::shared_ptr<TcGame> AsPtr() const;
+        [[nodiscard]] std::shared_ptr<TcDBGame> AsPtr() const;
 
     };
 
-    using TcGamePtr = std::shared_ptr<TcGame>;
+    using TcDBGamePtr = std::shared_ptr<TcDBGame>;
 
 }
 

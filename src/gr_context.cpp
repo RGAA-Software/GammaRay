@@ -11,9 +11,9 @@
 #include "tc_common_new/log.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_settings.h"
-#include "db/game_manager.h"
+#include "db/db_game_manager.h"
 #include "res/resource_manager.h"
-#include "manager/tc_app_manager.h"
+#include "manager/gr_server_manager.h"
 #include "app_messages.h"
 
 using namespace nlohmann;
@@ -50,8 +50,8 @@ namespace tc
             LOGI("IP: {} -> {}", ip, type == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
         }
 
-        game_manager_ = std::make_shared<GameManager>(shared_from_this());
-        game_manager_->Init();
+        db_game_manager_ = std::make_shared<DBGameManager>(shared_from_this());
+        db_game_manager_->Init();
 
         res_manager_ = std::make_shared<ResourceManager>(shared_from_this());
         res_manager_->ExtractIconsIfNeeded();
@@ -136,8 +136,8 @@ namespace tc
         return obj.dump();
     }
 
-    std::shared_ptr<GameManager> GrContext::GetGameManager() {
-        return game_manager_;
+    std::shared_ptr<DBGameManager> GrContext::GetDBGameManager() {
+        return db_game_manager_;
     }
 
     std::shared_ptr<MessageNotifier> GrContext::GetMessageNotifier() {

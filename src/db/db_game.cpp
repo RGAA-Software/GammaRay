@@ -2,7 +2,7 @@
 // Created by RGAA on 2024/4/10.
 //
 
-#include "game.h"
+#include "db_game.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/log.h"
 #include <algorithm>
@@ -10,7 +10,7 @@
 namespace tc
 {
 
-    void TcGame::AssignFrom(const std::shared_ptr<TcGame>& game) {
+    void TcDBGame::AssignFrom(const std::shared_ptr<TcDBGame>& game) {
         this->game_name_ = game->game_name_;
         this->game_installed_dir_ = game->game_installed_dir_;
         this->cover_url_ = game->cover_url_;
@@ -19,7 +19,7 @@ namespace tc
          this->game_exe_names_ = game->game_exe_names_;
     }
 
-    void TcGame::CopyFrom(const std::shared_ptr<SteamApp>& steam) {
+    void TcDBGame::CopyFrom(const std::shared_ptr<SteamApp>& steam) {
         this->game_id_ = steam->app_id_;
         this->game_name_ = steam->name_;
         this->game_installed_dir_ = steam->installed_dir_;
@@ -42,7 +42,7 @@ namespace tc
         this->cover_url_ = steam->cover_url_;
     }
 
-    void TcGame::UnpackExePaths() {
+    void TcDBGame::UnpackExePaths() {
         if (!this->game_exes_.empty()) {
             StringExt::Split(this->game_exes_, this->exes_, ";");
             std::erase_if(this->exes_, [](const std::string &item) -> bool {
@@ -57,8 +57,8 @@ namespace tc
         }
     }
 
-    std::shared_ptr<TcGame> TcGame::AsPtr() const {
-        auto game = std::make_shared<TcGame>();
+    std::shared_ptr<TcDBGame> TcDBGame::AsPtr() const {
+        auto game = std::make_shared<TcDBGame>();
         game->id_ = this->id_;
         game->game_id_ = this->game_id_;
         game->game_name_ = this->game_name_;

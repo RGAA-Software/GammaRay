@@ -13,8 +13,8 @@ endif()
 
 add_executable(test_db
         test_db.cpp
-        ../db/game.cpp
-        ../db/game_manager.cpp
+        ../db/db_game.cpp
+        ../db/db_game_manager.cpp
         ../gr_context.cpp
         ../network/ip_util.cpp
 )

@@ -22,8 +22,8 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
 #include "widgets/layout_helper.h"
-#include "db/game.h"
-#include "db/game_manager.h"
+#include "db/db_game.h"
+#include "db/db_game_manager.h"
 #include "tc_common_new/log.h"
 #include "widget_decorator.h"
 
@@ -134,7 +134,7 @@ namespace tc
     void TabGame::ScanInstalledGames() {
         context_->PostTask([=, this]() {
             // 1. load from database
-            auto gm = context_->GetGameManager();
+            auto gm = context_->GetDBGameManager();
             games_ = gm->GetAllGames();
             if (!games_.empty()) {
                 for (auto& game : games_) {
@@ -149,10 +149,10 @@ namespace tc
             steam_mgr_->DumpGamesInfo();
 
             auto steam_apps = steam_mgr_->GetInstalledGames();
-            std::vector<TcGamePtr> scan_games;
+            std::vector<TcDBGamePtr> scan_games;
 
             for (auto& app : steam_apps) {
-                auto game = std::make_shared<TcGame>();
+                auto game = std::make_shared<TcDBGame>();
                 game->CopyFrom(app);
                 scan_games.push_back(game);
             }
@@ -175,7 +175,7 @@ namespace tc
         });
     }
 
-    QListWidgetItem* TabGame::AddItem(int index, const TcGamePtr& game) {
+    QListWidgetItem* TabGame::AddItem(int index, const TcDBGamePtr& game) {
         auto item = new QListWidgetItem(list_widget_);
         int margin = 0;
         auto item_size = GetItemSize();
@@ -231,7 +231,7 @@ namespace tc
         return QSize(item_width, item_height);
     }
 
-    void TabGame::AddItems(const std::vector<TcGamePtr>& games) {
+    void TabGame::AddItems(const std::vector<TcDBGamePtr>& games) {
         context_->PostUITask([=, this]() {
             for (int i = 0; i < games.size(); i++) {
                 AddItem(i, games[i]);
@@ -239,7 +239,7 @@ namespace tc
         });
     }
 
-    void TabGame::LoadCover(const tc::TcGamePtr &game) {
+    void TabGame::LoadCover(const tc::TcDBGamePtr &game) {
         QImage image;
         if (!image.load(QString::fromStdString(game->cover_url_))) {
             LOGI("not find cover: {}", game->cover_url_);

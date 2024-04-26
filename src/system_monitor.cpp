@@ -12,7 +12,7 @@
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/process_helper.h"
-#include "manager/tc_app_manager.h"
+#include "manager/gr_server_manager.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 

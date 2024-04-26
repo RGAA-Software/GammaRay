@@ -21,7 +21,7 @@ namespace tc
     class TaskRuntime;
     class SharedPreference;
     class GrSettings;
-    class GameManager;
+    class DBGameManager;
     class ResourceManager;
     class ServerManager;
 
@@ -42,7 +42,7 @@ namespace tc
 
         std::string MakeBroadcastMessage();
 
-        std::shared_ptr<GameManager> GetGameManager();
+        std::shared_ptr<DBGameManager> GetDBGameManager();
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -66,7 +66,7 @@ namespace tc
         std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;
         std::string unique_id_{};
         std::map<std::string, IPNetworkType> ips_;
-        std::shared_ptr<GameManager> game_manager_ = nullptr;
+        std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::shared_ptr<ResourceManager> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<ServerManager> srv_manager_ = nullptr;
