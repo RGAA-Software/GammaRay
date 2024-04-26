@@ -8,6 +8,9 @@
 #include <memory>
 #include <map>
 #include <mutex>
+
+#include <QProcess>
+
 #include "tc_common_new/concurrent_hashmap.h"
 #include "tc_common_new/response.h"
 
@@ -15,9 +18,13 @@ namespace tc
 {
 
     class GrContext;
-    class RunningAppInfo;
 
-    // 用来管理tc_server
+    class RunningAppInfo {
+    public:
+        uint32_t pid_{0};
+        std::shared_ptr<QProcess> process_ = nullptr;
+    };
+
     class ServerManager {
     public:
 

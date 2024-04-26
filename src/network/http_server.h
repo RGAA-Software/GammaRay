@@ -3,6 +3,8 @@
 
 #include <thread>
 #include <memory>
+#include <string>
+#include "apis.h"
 
 namespace httplib {
     class Server;

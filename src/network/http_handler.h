@@ -27,8 +27,6 @@ namespace tc
         void HandleGames(const httplib::Request& req, httplib::Response& res);
         void HandleGameStart(const httplib::Request& req, httplib::Response& res);
         void HandleGameStop(const httplib::Request& req, httplib::Response& res);
-        void HandleGameStartOnly(const httplib::Request& req, httplib::Response& res);
-        void HandleGameStopOnly(const httplib::Request& req, httplib::Response& res);
 
     private:
         std::string GetInstalledGamesAsJson();

@@ -2,13 +2,12 @@
 // Created by RGAA on 2024-03-30.
 //
 
-#include "tc_app_manager.h"
-#include "tc_app_info.h"
+#include "gr_server_manager.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
+#include "gr_settings.h"
 
 #include <QCoreApplication>
-#include "gr_settings.h"
 
 namespace tc
 {

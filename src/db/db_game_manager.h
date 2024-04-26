@@ -11,22 +11,22 @@
 #include <sqlite_orm/sqlite_orm.h>
 using namespace sqlite_orm;
 
-#include "game.h"
+#include "db_game.h"
 
 namespace tc
 {
     class GrContext;
 
-    class GameManager {
+    class DBGameManager {
     public:
-        explicit GameManager(const std::shared_ptr<GrContext>& ctx);
+        explicit DBGameManager(const std::shared_ptr<GrContext>& ctx);
         void Init();
 
-        void SaveOrUpdateGame(const std::shared_ptr<TcGame>& game);
-        std::shared_ptr<TcGame> GetGameByGameId(uint64_t gid);
-        std::vector<std::shared_ptr<TcGame>> GetAllGames();
+        void SaveOrUpdateGame(const std::shared_ptr<TcDBGame>& game);
+        std::shared_ptr<TcDBGame> GetGameByGameId(uint64_t gid);
+        std::vector<std::shared_ptr<TcDBGame>> GetAllGames();
         void DeleteGameByGameId(uint64_t gid);
-        void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<TcGame>>& games);
+        void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<TcDBGame>>& games);
 
     private:
         auto GetStorageTypeValue();

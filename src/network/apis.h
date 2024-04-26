@@ -13,25 +13,31 @@ namespace tc
 {
 
     constexpr auto kNetOk = 200;
-    constexpr auto kStartFailed = 301;
+    constexpr auto kStartFailed = 600;
+
+    const std::string kPathPing = "/v1/ping";
+    const std::string kPathSimpleInfo = "/v1/simple/info";
+    const std::string kPathSupportApis = "/v1/apis";
+    const std::string kPathGames = "/v1/apps";
+    const std::string kPathGameStart = "/v1/start/app";
+    const std::string kPathGameStop = "/v1/stop/app";
 
     static std::string GetSupportedApis() {
         std::stringstream ss;
-        ss << " * 表示参数必须要填写" << std::endl;
+        ss << "* => necessary param" << std::endl;
         {
             ss << "===>" << std::endl;
-            ss << "path: /v1/supported/apis" << std::endl;
+            ss << "path:" << kPathSupportApis << std::endl;
             ss << "method: GET" << std::endl;
-            ss << "desc: 当前支持的所有API" << std::endl;
+            ss << "desc: to get all apis' information" << std::endl;
             ss << "params: None" << std::endl;
         }
         {
             ss << "===>" << std::endl;
-            ss << "path: /v1/supported/apis" << std::endl;
-            ss << "method: POST" << std::endl;
-            ss << "desc: 当前支持的所有API" << std::endl;
-            ss << "params: " << std::endl;
-            ss << "  * [version]=[string], desc: [版本号], eg: version=1.1" << std::endl;
+            ss << "path:" << kPathPing << std::endl;
+            ss << "method: GET" << std::endl;
+            ss << "desc: response a 'Pong'" << std::endl;
+            ss << "params: None" << std::endl;
         }
         return ss.str();
     }

@@ -9,7 +9,7 @@
 #include "tc_steam_manager_new/steam_entities.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_application.h"
-#include "manager/tc_app_manager.h"
+#include "manager/gr_server_manager.h"
 #include "tc_common_new/net_resp.h"
 #include "apis.h"
 
@@ -34,7 +34,7 @@ namespace tc
     }
 
     void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
-        res.set_content("Good", "text/plain");
+        res.set_content(GetSupportedApis(), "text/plain");
     }
 
     void HttpHandler::HandleGames(const httplib::Request& req, httplib::Response& res) {
@@ -56,15 +56,8 @@ namespace tc
 
     }
 
-    void HttpHandler::HandleGameStartOnly(const httplib::Request& req, httplib::Response& res) {
-
-    }
-
-    void HttpHandler::HandleGameStopOnly(const httplib::Request& req, httplib::Response& res) {
-
-    }
-
     // impl
+
     std::string HttpHandler::GetInstalledGamesAsJson() {
         auto steam_mgr = context_->GetSteamManager();
         auto games = steam_mgr->GetInstalledGames();

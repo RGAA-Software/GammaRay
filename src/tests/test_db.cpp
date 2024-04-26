@@ -10,8 +10,8 @@
 #include <map>
 #include <iostream>
 
-#include "db/game.h"
-#include "db/game_manager.h"
+#include "db/db_game.h"
+#include "db/db_game_manager.h"
 #include "context.h"
 
 using namespace tc;
@@ -25,7 +25,7 @@ TEST(Test_db, read_write) {
     std::cout << "start..." << std::endl;
 
     auto ctx = std::make_shared<Context>();
-    auto gm = std::make_shared<GameManager>(ctx);
+    auto gm = std::make_shared<DBGameManager>(ctx);
     gm->Init();
     {
         {

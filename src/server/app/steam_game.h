@@ -15,6 +15,7 @@ namespace tc
     class Context;
     class SteamApp;
 
+    // deprecated
     class SteamGame {
     public:
 
