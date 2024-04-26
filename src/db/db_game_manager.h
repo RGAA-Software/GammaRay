@@ -24,6 +24,8 @@ namespace tc
 
         void SaveOrUpdateGame(const std::shared_ptr<TcDBGame>& game);
         std::shared_ptr<TcDBGame> GetGameByGameId(uint64_t gid);
+        // game added by user
+        std::shared_ptr<TcDBGame> GetGameByExePath(const std::string& path);
         std::vector<std::shared_ptr<TcDBGame>> GetAllGames();
         void DeleteGameByGameId(uint64_t gid);
         void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<TcDBGame>>& games);

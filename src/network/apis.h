@@ -17,10 +17,10 @@ namespace tc
 
     const std::string kPathPing = "/v1/ping";
     const std::string kPathSimpleInfo = "/v1/simple/info";
-    const std::string kPathSupportApis = "/v1/apis";
-    const std::string kPathGames = "/v1/apps";
-    const std::string kPathGameStart = "/v1/start/app";
-    const std::string kPathGameStop = "/v1/stop/app";
+    const std::string kPathSupportApis = "/v1/support/apis";
+    const std::string kPathGames = "/v1/games";
+    const std::string kPathGameStart = "/v1/game/start";
+    const std::string kPathGameStop = "/v1/game/stop";
 
     static std::string GetSupportedApis() {
         std::stringstream ss;

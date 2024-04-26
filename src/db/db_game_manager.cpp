@@ -69,6 +69,18 @@ namespace tc
         return g.AsPtr();
     }
 
+    std::shared_ptr<TcDBGame> DBGameManager::GetGameByExePath(const std::string& path) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        auto games = storage.get_all<TcDBGame>(where(c(&TcDBGame::game_exes_) == path));
+        if (games.empty()) {
+            return nullptr;
+        }
+        auto g = games.at(0);
+        g.UnpackExePaths();
+        return g.AsPtr();
+    }
+
     std::vector<TcDBGamePtr> DBGameManager::GetAllGames() {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
