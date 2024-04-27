@@ -15,6 +15,7 @@ namespace tc
 
     class GrContext;
     class GrApplication;
+    class RunGameManager;
 
     class HttpHandler {
     public:
@@ -27,6 +28,7 @@ namespace tc
         void HandleGames(const httplib::Request& req, httplib::Response& res);
         void HandleGameStart(const httplib::Request& req, httplib::Response& res);
         void HandleGameStop(const httplib::Request& req, httplib::Response& res);
+        void HandleRunningGames(const httplib::Request& req, httplib::Response& res);
 
     private:
         std::string GetInstalledGamesAsJson();
@@ -37,6 +39,7 @@ namespace tc
 
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
+        std::shared_ptr<RunGameManager> run_game_mgr_ = nullptr;
 
     };
 

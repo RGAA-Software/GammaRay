@@ -80,7 +80,7 @@ namespace tc
         });
     }
 
-    void GrContext::PostDelayTask(std::function<void()>&& task, int ms) {
+    void GrContext::PostUIDelayTask(std::function<void()>&& task, int ms) {
         this->PostUITask([ms, t = std::move(task)]() {
             QTimer::singleShot(ms, [=]() {
                 t();

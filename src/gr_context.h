@@ -35,7 +35,7 @@ namespace tc
         std::shared_ptr<TaskRuntime> GetTaskRuntime();
         void PostTask(std::function<void()>&& task);
         void PostUITask(std::function<void()>&& task);
-        void PostDelayTask(std::function<void()>&& task, int ms);
+        void PostUIDelayTask(std::function<void()>&& task, int ms);
 
         std::string GetSysUniqueId();
         int GetIndexByUniqueId();

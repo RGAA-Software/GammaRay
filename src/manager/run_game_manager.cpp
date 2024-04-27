@@ -9,8 +9,13 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"
+#include "tc_common_new/win32/process_helper.h"
+#include "tc_common_new/time_ext.h"
+#include "tc_3rdparty/json/json.hpp"
 
 #include <shellapi.h>
+
+using namespace nlohmann;
 
 namespace tc
 {
@@ -50,7 +55,6 @@ namespace tc
                     LOGI("{} is a steam game.", game_path);
                     // 1.1 this is a game that installed by steam
                     this->StartSteamGame(game_path, args);
-                    running_game_ = game;
                     ok_resp();
                     return resp;
                 } else {
@@ -59,7 +63,7 @@ namespace tc
                     auto r = this->StartNormalGame(game_path, args);
                     LOGI("start result: {}, {}, {}", r.ok_, r.value_, r.msg_);
                     if (r.ok_) {
-                        running_game_ = game;
+
                     }
                     return r;
                 }
@@ -155,7 +159,56 @@ namespace tc
     }
 
     void RunGameManager::CheckRunningGame() {
+        auto beg = TimeExt::GetCurrentTimestamp();
+        auto running_processes = ProcessHelper::GetProcessList();
+        auto db_games = this->db_game_manager_->GetAllGames();
+        LOGI("running process: {}", running_processes.size());
+        LOGI("db games: {}",db_games.size());
 
+        running_games_.clear();
+        for (const auto& game : db_games) {
+            if (game->IsSteamGame()) {
+                std::vector<uint32_t> running_pids;
+
+                for (auto& exe : game->exes_) {
+                    std::string exe_full_path = exe;
+                    StringExt::Replace(exe_full_path, "\\", "/");
+                    for (const auto& rp : running_processes) {
+                        std::string rp_exe_full_path = rp.exe_full_path_;
+                        StringExt::Replace(rp_exe_full_path, "\\", "/");
+                        //std::cout << "exe_name: " << exe_full_path << ", rp exe name: " << rp_exe_full_path << "\n";
+                        if (rp_exe_full_path == exe_full_path) {
+                            LOGI("********Find running game: {}", exe_full_path);
+                            running_pids.push_back(rp.pid_);
+                            break;
+                        }
+                    }
+                }
+                if (!running_pids.empty()) {
+                    auto rg = std::make_shared<RunningGame>();
+                    rg->game_ = game;
+                    rg->pids_ = running_pids;
+                    running_games_.push_back(rg);
+                }
+
+            } else {
+                // normal(added by user) game
+
+            }
+        }
+        auto end = TimeExt::GetCurrentTimestamp();
+        LOGI("check game alive used : {}ms", end - beg);
+    }
+
+    std::string RunGameManager::GetRunningGamesAsJson() {
+        json obj = json::array();
+        for (auto& rg : running_games_) {
+            json item;
+            item["game_id"] = rg->game_->game_id_;
+            item["game_exes"] = rg->game_->game_exes_;
+            obj.push_back(item);
+        }
+        return obj.dump(2);
     }
 
 }

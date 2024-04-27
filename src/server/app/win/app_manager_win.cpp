@@ -270,7 +270,7 @@ namespace tc
         for (const std::string& exe_name : target_app->exe_names_) {
             auto processes = ProcessHelper::GetProcessList();
             for (auto& process : processes) {
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_name_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
                 if (process_exe_name == exe_name) {
                     //LOGI("find target process exe: {}", exe_name);
                     auto ret = WinHelper::FindHwndByPid(process.pid_);
@@ -296,7 +296,7 @@ namespace tc
         if (settings_->capture_.capture_video_type_ == Capture::kVideoHook) {
             for (const auto &process: processes_info) {
                 auto result = WinHelper::IsDllInjected(process.pid_, kX86DllName, kX64DllName);
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_name_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
                 if (result.ok_ && result.value_) {
                     continue;
                 }
@@ -340,7 +340,7 @@ namespace tc
         for (const auto& process : processes) {
             if (process.pid_ == target_pid_) {
                 target_process_info = process;
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_name_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
                 //LOGI("Find the pid: {}, exe : {}", process.pid_, process.exe_name_);
                 break;
             }
@@ -350,7 +350,7 @@ namespace tc
             LOGE("Can't find app to inject, pid: {}, search for by exe: {}", target_pid_, target_exe_name);
             uint32_t pid_by_exe = 0;
             for (const auto& process : processes) {
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_name_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
                 if (process_exe_name == target_exe_name) {
                     //LOGI("find target process exe: {}, pid: {}", target_exe_name, pid_by_exe);
                     pid_by_exe = process.pid_;
@@ -369,7 +369,7 @@ namespace tc
         } else {
             // 单独采集的时候才尝试hook
             auto result = WinHelper::IsDllInjected(target_process_info.pid_, kX86DllName, kX64DllName);
-            auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info.exe_name_);
+            auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info.exe_full_path_);
             if (result.ok_ && result.value_) {
                 //LOGI("Pid: {} for: {} is already injected....", target_process_info.pid_, process_exe_name);
                 return;
@@ -431,7 +431,7 @@ namespace tc
 
     void AppManagerWinImpl::CloseCurrentApp() {
         for (const auto& pi : found_process_info_) {
-            LOGI("Will kill target pid: {}, exe: {}", pi.pid_, pi.exe_name_);
+            LOGI("Will kill target pid: {}, exe: {}", pi.pid_, pi.exe_full_path_);
             ProcessUtil::KillProcess(pi.pid_);
         }
     }

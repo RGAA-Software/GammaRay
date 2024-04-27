@@ -1,8 +1,8 @@
 //
 // Created by RGAA on 2023/12/20.
 //
-#include "apis.h"
 #include "http_handler.h"
+#include "apis.h"
 #include "tc_common_new/log.h"
 #include "gr_context.h"
 #include "tc_steam_manager_new/steam_manager.h"
@@ -11,7 +11,10 @@
 #include "gr_application.h"
 #include "manager/gr_server_manager.h"
 #include "tc_common_new/net_resp.h"
-#include "apis.h"
+#include "tc_3rdparty/json/json.hpp"
+#include "manager/run_game_manager.h"
+
+#include <boost/algorithm/string/trim.hpp>
 
 using namespace nlohmann;
 
@@ -21,6 +24,7 @@ namespace tc
     HttpHandler::HttpHandler(const std::shared_ptr<GrApplication>& app) {
         this->context_ = app->GetContext();
         this->app_ = app;
+        this->run_game_mgr_ = app->GetContext()->GetRunGameManager();
     }
 
     void HttpHandler::HandlePing(const httplib::Request &req, httplib::Response &res) {
@@ -43,17 +47,39 @@ namespace tc
     }
 
     void HttpHandler::HandleGameStart(const httplib::Request& req, httplib::Response& res) {
-//        auto app_mgr = app_->GetSrvManager();
-//        auto resp = app_mgr->Start();
-//        NetResp nr = NetResp::Make(resp.ok_ ? kNetOk : kStartFailed, "start app failed", "");
-//        res.set_content(nr.Dump(), "application/json");
+        LOGI("body: {}", req.body);
+        std::string game_path;
+        try {
+            auto obj = nlohmann::json::parse(req.body);
+            game_path = obj["game_path"].get<std::string>();
+            boost::trim(game_path);
+            if (game_path.empty()) {
+                LOGE("game path is empty");
+                return;
+            }
+        } catch (std::exception& e) {
+            LOGE("parse json failed, body:{}", req.body);
+            return;
+        }
 
-        NetResp nr = NetResp::Make(kNetOk, "start app failed", "");
+        auto start_result = this->run_game_mgr_->StartGame(game_path, {});
+        NetResp nr;
+        if (start_result.ok_) {
+            nr = NetResp::Make(kNetOk, "OK", "");
+        } else {
+            nr = NetResp::Make(kStartFailed, "start app failed", "");
+        }
         res.set_content(nr.Dump(), "application/json");
     }
 
     void HttpHandler::HandleGameStop(const httplib::Request& req, httplib::Response& res) {
 
+    }
+
+    void HttpHandler::HandleRunningGames(const httplib::Request& req, httplib::Response& res) {
+        auto run_games_info = this->run_game_mgr_->GetRunningGamesAsJson();
+        auto resp = WrapBasicInfo(200, "ok", run_games_info);
+        res.set_content(resp, "application/json");
     }
 
     // impl

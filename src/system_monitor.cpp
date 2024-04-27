@@ -62,7 +62,7 @@ namespace tc
                     auto resp = this->CheckServerAlive();
                     if (resp.ok_) {
                         if (resp.value_) {
-                            LOGI("server is already running...");
+                            //LOGI("server is already running...");
                             ctx_->SendAppMessage(MsgServerAlive {
                                 .alive_ = true,
                             });
@@ -70,13 +70,13 @@ namespace tc
                             LOGI("server is not running, we'll start it.");
                             this->StartServer();
                             // check again
-                            ctx_->PostDelayTask([=, this](){
+                            ctx_->PostUIDelayTask([=, this]() {
                                 // UI thread
                                 ctx_->PostTask([=, this]() {
                                     // Background thread
                                     auto resp = this->CheckServerAlive();
                                     auto started = resp.ok_ && resp.value_;
-                                    ctx_->SendAppMessage(MsgServerAlive {
+                                    ctx_->SendAppMessage(MsgServerAlive{
                                         .alive_ = started,
                                     });
                                 });
@@ -91,10 +91,12 @@ namespace tc
                 // check running game
                 {
                     auto rgm = ctx_->GetRunGameManager();
-                    rgm->CheckRunningGame();
+                    ctx_->PostTask([=, this]() {
+                        rgm->CheckRunningGame();
+                    });
                 }
 
-                std::this_thread::sleep_for(std::chrono::seconds(5));
+                std::this_thread::sleep_for(std::chrono::seconds(3));
             }
         }, "", false);
     }
@@ -111,7 +113,7 @@ namespace tc
         std::wstring path = L"C:\\Windows\\System32\\drivers\\ViGEmBus.sys";
 
         if (GetFileVersion(path, major, minor)) {
-            LOGI("ViGEmBus: {}.{}", major, minor);
+            //LOGI("ViGEmBus: {}.{}", major, minor);
             if (major > 1 || (major == 1 && minor >= 17)) {
                 return true;
             } else {
@@ -155,7 +157,7 @@ namespace tc
             LOGI("connect failed.");
             return false;
         } else {
-            LOGI("already tested, connect to vigem success.");
+            //LOGI("already tested, connect to vigem success.");
             return true;
         }
     }
@@ -186,7 +188,7 @@ namespace tc
 
         if (first_emit_state) {
             first_emit_state = false;
-            ctx_->PostDelayTask([=]() {
+            ctx_->PostUIDelayTask([=]() {
                 task();
             }, 250);
         } else {
@@ -213,9 +215,9 @@ namespace tc
 
         for (auto& p : processes) {
             //LOGI("p.exe_name: {}", p.exe_name_);
-            if (p.exe_name_.find("GammaRayServer.exe") != std::string::npos) {
+            if (p.exe_full_path_.find("GammaRayServer.exe") != std::string::npos) {
                 resp.value_ = true;
-                LOGI("Yes, find it.");
+                //LOGI("Yes, find it.");
                 break;
             }
         }

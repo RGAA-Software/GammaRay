@@ -20,6 +20,12 @@ namespace tc
     class TcDBGame;
     class SteamApp;
 
+    class RunningGame {
+    public:
+        std::shared_ptr<TcDBGame> game_;
+        std::vector<uint32_t> pids_;
+    };
+
     class RunGameManager {
     public:
 
@@ -34,6 +40,9 @@ namespace tc
 
         void CheckRunningGame();
 
+        [[nodiscard]] std::vector<std::shared_ptr<RunningGame>> GetRunningGames() const { return running_games_; }
+        std::string GetRunningGamesAsJson();
+
     private:
         std::shared_ptr<SteamApp> FindInSteamManager(const std::string& game_path);
         std::shared_ptr<TcDBGame> FindInDBGameManager(const std::string& game_path);
@@ -44,7 +53,7 @@ namespace tc
         std::shared_ptr<GrContext> gr_ctx_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
-        std::shared_ptr<TcDBGame> running_game_ = nullptr;
+        std::vector<std::shared_ptr<RunningGame>> running_games_;
     };
 
 }
