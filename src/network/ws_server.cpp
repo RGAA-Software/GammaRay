@@ -51,14 +51,15 @@ namespace tc
         }).bind_recv([&](auto &session_ptr, std::string_view data) {
             this->ParseBinaryMessage(data);
 
-        }).bind_connect([](auto &session_ptr) {
-//            printf("client enter : %s %u %s %u\n",
-//                   session_ptr->remote_address().c_str(), session_ptr->remote_port(),
-//                   session_ptr->local_address().c_str(), session_ptr->local_port());
+        }).bind_connect([=, this](std::shared_ptr<asio2::ws_session>& sess) {
+            auto socket_fd = (uint64_t)sess->socket().native_handle();
+            this->sessions_.Insert(socket_fd, sess);
+            LOGI("client connect : {}", socket_fd);
 
-        }).bind_disconnect([](auto &session_ptr) {
-            asio2::ignore_unused(session_ptr);
-            printf("client leave : %s\n", asio2::last_error_msg().c_str());
+        }).bind_disconnect([=, this](auto &sess) {
+            auto socket_fd = (uint64_t)sess->socket().native_handle();
+            this->sessions_.Remove(socket_fd);
+            LOGI("client leave : {}", socket_fd);
 
         }).bind_upgrade([](auto &session_ptr) {
             printf("client upgrade : %s %u %d %s\n",
