@@ -8,6 +8,8 @@
 #include <memory>
 #include <asio2/websocket/ws_server.hpp>
 
+#include "tc_common_new/concurrent_hashmap.h"
+
 namespace tc
 {
     class GrContext;
@@ -27,6 +29,7 @@ namespace tc
     private:
         std::shared_ptr<asio2::ws_server> server_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
+        ConcurrentHashMap<uint64_t, std::shared_ptr<asio2::ws_session>> sessions_;
     };
 }
 
