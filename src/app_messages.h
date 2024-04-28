@@ -42,6 +42,12 @@ namespace tc
     public:
     };
 
+    // running game ids
+    class MsgRunningGameIds {
+    public:
+        std::vector<uint32_t> game_ids_;
+    };
+
 }
 
 #endif // APP_MESSAGES_H

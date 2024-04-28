@@ -42,6 +42,8 @@ namespace tc
 
         [[nodiscard]] std::vector<std::shared_ptr<RunningGame>> GetRunningGames() const { return running_games_; }
         std::string GetRunningGamesAsJson();
+        std::string GetRunningGamesAsProto();
+        std::vector<uint32_t> GetRunningGameIds();
 
     private:
         std::shared_ptr<SteamApp> FindInSteamManager(const std::string& game_path);

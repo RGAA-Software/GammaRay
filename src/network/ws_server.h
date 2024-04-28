@@ -24,6 +24,7 @@ namespace tc
         void Start();
         void Exit();
 
+        void PostBinaryMessage(const std::string& msg);
         void ParseBinaryMessage(std::string_view msg);
 
     private:

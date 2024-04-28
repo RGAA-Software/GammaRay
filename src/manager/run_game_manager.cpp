@@ -12,6 +12,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_3rdparty/json/json.hpp"
+#include "tc_message_new/tc_message.pb.h"
 
 #include <shellapi.h>
 
@@ -209,6 +210,26 @@ namespace tc
             obj.push_back(item);
         }
         return obj.dump(2);
+    }
+
+    std::string RunGameManager::GetRunningGamesAsProto() {
+        tc::Message msg;
+        msg.set_type(tc::MessageType::kOnlineGames);
+        auto online_games = msg.mutable_online_games();
+        for (auto& rg : running_games_) {
+            auto game = online_games->Add();
+            game->set_game_id(rg->game_->game_id_);
+            game->set_game_exes(rg->game_->game_exes_);
+        }
+        return msg.SerializeAsString();
+    }
+
+    std::vector<uint32_t> RunGameManager::GetRunningGameIds() {
+        std::vector<uint32_t> game_ids;
+        for (auto& rg : running_games_) {
+            game_ids.push_back(rg->game_->game_id_);
+        }
+        return game_ids;
     }
 
 }

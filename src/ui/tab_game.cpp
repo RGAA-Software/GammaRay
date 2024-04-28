@@ -14,18 +14,20 @@
 #include <boost/format.hpp>
 #include <utility>
 
+#include "db/db_game.h"
+#include "db/db_game_manager.h"
 #include "gr_context.h"
+#include "app_messages.h"
 #include "widgets/main_item_delegate.h"
 #include "widgets/round_img_display.h"
 #include "widgets/cover_widget.h"
-#include "tc_common_new/task_runtime.h"
-#include "tc_steam_manager_new/steam_manager.h"
-#include "tc_steam_manager_new/steam_entities.h"
 #include "widgets/layout_helper.h"
-#include "db/db_game.h"
-#include "db/db_game_manager.h"
 #include "tc_common_new/log.h"
 #include "widget_decorator.h"
+#include "tc_common_new/task_runtime.h"
+#include "tc_common_new/message_notifier.h"
+#include "tc_steam_manager_new/steam_manager.h"
+#include "tc_steam_manager_new/steam_entities.h"
 
 namespace tc
 {
@@ -115,6 +117,14 @@ namespace tc
         list_widget_->show();
 
         setLayout(root_layout);
+
+        // listeners
+        msg_listener_->Listen<MsgRunningGameIds>([=, this](const MsgRunningGameIds& rgs) {
+            LOGI("Running ids: ");
+            for (auto& gid : rgs.game_ids_) {
+                LOGI("game id: {}", gid);
+            }
+        });
 
         ScanInstalledGames();
     }
