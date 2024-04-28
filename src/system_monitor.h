@@ -15,15 +15,16 @@ namespace tc
 
     class Thread;
     class GrContext;
+    class GrApplication;
     class VigemDriverManager;
     class MessageListener;
 
     class SystemMonitor {
     public:
 
-        static std::shared_ptr<SystemMonitor> Make(const std::shared_ptr<GrContext>& ctx);
+        static std::shared_ptr<SystemMonitor> Make(const std::shared_ptr<GrApplication>& app);
 
-        explicit SystemMonitor(const std::shared_ptr<GrContext>& ctx);
+        explicit SystemMonitor(const std::shared_ptr<GrApplication>& app);
         void Start();
         void Exit();
 
@@ -38,6 +39,8 @@ namespace tc
         void StartServer();
 
     private:
+
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> ctx_ = nullptr;
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         bool exit_ = false;

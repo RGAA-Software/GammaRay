@@ -48,7 +48,7 @@ namespace tc
         ws_server_ = WSServer::Make(context_);
         ws_server_->Start();
 
-        sys_monitor_ = SystemMonitor::Make(context_);
+        sys_monitor_ = SystemMonitor::Make(shared_from_this());
         sys_monitor_->Start();
 
         udp_broadcaster_ = UdpBroadcaster::Make(context_);

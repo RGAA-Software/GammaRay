@@ -30,6 +30,7 @@ namespace tc
         void Init();
 
         std::shared_ptr<GrContext> GetContext() { return context_; }
+        std::shared_ptr<WSServer> GetWSServer() { return ws_server_; }
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;

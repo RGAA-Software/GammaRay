@@ -4,6 +4,7 @@
 
 #include "system_monitor.h"
 #include "gr_context.h"
+#include "gr_application.h"
 #include "app_messages.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
@@ -14,6 +15,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "manager/gr_server_manager.h"
 #include "manager/run_game_manager.h"
+#include "network/ws_server.h"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -24,12 +26,13 @@
 namespace tc
 {
 
-    std::shared_ptr<SystemMonitor> SystemMonitor::Make(const std::shared_ptr<GrContext>& ctx) {
-        return std::make_shared<SystemMonitor>(ctx);
+    std::shared_ptr<SystemMonitor> SystemMonitor::Make(const std::shared_ptr<GrApplication>& app) {
+        return std::make_shared<SystemMonitor>(app);
     }
 
-    SystemMonitor::SystemMonitor(const std::shared_ptr<GrContext>& ctx) {
-        this->ctx_ = ctx;
+    SystemMonitor::SystemMonitor(const std::shared_ptr<GrApplication>& app) {
+        this->app_ = app;
+        this->ctx_ = app->GetContext();
     }
 
     void SystemMonitor::Start() {
@@ -93,6 +96,16 @@ namespace tc
                     auto rgm = ctx_->GetRunGameManager();
                     ctx_->PostTask([=, this]() {
                         rgm->CheckRunningGame();
+                        auto msg = rgm->GetRunningGamesAsProto();
+                        auto ws_server = app_->GetWSServer();
+                        if (ws_server) {
+                            ws_server->PostBinaryMessage(msg);
+                        }
+
+                        auto game_ids = rgm->GetRunningGameIds();
+                        ctx_->SendAppMessage(MsgRunningGameIds {
+                            .game_ids_ = game_ids,
+                        });
                     });
                 }
 

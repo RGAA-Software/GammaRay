@@ -25,28 +25,10 @@ namespace tc
         server_->bind_accept([&](std::shared_ptr<asio2::ws_session> &session_ptr) {
             // accept callback maybe has error like "Too many open files", etc...
             if (!asio2::get_last_error()) {
-                // Set the binary message write option.
                 session_ptr->ws_stream().binary(true);
-
-                // Set the text message write option. The sent text must be utf8 format.
-                //session_ptr->ws_stream().text(true);
-
-                // how to set custom websocket response data :
-                // the decorator is just a callback function, when the upgrade response is send,
-                // this callback will be called.
-                session_ptr->ws_stream().set_option(
-                        websocket::stream_base::decorator([session_ptr](websocket::response_type &rep) {
-                            // @see /asio2/example/websocket/client/websocket_client.cpp
-                            const websocket::request_type &req = session_ptr->get_upgrade_request();
-                            auto it = req.find(http::field::authorization);
-                            if (it != req.end())
-                                rep.set(http::field::authentication_results, "200 OK");
-                            else
-                                rep.set(http::field::authentication_results, "401 unauthorized");
-                        }));
             } else {
-                printf("error occurred when calling the accept function : %d %s\n",
-                       asio2::get_last_error_val(), asio2::get_last_error_msg().data());
+                LOGE("error occurred when calling the accept function, err: {}, msg: {}",
+                     asio2::get_last_error_val(), asio2::get_last_error_msg().data());
             }
         }).bind_recv([&](auto &session_ptr, std::string_view data) {
             this->ParseBinaryMessage(data);
@@ -62,19 +44,6 @@ namespace tc
             LOGI("client leave : {}", socket_fd);
 
         }).bind_upgrade([](auto &session_ptr) {
-            printf("client upgrade : %s %u %d %s\n",
-                   session_ptr->remote_address().c_str(), session_ptr->remote_port(),
-                   asio2::last_error_val(), asio2::last_error_msg().c_str());
-
-            // how to get the upgrade request data :
-            // @see /asio2/example/websocket/client/websocket_client.cpp
-            const websocket::request_type &req = session_ptr->get_upgrade_request();
-            auto it = req.find(http::field::authorization);
-            if (it != req.end()) {
-                beast::string_view auth = it->value();
-                std::cout << auth << std::endl;
-                        ASIO2_ASSERT(auth == "websocket-client-authorization");
-            }
 
         }).bind_start([&]() {
             if (asio2::get_last_error()) {
@@ -97,6 +66,12 @@ namespace tc
         if (server_) {
             server_->stop();
         }
+    }
+
+    void WSServer::PostBinaryMessage(const std::string& msg) {
+        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<asio2::ws_session>& sess) {
+            sess->async_send(msg);
+        });
     }
 
     void WSServer::ParseBinaryMessage(std::string_view msg) {
