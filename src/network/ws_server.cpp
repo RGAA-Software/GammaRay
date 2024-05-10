@@ -74,6 +74,12 @@ namespace tc
         });
     }
 
+    void WSServer::PostBinaryMessage(std::string_view msg) {
+        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<asio2::ws_session>& sess) {
+            sess->async_send(msg);
+        });
+    }
+
     void WSServer::ParseBinaryMessage(std::string_view msg) {
         auto proto_msg = std::make_shared<tc::Message>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
@@ -92,6 +98,9 @@ namespace tc
                 .msg_ = proto_msg,
                 .spectrum_ = spectrum,
             });
+
+            // todo: only send to client
+            this->PostBinaryMessage(msg);
         }
     }
 
