@@ -81,13 +81,22 @@ namespace tc
 
     }
 
-    void AppServer::PostMediaMessage(const std::string &data) {
+    void AppServer::PostVideoMessage(const std::string& data) {
+        media_routers_.ApplyAll([=](const auto &k, const auto &v) {
+            if (v->audio_only_) {
+                return;
+            }
+            v->PostBinaryMessage(data);
+        });
+    }
+
+    void AppServer::PostAudioMessage(const std::string& data) {
         media_routers_.ApplyAll([=](const auto &k, const auto &v) {
             v->PostBinaryMessage(data);
         });
     }
 
-    void AppServer::PostControlMessage(const std::string &data) {
+    void AppServer::PostControlMessage(const std::string& data) {
 
     }
 
@@ -109,6 +118,18 @@ namespace tc
         Connection::NotifyPeerDisconnected();
     }
 
+    bool AppServer::OnlyAudioClient() {
+        bool only_audio_client = true;
+        media_routers_.VisitAllCond([&](auto k, auto& v) -> bool {
+            if (!v->audio_only_) {
+                only_audio_client = false;
+                return true;
+            }
+            return false;
+        });
+        return only_audio_client;
+    }
+
     template<typename Server>
     void AppServer::AddWebsocketRouter(const std::string &path, const Server &s) {
         auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
@@ -120,15 +141,21 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlMedia) {
                     media_routers_.VisitAll([=](auto k, auto &v) mutable {
-                        v->OnMessage(sess_ptr, data);
+                        if (socket_fd == k) {
+                            v->OnMessage(sess_ptr, data);
+                        }
                     });
                 } else if (path == kUrlControl) {
                     control_routers_.VisitAll([=](auto k, auto &v) mutable {
-                        v->OnMessage(sess_ptr, data);
+                        if (socket_fd == k) {
+                            v->OnMessage(sess_ptr, data);
+                        }
                     });
                 } else if (path == kUrlIpc) {
                     ipc_routers_.VisitAll([=](auto k, auto& v) mutable {
-                        v->OnMessage(sess_ptr, data);
+                        if (socket_fd == k) {
+                            v->OnMessage(sess_ptr, data);
+                        }
                     });
                 }
             })

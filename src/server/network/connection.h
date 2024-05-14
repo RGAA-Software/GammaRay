@@ -26,14 +26,14 @@ namespace tc
         virtual void Start();
         virtual void Exit();
 
-        virtual void PostMediaMessage(const std::string& data);
+        virtual void PostVideoMessage(const std::string& data);
+        virtual void PostAudioMessage(const std::string& data);
         virtual void PostControlMessage(const std::string& data);
         virtual void PostIpcMessage(const std::string& data);
-
         virtual int GetConnectionPeerCount();
-
         virtual void NotifyPeerConnected();
         virtual void NotifyPeerDisconnected();
+        virtual bool OnlyAudioClient();
 
     protected:
 

@@ -275,7 +275,7 @@ namespace tc
                 auto encoded_data = Data::Make((char*)ef.data(), ef.size());
                 auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
                                                                   opus_encoder_->Channels(), opus_encoder_->Bits(), frame_size);
-                connection_->PostMediaMessage(net_msg);
+                connection_->PostAudioMessage(net_msg);
 
                 if (debug_opus_decoder_) {
                     if (!opus_decoder_) {
@@ -342,7 +342,7 @@ namespace tc
                 debug_encode_file_->Append(msg.image_->data->AsString());
                 LOGI("encoded frame callback, size: {}x{}, buffer size: {}", msg.frame_width_, msg.frame_height_, msg.image_->data->Size());
             }
-            connection_->PostMediaMessage(net_msg);
+            connection_->PostVideoMessage(net_msg);
         });
 
         auto fn_start_process = [=, this]() {
@@ -373,12 +373,17 @@ namespace tc
             } ();
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
                                                               msg.frame_height_, msg.key_frame_);
-            connection_->PostMediaMessage(net_msg);
+            connection_->PostVideoMessage(net_msg);
             statistics_->fps_video_encode_->Tick();
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
             if (!HasConnectedPeer()) {
+                LOGW("No have connected peer");
+                return;
+            }
+            if (!connection_ || connection_->OnlyAudioClient()) {
+                LOGW("Only have audio client.");
                 return;
             }
 

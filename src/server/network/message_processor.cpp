@@ -17,6 +17,7 @@
 #include "app/app_messages.h"
 #include "context.h"
 #include "statistics.h"
+#include "ws_media_router.h"
 
 namespace tc {
 
@@ -27,7 +28,7 @@ namespace tc {
         control_event_replayer_win_ = std::make_shared<ControlEventReplayerWin>();
     }
 
-    void MessageProcessor::HandleMessage(const std::string_view message_str) {
+    void MessageProcessor::HandleMessage(const std::shared_ptr<WsMediaRouter>& router, const std::string_view message_str) {
         auto msg = std::make_shared<Message>();
         auto parse_res = msg->ParseFromArray(message_str.data(), message_str.size());
         if(!parse_res) {
@@ -35,8 +36,10 @@ namespace tc {
             return;
         }
         switch (msg->type()) {
-            case kHello:
+            case kHello: {
+                this->ProcessHelloEvent(router, std::move(msg));
                 break;
+            }
             case kAck:
                 break;
             case kHeartBeat:
@@ -61,7 +64,24 @@ namespace tc {
                 ProcessClientStatistics(std::move(msg));
                 break;
             }
+            case kCursorInfoSync:
+                break;
+            case kCaptureStatistics:
+                break;
+            case kServerAudioSpectrum:
+                break;
+            case kOnlineGames:
+                break;
+            case MessageType_INT_MIN_SENTINEL_DO_NOT_USE_:
+                break;
+            case MessageType_INT_MAX_SENTINEL_DO_NOT_USE_:
+                break;
         }
+    }
+
+    void MessageProcessor::ProcessHelloEvent(const std::shared_ptr<WsMediaRouter>& router, std::shared_ptr<Message>&& msg) {
+        const auto& hello = msg->hello();
+        router->audio_only_ = hello.only_audio();
     }
 
     void MessageProcessor::ProcessMouseEvent(std::shared_ptr<Message>&& msg) {

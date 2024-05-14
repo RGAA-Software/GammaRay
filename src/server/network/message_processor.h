@@ -17,13 +17,15 @@ namespace tc
     class Settings;
     class Data;
     class Statistics;
+    class WsMediaRouter;
 
     class MessageProcessor {
     public :
         explicit MessageProcessor(const std::shared_ptr<Application>& app);
-        void HandleMessage(std::string_view message_str);
+        void HandleMessage(const std::shared_ptr<WsMediaRouter>& router, std::string_view message_str);
 
     private:
+        void ProcessHelloEvent(const std::shared_ptr<WsMediaRouter>& router, std::shared_ptr<Message>&& msg);
         void ProcessMouseEvent(std::shared_ptr<Message>&& msg);
         void ProcessKeyboardEvent(std::shared_ptr<Message>&& msg);
 #if ENABLE_SHM

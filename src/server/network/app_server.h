@@ -24,14 +24,14 @@ namespace tc
         void Start() override;
         void Exit() override;
 
-        void PostMediaMessage(const std::string &data) override;
-        void PostControlMessage(const std::string &data) override;
+        void PostVideoMessage(const std::string& data) override;
+        void PostAudioMessage(const std::string& data) override;
+        void PostControlMessage(const std::string& data) override;
         void PostIpcMessage(const std::string& msg) override;
-
         int GetConnectionPeerCount() override;
-
         void NotifyPeerConnected() override;
         void NotifyPeerDisconnected() override;
+        bool OnlyAudioClient() override;
 
     private:
 

@@ -33,7 +33,11 @@ namespace tc
 
     }
 
-    void Connection::PostMediaMessage(const std::string& data) {
+    void Connection::PostVideoMessage(const std::string& data) {
+
+    }
+
+    void Connection::PostAudioMessage(const std::string& data) {
 
     }
 
@@ -57,6 +61,10 @@ namespace tc
 
     void Connection::NotifyPeerDisconnected() {
         //context_->SendAppMessage(PeerDisconnectedMessage::Make());
+    }
+
+    bool Connection::OnlyAudioClient() {
+        return false;
     }
 
 }

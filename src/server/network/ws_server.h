@@ -6,6 +6,8 @@
 // !! deprecated !!
 // !! deprecated !!
 
+#if 000
+
 #ifndef TC_APPLICATION_WS_SERVER_H
 #define TC_APPLICATION_WS_SERVER_H
 
@@ -98,3 +100,5 @@ namespace tc
 }
 
 #endif //TC_APPLICATION_WS_SERVER_H
+
+#endif

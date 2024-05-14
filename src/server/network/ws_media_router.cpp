@@ -21,7 +21,7 @@ namespace tc
 
     void WsMediaRouter::OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
         WsRouter::OnMessage(sess_ptr, data);
-        Get<std::shared_ptr<MessageProcessor>>("proc")->HandleMessage(data);
+        Get<std::shared_ptr<MessageProcessor>>("proc")->HandleMessage(shared_from_this(), data);
     }
 
     void WsMediaRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {
