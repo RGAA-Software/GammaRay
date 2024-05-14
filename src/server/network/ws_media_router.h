@@ -12,7 +12,7 @@ namespace tc
 
     class Data;
 
-    class WsMediaRouter : public WsRouter {
+    class WsMediaRouter : public WsRouter, public std::enable_shared_from_this<WsMediaRouter> {
     public:
 
         static std::shared_ptr<WsMediaRouter> Make(const WsDataPtr& data) {

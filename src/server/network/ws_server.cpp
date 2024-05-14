@@ -2,6 +2,8 @@
 // Created by RGAA on 2024/1/25.
 //
 
+#if 000
+
 #include "ws_server.h"
 
 #include "tc_common_new/log.h"
@@ -182,3 +184,5 @@ namespace tc
     }
 
 }
+
+#endif
