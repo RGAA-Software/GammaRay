@@ -20,19 +20,12 @@ namespace tc
         }
 
         explicit WsMediaRouter(const WsDataPtr& data) : WsRouter(data) {}
-
         void OnOpen(std::shared_ptr<asio2::http_session> &sess_ptr) override;
-
         void OnClose(std::shared_ptr<asio2::http_session> &sess_ptr) override;
-
         void OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) override;
-
         void OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) override;
-
         void OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) override;
-
         void PostBinaryMessage(const std::shared_ptr<Data> &data) override;
-
         void PostBinaryMessage(const std::string &data) override;
 
     };

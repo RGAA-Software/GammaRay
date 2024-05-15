@@ -93,12 +93,12 @@ namespace tc
                 .statistics_ = capture_statistics,
             });
         } else if (proto_msg->type() == tc::kServerAudioSpectrum) {
-#if 0
             auto spectrum = proto_msg->server_audio_spectrum();
             context_->SendAppMessage(MsgServerAudioSpectrum {
                 .msg_ = proto_msg,
                 .spectrum_ = spectrum,
             });
+#if 0
             // todo: only send to client
             this->PostBinaryMessage(msg);
 #endif

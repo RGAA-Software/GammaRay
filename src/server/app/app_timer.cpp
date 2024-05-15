@@ -21,7 +21,7 @@ namespace tc
 
     void AppTimer::StartTimers() {
         auto durations = std::vector<AppTimerDuration>{
-            kTimerDuration1000, kTimerDuration2000, kTimerDuration100, kTimerDuration20,
+                kTimerDuration1000, kTimerDuration2000, kTimerDuration100, kTimerDuration16,
         };
         for (const auto& duration : durations) {
             auto timer_id = std::format("tid:{}", (int)duration);
@@ -38,8 +38,8 @@ namespace tc
             context_->SendAppMessage(MsgTimer2000{});
         } else if (duration == AppTimerDuration::kTimerDuration100) {
             context_->SendAppMessage(MsgTimer100{});
-        } else if (duration == AppTimerDuration::kTimerDuration20) {
-            context_->SendAppMessage(MsgTimer20{});
+        } else if (duration == AppTimerDuration::kTimerDuration16) {
+            context_->SendAppMessage(MsgTimer16{});
         }
     }
 
