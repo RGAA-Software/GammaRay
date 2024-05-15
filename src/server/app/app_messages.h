@@ -47,7 +47,7 @@ namespace tc
     public:
     };
 
-    class MsgTimer20 {
+    class MsgTimer16 {
     public:
     };
 

@@ -171,7 +171,7 @@ namespace tc
 #endif
         });
 
-        msg_listener_->Listen<MsgTimer20>([=, this](const MsgTimer20& msg) {
+        msg_listener_->Listen<MsgTimer16>([=, this](const MsgTimer16& msg) {
             this->PostGlobalTask([=, this]() {
                 this->ReportAudioSpectrum();
             });
@@ -241,7 +241,7 @@ namespace tc
             }
             memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
             memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
-            LOGI("fft : {} {}", fft_left.size(), fft_right.size());
+            //LOGI("fft : {} {}", fft_left.size(), fft_right.size());
         });
 
         audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
@@ -493,9 +493,15 @@ namespace tc
     }
 
     void Application::ReportAudioSpectrum() {
+        LOGI("ReportAudioSpectrum");
         auto msg = NetMessageMaker::MakeServerAudioSpectrumMsg();
         if (ws_client_) {
             ws_client_->PostNetMessage(msg);
+        }
+
+        // audio spectrum
+        if (connection_) {
+            connection_->PostAudioMessage(msg);
         }
     }
 
