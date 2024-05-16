@@ -127,9 +127,9 @@ namespace tc {
             auto hwnd = this->app_->GetAppManager()->GetWindowHandle();
             auto hwnd_ptr = reinterpret_cast<uint64_t>(hwnd);
 
-            auto msg = CaptureMessageMaker::MakeKeyboardEventMessage(hwnd_ptr, key_event.key_code(), key_event.down(),
+            auto keyboard_msg = CaptureMessageMaker::MakeKeyboardEventMessage(hwnd_ptr, key_event.key_code(), key_event.down(),
                 key_event.num_lock_status(), key_event.caps_lock_status());
-            auto msg_str = CaptureMessageMaker::ConvertMessageToString(msg);
+            auto msg_str = CaptureMessageMaker::ConvertMessageToString(keyboard_msg);
             // 2. post it
             PostIpcMessage(msg_str);
         }

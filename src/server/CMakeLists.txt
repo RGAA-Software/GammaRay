@@ -15,11 +15,9 @@ set(SRCS
     app.cpp
     context.cpp
     statistics.cpp
-    server_monitor.cpp
     network/app_server.cpp
     network/ws_media_router.cpp
     network/http_handler.cpp
-    network/session.cpp
     network/ws_server.cpp
     network/ws_ipc_router.cpp
     network/connection.cpp
