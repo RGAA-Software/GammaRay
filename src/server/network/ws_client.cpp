@@ -38,7 +38,7 @@ namespace tc
 
         }).bind_connect([&]() {
             if (asio2::get_last_error()) {
-                LOGI("connect failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
+                LOGE("connect failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }

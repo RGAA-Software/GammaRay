@@ -5,7 +5,6 @@
 #ifndef TC_APPLICATION_HTTP_HANDLER_H
 #define TC_APPLICATION_HTTP_HANDLER_H
 
-#include "app_server_config.h"
 #include <asio2/asio2.hpp>
 
 namespace tc

@@ -166,8 +166,6 @@ namespace tc
             return true;
         }
 
-        //StringExt::ToWString(config_exe_path);
-        //auto exe_path = std::filesystem::u8path(config_exe_path);
         if (!std::filesystem::exists(StringExt::ToWString(config_exe_path)) && !is_steam_url) {
             LOGE("Exe not exists: {}", config_exe_path);
             return false;
@@ -182,45 +180,6 @@ namespace tc
         });
         LOGE("we will use normal method to start, exe: {}", u8_exec);
         target_pid_ = ProcessUtil::StartProcess(u8_exec, args);
-
-#if 0
-        // 后面可以 如果要将目标进程启动在 特定桌面下，或者启动时 增加CREATE_SUSPENDED 标志位，在创建后立即进入暂停状态
-        STARTUPINFOW startup_info = { 0 };
-        startup_info.cb = sizeof(startup_info);
-
-        PROCESS_INFORMATION out_process_info = { 0 };
-
-        std::filesystem::path std_fpath{config_exe_path};
-        std::wstring parent_path = std_fpath.parent_path().wstring();
-
-        std::wstring arguments = StringExt::ToWString(settings_->app_.game_arguments_);
-        LPWSTR command = NULL;
-        std::wstring app_path = L"\"" + config_exe_path + L"\"";
-        std::wstring full_path = app_path;
-        if (!arguments.empty()) {
-            //fullPath += " \"" + args + "\"";
-            std::wstring args_mutable = arguments;
-            boost::trim(args_mutable);
-            std::vector<std::wstring> split_args;
-            boost::split(split_args, args_mutable, boost::is_any_of(" "));
-            if (split_args.size() > 0) {
-                for (auto& arg : split_args) {
-                    full_path += L" \"" + arg + L"\"";
-                }
-            }
-        }
-        if (!arguments.empty()) {
-            command = const_cast<LPWSTR>(full_path.c_str());
-        }
-
-        ret = CreateProcessW(exe_path.c_str(), command, NULL, NULL, FALSE,
-                       0, NULL, parent_path.c_str(), &startup_info, &out_process_info);
-
-        if(ret && out_process_info.hProcess != INVALID_HANDLE_VALUE) {
-            CloseHandle(out_process_info.hProcess);
-            out_process_info.hProcess = INVALID_HANDLE_VALUE;
-        }
-#endif
         return ret;
     }
 

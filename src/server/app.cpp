@@ -42,7 +42,6 @@
 #include "tc_common_new/win32/win_helper.h"
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
-#include "server_monitor.h"
 #include "statistics.h"
 #include "app/fft_32.h"
 
@@ -126,10 +125,6 @@ namespace tc
             }
         }
 
-        // system monitor
-        server_monitor_ = ServerMonitor::Make(shared_from_this());
-        server_monitor_->Start();
-
         while (!exit_app_) {
             std::unique_lock<std::mutex> guard(app_msg_cond_mtx_);
             app_msg_cond_.wait(guard, [=, this]() -> bool {
@@ -159,14 +154,12 @@ namespace tc
     void Application::InitMessages() {
         msg_listener_->Listen<MsgBeforeInject>([=, this](const MsgBeforeInject& msg) {
 #if ENABLE_SHM
-            LOGI("----Before inject: {}", msg.pid_);
             this->WriteBoostUpInfoForPid(msg.pid_);
 #endif
         });
 
         msg_listener_->Listen<MsgObsInjected>([=, this](const MsgObsInjected& msg) {
 #if ENABLE_SHM
-            LOGI("===> Will send MsgObsInjected...");
             this->InitHostIpcManager(msg.pid_);
 #endif
         });
@@ -379,11 +372,9 @@ namespace tc
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
             if (!HasConnectedPeer()) {
-                LOGW("No have connected peer");
                 return;
             }
             if (!connection_ || connection_->OnlyAudioClient()) {
-                LOGW("Only have audio client.");
                 return;
             }
 
@@ -493,7 +484,6 @@ namespace tc
     }
 
     void Application::ReportAudioSpectrum() {
-        LOGI("ReportAudioSpectrum");
         auto msg = NetMessageMaker::MakeServerAudioSpectrumMsg();
         if (ws_client_) {
             ws_client_->PostNetMessage(msg);

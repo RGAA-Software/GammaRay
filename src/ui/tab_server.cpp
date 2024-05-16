@@ -15,6 +15,7 @@
 #include <boost/format.hpp>
 #include <utility>
 #include <QPushButton>
+#include <QComboBox>
 
 #include <boost/format.hpp>
 #include "gr_context.h"
@@ -262,7 +263,7 @@ namespace tc
                     layout->addLayout(item_layout);
                 }
 
-                // tc_application server port
+                // GammaRayServer port
                 {
                     auto item_layout = new NoMarginHLayout();
                     item_layout->addSpacing(margin_left);
@@ -284,6 +285,36 @@ namespace tc
                     item_layout->addWidget(value);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
+                }
+
+                // Capture monitor
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(margin_left);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Capture Monitor"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto value = new QComboBox(this);
+                    value->setFixedSize(140, 30);
+                    value->addItem("://DISPLAY 1");
+                    value->addItem("://DISPLAY 2");
+                    //value->setText(std::to_string(settings_->network_listen_port_).c_str());
+                    value->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(value);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+
+                    connect(value, &QComboBox::currentTextChanged, this, [](const QString& item) {
+                        LOGI("current item: {}", item.toStdString());
+                    });
                 }
 
                 {

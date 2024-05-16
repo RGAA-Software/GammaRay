@@ -44,7 +44,6 @@ namespace tc
     class CaptureVideoFrame;
     class VigemController;
     class VigemDriverManager;
-    class ServerMonitor;
     class Statistics;
     class WSClient;
 
@@ -126,8 +125,6 @@ namespace tc
 
         std::shared_ptr<Thread> control_thread_ = nullptr;
         std::shared_ptr<VigemController> vigem_controller_ = nullptr;
-
-        std::shared_ptr<ServerMonitor> server_monitor_ = nullptr;
 
         uint64_t last_capture_screen_time_ = 0;
         uint64_t last_post_video_time_ = 0;
