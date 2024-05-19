@@ -224,7 +224,7 @@ namespace tc
             std::vector<double> fft_right;
             FFT32::DoFFT(fft_left, left, 960);
             FFT32::DoFFT(fft_right, right, 960);
-            int cpy_size = 160;
+            int cpy_size = 120;
             if (fft_left.size() < cpy_size || fft_right.size() < cpy_size) {
                 return;
             }
