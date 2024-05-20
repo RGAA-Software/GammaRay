@@ -28,6 +28,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
+#include "game_info_preview.h"
 
 namespace tc
 {
@@ -38,8 +39,6 @@ namespace tc
         LayoutHelper::ClearMargins(root_layout);
 
         list_widget_ = new QListWidget(this);
-        //list_widget_->verticalScrollBar()->setStyleSheet(Style::GetScrollBar().c_str());
-
         auto delegate = new MainItemDelegate(this);
         list_widget_->setItemDelegate(delegate);
 
@@ -87,7 +86,7 @@ namespace tc
             if (index < 0 || index >= games_.size()) {
                 return;
             }
-            auto wp_entity = games_.at(index);
+            auto game = games_.at(index);
 
             std::vector<QString> actions {
                 tr("11111111"),
@@ -103,8 +102,10 @@ namespace tc
                 WidgetDecorator::DecoratePopMenu(pop_menu);
                 pop_menu->addAction(action);
 
-                QObject::connect(action, &QAction::triggered, this, [=]() {
-
+                QObject::connect(action, &QAction::triggered, this, [=, this]() {
+                    GameInfoPreview preview(app_, game);
+                    preview.setFixedSize(480, 320);
+                    preview.exec();
                 });
             }
 
