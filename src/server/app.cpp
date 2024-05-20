@@ -247,7 +247,8 @@ namespace tc
             }
 
             audio_cache_->Append(data->DataAddr(), data->Size());
-            if (++audio_callback_count_ < 6) {
+            // 2 or 6
+            if (++audio_callback_count_ < 2) {
                 return;
             }
 
