@@ -13,25 +13,14 @@ namespace tc
 {
 
     class QtCircle : public EffectWidget {
-    //Q_OBJECT
 
     public:
         explicit QtCircle(QWidget *parent = nullptr);
         void paintEvent(QPaintEvent *event) override;
 
     private:
-
-        float step = 3.5f;
-        float rotate = 0;
-        long color_count = 0;
-        long long start = 0;
-        float delta = 0;
-
-        int bar_size = kMaxBars / 2;
-        QPixmap pixmap;
-
-    signals:
-
+        float rotate_ = 0;
+        long color_count_ = 0;
     };
 
 }

@@ -12,6 +12,7 @@
 #include "stat_chart.h"
 #include "gr_statistics.h"
 #include "gr_context.h"
+#include "gr_application.h"
 #include "app_messages.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
@@ -27,7 +28,7 @@ constexpr auto kChartRecvVideoFrame = "Recv Video Gap";
 namespace tc
 {
 
-    RnApp::RnApp(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    RnApp::RnApp(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto root_layout = new NoMarginVLayout();
         auto place_holder = new QLabel();
         place_holder->setFixedWidth(1300);
@@ -251,7 +252,7 @@ namespace tc
         }
 
         {
-            auto chart = new StatChart(ctx, {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
+            auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
             stat_chart_ = chart;
             chart->setFixedSize(1100, 400);
             root_layout->addWidget(chart);

@@ -32,7 +32,7 @@
 namespace tc
 {
 
-    TabGame::TabGame(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TabBase(ctx, parent) {
+    TabGame::TabGame(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent) {
         steam_mgr_ = context_->GetSteamManager();
         auto root_layout = new QVBoxLayout();
         LayoutHelper::ClearMargins(root_layout);

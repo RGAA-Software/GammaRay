@@ -12,7 +12,7 @@ namespace tc
 
     class StInput : public TabBase {
     public:
-        StInput(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
+        StInput(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~StInput() = default;
 
         void OnTabShow() override;

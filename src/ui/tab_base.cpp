@@ -5,14 +5,16 @@
 #include "tab_base.h"
 #include "gr_settings.h"
 #include "gr_context.h"
+#include "gr_application.h"
 #include "tc_common_new/message_notifier.h"
 
 namespace tc
 {
-    TabBase::TabBase(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent) {
-        context_ = ctx;
+    TabBase::TabBase(const std::shared_ptr<GrApplication>& app, QWidget* parent) : QWidget(parent) {
+        app_ = app;
+        context_ = app->GetContext();
         settings_ = GrSettings::Instance();
-        msg_listener_ = ctx->GetMessageNotifier()->CreateListener();
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
     }
 
     TabBase::~TabBase() {

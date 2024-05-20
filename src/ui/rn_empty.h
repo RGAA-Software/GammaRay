@@ -12,7 +12,7 @@ namespace tc
 
     class RnEmpty : public TabBase {
     public:
-        RnEmpty(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
+        RnEmpty(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~RnEmpty() = default;
 
         void OnTabShow() override;

@@ -36,9 +36,9 @@
 namespace tc
 {
 
-    TabServer::TabServer(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         statistics_ = GrStatistics::Instance();
-        auto broadcast_msg = ctx->MakeBroadcastMessage();
+        auto broadcast_msg = context_->MakeBroadcastMessage();
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
         // root layout
         auto root_layout = new QVBoxLayout();
@@ -356,7 +356,7 @@ namespace tc
             auto layout = new QVBoxLayout();
             LayoutHelper::ClearMargins(layout);
             rn_stack_ = new QStackedWidget(this);
-            rn_app_ = new RnApp(context_, this);
+            rn_app_ = new RnApp(app_, this);
             //rn_empty_ = new RnEmpty(context_, this);
             //rn_stack_->addWidget(rn_empty_);
             rn_stack_->addWidget(rn_app_);

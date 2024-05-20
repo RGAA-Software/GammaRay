@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    StClient::StClient(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    StClient::StClient(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         setStyleSheet("background: #9cc090;");
     }
 

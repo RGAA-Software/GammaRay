@@ -14,7 +14,7 @@
 namespace tc
 {
 
-    TabSettings::TabSettings(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TabBase(ctx, parent) {
+    TabSettings::TabSettings(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent) {
         auto root_layout = new NoMarginHLayout();
 
         auto left_button_layout = new NoMarginVLayout();
@@ -112,11 +112,11 @@ namespace tc
 
         {
             // tabs
-            tabs_.insert({StTabName::kStClient, new StClient(context_, this)});
-            tabs_.insert({StTabName::kStInput, new StInput(context_, this)});
-            tabs_.insert({StTabName::kStMedia, new StMedia(context_, this)});
-            tabs_.insert({StTabName::kStNetwork, new StNetwork(context_, this)});
-            tabs_.insert({StTabName::kStEncoder, new StEncoder(context_, this)});
+            tabs_.insert({StTabName::kStClient, new StClient(app_, this)});
+            tabs_.insert({StTabName::kStInput, new StInput(app_, this)});
+            tabs_.insert({StTabName::kStMedia, new StMedia(app_, this)});
+            tabs_.insert({StTabName::kStNetwork, new StNetwork(app_, this)});
+            tabs_.insert({StTabName::kStEncoder, new StEncoder(app_, this)});
 
             tabs_[StTabName::kStClient]->SetAttach(btn_client_);
             tabs_[StTabName::kStInput]->SetAttach(btn_input_);

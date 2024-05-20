@@ -23,7 +23,7 @@ namespace tc
 
     class TabServer : public TabBase {
     public:
-        explicit TabServer(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
+        explicit TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~TabServer() override;
 
         void OnTabShow() override;

@@ -12,16 +12,16 @@ QtVertical::QtVertical(QWidget* parent) : EffectWidget(parent) {
 }
 
 void QtVertical::paintEvent(QPaintEvent* event) {
-    std::lock_guard<std::mutex> guard(data_mtx);
+    std::lock_guard<std::mutex> guard(data_mtx_);
 
-    if (left_new_bars.empty()) {
+    if (left_new_bars_.empty()) {
         return;
     }
-    if (left_bars.size() != left_new_bars.size()) {
-        left_bars.resize(left_new_bars.size());
+    if (left_bars.size() != left_new_bars_.size()) {
+        left_bars.resize(left_new_bars_.size());
     }
 
-    FallDownBars(left_bars, left_new_bars);
+    FallDownBars(left_bars, left_new_bars_);
 
     auto filter_left_data = left_bars;
 

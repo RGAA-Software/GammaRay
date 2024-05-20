@@ -12,11 +12,12 @@ namespace tc
 {
     class GrContext;
     class GrSettings;
+    class GrApplication;
     class MessageListener;
 
     class TabBase : public QWidget {
     public:
-        explicit TabBase(const std::shared_ptr<GrContext>& ctx, QWidget* parent);
+        explicit TabBase(const std::shared_ptr<GrApplication>& app, QWidget* parent);
         ~TabBase() override;
         virtual void OnTabShow();
         virtual void OnTabHide();
@@ -25,6 +26,7 @@ namespace tc
         QObject* GetAttach() {return attach_;}
 
     protected:
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         QObject* attach_ = nullptr;
         GrSettings* settings_ = nullptr;
