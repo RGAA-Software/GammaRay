@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    StNetwork::StNetwork(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    StNetwork::StNetwork(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         setStyleSheet("background: #9ff090;");
     }
 

@@ -23,7 +23,6 @@ namespace tc
     void WSServer::Start() {
         server_ = std::make_shared<asio2::ws_server>();
         server_->bind_accept([&](std::shared_ptr<asio2::ws_session> &session_ptr) {
-            // accept callback maybe has error like "Too many open files", etc...
             if (!asio2::get_last_error()) {
                 session_ptr->ws_stream().binary(true);
             } else {
@@ -47,7 +46,7 @@ namespace tc
 
         }).bind_start([&]() {
             if (asio2::get_last_error()) {
-                LOGE("start websocket server failure : %s %u %d %s\n",
+                LOGE("start websocket server failure, address: {}, listen port: {}, error val: {}, error msg: {}",
                        server_->listen_address().c_str(), server_->listen_port(),
                        asio2::last_error_val(), asio2::last_error_msg().c_str());
             }
@@ -99,7 +98,7 @@ namespace tc
                 .spectrum_ = spectrum,
             });
 #if 0
-            // todo: only send to client
+            // !! deprecated !!
             this->PostBinaryMessage(msg);
 #endif
         }

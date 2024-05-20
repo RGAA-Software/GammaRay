@@ -17,8 +17,6 @@
 namespace tc
 {
 
-    constexpr auto kMaxBars = 480;
-
     class EffectWidget : public QWidget {
     public:
         explicit EffectWidget(QWidget *parent = nullptr) : QWidget(parent) {
@@ -54,40 +52,36 @@ namespace tc
         }
 
         void OnDataComing(const std::vector<double> &left, const std::vector<double> &right) {
-            counts++;
-            if (counts % 3 != 0) {
+            counts_++;
+            if (counts_ % 3 != 0) {
                 return;
             }
 
-            std::lock_guard<std::mutex> guard(data_mtx);
-            if (left_new_bars.size() != left.size()) {
-                left_new_bars.resize(left.size());
+            std::lock_guard<std::mutex> guard(data_mtx_);
+            if (left_new_bars_.size() != left.size()) {
+                left_new_bars_.resize(left.size());
             }
-            if (right_new_bars.size() != right.size()) {
-                right_new_bars.resize(right.size());
+            if (right_new_bars_.size() != right.size()) {
+                right_new_bars_.resize(right.size());
             }
 
-            memcpy(left_new_bars.data(), left.data(), left.size() * sizeof(double));
-            memcpy(right_new_bars.data(), right.data(), right.size() * sizeof(double));
+            memcpy(left_new_bars_.data(), left.data(), left.size() * sizeof(double));
+            memcpy(right_new_bars_.data(), right.data(), right.size() * sizeof(double));
 
-            MonsterCatFilter::FilterBars(left_new_bars);
-            MonsterCatFilter::FilterBars(right_new_bars);
-
+            MonsterCatFilter::FilterBars(left_new_bars_);
+            MonsterCatFilter::FilterBars(right_new_bars_);
         }
 
     protected:
-        std::mutex data_mtx;
 
+        std::mutex data_mtx_;
         std::vector<double> left_bars;
-        std::vector<double> left_new_bars;
-
+        std::vector<double> left_new_bars_;
         std::vector<double> right_bars;
-        std::vector<double> right_new_bars;
-
-        std::vector<double> origin_left_bars;
-        std::vector<double> origin_right_bars;
-
-        long counts = 0;
+        std::vector<double> right_new_bars_;
+        std::vector<double> origin_left_bars_;
+        std::vector<double> origin_right_bars_;
+        long counts_ = 0;
     };
 
     typedef std::shared_ptr<EffectWidget> EffectWidgetPtr;

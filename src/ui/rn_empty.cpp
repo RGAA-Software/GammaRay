@@ -12,7 +12,7 @@
 namespace tc
 {
 
-    RnEmpty::RnEmpty(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    RnEmpty::RnEmpty(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto root_layout = new NoMarginVLayout();
         root_layout->addStretch();
         {

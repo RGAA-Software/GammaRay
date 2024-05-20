@@ -12,7 +12,7 @@ namespace tc
 
     class StNetwork : public TabBase {
     public:
-        StNetwork(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
+        StNetwork(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~StNetwork() = default;
 
         void OnTabShow() override;

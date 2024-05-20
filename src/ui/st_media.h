@@ -12,7 +12,7 @@ namespace tc
 
     class StMedia : public TabBase {
     public:
-        StMedia(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
+        StMedia(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~StMedia() = default;
 
         void OnTabShow() override;

@@ -125,9 +125,9 @@ namespace tc
         // right panels
         {
             // tabs
-            tabs_.insert({TabName::kTabServer, new TabServer(app_->GetContext(), this)});
-            tabs_.insert({TabName::kTabGames, new TabGame(app_->GetContext(), this)});
-            tabs_.insert({TabName::kTabSettings, new TabSettings(app_->GetContext(), this)});
+            tabs_.insert({TabName::kTabServer, new TabServer(app_, this)});
+            tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
+            tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);

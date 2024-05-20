@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    StEncoder::StEncoder(const std::shared_ptr<GrContext>& ctx, QWidget *parent) : TabBase(ctx, parent) {
+    StEncoder::StEncoder(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         setStyleSheet("background: #909090;");
     }
 

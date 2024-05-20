@@ -15,7 +15,7 @@ namespace tc
 
     class RnApp : public TabBase {
     public:
-        RnApp(const std::shared_ptr<GrContext>& ctx, QWidget *parent);
+        RnApp(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~RnApp() = default;
 
         void OnTabShow() override;
