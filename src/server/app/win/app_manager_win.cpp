@@ -97,33 +97,36 @@ namespace tc
             return true;
         }
 
-        // use easyhook to start
-        auto result = RhCreateAndInject(
-                const_cast<wchar_t *>(exec.data()),
-                const_cast<wchar_t *>(arguments.data()),
-                0,
-                EASYHOOK_INJECT_DEFAULT,
-                const_cast<wchar_t *>(x86_dll.data()),
-                const_cast<wchar_t *>(x64_dll.data()),
-                &inject_params,
-                sizeof(InjectParams),
-                &target_pid_
-        );
-        if (result >= 0) {
-            LOGI("Start & Hook success...");
-            return true;
-        } else {
-            std::vector<std::string> args;
-            auto u8_exec = StringExt::ToUTF8(exec);
-            boost::algorithm::split(args, settings_->app_.game_arguments_, boost::is_any_of(" "));
-            std::erase_if(args, [](std::string& arg) -> bool {
-                boost::trim(arg);
-                return arg.empty();
-            });
-            LOGE("EasyHook start failed : {}, we will use normal method to start, exe: {}", result, u8_exec);
-            target_pid_ = ProcessUtil::StartProcess(u8_exec, args);
-            return false;
-        }
+//        // use easyhook to start
+//        auto result = RhCreateAndInject(
+//                const_cast<wchar_t *>(exec.data()),
+//                const_cast<wchar_t *>(arguments.data()),
+//                0,
+//                EASYHOOK_INJECT_DEFAULT,
+//                const_cast<wchar_t *>(x86_dll.data()),
+//                const_cast<wchar_t *>(x64_dll.data()),
+//                &inject_params,
+//                sizeof(InjectParams),
+//                &target_pid_
+//        );
+//        if (result >= 0) {
+//            LOGI("Start & Hook success...");
+//            return true;
+//        } else {
+//
+//        }
+
+        std::vector<std::string> args;
+        auto u8_exec = StringExt::ToUTF8(exec);
+        boost::algorithm::split(args, settings_->app_.game_arguments_, boost::is_any_of(" "));
+        std::erase_if(args, [](std::string& arg) -> bool {
+            boost::trim(arg);
+            return arg.empty();
+        });
+        LOGI("we will use normal method to start, exe: {}", u8_exec);
+        target_pid_ = ProcessUtil::StartProcess(u8_exec, args);
+        LOGI("After started, the pid is: {}", target_pid_);
+        return false;
     }
 
     bool AppManagerWinImpl::StartProcess() {
@@ -167,7 +170,7 @@ namespace tc
             boost::trim(arg);
             return arg.empty();
         });
-        LOGE("we will use normal method to start, exe: {}", u8_exec);
+        LOGI("we will use normal method to start, exe: {}", u8_exec);
         target_pid_ = ProcessUtil::StartProcess(u8_exec, args);
         return ret;
     }
@@ -434,7 +437,7 @@ namespace tc
         if (!exist) {
             found_process_info_.push_back(target_pi);
         }
-        LOGI("found pid count: {}", found_process_info_.size());
+        //LOGI("found pid count: {}", found_process_info_.size());
     }
 
 }

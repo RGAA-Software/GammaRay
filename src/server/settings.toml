@@ -112,8 +112,8 @@ listening-port = 20371
 #game-path = "steam://open/bigpicture"
 
 # 启动参数
-#game-arguments = ""
-game-arguments = "-force-d3d11 -D3D11 -dx11"
+game-arguments = ""
+#game-arguments = "-force-d3d11 -D3D11 -dx11"
 #game-arguments = "-force-d3d12 -D3D12 -dx12"
 # 跟game-path是exe路径的情况下一样
 #running-path = "C:/Program Files (x86)/Steam/steamapps/common/zjjt/Legion of Valkyrie.exe"
