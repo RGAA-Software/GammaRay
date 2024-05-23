@@ -37,7 +37,6 @@ namespace tc
     class OpusAudioEncoder;
     class OpusAudioDecoder;
     class CommandManager;
-    class DynWebRtcServerApi;
     class ServerCast;
     class AppSharedInfo;
     class Message;
@@ -118,7 +117,6 @@ namespace tc
 
         std::shared_ptr<CommandManager> command_mgr_ = nullptr;
 
-        std::shared_ptr<DynWebRtcServerApi> rtc_server_ = nullptr;
         //std::shared_ptr<ServerCast> server_cast_ = nullptr;
 
         std::shared_ptr<AppSharedInfo> app_shared_info_ = nullptr;
