@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
     // 1. load from config.toml
     auto settings = Settings::Instance();
     settings->LoadSettings("settings.toml");
-    UpdateSettings(settings);
+    //UpdateSettings(settings);
     auto settings_str = settings->Dump();
     LOGI("\n" + settings_str);
 
