@@ -5,6 +5,7 @@
 #include "control_event_replayer_win.h"
 #include <Windows.h>
 #include "settings/settings.h"
+#include "tc_message.pb.h"
 
 namespace tc
 {
@@ -266,18 +267,45 @@ namespace tc
         }
     }
 
-    void ControlEventReplayerWin::PlayGlobalMouseEvent(int monitor_index, float x_ration, float y_ration, int buttonmask, int data) {
+    void ControlEventReplayerWin::PlayGlobalMouseEvent(int monitor_index, float x_ration, float y_ration, int buttons, int data) {
         // to do 这里假定 服务端就一个屏幕 test, 等会就要兼容多屏
-        int x = x_ration * 65535;
-        int y = y_ration * 65535;
+        int x = (int)(x_ration * 65535);
+        int y = (int)(y_ration * 65535);
         INPUT evt;
         evt.type = INPUT_MOUSE;
         evt.mi.dx = x;
         evt.mi.dy = y;
         // to do ，这里暂定使用 绝对模式，虚拟桌面映射
-        buttonmask |= MOUSEEVENTF_ABSOLUTE;
-        buttonmask |= MOUSEEVENTF_VIRTUALDESK;
-        evt.mi.dwFlags = buttonmask;
+        int target_buttons = 0;
+        if (buttons & ButtonFlag::kMouseMove) {
+            target_buttons |= MOUSEEVENTF_MOVE;
+        }
+        if (buttons & ButtonFlag::kLeftMouseButtonDown) {
+            target_buttons |= MOUSEEVENTF_LEFTDOWN;
+        }
+        if (buttons & ButtonFlag::kRightMouseButtonDown) {
+            target_buttons |= MOUSEEVENTF_RIGHTDOWN;
+        }
+        if (buttons & ButtonFlag::kMiddleMouseButtonDown) {
+            target_buttons |= MOUSEEVENTF_MIDDLEDOWN;
+        }
+        if (buttons & ButtonFlag::kLeftMouseButtonUp) {
+            target_buttons |= MOUSEEVENTF_LEFTUP;
+        }
+        if (buttons & ButtonFlag::kRightMouseButtonUp) {
+            target_buttons |= MOUSEEVENTF_RIGHTUP;
+        }
+        if (buttons & ButtonFlag::kMiddleMouseButtonUp) {
+            target_buttons |= MOUSEEVENTF_MIDDLEUP;
+        }
+        if (buttons & ButtonFlag::kMouseEventWheel) {
+            target_buttons |= MOUSEEVENTF_WHEEL;
+        }
+
+        target_buttons |= MOUSEEVENTF_ABSOLUTE;
+        target_buttons |= MOUSEEVENTF_VIRTUALDESK;
+
+        evt.mi.dwFlags = target_buttons;
         evt.mi.dwExtraInfo = 0;
         evt.mi.mouseData = data;
         evt.mi.time = 0;
