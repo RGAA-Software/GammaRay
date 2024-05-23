@@ -29,15 +29,9 @@ namespace tc
         virtual void* GetWindowHandle() = 0;
         virtual void CloseCurrentApp();
 
-    private:
-        //void InitSteamManager();
-
     protected:
-
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        //std::shared_ptr<SteamManager> steam_manager_ = nullptr;
-
     };
 
 }

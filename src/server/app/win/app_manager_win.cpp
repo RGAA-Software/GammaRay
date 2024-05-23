@@ -56,18 +56,7 @@ namespace tc
             msg_listener_->Listen<MsgTimer100>([=, this](const auto &msg) {
                 context_->PostInTaskRuntime([=, this]() {
                     this->InjectCaptureDllIfNeeded();
-                    HWND hwnd = target_window_info_.win_handle;
-#if 0
-                    // todo:条件改成 win_handle能取得窗口的大小，不仅仅判断不为空
-                    if (target_pid_ > 0 /*&& !target_window_info_.win_handle*/) {
-                        auto infos = this->SearchWindowByPid(target_pid_);
-                        target_window_info_ = GetTargetWindowInfo(infos);
-                        if (hwnd) {
-                            bool bVisible = (::GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE) != 0;
-                            bool v = IsWindowVisible(hwnd);
-                        }
-                    }
-#endif
+                    //HWND hwnd = target_window_info_.win_handle;
                 });
             });
         }
@@ -340,7 +329,7 @@ namespace tc
 
             // before inject
             MsgBeforeInject msg_before_inject{
-                    .pid_ = target_process_info.pid_,
+                .pid_ = target_process_info.pid_,
             };
             context_->SendAppMessage(msg_before_inject);
 
@@ -402,7 +391,6 @@ namespace tc
                 //LOGI("pid : {}, exe : {}, title : {}, class : {}",
                 //         info.pid, StringExt::ToUTF8(info.exe_name).c_str(), StringExt::ToUTF8(info.title).c_str(), info.claxx );
                 auto size = info.GetWindowSize();
-                //LOGI("//width : {}, height : {}", size.first, size.second);
             }
         }
         return infos;

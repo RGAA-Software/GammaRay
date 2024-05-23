@@ -21,7 +21,7 @@ namespace tc
 
     void AppTimer::StartTimers() {
         auto durations = std::vector<AppTimerDuration>{
-                kTimerDuration1000, kTimerDuration2000, kTimerDuration100, kTimerDuration16,
+            kTimerDuration1000, kTimerDuration2000, kTimerDuration100, kTimerDuration16,
         };
         for (const auto& duration : durations) {
             auto timer_id = std::format("tid:{}", (int)duration);

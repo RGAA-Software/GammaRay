@@ -16,6 +16,7 @@
 
 #include "tc_capture_new/capture_message.h"
 
+// !! deprecated !!
 namespace tc
 {
 

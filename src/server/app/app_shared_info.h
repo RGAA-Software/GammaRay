@@ -24,24 +24,19 @@ namespace tc
     // write information to shared memory, so the dll can read the shm after it is injected.
     class AppSharedInfo {
     public:
-
         static std::shared_ptr<AppSharedInfo> Make(const std::shared_ptr<Context>& ctx);
 
         explicit AppSharedInfo(const std::shared_ptr<Context>& ctx);
-
         // write data to target shared memory
         void WriteData(const std::string& shm_name, const std::string& data);
-
         void Exit();
 
     private:
         void GuaranteeTargetMemory(const std::string& shm_name);
 
     private:
-
         std::shared_ptr<Context> context_ = nullptr;
         std::map<std::string, std::shared_ptr<Poco::SharedMemory>> target_memories_;
-
     };
 
 }

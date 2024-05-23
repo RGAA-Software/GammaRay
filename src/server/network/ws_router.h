@@ -35,8 +35,6 @@ namespace tc
         virtual void OnOpen(std::shared_ptr<asio2::http_session>& sess_ptr) {
             session_ = sess_ptr;
             session_->ws_stream().binary(true);
-            // how to send a message to client when the websocket connection is connected.
-            // can't use session_ptr->async_send(...) directly, because the websocket connection is not ready.
             session_->post_queued_event([=]() {
                 //session_->async_send("eg: hello websocket");
             });
@@ -70,14 +68,13 @@ namespace tc
         }
 
     protected:
-
         std::shared_ptr<WsData> ws_data_ = nullptr;
         std::shared_ptr<asio2::http_session> session_ = nullptr;
-
         std::atomic_int queued_message_count_ = 0;
 
     public:
         bool audio_only_ = false;
+
     };
 
     using WsRouterPtr = std::shared_ptr<WsRouter>;

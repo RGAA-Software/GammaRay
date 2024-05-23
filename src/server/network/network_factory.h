@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "connection.h"
-#include "ws_server.h"
 #include "app_server.h"
 
 namespace tc
@@ -20,7 +19,6 @@ namespace tc
 
         static std::shared_ptr<Connection> MakeConnection(const std::shared_ptr<Application>& app) {
             return std::make_shared<AppServer>(app);
-            //return std::make_shared<WSServer>(app);
         }
 
     };
