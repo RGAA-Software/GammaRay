@@ -27,15 +27,12 @@ namespace tc
     public:
 
         explicit AppTimer(const std::shared_ptr<Context>& ctx);
-
         void StartTimers();
 
     private:
-
         void NotifyTimeout(AppTimerDuration duration);
 
     private:
-
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
     };

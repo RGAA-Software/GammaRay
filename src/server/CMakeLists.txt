@@ -12,22 +12,20 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
 
 set(SRCS
-    app.cpp
-    context.cpp
-    statistics.cpp
-    network/app_server.cpp
-    network/ws_media_router.cpp
-    network/http_handler.cpp
-    network/ws_server.cpp
-    network/ws_ipc_router.cpp
-    network/connection.cpp
-    network/message_processor.cpp
-    network/ws_client.cpp
-    ipc/host_ipc_manager.cpp
-    app/encoder_thread.cpp
-    network/message_maker.cpp
-    app/command_manager.cpp
-    network/server_cast.cpp
+        app.cpp
+        context.cpp
+        statistics.cpp
+        network/app_server.cpp
+        network/ws_media_router.cpp
+        network/http_handler.cpp
+        network/ws_ipc_router.cpp
+        network/connection.cpp
+        network/message_processor.cpp
+        network/ws_client.cpp
+        network/net_message_maker.cpp
+        network/server_cast.cpp
+        ipc/host_ipc_manager.cpp
+        app/encoder_thread.cpp
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app)

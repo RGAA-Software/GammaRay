@@ -27,22 +27,21 @@
 #include "network/ws_server.h"
 #include "ipc/host_ipc_manager.h"
 #include "app/encoder_thread.h"
-#include "network/message_maker.h"
+#include "network/net_message_maker.h"
 #include "tc_message.pb.h"
 #include "app/app_timer.h"
 #include "tc_opus_codec_new/opus_codec.h"
 #include "network/message_processor.h"
 #include "network/ws_client.h"
-#include "app/command_manager.h"
 #include "network/network_factory.h"
 #include "network/server_cast.h"
 #include "app/app_shared_info.h"
 #include "app/win/dx_address_loader.h"
 #include "tc_common_new/win32/win_helper.h"
+#include "tc_common_new/fft_32.h"
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "statistics.h"
-#include "app/fft_32.h"
 
 namespace tc
 {
@@ -85,8 +84,6 @@ namespace tc
         encoder_thread_ = EncoderThread::Make(context_);
         // event bus listener
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-        // command manager
-        command_mgr_ = CommandManager::Make(shared_from_this());
         // app shared info
         app_shared_info_ = AppSharedInfo::Make(context_);
         // audio cache
@@ -103,7 +100,7 @@ namespace tc
 
         // init webrtc
         //InitWebRtc();
-        // vigem controll thread
+        // vigem control thread
         control_thread_ = Thread::Make("control", 16);
         control_thread_->Poll();
         // desktop capture

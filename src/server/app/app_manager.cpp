@@ -20,7 +20,6 @@ namespace tc
 
     void AppManager::Init() {
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-        //InitSteamManager();
     }
 
     bool AppManager::StartProcess() {
@@ -30,14 +29,6 @@ namespace tc
     bool AppManager::StartProcessWithHook() {
         return true;
     }
-
-#if 0
-    void AppManager::InitSteamManager() {
-        // steam manager
-        steam_manager_ = SteamManager::Make(context_->GetTaskRuntime());
-        steam_manager_->ScanInstalledGames();
-    }
-#endif
 
     void AppManager::Exit() {
 

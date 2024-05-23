@@ -5,7 +5,6 @@
 #ifndef TC_APPLICATION_MESSAGEMAKER_H
 #define TC_APPLICATION_MESSAGEMAKER_H
 
-#include "message_maker.h"
 #include <string>
 #include <memory>
 

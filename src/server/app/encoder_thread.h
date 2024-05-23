@@ -10,7 +10,6 @@
 
 namespace tc
 {
-
     class Thread;
     class VideoEncoder;
     class Data;

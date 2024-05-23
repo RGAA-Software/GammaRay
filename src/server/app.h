@@ -115,10 +115,6 @@ namespace tc
         bool debug_opus_decoder_ = false;
         std::shared_ptr<OpusAudioDecoder> opus_decoder_ = nullptr;
 
-        std::shared_ptr<CommandManager> command_mgr_ = nullptr;
-
-        //std::shared_ptr<ServerCast> server_cast_ = nullptr;
-
         std::shared_ptr<AppSharedInfo> app_shared_info_ = nullptr;
 
         std::shared_ptr<Thread> control_thread_ = nullptr;

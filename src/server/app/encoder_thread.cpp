@@ -27,7 +27,6 @@
 #endif
 
 #define DEBUG_FILE 0
-
 #define DEBUG_SAVE_D3D11TEXTURE_TO_FILE 0
 
 namespace tc
@@ -115,7 +114,6 @@ namespace tc
     }
 
     void EncoderThread::Encode(int64_t adapter_uid, uint64_t handle, int width, int height, int format, uint64_t frame_index) {
-         //LOGI("EncoderThread::Encode, width = {}, heigth = {}, format = {}, adapter_uid = {}", width, height, format, adapter_uid);
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
         Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
         if(g_render) {
@@ -139,7 +137,6 @@ namespace tc
                 video_encoder_.reset();
             }
             auto settings = Settings::Instance();
-            // gpu id 76762
             tc::EncoderConfig encoder_config;
             if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
                 encoder_config.width = width;
@@ -155,7 +152,6 @@ namespace tc
                 encoder_config.frame_resize = true;
             }
             encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
-            //encoder_config.codec_type = tc::EVideoCodecType::kHEVC;
             encoder_config.enable_adaptive_quantization = true;
             encoder_config.gop_size = -1;
             encoder_config.quality_preset = 1;
@@ -166,7 +162,6 @@ namespace tc
             encoder_config.supports_intra_refresh = true;
             encoder_config.texture_format = format;
             encoder_config.bitrate = 10 * 1000000;
-            // 因为目前是采集游戏画面 ，采集画面索引，暂定为0， 桌面采集目前也是只发送主屏的画面
             EncoderFeature encoder_feature{adapter_uid, 0};
             video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
                                                                 encoder_feature,
@@ -183,7 +178,7 @@ namespace tc
                 if (key) {
                     LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}", frame->data->Size(), frame_index, key, frame->width, frame->height);
                 }
-                //
+
                 MsgVideoFrameEncoded msg {
                     .frame_width_ = static_cast<uint32_t>(frame->width),
                     .frame_height_ = static_cast<uint32_t>(frame->height),
