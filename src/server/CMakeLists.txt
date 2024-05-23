@@ -43,7 +43,7 @@ else()
     #
 endif()
 
-target_link_libraries(main app_manager tc_message tc_dyn_rtc)
+target_link_libraries(main app_manager tc_message) #tc_dyn_rtc
 target_link_libraries(main Dexode::EventBus ZLIB::ZLIB ${OpenCV_LIBS} PocoFoundationmt.lib)
 target_link_libraries(main websocketpp::websocketpp)
 

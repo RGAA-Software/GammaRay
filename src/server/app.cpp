@@ -35,7 +35,6 @@
 #include "network/ws_client.h"
 #include "app/command_manager.h"
 #include "network/network_factory.h"
-#include "webrtc/dyn_webrtc_server_api.h"
 #include "network/server_cast.h"
 #include "app/app_shared_info.h"
 #include "app/win/dx_address_loader.h"
@@ -86,21 +85,17 @@ namespace tc
         encoder_thread_ = EncoderThread::Make(context_);
         // event bus listener
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-
         // command manager
         command_mgr_ = CommandManager::Make(shared_from_this());
-
         // app shared info
         app_shared_info_ = AppSharedInfo::Make(context_);
-        //
+        // audio cache
         audio_cache_ = Data::Make(nullptr, 1024*16);
 
         // app timer
         InitAppTimer();
-
         // messages
         InitMessages();
-
         // global audio capture
         if (settings_->capture_.enable_audio_) {
             InitGlobalAudioCapture();
@@ -108,19 +103,16 @@ namespace tc
 
         // init webrtc
         //InitWebRtc();
-
         // vigem controll thread
         control_thread_ = Thread::Make("control", 16);
         control_thread_->Poll();
-
         // desktop capture
         desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier());
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
                 StartProcessWithHook();
-            }
-            else if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kCaptureScreen) {
+            } else if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kCaptureScreen) {
                 StartProcessWithScreenCapture();
             }
         }
@@ -234,7 +226,6 @@ namespace tc
             }
             memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
             memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
-            //LOGI("fft : {} {}", fft_left.size(), fft_right.size());
         });
 
         audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
@@ -294,8 +285,7 @@ namespace tc
     }
 
     void Application::InitWebRtc() {
-        rtc_server_ = DynWebRtcServerApi::Make();
-        rtc_server_->Start();
+
     }
 
     void Application::PostGlobalAppMessage(std::shared_ptr<AppMessage>&& msg) {
@@ -534,18 +524,12 @@ namespace tc
 
     int WinApplication::Run() {
         if(!tc::SetDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
-            std::cout << "SetDpiAwarenessContext error" << std::endl;
             LOGE("SetDpiAwarenessContext error");
-            // to do 如果设置进程DPI感知失败了，鼠标计算方式就要考虑到 dpi缩放比例了
         }
         LoadDxAddress();
         Application::Run();
         return 0;
     }
-
-//    void WinApplication::SendHelloMessageToDll(uint32_t pid) {
-//        Application::SendHelloMessageToDll(pid);
-//    }
 
     void WinApplication::Exit() {
         Application::Exit();

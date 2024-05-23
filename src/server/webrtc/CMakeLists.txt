@@ -27,19 +27,7 @@ elseif (UNIX)
 endif ()
 
 set(SRCS
-    webrtc_server_impl.cpp
-    h264_encoder_factory.cpp
-    h264_encoder_router.cpp
-    self_gen_video_source.cpp
-    self_gen_video_track.cpp
-    observers/create_session_desc_observer_impl.cpp
-    observers/data_channel_observer_impl.cpp
-    observers/peer_conn_observer_impl.cpp
-    observers/set_session_desc_observer_impl.cpp
-    observers/video_frame_observer.cpp
-    webrtc_server_api.cpp
-    signaling_maker.cpp
-    signaling_manager.cpp
+    rtc_server.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRCS})
@@ -56,18 +44,16 @@ if (WIN32)
             wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32 ${OpenCV_LIBS}
     )
 
-    add_library(tc_dyn_rtc
-        dyn_webrtc_server_api.cpp
-    )
-    target_link_libraries(tc_dyn_rtc ${OpenCV_LIBS} )
+#    add_library(tc_dyn_rtc
+#        dyn_webrtc_server_api.cpp
+#    )
+#    target_link_libraries(tc_dyn_rtc ${OpenCV_LIBS} )
 
 elseif (APPLE)
 
 elseif (ANDROID)
 elseif (UNIX)
 endif ()
-
-message(----> ${OpenCV_LIBS})
 
 add_executable(test_webrtc test/test_webrtc.cpp)
 target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib ${OpenCV_LIBS} ${FFMPEG_LIBRARIES})
