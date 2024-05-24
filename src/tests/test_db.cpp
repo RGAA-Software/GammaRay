@@ -12,7 +12,7 @@
 
 #include "db/db_game.h"
 #include "db/db_game_manager.h"
-#include "context.h"
+#include "gr_context.h"
 
 using namespace tc;
 
@@ -24,12 +24,12 @@ int main(int argc, char** argv) {
 TEST(Test_db, read_write) {
     std::cout << "start..." << std::endl;
 
-    auto ctx = std::make_shared<Context>();
+    auto ctx = std::make_shared<GrContext>();
     auto gm = std::make_shared<DBGameManager>(ctx);
     gm->Init();
     {
         {
-            auto g = std::make_shared<Game>();
+            auto g = std::make_shared<TcDBGame>();
             g->game_id_ = 1023;
             g->game_name_ = "test1.9";
             g->game_installed_dir_ = "test_path";
@@ -37,7 +37,7 @@ TEST(Test_db, read_write) {
             gm->SaveOrUpdateGame(g);
         }
         {
-            auto g = std::make_shared<Game>();
+            auto g = std::make_shared<TcDBGame>();
             g->game_id_ = 10235656;
             g->game_name_ = "test1dfsadf.9";
             g->game_installed_dir_ = "tesdfadst_path";
@@ -66,7 +66,7 @@ TEST(Test_db, read_write) {
 
     std::cout << "will update 1025" << std::endl;
     {
-        auto g = std::make_shared<Game>();
+        auto g = std::make_shared<TcDBGame>();
         g->game_id_ = 10235656;
         g->game_name_ = "tesd=========";
         g->game_installed_dir_ = "tesdfadst_path";

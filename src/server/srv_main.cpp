@@ -11,6 +11,8 @@ using namespace tc;
 
 DEFINE_int32(steam_app_id, 0, "steam app id");
 DEFINE_bool(logfile, false, "log to file");
+DEFINE_bool(isolate, false, "only use settings.toml, args below aren't be used");
+
 // encoder
 DEFINE_string(encoder_select_type, "auto", "auto/specify");
 DEFINE_string(encoder_name, "nvenc", "nvenc/amf/ffmpeg");
@@ -134,7 +136,9 @@ int main(int argc, char** argv) {
     // 1. load from config.toml
     auto settings = Settings::Instance();
     settings->LoadSettings("settings.toml");
-    //UpdateSettings(settings);
+    if (!FLAGS_isolate) {
+        UpdateSettings(settings);
+    }
     auto settings_str = settings->Dump();
     LOGI("\n" + settings_str);
 
@@ -145,7 +149,7 @@ int main(int argc, char** argv) {
 
     //
     auto task = AppMessageMaker::MakeTaskMessage([]() {
-        LOGI("App started...");
+        LOGI("Server started...");
     });
     app->PostGlobalAppMessage(std::move(task));
 

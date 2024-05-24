@@ -45,18 +45,20 @@ namespace tc
         steam_game_ = std::make_shared<SteamGame>(context_);
         steam_game_->RequestSteamGames();
 
-        if (settings_->capture_.capture_video_type_ == Capture::kVideoHook) {
-            msg_listener_->Listen<MsgTimer2000>([=, this](const auto &msg) {
-                context_->PostInTaskRuntime([=, this]() {
-                    // 只是查找应用，不再hook
-                    this->InjectCaptureDllIfNeeded();
-                });
-            });
-        } else {
+        if (settings_->capture_.IsVideoHook()) {
             msg_listener_->Listen<MsgTimer100>([=, this](const auto &msg) {
                 context_->PostInTaskRuntime([=, this]() {
                     this->InjectCaptureDllIfNeeded();
-                    //HWND hwnd = target_window_info_.win_handle;
+                    if (target_pid_ > 0) {
+                        auto infos = tc::AppManagerWinImpl::SearchWindowByPid(target_pid_);
+                        target_window_info_ = GetTargetWindowInfo(infos);
+                    }
+                });
+            });
+        } else {
+            msg_listener_->Listen<MsgTimer2000>([=, this](const auto &msg) {
+                context_->PostInTaskRuntime([=, this]() {
+                    this->InjectCaptureDllIfNeeded();
                 });
             });
         }
@@ -82,7 +84,7 @@ namespace tc
         std::wstring exec = StringExt::ToWString(config_exe_path);
         std::wstring arguments = StringExt::ToWString(settings_->app_.game_arguments_);
         std::wstring x86_dll;
-        std::wstring x64_dll = L"tc_graphics_lb.dll";
+        std::wstring x64_dll = L"tc_graphics.dll";
 
         InjectParams inject_params {};
         std::string folder_path = GetExeFolderPath();
@@ -97,25 +99,27 @@ namespace tc
             return true;
         }
 
-//        // use easyhook to start
-//        auto result = RhCreateAndInject(
-//                const_cast<wchar_t *>(exec.data()),
-//                const_cast<wchar_t *>(arguments.data()),
-//                0,
-//                EASYHOOK_INJECT_DEFAULT,
-//                const_cast<wchar_t *>(x86_dll.data()),
-//                const_cast<wchar_t *>(x64_dll.data()),
-//                &inject_params,
-//                sizeof(InjectParams),
-//                &target_pid_
-//        );
-//        if (result >= 0) {
-//            LOGI("Start & Hook success...");
-//            return true;
-//        } else {
-//
-//        }
-
+#if 0
+        // use easyhook to start
+        auto result = RhCreateAndInject(
+                const_cast<wchar_t *>(exec.data()),
+                const_cast<wchar_t *>(arguments.data()),
+                0,
+                EASYHOOK_INJECT_DEFAULT,
+                const_cast<wchar_t *>(x86_dll.data()),
+                const_cast<wchar_t *>(x64_dll.data()),
+                &inject_params,
+                sizeof(InjectParams),
+                &target_pid_
+        );
+        if (result >= 0) {
+            LOGI("Start & Hook success...");
+            return true;
+        } else {
+            LOGI("Start & Hook failed: {}", (int)result);
+            return false;
+        }
+#endif
         std::vector<std::string> args;
         auto u8_exec = StringExt::ToUTF8(exec);
         boost::algorithm::split(args, settings_->app_.game_arguments_, boost::is_any_of(" "));
@@ -124,9 +128,9 @@ namespace tc
             return arg.empty();
         });
         LOGI("we will use normal method to start, exe: {}", u8_exec);
-        target_pid_ = ProcessUtil::StartProcess(u8_exec, args);
+        target_pid_ = ProcessUtil::StartProcess(u8_exec, args, true, false);
         LOGI("After started, the pid is: {}", target_pid_);
-        return false;
+        return target_pid_ > 0;
     }
 
     bool AppManagerWinImpl::StartProcess() {
@@ -171,7 +175,7 @@ namespace tc
             return arg.empty();
         });
         LOGI("we will use normal method to start, exe: {}", u8_exec);
-        target_pid_ = ProcessUtil::StartProcess(u8_exec, args);
+        target_pid_ = ProcessUtil::StartProcess(u8_exec, args, true, false);
         return ret;
     }
 
@@ -244,7 +248,7 @@ namespace tc
 
         // inject it
         // 单独采集的时候才尝试hook
-        if (settings_->capture_.capture_video_type_ == Capture::kVideoHook) {
+        if (settings_->capture_.IsVideoHook()) {
             for (const auto &process: processes_info) {
                 auto result = WinHelper::IsDllInjected(process.pid_, kX86DllName, kX64DllName);
                 auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
@@ -257,13 +261,12 @@ namespace tc
 
                 // before inject
                 MsgBeforeInject msg_before_inject{
-                        .steam_app_ = target_app,
-                        .pid_ = process.pid_,
+                    .steam_app_ = target_app,
+                    .pid_ = process.pid_,
                 };
                 context_->SendAppMessage(msg_before_inject);
 
-                bool injected = InjectDll(process.pid_, /*process.thread_id_*/0, process.is_x86_, kX86DllName,
-                                          kX64DllName);
+                bool injected = InjectDll(process.pid_, 0, process.is_x86_, kX86DllName, kX64DllName);
                 this->injected_ = injected;
                 if (injected) {
                     LOGI("Inject success for pid: {}, exe: {}", process.pid_, process_exe_name);
@@ -273,8 +276,7 @@ namespace tc
                     msg_injected.pid_ = process.pid_;
                     context_->SendAppMessage(msg_injected);
                 } else {
-                    LOGE("Inject capture dll failed for pid: {}, is x86:{}, exe: {}", process.pid_, process.is_x86_,
-                         process_exe_name);
+                    LOGE("Inject capture dll failed for pid: {}, is x86:{}, exe: {}", process.pid_, process.is_x86_, process_exe_name);
                 }
             }
         }
@@ -317,7 +319,8 @@ namespace tc
 
         if (settings_->capture_.capture_video_type_ == Capture::kCaptureScreen) {
             AddFoundPid(target_process_info);
-        } else {
+        }
+        if (settings_->capture_.IsVideoHook()){
             // 单独采集的时候才尝试hook
             auto result = WinHelper::IsDllInjected(target_process_info.pid_, kX86DllName, kX64DllName);
             auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info.exe_full_path_);

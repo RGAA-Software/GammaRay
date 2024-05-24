@@ -77,8 +77,8 @@ namespace tc
 
 #if ENABLE_SHM
         void InitHostIpcManager(uint32_t pid);
-        void WriteBoostUpInfoForPid(uint32_t pid);
 #endif
+        void WriteBoostUpInfoForPid(uint32_t pid);
         void StartProcessWithHook();
         void StartProcessWithScreenCapture();
         bool HasConnectedPeer();

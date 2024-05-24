@@ -115,7 +115,7 @@ namespace tc
             return resp;
         }
 
-        auto pid = ProcessUtil::StartProcess(game_path, args);
+        auto pid = ProcessUtil::StartProcess(game_path, args, true, false);
         resp.ok_ = pid > 0;
         resp.value_ = "Start success";
         resp.msg_ = std::to_string(pid);

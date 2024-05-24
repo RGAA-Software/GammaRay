@@ -142,9 +142,9 @@ namespace tc
 
     void Application::InitMessages() {
         msg_listener_->Listen<MsgBeforeInject>([=, this](const MsgBeforeInject& msg) {
-#if ENABLE_SHM
-            this->WriteBoostUpInfoForPid(msg.pid_);
-#endif
+            if (settings_->capture_.IsVideoHook()) {
+                this->WriteBoostUpInfoForPid(msg.pid_);
+            }
         });
 
         msg_listener_->Listen<MsgObsInjected>([=, this](const MsgObsInjected& msg) {
@@ -305,9 +305,9 @@ namespace tc
     }
 
     void Application::PostIpcMessage(const std::string& msg) {
-#if !ENABLE_SHM
-        connection_->PostIpcMessage(msg);
-#endif
+        if (settings_->capture_.IsVideoHook()) {
+            connection_->PostIpcMessage(msg);
+        }
     }
 
     void Application::StartProcessWithHook() {
@@ -433,7 +433,6 @@ namespace tc
         return connection_ && connection_->GetConnectionPeerCount() > 0;
     }
 
-#if ENABLE_SHM
     void Application::WriteBoostUpInfoForPid(uint32_t pid) {
         if (!app_shared_message_) {
             LOGE("Don't have app_shared_message_");
@@ -445,7 +444,6 @@ namespace tc
         memcpy(shm_buffer.data(), app_shared_message_.get(), sizeof(AppSharedMessage));
         app_shared_info_->WriteData(shm_name, shm_buffer);
     }
-#endif
 
     void Application::InitVigemController() {
         vigem_controller_ = VigemController::Make();
