@@ -85,8 +85,7 @@ namespace tc {
     }
 
     void MessageProcessor::ProcessMouseEvent(std::shared_ptr<Message>&& msg) {
-        bool global_events = settings_->app_.event_replay_mode_ == TargetApplication::EventReplayMode::kGlobal;
-        if (global_events) {
+        if (settings_->app_.IsGlobalReplayMode()) {
             control_event_replayer_win_->HandleMessage(msg);
         } else {
             //1. convert to ipc message

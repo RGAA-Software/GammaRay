@@ -54,6 +54,16 @@ namespace tc
             kCaptureScreen,
         };
 
+    public:
+        bool IsVideoHook() {
+            return capture_video_type_ == CaptureVideoType::kVideoHook;
+        }
+
+        bool IsAudioHook() {
+            return capture_audio_type_ == CaptureAudioType::kAudioHook;
+        }
+
+    public:
         bool enable_audio_;
         CaptureAudioType capture_audio_type_;
         bool enable_video_;
@@ -85,6 +95,10 @@ namespace tc
             kGlobal,
             kHookInner,
         };
+
+        bool IsGlobalReplayMode() {
+            return event_replay_mode_ == EventReplayMode::kGlobal;
+        }
 
     public:
         std::string game_path_{};

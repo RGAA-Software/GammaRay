@@ -36,7 +36,7 @@ enable-video = true
 # 图像采集方法
 # hook 程序内部采集
 # global 直接抓取屏幕
-video-capture-type = "global"
+video-capture-type = "hook"
 # 采集到的画面是否通过共享内存发送
 # true 发送共享内存数据I420格式
 # false 发送handle
@@ -58,7 +58,7 @@ listening-port = 20371
 # 2.steam://路径，在桌面快捷方式右键，属性里就能看见
 #game-path = "D:/software/心脏医学可执行/心脏医学可执行/心脏-医学动态展示.exe"
 #game-path = "D:\\Game\\dai_sen_qiu_ji_hua\\A1738 V0.9.27.15033\\Dyson Sphere Program\\DSPGAME.exe"
-#game-path = "C:\\software\\u3d_demo\\u3d_demo\\u3d_shared_window_demo.exe"
+game-path = "C:\\software\\u3d_demo\\u3d_demo\\u3d_shared_window_demo.exe"
 #game-path = "E:\\SteamLibrary\\steamapps\\common\\One Dreamer Prologue\\One Dreamer Prologue.exe"
 #game-path = "D:\\SteamLibrary\\steamapps\\common\\灵境奇谈\\NotesOfSoul\\Binaries\\Win64\\NotesOfSoul-Win64-Shipping.exe"
 #game-path = "D:\\SteamLibrary\\steamapps\\common\\DongBeiZhiXia\\DongBeiZhiXia.exe"
@@ -118,7 +118,7 @@ game-arguments = ""
 # 跟game-path是exe路径的情况下一样
 #running-path = "C:/Program Files (x86)/Steam/steamapps/common/zjjt/Legion of Valkyrie.exe"
 #running-path = "D:/software/心脏医学可执行/心脏医学可执行/心脏-医学动态展示.exe"
-#running-path = "C:\\software\\u3d_demo\\u3d_demo\\u3d_shared_window_demo.exe"
+running-path = "C:\\software\\u3d_demo\\u3d_demo\\u3d_shared_window_demo.exe"
 # 启动后隐藏
 hide-after-started = false
 #强制全屏
@@ -131,5 +131,5 @@ capture-method = "search"
 debug-enabled = false
 
 # global 全局事件
-# inner hook内部事件
-event-replay-mode = "global"
+# inner-hook内部事件
+event-replay-mode = "inner-hook"
