@@ -96,14 +96,13 @@ namespace tc
             kHookInner,
         };
 
-        bool IsGlobalReplayMode() {
+        [[nodiscard]] bool IsGlobalReplayMode() const {
             return event_replay_mode_ == EventReplayMode::kGlobal;
         }
 
     public:
         std::string game_path_{};
         std::string game_arguments_{};
-        std::string running_path_{};
         bool hide_after_started_{};
         bool force_fullscreen_{};
         InjectMethod inject_method_{kEasyHook};

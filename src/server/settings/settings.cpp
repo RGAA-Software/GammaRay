@@ -117,7 +117,6 @@ namespace tc
         // TargetApplication
         app_.game_path_ = result["application"]["game-path"].value_or("");
         app_.game_arguments_ = result["application"]["game-arguments"].value_or("");
-        app_.running_path_ = result["application"]["running-path"].value_or("");
         app_.hide_after_started_ = result["application"]["hide-after-started"].value_or(false);
         app_.force_fullscreen_ = result["application"]["force-fullscreen"].value_or(false);
         auto inject_method = result["application"]["capture-method"].value_or("obs");
@@ -170,7 +169,6 @@ namespace tc
         ss << "Application: \n";
         ss << "  - game path: " << app_.game_path_ << std::endl;
         ss << "  - game arguments: " << app_.game_arguments_ << std::endl;
-        ss << "  - running path: " << app_.running_path_ << std::endl;
         ss << "  - steam app:" << std::endl;
         ss << "    - app id: " << app_.steam_app_.app_id_ << std::endl;
         ss << "    - steam url: " << app_.steam_app_.steam_url_ << std::endl;
