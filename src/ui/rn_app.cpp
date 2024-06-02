@@ -18,6 +18,8 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/num_formatter.h"
 #include "widgets/round_img_display.h"
+#include "manager/run_game_manager.h"
+#include "db/db_game.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartAudioFrameGap = "Capture Audio Gap";
@@ -36,59 +38,33 @@ namespace tc
 
         {
             auto head_layout = new NoMarginHLayout();
-            // image
-            {
-                auto layout = new NoMarginVLayout();
-                int item_width = 135;
-                int item_height = item_width / (600.0 / 900.0);
-                auto cover = new RoundImageDisplay("", item_width, item_height, 9, this);
-                layout->addWidget(cover);
-                layout->addStretch();
-                head_layout->addSpacing(32);
-                head_layout->addLayout(layout);
-            }
-
             // app info
-            auto label_size = QSize(140, 35);
+            auto label_size = QSize(250, 35);
             auto btn_height = 25;
 
             // 1st column
             {
                 auto layout = new NoMarginVLayout();
                 {
-                    auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Running Game");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
-                    item_layout->addWidget(label);
-
-                    auto op = new QLabel(this);
-                    op->setText("Serious");
-                    op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
-                    item_layout->addWidget(op);
-                    item_layout->addStretch();
-                    layout->addLayout(item_layout);
+                    label->setText("Running Games");
+                    label->setStyleSheet("font-size: 13px;font-weight:700;");
+                    layout->addWidget(label);
                 }
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
+                    lbl_running_games_ = label;
                     label->setFixedSize(label_size);
-                    label->setText("Stop Game");
-                    label->setStyleSheet("font-size: 13px;");
+                    label->setText("");
+                    label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
-
-                    auto op = new QPushButton(this);
-                    op->setText("STOP");
-                    op->setFixedSize(QSize(70, btn_height));
-                    op->setStyleSheet("font-size: 13px;");
-                    item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
                 layout->addStretch();
-                head_layout->addSpacing(20);
+                head_layout->addSpacing(10);
                 head_layout->addLayout(layout);
             }
 
@@ -267,6 +243,20 @@ namespace tc
             this->UpdateUI();
         });
 
+        msg_listener_->Listen<MsgRunningGameIds>([=, this](const MsgRunningGameIds& msg) {
+            this->context_->PostUITask([=, this]() {
+                auto rgm = this->context_->GetRunGameManager();
+                auto running_games = rgm->GetRunningGames();
+                std::string running_games_name;
+                for (const auto& rg : running_games) {
+                    running_games_name = running_games_name
+                            .append(std::to_string(rg->game_->game_id_))
+                            .append(" - ")
+                            .append(rg->game_->game_name_).append("\n");
+                }
+                lbl_running_games_->setText(running_games_name.c_str());
+            });
+        });
     }
 
     void RnApp::OnTabShow() {
