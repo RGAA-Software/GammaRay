@@ -12,14 +12,15 @@ namespace tc
     Q_OBJECT
 
     public:
-        CoverWidget(QWidget *parent = nullptr, int offset = 0);
-        ~CoverWidget();
+        explicit CoverWidget(QWidget *parent = nullptr, int offset = 0);
+        ~CoverWidget() override;
 
         void paintEvent(QPaintEvent *event) override;
         void enterEvent(QEnterEvent *event) override;
         void leaveEvent(QEvent *event) override;
         void SetTagEnableStatus(bool enable);
         void UpdateTagText(const QString &t);
+        void SetRunningStatus(bool running);
 
     private:
 
@@ -32,6 +33,7 @@ namespace tc
 
         QString tag_text = "1920x1080";
         bool enable_tab_display = true;
+        bool running_ = false;
     };
 
 }
