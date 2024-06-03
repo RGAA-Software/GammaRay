@@ -30,6 +30,7 @@ namespace tc
         QSize GetItemSize();
         void AddItems(const std::vector<TcDBGamePtr>& games);
         void LoadCover(const TcDBGamePtr& game);
+        void UpdateRunningStatus(const std::vector<uint32_t>& game_ids);
 
     private:
         QListWidget* list_widget_ = nullptr;

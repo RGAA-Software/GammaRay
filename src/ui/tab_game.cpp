@@ -89,10 +89,10 @@ namespace tc
             auto game = games_.at(index);
 
             std::vector<QString> actions {
-                tr("11111111"),
-                tr("33333333"),
-                tr("55555555"),
-                tr("77777777"),
+                tr("Game Info"),
+                tr("Start Game"),
+                tr("Stop Game"),
+                tr("Game Location"),
             };
             auto pop_menu = new QMenu();
             //pop_menu->setFont(sk::SysConfig::Instance()->sys_font_9);
@@ -104,7 +104,7 @@ namespace tc
 
                 QObject::connect(action, &QAction::triggered, this, [=, this]() {
                     GameInfoPreview preview(app_, game);
-                    preview.setFixedSize(480, 320);
+                    preview.setFixedSize(640, 480);
                     preview.exec();
                 });
             }
@@ -121,18 +121,15 @@ namespace tc
 
         // listeners
         msg_listener_->Listen<MsgRunningGameIds>([=, this](const MsgRunningGameIds& rgs) {
-            LOGI("Running ids: ");
-            for (auto& gid : rgs.game_ids_) {
-                LOGI("game id: {}", gid);
-            }
+            this->context_->PostUITask([=, this]() {
+                this->UpdateRunningStatus(rgs.game_ids_);
+            });
         });
 
         ScanInstalledGames();
     }
 
-    TabGame::~TabGame() {
-
-    }
+    TabGame::~TabGame() = default;
 
     void TabGame::OnTabShow() {
 
@@ -196,6 +193,7 @@ namespace tc
 
         auto widget = new QWidget(this);
         widget->setFixedSize(item_width, item_height);
+        widget->setObjectName(std::to_string(game->game_id_).c_str());
 
         auto layout = new QVBoxLayout();
         LayoutHelper::ClearMargins(layout);
@@ -205,7 +203,7 @@ namespace tc
 
         if (game->cover_pixmap_.has_value()) {
             auto pixmap = std::any_cast<QPixmap>(game->cover_pixmap_);
-            cover->UpdatePixmap(pixmap);
+            //cover->UpdatePixmap(pixmap);
         }
 
         widget->setLayout(layout);
@@ -260,6 +258,29 @@ namespace tc
         auto pixmap = QPixmap::fromImage(image);
         pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         game->cover_pixmap_ = pixmap;
+    }
+
+    void TabGame::UpdateRunningStatus(const std::vector<uint32_t>& game_ids) {
+        auto item_counts = list_widget_->count();
+        for (int i = 0; i < item_counts; i++) {
+            QListWidgetItem *item = list_widget_->item(i);
+            auto item_widget = list_widget_->itemWidget(item);
+            auto cover_widget = item_widget->findChild<CoverWidget*>("cover_mask");
+            auto game_id = item_widget->objectName().toStdString();
+            cover_widget->SetRunningStatus(false);
+        }
+        for (int i = 0; i < item_counts; i++) {
+            QListWidgetItem *item = list_widget_->item(i);
+            auto item_widget = list_widget_->itemWidget(item);
+            auto cover_widget = item_widget->findChild<CoverWidget*>("cover_mask");
+            auto game_id = item_widget->objectName().toStdString();
+            for (auto rgid : game_ids) {
+                if (std::to_string(rgid) == game_id) {
+                    cover_widget->SetRunningStatus(true);
+                }
+            }
+        }
+
     }
 
 }

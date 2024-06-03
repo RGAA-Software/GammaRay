@@ -661,7 +661,7 @@ QTabWidget::pane:left{right:-1px;}
 QTabWidget::pane:right{left:-1px;}
 
 QDialog,QDial,#QUIWidgetMain{
-background-color:#EAF7FF;
+background-color:#FFFFFF;
 color:#386487;
 }
 
