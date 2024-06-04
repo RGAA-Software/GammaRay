@@ -13,7 +13,7 @@
 #include <QAction>
 #include <boost/format.hpp>
 #include <utility>
-
+#include "shellapi.h"
 #include "db/db_game.h"
 #include "db/db_game_manager.h"
 #include "gr_context.h"
@@ -29,6 +29,9 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
 #include "game_info_preview.h"
+#include "util/qt_directory.h"
+#include "manager/run_game_manager.h"
+#include "tc_common_new/process_util.h"
 
 namespace tc
 {
@@ -92,21 +95,44 @@ namespace tc
                 tr("Game Info"),
                 tr("Start Game"),
                 tr("Stop Game"),
-                tr("Game Location"),
+                tr("Installed Location"),
             };
             auto pop_menu = new QMenu();
-            //pop_menu->setFont(sk::SysConfig::Instance()->sys_font_9);
             for (int i = 0; i < actions.size(); i++) {
                 auto action = new QAction(actions.at(i), pop_menu);
-                //action->setFont(sk::SysConfig::Instance()->sys_font_9);
                 WidgetDecorator::DecoratePopMenu(pop_menu);
                 pop_menu->addAction(action);
 
-                QObject::connect(action, &QAction::triggered, this, [=, this]() {
-                    GameInfoPreview preview(app_, game);
-                    preview.setFixedSize(640, 480);
-                    preview.exec();
-                });
+                if (i == 0) {
+                    QObject::connect(action, &QAction::triggered, this, [=, this]() {
+                        GameInfoPreview preview(app_, game);
+                        preview.setFixedSize(640, 480);
+                        preview.exec();
+                    });
+                } else if (i == 1) {
+                    QObject::connect(action, &QAction::triggered, this, [=, this]() {
+                        ShellExecuteA(nullptr, nullptr, game->steam_url_.c_str(), nullptr, nullptr , SW_SHOW);
+                    });
+                } else if (i == 2) {
+                    QObject::connect(action, &QAction::triggered, this, [=, this]() {
+                        this->context_->PostTask([=, this]() {
+                            auto rgm = this->context_->GetRunGameManager();
+                            auto running_games = rgm->GetRunningGames();
+                            for (const auto& rg : running_games) {
+                                if (rg->game_->game_id_ != game->game_id_) {
+                                    continue;
+                                }
+                                for (auto pid : rg->pids_) {
+                                    ProcessUtil::KillProcess(pid);
+                                }
+                            }
+                        });
+                    });
+                } else if (i == 3) {
+                    QObject::connect(action, &QAction::triggered, this, [=, this]() {
+                        QtDirectory::OpenDir(game->game_installed_dir_);
+                    });
+                }
             }
 
             pop_menu->exec(QCursor::pos());
@@ -261,17 +287,11 @@ namespace tc
     }
 
     void TabGame::UpdateRunningStatus(const std::vector<uint32_t>& game_ids) {
-        auto item_counts = list_widget_->count();
-        for (int i = 0; i < item_counts; i++) {
-            QListWidgetItem *item = list_widget_->item(i);
-            auto item_widget = list_widget_->itemWidget(item);
+        this->VisitListWidget([=, this](QListWidgetItem* item, QWidget* item_widget) {
             auto cover_widget = item_widget->findChild<CoverWidget*>("cover_mask");
-            auto game_id = item_widget->objectName().toStdString();
             cover_widget->SetRunningStatus(false);
-        }
-        for (int i = 0; i < item_counts; i++) {
-            QListWidgetItem *item = list_widget_->item(i);
-            auto item_widget = list_widget_->itemWidget(item);
+        });
+        this->VisitListWidget([=, this](QListWidgetItem* item, QWidget* item_widget) {
             auto cover_widget = item_widget->findChild<CoverWidget*>("cover_mask");
             auto game_id = item_widget->objectName().toStdString();
             for (auto rgid : game_ids) {
@@ -279,8 +299,16 @@ namespace tc
                     cover_widget->SetRunningStatus(true);
                 }
             }
-        }
+        });
+    }
 
+    void TabGame::VisitListWidget(std::function<void(QListWidgetItem* item, QWidget* item_widget)>&& cbk) {
+        auto item_counts = list_widget_->count();
+        for (int i = 0; i < item_counts; i++) {
+            QListWidgetItem *item = list_widget_->item(i);
+            auto item_widget = list_widget_->itemWidget(item);
+            cbk(item, item_widget);
+        }
     }
 
 }

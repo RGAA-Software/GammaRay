@@ -30,7 +30,7 @@ namespace tc
 
         if (running_) {
             painter.setBrush(QBrush(QColor(0x00ff00)));
-            painter.drawRoundedRect(5, 5, 10, 10, 5, 5);
+            painter.drawRoundedRect(5, 5, 16, 16, 8, 8);
         }
     }
 
