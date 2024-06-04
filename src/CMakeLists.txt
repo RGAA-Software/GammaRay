@@ -46,7 +46,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/db/db_game_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/res/resource_manager.cpp
-
+        ${CMAKE_CURRENT_SOURCE_DIR}/util/qt_directory.cpp
         PARENT_SCOPE
 )
 

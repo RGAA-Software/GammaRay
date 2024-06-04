@@ -179,7 +179,7 @@ namespace tc
                         StringExt::Replace(rp_exe_full_path, "\\", "/");
                         //std::cout << "exe_name: " << exe_full_path << ", rp exe name: " << rp_exe_full_path << "\n";
                         if (rp_exe_full_path == exe_full_path) {
-                            LOGI("********Find running game: {}", exe_full_path);
+                            LOGI("********Found running game: {}", exe_full_path);
                             running_pids.push_back(rp.pid_);
                             break;
                         }

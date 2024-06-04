@@ -8,6 +8,7 @@
 #include "tab_base.h"
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <functional>
 #include "db/db_game.h"
 
 namespace tc
@@ -31,6 +32,7 @@ namespace tc
         void AddItems(const std::vector<TcDBGamePtr>& games);
         void LoadCover(const TcDBGamePtr& game);
         void UpdateRunningStatus(const std::vector<uint32_t>& game_ids);
+        void VisitListWidget(std::function<void(QListWidgetItem* item, QWidget* item_widget)>&& cbk);
 
     private:
         QListWidget* list_widget_ = nullptr;
