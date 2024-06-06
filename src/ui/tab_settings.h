@@ -14,10 +14,7 @@ namespace tc
 
     enum class StTabName {
         kStClient,
-        kStInput,
-        kStMedia,
-        kStNetwork,
-        kStEncoder,
+        kStGeneral,
     };
 
     class TabSettings : public TabBase {
