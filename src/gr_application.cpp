@@ -14,8 +14,10 @@
 #include "tc_common_new/shared_preference.h"
 #include "system_monitor.h"
 #include "gr_statistics.h"
+#include "util/qt_directory.h"
 
 #include <QTimer>
+#include <QApplication>
 
 using namespace nlohmann;
 
@@ -34,6 +36,10 @@ namespace tc
         settings_ = GrSettings::Instance();
         settings_->Load();
         settings_->Dump();
+
+        auto exeDir = QApplication::applicationDirPath().toStdString();
+        QtDirectory::CreateDir(std::format("{}/clients/windows", exeDir));
+        QtDirectory::CreateDir(std::format("{}/clients/android", exeDir));
 
         context_ = std::make_shared<GrContext>();
         context_->Init();

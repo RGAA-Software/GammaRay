@@ -74,8 +74,9 @@ namespace tc
                 server_->set_mount_point("/cache", image_cache_path);
             }
 
-            auto res_path = QApplication::applicationDirPath() +  "/resources";
-            server_->set_mount_point("/res", res_path.toStdString());
+            auto exeDir = QApplication::applicationDirPath();
+            server_->set_mount_point("/res", std::format("{}/resources", exeDir.toStdString()));
+            server_->set_mount_point("/clients", std::format("{}/clients", exeDir.toStdString()));
 
             server_->listen("0.0.0.0", GrSettings::Instance()->http_server_port_);
         });
