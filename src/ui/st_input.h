@@ -10,10 +10,10 @@
 namespace tc
 {
 
-    class StInput : public TabBase {
+    class StGeneral : public TabBase {
     public:
-        StInput(const std::shared_ptr<GrApplication>& app, QWidget *parent);
-        ~StInput() = default;
+        StGeneral(const std::shared_ptr<GrApplication>& app, QWidget *parent);
+        ~StGeneral() override = default;
 
         void OnTabShow() override;
         void OnTabHide() override;
