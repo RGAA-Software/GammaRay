@@ -14,9 +14,10 @@ namespace tc
         // Manual operation
         std::vector<QrSegment> segs =
                 QrSegment::makeSegments(message.toStdString().c_str());
+//        QrCode qr1 = QrCode::encodeSegments(
+//                segs, QrCode::Ecc::QUARTILE, 15, 15, 2, false);
         QrCode qr1 = QrCode::encodeSegments(
-                segs, QrCode::Ecc::QUARTILE, 15, 15, 2, false);
-
+                segs, QrCode::Ecc::LOW, 10, 10, 1, false);
         QImage QrCode_Image=QImage(qr1.getSize(),qr1.getSize(),QImage::Format_RGB888);
         QrCode_Image.fill(Qt::transparent);
         for (int y = 0; y < qr1.getSize(); y++) {

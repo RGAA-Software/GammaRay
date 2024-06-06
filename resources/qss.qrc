@@ -61,5 +61,8 @@
         <file>icons/ic_empty.svg</file>
         <file>icons/ic_server.svg</file>
         <file>icons/ic_spectrum.svg</file>
+        <file>icons/logo_windows.png</file>
+        <file>icons/logo_android.png</file>
+
     </qresource>
 </RCC>

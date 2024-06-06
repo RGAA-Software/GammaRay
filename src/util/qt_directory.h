@@ -17,7 +17,7 @@ namespace tc
     class QtDirectory {
     public:
         static void OpenDir(const std::string& path);
-
+        static void CreateDir(const std::string& path);
     };
 
 }
