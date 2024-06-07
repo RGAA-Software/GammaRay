@@ -229,7 +229,7 @@ namespace tc
 
         if (game->cover_pixmap_.has_value()) {
             auto pixmap = std::any_cast<QPixmap>(game->cover_pixmap_);
-            //cover->UpdatePixmap(pixmap);
+            cover->UpdatePixmap(pixmap);
         }
 
         widget->setLayout(layout);

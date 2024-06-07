@@ -7,6 +7,8 @@
 
 #include "tab_base.h"
 
+#include <QLineEdit>
+
 namespace tc
 {
 
@@ -17,7 +19,9 @@ namespace tc
 
         void OnTabShow() override;
         void OnTabHide() override;
-
+    private:
+        QLineEdit* et_res_width_;
+        QLineEdit* et_res_height_;
     };
 
 }
