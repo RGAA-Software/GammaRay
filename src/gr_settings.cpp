@@ -35,6 +35,8 @@ namespace tc
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
 
+        enable_res_resize_ = sp_->GetInt(kStEnableResolutionResize, 0);
+
         // test
         //encoder_resolution_type_ = "specify";
         //capture_audio_ = "false";
@@ -80,5 +82,10 @@ namespace tc
         args.push_back(std::format("--{}={}", kStNetworkType, network_type_));
         args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listen_port_));
         return args;
+    }
+
+    void GrSettings::SetEnableResResize(bool enabled) {
+        enable_res_resize_ = enabled ? 1 : 0;
+        sp_->PutInt(kStEnableResolutionResize, enable_res_resize_);
     }
 }

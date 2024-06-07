@@ -5,7 +5,7 @@
 #include "tab_settings.h"
 #include "widgets/custom_tab_btn.h"
 #include "widgets/no_margin_layout.h"
-#include "ui/st_input.h"
+#include "ui/st_general.h"
 #include "ui/st_client.h"
 
 namespace tc

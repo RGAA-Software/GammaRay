@@ -33,6 +33,7 @@ namespace tc
 
     static const std::string kStHttpPort = "k_http_port";
     static const std::string kStWsPort = "k_ws_port";
+    static const std::string kStEnableResolutionResize = "k_enable_resolution_resize";
 
     class SharedPreference;
 
@@ -47,6 +48,8 @@ namespace tc
         void Load();
         void Dump();
         [[nodiscard]] std::vector<std::string> GetArgs() const;
+
+        void SetEnableResResize(bool enabled);
 
     public:
 
@@ -71,8 +74,9 @@ namespace tc
         std::string capture_video_type_;
 
         std::string network_type_;
-        int network_listen_port_;
+        int network_listen_port_{};
 
+        int enable_res_resize_ = 0;
     };
 
 }
