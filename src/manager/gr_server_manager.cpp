@@ -20,7 +20,7 @@ namespace tc
         Exit();
     }
 
-    Response<bool, uint32_t> ServerManager::Start() {
+    Response<bool, uint32_t> ServerManager::StartServer() {
         auto resp = Response<bool, uint32_t>::Make(false, 0, "");
 
         QString current_path = QCoreApplication::applicationDirPath();
@@ -60,8 +60,14 @@ namespace tc
         return resp;
     }
 
-    Response<bool, bool> ServerManager::Stop(uint32_t pid) {
+    Response<bool, bool> ServerManager::StopServer() {
         auto resp = Response<bool, bool>::Make(false, false, "");
+        if (running_srv_ && running_srv_->process_) {
+            running_srv_->process_->kill();
+            running_srv_->process_ = nullptr;
+        }
+        resp.ok_ = true;
+        resp.value_ = true;
         return resp;
     }
 

@@ -31,8 +31,8 @@ namespace tc
         explicit ServerManager(const std::shared_ptr<GrContext>& ctx);
         ~ServerManager();
 
-        Response<bool, uint32_t> Start();
-        Response<bool, bool> Stop(uint32_t pid);
+        Response<bool, uint32_t> StartServer();
+        Response<bool, bool> StopServer();
         Response<bool, uint32_t> ReStart();
         void Exit();
 
