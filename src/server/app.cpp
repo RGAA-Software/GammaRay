@@ -175,6 +175,14 @@ namespace tc
         msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {
             this->PostGlobalTask([=, this]() {
                 if (msg.client_size_ == 1) {
+                    //
+                }
+            });
+        });
+
+        msg_listener_->Listen<MsgHello>([=, this](const MsgHello& msg) {
+            this->PostGlobalTask([=, this]() {
+                if (msg.enable_controller) {
                     InitVigemController();
                 }
             });

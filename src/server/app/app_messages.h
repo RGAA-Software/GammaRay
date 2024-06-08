@@ -82,6 +82,13 @@ namespace tc
     public:
         int client_size_ = -1;
     };
+
+    // Hello message
+    class MsgHello {
+    public:
+        bool only_audio_ = false;
+        bool enable_controller = false;
+    };
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H
