@@ -82,6 +82,10 @@ namespace tc {
     void MessageProcessor::ProcessHelloEvent(const std::shared_ptr<WsMediaRouter>& router, std::shared_ptr<Message>&& msg) {
         const auto& hello = msg->hello();
         router->audio_only_ = hello.only_audio();
+        app_->GetContext()->SendAppMessage(MsgHello {
+            .only_audio_ = hello.only_audio(),
+            .enable_controller = hello.enable_controller(),
+        });
     }
 
     void MessageProcessor::ProcessMouseEvent(std::shared_ptr<Message>&& msg) {
