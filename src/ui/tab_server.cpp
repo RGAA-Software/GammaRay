@@ -32,6 +32,9 @@
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
 #include "gr_statistics.h"
+#include "widgets/sized_msg_box.h"
+#include "gr_application.h"
+#include "manager/gr_server_manager.h"
 
 namespace tc
 {
@@ -140,7 +143,10 @@ namespace tc
                     item_layout->addStretch();
 
                     connect(btn, &QPushButton::clicked, this, [=, this]() {
-                        context_->SendAppMessage(MsgInstallViGEm{});
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install ViGEm"), tr("Do you want to install ViGEm?"));
+                        if (msg_box->exec() == 0) {
+                            context_->SendAppMessage(MsgInstallViGEm{});
+                        }
                     });
 
                     layout->addLayout(item_layout);
@@ -177,6 +183,17 @@ namespace tc
 
                     connect(btn, &QPushButton::clicked, this, [=, this]() {
                        // restart
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Server"), tr("Do you want to restart server?"));
+                        if (msg_box->exec() == 0) {
+                            this->context_->PostTask([=, this]() {
+                                auto srv_mgr = this->context_->GetServerManager();
+                                srv_mgr->StopServer();
+
+                                this->context_->SendAppMessage(MsgServerAlive {
+                                    .alive_ = false,
+                                });
+                            });
+                        }
                     });
 
                     layout->addLayout(item_layout);

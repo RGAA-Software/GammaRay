@@ -24,6 +24,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/widgets/round_img_display.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/widgets/cover_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/widgets/main_item_delegate.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/sized_msg_box.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_base.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server.cpp

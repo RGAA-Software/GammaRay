@@ -239,7 +239,7 @@ namespace tc
 
     void SystemMonitor::StartServer() {
         auto srv_mgr = ctx_->GetServerManager();
-        srv_mgr->Start();
+        srv_mgr->StartServer();
     }
 
 }
