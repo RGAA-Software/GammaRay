@@ -15,6 +15,7 @@ namespace tc
     enum class StTabName {
         kStClient,
         kStGeneral,
+        kStAboutMe,
     };
 
     class TabSettings : public TabBase {
@@ -35,9 +36,7 @@ namespace tc
         QStackedWidget* stacked_widget_ = nullptr;
         QPushButton* btn_client_ = nullptr;
         QPushButton* btn_input_ = nullptr;
-        QPushButton* btn_media_ = nullptr;
-        QPushButton* btn_network_ = nullptr;
-        QPushButton* btn_encoder_ = nullptr;
+        QPushButton* btn_about_me_ = nullptr;
 
     };
 

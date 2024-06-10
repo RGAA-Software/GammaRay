@@ -13,7 +13,7 @@ namespace tc
     class StClient : public TabBase {
     public:
         StClient(const std::shared_ptr<GrApplication>& app, QWidget *parent);
-        ~StClient() = default;
+        ~StClient() override = default;
 
         void OnTabShow() override;
         void OnTabHide() override;
