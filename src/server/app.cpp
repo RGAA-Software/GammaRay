@@ -388,8 +388,7 @@ namespace tc
             }
 
             // to encode
-            encoder_thread_->Encode(msg.adapter_uid_, msg.handle_, (int)msg.frame_width_,
-                                    (int)msg.frame_height_, (int)msg.frame_format_, msg.frame_index_);
+            encoder_thread_->Encode(msg);
         });
 
         if(desktop_capture_) {
@@ -433,8 +432,7 @@ namespace tc
 
         //LOGI("Frame ws ipc pass from shm: adapter uid: {}, type: {}, frame index: {}, frame_width: {}, frame_height: {}, buffer size: {}",
         //     msg->adapter_uid_, (int)msg->type_, msg->frame_index_, msg->frame_width_, msg->frame_height_,  0);
-        encoder_thread_->Encode(msg->adapter_uid_, msg->handle_, (int) msg->frame_width_,
-                                (int) msg->frame_height_, (int) msg->frame_format_, msg->frame_index_);
+        encoder_thread_->Encode(*msg);
     }
 
     bool Application::HasConnectedPeer() {
