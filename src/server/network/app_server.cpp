@@ -83,7 +83,7 @@ namespace tc
 
     void AppServer::PostVideoMessage(const std::string& data) {
         media_routers_.ApplyAll([=](const auto &k, const auto &v) {
-            if (v->audio_only_) {
+            if (!v->enable_video_) {
                 return;
             }
             v->PostBinaryMessage(data);
@@ -121,7 +121,7 @@ namespace tc
     bool AppServer::OnlyAudioClient() {
         bool only_audio_client = true;
         media_routers_.VisitAllCond([&](auto k, auto& v) -> bool {
-            if (!v->audio_only_) {
+            if (v->enable_video_) {
                 only_audio_client = false;
                 return true;
             }

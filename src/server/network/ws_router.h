@@ -73,7 +73,8 @@ namespace tc
         std::atomic_int queued_message_count_ = 0;
 
     public:
-        bool audio_only_ = false;
+        bool enable_audio_ = false;
+        bool enable_video_ = false;
 
     };
 
