@@ -7,6 +7,7 @@
 #include "gr_context.h"
 #include "gr_application.h"
 #include "gr_settings.h"
+#include "widgets/sized_msg_box.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -46,6 +47,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setValidator(new QIntValidator(0, 1000));
+                et_bitrate_ = edit;
+                et_bitrate_->setText(settings_->encoder_bitrate_.c_str());
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -69,6 +73,13 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
+
+                auto is_h265 = settings_->encoder_format_ == "h265";
+                edit->setCurrentIndex(is_h265 ? 1 : 0);
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
+                    settings_->SetEncoderFormat(idx);
+                });
             }
             // Resize resolution
             auto func_set_res_edit_enabled = [=, this](bool enabled) {
@@ -90,11 +101,12 @@ namespace tc
 
                 auto edit = new QCheckBox(this);
                 edit->setFixedSize(input_size);
+                cb_resize_res_ = edit;
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(settings_->enable_res_resize_);
+                edit->setChecked(!settings_->IsEncoderResTypeOrigin());
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     func_set_res_edit_enabled(enabled);
@@ -110,7 +122,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setValidator(new QIntValidator(0, 80000));
                 et_res_width_ = edit;
+                et_res_width_->setText(settings_->encoder_width_.c_str());
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -126,7 +140,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setValidator(new QIntValidator(0, 80000));
                 et_res_height_ = edit;
+                et_res_height_->setText(settings_->encoder_height_.c_str());
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -134,11 +150,10 @@ namespace tc
                 segment_layout->addLayout(layout);
             }
 
-            func_set_res_edit_enabled(settings_->enable_res_resize_);
+            func_set_res_edit_enabled(!settings_->IsEncoderResTypeOrigin());
 
             root_layout->addLayout(segment_layout);
         }
-
         {
             auto segment_layout = new NoMarginVLayout();
             {
@@ -164,6 +179,12 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
+
+                edit->setChecked(settings_->capture_video_ == kStTrue);
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    settings_->SetCaptureVideo(enabled);
+                });
             }
             // capture audio
             {
@@ -180,6 +201,11 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
+                edit->setChecked(settings_->capture_audio_ == kStTrue);
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    settings_->SetCaptureAudio(enabled);
+                });
             }
             root_layout->addLayout(segment_layout);
         }
@@ -270,12 +296,51 @@ namespace tc
         }
 
         {
+            auto func_show_err = [=](const QString& msg) {
+                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Save Settings Error"), msg);
+                msg_box->exec();
+            };
+
             auto layout = new NoMarginHLayout();
-            auto label = new QPushButton(this);
-            label->setText(tr("SAVE"));
-            label->setFixedSize(QSize(120, 35));
-            label->setStyleSheet("font-size: 14px; font-weight: 700;");
-            layout->addWidget(label);
+            auto btn = new QPushButton(this);
+            btn->setText(tr("S.A.V.E"));
+            btn->setFixedSize(QSize(150, 35));
+            btn->setStyleSheet("font-size: 14px; font-weight: 700;");
+            layout->addWidget(btn);
+            connect(btn, &QPushButton::clicked, this, [=, this]() {
+                // bitrate
+                auto bitrate = et_bitrate_->text().toInt();
+                if (bitrate == 0) {
+                    func_show_err(tr("Bitrate is none!"));
+                    return;
+                }
+                settings_->SetBitrate(bitrate);
+
+                if (cb_resize_res_->isChecked()) {
+                    // resize width
+                    auto res_width = et_res_width_->text().toInt();
+                    if (res_width == 0) {
+                        func_show_err(tr("Resolution width is none!"));
+                        return;
+                    }
+                    settings_->SetResWidth(res_width);
+
+                    // resize height
+                    auto res_height = et_res_height_->text().toInt();
+                    if (res_height == 0) {
+                        func_show_err(tr("Resolution height is none!"));
+                        return;
+                    }
+                    settings_->SetResHeight(res_height);
+                }
+
+                // Load again
+                settings_->Load();
+
+                // Save success dialog
+                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Save Success"), tr("Save settings success !"));
+                msg_box->exec();
+            });
 
             layout->addStretch();
             root_layout->addSpacing(30);
