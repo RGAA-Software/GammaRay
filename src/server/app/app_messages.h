@@ -86,7 +86,8 @@ namespace tc
     // Hello message
     class MsgHello {
     public:
-        bool only_audio_ = false;
+        bool enable_audio_ = false;
+        bool enable_video_ = false;
         bool enable_controller = false;
     };
 }
