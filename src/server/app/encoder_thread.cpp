@@ -65,9 +65,9 @@ namespace tc
             encoder_config.width = image->width;
             encoder_config.height = image->height;
             encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
-            encoder_config.gop_size = 60;
+            encoder_config.gop_size = -1;
             encoder_config.fps = 60;
-            encoder_config.bitrate = 25 * 1000000;
+            encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
             EncoderFeature encoder_feature{-1, 0};
             video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
                                                                 encoder_feature,
@@ -161,7 +161,7 @@ namespace tc
             encoder_config.sample_desc_count = 1;
             encoder_config.supports_intra_refresh = true;
             encoder_config.texture_format = format;
-            encoder_config.bitrate = 10 * 1000000;
+            encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
             EncoderFeature encoder_feature{adapter_uid, 0};
             video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
                                                                 encoder_feature,
