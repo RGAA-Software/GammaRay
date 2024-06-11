@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <functional>
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {
@@ -27,7 +28,7 @@ namespace tc
 
         void Encode(const std::shared_ptr<Data>& data, int width, int height, uint64_t frame_index);
         void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index);
-        void Encode(int64_t adapter_uid, uint64_t handle, int width, int height, int format, uint64_t frame_index);
+        void Encode(const CaptureVideoFrame& msg);
         void Exit();
 
     private:
