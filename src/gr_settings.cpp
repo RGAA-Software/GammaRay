@@ -35,8 +35,6 @@ namespace tc
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
 
-        enable_res_resize_ = sp_->GetInt(kStEnableResolutionResize, 0);
-
         // test
         //encoder_resolution_type_ = "specify";
         //capture_audio_ = "false";
@@ -85,7 +83,49 @@ namespace tc
     }
 
     void GrSettings::SetEnableResResize(bool enabled) {
-        enable_res_resize_ = enabled ? 1 : 0;
-        sp_->PutInt(kStEnableResolutionResize, enable_res_resize_);
+        if (enabled) {
+            encoder_resolution_type_ = kResTypeResize;
+        } else {
+            encoder_resolution_type_ = kResTypeOrigin;
+        }
+        sp_->Put(kStEncoderResolutionType, encoder_resolution_type_);
+    }
+
+    void GrSettings::SetBitrate(int br) {
+        encoder_bitrate_ = std::to_string(br);
+        sp_->Put(kStEncoderBitrate, encoder_bitrate_);
+    }
+
+    void GrSettings::SetResWidth(int width) {
+        encoder_width_ = std::to_string(width);
+        sp_->Put(kStEncoderWidth, encoder_width_);
+    }
+
+    void GrSettings::SetResHeight(int height) {
+        encoder_height_ = std::to_string(height);
+        sp_->Put(kStEncoderHeight, encoder_height_);
+    }
+
+    void GrSettings::SetEncoderFormat(int idx) {
+        // h264
+        if (idx == 0) {
+            sp_->Put(kStEncoderFormat, "h264");
+        } else if (idx == 1) {
+            sp_->Put(kStEncoderFormat, "h265");
+        }
+    }
+
+    void GrSettings::SetCaptureVideo(bool enabled) {
+        capture_video_ = enabled ? kStTrue : kStFalse;
+        sp_->Put(kStCaptureVideo, capture_video_);
+    }
+
+    void GrSettings::SetCaptureAudio(bool enabled) {
+        capture_audio_ = enabled ? kStTrue : kStFalse;
+        sp_->Put(kStCaptureAudio, capture_audio_);
+    }
+
+    bool GrSettings::IsEncoderResTypeOrigin() const {
+        return encoder_resolution_type_ == kResTypeOrigin;
     }
 }

@@ -33,7 +33,14 @@ namespace tc
 
     static const std::string kStHttpPort = "k_http_port";
     static const std::string kStWsPort = "k_ws_port";
-    static const std::string kStEnableResolutionResize = "k_enable_resolution_resize";
+
+    static const std::string kStTrue = "true";
+    static const std::string kStFalse = "false";
+    static const std::string kEncFormatH264 = "h264";
+    static const std::string kEncFormatH265 = "h265";
+    static const std::string kResTypeOrigin = "origin";
+    static const std::string kResTypeResize = "resize";
+    static const std::string kNetworkTypeWebsocket = "Websocket";
 
     class SharedPreference;
 
@@ -49,7 +56,15 @@ namespace tc
         void Dump();
         [[nodiscard]] std::vector<std::string> GetArgs() const;
 
+        void SetBitrate(int br);
         void SetEnableResResize(bool enabled);
+        void SetResWidth(int width);
+        void SetResHeight(int height);
+        void SetEncoderFormat(int idx);
+        void SetCaptureVideo(bool enabled);
+        void SetCaptureAudio(bool enabled);
+
+        bool IsEncoderResTypeOrigin() const;
 
     public:
 
@@ -76,7 +91,6 @@ namespace tc
         std::string network_type_;
         int network_listen_port_{};
 
-        int enable_res_resize_ = 0;
     };
 
 }
