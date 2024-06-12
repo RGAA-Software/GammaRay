@@ -364,6 +364,8 @@ namespace tc
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
                                                               msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
                                                               msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
+            //LOGI("monitor: {} - {} , ({},{} {},{})",
+            //     msg.monitor_index_, msg.monitor_name_, msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
             connection_->PostVideoMessage(net_msg);
             statistics_->fps_video_encode_->Tick();
         });
