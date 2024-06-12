@@ -177,7 +177,9 @@ namespace tc
             static uint64_t write_buffer = 0;
             video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
                 if (key) {
-                    LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}", frame->data->Size(), frame_index, key, frame->width, frame->height);
+                    LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
+                         frame->data->Size(), frame_index, key, frame->width, frame->height, cap_video_msg.monitor_index_,
+                         cap_video_msg.display_name_, cap_video_msg.left_, cap_video_msg.top_, cap_video_msg.right_, cap_video_msg.bottom_);
                 }
 
                 MsgVideoFrameEncoded msg {
