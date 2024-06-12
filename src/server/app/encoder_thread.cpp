@@ -113,7 +113,8 @@ namespace tc
         }));
     }
 
-    void EncoderThread::Encode(const CaptureVideoFrame& msg) {
+    void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
+        auto settings = Settings::Instance();
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
         Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
         if(g_render) {
@@ -131,18 +132,18 @@ namespace tc
             CopyID3D11Texture2D(shared_texture);
         }
 #endif
-        if (frame_width_ != msg.frame_width_ || frame_height_ != msg.frame_height_ || !video_encoder_) {
+        if (frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
+            || encoder_format_ != settings->encoder_.encoder_format_ || !video_encoder_) {
             if (video_encoder_) {
                 video_encoder_->Exit();
                 video_encoder_.reset();
             }
-            auto settings = Settings::Instance();
             tc::EncoderConfig encoder_config;
             if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
-                encoder_config.width = msg.frame_width_;
-                encoder_config.height = msg.frame_height_;
-                encoder_config.encode_width = msg.frame_width_;
-                encoder_config.encode_height = msg.frame_height_;
+                encoder_config.width = cap_video_msg.frame_width_;
+                encoder_config.height = cap_video_msg.frame_height_;
+                encoder_config.encode_width = cap_video_msg.frame_width_;
+                encoder_config.encode_height = cap_video_msg.frame_height_;
                 encoder_config.frame_resize = false;
             } else {
                 encoder_config.width = settings_->encoder_.encode_width_;
@@ -160,9 +161,9 @@ namespace tc
             encoder_config.rate_control_mode = tc::ERateControlMode::kRateControlModeCbr;
             encoder_config.sample_desc_count = 1;
             encoder_config.supports_intra_refresh = true;
-            encoder_config.texture_format = msg.frame_format_;
+            encoder_config.texture_format = cap_video_msg.frame_format_;
             encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
-            EncoderFeature encoder_feature{msg.adapter_uid_, 0};
+            EncoderFeature encoder_feature{cap_video_msg.adapter_uid_, 0};
             video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
                                                                 encoder_feature,
                                                                 settings_->encoder_.encoder_select_type_,
@@ -182,21 +183,28 @@ namespace tc
                 MsgVideoFrameEncoded msg {
                     .frame_width_ = static_cast<uint32_t>(frame->width),
                     .frame_height_ = static_cast<uint32_t>(frame->height),
-                    .frame_format_ = (uint32_t )settings->encoder_.encoder_format_,
+                    .frame_format_ = (uint32_t)settings->encoder_.encoder_format_,
                     .frame_index_ = frame_index,
                     .key_frame_ = key,
                     .image_ = frame,
+                    .monitor_index_ = cap_video_msg.monitor_index_,
+                    .monitor_name_ = cap_video_msg.display_name_,
+                    .monitor_left_ = cap_video_msg.left_,
+                    .monitor_top_ = cap_video_msg.top_,
+                    .monitor_right_ = cap_video_msg.right_,
+                    .monitor_bottom_ = cap_video_msg.bottom_,
                 };
                 context_->SendAppMessage(msg);
             });
 
-            frame_width_ = msg.frame_width_;
-            frame_height_ = msg.frame_height_;
+            frame_width_ = cap_video_msg.frame_width_;
+            frame_height_ = cap_video_msg.frame_height_;
+            encoder_format_ = settings->encoder_.encoder_format_;
         }
 
         enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
             auto beg = TimeExt::GetCurrentTimestamp();
-            video_encoder_->Encode(msg.handle_, msg.frame_index_);
+            video_encoder_->Encode(cap_video_msg.handle_, cap_video_msg.frame_index_);
             auto end = TimeExt::GetCurrentTimestamp();
             auto diff = end - beg;
             Statistics::Instance()->AppendEncodeDuration(diff);
