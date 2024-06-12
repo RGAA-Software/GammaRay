@@ -24,6 +24,12 @@ namespace tc
         uint64_t frame_index_ = 0;
         bool key_frame_ = false;
         std::shared_ptr<Image> image_ = nullptr;
+        int monitor_index_ = -1;
+        std::string monitor_name_;
+        int monitor_left_ = 0;
+        int monitor_top_ = 0;
+        int monitor_right_ = 0;
+        int monitor_bottom_ = 0;
     };
 
     class MsgAudioFrameEncoded {

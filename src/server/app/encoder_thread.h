@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include "tc_capture_new/capture_message.h"
+#include "settings/settings.h"
 
 namespace tc
 {
@@ -17,7 +18,6 @@ namespace tc
     class Image;
     class File;
     class Context;
-    class Settings;
 
     class EncoderThread {
     public:
@@ -39,6 +39,7 @@ namespace tc
 
         int frame_width_ = 0;
         int frame_height_ = 0;
+        Encoder::EncoderFormat encoder_format_ = Encoder::EncoderFormat::kH264;
 
         // debug
         std::shared_ptr<File> debug_file_ = nullptr;

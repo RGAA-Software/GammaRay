@@ -35,12 +35,10 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-    std::string NetMessageMaker::MakeVideoFrameMsg(const tc::VideoType& vt,
-                                                   const std::shared_ptr<Data>& data,
-                                                   uint64_t frame_index,
-                                                   int frame_width,
-                                                   int frame_height,
-                                                   bool key) {
+    std::string NetMessageMaker::MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
+                                                   uint64_t frame_index, int frame_width, int frame_height, bool key,
+                                                   int mon_idx, const std::string& display_name, int mon_left,
+                                                   int mon_top, int mon_right, int mon_bottom) {
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kVideoFrame);
         auto frame = new VideoFrame();
@@ -50,6 +48,12 @@ namespace tc
         frame->set_key(key);
         frame->set_frame_width(frame_width);
         frame->set_frame_height(frame_height);
+        frame->set_mon_idx(mon_idx);
+        frame->set_mon_name(display_name);
+        frame->set_mon_left(mon_left);
+        frame->set_mon_top(mon_top);
+        frame->set_mon_right(mon_right);
+        frame->set_mon_bottom(mon_bottom);
         msg->set_allocated_video_frame(frame);
         return msg->SerializeAsString();
     }

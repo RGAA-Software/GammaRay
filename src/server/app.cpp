@@ -322,7 +322,8 @@ namespace tc
         msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg([=]() -> tc::VideoType {
                 return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
-            } (), msg.image_->data, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.key_frame_);
+            } (), msg.image_->data, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
+            msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
 
             if (settings_->app_.debug_enabled_) {
                 if (!debug_encode_file_) {
@@ -361,7 +362,8 @@ namespace tc
                 return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
             } ();
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
-                                                              msg.frame_height_, msg.key_frame_);
+                                                              msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
+                                                              msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
             connection_->PostVideoMessage(net_msg);
             statistics_->fps_video_encode_->Tick();
         });
