@@ -395,6 +395,13 @@ namespace tc
             encoder_thread_->Encode(msg);
         });
 
+        msg_listener_->Listen<CaptureCursorBitmap>([=, this](const CaptureCursorBitmap& cursor_msg) {
+            auto net_msg = NetMessageMaker::MakeCursorInfoSyncMsg(cursor_msg.x_, cursor_msg.y_, cursor_msg.hotspot_x_,
+                                                                  cursor_msg.hotspot_y_, cursor_msg.width_, cursor_msg.height_,
+                                                                  cursor_msg.visable_, cursor_msg.data_);
+            connection_->PostVideoMessage(net_msg);
+        });
+
         if(desktop_capture_) {
             desktop_capture_->StartCapture();
         }
