@@ -7,7 +7,7 @@
 #include <iostream>
 #include "app.h"
 #include "settings/settings.h"
-#include "app/win/control_event_replayer_win.h"
+#include "app/win/win_event_replayer.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "tc_capture_new/capture_message_maker.h"
@@ -25,7 +25,12 @@ namespace tc {
         this->app_ = app;
         this->settings_ = Settings::Instance();
         this->statistics_ = Statistics::Instance();
-        control_event_replayer_win_ = std::make_shared<ControlEventReplayerWin>();
+        win_event_replayer_ = std::make_shared<WinEventReplayer>();
+
+        msg_listener_ = this->app_->GetContext()->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
+            win_event_replayer_->UpdateCaptureMonitorInfo(msg);
+        });
     }
 
     void MessageProcessor::HandleMessage(const std::shared_ptr<WsMediaRouter>& router, const std::string_view message_str) {
@@ -92,7 +97,7 @@ namespace tc {
 
     void MessageProcessor::ProcessMouseEvent(std::shared_ptr<Message>&& msg) {
         if (settings_->app_.IsGlobalReplayMode()) {
-            control_event_replayer_win_->HandleMessage(msg);
+            win_event_replayer_->HandleMessage(msg);
         } else {
             //1. convert to ipc message
             const auto& mouse_event = msg->mouse_event();
@@ -125,7 +130,7 @@ namespace tc {
     void MessageProcessor::ProcessKeyboardEvent(std::shared_ptr<Message>&& msg) {
         bool global_events = settings_->app_.event_replay_mode_ == TargetApplication::EventReplayMode::kGlobal;
         if (global_events) {
-            control_event_replayer_win_->HandleMessage(msg);
+            win_event_replayer_->HandleMessage(msg);
         } else {
             // 1. convert to ipc message
             const auto& key_event = msg->key_event();

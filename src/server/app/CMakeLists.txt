@@ -8,7 +8,7 @@ if (WIN32)
 
         win/app_manager_win.cpp
         win/dx_address_loader.cpp
-        win/control_event_replayer_win.cpp
+        win/win_event_replayer.cpp
     )
     target_link_libraries(app_manager fftw3)
 elseif (APPLE)
