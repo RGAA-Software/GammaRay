@@ -12,12 +12,13 @@
 
 namespace tc
 {
-    class ControlEventReplayerWin;
+    class WinEventReplayer;
     class Application;
     class Settings;
     class Data;
     class Statistics;
     class WsMediaRouter;
+    class MessageListener;
 
     class MessageProcessor {
     public :
@@ -38,8 +39,9 @@ namespace tc
     private:
         Settings* settings_ = nullptr;
         Statistics* statistics_ = nullptr;
-        std::shared_ptr<Application> app_;
-        std::shared_ptr<ControlEventReplayerWin> control_event_replayer_win_;
+        std::shared_ptr<Application> app_ = nullptr;
+        std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 }
 

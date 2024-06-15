@@ -4,11 +4,15 @@
 
 #ifndef TC_APPLICATION_CONTROL_EVENT_REPLAYER_WIN_H
 #define TC_APPLICATION_CONTROL_EVENT_REPLAYER_WIN_H
+
 #include <memory>
 #include "tc_message.pb.h"
+#include "tc_capture_new/capture_message.h"
 
-namespace tc{
-    class ControlEventReplayerWin {
+namespace tc
+{
+
+    class WinEventReplayer {
     public:
         void HandleMessage(const std::shared_ptr<Message>& message);
         void HandleKeyEvent(const tc::KeyEvent& event);
@@ -22,11 +26,12 @@ namespace tc{
         void DoScanCodeEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event);
         void MockKeyPressedByScanCode(uint16_t scancode);
 
+        void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg);
+
+    private:
+        // capturing monitors
+        std::vector<CaptureMonitorInfo> monitors_;
         bool current_key_status_map[256] = {false, };
-
-
-
-
         bool control_pressed_ = false;
         bool menu_pressed_ = false;
         bool delete_pressed_ = false;

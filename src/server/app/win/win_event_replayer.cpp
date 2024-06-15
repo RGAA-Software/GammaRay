@@ -2,7 +2,7 @@
 // Created by Administrator on 2024/2/12.
 //
 
-#include "control_event_replayer_win.h"
+#include "win_event_replayer.h"
 #include <Windows.h>
 #include "settings/settings.h"
 #include "tc_message.pb.h"
@@ -104,7 +104,7 @@ namespace tc
         return evt;
     }
 
-    void ControlEventReplayerWin::HandleMessage(const std::shared_ptr<Message>& msg) {
+    void WinEventReplayer::HandleMessage(const std::shared_ptr<Message>& msg) {
         // to do
         switch (msg->type()) {
             case MessageType::kKeyEvent: {
@@ -120,7 +120,7 @@ namespace tc
         }
     }
 
-    void ControlEventReplayerWin::HandleKeyEvent(const tc::KeyEvent& event) {
+    void WinEventReplayer::HandleKeyEvent(const tc::KeyEvent& event) {
         bool down = event.down();
         uint32_t vk_code = event.key_code();
         if (vk_code > 255)
@@ -173,7 +173,7 @@ namespace tc
         }
     }
 
-    bool ControlEventReplayerWin::CheckKeyAllowDown(uint32_t vk, bool down)
+    bool WinEventReplayer::CheckKeyAllowDown(uint32_t vk, bool down)
     {
         // win
         // to do
@@ -189,7 +189,7 @@ namespace tc
         return true;
     }
 
-    void ControlEventReplayerWin::ResetKey()
+    void WinEventReplayer::ResetKey()
     {
         // to do 当客户端断开连接时,重置服务端的键盘的状态。
         for(int i = 0; i < sizeof(current_key_status_map) / sizeof(*current_key_status_map);++i)
@@ -204,7 +204,7 @@ namespace tc
     }
 
     // 扫描码输入
-    void ControlEventReplayerWin::DoScanCodeEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event) {
+    void WinEventReplayer::DoScanCodeEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event) {
         INPUT evt = GenerateScanCodeInput(scancode, event.down(), extend);
 
         short num_lock_status = event.num_lock_status();
@@ -249,14 +249,14 @@ namespace tc
         WinSendEvent(&evt);
     }
 
-    void ControlEventReplayerWin::MockKeyPressedByScanCode(uint16_t scancode) {
+    void WinEventReplayer::MockKeyPressedByScanCode(uint16_t scancode) {
         INPUT down = GenerateScanCodeInput(scancode, true, true);
         WinSendEvent(&down);
         INPUT up = GenerateScanCodeInput(scancode, false, true);
         WinSendEvent(&up);
     }
 
-    void ControlEventReplayerWin::HandleMouseEvent(const tc::MouseEvent& event) {
+    void WinEventReplayer::HandleMouseEvent(const tc::MouseEvent& event) {
         float x_ratio = event.x_ratio();
         float y_ratio = event.y_ratio();
         // to do , 屏幕索引，后面要兼容多屏幕，目前暂用主屏
@@ -269,10 +269,31 @@ namespace tc
         }
     }
 
-    void ControlEventReplayerWin::PlayGlobalMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data) {
-        // to do 这里假定 服务端就一个屏幕 test, 等会就要兼容多屏
-        int x = (int)(x_ratio * 65535);
-        int y = (int)(y_ratio * 65535);
+    void WinEventReplayer::PlayGlobalMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data) {
+        if (monitors_.empty()) {
+            LOGE("Don't have capturing monitor info.");
+            return;
+        }
+        auto func_find_monitor = [&]() -> CaptureMonitorInfo {
+            for (auto& mon : monitors_) {
+                if (mon.index_ == monitor_index) {
+                    return mon;
+                }
+            }
+            return CaptureMonitorInfo{};
+        };
+
+        auto target_monitor = func_find_monitor();
+        if (!target_monitor.Valid()) {
+            LOGE("Invalid monitor for index: {}", monitor_index);
+            return;
+        }
+//        LOGI("monitor idx: {}, left: {}, bottom: {}, v-left: {}, v-bottom: {}",
+//             monitor_index, target_monitor.left_, target_monitor.bottom_,
+//             target_monitor.virtual_left_, target_monitor.virtual_bottom_);
+
+        int x = (int)(x_ratio * target_monitor.virtual_width_ + target_monitor.virtual_left_);
+        int y = (int)(y_ratio * target_monitor.virtual_height_ + target_monitor.virtual_top_);
         INPUT evt;
         evt.type = INPUT_MOUSE;
         evt.mi.dx = x;
@@ -315,5 +336,9 @@ namespace tc
         evt.mi.mouseData = data;
         evt.mi.time = 0;
         WinSendEvent(&evt);
+    }
+
+    void WinEventReplayer::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
+        monitors_ = msg.monitors_;
     }
 }
