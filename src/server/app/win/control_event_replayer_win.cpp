@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include "settings/settings.h"
 #include "tc_message.pb.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -167,6 +168,7 @@ namespace tc
                     break;
                 }
             }
+            LOGI("vk code: {}, down: {}, scancode: {}, extend: {}", vk_code, down, vsc, extend);
             DoScanCodeEvent(vsc, extend, event);
         }
     }
@@ -267,10 +269,10 @@ namespace tc
         }
     }
 
-    void ControlEventReplayerWin::PlayGlobalMouseEvent(int monitor_index, float x_ration, float y_ration, int buttons, int data) {
+    void ControlEventReplayerWin::PlayGlobalMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data) {
         // to do 这里假定 服务端就一个屏幕 test, 等会就要兼容多屏
-        int x = (int)(x_ration * 65535);
-        int y = (int)(y_ration * 65535);
+        int x = (int)(x_ratio * 65535);
+        int y = (int)(y_ratio * 65535);
         INPUT evt;
         evt.type = INPUT_MOUSE;
         evt.mi.dx = x;
@@ -279,9 +281,11 @@ namespace tc
         int target_buttons = 0;
         if (buttons & ButtonFlag::kMouseMove) {
             target_buttons |= MOUSEEVENTF_MOVE;
+            LOGI("Move: {}x{}", x, y);
         }
         if (buttons & ButtonFlag::kLeftMouseButtonDown) {
             target_buttons |= MOUSEEVENTF_LEFTDOWN;
+            LOGI("LeftDown: {}x{}", x, y);
         }
         if (buttons & ButtonFlag::kRightMouseButtonDown) {
             target_buttons |= MOUSEEVENTF_RIGHTDOWN;
@@ -291,6 +295,7 @@ namespace tc
         }
         if (buttons & ButtonFlag::kLeftMouseButtonUp) {
             target_buttons |= MOUSEEVENTF_LEFTUP;
+            LOGI("LeftUp: {}x{}", x, y);
         }
         if (buttons & ButtonFlag::kRightMouseButtonUp) {
             target_buttons |= MOUSEEVENTF_RIGHTUP;
@@ -309,7 +314,6 @@ namespace tc
         evt.mi.dwExtraInfo = 0;
         evt.mi.mouseData = data;
         evt.mi.time = 0;
-        //std::cout << "PlayGlobalMouseEvent x = " << x << " y = " << y << " data = " << evt.mi.mouseData << std::endl;
         WinSendEvent(&evt);
     }
 }

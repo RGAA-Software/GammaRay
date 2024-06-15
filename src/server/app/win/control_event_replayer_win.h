@@ -14,7 +14,7 @@ namespace tc{
         void HandleKeyEvent(const tc::KeyEvent& event);
         void HandleMouseEvent(const tc::MouseEvent& event);
 
-        void PlayGlobalMouseEvent(int monitor_index, float x_ration, float y_ration, int buttons, int data);
+        void PlayGlobalMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data);
 
         bool CheckKeyAllowDown(uint32_t vk,bool down);
         void ResetKey();

@@ -85,4 +85,21 @@ namespace tc
         return msg->SerializeAsString();
     }
 
+    std::string NetMessageMaker::MakeCursorInfoSyncMsg(uint32_t x, uint32_t y, uint32_t hotspot_x, uint32_t hotspot_y,
+                                                       uint32_t  width, uint32_t height, bool visable, const std::shared_ptr<Data>& data) {
+        auto msg = std::make_shared<Message>();
+        msg->set_type(tc::kCursorInfoSync);
+        auto cursor_info = new CursorInfoSync();
+        cursor_info->set_visible(visable);
+        cursor_info->set_width(width);
+        cursor_info->set_height(height);
+        cursor_info->set_x(x);
+        cursor_info->set_y(y);
+        cursor_info->set_hotspot_x(hotspot_x);
+        cursor_info->set_hotspot_y(hotspot_y);
+        cursor_info->set_bitmap(data->DataAddr(), data->Size());
+        msg->set_allocated_cursor_info_sync(cursor_info);
+        return msg->SerializeAsString();
+    }
+
 }
