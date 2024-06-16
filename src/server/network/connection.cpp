@@ -9,6 +9,7 @@
 #include "tc_encoder_new/encoder_messages.h"
 #include "settings/settings.h"
 #include "network/message_processor.h"
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {
@@ -54,9 +55,8 @@ namespace tc
     }
 
     void Connection::NotifyPeerConnected() {
-        //context_->SendAppMessage(PeerConnectedMessage::Make());
-        MsgInsertIDR msg{};
-        context_->SendAppMessage(msg);
+        context_->SendAppMessage(MsgInsertIDR {});
+        context_->SendAppMessage(RefreshScreenMessage {});
     }
 
     void Connection::NotifyPeerDisconnected() {
