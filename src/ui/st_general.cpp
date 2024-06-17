@@ -8,6 +8,7 @@
 #include "gr_application.h"
 #include "gr_settings.h"
 #include "widgets/sized_msg_box.h"
+#include "util/dxgi_mon_detector.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -15,6 +16,8 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDebug>
+#include <QAudioDevice>
+#include <QMediaDevices>
 
 namespace tc
 {
@@ -25,7 +28,7 @@ namespace tc
         auto tips_label_width = 220;
         auto tips_label_height = 35;
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
-        auto input_size = QSize(120, tips_label_height-5);
+        auto input_size = QSize(240, tips_label_height-5);
 
         {
             auto segment_layout = new NoMarginVLayout();
@@ -186,6 +189,33 @@ namespace tc
                     settings_->SetCaptureVideo(enabled);
                 });
             }
+            // Capture monitor
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Capture Video Monitor"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QComboBox(this);
+                edit->setFixedSize(input_size);
+                auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
+                for (const auto& adapter : adapters) {
+                    edit->addItem(std::format("{} [{}x{}]", adapter.display_name, adapter.width, adapter.height).c_str());
+                }
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+
+                auto is_h265 = settings_->encoder_format_ == "h265";
+                edit->setCurrentIndex(is_h265 ? 1 : 0);
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
+
+                });
+            }
             // capture audio
             {
                 auto layout = new NoMarginHLayout();
@@ -205,6 +235,35 @@ namespace tc
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetCaptureAudio(enabled);
+                });
+            }
+
+            // Capture Audio
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Capture Audio Device"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QComboBox(this);
+                edit->setFixedSize(input_size);
+                const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
+                for (const QAudioDevice &device : devices) {
+                    qDebug() << "音频输出设备: " << device.description().toStdString()  << ", " << device.id();
+                    edit->addItem(device.description());
+                }
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+
+                auto is_h265 = settings_->encoder_format_ == "h265";
+                edit->setCurrentIndex(is_h265 ? 1 : 0);
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
+
                 });
             }
             root_layout->addLayout(segment_layout);
