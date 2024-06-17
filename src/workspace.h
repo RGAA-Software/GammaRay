@@ -9,9 +9,20 @@
 #include <memory>
 #include <QPushButton>
 #include <QStackedWidget>
+#include "theme/QtAdvancedStylesheet.h"
 
 namespace tc
 {
+
+    struct MainWindowPrivate {
+        QMainWindow* _this;
+        acss::QtAdvancedStylesheet* AdvancedStyleSheet;
+        QVector<QPushButton*> ThemeColorButtons;
+
+        MainWindowPrivate(QMainWindow* _public) : _this(_public) {}
+    };
+
+    /// Mainwindow
 
     enum class TabName {
         kTabServer,
@@ -36,6 +47,7 @@ namespace tc
         QPushButton* btn_tab_games_ = nullptr;
         QPushButton* btn_tab_settings_ = nullptr;
         QStackedWidget* stacked_widget_ = nullptr;
+        MainWindowPrivate* d;
     };
 
 }
