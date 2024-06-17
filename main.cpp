@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         LOGI("font family : {}", f.toStdString());
     }
 
-    LoadStyle("");
+    //LoadStyle("");
     DxgiMonitorDetector::Instance()->DetectAdapters();
     Workspace workspace;
     workspace.setFixedSize(1820, 960);

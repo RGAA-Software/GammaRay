@@ -136,7 +136,7 @@ namespace tc
                     item_layout->addWidget(status);
 
                     auto btn = new QPushButton(this);
-                    btn->setFixedSize(80, 30);
+                    btn->setFixedSize(80, 28);
                     btn->setText(tr("INSTALL"));
                     item_layout->addSpacing(55);
                     item_layout->addWidget(btn);
@@ -175,7 +175,7 @@ namespace tc
                     item_layout->addWidget(status);
 
                     auto btn = new QPushButton(this);
-                    btn->setFixedSize(80, 30);
+                    btn->setFixedSize(80, 28);
                     btn->setText(tr("RESTART"));
                     item_layout->addSpacing(55);
                     item_layout->addWidget(btn);

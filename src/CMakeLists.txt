@@ -48,6 +48,9 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/res/resource_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util/qt_directory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util/dxgi_mon_detector.cpp
+
+        #${CMAKE_CURRENT_SOURCE_DIR}/theme/QmlStyleUrlInterceptor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/theme/QtAdvancedStylesheet.cpp
         PARENT_SCOPE
 )
 

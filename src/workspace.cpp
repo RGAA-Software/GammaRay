@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QStackedWidget>
+#include <QApplication>
 
 #include "widgets/custom_tab_btn.h"
 #include "widgets/layout_helper.h"
@@ -21,6 +22,22 @@ namespace tc
 
     Workspace::Workspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
+
+        d = new MainWindowPrivate(this);
+        QString AppDir = qApp->applicationDirPath();
+        QString StylesDir = AppDir + "/resources/";
+        qDebug() << "StyleDir: " << StylesDir;
+        d->AdvancedStyleSheet = new acss::QtAdvancedStylesheet(this);
+        d->AdvancedStyleSheet->setStylesDirPath(StylesDir);
+        d->AdvancedStyleSheet->setOutputDirPath(AppDir + "/output");
+        d->AdvancedStyleSheet->setCurrentStyle("qt_material");
+        //d->AdvancedStyleSheet->setDefaultTheme();
+        d->AdvancedStyleSheet->setCurrentTheme("light_blue");
+        d->AdvancedStyleSheet->updateStylesheet();
+        setWindowIcon(d->AdvancedStyleSheet->styleIcon());
+        qApp->setStyleSheet(d->AdvancedStyleSheet->styleSheet());
+        connect(d->AdvancedStyleSheet, SIGNAL(stylesheetChanged()), this,
+                SLOT(onStyleManagerStylesheetChanged()));
 
         app_ = std::make_shared<GrApplication>();
         app_->Init();
