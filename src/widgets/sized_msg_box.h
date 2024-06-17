@@ -7,28 +7,25 @@
 
 #include <QMessageBox>
 #include <QString>
+#include <QPushButton>
+#include <QLabel>
 #include <memory>
 
 namespace tc
 {
-    class SizedMessageBox : public QMessageBox {
+    class SizedMessageBox : public QDialog {
     public:
 
         static std::shared_ptr<SizedMessageBox> MakeOkCancelBox(const QString& title, const QString& msg);
-        static std::shared_ptr<SizedMessageBox> MakeOkBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeErrorOkBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeInfoOkBox(const QString& title, const QString& msg);
 
-        explicit SizedMessageBox(QWidget* parent = nullptr) : QMessageBox(parent) {
-        }
+        explicit SizedMessageBox(QWidget* parent = nullptr);
 
         void Resize(int width, int height) {
             this->width_ = width;
             this->height_ = height;
-        }
-
-        void resizeEvent(QResizeEvent *event) override {
-            setFixedSize(width_, height_);
+            setFixedSize(width, height);
         }
 
         void closeEvent(QCloseEvent *event) override {
@@ -42,10 +39,12 @@ namespace tc
             closed_callback_ = std::move(cbk);
         }
 
-    private:
+    public:
         int width_{};
         int height_{};
-
+        QLabel* lbl_message_ = nullptr;
+        QPushButton* btn_cancel_ = nullptr;
+        QPushButton* btn_ok_ = nullptr;
         std::function<void()> closed_callback_;
     };
 }
