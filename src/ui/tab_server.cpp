@@ -243,7 +243,7 @@ namespace tc
 
                     auto label = new QLabel(this);
                     label->setFixedSize(170, 40);
-                    label->setText(tr("HTTP Port"));
+                    label->setText(tr("Http Port"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
 
