@@ -53,7 +53,7 @@ namespace tc
 
     SizedMessageBox::SizedMessageBox(bool ok, bool cancel, QWidget* parent) {
         auto layout = new NoMarginVLayout();
-        layout->addSpacing(15);
+        layout->addSpacing(30);
         {
             auto item_layout = new NoMarginHLayout();
             auto lbl_message = new QLabel(this);
@@ -61,7 +61,7 @@ namespace tc
             lbl_message_ = lbl_message;
             item_layout->addSpacing(30);
             item_layout->addWidget(lbl_message);
-            item_layout->addSpacing(15);
+            item_layout->addSpacing(30);
             layout->addLayout(item_layout);
         }
         layout->addStretch(111);

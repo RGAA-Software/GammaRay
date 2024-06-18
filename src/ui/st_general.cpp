@@ -188,6 +188,7 @@ namespace tc
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetCaptureVideo(enabled);
+                    cb_capture_monitor_->setEnabled(enabled);
                 });
             }
             // Capture monitor
@@ -200,7 +201,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QComboBox(this);
+                cb_capture_monitor_ = edit;
                 edit->setFixedSize(input_size);
+                edit->setEnabled(settings_->capture_video_ == kStTrue);
                 auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
                 int idx = 0;
                 int target_idx = -1;
@@ -249,6 +252,7 @@ namespace tc
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetCaptureAudio(enabled);
+                    cb_capture_audio_device_->setEnabled(enabled);
                 });
             }
 
@@ -262,6 +266,8 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QComboBox(this);
+                cb_capture_audio_device_ = edit;
+                edit->setEnabled(settings_->capture_audio_ == kStTrue);
                 edit->setFixedSize(input_size);
                 const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
                 int idx = 0;
@@ -420,7 +426,7 @@ namespace tc
                 settings_->Load();
 
                 // Save success dialog
-                auto msg_box = SizedMessageBox::MakeOkBox(tr("Save Success"), tr("Save settings success !"));
+                auto msg_box = SizedMessageBox::MakeOkBox(tr("Save Success"), tr("Save settings success! You need to RESTART server."));
                 msg_box->exec();
             });
 
