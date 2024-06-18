@@ -57,6 +57,7 @@ namespace tc
         {
             auto item_layout = new NoMarginHLayout();
             auto lbl_message = new QLabel(this);
+            lbl_message->setWordWrap(true);
             lbl_message->setStyleSheet("font-size: 15px;");
             lbl_message_ = lbl_message;
             item_layout->addSpacing(30);
