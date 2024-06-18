@@ -104,7 +104,8 @@ namespace tc
         control_thread_ = Thread::Make("control", 16);
         control_thread_->Poll();
         // desktop capture
-        desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier());
+        auto target_monitor = settings_->capture_.capture_monitor_;
+        desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {

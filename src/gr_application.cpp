@@ -28,8 +28,7 @@ namespace tc
 
     }
 
-    GrApplication::~GrApplication() {
-    }
+    GrApplication::~GrApplication() = default;
 
     void GrApplication::Init() {
         SharedPreference::Instance()->Init("", "game.dat");

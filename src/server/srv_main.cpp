@@ -5,6 +5,7 @@
 #include "context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/dump_helper.h"
+#include "tc_common_new/base64.h"
 #include "gflags/gflags.h"
 
 using namespace tc;
@@ -32,6 +33,11 @@ DEFINE_string(capture_video_type, "global", "hook/global");
 DEFINE_string(network_type, "websocket", "");
 DEFINE_int32(network_listen_port, 20371, "");
 
+static const std::string kStCaptureMonitor = "capture_monitor";
+static const std::string kStCaptureAudioDevice = "capture_audio_device";
+DEFINE_string(capture_monitor, "", "capture monitor");
+DEFINE_string(capture_audio_device, "", "capture audio device");
+
 // application
 DEFINE_string(app_game_path, "", "");
 DEFINE_string(app_game_args, "", "");
@@ -53,6 +59,8 @@ void UpdateSettings(Settings* settings) {
     LOGI("capture_video_type: {}", FLAGS_capture_video_type);
     LOGI("network_type: {}", FLAGS_network_type);
     LOGI("network_listen_port: {}", FLAGS_network_listen_port);
+    LOGI("capture monitor: {}", Base64::Base64Decode(FLAGS_capture_monitor));
+    LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));
     LOGI("app_game_path: {}", FLAGS_app_game_path);
     LOGI("app_game_args: {}", FLAGS_app_game_args);
     LOGI("--------------In args end----------------");
@@ -106,6 +114,8 @@ void UpdateSettings(Settings* settings) {
     } else {
         settings->capture_.capture_video_type_ = Capture::CaptureVideoType::kVideoHook;
     }
+    settings->capture_.capture_monitor_ = Base64::Base64Decode(FLAGS_capture_monitor);
+    settings->capture_.capture_audio_device_ = Base64::Base64Decode(FLAGS_capture_audio_device);
 
     // network !! only support websocket now
     if (FLAGS_network_type == "websocket") {

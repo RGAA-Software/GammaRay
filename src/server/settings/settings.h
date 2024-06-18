@@ -69,6 +69,8 @@ namespace tc
         bool enable_video_;
         CaptureVideoType capture_video_type_;
         bool send_video_frame_by_shm_;
+        std::string capture_monitor_;
+        std::string capture_audio_device_;
     };
 
     // Transmission

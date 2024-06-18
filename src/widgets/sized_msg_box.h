@@ -16,11 +16,12 @@ namespace tc
     class SizedMessageBox : public QDialog {
     public:
 
+        static std::shared_ptr<SizedMessageBox> MakeOkBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeOkCancelBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeErrorOkBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeInfoOkBox(const QString& title, const QString& msg);
 
-        explicit SizedMessageBox(QWidget* parent = nullptr);
+        explicit SizedMessageBox(bool ok, bool cancel, QWidget* parent = nullptr);
 
         void Resize(int width, int height) {
             this->width_ = width;

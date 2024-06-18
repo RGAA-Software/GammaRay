@@ -9,6 +9,7 @@
 #include "gr_settings.h"
 #include "widgets/sized_msg_box.h"
 #include "util/dxgi_mon_detector.h"
+#include "tc_common_new/log.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -201,20 +202,31 @@ namespace tc
                 auto edit = new QComboBox(this);
                 edit->setFixedSize(input_size);
                 auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
+                int idx = 0;
+                int target_idx = -1;
                 for (const auto& adapter : adapters) {
                     edit->addItem(std::format("{} [{}x{}]", adapter.display_name, adapter.width, adapter.height).c_str());
+                    LOGI("capture: {}, display: {}", settings_->capture_monitor_, adapter.display_name);
+                    if (settings_->capture_monitor_ == adapter.display_name) {
+                        target_idx = idx;
+                    }
+                    idx++;
+                }
+
+                if (target_idx != -1) {
+                    edit->setCurrentIndex(target_idx);
+                    LOGI("capture target index: {}", target_idx);
                 }
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
 
-                auto is_h265 = settings_->encoder_format_ == "h265";
-                edit->setCurrentIndex(is_h265 ? 1 : 0);
-
                 connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
-
+                    auto monitor = adapters.at(idx).display_name;
+                    settings_->SetCaptureMonitor(monitor);
                 });
+
             }
             // capture audio
             {
@@ -250,20 +262,27 @@ namespace tc
                 auto edit = new QComboBox(this);
                 edit->setFixedSize(input_size);
                 const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
+                int idx = 0;
+                int target_idx = -1;
                 for (const QAudioDevice &device : devices) {
                     qDebug() << "音频输出设备: " << device.description().toStdString()  << ", " << device.id();
                     edit->addItem(device.description());
+                    if (settings_->capture_audio_device_ == device.id().toStdString()) {
+                        target_idx = idx;
+                    }
+                    idx++;
+                }
+                if (target_idx != -1) {
+                    edit->setCurrentIndex(target_idx);
                 }
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
 
-                auto is_h265 = settings_->encoder_format_ == "h265";
-                edit->setCurrentIndex(is_h265 ? 1 : 0);
-
                 connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
-
+                    auto target_device_id = devices.at(idx).id().toStdString();
+                    settings_->SetCaptureAudioDevice(target_device_id);
                 });
             }
             root_layout->addLayout(segment_layout);
@@ -356,7 +375,7 @@ namespace tc
 
         {
             auto func_show_err = [=](const QString& msg) {
-                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Save Settings Error"), msg);
+                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
                 msg_box->exec();
             };
 
@@ -397,7 +416,7 @@ namespace tc
                 settings_->Load();
 
                 // Save success dialog
-                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Save Success"), tr("Save settings success !"));
+                auto msg_box = SizedMessageBox::MakeOkBox(tr("Save Success"), tr("Save settings success !"));
                 msg_box->exec();
             });
 
