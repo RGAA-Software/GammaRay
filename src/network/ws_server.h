@@ -7,12 +7,18 @@
 
 #include <memory>
 #include <asio2/websocket/ws_server.hpp>
-
 #include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
     class GrContext;
+
+    class WSSession {
+    public:
+        uint64_t socket_fd_;
+        int session_type_;
+        std::shared_ptr<asio2::ws_session> session_ = nullptr;
+    };
 
     class WSServer {
     public:
@@ -24,14 +30,14 @@ namespace tc
         void Start();
         void Exit();
 
-        void PostBinaryMessage(const std::string& msg);
-        void PostBinaryMessage(std::string_view msg);
-        void ParseBinaryMessage(std::string_view msg);
+        void PostBinaryMessage(const std::string& msg, bool only_inner = false);
+        void PostBinaryMessage(std::string_view msg, bool only_inner = false);
+        void ParseBinaryMessage(uint64_t socket_fd, std::string_view msg);
 
     private:
         std::shared_ptr<asio2::ws_server> server_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
-        ConcurrentHashMap<uint64_t, std::shared_ptr<asio2::ws_session>> sessions_;
+        ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> sessions_;
     };
 }
 

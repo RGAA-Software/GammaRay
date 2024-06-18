@@ -29,12 +29,16 @@ namespace tc
                 LOGE("error occurred when calling the accept function, err: {}, msg: {}",
                      asio2::get_last_error_val(), asio2::get_last_error_msg().data());
             }
-        }).bind_recv([&](auto &session_ptr, std::string_view data) {
-            this->ParseBinaryMessage(data);
+        }).bind_recv([&](auto& sess, std::string_view data) {
+            auto socket_fd = (uint64_t)sess->socket().native_handle();
+            this->ParseBinaryMessage(socket_fd, data);
 
         }).bind_connect([=, this](std::shared_ptr<asio2::ws_session>& sess) {
             auto socket_fd = (uint64_t)sess->socket().native_handle();
-            this->sessions_.Insert(socket_fd, sess);
+            auto ws_sess = std::make_shared<WSSession>();
+            ws_sess->socket_fd_ = socket_fd;
+            ws_sess->session_ = sess;
+            this->sessions_.Insert(socket_fd, ws_sess);
             LOGI("client connect : {}", socket_fd);
 
         }).bind_disconnect([=, this](auto &sess) {
@@ -67,40 +71,56 @@ namespace tc
         }
     }
 
-    void WSServer::PostBinaryMessage(const std::string& msg) {
-        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<asio2::ws_session>& sess) {
-            sess->async_send(msg);
+    void WSServer::PostBinaryMessage(const std::string& msg, bool only_inner) {
+        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
+            if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
+                return;
+            }
+            if (sess->session_) {
+                sess->session_->async_send(msg);
+            }
         });
     }
 
-    void WSServer::PostBinaryMessage(std::string_view msg) {
-        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<asio2::ws_session>& sess) {
-            sess->async_send(msg);
+    void WSServer::PostBinaryMessage(std::string_view msg, bool only_inner) {
+        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
+            if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
+                return;
+            }
+            if (sess->session_) {
+                sess->session_->async_send(msg);
+            }
         });
     }
 
-    void WSServer::ParseBinaryMessage(std::string_view msg) {
+    void WSServer::ParseBinaryMessage(uint64_t socket_fd, std::string_view msg) {
         auto proto_msg = std::make_shared<tc::Message>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
             LOGE("Parse binary message failed.");
             return;
         }
-        if (proto_msg->type() == tc::kCaptureStatistics) {
+        if (proto_msg->type() == tc::kUIServerHello) {
+            auto hello = proto_msg->ui_server_hello();
+            sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
+                if (v->socket_fd_ == socket_fd) {
+                    v->session_type_ = hello.type();
+                    LOGI("Update session type: {} for socket: {}", v->session_type_, socket_fd);
+                }
+            });
+
+        } else if (proto_msg->type() == tc::kCaptureStatistics) {
             auto capture_statistics = proto_msg->capture_statistics();
             context_->SendAppMessage(MsgCaptureStatistics{
                 .msg_ = proto_msg,
                 .statistics_ = capture_statistics,
             });
+
         } else if (proto_msg->type() == tc::kServerAudioSpectrum) {
             auto spectrum = proto_msg->server_audio_spectrum();
             context_->SendAppMessage(MsgServerAudioSpectrum {
                 .msg_ = proto_msg,
                 .spectrum_ = spectrum,
             });
-#if 0
-            // !! deprecated !!
-            this->PostBinaryMessage(msg);
-#endif
         }
     }
 

@@ -5,6 +5,7 @@
 #include "gr_settings.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/base64.h"
 
 #include <sstream>
 
@@ -29,15 +30,13 @@ namespace tc
         capture_audio_type_ = sp_->Get(kStCaptureAudioType, "global");
         capture_video_ = sp_->Get(kStCaptureVideo, "true");
         capture_video_type_ = sp_->Get(kStCaptureVideoType, "global");
+        capture_monitor_ = sp_->Get(kStCaptureMonitor, "");
+        capture_audio_device_ = sp_->Get(kStCaptureAudioDevice, "");
 
         network_type_ = sp_->Get(kStNetworkType, "websocket");
         http_server_port_ = sp_->GetInt(kStHttpPort, 20368);
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
-
-        // test
-        //encoder_resolution_type_ = "specify";
-        //capture_audio_ = "false";
     }
 
     void GrSettings::Dump() {
@@ -59,6 +58,8 @@ namespace tc
         ss << "http_server_port_: " << http_server_port_ << std::endl;
         ss << "ws_server_port_: " << ws_server_port_ << std::endl;
         ss << "network_listen_port_: " << network_listen_port_ << std::endl;
+        ss << "capture_monitor_: " << capture_monitor_ << std::endl;
+        ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -79,6 +80,8 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
         args.push_back(std::format("--{}={}", kStNetworkType, network_type_));
         args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listen_port_));
+        args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
+        args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
         return args;
     }
 
@@ -125,7 +128,18 @@ namespace tc
         sp_->Put(kStCaptureAudio, capture_audio_);
     }
 
+    void GrSettings::SetCaptureMonitor(const std::string& name) {
+        capture_monitor_ = name;
+        sp_->Put(kStCaptureMonitor, capture_monitor_);
+    }
+
+    void GrSettings::SetCaptureAudioDevice(const std::string& name) {
+        capture_audio_device_ = name;
+        sp_->Put(kStCaptureAudioDevice, capture_audio_device_);
+    }
+
     bool GrSettings::IsEncoderResTypeOrigin() const {
         return encoder_resolution_type_ == kResTypeOrigin;
     }
+
 }
