@@ -25,6 +25,8 @@ namespace tc
         QLineEdit* et_res_width_;
         QLineEdit* et_res_height_;
         QCheckBox* cb_resize_res_;
+        QComboBox* cb_capture_monitor_;
+        QComboBox* cb_capture_audio_device_;
     };
 
 }
