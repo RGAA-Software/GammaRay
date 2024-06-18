@@ -204,7 +204,7 @@ namespace tc
             return;
         }
 
-        audio_capture_ = AudioCaptureFactory::Make();
+        audio_capture_ = AudioCaptureFactory::Make(settings_->capture_.capture_audio_device_);
         audio_capture_->RegisterFormatCallback([=, this](int samples, int channels, int bits) {
             LOGI("audio format, samples: {}, channels: {}, bits: {}", samples, channels, bits);
             auto stat = Statistics::Instance();
