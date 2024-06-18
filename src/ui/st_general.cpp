@@ -216,6 +216,8 @@ namespace tc
                 if (target_idx != -1) {
                     edit->setCurrentIndex(target_idx);
                     LOGI("capture target index: {}", target_idx);
+                } else {
+                    settings_->SetCaptureMonitor("");
                 }
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -274,6 +276,8 @@ namespace tc
                 }
                 if (target_idx != -1) {
                     edit->setCurrentIndex(target_idx);
+                } else {
+                    settings_->SetCaptureAudioDevice("");
                 }
                 layout->addWidget(edit);
                 layout->addStretch();

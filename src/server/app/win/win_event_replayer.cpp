@@ -302,11 +302,9 @@ namespace tc
         int target_buttons = 0;
         if (buttons & ButtonFlag::kMouseMove) {
             target_buttons |= MOUSEEVENTF_MOVE;
-            LOGI("Move: {}x{}", x, y);
         }
         if (buttons & ButtonFlag::kLeftMouseButtonDown) {
             target_buttons |= MOUSEEVENTF_LEFTDOWN;
-            LOGI("LeftDown: {}x{}", x, y);
         }
         if (buttons & ButtonFlag::kRightMouseButtonDown) {
             target_buttons |= MOUSEEVENTF_RIGHTDOWN;
@@ -316,7 +314,6 @@ namespace tc
         }
         if (buttons & ButtonFlag::kLeftMouseButtonUp) {
             target_buttons |= MOUSEEVENTF_LEFTUP;
-            LOGI("LeftUp: {}x{}", x, y);
         }
         if (buttons & ButtonFlag::kRightMouseButtonUp) {
             target_buttons |= MOUSEEVENTF_RIGHTUP;
