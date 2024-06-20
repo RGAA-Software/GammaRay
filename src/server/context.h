@@ -14,7 +14,6 @@
 
 namespace tc
 {
-    class TaskRuntime;
 
     class Context {
     public:
@@ -23,26 +22,25 @@ namespace tc
         Context();
         ~Context() = default;
 
-        std::shared_ptr<TaskRuntime> GetTaskRuntime();
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
 
         template<typename T>
         void SendAppMessage(const T& m) {
-            if (msg_notifier_) {
-                msg_notifier_->SendAppMessage(m);
-            }
+            asio2_pool_->post([=, this]() {
+                if (msg_notifier_) {
+                    msg_notifier_->SendAppMessage(m);
+                }
+            });
         }
 
-        uint64_t PostInTaskRuntime(std::function<void()>&& task);
-
+        void PostTask(std::function<void()>&& task);
         std::shared_ptr<asio2::iopool> GetAsio2IoPool();
-
         std::string GetCurrentExeFolder();
 
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
-        std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;
-        std::shared_ptr<asio2::iopool> asio2_iopool_ = nullptr;
+        std::shared_ptr<Thread> msg_thread_ = nullptr;
+        std::shared_ptr<asio2::iopool> asio2_pool_ = nullptr;
     };
 }
 
