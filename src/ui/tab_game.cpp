@@ -179,7 +179,7 @@ namespace tc
                 // todo: 1.loading ....
             }
 
-            steam_mgr_->ScanInstalledGames();
+            steam_mgr_->ScanInstalledGames(false);
             steam_mgr_->DumpGamesInfo();
 
             auto steam_apps = steam_mgr_->GetInstalledGames();
@@ -206,7 +206,12 @@ namespace tc
                 AddItems(games_);
             }
 
+            context_->PostTask([=, this]() {
+                steam_mgr_->RescanRecursively();
+            });
+
         });
+
     }
 
     QListWidgetItem* TabGame::AddItem(int index, const TcDBGamePtr& game) {
