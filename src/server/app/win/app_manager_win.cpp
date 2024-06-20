@@ -47,7 +47,7 @@ namespace tc
 
         if (settings_->capture_.IsVideoHook()) {
             msg_listener_->Listen<MsgTimer100>([=, this](const auto &msg) {
-                context_->PostInTaskRuntime([=, this]() {
+                context_->PostTask([=, this]() {
                     this->InjectCaptureDllIfNeeded();
                     if (target_pid_ > 0) {
                         auto infos = tc::AppManagerWinImpl::SearchWindowByPid(target_pid_);
@@ -57,7 +57,7 @@ namespace tc
             });
         } else {
             msg_listener_->Listen<MsgTimer2000>([=, this](const auto &msg) {
-                context_->PostInTaskRuntime([=, this]() {
+                context_->PostTask([=, this]() {
                     this->InjectCaptureDllIfNeeded();
                 });
             });

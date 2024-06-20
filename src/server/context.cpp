@@ -15,27 +15,21 @@ namespace tc
     }
 
     Context::Context() {
-        task_runtime_ = std::make_shared<TaskRuntime>();
         msg_notifier_ = std::make_shared<MessageNotifier>();
-
-        asio2_iopool_ = std::make_shared<asio2::iopool>();
-        asio2_iopool_->start();
-    }
-
-    std::shared_ptr<TaskRuntime> Context::GetTaskRuntime() {
-        return task_runtime_;
+        asio2_pool_ = std::make_shared<asio2::iopool>();
+        asio2_pool_->start();
     }
 
     std::shared_ptr<MessageNotifier> Context::GetMessageNotifier() {
         return msg_notifier_;
     }
 
-    uint64_t Context::PostInTaskRuntime(std::function<void()>&& task) {
-        return task_runtime_->Post(SimpleThreadTask::Make(std::move(task)));
+    void Context::PostTask(std::function<void()>&& task) {
+        asio2_pool_->post(std::move(task));
     }
 
     std::shared_ptr<asio2::iopool> Context::GetAsio2IoPool() {
-        return asio2_iopool_;
+        return asio2_pool_;
     }
 
     std::string Context::GetCurrentExeFolder() {

@@ -140,7 +140,7 @@ namespace tc
 
         });
 
-        list_widget_->setStyleSheet(format.str().c_str());
+        list_widget_->setStyleSheet("QListWidget {background-color:none;}");
         list_widget_->show();
 
         setLayout(root_layout);

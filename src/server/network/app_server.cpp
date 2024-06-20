@@ -185,8 +185,9 @@ namespace tc
                 if (router) {
                     router->OnOpen(sess_ptr);
                 }
-
+                LOGI("After ws open");
                 this->NotifyPeerConnected();
+                LOGI("After notify peer connected.");
             })
             .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
