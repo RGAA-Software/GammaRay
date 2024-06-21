@@ -9,10 +9,10 @@
 #include "tc_steam_manager_new/steam_entities.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_application.h"
-#include "manager/gr_server_manager.h"
+#include "src/gr_server_manager.h"
 #include "tc_common_new/net_resp.h"
 #include "tc_3rdparty/json/json.hpp"
-#include "manager/run_game_manager.h"
+#include "src/gr_run_game_manager.h"
 
 #include <boost/algorithm/string/trim.hpp>
 

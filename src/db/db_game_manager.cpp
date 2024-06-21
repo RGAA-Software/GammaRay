@@ -38,15 +38,12 @@ namespace tc
         auto storage = InitAppDatabase("game.db");
         db_storage_ = storage;
         storage.sync_schema();
-        auto type = typeid(storage).name();
     }
 
     void DBGameManager::SaveOrUpdateGame(const TcDBGamePtr& game) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-
         auto games = storage.get_all<TcDBGame>(where(c(&TcDBGame::game_id_) == game->game_id_));
-
         if (!games.empty() && game->game_id_ > 0) {
             for (auto& g : games) {
                 g.AssignFrom(game);

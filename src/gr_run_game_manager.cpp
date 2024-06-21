@@ -2,7 +2,7 @@
 // Created by hy on 2024/4/26.
 //
 
-#include "run_game_manager.h"
+#include "gr_run_game_manager.h"
 
 #include "gr_context.h"
 #include "db/db_game_manager.h"
@@ -21,17 +21,17 @@ using namespace nlohmann;
 namespace tc
 {
 
-    RunGameManager::RunGameManager(const std::shared_ptr<GrContext>& ctx) {
+    GrRunGameManager::GrRunGameManager(const std::shared_ptr<GrContext>& ctx) {
         this->gr_ctx_ = ctx;
         this->steam_mgr_ = ctx->GetSteamManager();
         this->db_game_manager_ = ctx->GetDBGameManager();
     }
 
-    RunGameManager::~RunGameManager() {
+    GrRunGameManager::~GrRunGameManager() {
 
     }
 
-    Response<bool, std::string> RunGameManager::StartGame(const std::string& game_path, const std::vector<std::string>& args) {
+    Response<bool, std::string> GrRunGameManager::StartGame(const std::string& game_path, const std::vector<std::string>& args) {
         auto resp = Response<bool, std::string>::Make(false, "");
         auto ok_resp = [&]() {
             resp.ok_ = true;
@@ -84,7 +84,7 @@ namespace tc
         return resp;
     }
 
-    bool RunGameManager::StartSteamGame(const std::string &game_path, const std::vector<std::string>& args) {
+    bool GrRunGameManager::StartSteamGame(const std::string &game_path, const std::vector<std::string>& args) {
         const std::wstring& target_exec = StringExt::ToWString(game_path);
         if (game_path.find("bigpicture") != std::string::npos) {
             // steam big picture mode
@@ -101,13 +101,13 @@ namespace tc
         }
     }
 
-    Response<bool, std::string> RunGameManager::StopGame(const std::string& game_path) {
+    Response<bool, std::string> GrRunGameManager::StopGame(const std::string& game_path) {
         auto resp = Response<bool, std::string>::Make(false, "");
 
         return resp;
     }
 
-    Response<bool, std::string> RunGameManager::StartNormalGame(const std::string& game_path, const std::vector<std::string>& args) {
+    Response<bool, std::string> GrRunGameManager::StartNormalGame(const std::string& game_path, const std::vector<std::string>& args) {
         auto resp = Response<bool, std::string>::Make(false, "");
         if (!std::filesystem::exists(StringExt::ToWString(game_path))) {
             resp.value_ = std::format("Exe not exists: {}", game_path);
@@ -122,7 +122,7 @@ namespace tc
         return resp;
     }
 
-    std::shared_ptr<SteamApp> RunGameManager::FindInSteamManager(const std::string& game_path) {
+    std::shared_ptr<SteamApp> GrRunGameManager::FindInSteamManager(const std::string& game_path) {
         if (!SteamManager::IsSteamPath(game_path)) {
             LOGI("path: {} is not a steam url", game_path);
             return nullptr;
@@ -142,7 +142,7 @@ namespace tc
         return nullptr;
     }
 
-    std::shared_ptr<TcDBGame> RunGameManager::FindInDBGameManager(const std::string& game_path) {
+    std::shared_ptr<TcDBGame> GrRunGameManager::FindInDBGameManager(const std::string& game_path) {
         if (SteamManager::IsSteamPath(game_path)) {
             // find by steam id
             auto app_id_str = SteamManager::ParseSteamIdFromPath(game_path);
@@ -159,7 +159,7 @@ namespace tc
         }
     }
 
-    void RunGameManager::CheckRunningGame() {
+    void GrRunGameManager::CheckRunningGame() {
         auto beg = TimeExt::GetCurrentTimestamp();
         auto running_processes = ProcessHelper::GetProcessList();
         auto db_games = this->db_game_manager_->GetAllGames();
@@ -201,7 +201,7 @@ namespace tc
         LOGI("check game alive used : {}ms", end - beg);
     }
 
-    std::string RunGameManager::GetRunningGamesAsJson() {
+    std::string GrRunGameManager::GetRunningGamesAsJson() {
         json obj = json::array();
         for (auto& rg : running_games_) {
             json item;
@@ -212,7 +212,7 @@ namespace tc
         return obj.dump(2);
     }
 
-    std::string RunGameManager::GetRunningGamesAsProto() {
+    std::string GrRunGameManager::GetRunningGamesAsProto() {
         tc::Message msg;
         msg.set_type(tc::MessageType::kOnlineGames);
         auto online_games = msg.mutable_online_games();
@@ -224,7 +224,7 @@ namespace tc
         return msg.SerializeAsString();
     }
 
-    std::vector<uint32_t> RunGameManager::GetRunningGameIds() {
+    std::vector<uint32_t> GrRunGameManager::GetRunningGameIds() {
         std::vector<uint32_t> game_ids;
         for (auto& rg : running_games_) {
             game_ids.push_back(rg->game_->game_id_);

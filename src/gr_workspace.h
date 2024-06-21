@@ -15,14 +15,12 @@ namespace tc
 {
 
     struct MainWindowPrivate {
+        explicit MainWindowPrivate(QMainWindow* _public) : _this(_public) {}
+
         QMainWindow* _this;
-        acss::QtAdvancedStylesheet* AdvancedStyleSheet;
+        acss::QtAdvancedStylesheet* AdvancedStyleSheet{};
         QVector<QPushButton*> ThemeColorButtons;
-
-        MainWindowPrivate(QMainWindow* _public) : _this(_public) {}
     };
-
-    /// Mainwindow
 
     enum class TabName {
         kTabServer,
@@ -33,9 +31,9 @@ namespace tc
     class TabBase;
     class GrApplication;
 
-    class Workspace : public QMainWindow {
+    class GrWorkspace : public QMainWindow {
     public:
-        Workspace();
+        GrWorkspace();
 
     private:
         void ChangeTab(const TabName& tn);

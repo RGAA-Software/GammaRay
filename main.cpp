@@ -5,7 +5,7 @@
 
 #include "tc_common_new/log.h"
 #include "gr_application.h"
-#include "workspace.h"
+#include "gr_workspace.h"
 #include "util/dxgi_mon_detector.h"
 
 using namespace tc;
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
     //LoadStyle("");
     DxgiMonitorDetector::Instance()->DetectAdapters();
-    Workspace workspace;
+    GrWorkspace workspace;
     workspace.setFixedSize(1820, 960);
     workspace.show();
 

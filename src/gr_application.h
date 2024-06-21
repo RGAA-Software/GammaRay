@@ -17,9 +17,9 @@ namespace tc
     class HttpServer;
     class WSServer;
     class UdpBroadcaster;
-    class ServerManager;
+    class GrServerManager;
     class GrSettings;
-    class SystemMonitor;
+    class GrSystemMonitor;
 
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -37,7 +37,7 @@ namespace tc
         std::shared_ptr<HttpServer> http_server_ = nullptr;
         std::shared_ptr<WSServer> ws_server_ = nullptr;
         std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
-        std::shared_ptr<SystemMonitor> sys_monitor_ = nullptr;
+        std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;
 
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;

@@ -2,7 +2,7 @@
 // Created by RGAA on 2024/4/12.
 //
 
-#include "resource_manager.h"
+#include "gr_resources.h"
 #include "gr_context.h"
 
 #include <QDir>
@@ -15,7 +15,7 @@
 namespace tc
 {
 
-    ResourceManager::ResourceManager(const std::shared_ptr<GrContext>& ctx) {
+    GrResources::GrResources(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
         res_folder_path_ = QApplication::applicationDirPath() +  "/resources";
         QDir res_dir(res_folder_path_);
@@ -26,7 +26,7 @@ namespace tc
         }
     }
 
-    void ResourceManager::ExtractIconsIfNeeded() {
+    void GrResources::ExtractIconsIfNeeded() {
         context_->PostTask([this] {
             for (int i = 1; i <= 30; i++) {
                 QString target_path = res_folder_path_ + "/" + std::format("{}.png", i).c_str();

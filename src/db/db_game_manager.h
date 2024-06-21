@@ -7,11 +7,10 @@
 
 #include <any>
 #include <memory>
-
 #include <sqlite_orm/sqlite_orm.h>
-using namespace sqlite_orm;
-
 #include "db_game.h"
+
+using namespace sqlite_orm;
 
 namespace tc
 {

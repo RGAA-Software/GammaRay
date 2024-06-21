@@ -33,6 +33,8 @@ namespace tc
         void LoadCover(const TcDBGamePtr& game);
         void UpdateRunningStatus(const std::vector<uint32_t>& game_ids);
         void VisitListWidget(std::function<void(QListWidgetItem* item, QWidget* item_widget)>&& cbk);
+        void ShowAddGamePanel();
+        void RefreshGames();
 
     private:
         QListWidget* list_widget_ = nullptr;

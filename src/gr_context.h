@@ -22,9 +22,9 @@ namespace tc
     class SharedPreference;
     class GrSettings;
     class DBGameManager;
-    class ResourceManager;
-    class ServerManager;
-    class RunGameManager;
+    class GrResources;
+    class GrServerManager;
+    class GrRunGameManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -52,8 +52,8 @@ namespace tc
             }
         }
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
-        std::shared_ptr<ServerManager> GetServerManager();
-        std::shared_ptr<RunGameManager> GetRunGameManager();
+        std::shared_ptr<GrServerManager> GetServerManager();
+        std::shared_ptr<GrRunGameManager> GetRunGameManager();
 
     private:
         void LoadUniqueId();
@@ -68,11 +68,11 @@ namespace tc
         std::string unique_id_{};
         std::map<std::string, IPNetworkType> ips_;
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
-        std::shared_ptr<ResourceManager> res_manager_ = nullptr;
+        std::shared_ptr<GrResources> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
-        std::shared_ptr<ServerManager> srv_manager_ = nullptr;
+        std::shared_ptr<GrServerManager> srv_manager_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
-        std::shared_ptr<RunGameManager> run_game_manager_ = nullptr;
+        std::shared_ptr<GrRunGameManager> run_game_manager_ = nullptr;
     };
 
 }

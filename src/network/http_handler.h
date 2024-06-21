@@ -15,7 +15,7 @@ namespace tc
 
     class GrContext;
     class GrApplication;
-    class RunGameManager;
+    class GrRunGameManager;
 
     class HttpHandler {
     public:
@@ -39,7 +39,7 @@ namespace tc
 
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
-        std::shared_ptr<RunGameManager> run_game_mgr_ = nullptr;
+        std::shared_ptr<GrRunGameManager> run_game_mgr_ = nullptr;
 
     };
 
