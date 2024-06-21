@@ -25,11 +25,11 @@ namespace tc
         std::shared_ptr<QProcess> process_ = nullptr;
     };
 
-    class ServerManager {
+    class GrServerManager {
     public:
 
-        explicit ServerManager(const std::shared_ptr<GrContext>& ctx);
-        ~ServerManager();
+        explicit GrServerManager(const std::shared_ptr<GrContext>& ctx);
+        ~GrServerManager();
 
         Response<bool, uint32_t> StartServer();
         Response<bool, bool> StopServer();

@@ -14,10 +14,10 @@ namespace tc
 
     class GrContext;
 
-    class ResourceManager {
+    class GrResources {
     public:
 
-        explicit ResourceManager(const std::shared_ptr<GrContext>& ctx);
+        explicit GrResources(const std::shared_ptr<GrContext>& ctx);
         void ExtractIconsIfNeeded();
 
     private:

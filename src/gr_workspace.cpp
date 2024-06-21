@@ -2,7 +2,7 @@
 // Created by RGAA on 2024/4/9.
 //
 
-#include "workspace.h"
+#include "gr_workspace.h"
 #include "gr_application.h"
 
 #include <QHBoxLayout>
@@ -20,7 +20,7 @@
 namespace tc
 {
 
-    Workspace::Workspace() : QMainWindow(nullptr) {
+    GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
 
         d = new MainWindowPrivate(this);
@@ -168,7 +168,7 @@ namespace tc
         ChangeTab(TabName::kTabServer);
     }
 
-    void Workspace::ChangeTab(const TabName& tn) {
+    void GrWorkspace::ChangeTab(const TabName& tn) {
         for (auto& [name, tab] : tabs_) {
             if (tn == name) {
                 stacked_widget_->setCurrentWidget(tabs_[tn]);

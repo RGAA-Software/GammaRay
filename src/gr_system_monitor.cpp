@@ -2,7 +2,7 @@
 // Created by RGAA on 2024/3/26.
 //
 
-#include "system_monitor.h"
+#include "gr_system_monitor.h"
 #include "gr_context.h"
 #include "gr_application.h"
 #include "app_messages.h"
@@ -13,8 +13,8 @@
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/process_helper.h"
-#include "manager/gr_server_manager.h"
-#include "manager/run_game_manager.h"
+#include "gr_server_manager.h"
+#include "gr_run_game_manager.h"
 #include "network/ws_server.h"
 
 #include <boost/filesystem/path.hpp>
@@ -26,16 +26,16 @@
 namespace tc
 {
 
-    std::shared_ptr<SystemMonitor> SystemMonitor::Make(const std::shared_ptr<GrApplication>& app) {
-        return std::make_shared<SystemMonitor>(app);
+    std::shared_ptr<GrSystemMonitor> GrSystemMonitor::Make(const std::shared_ptr<GrApplication>& app) {
+        return std::make_shared<GrSystemMonitor>(app);
     }
 
-    SystemMonitor::SystemMonitor(const std::shared_ptr<GrApplication>& app) {
+    GrSystemMonitor::GrSystemMonitor(const std::shared_ptr<GrApplication>& app) {
         this->app_ = app;
         this->ctx_ = app->GetContext();
     }
 
-    void SystemMonitor::Start() {
+    void GrSystemMonitor::Start() {
         vigem_driver_manager_ = VigemDriverManager::Make();
         msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
         RegisterMessageListener();
@@ -114,14 +114,14 @@ namespace tc
         }, "", false);
     }
 
-    void SystemMonitor::Exit() {
+    void GrSystemMonitor::Exit() {
         exit_ = true;
         if (monitor_thread_->IsJoinable()) {
             monitor_thread_->Join();
         }
     }
 
-    bool SystemMonitor::CheckViGEmDriver() {
+    bool GrSystemMonitor::CheckViGEmDriver() {
         DWORD major = 0, minor = 0;
         std::wstring path = L"C:\\Windows\\System32\\drivers\\ViGEmBus.sys";
 
@@ -137,7 +137,7 @@ namespace tc
         }
     }
 
-    bool SystemMonitor::GetFileVersion(const std::wstring& filePath, DWORD& major, DWORD& minor){
+    bool GrSystemMonitor::GetFileVersion(const std::wstring& filePath, DWORD& major, DWORD& minor){
         DWORD dummy;
         DWORD size = GetFileVersionInfoSizeW(filePath.c_str(), &dummy);
         if (size == 0) {
@@ -160,7 +160,7 @@ namespace tc
         return true;
     }
 
-    bool SystemMonitor::TryConnectViGEmDriver() {
+    bool GrSystemMonitor::TryConnectViGEmDriver() {
         // driver seems already exists, try to connect
         if (!connect_vigem_success_) {
             connect_vigem_success_ = vigem_driver_manager_->TryConnect();
@@ -175,7 +175,7 @@ namespace tc
         }
     }
 
-    void SystemMonitor::InstallViGem(bool silent) {
+    void GrSystemMonitor::InstallViGem(bool silent) {
         auto exe_folder_path = boost::filesystem::initial_path<boost::filesystem::path>().string();
         StringExt::Replace(exe_folder_path, R"(\)", R"(/)");
 
@@ -191,7 +191,7 @@ namespace tc
         }
     }
 
-    void SystemMonitor::NotifyViGEnState(bool ok) {
+    void GrSystemMonitor::NotifyViGEnState(bool ok) {
         static bool first_emit_state = true;
         auto task = [=, this]() {
             ctx_->SendAppMessage(MsgViGEmState {
@@ -209,16 +209,16 @@ namespace tc
         }
     }
 
-    void SystemMonitor::RegisterMessageListener() {
+    void GrSystemMonitor::RegisterMessageListener() {
         msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgInstallViGEm>([=, this](const MsgInstallViGEm& msg) {
             ctx_->PostTask([this]() {
-                tc::SystemMonitor::InstallViGem(false);
+                tc::GrSystemMonitor::InstallViGem(false);
             });
         });
     }
 
-    Response<bool, bool> SystemMonitor::CheckServerAlive() {
+    Response<bool, bool> GrSystemMonitor::CheckServerAlive() {
         auto resp = Response<bool, bool>::Make(false, false);
         auto processes = ProcessHelper::GetProcessList();
         if (processes.empty()) {
@@ -237,7 +237,7 @@ namespace tc
         return resp;
     }
 
-    void SystemMonitor::StartServer() {
+    void GrSystemMonitor::StartServer() {
         auto srv_mgr = ctx_->GetServerManager();
         srv_mgr->StartServer();
     }

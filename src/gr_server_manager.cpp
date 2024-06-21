@@ -12,15 +12,15 @@
 namespace tc
 {
 
-    ServerManager::ServerManager(const std::shared_ptr<GrContext>& ctx) {
+    GrServerManager::GrServerManager(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
     }
 
-    ServerManager::~ServerManager() {
+    GrServerManager::~GrServerManager() {
         Exit();
     }
 
-    Response<bool, uint32_t> ServerManager::StartServer() {
+    Response<bool, uint32_t> GrServerManager::StartServer() {
         auto resp = Response<bool, uint32_t>::Make(false, 0, "");
 
         QString current_path = QCoreApplication::applicationDirPath();
@@ -60,7 +60,7 @@ namespace tc
         return resp;
     }
 
-    Response<bool, bool> ServerManager::StopServer() {
+    Response<bool, bool> GrServerManager::StopServer() {
         auto resp = Response<bool, bool>::Make(false, false, "");
         if (running_srv_ && running_srv_->process_) {
             running_srv_->process_->kill();
@@ -71,12 +71,12 @@ namespace tc
         return resp;
     }
 
-    Response<bool, uint32_t> ServerManager::ReStart() {
+    Response<bool, uint32_t> GrServerManager::ReStart() {
         auto resp = Response<bool, uint32_t>::Make(false, 0);
         return resp;
     }
 
-    void ServerManager::Exit() {
+    void GrServerManager::Exit() {
         if (running_srv_ && running_srv_->process_) {
             running_srv_->process_->kill();
             running_srv_->process_->waitForFinished();

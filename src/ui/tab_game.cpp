@@ -30,8 +30,10 @@
 #include "tc_steam_manager_new/steam_entities.h"
 #include "game_info_preview.h"
 #include "util/qt_directory.h"
-#include "manager/run_game_manager.h"
+#include "src/gr_run_game_manager.h"
 #include "tc_common_new/process_util.h"
+#include "widgets/no_margin_layout.h"
+#include "add_game_panel.h"
 
 namespace tc
 {
@@ -41,11 +43,37 @@ namespace tc
         auto root_layout = new QVBoxLayout();
         LayoutHelper::ClearMargins(root_layout);
 
+        // operators
+        auto op_layout = new NoMarginHLayout();
+        auto btn_size = QSize(120, 33);
+        root_layout->addSpacing(10);
+        {
+            auto btn = new QPushButton(this);
+            btn->setText(tr("Add Game"));
+            btn->setFixedSize(btn_size);
+            op_layout->addSpacing(15);
+            op_layout->addWidget(btn);
+            connect(btn, &QPushButton::clicked, this, [=, this]() {
+                ShowAddGamePanel();
+            });
+        }
+        {
+            auto btn = new QPushButton(this);
+            btn->setText(tr("Refresh"));
+            btn->setFixedSize(btn_size);
+            op_layout->addSpacing(15);
+            op_layout->addWidget(btn);
+            connect(btn, &QPushButton::clicked, this, [=, this]() {
+                RefreshGames();
+            });
+        }
+        op_layout->addStretch();
+        root_layout->addLayout(op_layout);
+
         list_widget_ = new QListWidget(this);
         auto delegate = new MainItemDelegate(this);
         list_widget_->setItemDelegate(delegate);
 
-        root_layout->addSpacing(10);
         root_layout->addWidget(list_widget_);
 
         list_widget_->setMovement(QListView::Static);
@@ -309,6 +337,15 @@ namespace tc
             auto item_widget = list_widget_->itemWidget(item);
             cbk(item, item_widget);
         }
+    }
+
+    void TabGame::ShowAddGamePanel() {
+        AddGamePanel panel(context_, this);
+        panel.exec();
+    }
+
+    void TabGame::RefreshGames() {
+
     }
 
 }

@@ -17,12 +17,6 @@ namespace tc
 
     class TcDBGame {
     public:
-
-        ~TcDBGame() {
-
-        }
-
-    public:
         int id_{};
         uint64_t game_id_{};
         std::string game_name_{};
@@ -46,7 +40,7 @@ namespace tc
         void CopyFrom(const std::shared_ptr<SteamApp>& steam);
         void UnpackExePaths();
         [[nodiscard]] std::shared_ptr<TcDBGame> AsPtr() const;
-        bool IsSteamGame();
+        bool IsSteamGame() const;
 
     };
 

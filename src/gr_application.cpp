@@ -12,7 +12,7 @@
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/shared_preference.h"
-#include "system_monitor.h"
+#include "gr_system_monitor.h"
 #include "gr_statistics.h"
 #include "util/qt_directory.h"
 
@@ -53,7 +53,7 @@ namespace tc
         ws_server_ = WSServer::Make(context_);
         ws_server_->Start();
 
-        sys_monitor_ = SystemMonitor::Make(shared_from_this());
+        sys_monitor_ = GrSystemMonitor::Make(shared_from_this());
         sys_monitor_->Start();
 
         udp_broadcaster_ = UdpBroadcaster::Make(context_);

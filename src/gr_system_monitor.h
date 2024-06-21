@@ -19,12 +19,12 @@ namespace tc
     class VigemDriverManager;
     class MessageListener;
 
-    class SystemMonitor {
+    class GrSystemMonitor {
     public:
 
-        static std::shared_ptr<SystemMonitor> Make(const std::shared_ptr<GrApplication>& app);
+        static std::shared_ptr<GrSystemMonitor> Make(const std::shared_ptr<GrApplication>& app);
 
-        explicit SystemMonitor(const std::shared_ptr<GrApplication>& app);
+        explicit GrSystemMonitor(const std::shared_ptr<GrApplication>& app);
         void Start();
         void Exit();
 

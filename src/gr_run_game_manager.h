@@ -2,8 +2,8 @@
 // Created by hy on 2024/4/26.
 //
 
-#ifndef GAMMARAY_RUN_GAME_MANAGER_H
-#define GAMMARAY_RUN_GAME_MANAGER_H
+#ifndef GAMMARAY_GR_RUN_GAME_MANAGER_H
+#define GAMMARAY_GR_RUN_GAME_MANAGER_H
 
 #include <memory>
 #include <string>
@@ -26,11 +26,11 @@ namespace tc
         std::vector<uint32_t> pids_;
     };
 
-    class RunGameManager {
+    class GrRunGameManager {
     public:
 
-        explicit RunGameManager(const std::shared_ptr<GrContext>& ctx);
-        ~RunGameManager();
+        explicit GrRunGameManager(const std::shared_ptr<GrContext>& ctx);
+        ~GrRunGameManager();
 
         // 1. steam url: steam://xxxx
         // 2. specific exe path: c:/xx/xx.exe
@@ -60,4 +60,4 @@ namespace tc
 
 }
 
-#endif //GAMMARAY_RUN_GAME_MANAGER_H
+#endif //GAMMARAY_GR_RUN_GAME_MANAGER_H

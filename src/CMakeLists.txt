@@ -1,19 +1,19 @@
 set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/workspace.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_workspace.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_settings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_statistics.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/system_monitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_system_monitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_resources.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_server_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_run_game_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_handler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_server.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ws_server.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/udp_broadcaster.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ip_util.cpp
-
-        ${CMAKE_CURRENT_SOURCE_DIR}/manager/gr_server_manager.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/manager/run_game_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qrcodegen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qrcodegen.hpp
@@ -40,16 +40,12 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/stat_chart.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt_circle.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt_vertical.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/game_info_preview.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/add_game_panel.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/db/db_game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/db/db_game_manager.cpp
-
-        ${CMAKE_CURRENT_SOURCE_DIR}/res/resource_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util/qt_directory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util/dxgi_mon_detector.cpp
-
-        #${CMAKE_CURRENT_SOURCE_DIR}/theme/QmlStyleUrlInterceptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/theme/QtAdvancedStylesheet.cpp
         PARENT_SCOPE
 )
