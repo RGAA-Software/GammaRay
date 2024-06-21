@@ -13,6 +13,8 @@
 #include "tc_common_new/net_resp.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "src/gr_run_game_manager.h"
+#include "db/db_game.h"
+#include "db/db_game_manager.h"
 
 #include <boost/algorithm/string/trim.hpp>
 
@@ -86,7 +88,8 @@ namespace tc
 
     std::string HttpHandler::GetInstalledGamesAsJson() {
         auto steam_mgr = context_->GetSteamManager();
-        auto games = steam_mgr->GetInstalledGames();
+        //auto games = steam_mgr->GetInstalledGames();
+        auto games = context_->GetDBGameManager()->GetAllGames();
         json obj;
         obj["code"] = 200;
         obj["message"] = "ok";
@@ -96,9 +99,9 @@ namespace tc
         json game_array = json::array();
         for (const auto& game : games) {
             json game_obj;
-            game_obj["app_id"] = game->app_id_;
-            game_obj["name"] = game->name_;
-            game_obj["installed_dir"] = game->installed_dir_;
+            game_obj["app_id"] = game->game_id_;
+            game_obj["name"] = game->game_name_;
+            game_obj["installed_dir"] = game->game_installed_dir_;
             // exes
             {
                 auto array = json::array();
@@ -118,7 +121,7 @@ namespace tc
             }
 
             // is running
-            game_obj["is_running"] = game->is_running_;
+            game_obj["is_running"] = 0; //is_running;
 
             // is installed
             game_obj["is_installed"] = game->is_installed_;
