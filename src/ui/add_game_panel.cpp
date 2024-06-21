@@ -16,6 +16,7 @@
 #include <QTextEdit>
 #include <QGridLayout>
 #include <QFileDialog>
+#include <QApplication>
 
 namespace tc
 {
@@ -136,14 +137,31 @@ namespace tc
                 if (!file.exists()) {
                     return;
                 }
-                cover_path_ = filepath;
+
                 QImage image;
-                image.load(cover_path_);
+                image.load(filepath);
                 auto pixmap = QPixmap::fromImage(image);
                 if (!pixmap.isNull()) {
                     pixmap = pixmap.scaled(edit->width(), edit->height());
                     cover_preview_->setPixmap(pixmap);
                 }
+
+                auto res_folder = qApp->applicationDirPath() + "/static";
+                LOGI("res folder: {}", res_folder.toStdString());
+                QDir static_dir;
+                if (!static_dir.exists(res_folder)) {
+                    if (!static_dir.mkdir(res_folder)) {
+                        return;
+                    }
+                }
+
+                QFileInfo file_info(file);
+                auto target_name = res_folder + "/" + file_info.fileName();
+                LOGI("copy target : {}", target_name.toStdString());
+                if (file.copy(target_name)) {
+                    cover_path_ = target_name;
+                }
+
             });
         }
 

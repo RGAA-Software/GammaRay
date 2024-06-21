@@ -27,8 +27,8 @@ namespace tc
         void OnTabHide() override;
     private:
         void ScanInstalledGames();
-        QListWidgetItem* AddItem(int idx, const TcDBGamePtr& game);
-        QSize GetItemSize();
+        QListWidgetItem* AddItem(const TcDBGamePtr& game);
+        static QSize GetItemSize();
         void AddItems(const std::vector<TcDBGamePtr>& games);
         void LoadCover(const TcDBGamePtr& game);
         void UpdateRunningStatus(const std::vector<uint32_t>& game_ids);
