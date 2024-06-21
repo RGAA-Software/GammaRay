@@ -67,6 +67,7 @@ namespace tc
             });
 
             server_->set_mount_point("/", "./www");
+            server_->set_mount_point("/", "./www");
             auto steam_manager = context_->GetSteamManager();
             if (steam_manager) {
                 auto image_cache_path = steam_manager->GetSteamImageCachePath();

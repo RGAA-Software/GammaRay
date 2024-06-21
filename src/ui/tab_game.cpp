@@ -242,7 +242,7 @@ namespace tc
 
     }
 
-    QListWidgetItem* TabGame::AddItem(int index, const TcDBGamePtr& game) {
+    QListWidgetItem* TabGame::AddItem(const TcDBGamePtr& game) {
         auto item = new QListWidgetItem(list_widget_);
         int margin = 0;
         auto item_size = GetItemSize();
@@ -278,9 +278,11 @@ namespace tc
         name->setAlignment(Qt::AlignCenter);
         name->setGeometry(0, item_height-name->height(), item_width, name->height());
         name->setText(game->game_name_.c_str());
+        name->update();
+        name->show();
 
         LOGI("engine type: {}", game->engine_type_);
-        if (game->engine_type_ != "UNKNOWN") {
+        if (game->engine_type_ != "UNKNOWN" && !game->engine_type_.empty()) {
             auto engine = new QLabel(widget);
             engine->setFixedSize(60, 22);
             engine->setText(game->engine_type_.c_str());
@@ -296,13 +298,13 @@ namespace tc
     QSize TabGame::GetItemSize() {
         int item_width = 180;
         int item_height = item_width / (600.0/900.0);
-        return QSize(item_width, item_height);
+        return {item_width, item_height};
     }
 
     void TabGame::AddItems(const std::vector<TcDBGamePtr>& games) {
         context_->PostUITask([=, this]() {
-            for (int i = 0; i < games.size(); i++) {
-                AddItem(i, games[i]);
+            for (const auto& game : games) {
+                AddItem(game);
             }
         });
     }
@@ -315,7 +317,7 @@ namespace tc
         }
         auto item_size = GetItemSize();
         auto pixmap = QPixmap::fromImage(image);
-        pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         game->cover_pixmap_ = pixmap;
     }
 
@@ -347,10 +349,38 @@ namespace tc
     void TabGame::ShowAddGamePanel() {
         AddGamePanel panel(context_, this);
         panel.exec();
+        RefreshGames();
     }
 
     void TabGame::RefreshGames() {
+        context_->PostTask([=, this]() {
+            auto db_mgr = context_->GetDBGameManager();
+            auto rescan_games = db_mgr->GetAllGames();
+            for (auto& rg : rescan_games) {
+                bool find = false;
+                for (auto& exist_game : games_) {
+                    if (exist_game->game_id_ == rg->game_id_) {
+                        find = true;
+                        break;
+                    }
+                }
 
+                if (!find) {
+                    context_->PostUITask([=, this]() {
+                        QImage image;
+                        image.load(rg->cover_url_.c_str());
+                        auto pixmap = QPixmap::fromImage(image);
+                        auto item_size = GetItemSize();
+                        pixmap = pixmap.scaled(item_size.width(), item_size.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                        if (!pixmap.isNull()) {
+                            rg->cover_pixmap_ = pixmap;
+                        }
+                        AddItem(rg);
+                    });
+                    games_.push_back(rg);
+                }
+            }
+        });
     }
 
 }
