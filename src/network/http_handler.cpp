@@ -29,11 +29,11 @@ namespace tc
         this->run_game_mgr_ = app->GetContext()->GetRunGameManager();
     }
 
-    void HttpHandler::HandlePing(const httplib::Request &req, httplib::Response &res) {
+    void HttpHandler::HandlePing(const httplib::Request& req, httplib::Response &res) {
         res.set_content("Pong", "text/plain");
     }
 
-    void HttpHandler::HandleSimpleInfo(const httplib::Request &req, httplib::Response &res) {
+    void HttpHandler::HandleSimpleInfo(const httplib::Request& req, httplib::Response &res) {
         auto info = this->context_->MakeBroadcastMessage();
         auto resp = WrapBasicInfo(200, "ok", info);
         res.set_content(resp, "application/json");
@@ -49,7 +49,7 @@ namespace tc
     }
 
     void HttpHandler::HandleGameStart(const httplib::Request& req, httplib::Response& res) {
-        LOGI("body: {}", req.body);
+        LOGI("start body: {}", req.body);
         std::string game_path;
         try {
             auto obj = nlohmann::json::parse(req.body);
@@ -75,7 +75,29 @@ namespace tc
     }
 
     void HttpHandler::HandleGameStop(const httplib::Request& req, httplib::Response& res) {
+        LOGI("stop body: {}", req.body);
+        std::string game_id;
+        try {
+            auto obj = nlohmann::json::parse(req.body);
+            game_id = obj["game_id"].get<std::string>();
+            boost::trim(game_id);
+            if (game_id.empty()) {
+                LOGE("game path is empty");
+                return;
+            }
+        } catch (std::exception& e) {
+            LOGE("parse json failed, body:{}", req.body);
+            return;
+        }
 
+        auto start_result = this->run_game_mgr_->StopGame(game_id);
+        NetResp nr;
+        if (start_result.ok_) {
+            nr = NetResp::Make(kNetOk, "OK", "");
+        } else {
+            nr = NetResp::Make(kStartFailed, "start app failed", "");
+        }
+        res.set_content(nr.Dump(), "application/json");
     }
 
     void HttpHandler::HandleRunningGames(const httplib::Request& req, httplib::Response& res) {

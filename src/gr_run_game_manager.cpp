@@ -101,8 +101,22 @@ namespace tc
         }
     }
 
-    Response<bool, std::string> GrRunGameManager::StopGame(const std::string& game_path) {
+    Response<bool, std::string> GrRunGameManager::StopGame(const std::string& game_id) {
         auto resp = Response<bool, std::string>::Make(false, "");
+        if (game_process_) {
+            game_process_->kill();
+            game_process_ = nullptr;
+        }
+
+        for (const auto& running_game : running_games_ ) {
+            if (std::to_string(running_game->game_->game_id_) == game_id) {
+                for (const auto& pid : running_game->pids_) {
+                    ProcessUtil::KillProcess(pid);
+                    LOGI("Kill {} for pid: {}", running_game->game_->game_name_, pid);
+                }
+                break;
+            }
+        }
 
         return resp;
     }
@@ -115,7 +129,14 @@ namespace tc
             return resp;
         }
 
-        auto pid = ProcessUtil::StartProcess(game_path, args, true, false);
+        if (game_process_) {
+            game_process_->kill();
+        }
+        game_process_ = new QProcess();
+        game_process_->start(game_path.c_str());
+        game_process_->waitForStarted();
+        auto pid = game_process_->processId();
+        //auto pid = ProcessUtil::StartProcess(game_path, args, true, false);
         resp.ok_ = pid > 0;
         resp.value_ = "Start success";
         resp.msg_ = std::to_string(pid);
@@ -168,33 +189,25 @@ namespace tc
 
         running_games_.clear();
         for (const auto& game : db_games) {
-            if (game->IsSteamGame()) {
-                std::vector<uint32_t> running_pids;
-
-                for (auto& exe : game->exes_) {
-                    std::string exe_full_path = exe;
-                    StringExt::Replace(exe_full_path, "\\", "/");
-                    for (const auto& rp : running_processes) {
-                        std::string rp_exe_full_path = rp.exe_full_path_;
-                        StringExt::Replace(rp_exe_full_path, "\\", "/");
-                        //std::cout << "exe_name: " << exe_full_path << ", rp exe name: " << rp_exe_full_path << "\n";
-                        if (rp_exe_full_path == exe_full_path) {
-                            LOGI("********Found running game: {}", exe_full_path);
-                            running_pids.push_back(rp.pid_);
-                            break;
-                        }
+            std::vector<uint32_t> running_pids;
+            for (const std::string& exe : game->exes_) {
+                std::string exe_full_path = exe;
+                StringExt::Replace(exe_full_path, "\\", "/");
+                for (const auto& rp : running_processes) {
+                    std::string rp_exe_full_path = rp.exe_full_path_;
+                    StringExt::Replace(rp_exe_full_path, "\\", "/");
+                    if (rp_exe_full_path == exe_full_path) {
+                        LOGI("********Found running game: {}", exe_full_path);
+                        running_pids.push_back(rp.pid_);
+                        break;
                     }
                 }
-                if (!running_pids.empty()) {
-                    auto rg = std::make_shared<RunningGame>();
-                    rg->game_ = game;
-                    rg->pids_ = running_pids;
-                    running_games_.push_back(rg);
-                }
-
-            } else {
-                // normal(added by user) game
-
+            }
+            if (!running_pids.empty()) {
+                auto rg = std::make_shared<RunningGame>();
+                rg->game_ = game;
+                rg->pids_ = running_pids;
+                running_games_.push_back(rg);
             }
         }
         auto end = TimeExt::GetCurrentTimestamp();
@@ -224,8 +237,8 @@ namespace tc
         return msg.SerializeAsString();
     }
 
-    std::vector<uint32_t> GrRunGameManager::GetRunningGameIds() {
-        std::vector<uint32_t> game_ids;
+    std::vector<uint64_t> GrRunGameManager::GetRunningGameIds() {
+        std::vector<uint64_t> game_ids;
         for (auto& rg : running_games_) {
             game_ids.push_back(rg->game_->game_id_);
         }

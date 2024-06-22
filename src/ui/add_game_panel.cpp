@@ -146,7 +146,7 @@ namespace tc
                     cover_preview_->setPixmap(pixmap);
                 }
 
-                auto res_folder = qApp->applicationDirPath() + "/static";
+                auto res_folder = qApp->applicationDirPath() + "/www";
                 LOGI("res folder: {}", res_folder.toStdString());
                 QDir static_dir;
                 if (!static_dir.exists(res_folder)) {
@@ -157,11 +157,13 @@ namespace tc
 
                 QFileInfo file_info(file);
                 auto target_name = res_folder + "/" + file_info.fileName();
-                LOGI("copy target : {}", target_name.toStdString());
+                if (QFile::exists(target_name)) {
+                    QFile::remove(target_name);
+                }
                 if (file.copy(target_name)) {
                     cover_path_ = target_name;
+                    cover_name_ = file_info.fileName();
                 }
-
             });
         }
 
@@ -203,21 +205,22 @@ namespace tc
             return;
         }
 
-        auto func_gen_id = [](const std::string& md5) {
+        auto func_gen_id = [](const std::string& md5) -> uint32_t {
             std::string sub = md5.substr(0, 16);
             std::istringstream converter(sub);
             unsigned long long result;
             converter >> std::hex >> result;
-            return result;
+            return result % 99999999;
         };
 
         auto game = std::make_shared<TcDBGame>();
         game->game_name_ = lbl_game_name_->text().toStdString();
-        game->game_exes_ = edit_game_exe_path_->text().toStdString() + ";";
-        game->game_exe_names_ = lbl_game_exe_name_->text().toStdString() + ";";
+        game->game_exes_ = edit_game_exe_path_->text().toStdString();
+        game->game_exe_names_ = lbl_game_exe_name_->text().toStdString();
         game->game_installed_dir_ = lbl_game_installed_dir_->text().toStdString();
         game->cover_url_ = cover_path_.toStdString();
         game->game_id_ = func_gen_id(MD5::Hex(game->game_exes_));
+        game->cover_name_ = cover_name_.toStdString();
         auto game_mgr = context_->GetDBGameManager();
         game_mgr->SaveOrUpdateGame(game);
         done(0);

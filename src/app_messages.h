@@ -45,7 +45,7 @@ namespace tc
     // running game ids
     class MsgRunningGameIds {
     public:
-        std::vector<uint32_t> game_ids_;
+        std::vector<uint64_t> game_ids_;
     };
 
 }

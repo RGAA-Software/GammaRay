@@ -18,7 +18,7 @@ using namespace std::placeholders;
 namespace tc
 {
 
-    HttpServer::HttpServer(const std::shared_ptr<GrApplication>& app) {
+    HttpServer::HttpServer(const std::shared_ptr<GrApplication> &app) {
         context_ = app->GetContext();
         app_ = app;
         http_handler_ = std::make_shared<HttpHandler>(app);
@@ -33,41 +33,41 @@ namespace tc
             //server_ = std::make_shared<httplib::SSLServer>("./certificate.pem", "./private.key");
             server_ = std::make_shared<httplib::Server>();
             // response a "Pong" for checking server state
-            server_->Get(kPathPing, [=, this](const auto& req, auto& res) {
+            server_->Get(kPathPing, [=, this](const auto &req, auto &res) {
                 http_handler_->HandlePing(req, res);
             });
 
             // response the information that equals to the QR Code
-            server_->Get(kPathSimpleInfo, [=, this](const auto& req, auto& res) {
+            server_->Get(kPathSimpleInfo, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleSimpleInfo(req, res);
             });
 
             // response all apis that we support
-            server_->Get(kPathSupportApis, [=, this](const auto& req, auto& res) {
+            server_->Get(kPathSupportApis, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleSupportApis(req, res);
             });
 
             // response all apps that we found in system and added by user
-            server_->Get(kPathGames, [=, this](const auto& req, auto& res) {
+            server_->Get(kPathGames, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleGames(req, res);
             });
 
             // start game
-            server_->Post(kPathGameStart, [=, this](const auto& req, auto& res) {
+            server_->Post(kPathGameStart, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleGameStart(req, res);
             });
 
             // stop game
-            server_->Post(kPathGameStop, [=, this](const auto& req, auto& res) {
+            server_->Post(kPathGameStop, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleGameStop(req, res);
             });
 
-            server_->Get(kPathRunningGames, [=, this](const auto& req, auto& res) {
+            server_->Get(kPathRunningGames, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleRunningGames(req, res);
             });
 
             server_->set_mount_point("/", "./www");
-            server_->set_mount_point("/", "./www");
+            //server_->set_mount_point("/", "./static");
             auto steam_manager = context_->GetSteamManager();
             if (steam_manager) {
                 auto image_cache_path = steam_manager->GetSteamImageCachePath();
@@ -92,5 +92,4 @@ namespace tc
             server_thread_.join();
         }
     }
-
 }

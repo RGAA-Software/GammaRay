@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-
+#include <QProcess>
 #include "tc_common_new/response.h"
 
 namespace tc
@@ -36,14 +36,14 @@ namespace tc
         // 2. specific exe path: c:/xx/xx.exe
         Response<bool, std::string> StartGame(const std::string& game_path, const std::vector<std::string>& args);
         // see above
-        Response<bool, std::string> StopGame(const std::string& game_path);
+        Response<bool, std::string> StopGame(const std::string& game_id);
 
         void CheckRunningGame();
 
         [[nodiscard]] std::vector<std::shared_ptr<RunningGame>> GetRunningGames() const { return running_games_; }
         std::string GetRunningGamesAsJson();
         std::string GetRunningGamesAsProto();
-        std::vector<uint32_t> GetRunningGameIds();
+        std::vector<uint64_t> GetRunningGameIds();
 
     private:
         std::shared_ptr<SteamApp> FindInSteamManager(const std::string& game_path);
@@ -56,6 +56,7 @@ namespace tc
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::vector<std::shared_ptr<RunningGame>> running_games_;
+        QProcess* game_process_ = nullptr;
     };
 
 }
