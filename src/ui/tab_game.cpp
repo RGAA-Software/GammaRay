@@ -34,6 +34,7 @@
 #include "tc_common_new/process_util.h"
 #include "widgets/no_margin_layout.h"
 #include "add_game_panel.h"
+#include "widgets/sized_msg_box.h"
 
 namespace tc
 {
@@ -139,7 +140,31 @@ namespace tc
                     });
                 } else if (i == 1) {
                     QObject::connect(action, &QAction::triggered, this, [=, this]() {
-                        ShellExecuteA(nullptr, nullptr, game->steam_url_.c_str(), nullptr, nullptr , SW_SHOW);
+                        if (!game->steam_url_.empty()) {
+                            ShellExecuteA(nullptr, nullptr, game->steam_url_.c_str(), nullptr, nullptr, SW_SHOW);
+                        } else {
+                            auto func_start_error = [](const std::string& msg) {
+                                SizedMessageBox::MakeErrorOkBox(tr("Error"), std::format("Start process failed: {}", msg).c_str())->exec();
+                            };
+
+                            if (game->exes_.empty()) {
+                                func_start_error("Don't have exe");
+                                return;
+                            }
+                            auto exe_path = game->exes_.at(0);
+                            if (!QFile::exists(exe_path.c_str())) {
+                                func_start_error(std::format("File not exist: {}", exe_path));
+                                return;
+                            }
+
+                            context_->PostTask([=, this]() {
+                                LOGI("Will start: {}", exe_path);
+                                auto resp = context_->GetRunGameManager()->StartGame(exe_path, {});
+                                if (!resp.ok_) {
+                                    func_start_error("start error");
+                                }
+                            });
+                        }
                     });
                 } else if (i == 2) {
                     QObject::connect(action, &QAction::triggered, this, [=, this]() {
@@ -321,7 +346,7 @@ namespace tc
         game->cover_pixmap_ = pixmap;
     }
 
-    void TabGame::UpdateRunningStatus(const std::vector<uint32_t>& game_ids) {
+    void TabGame::UpdateRunningStatus(const std::vector<uint64_t>& game_ids) {
         this->VisitListWidget([=, this](QListWidgetItem* item, QWidget* item_widget) {
             auto cover_widget = item_widget->findChild<CoverWidget*>("cover_mask");
             cover_widget->SetRunningStatus(false);
@@ -331,6 +356,7 @@ namespace tc
             auto game_id = item_widget->objectName().toStdString();
             for (auto rgid : game_ids) {
                 if (std::to_string(rgid) == game_id) {
+                    LOGI("running game id: {}", rgid);
                     cover_widget->SetRunningStatus(true);
                 }
             }

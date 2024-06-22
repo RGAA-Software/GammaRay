@@ -27,6 +27,7 @@ namespace tc
         QLabel* lbl_game_exe_name_ = nullptr;
         QLineEdit* edit_game_exe_path_ = nullptr;
         QString cover_path_;
+        QString cover_name_;
         QLabel* cover_preview_;
     };
 

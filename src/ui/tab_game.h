@@ -6,10 +6,11 @@
 #define TC_SERVER_STEAM_TABGAME_H
 
 #include "tab_base.h"
-#include <QListWidget>
-#include <QListWidgetItem>
 #include <functional>
 #include "db/db_game.h"
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QProcess>
 
 namespace tc
 {
@@ -31,7 +32,7 @@ namespace tc
         static QSize GetItemSize();
         void AddItems(const std::vector<TcDBGamePtr>& games);
         void LoadCover(const TcDBGamePtr& game);
-        void UpdateRunningStatus(const std::vector<uint32_t>& game_ids);
+        void UpdateRunningStatus(const std::vector<uint64_t>& game_ids);
         void VisitListWidget(std::function<void(QListWidgetItem* item, QWidget* item_widget)>&& cbk);
         void ShowAddGamePanel();
         void RefreshGames();
