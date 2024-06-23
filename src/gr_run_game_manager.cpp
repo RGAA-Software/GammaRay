@@ -186,6 +186,9 @@ namespace tc
         auto db_games = this->db_game_manager_->GetAllGames();
         LOGI("running process: {}", running_processes.size());
         LOGI("db games: {}",db_games.size());
+        // for (auto& rp : running_processes) {
+        //     LOGI("  {} - {}", rp.pid_, rp.exe_full_path_);
+        // }
 
         running_games_.clear();
         for (const auto& game : db_games) {

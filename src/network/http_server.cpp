@@ -66,6 +66,10 @@ namespace tc
                 http_handler_->HandleRunningGames(req, res);
             });
 
+            server_->Get(kPathStopServer, [=, this](const auto& req, auto& res) {
+                http_handler_->HandleStopServer(req, res);
+            });
+
             server_->set_mount_point("/", "./www");
             //server_->set_mount_point("/", "./static");
             auto steam_manager = context_->GetSteamManager();
