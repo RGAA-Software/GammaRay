@@ -11,23 +11,9 @@
 namespace tc
 {
     const UINT32 kExtendedKeys[] = {
-            VK_RCONTROL,
-            VK_RMENU,
-            VK_RETURN,
-            VK_DIVIDE,
-            VK_LWIN,
-            VK_RWIN,
-            VK_HOME,
-            VK_PRIOR,
-            VK_NEXT,
-            VK_END,
-            VK_INSERT,
-            VK_DELETE,
-            VK_LEFT,
-            VK_UP,
-            VK_RIGHT,
-            VK_DOWN,
-            VK_NUMLOCK
+            VK_RCONTROL, VK_RMENU, VK_RETURN, VK_DIVIDE, VK_LWIN,
+            VK_RWIN, VK_HOME, VK_PRIOR, VK_NEXT, VK_END, VK_INSERT,
+            VK_DELETE, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_NUMLOCK
     };
 
     void WinSendEvent(INPUT* input) {
@@ -35,37 +21,23 @@ namespace tc
             return;
         }
         bool is_ok = true;
-        if (SendInput(1, input, sizeof(INPUT)) != 1)
-        {
-            //LogW(kLogInput, "SendInput {}", GetLastError());
+        if (SendInput(1, input, sizeof(INPUT)) != 1) {
             HDESK desk = OpenInputDesktop(0, FALSE, GENERIC_ALL);
-            if (desk)
-            {
-                if (!SetThreadDesktop(desk))
-                {
-                    //LogW(kLogInput, "SetThreadDesktop failed with:{}", GetLastError());
+            if (desk) {
+                if (!SetThreadDesktop(desk)) {
                 }
-                if (SendInput(1, input, sizeof(INPUT)) == 1)
-                {
-                    //LogI(kLogInput, "try send input successfully.");
-                }
-                else
-                {
+                if (SendInput(1, input, sizeof(INPUT)) == 1) {
+                } else {
                     is_ok = false;
-                    //LogE(kLogInput, "Re SendInput failed {}", GetLastError());
                 }
                 CloseDesktop(desk);
-            }
-            else
-            {
-
+            } else {
                 is_ok = false;
             }
         }
         if(!is_ok) {
-            std::cout << "SendInput error" << std::endl;
+            LOGE("SendInput error");
         }
-        // 事件处理的统计  to do ...
     }
 
     INPUT GenerateScanCodeInput(uint16_t scancode, bool down, bool extend) {
@@ -75,9 +47,9 @@ namespace tc
         evt.ki.wVk = 0;
         evt.ki.dwFlags = KEYEVENTF_SCANCODE;
 
-        if (!down)
+        if (!down) {
             evt.ki.dwFlags |= KEYEVENTF_KEYUP;
-
+        }
         if (extend) {
             evt.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
         }
@@ -85,17 +57,13 @@ namespace tc
         evt.ki.wScan = scancode;
         evt.ki.dwExtraInfo = 0;
         evt.ki.time = 0;
-        //LOGI("SendInput ScanCode: 0x%x Flags: 0x%lx %s", scancode,
-        //	evt.ki.dwFlags, down ? "Down" : "Up");
-
-        // Windows has some bug where it doesn't look up scan code 0x45
-        // properly, so we need to help it out
         if (evt.ki.wScan == 0x45) {
             evt.ki.dwFlags &= ~KEYEVENTF_SCANCODE;
-            if (evt.ki.dwFlags & KEYEVENTF_EXTENDEDKEY)
+            if (evt.ki.dwFlags & KEYEVENTF_EXTENDEDKEY) {
                 evt.ki.wVk = VK_NUMLOCK;
-            else
+            } else {
                 evt.ki.wVk = VK_PAUSE;
+            }
         }
         if (evt.ki.wScan == 0x3a) {
             evt.ki.dwFlags &= ~KEYEVENTF_SCANCODE;
@@ -105,7 +73,6 @@ namespace tc
     }
 
     void WinEventReplayer::HandleMessage(const std::shared_ptr<Message>& msg) {
-        // to do
         switch (msg->type()) {
             case MessageType::kKeyEvent: {
                 auto key_ev = msg->key_event();
@@ -123,15 +90,13 @@ namespace tc
     void WinEventReplayer::HandleKeyEvent(const tc::KeyEvent& event) {
         bool down = event.down();
         uint32_t vk_code = event.key_code();
-        if (vk_code > 255)
-        {
-            std::cout << "vk_code > 255" << std::endl;
+        if (vk_code > 255) {
+            LOGE("Error vk: {}", vk_code);
             return;
         }
 
         current_key_status_map[vk_code] = down;
-        if (!CheckKeyAllowDown(vk_code, down))
-        {
+        if (!IsKeyPermitted(vk_code)) {
             current_key_status_map[vk_code] =!down;
             return;
         }
@@ -152,14 +117,12 @@ namespace tc
             win_pressed_ = down;
         }
 
-        // to do 是否是全局，还是进程内部响应，暂定 截屏方式时 使用全局响应事件
         if(Settings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
-            // 是否为 ctrl + delete + alt
+            // ctrl + delete + alt
             if(control_pressed_ && menu_pressed_ && delete_pressed_ && !shift_pressed_ && !win_pressed_) {
                 return;
             }
-            // MAPVK_VK_TO_VSC：将虚拟键码转换为扫描码值。
-            std::cout << "down =  " << down << "HandleKeyEvent vk_code = " << vk_code << std::endl;
+            // MAPVK_VK_TO_VSC
             UINT vsc = MapVirtualKey(vk_code, MAPVK_VK_TO_VSC);
             bool extend = false;
             for (size_t j = 0; j < sizeof(kExtendedKeys) / sizeof(UINT32); j++) {
@@ -168,32 +131,24 @@ namespace tc
                     break;
                 }
             }
-            LOGI("vk code: {}, down: {}, scancode: {}, extend: {}", vk_code, down, vsc, extend);
-            DoScanCodeEvent(vsc, extend, event);
+            //LOGI("vk code: {}, down: {}, scancode: {}, extend: {}", vk_code, down, vsc, extend);
+            ReplayKeyEvent(vsc, extend, event);
         }
     }
 
-    bool WinEventReplayer::CheckKeyAllowDown(uint32_t vk, bool down)
-    {
-        // win
-        // to do
-#if 1   // 如果是hook游戏画面, 并且按键是 VK_LWIN 或 VK_RWIN 就不允许按下
+    bool WinEventReplayer::IsKeyPermitted(uint32_t vk) {
         if(Settings::Instance()->capture_.capture_video_type_ == Capture::kVideoHook && (vk == VK_LWIN || vk == VK_RWIN )) {
             return false;
         }
-#endif
-        // alt + F4
+        // alt F4
         if(current_key_status_map[VK_MENU] && current_key_status_map[VK_F4]) {
             return false;
         }
         return true;
     }
 
-    void WinEventReplayer::ResetKey()
-    {
-        // to do 当客户端断开连接时,重置服务端的键盘的状态。
-        for(int i = 0; i < sizeof(current_key_status_map) / sizeof(*current_key_status_map);++i)
-        {
+    void WinEventReplayer::ResetKey() {
+        for(int i = 0; i < sizeof(current_key_status_map) / sizeof(*current_key_status_map);++i) {
             if (current_key_status_map[i]) {
                 tc::KeyEvent event;
                 event.set_down(false);
@@ -203,53 +158,38 @@ namespace tc
         }
     }
 
-    // 扫描码输入
-    void WinEventReplayer::DoScanCodeEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event) {
+    void WinEventReplayer::ReplayKeyEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event) {
         INPUT evt = GenerateScanCodeInput(scancode, event.down(), extend);
-
         short num_lock_status = event.num_lock_status();
         short curr_num_lock_status = GetKeyState(VK_NUMLOCK);
 
-        //当按下num lock时，如果server端的状态跟client不相同，则不需要发送此次事件，
-        //因为num lock有两种状态，经过测试，发送过来的是未变化前的状态，也就说客户端的
-        //本意就是要变成server端现在的状态。
-        //在处理 KEYEVENTF_EXTENDEDKEY 时，将evt.ki.wVk赋值了，可以用这个条件，也可以用 scancode==0x45
         if (evt.ki.wVk == VK_NUMLOCK) {
-            printf("numlock status : %d, current status :%d", num_lock_status, curr_num_lock_status);
+            LOGI("numlock status : {}, current status: {}", num_lock_status, curr_num_lock_status);
             if (curr_num_lock_status != num_lock_status) {
-                printf("NumLock, NO need to send event.");
+                LOGI("NumLock, NO need to send event.");
                 return;
             }
         } else {
-            //如果按的小键盘其他的按键，当down事件触发的时候，发现num lock的状态不一致，
-            //那么需要在server端模拟一次num lock的按下，抬起动作，且要在发送此次事件之前
             if (event.down() && num_lock_status != curr_num_lock_status && event.status_check() == KeyEvent::kCheckNumLock) {
-                MockKeyPressedByScanCode(0x45);
-                //curr_num_lock_status = GetKeyState(VK_NUMLOCK);
-                //LOGI("After send numlock down and up, current status : %d, client status : %d", curr_num_lock_status, num_lock_status);
+                MockKeyEvent(0x45);
             }
         }
 
         short caps_lock_status = event.caps_lock_status();
-        std::cout << "event caps_lock_status = " << caps_lock_status << std::endl;
         short curr_caps_lock_status = GetKeyState(VK_CAPITAL);
-        std::cout << "curr_caps_lock_status = " << curr_caps_lock_status << std::endl;
         if (scancode == 0x3a) {
             if (curr_caps_lock_status == caps_lock_status) {
-                printf("CapsLock, No need to send event.\n");
                 return;
             }
         } else {
             if (event.down() && caps_lock_status != curr_caps_lock_status && event.status_check() == KeyEvent::kCheckCapsLock) {
-                MockKeyPressedByScanCode(0x3a);
-                //curr_caps_lock_status = GetKeyState(VK_CAPITAL);
-                //LOGI("After send capslock down and up, current status : %d, client status : %d", curr_caps_lock_status, caps_lock_status);
+                MockKeyEvent(0x3a);
             }
         }
         WinSendEvent(&evt);
     }
 
-    void WinEventReplayer::MockKeyPressedByScanCode(uint16_t scancode) {
+    void WinEventReplayer::MockKeyEvent(uint16_t scancode) {
         INPUT down = GenerateScanCodeInput(scancode, true, true);
         WinSendEvent(&down);
         INPUT up = GenerateScanCodeInput(scancode, false, true);
@@ -259,17 +199,15 @@ namespace tc
     void WinEventReplayer::HandleMouseEvent(const tc::MouseEvent& event) {
         float x_ratio = event.x_ratio();
         float y_ratio = event.y_ratio();
-        // to do , 屏幕索引，后面要兼容多屏幕，目前暂用主屏
         int monitor_index = event.monitor_index();
         int button = event.button();
         int data = event.data();
-        // to do 是否是全局，还是进程内部响应，暂定 截屏方式时 使用全局响应事件， 后续如果使用 WGC采集窗口的话，需要另外考虑
         if(Settings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
-            PlayGlobalMouseEvent(monitor_index, x_ratio, y_ratio, button, data);
+            ReplayMouseEvent(monitor_index, x_ratio, y_ratio, button, data);
         }
     }
 
-    void WinEventReplayer::PlayGlobalMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data) {
+    void WinEventReplayer::ReplayMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data) {
         if (monitors_.empty()) {
             LOGE("Don't have capturing monitor info.");
             return;
@@ -288,9 +226,9 @@ namespace tc
             LOGE("Invalid monitor for index: {}", monitor_index);
             return;
         }
-//        LOGI("monitor idx: {}, left: {}, bottom: {}, v-left: {}, v-bottom: {}",
-//             monitor_index, target_monitor.left_, target_monitor.bottom_,
-//             target_monitor.virtual_left_, target_monitor.virtual_bottom_);
+        // LOGI("monitor idx: {}, left: {}, bottom: {}, v-left: {}, v-bottom: {}",
+        //      monitor_index, target_monitor.left_, target_monitor.bottom_,
+        //      target_monitor.virtual_left_, target_monitor.virtual_bottom_);
 
         int x = (int)(x_ratio * target_monitor.virtual_width_ + target_monitor.virtual_left_);
         int y = (int)(y_ratio * target_monitor.virtual_height_ + target_monitor.virtual_top_);
@@ -298,7 +236,6 @@ namespace tc
         evt.type = INPUT_MOUSE;
         evt.mi.dx = x;
         evt.mi.dy = y;
-        // to do ，这里暂定使用 绝对模式，虚拟桌面映射
         int target_buttons = 0;
         if (buttons & ButtonFlag::kMouseMove) {
             target_buttons |= MOUSEEVENTF_MOVE;

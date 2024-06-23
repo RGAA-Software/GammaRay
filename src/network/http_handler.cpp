@@ -15,7 +15,7 @@
 #include "src/gr_run_game_manager.h"
 #include "db/db_game.h"
 #include "db/db_game_manager.h"
-
+#include "src/app_messages.h"
 #include <boost/algorithm/string/trim.hpp>
 
 using namespace nlohmann;
@@ -104,6 +104,17 @@ namespace tc
         auto run_games_info = this->run_game_mgr_->GetRunningGamesAsJson();
         auto resp = WrapBasicInfo(200, "ok", run_games_info);
         res.set_content(resp, "application/json");
+    }
+
+    void HttpHandler::HandleStopServer(const httplib::Request& req, httplib::Response& res) {
+        auto srv_mgr = context_->GetServerManager();
+        srv_mgr->StopServer();
+        auto nr = NetResp::Make(kNetOk, "OK", "");
+        res.set_content(nr.Dump(), "application/json");
+
+        this->context_->SendAppMessage(MsgServerAlive {
+            .alive_ = false,
+        });
     }
 
     // impl

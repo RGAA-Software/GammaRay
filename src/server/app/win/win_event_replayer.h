@@ -17,16 +17,14 @@ namespace tc
         void HandleMessage(const std::shared_ptr<Message>& message);
         void HandleKeyEvent(const tc::KeyEvent& event);
         void HandleMouseEvent(const tc::MouseEvent& event);
-
-        void PlayGlobalMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data);
-
-        bool CheckKeyAllowDown(uint32_t vk,bool down);
-        void ResetKey();
-
-        void DoScanCodeEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event);
-        void MockKeyPressedByScanCode(uint16_t scancode);
-
+        void ReplayMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data);
         void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg);
+
+    private:
+        bool IsKeyPermitted(uint32_t vk);
+        void ResetKey();
+        void ReplayKeyEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event);
+        void MockKeyEvent(uint16_t scancode);
 
     private:
         // capturing monitors

@@ -51,7 +51,7 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        if (!client_->start("127.0.0.1", 20369, "/")) {
+        if (!client_->async_start("127.0.0.1", 20369, "/")) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }

@@ -22,6 +22,7 @@ namespace tc
     const std::string kPathGameStart = "/v1/game/start";
     const std::string kPathGameStop = "/v1/game/stop";
     const std::string kPathRunningGames = "/v1/running/games";
+    const std::string kPathStopServer = "/v1/stop/server";
 
     static std::string GetSupportedApis() {
         std::stringstream ss;
