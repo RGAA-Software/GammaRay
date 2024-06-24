@@ -228,7 +228,7 @@ namespace tc
 
         for (auto& p : processes) {
             //LOGI("p.exe_name: {}", p.exe_name_);
-            if (p.exe_full_path_.find("GammaRayServer.exe") != std::string::npos) {
+            if (p->exe_full_path_.find("GammaRayServer.exe") != std::string::npos) {
                 resp.value_ = true;
                 //LOGI("Yes, find it.");
                 break;

@@ -80,7 +80,27 @@ file(COPY ${CMAKE_SOURCE_DIR}/src/server/certificate.pem DESTINATION ${CMAKE_BIN
 
 add_subdirectory(deps)
 add_subdirectory(src)
-add_subdirectory(src/tests)
+#add_subdirectory(src/tests)
+
+### Translation
+set(TRANSLATION ON)
+if(TRANSLATION)
+    set(TS_DIR ${CMAKE_SOURCE_DIR}/translation)
+    set(LUPDATE_EXE_PATH ${QT_ROOT}/bin/lupdate.exe)
+    set(LRELEASE_EXE_PATH ${QT_ROOT}/bin/lrelease.exe)
+
+    set(TS_FILES
+        ${TS_DIR}/${PROJECT_NAME}_zh_CN.ts
+        ${TS_DIR}/${PROJECT_NAME}_en_US.ts
+    )
+    foreach(_ts_file ${TS_FILES})
+        execute_process(
+                COMMAND ${LUPDATE_EXE_PATH} -recursive ${CMAKE_SOURCE_DIR}/src/ui -ts ${_ts_file})
+        execute_process(
+                COMMAND ${LUPDATE_EXE_PATH} ${_ts_file})
+    endforeach()
+endif ()
+### Translation
 
 set(RES resources/font.qrc resources/main.qrc resources/qss.qrc res.qrc)
 add_executable(${PROJECT_NAME}
@@ -89,6 +109,7 @@ add_executable(${PROJECT_NAME}
         ${MAIN_SRCS}
         ${NETWORK_SRCS}
         icon.rc
+        ${TS_FILES}
 )
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")

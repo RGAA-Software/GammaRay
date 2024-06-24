@@ -34,7 +34,7 @@ namespace tc
         void InjectCaptureDllForSteamApp();
         void InjectCaptureDllForNormalApp();
         bool InjectDll(uint32_t pid, uint32_t tid, bool is_x86, const std::string& x86_dll, const std::string& x64_dll);
-        void AddFoundPid(const ProcessInfo& target_pi);
+        void AddFoundPid(const ProcessInfoPtr& target_pi);
         static WindowInfos SearchWindowByPid(uint32_t pid);
         static WindowInfo GetTargetWindowInfo(const WindowInfos& infos);
 
@@ -44,7 +44,7 @@ namespace tc
         WindowInfo target_window_info_;
         std::atomic<bool> injected_ = false;
         // 找到的所有的属于这个应用的pid
-        std::vector<ProcessInfo> found_process_info_;
+        std::vector<ProcessInfoPtr> found_process_info_;
         std::shared_ptr<SteamGame> steam_game_ = nullptr;
 
     };
