@@ -16,6 +16,9 @@
 #include "db/db_game.h"
 #include "db/db_game_manager.h"
 #include "src/app_messages.h"
+#include "tc_common_new/win32/process_helper.h"
+#include "tc_common_new/string_ext.h"
+#include "tc_common_new/process_util.h"
 #include <boost/algorithm/string/trim.hpp>
 
 using namespace nlohmann;
@@ -60,7 +63,9 @@ namespace tc
                 return;
             }
         } catch (std::exception& e) {
-            LOGE("parse json failed, body:{}", req.body);
+            LOGE("parse json failed, body:{}", req.body);\
+            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body), "");
+            res.set_content(nr.Dump(), "application/json");
             return;
         }
 
@@ -87,6 +92,8 @@ namespace tc
             }
         } catch (std::exception& e) {
             LOGE("parse json failed, body:{}", req.body);
+            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body), "");
+            res.set_content(nr.Dump(), "application/json");
             return;
         }
 
@@ -115,6 +122,41 @@ namespace tc
         this->context_->SendAppMessage(MsgServerAlive {
             .alive_ = false,
         });
+    }
+
+    void HttpHandler::HandleAllRunningProcesses(const httplib::Request& req, httplib::Response& res) {
+        auto rgm = context_->GetRunGameManager();
+        auto rps = rgm->GetRunningProcesses();
+        json obj = json::array();
+        for (const std::shared_ptr<ProcessInfo>& rp : rps) {
+            json item;
+            item["pid"] = rp->pid_;
+            auto exe_path = rp->exe_full_path_;
+            StringExt::Replace(exe_path, "\\", "/");
+            item["exe_path"] = exe_path;
+            item["icon"] = rp->icon_name_;
+            obj.push_back(item);
+        }
+        auto resp = WrapBasicInfo(200, "ok", obj);
+        res.set_content(resp, "application/json");
+    }
+
+    void HttpHandler::HandleKillProcess(const httplib::Request& req, httplib::Response& res) {
+        int pid = 0;
+        try {
+            auto obj = nlohmann::json::parse(req.body);
+            auto pid_str = obj["pid"].get<std::string>();
+            pid = std::atoi(pid_str.c_str());
+        } catch (std::exception& e) {
+            LOGE("parse json failed, body:{}", req.body);
+            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body), "");
+            res.set_content(nr.Dump(), "application/json");
+            return;
+        }
+
+        ProcessUtil::KillProcess(pid);
+        auto nr = NetResp::Make(kNetOk, "OK", "");
+        res.set_content(nr.Dump(), "application/json");
     }
 
     // impl

@@ -70,6 +70,14 @@ namespace tc
                 http_handler_->HandleStopServer(req, res);
             });
 
+            server_->Get(kPathAllRunningProcesses, [=, this](const auto& req, auto& res) {
+                http_handler_->HandleAllRunningProcesses(req, res);
+            });
+
+            server_->Post(kPathKillProcess, [=, this](const auto& req, auto& res) {
+                http_handler_->HandleKillProcess(req, res);
+            });
+
             server_->set_mount_point("/", "./www");
             //server_->set_mount_point("/", "./static");
             auto steam_manager = context_->GetSteamManager();

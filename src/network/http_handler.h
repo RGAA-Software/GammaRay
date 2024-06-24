@@ -30,6 +30,8 @@ namespace tc
         void HandleGameStop(const httplib::Request& req, httplib::Response& res);
         void HandleRunningGames(const httplib::Request& req, httplib::Response& res);
         void HandleStopServer(const httplib::Request& req, httplib::Response& res);
+        void HandleAllRunningProcesses(const httplib::Request& req, httplib::Response& res);
+        void HandleKillProcess(const httplib::Request& req, httplib::Response& res);
 
     private:
         std::string GetInstalledGamesAsJson();

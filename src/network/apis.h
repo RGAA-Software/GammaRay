@@ -14,6 +14,7 @@ namespace tc
 
     constexpr auto kNetOk = 200;
     constexpr auto kStartFailed = 600;
+    constexpr auto kParamError = 601;
 
     const std::string kPathPing = "/v1/ping";
     const std::string kPathSimpleInfo = "/v1/simple/info";
@@ -23,6 +24,8 @@ namespace tc
     const std::string kPathGameStop = "/v1/game/stop";
     const std::string kPathRunningGames = "/v1/running/games";
     const std::string kPathStopServer = "/v1/stop/server";
+    const std::string kPathAllRunningProcesses = "/v1/all/running/processes";
+    const std::string kPathKillProcess = "/v1/kill/process";
 
     static std::string GetSupportedApis() {
         std::stringstream ss;
