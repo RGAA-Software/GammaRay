@@ -19,6 +19,7 @@ namespace tc
     class DBGameManager;
     class TcDBGame;
     class SteamApp;
+    class ProcessInfo;
 
     class RunningGame {
     public:
@@ -44,6 +45,7 @@ namespace tc
         std::string GetRunningGamesAsJson();
         std::string GetRunningGamesAsProto();
         std::vector<uint64_t> GetRunningGameIds();
+        std::vector<std::shared_ptr<ProcessInfo>> GetRunningProcesses();
 
     private:
         std::shared_ptr<SteamApp> FindInSteamManager(const std::string& game_path);
@@ -57,6 +59,8 @@ namespace tc
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::vector<std::shared_ptr<RunningGame>> running_games_;
         QProcess* game_process_ = nullptr;
+        std::vector<std::shared_ptr<ProcessInfo>> running_processes_;
+
     };
 
 }

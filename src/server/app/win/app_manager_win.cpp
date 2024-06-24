@@ -221,18 +221,18 @@ namespace tc
         SteamAppPtr target_app = *it;
 
         // find pids by exes
-        std::vector<ProcessInfo> processes_info;
+        std::vector<ProcessInfoPtr> processes_info;
         for (const std::string& exe_name : target_app->exe_names_) {
             auto processes = ProcessHelper::GetProcessList();
             for (auto& process : processes) {
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
                 if (process_exe_name == exe_name) {
                     //LOGI("find target process exe: {}", exe_name);
-                    auto ret = WinHelper::FindHwndByPid(process.pid_);
+                    auto ret = WinHelper::FindHwndByPid(process->pid_);
                     if (ret.ok_ && ret.value_) {
                         DWORD process_id;
                         auto thread_id = GetWindowThreadProcessId(ret.value_, &process_id);
-                        process.thread_id_ = thread_id;
+                        process->thread_id_ = thread_id;
                         //LOGI("xxx PID:{} , TID:{}, origin PID:{}", process_id, thread_id, process.pid_);
                     }
                     processes_info.push_back(process);
@@ -250,8 +250,8 @@ namespace tc
         // 单独采集的时候才尝试hook
         if (settings_->capture_.IsVideoHook()) {
             for (const auto &process: processes_info) {
-                auto result = WinHelper::IsDllInjected(process.pid_, kX86DllName, kX64DllName);
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
+                auto result = WinHelper::IsDllInjected(process->pid_, kX86DllName, kX64DllName);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
                 if (result.ok_ && result.value_) {
                     continue;
                 }
@@ -262,21 +262,21 @@ namespace tc
                 // before inject
                 MsgBeforeInject msg_before_inject{
                     .steam_app_ = target_app,
-                    .pid_ = process.pid_,
+                    .pid_ = process->pid_,
                 };
                 context_->SendAppMessage(msg_before_inject);
 
-                bool injected = InjectDll(process.pid_, 0, process.is_x86_, kX86DllName, kX64DllName);
+                bool injected = InjectDll(process->pid_, 0, process->is_x86_, kX86DllName, kX64DllName);
                 this->injected_ = injected;
                 if (injected) {
-                    LOGI("Inject success for pid: {}, exe: {}", process.pid_, process_exe_name);
-                    target_pid_ = process.pid_;
+                    LOGI("Inject success for pid: {}, exe: {}", process->pid_, process_exe_name);
+                    target_pid_ = process->pid_;
                     MsgObsInjected msg_injected;
                     msg_injected.steam_app_ = target_app;
-                    msg_injected.pid_ = process.pid_;
+                    msg_injected.pid_ = process->pid_;
                     context_->SendAppMessage(msg_injected);
                 } else {
-                    LOGE("Inject capture dll failed for pid: {}, is x86:{}, exe: {}", process.pid_, process.is_x86_, process_exe_name);
+                    LOGE("Inject capture dll failed for pid: {}, is x86:{}, exe: {}", process->pid_, process->is_x86_, process_exe_name);
                 }
             }
         }
@@ -289,24 +289,24 @@ namespace tc
         }
 
         auto processes = ProcessHelper::GetProcessList();
-        ProcessInfo target_process_info;
+        ProcessInfoPtr target_process_info;
         for (const auto& process : processes) {
-            if (process.pid_ == target_pid_) {
+            if (process->pid_ == target_pid_) {
                 target_process_info = process;
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
                 //LOGI("Find the pid: {}, exe : {}", process.pid_, process.exe_name_);
                 break;
             }
         }
-        if (!target_process_info.Valid()) {
+        if (!target_process_info->Valid()) {
             auto target_exe_name = FileExt::GetFileNameFromPath(settings_->app_.game_path_);
             LOGE("Can't find app to inject, pid: {}, search for by exe: {}", target_pid_, target_exe_name);
             uint32_t pid_by_exe = 0;
             for (const auto& process : processes) {
-                auto process_exe_name = FileExt::GetFileNameFromPath(process.exe_full_path_);
+                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
                 if (process_exe_name == target_exe_name) {
                     //LOGI("find target process exe: {}, pid: {}", target_exe_name, pid_by_exe);
-                    pid_by_exe = process.pid_;
+                    pid_by_exe = process->pid_;
                     break;
                 }
             }
@@ -322,37 +322,37 @@ namespace tc
         }
         if (settings_->capture_.IsVideoHook()){
             // 单独采集的时候才尝试hook
-            auto result = WinHelper::IsDllInjected(target_process_info.pid_, kX86DllName, kX64DllName);
-            auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info.exe_full_path_);
+            auto result = WinHelper::IsDllInjected(target_process_info->pid_, kX86DllName, kX64DllName);
+            auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info->exe_full_path_);
             if (result.ok_ && result.value_) {
                 //LOGI("Pid: {} for: {} is already injected....", target_process_info.pid_, process_exe_name);
                 return;
             } else {
-                LOGI("Not injected, will inject for pid: {}, exe: {}", target_process_info.pid_, process_exe_name);
+                LOGI("Not injected, will inject for pid: {}, exe: {}", target_process_info->pid_, process_exe_name);
             }
 
             AddFoundPid(target_process_info);
 
             // before inject
             MsgBeforeInject msg_before_inject{
-                .pid_ = target_process_info.pid_,
+                .pid_ = target_process_info->pid_,
             };
             context_->SendAppMessage(msg_before_inject);
 
-            bool injected = InjectDll(target_process_info.pid_, target_process_info.thread_id_,
-                                      target_process_info.is_x86_, kX86DllName, kX64DllName);
+            bool injected = InjectDll(target_process_info->pid_, target_process_info->thread_id_,
+                                      target_process_info->is_x86_, kX86DllName, kX64DllName);
             this->injected_ = injected;
             if (injected) {
-                LOGI("Inject success for pid: {}, exe: {}", target_process_info.pid_, process_exe_name);
+                LOGI("Inject success for pid: {}, exe: {}", target_process_info->pid_, process_exe_name);
                 MsgObsInjected msg_injected;
                 SteamAppPtr mock_app = SteamApp::Make();
                 mock_app->exes_.push_back(settings_->app_.game_path_);
                 msg_injected.steam_app_ = mock_app;
-                msg_injected.pid_ = target_process_info.pid_;
+                msg_injected.pid_ = target_process_info->pid_;
                 context_->SendAppMessage(msg_injected);
             } else {
-                LOGE("Inject capture dll failed for pid: {}, is x86:{}, exe: {}", target_process_info.pid_,
-                     target_process_info.is_x86_, process_exe_name);
+                LOGE("Inject capture dll failed for pid: {}, is x86:{}, exe: {}", target_process_info->pid_,
+                     target_process_info->is_x86_, process_exe_name);
             }
         }
     }
@@ -385,8 +385,8 @@ namespace tc
 
     void AppManagerWinImpl::CloseCurrentApp() {
         for (const auto& pi : found_process_info_) {
-            LOGI("Will kill target pid: {}, exe: {}", pi.pid_, pi.exe_full_path_);
-            ProcessUtil::KillProcess(pi.pid_);
+            LOGI("Will kill target pid: {}, exe: {}", pi->pid_, pi->exe_full_path_);
+            ProcessUtil::KillProcess(pi->pid_);
         }
     }
 
@@ -430,10 +430,10 @@ namespace tc
         return info;
     }
 
-    void AppManagerWinImpl::AddFoundPid(const ProcessInfo& target_pi) {
+    void AppManagerWinImpl::AddFoundPid(const ProcessInfoPtr& target_pi) {
         bool exist = false;
         for (auto& pi : found_process_info_) {
-            if (pi.pid_ == target_pi.pid_) {
+            if (pi->pid_ == target_pi->pid_) {
                 exist = true;
             }
         }

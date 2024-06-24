@@ -11,9 +11,16 @@
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/time_ext.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/win32/process_helper.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_message_new/tc_message.pb.h"
-
+#include <QImage>
+#include <QPixmap>
+#include <QApplication>
+#include <QDir>
+#include <QFile>
+#include <QString>
 #include <shellapi.h>
 
 using namespace nlohmann;
@@ -182,13 +189,28 @@ namespace tc
 
     void GrRunGameManager::CheckRunningGame() {
         auto beg = TimeExt::GetCurrentTimestamp();
-        auto running_processes = ProcessHelper::GetProcessList();
+        running_processes_ = ProcessHelper::GetProcessList();
         auto db_games = this->db_game_manager_->GetAllGames();
-        LOGI("running process: {}", running_processes.size());
+        LOGI("running process: {}", running_processes_.size());
         LOGI("db games: {}",db_games.size());
-        // for (auto& rp : running_processes) {
-        //     LOGI("  {} - {}", rp.pid_, rp.exe_full_path_);
-        // }
+        for (auto& rp : running_processes_) {
+            //LOGI("  {} - {}", rp.pid_, rp.exe_full_path_);
+            if (rp->icon_) {
+                QString icons_path = qApp->applicationDirPath() + "/www/icons";
+                QDir dir;
+                if (!dir.exists(icons_path)) {
+                    dir.mkdir(icons_path);
+                }
+                rp->icon_name_ = MD5::Hex(rp->exe_full_path_) + ".png";
+                auto icon_file_path = icons_path + "/" + rp->icon_name_.c_str();
+                if (QFile::exists(icon_file_path)) {
+                    continue;
+                }
+                auto image = QImage::fromHICON(rp->icon_);
+                auto pixmap = QPixmap::fromImage(image);
+                pixmap.save(icon_file_path);
+            }
+        }
 
         running_games_.clear();
         for (const auto& game : db_games) {
@@ -196,12 +218,12 @@ namespace tc
             for (const std::string& exe : game->exes_) {
                 std::string exe_full_path = exe;
                 StringExt::Replace(exe_full_path, "\\", "/");
-                for (const auto& rp : running_processes) {
-                    std::string rp_exe_full_path = rp.exe_full_path_;
+                for (const auto& rp : running_processes_) {
+                    std::string rp_exe_full_path = rp->exe_full_path_;
                     StringExt::Replace(rp_exe_full_path, "\\", "/");
                     if (rp_exe_full_path == exe_full_path) {
                         LOGI("********Found running game: {}", exe_full_path);
-                        running_pids.push_back(rp.pid_);
+                        running_pids.push_back(rp->pid_);
                         break;
                     }
                 }
@@ -246,6 +268,10 @@ namespace tc
             game_ids.push_back(rg->game_->game_id_);
         }
         return game_ids;
+    }
+
+    std::vector<std::shared_ptr<ProcessInfo>> GrRunGameManager::GetRunningProcesses() {
+        return running_processes_;
     }
 
 }
