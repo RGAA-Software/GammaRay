@@ -63,13 +63,11 @@ namespace tc
         void SetCaptureAudio(bool enabled);
         void SetCaptureMonitor(const std::string& name);
         void SetCaptureAudioDevice(const std::string& name);
-
-        bool IsEncoderResTypeOrigin() const;
+        [[nodiscard]] bool IsEncoderResTypeOrigin() const;
 
     public:
-
         SharedPreference* sp_ = nullptr;
-
+        std::string version_;
         int http_server_port_{0};
         int ws_server_port_{0};
         int udp_server_port_{0};

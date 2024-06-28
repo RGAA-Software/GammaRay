@@ -62,24 +62,27 @@ namespace tc
                 http_handler_->HandleGameStop(req, res);
             });
 
+            // running games
             server_->Get(kPathRunningGames, [=, this](const auto &req, auto &res) {
                 http_handler_->HandleRunningGames(req, res);
             });
 
+            // stop the GammaRayServer.exe
             server_->Get(kPathStopServer, [=, this](const auto& req, auto& res) {
                 http_handler_->HandleStopServer(req, res);
             });
 
+            // all running processes in th PC, equals the process list in TaskManager
             server_->Get(kPathAllRunningProcesses, [=, this](const auto& req, auto& res) {
                 http_handler_->HandleAllRunningProcesses(req, res);
             });
 
+            // kill a process by pid
             server_->Post(kPathKillProcess, [=, this](const auto& req, auto& res) {
                 http_handler_->HandleKillProcess(req, res);
             });
 
             server_->set_mount_point("/", "./www");
-            //server_->set_mount_point("/", "./static");
             auto steam_manager = context_->GetSteamManager();
             if (steam_manager) {
                 auto image_cache_path = steam_manager->GetSteamImageCachePath();
