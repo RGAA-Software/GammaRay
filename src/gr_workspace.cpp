@@ -16,28 +16,26 @@
 #include "ui/tab_game.h"
 #include "ui/tab_server.h"
 #include "ui/tab_settings.h"
+#include "gr_settings.h"
 
 namespace tc
 {
 
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
+        settings_ = GrSettings::Instance();
 
         d = new MainWindowPrivate(this);
-        QString AppDir = qApp->applicationDirPath();
-        QString StylesDir = AppDir + "/resources/";
-        qDebug() << "StyleDir: " << StylesDir;
+        QString app_dir = qApp->applicationDirPath();
+        QString style_dir = app_dir + "/resources/";
         d->AdvancedStyleSheet = new acss::QtAdvancedStylesheet(this);
-        d->AdvancedStyleSheet->setStylesDirPath(StylesDir);
-        d->AdvancedStyleSheet->setOutputDirPath(AppDir + "/output");
+        d->AdvancedStyleSheet->setStylesDirPath(style_dir);
+        d->AdvancedStyleSheet->setOutputDirPath(app_dir + "/output");
         d->AdvancedStyleSheet->setCurrentStyle("qt_material");
-        //d->AdvancedStyleSheet->setDefaultTheme();
         d->AdvancedStyleSheet->setCurrentTheme("light_blue");
         d->AdvancedStyleSheet->updateStylesheet();
         setWindowIcon(d->AdvancedStyleSheet->styleIcon());
         qApp->setStyleSheet(d->AdvancedStyleSheet->styleSheet());
-        connect(d->AdvancedStyleSheet, SIGNAL(stylesheetChanged()), this,
-                SLOT(onStyleManagerStylesheetChanged()));
 
         app_ = std::make_shared<GrApplication>();
         app_->Init();
@@ -58,7 +56,6 @@ namespace tc
             int left_area_width = 220;
             auto extend = new QLabel(this);
             extend->setFixedSize(left_area_width, 2);
-            //extend->setStyleSheet("background:#298789;");
             layout->addWidget(extend);
 
             // logo
@@ -83,10 +80,8 @@ namespace tc
                 btn_tab_server_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Server"));
-                //btn->setFont(font);
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
-                //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabServer);
                 });
@@ -99,10 +94,8 @@ namespace tc
                 btn_tab_games_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Games"));
-                //btn->setFont(font);
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
-                //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabGames);
                 });
@@ -115,10 +108,8 @@ namespace tc
                 btn_tab_settings_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Settings"));
-                //btn->setFont(font);
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
-                //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabSettings);
                 });
@@ -131,7 +122,7 @@ namespace tc
             // version
             {
                 auto label = new QLabel(this);
-                label->setText("V 1.0.3");
+                label->setText(settings_->version_.c_str());
                 layout->addWidget(label, 0, Qt::AlignHCenter);
                 layout->addSpacing(10);
             }

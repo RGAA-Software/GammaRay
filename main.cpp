@@ -10,37 +10,11 @@
 
 using namespace tc;
 
-void LoadStyle(const std::string &name) {
-    auto qssFile = ":/qss/lightblue.css";
-
-    QString qss;
-    QFile file(qssFile);
-    if (file.open(QFile::ReadOnly)) {
-        qDebug() << "open success...";
-        QStringList list;
-        QTextStream in(&file);
-
-        while (!in.atEnd()) {
-            QString line;
-            in >> line;
-            list << line;
-        }
-
-        file.close();
-        qss = list.join("\n");
-        QString paletteColor = qss.mid(20, 7);
-        qApp->setPalette(QPalette(paletteColor));
-        qApp->setStyleSheet(qss);
-    }
-}
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
 
     QApplication app(argc, argv);
-
     Logger::InitLog("GammaRay.log", false);
 
     int id = QFontDatabase::addApplicationFont(":/resources/font/matrix.ttf");
@@ -49,7 +23,6 @@ int main(int argc, char *argv[])
         LOGI("font family : {}", f.toStdString());
     }
 
-    //LoadStyle("");
     DxgiMonitorDetector::Instance()->DetectAdapters();
     GrWorkspace workspace;
     workspace.setFixedSize(1820, 960);

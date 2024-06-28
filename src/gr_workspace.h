@@ -30,6 +30,7 @@ namespace tc
 
     class TabBase;
     class GrApplication;
+    class GrSettings;
 
     class GrWorkspace : public QMainWindow {
     public:
@@ -40,6 +41,7 @@ namespace tc
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;
+        GrSettings* settings_ = nullptr;
         std::map<TabName, TabBase*> tabs_;
         QPushButton* btn_tab_server_ = nullptr;
         QPushButton* btn_tab_games_ = nullptr;

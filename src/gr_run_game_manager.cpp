@@ -58,7 +58,6 @@ namespace tc
         {
             auto game = FindInDBGameManager(game_path);
             if (game != nullptr) {
-                LOGI("find: {} in database", game_path);
                 if (game->IsSteamGame()) {
                     LOGI("{} is a steam game.", game_path);
                     // 1.1 this is a game that installed by steam
@@ -70,9 +69,6 @@ namespace tc
                     // 1.2 this is a game that added by user
                     auto r = this->StartNormalGame(game_path, args);
                     LOGI("start result: {}, {}, {}", r.ok_, r.value_, r.msg_);
-                    if (r.ok_) {
-
-                    }
                     return r;
                 }
             }
@@ -124,7 +120,6 @@ namespace tc
                 break;
             }
         }
-
         return resp;
     }
 
@@ -143,7 +138,6 @@ namespace tc
         game_process_->start(game_path.c_str());
         game_process_->waitForStarted();
         auto pid = game_process_->processId();
-        //auto pid = ProcessUtil::StartProcess(game_path, args, true, false);
         resp.ok_ = pid > 0;
         resp.value_ = "Start success";
         resp.msg_ = std::to_string(pid);
@@ -180,7 +174,6 @@ namespace tc
                 return nullptr;
             }
             return this->db_game_manager_->GetGameByGameId(app_id);
-
         } else {
             // find by path
             return this->db_game_manager_->GetGameByExePath(game_path);
@@ -194,7 +187,6 @@ namespace tc
         LOGI("running process: {}", running_processes_.size());
         LOGI("db games: {}",db_games.size());
         for (auto& rp : running_processes_) {
-            //LOGI("  {} - {}", rp.pid_, rp.exe_full_path_);
             if (rp->icon_) {
                 QString icons_path = qApp->applicationDirPath() + "/www/icons";
                 QDir dir;

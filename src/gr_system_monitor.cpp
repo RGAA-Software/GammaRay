@@ -74,9 +74,7 @@ namespace tc
                             this->StartServer();
                             // check again
                             ctx_->PostUIDelayTask([=, this]() {
-                                // UI thread
                                 ctx_->PostTask([=, this]() {
-                                    // Background thread
                                     auto resp = this->CheckServerAlive();
                                     auto started = resp.ok_ && resp.value_;
                                     ctx_->SendAppMessage(MsgServerAlive{
