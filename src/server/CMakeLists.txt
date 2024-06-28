@@ -41,9 +41,8 @@ else()
     #
 endif()
 
-target_link_libraries(main app_manager tc_message) #tc_dyn_rtc
-target_link_libraries(main Dexode::EventBus ZLIB::ZLIB ${OpenCV_LIBS} PocoFoundationmt.lib)
-target_link_libraries(main websocketpp::websocketpp)
+target_link_libraries(main app_manager tc_message)
+target_link_libraries(main Dexode::EventBus ZLIB::ZLIB ${OpenCV_LIBS})
 
 add_executable(${PROJECT_NAME} srv_main.cpp)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
