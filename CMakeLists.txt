@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
+find_package(OpenSSL REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Multimedia Svg)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Multimedia Svg)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)
@@ -23,9 +24,6 @@ if(Boost_FOUND)
     MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
     MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
 endif()
-
-find_package(OpenSSL REQUIRED)
-find_package(SqliteOrm CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -39,6 +37,7 @@ include_directories(${CMAKE_BINARY_DIR}/deps/tc_message_new)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/sqlite_orm/include)
 
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${VCPKG_ROOT}/packages/poco_x64-windows-static/lib)
@@ -67,8 +66,6 @@ if(Boost_FOUND)
     MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
 endif()
 
-find_package(OpenSSL REQUIRED)
-find_package(SqliteOrm CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
 find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")
 
@@ -121,7 +118,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Multimedia Qt6::Svg)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new sqlite_orm::sqlite_orm tc_vigem tc_message)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite_orm)
 
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
