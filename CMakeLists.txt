@@ -29,6 +29,7 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/eventbus/src)
 include_directories(${CMAKE_BINARY_DIR}/deps/tc_message_new)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/sqlite_orm/include)
 

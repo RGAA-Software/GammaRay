@@ -4,13 +4,11 @@
 
 #include "app_manager_win.h"
 #include <filesystem>
-#include <sstream>
 
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/file_ext.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/task_runtime.h"
 #include "easyhook/easyhook.h"
 #include "context.h"
 #include "settings/settings.h"
@@ -18,7 +16,6 @@
 #include "app/app_messages.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/win32/win_helper.h"
-#include "tc_steam_manager_new/steam_manager.h"
 #include <shellapi.h>
 #include <QList>
 #include <QString>
