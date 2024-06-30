@@ -3,8 +3,8 @@
 //
 
 #include "app_manager_win.h"
-#include <filesystem>
-
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/file_ext.h"
@@ -17,6 +17,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/win32/win_helper.h"
 #include <shellapi.h>
+#include <filesystem>
 #include <QList>
 #include <QString>
 
