@@ -19,7 +19,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"
-#include <boost/algorithm/string/trim.hpp>
+#include <QString>
 
 using namespace nlohmann;
 
@@ -57,7 +57,7 @@ namespace tc
         try {
             auto obj = nlohmann::json::parse(req.body);
             game_path = obj["game_path"].get<std::string>();
-            boost::trim(game_path);
+            game_path = QString::fromStdString(game_path).trimmed().toStdString();
             if (game_path.empty()) {
                 LOGE("game path is empty");
                 return;
@@ -85,7 +85,7 @@ namespace tc
         try {
             auto obj = nlohmann::json::parse(req.body);
             game_id = obj["game_id"].get<std::string>();
-            boost::trim(game_id);
+            game_id = QString::fromStdString(game_id).trimmed().toStdString();
             if (game_id.empty()) {
                 LOGE("game path is empty");
                 return;

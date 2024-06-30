@@ -11,7 +11,6 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
-#include <boost/format.hpp>
 #include <utility>
 #include "shellapi.h"
 #include "db/db_game.h"
@@ -23,7 +22,6 @@
 #include "widgets/cover_widget.h"
 #include "widgets/layout_helper.h"
 #include "tc_common_new/log.h"
-#include "widget_decorator.h"
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_steam_manager_new/steam_manager.h"
@@ -83,12 +81,9 @@ namespace tc
         list_widget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         list_widget_->setSpacing(10);
         list_widget_->setResizeMode(QListWidget::Adjust);
-        boost::format format(R"(
-            QListWidget { outline: none; border:0px solid gray; color: black; background-color: none; padding-left: %1%px; padding-right: %2%px; padding-bottom: %3%px;}
-        )");
-        format% (25);
-        format% (20);
-        format% (20);
+        auto format = std::format(R"(
+            QListWidget {{ outline: none; border:0px solid gray; color: black; background-color: none; padding-left: {}; padding-right: {}; padding-bottom: {};}}
+        )", 25, 20, 20);
 
         //
         QObject::connect(list_widget_, &QListWidget::clicked, this, [=, this](const QModelIndex& index) {
@@ -129,7 +124,6 @@ namespace tc
             auto pop_menu = new QMenu();
             for (int i = 0; i < actions.size(); i++) {
                 auto action = new QAction(actions.at(i), pop_menu);
-                WidgetDecorator::DecoratePopMenu(pop_menu);
                 pop_menu->addAction(action);
 
                 if (i == 0) {

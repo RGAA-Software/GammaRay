@@ -17,9 +17,6 @@
 #include "gr_run_game_manager.h"
 #include "network/ws_server.h"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
 
@@ -174,9 +171,7 @@ namespace tc
     }
 
     void GrSystemMonitor::InstallViGem(bool silent) {
-        auto exe_folder_path = boost::filesystem::initial_path<boost::filesystem::path>().string();
-        StringExt::Replace(exe_folder_path, R"(\)", R"(/)");
-
+        auto exe_folder_path = GrContext::GetCurrentExeFolder();
         std::string cmd;
         if (silent) {
             cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe /passive /promptrestart", exe_folder_path);

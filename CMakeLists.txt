@@ -17,13 +17,6 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 find_package(OpenSSL REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Multimedia Svg)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Multimedia Svg)
-find_package(Boost REQUIRED COMPONENTS system filesystem thread)
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    MESSAGE(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
-    MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
-    MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
-endif()
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -53,18 +46,9 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--stack,83886080")
 endif()
 
-add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX -DENABLE_SSL=0)
+add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX -DENABLE_SSL=0 -DCMAKE_GENERATOR_PLATFORM=x64 -D_AMD64_)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-
-## Boost
-find_package(Boost REQUIRED COMPONENTS system filesystem thread)
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    MESSAGE(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
-    MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
-    MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
-endif()
 
 find_package(gflags CONFIG REQUIRED)
 find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")

@@ -3,8 +3,8 @@
 //
 
 #include "app.h"
-
-// MUST put it here before windows.h
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "context.h"
 #include "tc_capture_new/desktop_capture.h"
 #include "tc_capture_new/desktop_capture_factory.h"
@@ -42,7 +42,6 @@
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "statistics.h"
-
 namespace tc
 {
 
@@ -60,6 +59,11 @@ namespace tc
 
     Application::~Application() {
         LOGI("Application dtor");
+    }
+
+    void Application::Init(int argc, char** argv) {
+        qapp_ = std::make_shared<QApplication>(argc, argv);
+        // parse args
     }
 
     int Application::Run() {
@@ -115,25 +119,25 @@ namespace tc
             }
         }
 
-        while (!exit_app_) {
-            std::unique_lock<std::mutex> guard(app_msg_cond_mtx_);
-            app_msg_cond_.wait(guard, [=, this]() -> bool {
-                return exit_app_ || !app_messages_.Empty();
-            });
+//        while (!exit_app_) {
+//            std::unique_lock<std::mutex> guard(app_msg_cond_mtx_);
+//            app_msg_cond_.wait(guard, [=, this]() -> bool {
+//                return exit_app_ || !app_messages_.Empty();
+//            });
+//
+//            if (exit_app_) {
+//                LOGI("Exit app....");
+//                break;
+//            }
+//
+//            auto msg = app_messages_.Front();
+//            if (msg->task_) {
+//                msg->task_();
+//            }
+//            app_messages_.Pop();
+//        }
 
-            if (exit_app_) {
-                LOGI("Exit app....");
-                break;
-            }
-
-            auto msg = app_messages_.Front();
-            if (msg->task_) {
-                msg->task_();
-            }
-            app_messages_.Pop();
-        }
-
-        return 0;
+        return qapp_->exec();
     }
 
     void Application::InitAppTimer() {
@@ -295,8 +299,11 @@ namespace tc
     }
 
     void Application::PostGlobalAppMessage(std::shared_ptr<AppMessage>&& msg) {
-        app_messages_.Push(std::move(msg));
-        app_msg_cond_.notify_one();
+        QMetaObject::invokeMethod(this, [m = std::move(msg)]() {
+            if (m->task_) {
+                m->task_();
+            }
+        });
     }
 
     void Application::PostGlobalTask(std::function<void()>&& task) {
@@ -521,7 +528,6 @@ namespace tc
         }
 
         exit_app_ = true;
-        app_msg_cond_.notify_one();
     }
 
     // ------------------------------------------------------ //

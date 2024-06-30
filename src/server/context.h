@@ -35,7 +35,7 @@ namespace tc
 
         void PostTask(std::function<void()>&& task);
         std::shared_ptr<asio2::iopool> GetAsio2IoPool();
-        std::string GetCurrentExeFolder();
+        static std::string GetCurrentExeFolder();
 
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;

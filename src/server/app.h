@@ -9,11 +9,11 @@
 #include <memory>
 #include <unordered_map>
 #include <condition_variable>
-#include <boost/asio.hpp>
 #include "tc_common_new/concurrent_hashmap.h"
 #include "tc_common_new/concurrent_queue.h"
 #include "app_global_messages.h"
 #include "app/app_messages.h"
+#include <QApplication>
 
 namespace tc
 {
@@ -46,14 +46,15 @@ namespace tc
     class Statistics;
     class WSClient;
 
-    class Application : public std::enable_shared_from_this<Application> {
+    class Application : public std::enable_shared_from_this<Application>, public QObject {
     public:
 
         static std::shared_ptr<Application> Make(const AppParams& args);
 
         explicit Application(const AppParams& args);
-        virtual ~Application();
+        ~Application() override;
 
+        virtual void Init(int argc, char** argv);
         virtual int Run();
         virtual void Exit();
         virtual void CaptureControlC() = 0;
@@ -103,10 +104,6 @@ namespace tc
 
         std::shared_ptr<File> debug_encode_file_ = nullptr;
         std::shared_ptr<AppSharedMessage> app_shared_message_ = nullptr;
-
-        std::mutex app_msg_cond_mtx_;
-        std::condition_variable app_msg_cond_;
-        tc::ConcurrentQueue<std::shared_ptr<AppMessage>> app_messages_;
         bool exit_app_ = false;
 
         std::shared_ptr<Thread> audio_capture_thread_ = nullptr;
@@ -127,6 +124,8 @@ namespace tc
 
         std::shared_ptr<Data> audio_cache_ = nullptr;
         int audio_callback_count_ = 0;
+
+        std::shared_ptr<QApplication> qapp_ = nullptr;
     };
 
     // Windows

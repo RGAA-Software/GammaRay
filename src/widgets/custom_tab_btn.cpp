@@ -1,6 +1,5 @@
 #include "custom_tab_btn.h"
 
-#include <boost/format.hpp>
 #include <QPainter>
 #include <QPen>
 #include <QBrush>
@@ -22,23 +21,21 @@ namespace tc
     }
 
     void CustomTabBtn::SetSelectedFontColor(const std::string &color) {
-        boost::format style(R"(
-		QPushButton {
-            background:none;
-            border: none; 
-            color: '%1%';
-        }
+        auto style = std::format(R"(
+            QPushButton {{
+                background:none;
+                border: none;
+                color: {};
+            }}
 
-        QPushButton:hover { 
-            
-        }
-        QPushButton:pressed{ 
-            
-        }	
-	)");
-        style % color;
+            QPushButton:hover {{
 
-        this->setStyleSheet(style.str().c_str());
+            }}
+            QPushButton:pressed{{
+
+            }}
+        )", color);
+        this->setStyleSheet(style.c_str());
     }
 
     void CustomTabBtn::mousePressEvent(QMouseEvent *event) {

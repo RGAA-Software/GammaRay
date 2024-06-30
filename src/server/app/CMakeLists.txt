@@ -1,3 +1,6 @@
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Core5Compat)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Core5Compat)
+
 if (WIN32)
     add_library(app_manager
         app_manager.cpp
@@ -11,6 +14,7 @@ if (WIN32)
         win/win_event_replayer.cpp
     )
     target_link_libraries(app_manager fftw3)
+    target_link_libraries(app_manager Qt6::Core Qt6::Core5Compat)
 elseif (APPLE)
 
 elseif (UNIX)
