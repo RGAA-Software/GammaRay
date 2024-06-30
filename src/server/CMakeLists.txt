@@ -9,8 +9,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-# C:\source\vcpkg\installed\x64-windows-static\lib
-#link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)

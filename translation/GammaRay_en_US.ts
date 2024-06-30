@@ -270,37 +270,37 @@
 <context>
     <name>tc::TabGame</name>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="53"/>
+        <location filename="../src/ui/tab_game.cpp" line="51"/>
         <source>Add Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="63"/>
+        <location filename="../src/ui/tab_game.cpp" line="61"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="124"/>
+        <location filename="../src/ui/tab_game.cpp" line="119"/>
         <source>Game Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="125"/>
+        <location filename="../src/ui/tab_game.cpp" line="120"/>
         <source>Start Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="126"/>
+        <location filename="../src/ui/tab_game.cpp" line="121"/>
         <source>Stop Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="127"/>
+        <location filename="../src/ui/tab_game.cpp" line="122"/>
         <source>Installed Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_game.cpp" line="147"/>
+        <location filename="../src/ui/tab_game.cpp" line="141"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -308,72 +308,72 @@
 <context>
     <name>tc::TabServer</name>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="75"/>
+        <location filename="../src/ui/tab_server.cpp" line="72"/>
         <source>Machine Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="127"/>
+        <location filename="../src/ui/tab_server.cpp" line="124"/>
         <source>ViGEm Driver Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="140"/>
+        <location filename="../src/ui/tab_server.cpp" line="137"/>
         <source>INSTALL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="146"/>
+        <location filename="../src/ui/tab_server.cpp" line="143"/>
         <source>Install ViGEm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="146"/>
+        <location filename="../src/ui/tab_server.cpp" line="143"/>
         <source>Do you want to install ViGEm?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="166"/>
+        <location filename="../src/ui/tab_server.cpp" line="163"/>
         <source>Server Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="179"/>
+        <location filename="../src/ui/tab_server.cpp" line="176"/>
         <source>RESTART</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="186"/>
+        <location filename="../src/ui/tab_server.cpp" line="183"/>
         <source>Restart Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="186"/>
+        <location filename="../src/ui/tab_server.cpp" line="183"/>
         <source>Do you want to restart server?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="214"/>
+        <location filename="../src/ui/tab_server.cpp" line="211"/>
         <source>Detected IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="246"/>
+        <location filename="../src/ui/tab_server.cpp" line="243"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="270"/>
+        <location filename="../src/ui/tab_server.cpp" line="267"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="294"/>
+        <location filename="../src/ui/tab_server.cpp" line="291"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="317"/>
+        <location filename="../src/ui/tab_server.cpp" line="314"/>
         <source>Audio Spectrum</source>
         <translation type="unfinished"></translation>
     </message>
