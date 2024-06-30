@@ -5,8 +5,7 @@
 #include "context.h"
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <QApplication>
 
 namespace tc
 {
@@ -33,8 +32,7 @@ namespace tc
     }
 
     std::string Context::GetCurrentExeFolder() {
-        auto exe_folder_path = boost::filesystem::initial_path<boost::filesystem::path>();
-        return exe_folder_path.string();
+        return QCoreApplication::applicationDirPath().toStdString();
     }
 
 }

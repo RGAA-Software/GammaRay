@@ -12,12 +12,9 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
-#include <boost/format.hpp>
 #include <utility>
 #include <QPushButton>
 #include <QComboBox>
-
-#include <boost/format.hpp>
 #include "gr_context.h"
 #include "gr_settings.h"
 #include "widgets/main_item_delegate.h"

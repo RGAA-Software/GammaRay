@@ -19,8 +19,9 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/win32/win_helper.h"
 #include "tc_steam_manager_new/steam_manager.h"
-
 #include <shellapi.h>
+#include <QList>
+#include <QString>
 
 #pragma comment(lib, "Shell32.lib")
 
@@ -122,11 +123,14 @@ namespace tc
 #endif
         std::vector<std::string> args;
         auto u8_exec = StringExt::ToUTF8(exec);
-        boost::algorithm::split(args, settings_->app_.game_arguments_, boost::is_any_of(" "));
-        std::erase_if(args, [](std::string& arg) -> bool {
-            boost::trim(arg);
-            return arg.empty();
-        });
+        auto game_args = QString::fromStdString(settings_->app_.game_arguments_);
+        auto split_game_args = game_args.split(' ');
+        for (const auto& arg: split_game_args) {
+            if (!arg.trimmed().isEmpty()) {
+                args.push_back(arg.toStdString());
+            }
+        }
+
         LOGI("we will use normal method to start, exe: {}", u8_exec);
         target_pid_ = ProcessUtil::StartProcess(u8_exec, args, true, false);
         LOGI("After started, the pid is: {}", target_pid_);
@@ -169,11 +173,13 @@ namespace tc
 
         std::vector<std::string> args;
         auto u8_exec = StringExt::ToUTF8(exec);
-        boost::algorithm::split(args, settings_->app_.game_arguments_, boost::is_any_of(" "));
-        std::erase_if(args, [](std::string& arg) -> bool {
-            boost::trim(arg);
-            return arg.empty();
-        });
+        auto game_args = QString::fromStdString(settings_->app_.game_arguments_);
+        auto split_game_args = game_args.split(' ');
+        for (const auto& arg: split_game_args) {
+            if (!arg.trimmed().isEmpty()) {
+                args.push_back(arg.toStdString());
+            }
+        }
         LOGI("we will use normal method to start, exe: {}", u8_exec);
         target_pid_ = ProcessUtil::StartProcess(u8_exec, args, true, false);
         return ret;

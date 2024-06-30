@@ -16,6 +16,7 @@
 #include "gr_server_manager.h"
 #include "gr_run_game_manager.h"
 #include "app_messages.h"
+#include <QApplication>
 
 using namespace nlohmann;
 
@@ -160,6 +161,10 @@ namespace tc
 
     std::shared_ptr<GrRunGameManager> GrContext::GetRunGameManager() {
         return run_game_manager_;
+    }
+
+    std::string GrContext::GetCurrentExeFolder() {
+        return QCoreApplication::applicationDirPath().toStdString();
     }
 
 }

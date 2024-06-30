@@ -155,13 +155,7 @@ int main(int argc, char** argv) {
     // start application
     tc::AppParams params = {};
     auto app = tc::Application::Make(params);
+    app->Init(argc, argv);
     app->CaptureControlC();
-
-    //
-    auto task = AppMessageMaker::MakeTaskMessage([]() {
-        LOGI("Server started...");
-    });
-    app->PostGlobalAppMessage(std::move(task));
-
     return app->Run();
 }

@@ -5,7 +5,7 @@
 #ifndef TC_APPLICATION_SERVER_CAST_H
 #define TC_APPLICATION_SERVER_CAST_H
 
-#include <asio2/udp/udp_cast.hpp>
+#include <memory>
 
 namespace tc
 {
@@ -15,17 +15,15 @@ namespace tc
     class ServerCast {
     public:
 
-        static std::shared_ptr<ServerCast> Make(std::shared_ptr<Context>& app);
+        static std::shared_ptr<ServerCast> Make(std::shared_ptr<Context>& ctx);
 
-        explicit ServerCast(const std::shared_ptr<Context>& app);
+        explicit ServerCast(const std::shared_ptr<Context>& ctx);
         void Start();
-        void CastMessage(const std::string& msg);
         void Stop();
 
     private:
+        std::shared_ptr<Context> context_ = nullptr;
 
-        std::shared_ptr<Context> app_ = nullptr;
-        std::shared_ptr<asio2::udp_cast> udp_cast_ = nullptr;
     };
 
 }
