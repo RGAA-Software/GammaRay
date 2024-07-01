@@ -43,8 +43,7 @@ else()
     #
 endif()
 
-target_link_libraries(main app_manager tc_message)
-target_link_libraries(main Dexode::EventBus ZLIB::ZLIB ${OpenCV_LIBS})
+target_link_libraries(main app_manager tc_message Dexode::EventBus)
 target_link_libraries(main Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Multimedia)
 
