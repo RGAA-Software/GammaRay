@@ -36,18 +36,13 @@ add_library(${PROJECT_NAME}_lib ${SRCS})
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} ${WEBRTC_ROOT}/lib/win64/webrtc.lib
             Winmm ws2_32 Secur32 Crypt32 Msdmo dmoguids tc_common_new
-            wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32 ${OpenCV_LIBS}
+            wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32
     )
 
     target_link_libraries(${PROJECT_NAME}_lib ${WEBRTC_ROOT}/lib/win64/webrtc.lib
             Winmm ws2_32 Secur32 Crypt32 Msdmo dmoguids tc_common_new
-            wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32 ${OpenCV_LIBS}
+            wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32
     )
-
-#    add_library(tc_dyn_rtc
-#        dyn_webrtc_server_api.cpp
-#    )
-#    target_link_libraries(tc_dyn_rtc ${OpenCV_LIBS} )
 
 elseif (APPLE)
 
@@ -56,4 +51,4 @@ elseif (UNIX)
 endif ()
 
 add_executable(test_webrtc test/test_webrtc.cpp)
-target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib ${OpenCV_LIBS} ${FFMPEG_LIBRARIES})
+target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib ${FFMPEG_LIBRARIES})
