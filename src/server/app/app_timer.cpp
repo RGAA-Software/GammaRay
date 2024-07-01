@@ -4,7 +4,6 @@
 
 #include "app_timer.h"
 #include "context.h"
-#include "tc_common_new/timer.h"
 #include "app/app_messages.h"
 #include "tc_common_new/log.h"
 

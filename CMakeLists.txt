@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 include(env_settings.cmake)
+set(VCPKG_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/vcpkg)
 set(CMAKE_PREFIX_PATH ${QT_ROOT}/lib/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
@@ -32,6 +33,7 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/sqlite_orm/include)
+include_directories(${VCPKG_ROOT}/installed/x64-windows-static/include)
 
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${VCPKG_ROOT}/packages/poco_x64-windows-static/lib)
