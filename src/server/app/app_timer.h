@@ -14,7 +14,6 @@ namespace tc
 {
 
     class Context;
-    class AsyncTimer;
 
     enum AppTimerDuration {
         kTimerDuration1000 = 1000,

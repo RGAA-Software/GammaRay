@@ -9,7 +9,6 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/file_ext.h"
 #include "tc_common_new/log.h"
-#include "easyhook/easyhook.h"
 #include "context.h"
 #include "settings/settings.h"
 #include "app/steam_game.h"
