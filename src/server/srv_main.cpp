@@ -126,8 +126,12 @@ void UpdateSettings(Settings* settings) {
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
 
     // app
-    settings->app_.game_path_ = FLAGS_app_game_path;
-    settings->app_.game_arguments_ = FLAGS_app_game_args;
+    if (!FLAGS_app_game_path.empty()) {
+        settings->app_.game_path_ = FLAGS_app_game_path;
+    }
+    if (!FLAGS_app_game_args.empty()) {
+        settings->app_.game_arguments_ = FLAGS_app_game_args;
+    }
 }
 
 int main(int argc, char** argv) {

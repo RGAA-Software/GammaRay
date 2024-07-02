@@ -115,8 +115,10 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer tc_capture_library tc_graphics tc_graphics_util
-        tc_message tc_graphics_helper tc_vigem)
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer tc_message tc_vigem)
+if(ENABLE_HOOK_CAPTURE)
+    add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
+endif ()
 
 add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}"

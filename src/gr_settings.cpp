@@ -82,6 +82,8 @@ namespace tc
         args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listen_port_));
         args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
+        args.push_back(std::format("--{}={}", kStAppGamePath, "desktop"));
+        args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
         return args;
     }
 
