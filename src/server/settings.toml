@@ -57,10 +57,10 @@ listening-port = 20371
 # 2.steam://rungameid/xxx
 # 3.steam://open/bigpicture Steam Big Picture Mode
 
-#game-path = "D:\\Game\\dai_sen_qiu_ji_hua\\A1738 V0.9.27.15033\\Dyson Sphere Program\\DSPGAME.exe"
+game-path = "D:/Game/Dyson Sphere Program/DSPGAME.exe"
 # Steam BIG Picture Mode
 #game-path = "steam://open/bigpicture"
-game-path = "C:/software/u3d_demo/u3d_demo/u3d_shared_window_demo.exe"
+#game-path = "C:/software/u3d_demo/u3d_demo/u3d_shared_window_demo.exe"
 
 #
 game-arguments = ""
