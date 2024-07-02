@@ -27,7 +27,7 @@ DEFINE_int32(encoder_height, 720, "");
 DEFINE_bool(capture_audio, true, "");
 DEFINE_string(capture_audio_type, "global", "hook/global");
 DEFINE_bool(capture_video, true, "");
-DEFINE_string(capture_video_type, "global", "hook/global");
+DEFINE_string(capture_video_type, "hook", "hook/global");
 
 // network
 DEFINE_string(network_type, "websocket", "");
