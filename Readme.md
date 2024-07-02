@@ -43,4 +43,5 @@
     11. .\vcpkg.exe install fftw3:x64-windows
     12. .\vcpkg.exe install poco:x64-windows-static
     13. .\vcpkg.exe install easyhook:x64-windows
+    14. .\vcpkg.exe install glm:x64-windows
 ```

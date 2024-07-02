@@ -287,20 +287,24 @@ namespace tc
 
     void AppManagerWinImpl::InjectCaptureDllForNormalApp() {
         if (target_pid_ <= 0) {
-            //LOGW("running pid：{} is invalid for : {}", target_pid_, settings_->app_.game_path_);
             return;
         }
 
         auto processes = ProcessHelper::GetProcessList();
-        ProcessInfoPtr target_process_info;
+        ProcessInfoPtr target_process_info = nullptr;
         for (const auto& process : processes) {
             if (process->pid_ == target_pid_) {
                 target_process_info = process;
                 auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
-                //LOGI("Find the pid: {}, exe : {}", process.pid_, process.exe_name_);
+                //LOGI("Find the pid: {}, exe : {}", process->pid_, process_exe_name);
                 break;
             }
         }
+        if (!target_process_info) {
+            LOGI("Can't find process info now: {}", target_pid_);
+            return;
+        }
+
         if (!target_process_info->Valid()) {
             auto target_exe_name = FileExt::GetFileNameFromPath(settings_->app_.game_path_);
             LOGE("Can't find app to inject, pid: {}, search for by exe: {}", target_pid_, target_exe_name);
@@ -308,7 +312,7 @@ namespace tc
             for (const auto& process : processes) {
                 auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
                 if (process_exe_name == target_exe_name) {
-                    //LOGI("find target process exe: {}, pid: {}", target_exe_name, pid_by_exe);
+                    LOGI("find target process exe: {}, pid: {}", target_exe_name, pid_by_exe);
                     pid_by_exe = process->pid_;
                     break;
                 }
@@ -328,7 +332,7 @@ namespace tc
             auto result = WinHelper::IsDllInjected(target_process_info->pid_, kX86DllName, kX64DllName);
             auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info->exe_full_path_);
             if (result.ok_ && result.value_) {
-                //LOGI("Pid: {} for: {} is already injected....", target_process_info.pid_, process_exe_name);
+                LOGI("Pid: {} for: {} is already injected....", target_process_info->pid_, process_exe_name);
                 return;
             } else {
                 LOGI("Not injected, will inject for pid: {}, exe: {}", target_process_info->pid_, process_exe_name);
