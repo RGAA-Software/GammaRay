@@ -46,6 +46,9 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/util/qt_directory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util/dxgi_mon_detector.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/theme/QtAdvancedStylesheet.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/transfer/file_transfer.cpp
+
         PARENT_SCOPE
 )
 

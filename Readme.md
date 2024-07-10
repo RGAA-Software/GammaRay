@@ -30,18 +30,22 @@
 ```
 - 2.3 Install dependences
 ```c++
-    1. .\vcpkg.exe install openssl:x64-windows
-    2. .\vcpkg.exe install gflags:x64-windows
-    3. .\vcpkg.exe install sqlite3:x64-windows
-    4. .\vcpkg.exe install libyuv:x64-windows
-    5. .\vcpkg.exe install detours:x64-windows
-    6. .\vcpkg.exe install gtest:x64-windows
-    7. .\vcpkg.exe install libvpx:x64-windows
-    8. .\vcpkg.exe install opus:x64-windows
-    9. .\vcpkg.exe install protobuf:x64-windows
-    10. .\vcpkg.exe install ffmpeg:x64-windows
-    11. .\vcpkg.exe install fftw3:x64-windows
-    12. .\vcpkg.exe install poco:x64-windows-static
-    13. .\vcpkg.exe install easyhook:x64-windows
-    14. .\vcpkg.exe install glm:x64-windows
+    .\vcpkg.exe install openssl:x64-windows
+    .\vcpkg.exe install gflags:x64-windows
+    .\vcpkg.exe install sqlite3:x64-windows
+    .\vcpkg.exe install libyuv:x64-windows
+    .\vcpkg.exe install detours:x64-windows
+    .\vcpkg.exe install gtest-:x64-windows
+    .\vcpkg.exe install libvpx:x64-windows
+    .\vcpkg.exe install opus:x64-windows
+    .\vcpkg.exe install protobuf:x64-windows
+    .\vcpkg.exe install ffmpeg:x64-windows
+    .\vcpkg.exe install fftw3:x64-windows
+    .\vcpkg.exe install poco:x64-windows-static
+    .\vcpkg.exe install easyhook:x64-windows
+    .\vcpkg.exe install glm:x64-windows
+    .\vcpkg install boost:x64-windows
 ```
+
+1. https://github.com/microsoft/vcpkg/issues/36858
+2. change c++17 -> c++20
