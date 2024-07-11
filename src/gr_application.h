@@ -20,7 +20,7 @@ namespace tc
     class GrServerManager;
     class GrSettings;
     class GrSystemMonitor;
-    class FileTransfer;
+    class FileTransferChannel;
 
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -39,7 +39,7 @@ namespace tc
         std::shared_ptr<WSServer> ws_server_ = nullptr;
         std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
         std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;
-        std::shared_ptr<FileTransfer> file_transfer_ = nullptr;
+        std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;
 
