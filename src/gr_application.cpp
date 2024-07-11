@@ -15,6 +15,7 @@
 #include "gr_system_monitor.h"
 #include "gr_statistics.h"
 #include "util/qt_directory.h"
+#include "transfer/file_transfer.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -64,6 +65,9 @@ namespace tc
             udp_broadcaster_->Broadcast(broadcast_msg);
         });
         timer_->start(1000);
+
+        file_transfer_ = FileTransfer::Make(context_);
+        file_transfer_->Start();
 
     }
 
