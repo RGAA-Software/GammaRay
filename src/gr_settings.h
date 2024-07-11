@@ -91,6 +91,8 @@ namespace tc
         std::string network_type_;
         int network_listen_port_{};
 
+        int file_transfer_port_ = 20372;
+        std::string file_transfer_path_ = "/file/transfer";
     };
 
 }
