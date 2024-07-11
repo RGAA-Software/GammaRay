@@ -66,7 +66,7 @@ namespace tc
         });
         timer_->start(1000);
 
-        file_transfer_ = FileTransfer::Make(context_);
+        file_transfer_ = FileTransferChannel::Make(context_);
         file_transfer_->Start();
 
     }
