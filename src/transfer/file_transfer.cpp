@@ -7,6 +7,7 @@
 #include "gr_context.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
+#include "tc_common_new/thread.h"
 
 namespace tc
 {
@@ -18,16 +19,34 @@ namespace tc
     FileTransferChannel::FileTransferChannel(const std::shared_ptr<GrContext> &ctx) {
         context_ = ctx;
         settings_ = GrSettings::Instance();
+        thread_ = Thread::Make("file transfer sender", 8192);
+        thread_->Poll();
     }
 
     void FileTransferChannel::Start() {
         server_ = std::make_shared<asio2::ws_server>();
         server_->bind_accept([=, this](std::shared_ptr<asio2::ws_session> &session_ptr) {
+            // accept callback maybe has error like "Too many open files", etc...
             if (!asio2::get_last_error()) {
                 session_ = session_ptr;
+                session_ptr->ws_stream().binary(true);
+
+                // how to set custom websocket response data :
+                // the decorator is just a callback function, when the upgrade response is send,
+                // this callback will be called.
+                session_ptr->ws_stream().set_option(
+                        websocket::stream_base::decorator([session_ptr](websocket::response_type &rep) {
+                            // @see /asio2/example/websocket/client/websocket_client.cpp
+                            const websocket::request_type &req = session_ptr->get_upgrade_request();
+                            auto it = req.find(http::field::authorization);
+                            if (it != req.end())
+                                rep.set(http::field::authentication_results, "200 OK");
+                            else
+                                rep.set(http::field::authentication_results, "401 unauthorized");
+                        }));
             } else {
-                LOGE("error occurred when calling the accept function : {} -> {}", asio2::get_last_error_val(),
-                     asio2::get_last_error_msg().data());
+                printf("error occurred when calling the accept function : %d %s\n",
+                       asio2::get_last_error_val(), asio2::get_last_error_msg().data());
             }
         }).bind_recv([&](auto &session_ptr, std::string_view data) {
             ParseMessage(data);
@@ -57,7 +76,7 @@ namespace tc
             LOGE("Parse proto message failed");
             return;
         }
-        LOGI("Received type: {}", (int)msg->type());
+        LOGI("Received type: {}", (int) msg->type());
         if (msg->type() == MessageType::kFileTransfer) {
             auto fs = msg->file_transfer();
             if (fs.state() == FileTransfer_FileTransferState_kRequestFileTransfer) {
@@ -68,21 +87,23 @@ namespace tc
                 resp_msg.mutable_resp_file_transfer()->set_state(RespFileTransfer_FileTransferRespState_kTransferReady);
                 auto proto_msg = resp_msg.SerializeAsString();
                 // 导致出问题
-                //PostBinaryMessage(proto_msg);
+                PostBinaryMessage(proto_msg);
 
             } else if (fs.state() == FileTransfer_FileTransferState_kTransferring) {
                 auto data_size = fs.data().size();
                 auto progress = data_size + fs.transferred_size();
                 auto total = fs.filesize();
-                LOGI("data size: {}, progress: {}", data_size, (progress*1.0f/total));
+                LOGI("data size: {}, progress: {}", data_size, (progress * 1.0f / total));
             }
         }
     }
 
-    void FileTransferChannel::PostBinaryMessage(const std::string& msg) {
-        if (session_ && server_ && server_->is_started()) {
-            LOGI("send back...");
-            session_->async_send(msg);
-        }
+    void FileTransferChannel::PostBinaryMessage(const std::string &msg) {
+        thread_->Post([=]() {
+            if (session_ && server_ && server_->is_started()) {
+                LOGI("send back...");
+                session_->async_send(msg);
+            }
+        });
     }
 }
