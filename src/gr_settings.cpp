@@ -6,8 +6,8 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/base64.h"
-
 #include <sstream>
+#include <QApplication>
 
 namespace tc
 {
@@ -37,6 +37,11 @@ namespace tc
         http_server_port_ = sp_->GetInt(kStHttpPort, 20368);
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
+
+        file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
+        if (file_transfer_folder_.empty()) {
+            file_transfer_folder_ = qApp->applicationDirPath().toStdString();
+        }
     }
 
     void GrSettings::Dump() {
@@ -142,6 +147,11 @@ namespace tc
 
     bool GrSettings::IsEncoderResTypeOrigin() const {
         return encoder_resolution_type_ == kResTypeOrigin;
+    }
+
+    void GrSettings::SetFileTransferFolder(const std::string& path) {
+        file_transfer_folder_ = path;
+        sp_->Put(kStFileTransferFolder, path);
     }
 
 }

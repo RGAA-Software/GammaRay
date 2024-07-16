@@ -14,6 +14,7 @@ namespace tc
     class GrContext;
     class GrSettings;
     class Thread;
+    class File;
 
     class FileTransferChannel {
     public:
@@ -31,7 +32,7 @@ namespace tc
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<asio2::ws_server> server_ = nullptr;
         std::shared_ptr<asio2::ws_session> session_ = nullptr;
-        std::shared_ptr<Thread> thread_ = nullptr;
+        std::shared_ptr<File> transferring_file_ = nullptr;
     };
 
 }
