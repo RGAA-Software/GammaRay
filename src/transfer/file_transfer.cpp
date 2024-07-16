@@ -25,40 +25,34 @@ namespace tc
     void FileTransferChannel::Start() {
         server_ = std::make_shared<asio2::ws_server>();
         server_->bind_accept([=, this](std::shared_ptr<asio2::ws_session> &session_ptr) {
-            // accept callback maybe has error like "Too many open files", etc...
             if (!asio2::get_last_error()) {
                 session_ = session_ptr;
                 session_ptr->ws_stream().binary(true);
-
-                // how to set custom websocket response data :
-                // the decorator is just a callback function, when the upgrade response is send,
-                // this callback will be called.
                 session_ptr->ws_stream().set_option(
-                        websocket::stream_base::decorator([session_ptr](websocket::response_type &rep) {
-                            // @see /asio2/example/websocket/client/websocket_client.cpp
-                            const websocket::request_type &req = session_ptr->get_upgrade_request();
-                            auto it = req.find(http::field::authorization);
-                            if (it != req.end())
-                                rep.set(http::field::authentication_results, "200 OK");
-                            else
-                                rep.set(http::field::authentication_results, "401 unauthorized");
-                        }));
+                    websocket::stream_base::decorator([session_ptr](websocket::response_type &rep) {
+                        const websocket::request_type &req = session_ptr->get_upgrade_request();
+                        auto it = req.find(http::field::authorization);
+                        if (it != req.end())
+                            rep.set(http::field::authentication_results, "200 OK");
+                        else
+                            rep.set(http::field::authentication_results, "401 unauthorized");
+                    }));
             } else {
                 printf("error occurred when calling the accept function : %d %s\n",
                        asio2::get_last_error_val(), asio2::get_last_error_msg().data());
             }
-        }).bind_recv([&](auto &session_ptr, std::string_view data) {
-            ParseMessage(data);
+        }).bind_recv([=](auto &session_ptr, std::string_view data) {
+            this->ParseMessage(data);
         }).bind_connect([](auto &session_ptr) {
 
         }).bind_disconnect([=](auto &session_ptr) {
-            asio2::ignore_unused(session_ptr);
+
         }).bind_upgrade([](auto &session_ptr) {
-            LOGI("File transfer upgrade");
+
         }).bind_start([&]() {
-            LOGI("File transfer start");
+
         }).bind_stop([&]() {
-            LOGI("File transfer stop");
+
         });
 
         server_->start("0.0.0.0", settings_->file_transfer_port_, settings_->file_transfer_listen_path_);
@@ -75,13 +69,23 @@ namespace tc
             LOGE("Parse proto message failed");
             return;
         }
-        LOGI("Received type: {}", (int) msg->type());
+
         if (msg->type() == MessageType::kFileTransfer) {
             auto fs = msg->file_transfer();
+
+            auto func_transfer_failed = [=, this]() {
+                tc::Message resp_msg;
+                resp_msg.set_type(MessageType::kRespFileTransfer);
+                auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
+                resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kTransferFailed);
+                resp_file_transfer->set_filename(fs.filename());
+                PostBinaryMessage(resp_msg.SerializeAsString());
+            };
+
             if (fs.state() == FileTransfer_FileTransferState_kRequestFileTransfer) {
                 // 1. check file state
                 auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
-                bool ready_to_transfer = false;
+                bool ready_to_transfer;
                 if (!QFile::exists(file_path.c_str())) {
                     ready_to_transfer = true;
                 } else {
@@ -96,30 +100,45 @@ namespace tc
                 // 2. response
                 tc::Message resp_msg;
                 resp_msg.set_type(MessageType::kRespFileTransfer);
+                auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
                 if (ready_to_transfer) {
-                    resp_msg.mutable_resp_file_transfer()->set_state(
-                            RespFileTransfer_FileTransferRespState_kTransferReady);
+                    resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kTransferReady);
                 } else {
-                    resp_msg.mutable_resp_file_transfer()->set_state(
-                            RespFileTransfer_FileTransferRespState_kFileDeleteFailed);
+                    resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kFileDeleteFailed);
                 }
+                resp_file_transfer->set_filename(fs.filename());
+                resp_file_transfer->set_local_filepath(fs.local_filepath());
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);
 
             } else if (fs.state() == FileTransfer_FileTransferState_kTransferring) {
                 auto data_size = fs.data().size();
-                auto progress = data_size + fs.transferred_size();
+                auto recv_size = data_size + fs.transferred_size();
                 auto total = fs.filesize();
-                LOGI("data size: {}, progress: {}", data_size, (progress * 1.0f / total));
+                auto progress = (recv_size * 1.0f / total);
+                LOGI("data size: {}, progress: {}", data_size, progress);
                 if (fs.transferred_size() == 0) {
                     auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
                     transferring_file_ = File::OpenForAppendB(file_path);
                 }
                 if (!transferring_file_ || !transferring_file_->IsOpen()) {
                     LOGE("File open failed: {}", settings_->file_transfer_folder_+"/"+fs.filename());
+                    func_transfer_failed();
                     return;
                 }
                 transferring_file_->Append(fs.data());
+
+                tc::Message resp_msg;
+                resp_msg.set_type(MessageType::kRespFileTransfer);
+                auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
+                resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kTransferring);
+                resp_file_transfer->set_filename(fs.filename());
+                resp_file_transfer->set_local_filepath(fs.local_filepath());
+                resp_file_transfer->set_filesize(fs.filesize());
+                resp_file_transfer->set_transferred_size(fs.transferred_size());
+                resp_file_transfer->set_progress(progress);
+                auto proto_msg = resp_msg.SerializeAsString();
+                PostBinaryMessage(proto_msg);
 
             }  else if (fs.state() == FileTransfer_FileTransferState_kTransferOver) {
                 LOGI("File transfer over: {}", fs.filename());
