@@ -31,6 +31,7 @@ namespace tc
     static const std::string kStWsPort = "k_ws_port";
     static const std::string kStCaptureMonitor = "capture_monitor";
     static const std::string kStCaptureAudioDevice = "capture_audio_device";
+    static const std::string kStFileTransferFolder = "file_transfer_folder";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -64,6 +65,7 @@ namespace tc
         void SetCaptureMonitor(const std::string& name);
         void SetCaptureAudioDevice(const std::string& name);
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
+        void SetFileTransferFolder(const std::string& path);
 
     public:
         SharedPreference* sp_ = nullptr;
@@ -92,7 +94,8 @@ namespace tc
         int network_listen_port_{};
 
         int file_transfer_port_ = 20372;
-        std::string file_transfer_path_ = "/file/transfer";
+        std::string file_transfer_listen_path_ = "/file/transfer";
+        std::string file_transfer_folder_;
     };
 
 }

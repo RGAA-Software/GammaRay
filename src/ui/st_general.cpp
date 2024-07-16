@@ -19,17 +19,27 @@
 #include <QDebug>
 #include <QAudioDevice>
 #include <QMediaDevices>
+#include <QFileDialog>
 
 namespace tc
 {
 
     StGeneral::StGeneral(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
-        auto root_layout = new NoMarginVLayout();
+        auto root_layout = new NoMarginHLayout();
+        auto column1_layout = new NoMarginVLayout();
+        root_layout->addLayout(column1_layout);
+
+        auto column2_layout = new NoMarginVLayout();
+        root_layout->addSpacing(40);
+        root_layout->addLayout(column2_layout);
+
+        root_layout->addStretch();
+
         // segment encoder
         auto tips_label_width = 220;
         auto tips_label_height = 35;
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
-        auto input_size = QSize(240, tips_label_height-5);
+        auto input_size = QSize(240, tips_label_height);
 
         {
             auto segment_layout = new NoMarginVLayout();
@@ -156,7 +166,7 @@ namespace tc
 
             func_set_res_edit_enabled(!settings_->IsEncoderResTypeOrigin());
 
-            root_layout->addLayout(segment_layout);
+            column1_layout->addLayout(segment_layout);
         }
         {
             auto segment_layout = new NoMarginVLayout();
@@ -295,7 +305,7 @@ namespace tc
                     settings_->SetCaptureAudioDevice(target_device_id);
                 });
             }
-            root_layout->addLayout(segment_layout);
+            column1_layout->addLayout(segment_layout);
         }
 
         {
@@ -380,7 +390,7 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
             }
-            root_layout->addLayout(segment_layout);
+            column1_layout->addLayout(segment_layout);
         }
 
         {
@@ -426,17 +436,69 @@ namespace tc
                 settings_->Load();
 
                 // Save success dialog
-                auto msg_box = SizedMessageBox::MakeOkBox(tr("Save Success"), tr("Save settings success! You need to RESTART server."));
+                auto msg_box = SizedMessageBox::MakeOkBox(tr("Save Success"), tr("Save settings success! You may RESTART server."));
                 msg_box->exec();
             });
 
             layout->addStretch();
-            root_layout->addSpacing(30);
-            root_layout->addLayout(layout);
+            column1_layout->addSpacing(30);
+            column1_layout->addLayout(layout);
+        }
+        column1_layout->addStretch();
+
+        // column 2
+        {
+            auto segment_layout = new NoMarginVLayout();
+            {
+                // title
+                auto label = new QLabel(this);
+                label->setText(tr("File Transfer"));
+                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+                segment_layout->addSpacing(20);
+                segment_layout->addWidget(label);
+            }
+            // default transfer folder
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Default Transfer Folder"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                edit->setFixedSize(QSize(360, 35));
+                edit->setText(settings_->file_transfer_folder_.c_str());
+                layout->addWidget(edit);
+
+                auto btn = new QPushButton(this);
+                btn->setFixedSize(120, 35);
+                btn->setText("Select");
+                connect(btn, &QPushButton::clicked, this, [=]() {
+                    QString filename = QFileDialog::getExistingDirectory();
+                    if (filename.isEmpty()) {
+                        return;
+                    }
+                    edit->setText(filename);
+                    settings_->SetFileTransferFolder(filename.toStdString());
+                });
+                layout->addSpacing(20);
+                layout->addWidget(btn);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+
+            }
+            {
+
+            }
+            column2_layout->addLayout(segment_layout);
+
+            column2_layout->addStretch();
         }
 
-        root_layout->addStretch();
         setLayout(root_layout);
+
     }
 
     void StGeneral::OnTabShow() {

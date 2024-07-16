@@ -8,6 +8,7 @@
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/thread.h"
+#include "tc_common_new/file.h"
 
 namespace tc
 {
@@ -19,8 +20,6 @@ namespace tc
     FileTransferChannel::FileTransferChannel(const std::shared_ptr<GrContext> &ctx) {
         context_ = ctx;
         settings_ = GrSettings::Instance();
-        thread_ = Thread::Make("file transfer sender", 8192);
-        thread_->Poll();
     }
 
     void FileTransferChannel::Start() {
@@ -62,7 +61,7 @@ namespace tc
             LOGI("File transfer stop");
         });
 
-        server_->start("0.0.0.0", settings_->file_transfer_port_, settings_->file_transfer_path_);
+        server_->start("0.0.0.0", settings_->file_transfer_port_, settings_->file_transfer_listen_path_);
     }
 
     void FileTransferChannel::Exit() {
@@ -81,12 +80,30 @@ namespace tc
             auto fs = msg->file_transfer();
             if (fs.state() == FileTransfer_FileTransferState_kRequestFileTransfer) {
                 // 1. check file state
+                auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
+                bool ready_to_transfer = false;
+                if (!QFile::exists(file_path.c_str())) {
+                    ready_to_transfer = true;
+                } else {
+                    if (File::Delete(file_path)) {
+                        ready_to_transfer = true;
+                    } else {
+                        ready_to_transfer = false;
+                        LOGE("Delete file failed: {}", file_path);
+                    }
+                }
+
                 // 2. response
                 tc::Message resp_msg;
                 resp_msg.set_type(MessageType::kRespFileTransfer);
-                resp_msg.mutable_resp_file_transfer()->set_state(RespFileTransfer_FileTransferRespState_kTransferReady);
+                if (ready_to_transfer) {
+                    resp_msg.mutable_resp_file_transfer()->set_state(
+                            RespFileTransfer_FileTransferRespState_kTransferReady);
+                } else {
+                    resp_msg.mutable_resp_file_transfer()->set_state(
+                            RespFileTransfer_FileTransferRespState_kFileDeleteFailed);
+                }
                 auto proto_msg = resp_msg.SerializeAsString();
-                // 导致出问题
                 PostBinaryMessage(proto_msg);
 
             } else if (fs.state() == FileTransfer_FileTransferState_kTransferring) {
@@ -94,16 +111,36 @@ namespace tc
                 auto progress = data_size + fs.transferred_size();
                 auto total = fs.filesize();
                 LOGI("data size: {}, progress: {}", data_size, (progress * 1.0f / total));
+                if (fs.transferred_size() == 0) {
+                    auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
+                    transferring_file_ = File::OpenForAppendB(file_path);
+                }
+                if (!transferring_file_ || !transferring_file_->IsOpen()) {
+                    LOGE("File open failed: {}", settings_->file_transfer_folder_+"/"+fs.filename());
+                    return;
+                }
+                transferring_file_->Append(fs.data());
+
+            }  else if (fs.state() == FileTransfer_FileTransferState_kTransferOver) {
+                LOGI("File transfer over: {}", fs.filename());
+                if (transferring_file_ && transferring_file_->IsOpen()) {
+                    transferring_file_.reset();
+                    transferring_file_ = nullptr;
+                }
+
+                tc::Message resp_msg;
+                resp_msg.set_type(MessageType::kRespFileTransfer);
+                resp_msg.mutable_resp_file_transfer()->set_state(RespFileTransfer_FileTransferRespState_kTransferSuccess);
+                auto proto_msg = resp_msg.SerializeAsString();
+                PostBinaryMessage(proto_msg);
             }
         }
     }
 
     void FileTransferChannel::PostBinaryMessage(const std::string &msg) {
-        thread_->Post([=]() {
-            if (session_ && server_ && server_->is_started()) {
-                LOGI("send back...");
-                session_->async_send(msg);
-            }
-        });
+        if (session_ && server_ && server_->is_started()) {
+            LOGI("send back...");
+            session_->async_send(msg);
+        }
     }
 }
