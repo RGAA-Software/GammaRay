@@ -46,7 +46,10 @@ namespace tc
         }).bind_connect([](auto &session_ptr) {
 
         }).bind_disconnect([=](auto &session_ptr) {
-
+            if (transferring_file_) {
+                transferring_file_.reset();
+                transferring_file_ = nullptr;
+            }
         }).bind_upgrade([](auto &session_ptr) {
 
         }).bind_start([&]() {
@@ -77,12 +80,13 @@ namespace tc
                 tc::Message resp_msg;
                 resp_msg.set_type(MessageType::kRespFileTransfer);
                 auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
-                resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kTransferFailed);
+                resp_file_transfer->set_id(fs.id());
+                resp_file_transfer->set_state(RespFileTransfer::kTransferFailed);
                 resp_file_transfer->set_filename(fs.filename());
                 PostBinaryMessage(resp_msg.SerializeAsString());
             };
 
-            if (fs.state() == FileTransfer_FileTransferState_kRequestFileTransfer) {
+            if (fs.state() == FileTransfer::kRequestFileTransfer) {
                 // 1. check file state
                 auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
                 bool ready_to_transfer;
@@ -101,22 +105,23 @@ namespace tc
                 tc::Message resp_msg;
                 resp_msg.set_type(MessageType::kRespFileTransfer);
                 auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
+                resp_file_transfer->set_id(fs.id());
                 if (ready_to_transfer) {
-                    resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kTransferReady);
+                    resp_file_transfer->set_state(RespFileTransfer::kTransferReady);
                 } else {
-                    resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kFileDeleteFailed);
+                    resp_file_transfer->set_state(RespFileTransfer::kFileDeleteFailed);
                 }
                 resp_file_transfer->set_filename(fs.filename());
                 resp_file_transfer->set_local_filepath(fs.local_filepath());
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);
 
-            } else if (fs.state() == FileTransfer_FileTransferState_kTransferring) {
+            } else if (fs.state() == FileTransfer::kTransferring) {
                 auto data_size = fs.data().size();
                 auto recv_size = data_size + fs.transferred_size();
                 auto total = fs.filesize();
                 auto progress = (recv_size * 1.0f / total);
-                LOGI("data size: {}, progress: {}", data_size, progress);
+                //LOGI("data size: {}, progress: {}", data_size, progress);
                 if (fs.transferred_size() == 0) {
                     auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
                     transferring_file_ = File::OpenForAppendB(file_path);
@@ -131,7 +136,8 @@ namespace tc
                 tc::Message resp_msg;
                 resp_msg.set_type(MessageType::kRespFileTransfer);
                 auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
-                resp_file_transfer->set_state(RespFileTransfer_FileTransferRespState_kTransferring);
+                resp_file_transfer->set_id(fs.id());
+                resp_file_transfer->set_state(RespFileTransfer::kTransferring);
                 resp_file_transfer->set_filename(fs.filename());
                 resp_file_transfer->set_local_filepath(fs.local_filepath());
                 resp_file_transfer->set_filesize(fs.filesize());
@@ -140,7 +146,7 @@ namespace tc
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);
 
-            }  else if (fs.state() == FileTransfer_FileTransferState_kTransferOver) {
+            }  else if (fs.state() == FileTransfer::kTransferOver) {
                 LOGI("File transfer over: {}", fs.filename());
                 if (transferring_file_ && transferring_file_->IsOpen()) {
                     transferring_file_.reset();
@@ -149,7 +155,9 @@ namespace tc
 
                 tc::Message resp_msg;
                 resp_msg.set_type(MessageType::kRespFileTransfer);
-                resp_msg.mutable_resp_file_transfer()->set_state(RespFileTransfer_FileTransferRespState_kTransferSuccess);
+                auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
+                resp_file_transfer->set_id(fs.id());
+                resp_file_transfer->set_state(RespFileTransfer::kTransferSuccess);
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);
             }
@@ -158,7 +166,6 @@ namespace tc
 
     void FileTransferChannel::PostBinaryMessage(const std::string &msg) {
         if (session_ && server_ && server_->is_started()) {
-            LOGI("send back...");
             session_->async_send(msg);
         }
     }
