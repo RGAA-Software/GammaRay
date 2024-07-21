@@ -1,5 +1,5 @@
 //
-// Created by hy on 8/07/2024.
+// Created by RGAA  on 8/07/2024.
 //
 
 #ifndef GAMMARAY_FILETRANSFER_H

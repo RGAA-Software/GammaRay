@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/6/4.
+// Created by RGAA  on 2024/6/4.
 //
 
 #ifndef GAMMARAY_QT_DIRECTORY_H

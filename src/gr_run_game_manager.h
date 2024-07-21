@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/4/26.
+// Created by RGAA  on 2024/4/26.
 //
 
 #ifndef GAMMARAY_GR_RUN_GAME_MANAGER_H

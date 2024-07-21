@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/5/20.
+// Created by RGAA  on 2024/5/20.
 //
 
 #include "game_info_preview.h"

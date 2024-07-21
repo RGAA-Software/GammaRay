@@ -1,5 +1,5 @@
 //
-// Created by Administrator on 2024/2/12.
+// Created by RGAA  on 2024/2/12.
 //
 
 #include "win_event_replayer.h"
@@ -10,10 +10,10 @@
 
 namespace tc
 {
-    const UINT32 kExtendedKeys[] = {
-            VK_RCONTROL, VK_RMENU, VK_RETURN, VK_DIVIDE, VK_LWIN,
-            VK_RWIN, VK_HOME, VK_PRIOR, VK_NEXT, VK_END, VK_INSERT,
-            VK_DELETE, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_NUMLOCK
+    const uint32_t kExtendedKeys[] = {
+        VK_DELETE, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_NUMLOCK,
+        VK_RCONTROL, VK_RMENU, VK_RETURN, VK_DIVIDE, VK_LWIN,
+        VK_RWIN, VK_HOME, VK_PRIOR, VK_NEXT, VK_END, VK_INSERT,
     };
 
     void WinSendEvent(INPUT* input) {
