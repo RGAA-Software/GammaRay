@@ -9,7 +9,7 @@
 - Android client for playing game
 - PC clients for Remote Controller(such as TeamViewer, VNC)
 - Extend a screen by (Graphics Card Spoof)/(HDMI DDC EDID Dummy Plug)
-- Load & display configuration of Steam games
+- Load & display Steam games automatically
 - Support Steam "Big Picture Mode"
 - Audio Spectrum to clients
 - Mock "Game Controller"
@@ -21,17 +21,26 @@
 - Android Client (Play a game by Joystick that plugged into your phone)
 
 #### 2.Run the server
-Just double-clicked the GammaRay.exe in server folder
+##### - 2.1 Just double-click the GammaRay.exe in server folder
 ![](docs/images/srv_main.png)
 
+##### - 2.2 If you have Steam already installed, the games info will be displayed.
+![](docs/images/srv_steam.png)
+
+##### - 2.3 You can also add your own game
+![](docs/images/srv_add_game.png)
+
+##### - 2.4 Change the settings if you want
+![](docs/images/srv_settings.png)
+
 #### 3-1 Run a PC Client
-- 3-1.1 Just double-clicked the GammaRayClient.exe in PC client folder
+#### - 3-1.1 Just double-clicked the GammaRayClient.exe in PC client folder
 ![](docs/images/client_main.png)
 
-- 3-1.2 Add a remote
+#### - 3-1.2 Add a remote
 ![](docs/images/client_add_remote.png)
 
-- 3-1.3 Double-click to connect it and transfer files
+#### - 3-1.3 Double-click to connect it and transfer files
 ![](docs/images/client_file_transfer.png)
 
 #### 3-2 Run a Android Client
