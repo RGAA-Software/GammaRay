@@ -4,6 +4,10 @@
 ### GammaRay
 ##### GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC.
 
+### Clients Repo
+[PC Client is here](https://github.com/RGAA-Software/GammaRayPC)  
+[Android Client is here](https://github.com/RGAA-Software/GammaRayAndroid)
+
 ### Main features
 - Stream desktop & Replay events
 - Android client for playing game
@@ -12,7 +16,7 @@
 - Load & display Steam games automatically
 - Support Steam "Big Picture Mode"
 - Audio Spectrum to clients
-- Mock "Game Controller"
+- Mock "XBox Game Controller" By ViGEm
 
 ### How to use
 #### 1.Download prebuild software in release region, 2 or 3 packages that you may need.
@@ -96,3 +100,6 @@
     .\vcpkg.exe install glm:x64-windows
     .\vcpkg install boost:x64-windows
 ```
+
+### License
+##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact me at: hollow.ichigo.yoo@gmail.com
