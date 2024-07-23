@@ -3,10 +3,10 @@
 
 ### GammaRay
 ##### GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC.
-
+##### Attentation: Please make sure all devices connectted to same Router.
 ### Clients Repo
-[PC Client is here](https://github.com/RGAA-Software/GammaRayPC)  
-[Android Client is here](https://github.com/RGAA-Software/GammaRayAndroid)
+[PC Client Repo is here](https://github.com/RGAA-Software/GammaRayPC)  
+[Android Client Repo is here](https://github.com/RGAA-Software/GammaRayAndroid)
 
 ### Main features
 - Stream desktop & Replay events
@@ -73,7 +73,7 @@
     git clone --recursive 
 ```
 
-#### 2. Install dependences by VCPKG in 3rdparty.
+#### 2. Install dependencies by VCPKG in 3rdparty.
 - 2.1 Change to VCPKG folder
 ```c++
     cd {your-project-folder}/deps/tc_3rdparty/vcpkg
