@@ -6,12 +6,37 @@
 
 ### Main features
 - Stream desktop & Replay events
-- Start game automatically from clients
+- Android client for playing game
+- PC clients for Remote Controller(such as TeamViewer, VNC)
+- Extend a screen by (Graphics Card Spoof)/(HDMI DDC EDID Dummy Plug)
 - Load & display configuration of Steam games
 - Support Steam "Big Picture Mode"
 - Audio Spectrum to clients
 - Mock "Game Controller"
-- Detail debug information
+
+### How to use
+#### 1.Download prebuild software in release region, 2 or 3 packages that you may need.
+- Server (Capture, Encode, Replay events...)
+- PC Client (Control a computer(Server) like TeamViewer)
+- Android Client (Play a game by Joystick that plugged into your phone)
+
+#### 2.Run the server
+Just double-clicked the GammaRay.exe in server folder
+![](docs/images/srv_main.png)
+
+#### 3-1 Run a PC Client
+- 3-1.1 Just double-clicked the GammaRayClient.exe in PC client folder
+![](docs/images/client_main.png)
+
+- 3-1.2 Add a remote
+![](docs/images/client_add_remote.png)
+
+- 3-1.3 Double-click to connect it and transfer files
+![](docs/images/client_file_transfer.png)
+
+#### 3-2 Run a Android Client
+> Download and install the GammaRay_Official_xxx.apk first
+
 
 ### How to build
 #### 1. Clone the repo
@@ -28,14 +53,14 @@
 ```c++
     .\bootstrap-vcpkg.bat 
 ```
-- 2.3 Install dependences
+- 2.3 Install dependencies
 ```c++
     .\vcpkg.exe install openssl:x64-windows
     .\vcpkg.exe install gflags:x64-windows
     .\vcpkg.exe install sqlite3:x64-windows
     .\vcpkg.exe install libyuv:x64-windows
     .\vcpkg.exe install detours:x64-windows
-    .\vcpkg.exe install gtest-:x64-windows
+    .\vcpkg.exe install gtest:x64-windows
     .\vcpkg.exe install libvpx:x64-windows
     .\vcpkg.exe install opus:x64-windows
     .\vcpkg.exe install protobuf:x64-windows
@@ -46,6 +71,3 @@
     .\vcpkg.exe install glm:x64-windows
     .\vcpkg install boost:x64-windows
 ```
-
-1. https://github.com/microsoft/vcpkg/issues/36858
-2. change c++17 -> c++20
