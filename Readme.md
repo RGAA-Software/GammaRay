@@ -101,5 +101,8 @@
     .\vcpkg install boost:x64-windows
 ```
 
+- 2.4 You can open the project by Visual Studio 2022 or Clion, solve the problems and then compile the project.
+- 2.5 Really hard to build the project? You may download the prebuild binary...
+
 ### License
 ##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact me at: hollow.ichigo.yoo@gmail.com
