@@ -23,7 +23,7 @@ namespace tc
         auto btn_font_color = "#ffffff";
         int border_radius = btn_size.height()/2;
         // Clients
-        {
+        if (false) {
             auto btn = new CustomTabBtn(this);
             btn_client_ = btn;
             btn->SetBorderRadius(border_radius);
@@ -74,17 +74,17 @@ namespace tc
 
         {
             // tabs
-            tabs_.insert({StTabName::kStClient, new StClient(app_, this)});
+            //tabs_.insert({StTabName::kStClient, new StClient(app_, this)});
             tabs_.insert({StTabName::kStGeneral, new StGeneral(app_, this)});
             tabs_.insert({StTabName::kStAboutMe, new StAboutMe(app_, this)});
 
-            tabs_[StTabName::kStClient]->SetAttach(btn_client_);
+            //tabs_[StTabName::kStClient]->SetAttach(btn_client_);
             tabs_[StTabName::kStGeneral]->SetAttach(btn_input_);
             tabs_[StTabName::kStAboutMe]->SetAttach(btn_about_me_);
 
             auto layout = new NoMarginVLayout();
             auto stack_widget = new QStackedWidget(this);
-            stack_widget->addWidget(tabs_[StTabName::kStClient]);
+            //stack_widget->addWidget(tabs_[StTabName::kStClient]);
             stack_widget->addWidget(tabs_[StTabName::kStGeneral]);
             stack_widget->addWidget(tabs_[StTabName::kStAboutMe]);
             stacked_widget_ = stack_widget;
@@ -94,7 +94,7 @@ namespace tc
         }
 
         setLayout(root_layout);
-        ChangeTab(StTabName::kStClient);
+        ChangeTab(StTabName::kStGeneral);
     }
 
     TabSettings::~TabSettings() {
