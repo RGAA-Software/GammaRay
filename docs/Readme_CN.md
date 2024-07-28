@@ -56,6 +56,9 @@
 
 #### 3-2 运行Android客户端
 > 现在并且安装 GammaRay_Official_xxx.apk
+##### 3-2 准备
+![](images/android_prepare_1.jpg)
+
 ##### 3-2.1 扫描服务器上的二维码，它将自动连接
 ![](images/android_1.png)
 
@@ -67,7 +70,7 @@
 
 ##### 3-2.4 点击Steam Big Picture(第二个),您的服务器将把Steam运行在大屏模式. 您也可以在设置种打开虚拟手柄.
 ![](images/android_4.png)
-
+![](images/android_prepare_2.jpg)
 ##### 3-2.5 如果您只想听听歌，切换到第三页，这里预置了几个音乐可视化的效果:
 ![](images/android_5.jpg)
 ![](images/android_7.jpg)
