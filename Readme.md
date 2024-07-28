@@ -55,6 +55,10 @@
 
 #### 3-2 Run a Android Client
 > Download and install the GammaRay_Official_xxx.apk first
+
+##### 3-2 Prepare
+![](docs/images/android_prepare_1.jpg)
+
 ##### 3-2.1 Scan the QR in server panel, it will connect automatically.
 ![](docs/images/android_1.png)
 
@@ -66,7 +70,7 @@
 
 ##### 3-2.4 If you toch the Steam Big Picture(the second item), your Server will run the steam in Big Piture Mode. You can turn Virtual Joystick on in settings tab(the 4th tab).
 ![](docs/images/android_4.png)
-
+![](docs/images/android_prepare_2.jpg)
 ##### 3-2.5 If you just want to listen to the music that playing on your Server, you can switch to the 3rd tab, there are some buildin music spectrum effects, examples:
 ![](docs/images/android_5.jpg)
 ![](docs/images/android_7.jpg)
