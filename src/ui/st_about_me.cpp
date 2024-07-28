@@ -117,6 +117,20 @@ namespace tc
             root_layout->addLayout(layout);
         }
         root_layout->addStretch();
+
+        {
+            auto layout = new NoMarginHLayout();
+            root_layout->addLayout(layout);
+            layout->addStretch();
+
+            license_ = new QLabel(this);
+            license_->setText("License[Apache]");
+            license_->setStyleSheet(R"(font-size:25px; color:#bb2222;)");
+            layout->addWidget(license_);
+            layout->addSpacing(20);
+        }
+
+        root_layout->addSpacing(20);
         setLayout(root_layout);
     }
 

@@ -5,6 +5,7 @@
 #ifndef GAMMARAY_ST_ABOUT_ME_H
 #define GAMMARAY_ST_ABOUT_ME_H
 
+#include <QLabel>
 #include "tab_base.h"
 
 namespace tc
@@ -18,6 +19,9 @@ namespace tc
 
         void OnTabShow() override;
         void OnTabHide() override;
+
+    private:
+        QLabel* license_ = nullptr;
     };
 
 }
