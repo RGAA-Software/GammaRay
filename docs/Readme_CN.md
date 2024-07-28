@@ -19,6 +19,12 @@
 - Android客户端支持音乐可视化效果
 - 使用ViGEm模拟"XBox"手柄
 
+### Recordings
+#### Test (Ori)
+![](images/test1.gif)
+#### Test (Elden Ring)
+![](images/test2.gif)
+
 ### 怎样使用
 #### 1.在右侧Release区域下载预编译的程序
 - 服务端 (Capture, Encode, Replay events...)

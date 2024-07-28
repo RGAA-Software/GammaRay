@@ -18,6 +18,12 @@
 - Audio Spectrum to clients
 - Mock "XBox Game Controller" By ViGEm
 
+### Recordings
+#### Test (Ori)
+![](docs/images/test1.gif)
+#### Test (Elden Ring)
+![](docs/images/test2.gif)
+
 ### How to use
 #### 1.Download prebuild software in release region, 2 or 3 packages that you may need.
 - Server (Capture, Encode, Replay events...)
