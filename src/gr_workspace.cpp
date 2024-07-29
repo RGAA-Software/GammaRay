@@ -17,6 +17,7 @@
 #include "ui/tab_server.h"
 #include "ui/tab_settings.h"
 #include "gr_settings.h"
+#include "widgets/sized_msg_box.h"
 
 namespace tc
 {
@@ -169,6 +170,15 @@ namespace tc
                 tabs_[name]->OnTabShow();
                 ((CustomTabBtn*)tabs_[name]->GetAttach())->ToInActiveStatus();
             }
+        }
+    }
+
+    void GrWorkspace::closeEvent(QCloseEvent *event) {
+        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit GammaRay?"));
+        if (dlg->exec() == 0) {
+            event->accept();
+        } else {
+            event->ignore();
         }
     }
 

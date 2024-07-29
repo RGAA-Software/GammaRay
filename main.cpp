@@ -11,8 +11,8 @@
 using namespace tc;
 
 int main(int argc, char *argv[]) {
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
+    //AllocConsole();
+    //freopen("CONOUT$", "w", stdout);
 
     QApplication app(argc, argv);
     Logger::InitLog("GammaRay.log", false);

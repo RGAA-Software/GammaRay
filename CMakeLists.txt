@@ -87,7 +87,7 @@ endif ()
 ### Translation
 
 set(RES resources/font.qrc resources/main.qrc resources/qss.qrc res.qrc)
-add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME} WIN32
         main.cpp
         ${RES}
         ${MAIN_SRCS}

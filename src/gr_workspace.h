@@ -35,6 +35,7 @@ namespace tc
     class GrWorkspace : public QMainWindow {
     public:
         GrWorkspace();
+        void closeEvent(QCloseEvent *event) override;
 
     private:
         void ChangeTab(const TabName& tn);

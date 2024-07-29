@@ -8,12 +8,16 @@ from shutil import copytree
 
 def collceion_program_files(type, force_update, publish, in_target_path):
     base_path = ""
+    target_folder_suffix = ""
     if type == "debug":
         base_path = "./cmake-build-debug/"
+        target_folder_suffix = "_debug"
     elif type == "release":
         base_path = "./cmake-build-release/"
+        target_folder_suffix = "_release"
     elif type == "rel-debug":
         base_path = "./cmake-build-relwithdebinfo/"
+        target_folder_suffix = "_rel_dbg_info"
     else:
         print("don't known the mode : {}, must debug/release".format(sys.argv[1]))
         return
@@ -61,7 +65,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
     folders_path.append(base_path + "qml")
     folders_path.append(base_path + "qmltooling")
 
-    target_path = base_path + "tc_steam"
+    target_path = base_path + "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:
         target_path = in_target_path
 
