@@ -71,5 +71,9 @@ namespace tc
 
     }
 
+    void GrApplication::Exit() {
+        context_->Exit();
+    }
+
 
 }
