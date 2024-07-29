@@ -11,7 +11,7 @@
 using namespace tc;
 
 DEFINE_int32(steam_app_id, 0, "steam app id");
-DEFINE_bool(logfile, false, "log to file");
+DEFINE_bool(logfile, true, "log to file");
 DEFINE_bool(isolate, false, "only use settings.toml, args below aren't be used");
 
 // encoder
