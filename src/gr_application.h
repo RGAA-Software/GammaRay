@@ -29,6 +29,7 @@ namespace tc
         ~GrApplication() override;
 
         void Init();
+        void Exit();
 
         std::shared_ptr<GrContext> GetContext() { return context_; }
         std::shared_ptr<WSServer> GetWSServer() { return ws_server_; }

@@ -31,6 +31,7 @@ namespace tc
         GrContext();
 
         void Init();
+        void Exit();
         std::shared_ptr<SteamManager> GetSteamManager();
         std::shared_ptr<TaskRuntime> GetTaskRuntime();
         void PostTask(std::function<void()>&& task);

@@ -176,6 +176,7 @@ namespace tc
     void GrWorkspace::closeEvent(QCloseEvent *event) {
         auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit GammaRay?"));
         if (dlg->exec() == 0) {
+            app_->Exit();
             event->accept();
         } else {
             event->ignore();

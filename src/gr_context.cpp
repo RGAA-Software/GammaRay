@@ -63,6 +63,10 @@ namespace tc
         StartTimers();
     }
 
+    void GrContext::Exit() {
+        srv_manager_->Exit();
+    }
+
     std::shared_ptr<SteamManager> GrContext::GetSteamManager() {
         return steam_mgr_;
     }
