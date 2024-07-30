@@ -18,6 +18,10 @@
 - 支持Steam大屏模式
 - Android客户端支持音乐可视化效果
 - 使用ViGEm模拟"XBox"手柄
+- 
+### 支持的编码器
+- NVENC (英伟达硬编)
+- x264/x265 (FFmpeg软编)
 
 ### Recordings
 #### Test (Ori)
@@ -68,7 +72,7 @@
 ##### 3-2.3 连接成功后，您就能在手机上看见服务端的画面
 ![](images/android_3.png)
 
-##### 3-2.4 点击Steam Big Picture(第二个),您的服务器将把Steam运行在大屏模式. 您也可以在设置种打开虚拟手柄.
+##### 3-2.4 点击Steam Big Picture(第二个),您的服务器将把Steam运行在大屏模式. 您也可以在设置中打开虚拟手柄.
 ![](images/android_4.png)
 ![](images/android_prepare_2.jpg)
 ##### 3-2.5 如果您只想听听歌，切换到第三页，这里预置了几个音乐可视化的效果:
