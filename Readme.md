@@ -18,6 +18,10 @@
 - Audio Spectrum to clients
 - Mock "XBox Game Controller" By ViGEm
 
+### Supported Encoders
+- NVENC (Nvidia GPU)
+- x264/x265 (FFmpeg)
+
 ### Recordings
 #### Test (Ori)
 ![](docs/images/test1.gif)
