@@ -9,6 +9,7 @@
 [Android Client Repo is here](https://github.com/RGAA-Software/GammaRayAndroid)
 
 ### Main features
+- Play AAA Games by Android Phone over the air
 - Stream desktop & Replay events
 - Android client for playing game
 - PC clients for Remote Controller(such as TeamViewer, VNC)
@@ -20,6 +21,7 @@
 
 ### Supported Encoders
 - NVENC (Nvidia GPU)
+- AMF (AMD GPU)
 - x264/x265 (FFmpeg)
 
 ### Recordings

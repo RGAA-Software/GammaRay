@@ -10,6 +10,7 @@
 [Android Client代码在这里](https://github.com/RGAA-Software/GammaRayAndroid)
 
 ### Main features
+- 通过Android手机无线玩3A游戏
 - 采集传输桌面画面，声音 & 重放手柄，键盘，鼠标事件
 - Android客户端用于配合手柄玩游戏
 - PC客户端可以像Todesk和向日葵一样，远程操控电脑
