@@ -10,17 +10,17 @@
 [Android Client代码在这里](https://github.com/RGAA-Software/GammaRayAndroid)
 
 ### Main features
-- 采集传输桌面画面，声音 & 重放手柄，键盘，鼠标事件
-- Android客户端用于配合手柄玩游戏
-- PC客户端可以像Todesk和向日葵一样，远程操控电脑
+- 游戏串流，采集传输桌面画面，声音 & 重放手柄，键盘，鼠标事件
+- 远程桌面，像Todesk和向日葵一样，远程操控电脑
 - 使用显卡欺骗器扩展屏幕
 - 自动搜索显示Steam安装的游戏
 - 支持Steam大屏模式
 - Android客户端支持音乐可视化效果
 - 使用ViGEm模拟"XBox"手柄
-- 
+
 ### 支持的编码器
 - NVENC (英伟达硬编)
+- AMF (AMD硬编)
 - x264/x265 (FFmpeg软编)
 
 ### Recordings
