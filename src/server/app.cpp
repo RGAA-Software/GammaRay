@@ -118,25 +118,6 @@ namespace tc
                 StartProcessWithScreenCapture();
             }
         }
-
-//        while (!exit_app_) {
-//            std::unique_lock<std::mutex> guard(app_msg_cond_mtx_);
-//            app_msg_cond_.wait(guard, [=, this]() -> bool {
-//                return exit_app_ || !app_messages_.Empty();
-//            });
-//
-//            if (exit_app_) {
-//                LOGI("Exit app....");
-//                break;
-//            }
-//
-//            auto msg = app_messages_.Front();
-//            if (msg->task_) {
-//                msg->task_();
-//            }
-//            app_messages_.Pop();
-//        }
-
         return qapp_->exec();
     }
 
