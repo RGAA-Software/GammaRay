@@ -9,14 +9,11 @@
 [Android Client Repo is here](https://github.com/RGAA-Software/GammaRayAndroid)
 
 ### Main features
-- Play AAA Games by Android Phone over the air
-- Stream desktop & Replay events
-- Android client for playing game
-- PC clients for Remote Controller(such as TeamViewer, VNC)
-- Extend a screen by (Graphics Card Spoof)/(HDMI DDC EDID Dummy Plug)
-- Load & display Steam games automatically
+- Game streaming, Stream desktop & Replay events, with Android client
+- Remote desktop, such as TeamViewer VNC, with PC Client
+- Music visualizer
+- Screen extension, by (Graphics Card Spoof)/(HDMI DDC EDID Dummy Plug)
 - Support Steam "Big Picture Mode"
-- Audio Spectrum to clients
 - Mock "XBox Game Controller" By ViGEm
 
 ### Supported Encoders
