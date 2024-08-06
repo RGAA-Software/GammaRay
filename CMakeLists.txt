@@ -39,6 +39,7 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/include)
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${VCPKG_ROOT}/packages/poco_x64-windows-static/lib)
 link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64)
+link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/openssl/x64/lib/VC/static)
 
 if(MSVC)
     add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
