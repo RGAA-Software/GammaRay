@@ -10,7 +10,8 @@
 #include "widgets/sized_msg_box.h"
 #include "util/dxgi_mon_detector.h"
 #include "tc_common_new/log.h"
-
+#include "tc_common_new/string_ext.h"
+#include "tc_common_new/win32/audio_device_helper.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -20,6 +21,12 @@
 //#include <QAudioDevice>
 //#include <QMediaDevices>
 #include <QFileDialog>
+#include <Windows.h>
+#include <Mmsystem.h>
+#include <SetupAPI.h>
+#include <devguid.h>
+#include <RegStr.h>
+#include <initguid.h>
 
 namespace tc
 {
@@ -279,31 +286,39 @@ namespace tc
                 cb_capture_audio_device_ = edit;
                 edit->setEnabled(settings_->capture_audio_ == kStTrue);
                 edit->setFixedSize(input_size);
-//                const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
-//                int idx = 0;
-//                int target_idx = -1;
-//                for (const QAudioDevice &device : devices) {
-//                    qDebug() << "音频输出设备: " << device.description().toStdString()  << ", " << device.id();
-//                    edit->addItem(device.description());
-//                    if (settings_->capture_audio_device_ == device.id().toStdString()) {
-//                        target_idx = idx;
-//                    }
-//                    idx++;
-//                }
-//                if (target_idx != -1) {
-//                    edit->setCurrentIndex(target_idx);
-//                } else {
-//                    settings_->SetCaptureAudioDevice("");
-//                }
-//                layout->addWidget(edit);
-//                layout->addStretch();
-//                segment_layout->addSpacing(5);
-//                segment_layout->addLayout(layout);
-//
-//                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
-//                    auto target_device_id = devices.at(idx).id().toStdString();
-//                    settings_->SetCaptureAudioDevice(target_device_id);
-//                });
+
+                auto devices = AudioDeviceHelper::DetectAudioDevices();
+
+                int idx = 0;
+                int target_idx = -1;
+                int default_idx = -1;
+                for (const auto& device : devices) {
+                    edit->addItem(device.name_.c_str());
+                    if (settings_->capture_audio_device_ == device.id_) {
+                        target_idx = idx;
+                    }
+                    if (device.default_device_) {
+                        default_idx = idx;
+                    }
+                    idx++;
+                }
+                if (target_idx != -1) {
+                    edit->setCurrentIndex(target_idx);
+                } else {
+                    if (default_idx != -1) {
+                        edit->setCurrentIndex(default_idx);
+                    }
+                    settings_->SetCaptureAudioDevice("");
+                }
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
+                    auto target_device_id = devices.at(idx).id_;
+                    settings_->SetCaptureAudioDevice(target_device_id);
+                });
             }
             column1_layout->addLayout(segment_layout);
         }

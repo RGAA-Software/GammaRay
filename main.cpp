@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     //freopen("CONOUT$", "w", stdout);
 
     QApplication app(argc, argv);
-    Logger::InitLog("GammaRay.log", false);
+    Logger::InitLog("GammaRay.log", true);
 
     int id = QFontDatabase::addApplicationFont(":/resources/font/matrix.ttf");
     auto families = QFontDatabase::applicationFontFamilies(id);
