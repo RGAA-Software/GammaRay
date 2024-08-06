@@ -98,16 +98,13 @@
 ```
 - 2.3 Install dependencies
 ```c++
-    .\vcpkg.exe install openssl:x64-windows
     .\vcpkg.exe install gflags:x64-windows
     .\vcpkg.exe install sqlite3:x64-windows
-    .\vcpkg.exe install libyuv:x64-windows
     .\vcpkg.exe install detours:x64-windows
     .\vcpkg.exe install gtest:x64-windows
     .\vcpkg.exe install libvpx:x64-windows
     .\vcpkg.exe install opus:x64-windows
     .\vcpkg.exe install protobuf:x64-windows
-    .\vcpkg.exe install ffmpeg[x264]:x64-windows
     .\vcpkg.exe install fftw3:x64-windows
     .\vcpkg.exe install poco:x64-windows-static
     .\vcpkg.exe install easyhook:x64-windows

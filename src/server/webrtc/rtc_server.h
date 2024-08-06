@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "rtc_header.h"
+
 namespace tc
 {
 
