@@ -51,4 +51,4 @@ elseif (UNIX)
 endif ()
 
 add_executable(test_webrtc test/test_webrtc.cpp)
-target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib ${FFMPEG_LIBRARIES})
+target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib)
