@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 
 project(tc_rtc)
 
-set(WEBRTC_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/4844)
-include_directories(${WEBRTC_ROOT}/)
+set(WEBRTC_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc)
 include_directories(${WEBRTC_ROOT}/include)
 include_directories(${WEBRTC_ROOT}/include/third_party/abseil-cpp)
 include_directories(${WEBRTC_ROOT}/include/third_party/jsoncpp/source/include/)
@@ -27,19 +26,14 @@ elseif (UNIX)
 endif ()
 
 set(SRCS
-    rtc_server.cpp
+        rtc_server.cpp
+        rtc_peer_callback.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED ${SRCS})
-add_library(${PROJECT_NAME}_lib ${SRCS})
+add_library(${PROJECT_NAME} ${SRCS})
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} ${WEBRTC_ROOT}/lib/win64/webrtc.lib
-            Winmm ws2_32 Secur32 Crypt32 Msdmo dmoguids tc_common_new
-            wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32
-    )
-
-    target_link_libraries(${PROJECT_NAME}_lib ${WEBRTC_ROOT}/lib/win64/webrtc.lib
+    target_link_libraries(${PROJECT_NAME} ${WEBRTC_ROOT}/x64/webrtc.lib
             Winmm ws2_32 Secur32 Crypt32 Msdmo dmoguids tc_common_new
             wmcodecdspuuid Iphlpapi.lib Strmiids Quartz Ole32
     )
@@ -51,4 +45,4 @@ elseif (UNIX)
 endif ()
 
 add_executable(test_webrtc test/test_webrtc.cpp)
-target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib ${FFMPEG_LIBRARIES})
+target_link_libraries(test_webrtc tc_encoder_new ${PROJECT_NAME}_lib)

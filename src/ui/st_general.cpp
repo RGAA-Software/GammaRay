@@ -17,8 +17,8 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDebug>
-#include <QAudioDevice>
-#include <QMediaDevices>
+//#include <QAudioDevice>
+//#include <QMediaDevices>
 #include <QFileDialog>
 
 namespace tc
@@ -279,31 +279,31 @@ namespace tc
                 cb_capture_audio_device_ = edit;
                 edit->setEnabled(settings_->capture_audio_ == kStTrue);
                 edit->setFixedSize(input_size);
-                const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
-                int idx = 0;
-                int target_idx = -1;
-                for (const QAudioDevice &device : devices) {
-                    qDebug() << "音频输出设备: " << device.description().toStdString()  << ", " << device.id();
-                    edit->addItem(device.description());
-                    if (settings_->capture_audio_device_ == device.id().toStdString()) {
-                        target_idx = idx;
-                    }
-                    idx++;
-                }
-                if (target_idx != -1) {
-                    edit->setCurrentIndex(target_idx);
-                } else {
-                    settings_->SetCaptureAudioDevice("");
-                }
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-
-                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
-                    auto target_device_id = devices.at(idx).id().toStdString();
-                    settings_->SetCaptureAudioDevice(target_device_id);
-                });
+//                const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
+//                int idx = 0;
+//                int target_idx = -1;
+//                for (const QAudioDevice &device : devices) {
+//                    qDebug() << "音频输出设备: " << device.description().toStdString()  << ", " << device.id();
+//                    edit->addItem(device.description());
+//                    if (settings_->capture_audio_device_ == device.id().toStdString()) {
+//                        target_idx = idx;
+//                    }
+//                    idx++;
+//                }
+//                if (target_idx != -1) {
+//                    edit->setCurrentIndex(target_idx);
+//                } else {
+//                    settings_->SetCaptureAudioDevice("");
+//                }
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//
+//                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
+//                    auto target_device_id = devices.at(idx).id().toStdString();
+//                    settings_->SetCaptureAudioDevice(target_device_id);
+//                });
             }
             column1_layout->addLayout(segment_layout);
         }
