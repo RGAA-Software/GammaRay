@@ -16,6 +16,8 @@
 #include "gr_server_manager.h"
 #include "gr_run_game_manager.h"
 #include "app_messages.h"
+#include "tc_controller/hardware.h"
+#include "tc_common_new/md5.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -102,10 +104,23 @@ namespace tc
     }
 
     void GrContext::GenUniqueId() {
-        auto uuid = GetUUID();
-        std::hash<std::string> fn_hash;
-        size_t value = fn_hash(uuid);
-        unique_id_ = std::to_string(value%1000000);
+        auto hardware = Hardware::Instance();
+        hardware->Detect(false, true, false);
+        hardware->Dump();
+        auto disks = hardware->hw_disks_;
+        std::string seed;
+        if (!disks.empty()) {
+            for (const auto& disk : disks) {
+                seed = seed.append(disk.serial_number_);
+            }
+        } else {
+            seed = GetUUID();
+        }
+        LOGI("Seed: {}, disks size: {}", seed, disks.size());
+        auto md5_str = MD5::Hex(seed);
+        std::stringstream ss;
+        ss << md5_str[0]%10 << md5_str[2]%10 << md5_str[4]%10 << md5_str[6]%10 << md5_str[8]%10 << md5_str[10]%10;
+        unique_id_ = ss.str();
     }
 
     std::string GrContext::GetSysUniqueId() {
