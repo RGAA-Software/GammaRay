@@ -48,7 +48,7 @@ namespace tc
         QPushButton* btn_tab_games_ = nullptr;
         QPushButton* btn_tab_settings_ = nullptr;
         QStackedWidget* stacked_widget_ = nullptr;
-        MainWindowPrivate* d;
+        MainWindowPrivate* theme_ = nullptr;
     };
 
 }
