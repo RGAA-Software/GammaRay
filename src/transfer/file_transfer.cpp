@@ -88,8 +88,24 @@ namespace tc
             };
 
             if (fs.state() == FileTransfer::kRequestFileTransfer) {
-                // 1. check file state
-                auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
+                LOGI("Ref folder: {}", fs.ref_folder());
+                std::string file_path;
+                // with folder ?
+                if (!fs.ref_folder().empty()) {
+                    QString folder_path = QString::fromStdString(settings_->file_transfer_folder_ + "/" + fs.ref_folder());
+                    QDir dir(folder_path);
+                    if (!dir.exists()) {
+                        if (dir.mkpath(".")) {
+                        } else {
+                            LOGE("Create folder failed: {}", folder_path.toStdString());
+                            return;
+                        }
+                    }
+                    file_path = settings_->file_transfer_folder_ + "/" + fs.ref_path();
+                } else {
+                    // 1. check file state
+                    file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
+                }
                 bool ready_to_transfer;
                 if (!QFile::exists(file_path.c_str())) {
                     ready_to_transfer = true;
@@ -124,8 +140,13 @@ namespace tc
                 auto total = fs.filesize();
                 auto progress = (recv_size * 1.0f / total);
                 //LOGI("data size: {}, progress: {}", data_size, progress);
+                std::string file_path;
+                if (!fs.ref_path().empty()) {
+                    file_path = settings_->file_transfer_folder_ + "/" + fs.ref_path();
+                } else {
+                    file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
+                }
                 if (fs.transferred_size() == 0) {
-                    auto file_path = settings_->file_transfer_folder_ + "/" + fs.filename();
                     transferring_file_ = File::OpenForAppendB(file_path);
                 }
                 if (!transferring_file_ || !transferring_file_->IsOpen()) {
