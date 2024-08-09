@@ -1,5 +1,7 @@
 ![](docs/images/GammaRay.png)
 #### [简体中文](docs/Readme_CN.md)
+#### Showcase【演示地址 B站】
+[B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)
 
 ### GammaRay
 ##### GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC.
