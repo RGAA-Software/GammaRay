@@ -137,10 +137,6 @@ namespace tc
     }
 
     bool WinEventReplayer::IsKeyPermitted(uint32_t vk) {
-        if(Settings::Instance()->capture_.capture_video_type_ == Capture::kVideoHook && (vk == VK_LWIN || vk == VK_RWIN )) {
-            return false;
-        }
-        // alt F4
         if(current_key_status_map[VK_MENU] && current_key_status_map[VK_F4]) {
             return false;
         }
