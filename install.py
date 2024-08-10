@@ -32,7 +32,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
             files_with_ref_path.append(file_path)
         if ".DLL" in file:
             files_with_ref_path.append(file_path)
-        if ".exe" in file:
+        if ".exe" in file  and "vc_redist.x64.exe" not in file:
             files_with_ref_path.append(file_path)
         if ".key" in file:
             files_with_ref_path.append(file_path)
