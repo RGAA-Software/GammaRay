@@ -26,7 +26,7 @@ namespace tc
 
         void PostVideoMessage(const std::string& data) override;
         void PostAudioMessage(const std::string& data) override;
-        void PostControlMessage(const std::string& data) override;
+        void PostNetMessage(const std::string& data) override;
         void PostIpcMessage(const std::string& msg) override;
         int GetConnectionPeerCount() override;
         void NotifyPeerConnected() override;

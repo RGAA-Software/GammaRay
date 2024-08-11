@@ -63,6 +63,7 @@ namespace tc
         void PostGlobalTask(std::function<void()>&& task);
         void PostIpcMessage(std::shared_ptr<Data>&& msg);
         void PostIpcMessage(const std::string& msg);
+        void PostNetMessage(const std::string& msg);
         std::shared_ptr<Context> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
 

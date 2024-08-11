@@ -7,6 +7,7 @@
 #include "tc_common_new/data.h"
 #include "tc_message.pb.h"
 #include "statistics.h"
+#include "tc_common_new/key_helper.h"
 
 namespace tc
 {
@@ -31,7 +32,21 @@ namespace tc
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kHeartBeat);
         auto heart_beat = new HeartBeat();
-        msg->set_allocated_heart_beat(heart_beat);
+        msg->set_allocated_heartbeat(heart_beat);
+        return msg->SerializeAsString();
+    }
+
+    std::string NetMessageMaker::MakeOnHeartBeatMsg(uint64_t index) {
+        auto msg = std::make_shared<Message>();
+        msg->set_type(tc::kOnHeartBeat);
+        auto hb = msg->mutable_on_heartbeat();
+        hb->set_index(index);
+        hb->set_caps_lock_pressed(KeyHelper::IsCapsLockPressed());
+        hb->set_num_lock_pressed(KeyHelper::IsNumLockPressed());
+        hb->set_alt_pressed(KeyHelper::IsAltPressed());
+        hb->set_control_pressed(KeyHelper::IsControlPressed());
+        hb->set_win_pressed(KeyHelper::IsWinPressed());
+        hb->set_shift_pressed(KeyHelper::IsShiftPressed());
         return msg->SerializeAsString();
     }
 

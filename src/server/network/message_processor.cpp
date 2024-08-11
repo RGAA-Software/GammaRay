@@ -18,6 +18,7 @@
 #include "context.h"
 #include "statistics.h"
 #include "ws_media_router.h"
+#include "net_message_maker.h"
 
 namespace tc {
 
@@ -47,8 +48,10 @@ namespace tc {
             }
             case kAck:
                 break;
-            case kHeartBeat:
+            case kHeartBeat: {
+                ProcessHeartBeat(std::move(msg));
                 break;
+            }
             case kVideoFrame:
                 break;
             case kAudioFrame:
@@ -197,4 +200,12 @@ namespace tc {
         statistics_->render_width_ = cst.render_width();
         statistics_->render_height_ = cst.render_height();
     }
+
+    void MessageProcessor::ProcessHeartBeat(std::shared_ptr<Message>&& msg) {
+        app_->PostGlobalTask([=, this]() {
+            auto proto_msg = NetMessageMaker::MakeOnHeartBeatMsg(msg->heartbeat().index());
+            app_->PostNetMessage(proto_msg);
+        });
+    }
+
 }

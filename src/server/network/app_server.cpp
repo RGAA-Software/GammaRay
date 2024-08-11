@@ -96,8 +96,10 @@ namespace tc
         });
     }
 
-    void AppServer::PostControlMessage(const std::string& data) {
-
+    void AppServer::PostNetMessage(const std::string& data) {
+        media_routers_.ApplyAll([=](const auto &k, const auto &v) {
+            v->PostBinaryMessage(data);
+        });
     }
 
     void AppServer::PostIpcMessage(const std::string& msg) {
