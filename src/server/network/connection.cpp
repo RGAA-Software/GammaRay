@@ -42,7 +42,7 @@ namespace tc
 
     }
 
-    void Connection::PostControlMessage(const std::string& data) {
+    void Connection::PostNetMessage(const std::string& data) {
 
     }
 

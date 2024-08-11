@@ -28,7 +28,7 @@ namespace tc
 
         virtual void PostVideoMessage(const std::string& data);
         virtual void PostAudioMessage(const std::string& data);
-        virtual void PostControlMessage(const std::string& data);
+        virtual void PostNetMessage(const std::string& data);
         virtual void PostIpcMessage(const std::string& data);
         virtual int GetConnectionPeerCount();
         virtual void NotifyPeerConnected();

@@ -307,6 +307,12 @@ namespace tc
         }
     }
 
+    void Application::PostNetMessage(const std::string& msg) {
+        if (connection_) {
+            connection_->PostNetMessage(msg);
+        }
+    }
+
     void Application::StartProcessWithHook() {
         msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg([=]() -> tc::VideoType {
