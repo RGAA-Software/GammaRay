@@ -95,9 +95,9 @@ namespace tc
             return;
         }
 
-        current_key_status_map[vk_code] = down;
+        current_key_status_[vk_code] = down;
         if (!IsKeyPermitted(vk_code)) {
-            current_key_status_map[vk_code] =!down;
+            current_key_status_[vk_code] =!down;
             return;
         }
 
@@ -118,11 +118,9 @@ namespace tc
         }
 
         if(Settings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
-            // ctrl + delete + alt
             if(control_pressed_ && menu_pressed_ && delete_pressed_ && !shift_pressed_ && !win_pressed_) {
                 return;
             }
-            // MAPVK_VK_TO_VSC
             UINT vsc = MapVirtualKey(vk_code, MAPVK_VK_TO_VSC);
             bool extend = false;
             for (size_t j = 0; j < sizeof(kExtendedKeys) / sizeof(UINT32); j++) {
@@ -137,15 +135,12 @@ namespace tc
     }
 
     bool WinEventReplayer::IsKeyPermitted(uint32_t vk) {
-        if(current_key_status_map[VK_MENU] && current_key_status_map[VK_F4]) {
-            return false;
-        }
         return true;
     }
 
     void WinEventReplayer::ResetKey() {
-        for(int i = 0; i < sizeof(current_key_status_map) / sizeof(*current_key_status_map);++i) {
-            if (current_key_status_map[i]) {
+        for(int i = 0; i < sizeof(current_key_status_) / sizeof(*current_key_status_);++i) {
+            if (current_key_status_[i]) {
                 tc::KeyEvent event;
                 event.set_down(false);
                 event.set_key_code(i);

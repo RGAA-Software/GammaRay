@@ -29,7 +29,7 @@ namespace tc
     private:
         // capturing monitors
         std::vector<CaptureMonitorInfo> monitors_;
-        bool current_key_status_map[256] = {false, };
+        bool current_key_status_[256] = {false, };
         bool control_pressed_ = false;
         bool menu_pressed_ = false;
         bool delete_pressed_ = false;

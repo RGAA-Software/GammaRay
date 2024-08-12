@@ -42,7 +42,9 @@ namespace tc
         auto hb = msg->mutable_on_heartbeat();
         hb->set_index(index);
         hb->set_caps_lock_pressed(KeyHelper::IsCapsLockPressed());
+        hb->set_caps_lock_state(KeyHelper::GetCapsLockState());
         hb->set_num_lock_pressed(KeyHelper::IsNumLockPressed());
+        hb->set_num_lock_state(KeyHelper::GetNumLockState());
         hb->set_alt_pressed(KeyHelper::IsAltPressed());
         hb->set_control_pressed(KeyHelper::IsControlPressed());
         hb->set_win_pressed(KeyHelper::IsWinPressed());
