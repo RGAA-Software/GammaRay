@@ -45,6 +45,7 @@ namespace tc
     class VigemDriverManager;
     class Statistics;
     class WSClient;
+    class ClipboardManager;
 
     class Application : public std::enable_shared_from_this<Application>, public QObject {
     public:
@@ -66,9 +67,9 @@ namespace tc
         void PostNetMessage(const std::string& msg);
         std::shared_ptr<Context> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
+        std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
 
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
-
         void ProcessGamepadState(const MsgGamepadState& state);
 
     private:
@@ -88,6 +89,7 @@ namespace tc
         void InitVigemController();
         void ReleaseVigemController();
         void ReportAudioSpectrum();
+        void SendClipboardMessage(const std::string& msg);
 
     protected:
         Settings* settings_ = nullptr;
@@ -127,6 +129,8 @@ namespace tc
         int audio_callback_count_ = 0;
 
         std::shared_ptr<QApplication> qapp_ = nullptr;
+
+        std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
     };
 
     // Windows

@@ -42,6 +42,8 @@
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "statistics.h"
+#include "app/clipboard_manager.h"
+
 namespace tc
 {
 
@@ -74,6 +76,10 @@ namespace tc
 
         // context
         context_ = std::make_shared<Context>();
+
+        // clipboard
+        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
+        clipboard_mgr_->Monitor();
 
         // websocket server
         connection_ = NetworkFactory::MakeConnection(shared_from_this());
@@ -182,6 +188,11 @@ namespace tc
             });
         });
 
+        msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
+            this->PostGlobalTask([=, this]() {
+                SendClipboardMessage(msg.msg_);
+            });
+        });
     }
 
     void Application::InitGlobalAudioCapture() {
@@ -491,6 +502,13 @@ namespace tc
         if (connection_) {
             connection_->PostAudioMessage(msg);
         }
+    }
+
+    void Application::SendClipboardMessage(const std::string& msg) {
+        tc::Message m;
+        m.set_type(tc::kClipboardInfo);
+        m.mutable_clipboard_info()->set_msg(msg);
+        connection_->PostNetMessage(m.SerializeAsString());
     }
 
     void Application::Exit() {

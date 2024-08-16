@@ -96,6 +96,11 @@ namespace tc
         bool enable_video_ = false;
         bool enable_controller = false;
     };
+
+    class ClipboardMessage {
+    public:
+        std::string msg_;
+    };
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H

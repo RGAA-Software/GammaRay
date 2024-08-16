@@ -19,6 +19,7 @@
 #include "statistics.h"
 #include "ws_media_router.h"
 #include "net_message_maker.h"
+#include "app/clipboard_manager.h"
 
 namespace tc {
 
@@ -79,6 +80,9 @@ namespace tc {
             case kServerAudioSpectrum:
                 break;
             case kOnlineGames:
+                break;
+            case kClipboardInfo:
+                ProcessClipboardInfo(std::move(msg));
                 break;
             case MessageType_INT_MIN_SENTINEL_DO_NOT_USE_:
                 break;
@@ -208,4 +212,9 @@ namespace tc {
         });
     }
 
+    void MessageProcessor::ProcessClipboardInfo(std::shared_ptr<Message>&& msg) {
+        auto info = msg->clipboard_info();
+        auto clipboard_mgr = app_->GetClipboardManager();
+        clipboard_mgr->UpdateRemoteInfo(QString::fromStdString(info.msg()));
+    }
 }
