@@ -1,5 +1,5 @@
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Core5Compat)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Core5Compat)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Core5Compat Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Core5Compat Widgets)
 
 if (WIN32)
     add_library(app_manager
@@ -8,13 +8,13 @@ if (WIN32)
         app_timer.cpp
         app_shared_info.cpp
         steam_game.cpp
-
+        clipboard_manager.cpp
         win/app_manager_win.cpp
         win/dx_address_loader.cpp
         win/win_event_replayer.cpp
     )
     target_link_libraries(app_manager fftw3)
-    target_link_libraries(app_manager Qt6::Core Qt6::Core5Compat)
+    target_link_libraries(app_manager Qt6::Core Qt6::Core5Compat Qt6::Widgets)
 elseif (APPLE)
 
 elseif (UNIX)

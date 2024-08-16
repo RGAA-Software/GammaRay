@@ -14,7 +14,7 @@ namespace tc
 
     void GrSettings::Load() {
         sp_ = SharedPreference::Instance();
-        version_ = "V 1.1.4";
+        version_ = "V 1.1.5";
         udp_server_port_ = 21034;
 
         log_file_ = sp_->Get(kStLogFile, "true");

@@ -36,6 +36,7 @@ namespace tc
         void ProcessGamepadState(std::shared_ptr<Message>&& msg);
         void ProcessClientStatistics(std::shared_ptr<Message>&& msg);
         void ProcessHeartBeat(std::shared_ptr<Message>&& msg);
+        void ProcessClipboardInfo(std::shared_ptr<Message>&& msg);
 
     private:
         Settings* settings_ = nullptr;
