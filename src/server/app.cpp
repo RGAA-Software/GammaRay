@@ -177,6 +177,9 @@ namespace tc
                 if (msg.enable_controller) {
                     InitVigemController();
                 }
+
+                // send configuration back to client
+                this->SendConfigurationBack();
             });
         });
 
@@ -192,6 +195,10 @@ namespace tc
             this->PostGlobalTask([=, this]() {
                 SendClipboardMessage(msg.msg_);
             });
+        });
+
+        msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
+            this->capturing_monitor_ = msg;
         });
     }
 
@@ -508,6 +515,30 @@ namespace tc
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
         m.mutable_clipboard_info()->set_msg(msg);
+        connection_->PostNetMessage(m.SerializeAsString());
+    }
+
+    void Application::SendConfigurationBack() {
+        tc::Message m;
+        m.set_type(tc::kServerConfiguration);
+        auto config = m.mutable_config();
+        // screen info
+        auto screen_info = config->mutable_screen_info();
+        auto capturing_idx = 0;
+        for (int i = 0; i < capturing_monitor_.monitors_.size(); i++) {
+            auto monitor = capturing_monitor_.monitors_[i];
+            if (monitor.name_ == capturing_monitor_.capturing_monitor_) {
+                capturing_idx = i;
+            }
+            ScreenInfo info;
+            info.set_index(monitor.index_);
+            info.set_name(monitor.name_);
+            screen_info->Add(std::move(info));
+        }
+        config->set_current_capturing_index(capturing_idx);
+
+        //
+
         connection_->PostNetMessage(m.SerializeAsString());
     }
 

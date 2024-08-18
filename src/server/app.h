@@ -13,6 +13,7 @@
 #include "tc_common_new/concurrent_queue.h"
 #include "app_global_messages.h"
 #include "app/app_messages.h"
+#include "tc_capture_new/capture_message.h"
 #include <QApplication>
 
 namespace tc
@@ -90,6 +91,7 @@ namespace tc
         void ReleaseVigemController();
         void ReportAudioSpectrum();
         void SendClipboardMessage(const std::string& msg);
+        void SendConfigurationBack();
 
     protected:
         Settings* settings_ = nullptr;
@@ -131,6 +133,7 @@ namespace tc
         std::shared_ptr<QApplication> qapp_ = nullptr;
 
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
+        CaptureMonitorInfoMessage capturing_monitor_{};
     };
 
     // Windows

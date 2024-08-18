@@ -63,7 +63,7 @@ namespace tc
         ss << "http_server_port_: " << http_server_port_ << std::endl;
         ss << "ws_server_port_: " << ws_server_port_ << std::endl;
         ss << "network_listen_port_: " << network_listen_port_ << std::endl;
-        ss << "capture_monitor_: " << capture_monitor_ << std::endl;
+        ss << "capture_monitor_: " << GetCaptureMonitor() << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
@@ -152,6 +152,10 @@ namespace tc
     void GrSettings::SetFileTransferFolder(const std::string& path) {
         file_transfer_folder_ = path;
         sp_->Put(kStFileTransferFolder, path);
+    }
+
+    std::string GrSettings::GetCaptureMonitor() const {
+        return sp_->Get(kStCaptureMonitor, "");
     }
 
 }
