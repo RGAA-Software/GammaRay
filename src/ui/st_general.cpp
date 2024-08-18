@@ -235,6 +235,7 @@ namespace tc
 
                 if (target_idx != -1) {
                     edit->setCurrentIndex(target_idx);
+                    settings_->SetCaptureMonitor(adapters.at(target_idx).display_name);
                     LOGI("capture target index: {}", target_idx);
                 } else {
                     settings_->SetCaptureMonitor("");
