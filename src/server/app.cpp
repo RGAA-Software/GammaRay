@@ -196,10 +196,6 @@ namespace tc
                 SendClipboardMessage(msg.msg_);
             });
         });
-
-        msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
-            this->capturing_monitor_ = msg;
-        });
     }
 
     void Application::InitGlobalAudioCapture() {
@@ -524,12 +520,10 @@ namespace tc
         auto config = m.mutable_config();
         // screen info
         auto screen_info = config->mutable_screen_info();
-        auto capturing_idx = 0;
-        for (int i = 0; i < capturing_monitor_.monitors_.size(); i++) {
-            auto monitor = capturing_monitor_.monitors_[i];
-            if (monitor.name_ == capturing_monitor_.capturing_monitor_name_) {
-                capturing_idx = i;
-            }
+        auto capturing_idx = desktop_capture_->GetCapturingMonitorIndex();
+        auto monitors = desktop_capture_->GetCaptureMonitorInfo();
+        for (int i = 0; i < monitors.size(); i++) {
+            auto monitor = monitors[i];
             ScreenInfo info;
             info.set_index(monitor.index_);
             info.set_name(monitor.name_);
