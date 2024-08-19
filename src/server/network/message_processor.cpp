@@ -20,6 +20,7 @@
 #include "ws_media_router.h"
 #include "net_message_maker.h"
 #include "app/clipboard_manager.h"
+#include "tc_capture_new/desktop_capture.h"
 
 namespace tc {
 
@@ -53,10 +54,6 @@ namespace tc {
                 ProcessHeartBeat(std::move(msg));
                 break;
             }
-            case kVideoFrame:
-                break;
-            case kAudioFrame:
-                break;
             case MessageType::kKeyEvent: {
                 ProcessKeyboardEvent(std::move(msg));
                 break;
@@ -73,21 +70,14 @@ namespace tc {
                 ProcessClientStatistics(std::move(msg));
                 break;
             }
-            case kCursorInfoSync:
-                break;
-            case kCaptureStatistics:
-                break;
-            case kServerAudioSpectrum:
-                break;
-            case kOnlineGames:
-                break;
-            case kClipboardInfo:
+            case kClipboardInfo: {
                 ProcessClipboardInfo(std::move(msg));
                 break;
-            case MessageType_INT_MIN_SENTINEL_DO_NOT_USE_:
+            }
+            case kSwitchMonitor: {
+                ProcessSwitchMonitor(std::move(msg));
                 break;
-            case MessageType_INT_MAX_SENTINEL_DO_NOT_USE_:
-                break;
+            }
         }
     }
 
@@ -216,5 +206,17 @@ namespace tc {
         auto info = msg->clipboard_info();
         auto clipboard_mgr = app_->GetClipboardManager();
         clipboard_mgr->UpdateRemoteInfo(QString::fromStdString(info.msg()));
+    }
+
+    void MessageProcessor::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {
+        app_->PostGlobalTask([=, this]() {
+            auto sm = msg->switch_monitor();
+            auto dc = app_->GetDesktopCapture();
+            dc->SetCaptureMonitor(sm.index(), sm.name());
+            dc->SendCapturingMonitorMessage();
+
+            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
+            app_->PostNetMessage(proto_msg);
+        });
     }
 }

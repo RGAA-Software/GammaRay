@@ -527,7 +527,7 @@ namespace tc
         auto capturing_idx = 0;
         for (int i = 0; i < capturing_monitor_.monitors_.size(); i++) {
             auto monitor = capturing_monitor_.monitors_[i];
-            if (monitor.name_ == capturing_monitor_.capturing_monitor_) {
+            if (monitor.name_ == capturing_monitor_.capturing_monitor_name_) {
                 capturing_idx = i;
             }
             ScreenInfo info;
