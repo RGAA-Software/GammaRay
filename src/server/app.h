@@ -133,7 +133,6 @@ namespace tc
         std::shared_ptr<QApplication> qapp_ = nullptr;
 
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
-        CaptureMonitorInfoMessage capturing_monitor_{};
     };
 
     // Windows
