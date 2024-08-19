@@ -69,7 +69,7 @@ namespace tc
         std::shared_ptr<Context> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
         std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
-
+        std::shared_ptr<DesktopCapture> GetDesktopCapture() { return desktop_capture_; }
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
         void ProcessGamepadState(const MsgGamepadState& state);
 
