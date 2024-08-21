@@ -78,6 +78,10 @@ namespace tc {
                 ProcessSwitchMonitor(std::move(msg));
                 break;
             }
+            case kSwitchWorkMode: {
+                ProcessSwitchWorkMode(std::move(msg));
+                break;
+            }
         }
     }
 
@@ -217,6 +221,18 @@ namespace tc {
 
             auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
             app_->PostNetMessage(proto_msg);
+        });
+    }
+
+    void MessageProcessor::ProcessSwitchWorkMode(std::shared_ptr<Message>&& msg) {
+        app_->PostGlobalTask([=, this]() {
+            auto wm = msg->work_mode();
+            auto dc = app_->GetDesktopCapture();
+            if (wm.mode() == SwitchWorkMode::kWork) {
+                dc->SetCaptureFps(30);
+            } else if (wm.mode() == SwitchWorkMode::kGame) {
+                dc->SetCaptureFps(60);
+            }
         });
     }
 }
