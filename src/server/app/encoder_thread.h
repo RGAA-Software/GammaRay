@@ -41,6 +41,8 @@ namespace tc
         int frame_height_ = 0;
         Encoder::EncoderFormat encoder_format_ = Encoder::EncoderFormat::kH264;
 
+        CaptureVideoFrame last_capture_video_frame_{};
+
         // debug
         std::shared_ptr<File> debug_file_ = nullptr;
     };

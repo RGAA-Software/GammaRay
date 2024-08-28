@@ -115,6 +115,7 @@ namespace tc
 
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
         auto settings = Settings::Instance();
+        last_capture_video_frame_ = cap_video_msg;
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
         Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
         if(g_render) {
@@ -178,8 +179,8 @@ namespace tc
             video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
                 if (key) {
                     LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
-                         frame->data->Size(), frame_index, key, frame->width, frame->height, cap_video_msg.monitor_index_,
-                         cap_video_msg.display_name_, cap_video_msg.left_, cap_video_msg.top_, cap_video_msg.right_, cap_video_msg.bottom_);
+                         frame->data->Size(), frame_index, key, frame->width, frame->height, last_capture_video_frame_.monitor_index_, last_capture_video_frame_.display_name_,
+                         last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);
                 }
 
                 MsgVideoFrameEncoded msg {
@@ -189,12 +190,12 @@ namespace tc
                     .frame_index_ = frame_index,
                     .key_frame_ = key,
                     .image_ = frame,
-                    .monitor_index_ = cap_video_msg.monitor_index_,
-                    .monitor_name_ = cap_video_msg.display_name_,
-                    .monitor_left_ = cap_video_msg.left_,
-                    .monitor_top_ = cap_video_msg.top_,
-                    .monitor_right_ = cap_video_msg.right_,
-                    .monitor_bottom_ = cap_video_msg.bottom_,
+                    .monitor_index_ = last_capture_video_frame_.monitor_index_,
+                    .monitor_name_ = last_capture_video_frame_.display_name_,
+                    .monitor_left_ = last_capture_video_frame_.left_,
+                    .monitor_top_ = last_capture_video_frame_.top_,
+                    .monitor_right_ = last_capture_video_frame_.right_,
+                    .monitor_bottom_ = last_capture_video_frame_.bottom_,
                 };
                 context_->SendAppMessage(msg);
             });
