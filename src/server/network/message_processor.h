@@ -39,6 +39,7 @@ namespace tc
         void ProcessClipboardInfo(std::shared_ptr<Message>&& msg);
         void ProcessSwitchMonitor(std::shared_ptr<Message>&& msg);
         void ProcessSwitchWorkMode(std::shared_ptr<Message>&& msg);
+        void ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg);
 
     private:
         Settings* settings_ = nullptr;
