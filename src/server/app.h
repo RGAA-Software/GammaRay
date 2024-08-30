@@ -92,6 +92,7 @@ namespace tc
         void ReportAudioSpectrum();
         void SendClipboardMessage(const std::string& msg);
         void SendConfigurationBack();
+        void ResetMonitorResolution(const std::string& name, int w, int h);
 
     protected:
         Settings* settings_ = nullptr;

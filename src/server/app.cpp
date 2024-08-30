@@ -536,6 +536,20 @@ namespace tc
         connection_->PostNetMessage(m.SerializeAsString());
     }
 
+    void Application::ResetMonitorResolution(const std::string& name, int w, int h) {
+        DEVMODE dm;
+        dm.dmSize = sizeof(dm);
+        dm.dmPelsWidth = w
+        dm.dmPelsHeight = h;
+        dm.dmBitsPerPel = 32;
+        dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+        wchar_t deviceName[] = L"\\\\.\\DISPLAY1";
+        LONG result = ChangeDisplaySettingsEx(deviceName, &dm, NULL, CDS_FULLSCREEN, NULL);
+        if (result!= DISP_CHANGE_SUCCESSFUL) {
+            MessageBoxA(NULL, "ERROR", NULL, MB_OK);
+        }
+        MessageBoxA(NULL, "OK", NULL, MB_OK);
+    }
     void Application::Exit() {
         if (app_shared_info_) {
             app_shared_info_->Exit();
