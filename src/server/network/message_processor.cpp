@@ -82,6 +82,10 @@ namespace tc {
                 ProcessSwitchWorkMode(std::move(msg));
                 break;
             }
+            case kChangeMonitorResolution: {
+                ProcessChangeMonitorResolution(std::move(msg));
+                break;
+            }
         }
     }
 
@@ -233,6 +237,13 @@ namespace tc {
             } else if (wm.mode() == SwitchWorkMode::kGame) {
                 dc->SetCaptureFps(60);
             }
+        });
+    }
+
+    void MessageProcessor::ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg) {
+        app_->PostGlobalTask([=, this]() {
+            auto cmr = msg->change_monitor_resolution();
+            app_->ResetMonitorResolution(cmr.monitor_name(), cmr.target_width(), cmr.target_height());
         });
     }
 }

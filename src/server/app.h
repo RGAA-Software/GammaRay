@@ -72,6 +72,7 @@ namespace tc
         std::shared_ptr<DesktopCapture> GetDesktopCapture() { return desktop_capture_; }
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
         void ProcessGamepadState(const MsgGamepadState& state);
+        void ResetMonitorResolution(const std::string& name, int w, int h);
 
     private:
         void InitAppTimer();
@@ -92,7 +93,6 @@ namespace tc
         void ReportAudioSpectrum();
         void SendClipboardMessage(const std::string& msg);
         void SendConfigurationBack();
-        void ResetMonitorResolution(const std::string& name, int w, int h);
 
     protected:
         Settings* settings_ = nullptr;
