@@ -68,7 +68,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/src/server/certificate.pem DESTINATION ${CMAKE_BIN
 
 add_subdirectory(deps)
 add_subdirectory(src)
-#add_subdirectory(src/tests)
+add_subdirectory(src/tests)
 
 ### Translation
 set(TRANSLATION ON)
