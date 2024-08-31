@@ -519,15 +519,21 @@ namespace tc
         m.set_type(tc::kServerConfiguration);
         auto config = m.mutable_config();
         // screen info
-        auto screen_info = config->mutable_screen_info();
+        auto monitor_info = config->mutable_monitor_info();
         auto capturing_idx = desktop_capture_->GetCapturingMonitorIndex();
         auto monitors = desktop_capture_->GetCaptureMonitorInfo();
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
-            ScreenInfo info;
+            MonitorInfo info;
             info.set_index(monitor.index_);
             info.set_name(monitor.name_);
-            screen_info->Add(std::move(info));
+            for (const auto& res : monitor.supported_res_) {
+                MonitorResolution mr;
+                mr.set_width(res.width_);
+                mr.set_height(res.height_);
+                info.mutable_resolutions()->Add(std::move(mr));
+            }
+            monitor_info->Add(std::move(info));
         }
         config->set_current_capturing_index(capturing_idx);
 
@@ -537,7 +543,6 @@ namespace tc
     }
 
     void Application::ResetMonitorResolution(const std::string& name, int w, int h) {
-        LOGI("name: {}, w: {}, h: {}", name, w, h);
         DEVMODE dm;
         dm.dmSize = sizeof(dm);
         dm.dmPelsWidth = w;
