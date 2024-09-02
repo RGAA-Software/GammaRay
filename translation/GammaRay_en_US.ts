@@ -197,82 +197,82 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="257"/>
+        <location filename="../src/ui/st_general.cpp" line="258"/>
         <source>Capture Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="280"/>
+        <location filename="../src/ui/st_general.cpp" line="281"/>
         <source>Capture Audio Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="331"/>
+        <location filename="../src/ui/st_general.cpp" line="332"/>
         <source>Network Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="340"/>
+        <location filename="../src/ui/st_general.cpp" line="341"/>
         <source>Network Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="358"/>
+        <location filename="../src/ui/st_general.cpp" line="359"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="376"/>
+        <location filename="../src/ui/st_general.cpp" line="377"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="394"/>
+        <location filename="../src/ui/st_general.cpp" line="395"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="413"/>
+        <location filename="../src/ui/st_general.cpp" line="414"/>
         <source>Save Settings Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="419"/>
+        <location filename="../src/ui/st_general.cpp" line="420"/>
         <source>S.A.V.E</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="427"/>
+        <location filename="../src/ui/st_general.cpp" line="428"/>
         <source>Bitrate is none!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="436"/>
+        <location filename="../src/ui/st_general.cpp" line="437"/>
         <source>Resolution width is none!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="444"/>
+        <location filename="../src/ui/st_general.cpp" line="445"/>
         <source>Resolution height is none!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="454"/>
+        <location filename="../src/ui/st_general.cpp" line="455"/>
         <source>Save Success</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="454"/>
+        <location filename="../src/ui/st_general.cpp" line="455"/>
         <source>Save settings success! You may RESTART server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="470"/>
+        <location filename="../src/ui/st_general.cpp" line="471"/>
         <source>File Transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="479"/>
+        <location filename="../src/ui/st_general.cpp" line="480"/>
         <source>Default Transfer Folder</source>
         <translation type="unfinished"></translation>
     </message>

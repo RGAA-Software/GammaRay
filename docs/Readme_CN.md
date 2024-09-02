@@ -24,6 +24,8 @@
 - x264/x265 (FFmpeg软编)
 
 ### Recordings
+#### Test Wukong
+![](images/test3.gif)
 #### Test (Ori)
 ![](images/test1.gif)
 #### Test (Elden Ring)
