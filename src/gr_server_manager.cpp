@@ -25,7 +25,7 @@ namespace tc
 
         QString current_path = QCoreApplication::applicationDirPath();
         QString work_dir = current_path;
-        current_path = current_path.append("/GammaRayServer.exe");
+        current_path = current_path.append("/").append(kGammaRayServerName);
 
         auto args = GrSettings::Instance()->GetArgs();
         QStringList arg_list;

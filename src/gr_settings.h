@@ -41,6 +41,9 @@ namespace tc
     static const std::string kResTypeResize = "resize";
     static const std::string kNetworkTypeWebsocket = "Websocket";
 
+    static const std::string kGammaRayName = "GammaRay.exe";
+    static const std::string kGammaRayServerName = "GammaRayServer.exe";
+
     class SharedPreference;
 
     class GrSettings {
