@@ -226,7 +226,7 @@ namespace tc
         // find pids by exes
         std::vector<ProcessInfoPtr> processes_info;
         for (const std::string& exe_name : target_app->exe_names_) {
-            auto processes = ProcessHelper::GetProcessList();
+            auto processes = ProcessHelper::GetProcessList(false);
             for (auto& process : processes) {
                 auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
                 if (process_exe_name == exe_name) {
@@ -290,7 +290,7 @@ namespace tc
             return;
         }
 
-        auto processes = ProcessHelper::GetProcessList();
+        auto processes = ProcessHelper::GetProcessList(false);
         ProcessInfoPtr target_process_info = nullptr;
         for (const auto& process : processes) {
             if (process->pid_ == target_pid_) {

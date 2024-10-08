@@ -182,7 +182,7 @@ namespace tc
 
     void GrRunGameManager::CheckRunningGame() {
         auto beg = TimeExt::GetCurrentTimestamp();
-        running_processes_ = ProcessHelper::GetProcessList();
+        running_processes_ = ProcessHelper::GetProcessList(true);
         auto db_games = this->db_game_manager_->GetAllGames();
         LOGI("running process: {}", running_processes_.size());
         LOGI("db games: {}",db_games.size());
