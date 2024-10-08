@@ -50,6 +50,11 @@ namespace tc
         auto app_path = qApp->applicationDirPath() + "/" + kGammaRayName.c_str();
         auto srv_path = qApp->applicationDirPath() + "/" + kGammaRayServerName.c_str();
         auto fh = FirewallHelper::Instance();
+        fh->RemoveProgramFromFirewall("GammaRayIn");
+        fh->RemoveProgramFromFirewall("GammaRayOut");
+        fh->RemoveProgramFromFirewall("GammaRayServerIn");
+        fh->RemoveProgramFromFirewall("GammaRayServerOut");
+
         fh->AddProgramToFirewall(RulesInfo("GammaRayIn", app_path.toStdString(), "", 1));
         fh->AddProgramToFirewall(RulesInfo("GammaRayOut", app_path.toStdString(), "", 2));
         fh->AddProgramToFirewall(RulesInfo("GammaRayServerIn", srv_path.toStdString(), "", 1));
