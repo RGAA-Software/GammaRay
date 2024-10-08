@@ -214,7 +214,7 @@ namespace tc
 
     Response<bool, bool> GrSystemMonitor::CheckServerAlive() {
         auto resp = Response<bool, bool>::Make(false, false);
-        auto processes = ProcessHelper::GetProcessList();
+        auto processes = ProcessHelper::GetProcessList(false);
         if (processes.empty()) {
             return resp;
         }
