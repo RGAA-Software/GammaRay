@@ -16,6 +16,8 @@
 #include "gr_statistics.h"
 #include "util/qt_directory.h"
 #include "transfer/file_transfer.h"
+#include "tc_common_new/win32/firewall_helper.h"
+#include "tc_common_new/log.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -43,6 +45,18 @@ namespace tc
 
         context_ = std::make_shared<GrContext>();
         context_->Init();
+
+        // register firewall
+        auto app_path = qApp->applicationDirPath() + "/" + kGammaRayName.c_str();
+        auto srv_path = qApp->applicationDirPath() + "/" + kGammaRayServerName.c_str();
+        auto fh = FirewallHelper::Instance();
+        fh->AddProgramToFirewall(RulesInfo("GammaRayIn", app_path.toStdString(), "", 1));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayOut", app_path.toStdString(), "", 2));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayServerIn", srv_path.toStdString(), "", 1));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayServerOut", srv_path.toStdString(), "", 2));
+
+        LOGI("app path: {}", app_path.toStdString());
+        LOGI("srv path: {}", srv_path.toStdString());
 
         auto st = GrStatistics::Instance();
         st->SetContext(context_);

@@ -26,7 +26,7 @@
 namespace tc
 {
 
-    static bool is_virtual_network_card_or_loopback(QString str_card_name) {
+    static bool NeedIgnoreNetwork(const QString& str_card_name) {
         if (-1 != str_card_name.indexOf("VMware")
             || -1 != str_card_name.indexOf("Loopback")
             || -1 != str_card_name.indexOf("VirtualBox")
@@ -37,12 +37,12 @@ namespace tc
     }
 
     // 0 - wireless , 1 - wire
-    static void get_ips(std::map<std::string, IPNetworkType> &map_ip) {
+    static void GetIps(std::map<std::string, IPNetworkType> &map_ip) {
         QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
         QList<QNetworkAddressEntry> entry;
         foreach(QNetworkInterface inter, interfaces) {
-            LOGI("human readalbe name: {}", inter.humanReadableName().toStdString());
-            if (is_virtual_network_card_or_loopback(inter.humanReadableName())) {
+            LOGI("human readable name: {}", inter.humanReadableName().toStdString());
+            if (NeedIgnoreNetwork(inter.humanReadableName())) {
                 continue;
             }
 
@@ -66,7 +66,7 @@ namespace tc
 
     std::map<std::string, IPNetworkType> IPUtil::ScanIPs() {
         std::map<std::string, IPNetworkType> ips;
-        get_ips(ips);
+        GetIps(ips);
         return ips;
     }
 

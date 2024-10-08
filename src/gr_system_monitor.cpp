@@ -16,6 +16,7 @@
 #include "gr_server_manager.h"
 #include "gr_run_game_manager.h"
 #include "network/ws_server.h"
+#include "gr_settings.h"
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
@@ -221,7 +222,7 @@ namespace tc
 
         for (auto& p : processes) {
             //LOGI("p.exe_name: {}", p.exe_name_);
-            if (p->exe_full_path_.find("GammaRayServer.exe") != std::string::npos) {
+            if (p->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
                 resp.value_ = true;
                 //LOGI("Yes, find it.");
                 break;
