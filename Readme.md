@@ -5,7 +5,7 @@
 
 ### GammaRay
 ##### GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC.
-##### Attention: Please make sure all devices connectted to same Router.
+##### Attention: Please make sure that your clients can connect to your server，eg: same domain network or deploy server at public network.
 ### Client Repos
 [PC Client Repo is here](https://github.com/RGAA-Software/GammaRayPC)  
 [Android Client Repo is here](https://github.com/RGAA-Software/GammaRayAndroid)
