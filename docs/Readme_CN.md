@@ -3,7 +3,7 @@
 
 ### GammaRay
 ##### GammaRay包含一系列软件，能将您的游戏和桌面采集，编码并传送到其他设备, 并且在服务器（运行游戏的电脑）上重放（模拟）手柄，鼠标，键盘事件。
-##### 请确保所有的设备连接到了同一台路由器。
+##### 请确客户端可连接到服务端，同一局域网或者服务在公网。
 
 ### Client Repos
 [PC Client代码在这里](https://github.com/RGAA-Software/GammaRayPC)  
@@ -24,11 +24,11 @@
 - x264/x265 (FFmpeg软编)
 
 ### Recordings
-#### Test Wukong
+#### Test 黑神话.悟空
 ![](images/test3.gif)
-#### Test (Ori)
+#### Test (奥日与精灵意志)
 ![](images/test1.gif)
-#### Test (Elden Ring)
+#### Test (埃尔登法环)
 ![](images/test2.gif)
 
 ### 怎样使用
