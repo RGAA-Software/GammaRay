@@ -86,6 +86,10 @@ namespace tc {
                 ProcessChangeMonitorResolution(std::move(msg));
                 break;
             }
+            case kInsertKeyFrame: {
+                ProcessInsertKeyFrame(std::move(msg));
+                break;
+            }
         }
     }
 
@@ -244,6 +248,12 @@ namespace tc {
         app_->PostGlobalTask([=, this]() {
             auto cmr = msg->change_monitor_resolution();
             app_->ResetMonitorResolution(cmr.monitor_name(), cmr.target_width(), cmr.target_height());
+        });
+    }
+
+    void MessageProcessor::ProcessInsertKeyFrame(std::shared_ptr<Message>&& msg) {
+        app_->PostGlobalTask([=, this]() {
+            app_->SendAppMessage(MsgInsertKeyFrame{});
         });
     }
 }

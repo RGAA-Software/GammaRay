@@ -11,6 +11,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
+#include "tc_common_new/message_notifier.h"
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_encoder_new/video_encoder.h"
 #include "tc_encoder_new/ffmpeg_video_encoder.h"
@@ -47,6 +48,13 @@ namespace tc
 #if DEBUG_FILE
         debug_file_ = File::OpenForWriteB("debug_encoder.h264");
 #endif
+
+        msg_listener_ = context_->CreateMessageListener();
+        msg_listener_->Listen<MsgInsertKeyFrame>([=, this](const MsgInsertKeyFrame& msg) {
+            if (video_encoder_) {
+                video_encoder_->InsertIDR();
+            }
+        });
     }
 
     void EncoderThread::Encode(const std::shared_ptr<Data>& data, int width, int height, uint64_t frame_index) {

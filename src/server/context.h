@@ -23,6 +23,7 @@ namespace tc
         ~Context() = default;
 
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
+        std::shared_ptr<MessageListener> CreateMessageListener();
 
         template<typename T>
         void SendAppMessage(const T& m) {

@@ -14,6 +14,7 @@
 #include "app_global_messages.h"
 #include "app/app_messages.h"
 #include "tc_capture_new/capture_message.h"
+#include "context.h"
 #include <QApplication>
 
 namespace tc
@@ -24,7 +25,6 @@ namespace tc
     class Data;
     class Connection;
     class AppManager;
-    class Context;
     class HostIpcManager;
     class EncoderThread;
     class MessageListener;
@@ -73,6 +73,11 @@ namespace tc
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
         void ProcessGamepadState(const MsgGamepadState& state);
         void ResetMonitorResolution(const std::string& name, int w, int h);
+
+        template<typename T>
+        void SendAppMessage(const T& m) {
+            context_->SendAppMessage(m);
+        }
 
     private:
         void InitAppTimer();
