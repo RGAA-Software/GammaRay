@@ -25,6 +25,7 @@ namespace tc
         server_->bind_accept([&](std::shared_ptr<asio2::ws_session> &session_ptr) {
             if (!asio2::get_last_error()) {
                 session_ptr->ws_stream().binary(true);
+                session_ptr->set_no_delay(true);
             } else {
                 LOGE("error occurred when calling the accept function, err: {}, msg: {}",
                      asio2::get_last_error_val(), asio2::get_last_error_msg().data());

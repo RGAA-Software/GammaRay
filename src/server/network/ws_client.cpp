@@ -30,6 +30,7 @@ namespace tc
 
         client_->bind_init([&]() {
             client_->ws_stream().binary(true);
+            client_->set_no_delay(true);
             client_->ws_stream().set_option(
                 websocket::stream_base::decorator([](websocket::request_type &req) {
                     req.set(http::field::authorization, "websocket-client-authorization");}
