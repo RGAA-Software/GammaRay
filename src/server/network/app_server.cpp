@@ -170,7 +170,7 @@ namespace tc
                 //s.set_option(asio::socket_base::send_buffer_size(1024*1024));
                 //s.set_option(asio::socket_base::receive_buffer_size(64));
                 //LOGI("NO DELAY EC: {}, msg: {}", ec.value(), ec.message());
-
+                sess_ptr->set_no_delay(true);
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 WsRouterPtr router = nullptr;
                 if (path == kUrlMedia) {
