@@ -40,6 +40,7 @@ namespace tc
         void ProcessSwitchMonitor(std::shared_ptr<Message>&& msg);
         void ProcessSwitchWorkMode(std::shared_ptr<Message>&& msg);
         void ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg);
+        void ProcessInsertKeyFrame(std::shared_ptr<Message>&& msg);
 
     private:
         Settings* settings_ = nullptr;

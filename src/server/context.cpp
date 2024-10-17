@@ -23,6 +23,10 @@ namespace tc
         return msg_notifier_;
     }
 
+    std::shared_ptr<MessageListener> Context::CreateMessageListener() {
+        return msg_notifier_->CreateListener();
+    }
+
     void Context::PostTask(std::function<void()>&& task) {
         asio2_pool_->post(std::move(task));
     }

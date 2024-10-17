@@ -18,6 +18,7 @@ namespace tc
     class Image;
     class File;
     class Context;
+    class MessageListener;
 
     class EncoderThread {
     public:
@@ -45,6 +46,8 @@ namespace tc
 
         // debug
         std::shared_ptr<File> debug_file_ = nullptr;
+
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

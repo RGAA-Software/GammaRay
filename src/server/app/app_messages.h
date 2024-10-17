@@ -101,6 +101,11 @@ namespace tc
     public:
         std::string msg_;
     };
+
+    // Insert key frame
+    class MsgInsertKeyFrame {
+
+    };
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H
