@@ -122,6 +122,9 @@ namespace tc
                 .msg_ = proto_msg,
                 .spectrum_ = spectrum,
             });
+
+        }  else if (proto_msg->type() == tc::kRestartServer) {
+            context_->SendAppMessage(MsgRestartServer {});
         }
     }
 

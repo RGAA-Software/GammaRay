@@ -9,12 +9,15 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <atomic>
 #include "tc_common_new/fps_stat.h"
 
 namespace tc
 {
 
     constexpr auto kMaxStatCounts = 180;
+
+    class Context;
 
     class Statistics {
     public:
@@ -25,18 +28,19 @@ namespace tc
         }
 
         Statistics();
-
+        void SetContext(const std::shared_ptr<Context>& ctx);
         void IncreaseRunningTime();
         void AppendMediaBytes(int bytes);
         void AppendEncodeDuration(uint32_t time);
         void AppendFrameGap(uint32_t time);
         void AppendAudioFrameGap(uint32_t time);
+        void IncreaseDDAFailedCount();
 
         void TickFps();
         std::string AsProtoMessage();
 
     public:
-
+        std::shared_ptr<Context> context_ = nullptr;
         // unit: S
         int64_t running_time_{};
         int64_t send_media_bytes_{};
@@ -63,6 +67,8 @@ namespace tc
         int32_t audio_samples_{0};
         int32_t audio_channels_{0};
         int32_t audio_bits_{0};
+
+        std::atomic_int dda_failed_count_{0};
     };
 
 }

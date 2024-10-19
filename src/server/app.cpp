@@ -76,6 +76,7 @@ namespace tc
 
         // context
         context_ = std::make_shared<Context>();
+        statistics_->SetContext(context_);
 
         // clipboard
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
@@ -140,9 +141,7 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgObsInjected>([=, this](const MsgObsInjected& msg) {
-#if ENABLE_SHM
-            this->InitHostIpcManager(msg.pid_);
-#endif
+
         });
 
         msg_listener_->Listen<MsgTimer16>([=, this](const MsgTimer16& msg) {
@@ -194,6 +193,15 @@ namespace tc
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
             this->PostGlobalTask([=, this]() {
                 SendClipboardMessage(msg.msg_);
+            });
+        });
+
+        // DDA Init failed
+        msg_listener_->Listen<CaptureInitFailedMessage>([=, this](const CaptureInitFailedMessage& msg) {
+            this->PostGlobalTask([=, this]() {
+                statistics_->IncreaseDDAFailedCount();
+                // tell UI process to restart me
+                RequestRestartMe();
             });
         });
     }
@@ -306,13 +314,7 @@ namespace tc
     }
 
     void Application::PostIpcMessage(std::shared_ptr<Data>&& msg) {
-#if ENABLE_SHM
-        host_ipc_managers_.ApplyAll([m = std::move(msg)](const auto& k, const std::shared_ptr<HostIpcManager>& ipc_mgr) {
-            if (ipc_mgr->Ready()) {
-                ipc_mgr->Send(m);
-            }
-        });
-#endif
+
     }
 
     void Application::PostIpcMessage(const std::string& msg) {
@@ -417,33 +419,6 @@ namespace tc
         app_manager_->StartProcess();
     }
 
-#if ENABLE_SHM
-    void Application::InitHostIpcManager(uint32_t pid) {
-        auto host_ipc_manager = HostIpcManager::Make(pid);
-        if (!host_ipc_manager->Ready()) {
-            LOGE("HostIpcManager not ready, InitHostIpcManager failed.");
-            return;
-        }
-        host_ipc_manager->RegisterVideoFrameCallback([=, this](const std::shared_ptr<CaptureVideoFrame>& msg, const std::shared_ptr<Data>& buffer) {
-            if (this->connection_->GetConnectionPeerCount() <= 0) {
-                //LOGI("Not have client, return...");
-                return;
-            }
-            //LOGI("Frame pass from shm: adapter uid: {}, type: {}, frame index: {}, frame_width: {}, frame_height: {}, buffer size: {}",
-            //     msg->adapter_uid_, msg->type, msg->frame_index_, msg->frame_width_, msg->frame_height_, buffer?buffer->Size() : 0);
-            if (msg->handle_ == 0) {
-                encoder_thread_->Encode(buffer, (int)msg->frame_width_, (int)msg->frame_height_, msg->frame_index_);
-            }
-            else {
-                encoder_thread_->Encode(msg->adapter_uid_, msg->handle_, (int) msg->frame_width_,
-                                        (int) msg->frame_height_, (int) msg->frame_format_, msg->frame_index_);
-            }
-        });
-        host_ipc_manager->WaitForMessage();
-        host_ipc_managers_.Insert(pid, host_ipc_manager);
-    }
-#endif
-
     void Application::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) {
         if (!HasConnectedPeer()) {
             //LOGI("Not have client, return...");
@@ -540,6 +515,13 @@ namespace tc
         //
 
         connection_->PostNetMessage(m.SerializeAsString());
+    }
+
+    void Application::RequestRestartMe() {
+        tc::Message m;
+        m.set_type(tc::kRestartServer);
+        m.mutable_restart_server()->set_reason("restart");
+        ws_client_->PostNetMessage(m.SerializeAsString());
     }
 
     void Application::ResetMonitorResolution(const std::string& name, int w, int h) {
