@@ -10,9 +10,9 @@
 #include <functional>
 #include <string>
 
-#include <Poco/NamedEvent.h>
-#include <Poco/SharedMemory.h>
-#include <Poco/NamedMutex.h>
+//#include <Poco/NamedEvent.h>
+//#include <Poco/SharedMemory.h>
+//#include <Poco/NamedMutex.h>
 
 #include "tc_capture_new/capture_message.h"
 
@@ -36,7 +36,7 @@ namespace tc
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
-        std::map<std::string, std::shared_ptr<Poco::SharedMemory>> target_memories_;
+//        std::map<std::string, std::shared_ptr<Poco::SharedMemory>> target_memories_;
     };
 
 }

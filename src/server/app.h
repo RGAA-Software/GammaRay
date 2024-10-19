@@ -84,10 +84,6 @@ namespace tc
         void InitMessages();
         void InitGlobalAudioCapture();
         void InitWebRtc();
-
-#if ENABLE_SHM
-        void InitHostIpcManager(uint32_t pid);
-#endif
         void WriteBoostUpInfoForPid(uint32_t pid);
         void StartProcessWithHook();
         void StartProcessWithScreenCapture();
@@ -98,6 +94,7 @@ namespace tc
         void ReportAudioSpectrum();
         void SendClipboardMessage(const std::string& msg);
         void SendConfigurationBack();
+        void RequestRestartMe();
 
     protected:
         Settings* settings_ = nullptr;
@@ -105,9 +102,6 @@ namespace tc
         std::shared_ptr<Connection> connection_ = nullptr;
         std::shared_ptr<AppManager> app_manager_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
-#if ENABLE_SHM
-        tc::ConcurrentHashMap<uint32_t, std::shared_ptr<HostIpcManager>> host_ipc_managers_;
-#endif
         std::shared_ptr<EncoderThread> encoder_thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<DesktopCapture> desktop_capture_ = nullptr;

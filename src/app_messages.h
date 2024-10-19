@@ -48,6 +48,11 @@ namespace tc
         std::vector<uint64_t> game_ids_;
     };
 
+    class MsgRestartServer {
+    public:
+
+    };
+
 }
 
 #endif // APP_MESSAGES_H

@@ -183,12 +183,13 @@ namespace tc
                         auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Server"), tr("Do you want to restart server?"));
                         if (msg_box->exec() == 0) {
                             this->context_->PostTask([=, this]() {
-                                auto srv_mgr = this->context_->GetServerManager();
-                                srv_mgr->StopServer();
-
-                                this->context_->SendAppMessage(MsgServerAlive {
-                                    .alive_ = false,
-                                });
+                                RestartServer();
+                                //auto srv_mgr = this->context_->GetServerManager();
+                                ////srv_mgr->StopServer();
+                                //srv_mgr->ReStart();
+                                //this->context_->SendAppMessage(MsgServerAlive {
+                                //    .alive_ = false,
+                                //});
                             });
                         }
                     });
@@ -375,6 +376,12 @@ namespace tc
                 this->RefreshUIEverySecond();
             });
         });
+
+        msg_listener_->Listen<MsgRestartServer>([=, this](const MsgRestartServer& msg) {
+            context_->PostTask([=, this]() {
+                RestartServer();
+            });
+        });
     }
 
     TabServer::~TabServer() {
@@ -417,5 +424,14 @@ namespace tc
 
     void TabServer::RefreshUIEverySecond() {
         this->lbl_audio_format_->setText(std::format("Format: {}/{}/{}", statistics_->audio_samples_, statistics_->audio_channels_, statistics_->audio_bits_).c_str());
+    }
+
+    void TabServer::RestartServer() {
+        auto srv_mgr = this->context_->GetServerManager();
+        //srv_mgr->StopServer();
+        srv_mgr->ReStart();
+        this->context_->SendAppMessage(MsgServerAlive {
+            .alive_ = false,
+        });
     }
 }

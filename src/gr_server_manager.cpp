@@ -72,8 +72,9 @@ namespace tc
     }
 
     Response<bool, uint32_t> GrServerManager::ReStart() {
-        auto resp = Response<bool, uint32_t>::Make(false, 0);
-        return resp;
+        this->StopServer();
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        return this->StartServer();
     }
 
     void GrServerManager::Exit() {

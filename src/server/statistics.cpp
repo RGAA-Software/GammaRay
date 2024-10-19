@@ -6,12 +6,18 @@
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/fps_stat.h"
+#include "app/app_messages.h"
+#include "context.h"
 
 namespace tc
 {
 
     Statistics::Statistics() {
         fps_video_encode_ = std::make_shared<FpsStat>();
+    }
+
+    void Statistics::SetContext(const std::shared_ptr<Context>& ctx) {
+        context_ = ctx;
     }
 
     void Statistics::IncreaseRunningTime() {
@@ -72,6 +78,10 @@ namespace tc
         cst->set_render_width(render_width_);
         cst->set_render_height(render_height_);
         return msg.SerializeAsString();
+    }
+
+    void Statistics::IncreaseDDAFailedCount() {
+        dda_failed_count_++;
     }
 
 }
