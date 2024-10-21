@@ -68,6 +68,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/src/server/certificate.pem DESTINATION ${CMAKE_BIN
 add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(src/tests)
+add_subdirectory(src/service)
 
 ### Translation
 set(TRANSLATION ON)
@@ -110,6 +111,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt$
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
 target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite_orm winmm.lib SetupAPI.lib)
 
+### Service Beg
+add_executable(GammaRayService ${SERVICE_SRCS})
+### Service End
+
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
         BUNDLE DESTINATION .
@@ -118,7 +123,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer tc_message tc_vigem)
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRayService tc_message tc_vigem)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()
