@@ -70,7 +70,7 @@ namespace tc
     void WSClient::PostNetMessage(const std::string& msg) {
         if (client_ && client_->is_started()) {
             if (queued_msg_count_ > kMaxClientQueuedMessage) {
-                LOGW("too many message in queue, discard the message in WSClient");
+                //LOGW("too many message in queue, discard the message in WSClient");
                 return;
             }
             queued_msg_count_++;
