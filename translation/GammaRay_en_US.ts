@@ -363,27 +363,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="211"/>
+        <location filename="../src/ui/tab_server.cpp" line="212"/>
         <source>Detected IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="243"/>
+        <location filename="../src/ui/tab_server.cpp" line="244"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="267"/>
+        <location filename="../src/ui/tab_server.cpp" line="268"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="291"/>
+        <location filename="../src/ui/tab_server.cpp" line="292"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="314"/>
+        <location filename="../src/ui/tab_server.cpp" line="315"/>
         <source>Audio Spectrum</source>
         <translation type="unfinished"></translation>
     </message>

@@ -98,6 +98,7 @@ add_executable(${PROJECT_NAME} WIN32
         ${NETWORK_SRCS}
         icon.rc
         ${TS_FILES}
+        ${SERVICE_MGR_SRCS}
 )
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
@@ -113,6 +114,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new
 
 ### Service Beg
 add_executable(GammaRayService ${SERVICE_SRCS})
+add_executable(GammaRayServiceManager ${SERVICE_MGR_MAIN_SRCS} ${SERVICE_MGR_SRCS})
+target_link_libraries(GammaRayServiceManager PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
+        Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
+target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite_orm winmm.lib SetupAPI.lib)
 ### Service End
 
 include(GNUInstallDirs)
@@ -123,7 +128,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRayService tc_message tc_vigem)
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRayService GammaRayServiceManager tc_message tc_vigem)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()
