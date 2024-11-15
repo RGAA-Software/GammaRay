@@ -133,7 +133,7 @@ add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRaySe
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()
-add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws)
+add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gr_plugins
@@ -144,6 +144,8 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_rtc/plugin_net_rtc.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_rtc.dll.toml"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_ws.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_ws/plugin_net_ws.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_media_recorder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_media_recorder.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/media_recorder/plugin_media_recorder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_media_recorder.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
