@@ -69,6 +69,7 @@ add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(src/tests)
 add_subdirectory(src/service)
+add_subdirectory(src/plugin_interface)
 
 ### Translation
 set(TRANSLATION ON)
@@ -110,14 +111,14 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
-target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin sqlite_orm winmm.lib SetupAPI.lib)
 
 ### Service Beg
 add_executable(GammaRayService ${SERVICE_SRCS})
 add_executable(GammaRayServiceManager ${SERVICE_MGR_MAIN_SRCS} ${SERVICE_MGR_SRCS})
 target_link_libraries(GammaRayServiceManager PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
-target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin sqlite_orm winmm.lib SetupAPI.lib)
 ### Service End
 
 include(GNUInstallDirs)
@@ -128,13 +129,21 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRayService GammaRayServiceManager tc_message tc_vigem)
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()
+add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_udp.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_udp/plugin_net_udp.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_rtc.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_rtc.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_rtc/plugin_net_rtc.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_rtc.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_ws.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_ws/plugin_net_ws.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

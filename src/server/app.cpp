@@ -43,6 +43,8 @@
 #include "tc_controller/vigem_driver_manager.h"
 #include "statistics.h"
 #include "app/clipboard_manager.h"
+#include "plugins/plugin_manager.h"
+#include "plugin_interface/gr_plugin_interface.h"
 
 namespace tc
 {
@@ -76,7 +78,10 @@ namespace tc
 
         // context
         context_ = std::make_shared<Context>();
+        context_->Init();
         statistics_->SetContext(context_);
+
+        plugin_manager_ = context_->GetPluginManager();
 
         // clipboard
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
@@ -157,6 +162,9 @@ namespace tc
         msg_listener_->Listen<MsgTimer1000>([=, this](const MsgTimer1000& msg) {
             statistics_->TickFps();
             statistics_->IncreaseRunningTime();
+
+            auto plugin_manager = context_->GetPluginManager();
+            plugin_manager->On1Second();
         });
 
         msg_listener_->Listen<MsgGamepadState>([=, this](const MsgGamepadState& state) {
@@ -222,6 +230,10 @@ namespace tc
             if (opus_encoder_->valid()) {
                 opus_encoder_->SetComplexity(8);
             }
+
+            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                plugin->OnAudioFormat(samples, channels, bits);
+            });
         });
 
         audio_capture_->RegisterSplitDataCallback([=, this](const tc::DataPtr& left, const tc::DataPtr& right) {
@@ -239,9 +251,19 @@ namespace tc
             }
             memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
             memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
+
+            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                plugin->OnSplitRawAudioData(left, right);
+                plugin->OnSplitFFTAudioData(fft_left, fft_right);
+            });
+
         });
 
         audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
+            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                plugin->OnRawAudioData(data);
+            });
+
             if (debug_opus_decoder_) {
                 static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
                 pcm_file->Append((char*)data->DataAddr(), data->Size());

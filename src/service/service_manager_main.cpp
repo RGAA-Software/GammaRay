@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
             process.start("sc", arguments);
             process.waitForFinished();
-            
+
             QByteArray result = process.readAllStandardOutput();
             QString resultString = QString::fromUtf8(result);
 

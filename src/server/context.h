@@ -15,15 +15,20 @@
 namespace tc
 {
 
-    class Context {
+    class PluginManager;
+
+    class Context : public std::enable_shared_from_this<Context> {
     public:
         static std::shared_ptr<Context> Make();
 
         Context();
         ~Context() = default;
 
+        bool Init();
+
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
         std::shared_ptr<MessageListener> CreateMessageListener();
+        std::shared_ptr<PluginManager> GetPluginManager();
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -42,6 +47,7 @@ namespace tc
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<Thread> msg_thread_ = nullptr;
         std::shared_ptr<asio2::iopool> asio2_pool_ = nullptr;
+        std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
     };
 }
 
