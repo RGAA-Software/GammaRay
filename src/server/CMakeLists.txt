@@ -1,6 +1,7 @@
 project(GammaRayServer VERSION 0.1 LANGUAGES CXX)
 
 add_subdirectory(settings)
+add_subdirectory(plugins)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
@@ -25,6 +26,8 @@ set(SRCS
         network/server_cast.cpp
         ipc/host_ipc_manager.cpp
         app/encoder_thread.cpp
+        plugins/plugin_manager.cpp
+        plugins/plugin_event_router.cpp
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app)
@@ -46,7 +49,7 @@ target_link_libraries(main Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}:
 
 add_executable(${PROJECT_NAME} WIN32 srv_main.cpp)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
-target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_rtc) #
+target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_rtc tc_plugin) #
 target_link_libraries(${PROJECT_NAME} sqlite_orm EasyHook64 gflags::gflags)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

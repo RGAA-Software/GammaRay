@@ -5,6 +5,7 @@
 #include "context.h"
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
+#include "plugins/plugin_manager.h"
 #include <QApplication>
 
 namespace tc
@@ -19,12 +20,24 @@ namespace tc
         asio2_pool_->start();
     }
 
+    bool Context::Init() {
+        plugin_manager_ = PluginManager::Make(shared_from_this());
+        plugin_manager_->LoadAllPlugins();
+        plugin_manager_->RegisterPluginEventsCallback();
+        plugin_manager_->DumpPluginInfo();
+        return true;
+    }
+
     std::shared_ptr<MessageNotifier> Context::GetMessageNotifier() {
         return msg_notifier_;
     }
 
     std::shared_ptr<MessageListener> Context::CreateMessageListener() {
         return msg_notifier_->CreateListener();
+    }
+
+    std::shared_ptr<PluginManager> Context::GetPluginManager() {
+        return plugin_manager_;
     }
 
     void Context::PostTask(std::function<void()>&& task) {

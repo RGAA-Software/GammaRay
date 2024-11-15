@@ -47,6 +47,7 @@ namespace tc
     class Statistics;
     class WSClient;
     class ClipboardManager;
+    class PluginManager;
 
     class Application : public std::enable_shared_from_this<Application>, public QObject {
     public:
@@ -133,6 +134,8 @@ namespace tc
         std::shared_ptr<QApplication> qapp_ = nullptr;
 
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
+
+        std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
     };
 
     // Windows
