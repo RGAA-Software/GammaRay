@@ -2,8 +2,8 @@
 // Created by RGAA on 15/11/2024.
 //
 
-#ifndef GAMMARAY_UDP_PLUGIN_H
-#define GAMMARAY_UDP_PLUGIN_H
+#ifndef GAMMARAY_WS_PLUGIN_H
+#define GAMMARAY_WS_PLUGIN_H
 
 #include "plugin_interface/gr_plugin_interface.h"
 
