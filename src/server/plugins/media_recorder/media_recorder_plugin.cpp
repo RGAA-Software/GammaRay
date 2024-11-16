@@ -9,7 +9,7 @@ namespace tc
 {
 
     std::string MediaRecorderPlugin::GetPluginName() {
-        return "Ws Plugin";
+        return "Media Recorder Plugin";
     }
 
     std::string MediaRecorderPlugin::GetVersionName() {

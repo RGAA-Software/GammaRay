@@ -8,7 +8,7 @@ namespace tc
 {
 
     std::string RtcPlugin::GetPluginName() {
-        return "Rtc Plugin";
+        return "RTC Plugin";
     }
 
     std::string RtcPlugin::GetVersionName() {

@@ -44,7 +44,7 @@ namespace tc
                     auto plugin = (GrPluginInterface *) func();
                     if (plugin) {
                         auto plugin_name = plugin->GetPluginName();
-                        if (plugins_.contains(plugin_name)) {
+                        if (plugins_.HasKey(plugin_name)) {
                             LOGE("{} repeated loading.", plugin_name);
                             lib->unload();
                             lib->deleteLater();
@@ -54,11 +54,14 @@ namespace tc
 
                         // create it
                         // todo: load config
-                        plugin->OnCreate(GrPluginParam {
-                            .cluster_ = {},
-                        });
+                        auto param = GrPluginParam {
+                            .cluster_ = {
+                                {"name", info.fileName().toStdString()},
+                            },
+                        };
+                        plugin->OnCreate(param);
 
-                        plugins_.insert({plugin_name, plugin});
+                        plugins_.Insert(plugin_name, plugin);
                         libs_.insert({plugin_name, lib});
 
                         LOGI("{} version: {}", plugin->GetPluginName(), plugin->GetVersionName());
@@ -91,15 +94,15 @@ namespace tc
     }
 
     void PluginManager::ReleaseAllPlugins() {
-        for (auto &[k, plugin]: plugins_) {
+        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
             plugin->OnStop();
             plugin->OnDestroy();
-        }
+        });
         for (auto &[k, lib]: libs_) {
             lib->unload();
             lib->deleteLater();
         }
-        plugins_.clear();
+        plugins_.Clear();
         libs_.clear();
     }
 
@@ -108,20 +111,15 @@ namespace tc
     }
 
     GrPluginInterface *PluginManager::GetPluginByName(const std::string &name) {
-        for (auto& [k, plugin]: plugins_) {
-            if (k == name) {
-                return plugin;
-            }
-        }
-        return nullptr;
+        return plugins_.Get(name);
     }
 
     void PluginManager::VisitPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
-        for (const auto &[k, plugin]: plugins_) {
+        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
             if (visitor && plugin->IsPluginEnabled()) {
                 visitor(plugin);
             }
-        }
+        });
     }
 
     void PluginManager::On1Second() {
@@ -133,7 +131,7 @@ namespace tc
     }
 
     void PluginManager::DumpPluginInfo() {
-        LOGI("====> Total plugins: {}", plugins_.size());
+        LOGI("====> Total plugins: {}", plugins_.Size());
         int index = 1;
         VisitPlugins([&](GrPluginInterface *plugin) {
             LOGI("Plugin {}. {} Version name:{}, Version code: {}", index++, plugin->GetPluginName(),

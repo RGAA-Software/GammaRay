@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <QLibrary>
+#include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
@@ -36,7 +37,7 @@ namespace tc
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
-        std::map<std::string, GrPluginInterface*> plugins_;
+        tc::ConcurrentHashMap<std::string, GrPluginInterface*> plugins_;
         std::map<std::string, QLibrary*> libs_;
         std::shared_ptr<PluginEventRouter> evt_router_ = nullptr;
     };

@@ -8,7 +8,7 @@ namespace tc
 {
 
     std::string UdpPlugin::GetPluginName() {
-        return "Udp Plugin";
+        return "UDP Plugin";
     }
 
     std::string UdpPlugin::GetVersionName() {
