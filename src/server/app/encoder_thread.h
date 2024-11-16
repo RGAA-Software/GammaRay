@@ -19,6 +19,7 @@ namespace tc
     class File;
     class Context;
     class MessageListener;
+    class PluginManager;
 
     class EncoderThread {
     public:
@@ -48,6 +49,7 @@ namespace tc
         std::shared_ptr<File> debug_file_ = nullptr;
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
     };
 
 }

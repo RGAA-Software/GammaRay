@@ -401,6 +401,11 @@ namespace tc
             //     msg.monitor_index_, msg.monitor_name_, msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
             connection_->PostVideoMessage(net_msg);
             statistics_->fps_video_encode_->Tick();
+
+            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
+            });
+
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
@@ -493,14 +498,23 @@ namespace tc
     }
 
     void Application::ReportAudioSpectrum() {
-        auto msg = NetMessageMaker::MakeServerAudioSpectrumMsg();
+        auto st = Statistics::Instance();
+        auto msg = std::make_shared<Message>();
+        msg->set_type(tc::kServerAudioSpectrum);
+        auto sas = msg->mutable_server_audio_spectrum();
+        sas->set_samples(st->audio_samples_);
+        sas->set_bits(st->audio_bits_);
+        sas->set_channels(st->audio_channels_);
+        sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
+        sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
+        auto net_msg = msg->SerializeAsString();
         if (ws_client_) {
-            ws_client_->PostNetMessage(msg);
+            ws_client_->PostNetMessage(net_msg);
         }
 
         // audio spectrum
         if (connection_) {
-            connection_->PostAudioMessage(msg);
+            connection_->PostAudioMessage(net_msg);
         }
     }
 

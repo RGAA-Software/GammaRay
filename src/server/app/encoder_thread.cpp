@@ -25,6 +25,8 @@
 #include <wrl/client.h>
 #include "tc_common_new/win32/d3d_render.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
+#include "plugins/plugin_manager.h"
+#include "plugin_interface/gr_plugin_interface.h"
 #endif
 
 #define DEBUG_FILE 0
@@ -55,6 +57,8 @@ namespace tc
                 video_encoder_->InsertIDR();
             }
         });
+
+        plugin_manager_ = context_->GetPluginManager();
     }
 
     void EncoderThread::Encode(const std::shared_ptr<Data>& data, int width, int height, uint64_t frame_index) {
@@ -183,6 +187,19 @@ namespace tc
                 return;
             }
 
+            auto video_type = [=]() -> GrPluginEncodedVideoType {
+                if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264) {
+                    return GrPluginEncodedVideoType::kH264;
+                } else if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kHEVC) {
+                    return GrPluginEncodedVideoType::kH265;
+                } else {
+                    return GrPluginEncodedVideoType::kH264;
+                }
+            } ();
+            plugin_manager_->VisitPlugins([=, this](GrPluginInterface* plugin) {
+                //plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
+            });
+
             static uint64_t write_buffer = 0;
             video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
                 if (key) {
@@ -206,6 +223,21 @@ namespace tc
                     .monitor_bottom_ = last_capture_video_frame_.bottom_,
                 };
                 context_->SendAppMessage(msg);
+
+                plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                    plugin->OnEncodedVideoFrame(video_type,
+                                                frame->data,
+                                                frame_index,
+                                                frame->width,
+                                                frame->height,
+                                                key,
+                                                msg.monitor_index_,
+                                                msg.monitor_name_,
+                                                msg.monitor_left_,
+                                                msg.monitor_top_,
+                                                msg.monitor_right_,
+                                                msg.monitor_bottom_);
+                });
             });
 
             frame_width_ = cap_video_msg.frame_width_;

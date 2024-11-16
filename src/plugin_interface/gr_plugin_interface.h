@@ -69,7 +69,22 @@ namespace tc
 
         // video
         virtual void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height);
-        virtual void OnEncodedVideoFrame(const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key);
+        virtual void OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
+                                         const std::shared_ptr<Data>& data,
+                                         uint64_t frame_index,
+                                         int frame_width,
+                                         int frame_height,
+                                         bool key,
+                                         int mon_idx,
+                                         const std::string& display_name,
+                                         int mon_left,
+                                         int mon_top,
+                                         int mon_right,
+                                         int mon_bottom);
+        // to see format detail in tc_message_new/tc_message.proto
+        // message VideoFrame { ... }
+        // you can send it to any clients
+        virtual void OnEncodedVideoFrameInProtobufFormat(const std::string& msg);
 
         // audio
         virtual void OnAudioFormat(int samples, int channels, int bits);
@@ -97,6 +112,7 @@ namespace tc
         std::shared_ptr<Thread> work_thread_ = nullptr;
         GrPluginEventCallback event_cbk_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
+        std::string plugin_file_name_;
     };
 
 }

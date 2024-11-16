@@ -38,6 +38,10 @@ namespace tc
     bool GrPluginInterface::OnCreate(const GrPluginParam& param) {
         this->param_ = param;
         this->enabled_ = true;
+        if (param.cluster_.contains("name")) {
+            auto n = param.cluster_.at("name");
+            plugin_file_name_ = std::any_cast<std::string>(n);
+        }
 
         work_thread_ = Thread::Make(GetPluginName(), 1024);
         work_thread_->Poll();
@@ -71,7 +75,22 @@ namespace tc
 
     }
 
-    void GrPluginInterface::OnEncodedVideoFrame(const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
+    void GrPluginInterface::OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
+                                 const std::shared_ptr<Data>& data,
+                                 uint64_t frame_index,
+                                 int frame_width,
+                                 int frame_height,
+                                 bool key,
+                                 int mon_idx,
+                                 const std::string& display_name,
+                                 int mon_left,
+                                 int mon_top,
+                                 int mon_right,
+                                 int mon_bottom) {
+
+    }
+
+    void GrPluginInterface::OnEncodedVideoFrameInProtobufFormat(const std::string& msg) {
 
     }
 

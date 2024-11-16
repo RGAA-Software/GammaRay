@@ -10,6 +10,8 @@
 namespace tc
 {
 
+    class WsPluginServer;
+
     class WsPlugin : public GrPluginInterface {
     public:
 
@@ -17,7 +19,27 @@ namespace tc
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
 
+        bool OnCreate(const tc::GrPluginParam &param) override;
+        bool OnDestroy() override;
         void On1Second() override;
+        void OnVideoEncoderCreated(const tc::GrPluginEncodedVideoType& type, int width, int height) override;
+        void OnEncodedVideoFrame(const tc::GrPluginEncodedVideoType& video_type,
+                                 const std::shared_ptr<Data> &data,
+                                 uint64_t frame_index,
+                                 int frame_width,
+                                 int frame_height,
+                                 bool key,
+                                 int mon_idx,
+                                 const std::string &display_name,
+                                 int mon_left,
+                                 int mon_top,
+                                 int mon_right,
+                                 int mon_bottom) override;
+        void OnEncodedVideoFrameInProtobufFormat(const std::string& msg) override;
+
+    private:
+
+        std::shared_ptr<WsPluginServer> ws_server_ = nullptr;
 
     };
 
