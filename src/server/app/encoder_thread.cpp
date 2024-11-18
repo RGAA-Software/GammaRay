@@ -196,9 +196,13 @@ namespace tc
                     return GrPluginEncodedVideoType::kH264;
                 }
             } ();
-            plugin_manager_->VisitPlugins([=, this](GrPluginInterface* plugin) {
-                plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
-            });
+
+            // plugins: VideoEncoderCreated
+            {
+                plugin_manager_->VisitPlugins([=, this](GrPluginInterface *plugin) {
+                    plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
+                });
+            }
 
             static uint64_t write_buffer = 0;
             video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
@@ -224,14 +228,28 @@ namespace tc
                 };
                 context_->SendAppMessage(msg);
 
-                plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
-                    plugin->OnEncodedVideoFrame(video_type,
-                                                frame->data,
-                                                frame_index,
-                                                frame->width,
-                                                frame->height,
-                                                key);
-                });
+                // plugins: Raw frame / Encoded frame
+                {
+                    plugin_manager_->VisitPlugins([=, this](GrPluginInterface *plugin) {
+                        // rgba
+                        video_encoder_->VisitRawImageRgba([=](const std::shared_ptr<Image>& image) {
+                            plugin->OnRawVideoFrameRgba(image);
+                        });
+
+                        // yuv/i420
+                        video_encoder_->VisitRawImageYuv([=](const std::shared_ptr<Image>& image) {
+                            plugin->OnRawVideoFrameYuv(image);
+                        });
+
+                        // encoded(h264/h265)
+                        plugin->OnEncodedVideoFrame(video_type,
+                                                    frame->data,
+                                                    frame_index,
+                                                    frame->width,
+                                                    frame->height,
+                                                    key);
+                    });
+                }
             });
 
             frame_width_ = cap_video_msg.frame_width_;

@@ -48,6 +48,12 @@ namespace tc
     public:
 
     };
+
+    // GrPluginInsertIdrEvent
+    class GrPluginInsertIdrEvent : public GrPluginBaseEvent {
+    public:
+
+    };
 }
 
 #endif //GAMMARAY_GR_PLUGIN_EVENTS_H

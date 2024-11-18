@@ -1,10 +1,11 @@
 #ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
-#include "tc_message.pb.h"
-
 namespace tc
 {
+    class Message;
+    class CaptureStatistics;
+    class ServerAudioSpectrum;
 
     // can't connect or not installed
     class MsgViGEmState {
@@ -28,13 +29,13 @@ namespace tc
     class MsgCaptureStatistics {
     public:
         std::shared_ptr<tc::Message> msg_ = nullptr;
-        tc::CaptureStatistics statistics_;
+        std::shared_ptr<tc::CaptureStatistics> statistics_ = nullptr;
     };
 
     class MsgServerAudioSpectrum {
     public:
         std::shared_ptr<tc::Message> msg_ = nullptr;
-        tc::ServerAudioSpectrum spectrum_;
+        std::shared_ptr<tc::ServerAudioSpectrum> spectrum_ = nullptr;
     };
 
     // timer 100ms

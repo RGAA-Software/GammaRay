@@ -110,14 +110,17 @@ namespace tc
             });
 
         } else if (proto_msg->type() == tc::kCaptureStatistics) {
-            auto capture_statistics = proto_msg->capture_statistics();
+            auto statistics = std::make_shared<CaptureStatistics>();
+            statistics->CopyFrom(proto_msg->capture_statistics());
             context_->SendAppMessage(MsgCaptureStatistics{
                 .msg_ = proto_msg,
-                .statistics_ = capture_statistics,
+                .statistics_ = statistics,
             });
 
         } else if (proto_msg->type() == tc::kServerAudioSpectrum) {
-            auto spectrum = proto_msg->server_audio_spectrum();
+            //auto spectrum = proto_msg->server_audio_spectrum();
+            auto spectrum = std::make_shared<ServerAudioSpectrum>();
+            spectrum->CopyFrom(proto_msg->server_audio_spectrum());
             context_->SendAppMessage(MsgServerAudioSpectrum {
                 .msg_ = proto_msg,
                 .spectrum_ = spectrum,

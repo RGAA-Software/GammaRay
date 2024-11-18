@@ -402,10 +402,12 @@ namespace tc
             connection_->PostVideoMessage(net_msg);
             statistics_->fps_video_encode_->Tick();
 
-            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
-                plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
-            });
-
+            // plugins: Frame encoded
+            {
+                plugin_manager_->VisitPlugins([=](GrPluginInterface *plugin) {
+                    plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
+                });
+            }
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
@@ -416,12 +418,11 @@ namespace tc
                 return;
             }
 
-            // plugins
+            // plugins: SharedTexture
             {
                 plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
-                    plugin->OnRawVideoFrame(msg.handle_);
+                    plugin->OnRawVideoFrameSharedTexture(msg.handle_);
                 });
-
             }
 
             // calculate gaps between 2 captured frames.
@@ -591,14 +592,6 @@ namespace tc
         r->set_monitor_name(name);
         r->set_result(ok);
         connection_->PostNetMessage(m.SerializeAsString());
-    }
-
-    void Application::PostRawImageReaderThread(std::function<void()>&& task) {
-        if (!raw_image_reader_thread_) {
-            raw_image_reader_thread_ = Thread::Make("raw_image_reader", 1024);
-            raw_image_reader_thread_->Poll();
-        }
-        raw_image_reader_thread_->Post(std::move(task));
     }
 
     void Application::Exit() {

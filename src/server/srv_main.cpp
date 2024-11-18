@@ -139,6 +139,8 @@ int main(int argc, char** argv) {
     // dump
     CaptureDump();
 
+    //MessageBoxA(0,0,0,0);
+
     // Log
     std::cout << "logfile: " << FLAGS_logfile << std::endl;
     Logger::InitLog("GammaRayServer.log", FLAGS_logfile);
