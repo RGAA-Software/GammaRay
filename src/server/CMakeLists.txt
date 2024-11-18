@@ -31,7 +31,7 @@ set(SRCS
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/webrtc)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/webrtc)
 
 add_library(main ${SRCS})
 
@@ -49,7 +49,7 @@ target_link_libraries(main Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}:
 
 add_executable(${PROJECT_NAME} WIN32 srv_main.cpp)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
-target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_rtc tc_plugin) #
+target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_plugin) # tc_rtc
 target_link_libraries(${PROJECT_NAME} sqlite_orm EasyHook64 gflags::gflags)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

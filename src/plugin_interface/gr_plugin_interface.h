@@ -11,6 +11,11 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtGui/QPixmap>
 
 #include "asio2/asio2.hpp"
 
@@ -47,7 +52,7 @@ namespace tc
     using GrPluginEventCallback = std::function<void(const std::shared_ptr<GrPluginBaseEvent>&)>;
 
     // interface
-    class GrPluginInterface {
+    class GrPluginInterface : public QObject {
     public:
         GrPluginInterface() = default;
         virtual ~GrPluginInterface() = default;
@@ -93,10 +98,13 @@ namespace tc
         virtual void OnEncodedVideoFrameInProtobufFormat(const std::string& msg);
         // raw video frame
         // handle: D3D Shared texture handle
-        virtual void OnRawVideoFrame(uint64_t handle);
-        // raw video frame
+        virtual void OnRawVideoFrameSharedTexture(uint64_t handle);
+        // raw video frame in rgba format
         // image: Raw image
-        virtual void OnRawVideoFrame(const std::shared_ptr<Image>& image);
+        virtual void OnRawVideoFrameRgba(const std::shared_ptr<Image>& image);
+        // raw video frame in yuv(I420) format
+        // image: Raw image
+        virtual void OnRawVideoFrameYuv(const std::shared_ptr<Image>& image);
 
         // audio
         virtual void OnAudioFormat(int samples, int channels, int bits);
@@ -116,6 +124,14 @@ namespace tc
 
         virtual void On1Second();
 
+        // key frame
+        void InsertIdr();
+
+        // widget
+        QWidget* GetRootWidget();
+        bool eventFilter(QObject *watched, QEvent *event) override;
+        void ShowRootWidget();
+        void HideRootWidget();
 
     protected:
         std::atomic_bool enabled_ = false;
@@ -126,6 +142,7 @@ namespace tc
         std::shared_ptr<asio2::timer> timer_ = nullptr;
         std::string plugin_file_name_;
         GrPluginType plugin_type_ = GrPluginType::kUtil;
+        QWidget* root_widget_ = nullptr;
     };
 
 }

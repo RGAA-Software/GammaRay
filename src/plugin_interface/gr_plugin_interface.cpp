@@ -7,6 +7,9 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/thread.h"
 #include "gr_plugin_events.h"
+#include "tc_common_new/log.h"
+
+#include <QtCore/QEvent>
 
 namespace tc
 {
@@ -60,6 +63,11 @@ namespace tc
 
         timer_ = std::make_shared<asio2::timer>();
 
+        root_widget_ = new QWidget();
+        root_widget_->resize(960, 540);
+        root_widget_->hide();
+        root_widget_->installEventFilter(this);
+
         return true;
     }
 
@@ -100,11 +108,15 @@ namespace tc
 
     }
 
-    void GrPluginInterface::OnRawVideoFrame(uint64_t handle) {
+    void GrPluginInterface::OnRawVideoFrameSharedTexture(uint64_t handle) {
 
     }
 
-    void GrPluginInterface::OnRawVideoFrame(const std::shared_ptr<Image>& image) {
+    void GrPluginInterface::OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) {
+
+    }
+
+    void GrPluginInterface::OnRawVideoFrameYuv(const std::shared_ptr<Image>& image) {
 
     }
 
@@ -151,6 +163,35 @@ namespace tc
 
     void GrPluginInterface::On1Second() {
 
+    }
+
+    void GrPluginInterface::InsertIdr() {
+        auto event = std::make_shared<GrPluginInsertIdrEvent>();
+        CallbackEvent(event);
+    }
+
+    QWidget* GrPluginInterface::GetRootWidget() {
+        return root_widget_;
+    }
+
+    bool GrPluginInterface::eventFilter(QObject *watched, QEvent *event) {
+        if (watched == root_widget_) {
+            if (event->type() == QEvent::Type::Close) {
+                LOGI("Event: {}", (int) event->type());
+                event->ignore();
+                ((QWidget*)watched)->hide();
+                return true;
+            }
+        }
+        return QObject::eventFilter(watched, event);
+    }
+
+    void GrPluginInterface::ShowRootWidget() {
+        root_widget_->show();
+    }
+
+    void GrPluginInterface::HideRootWidget() {
+        root_widget_->hide();
     }
 
 }
