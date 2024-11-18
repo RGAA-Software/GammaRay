@@ -28,6 +28,12 @@ namespace tc
         std::map<std::string, std::any> cluster_;
     };
 
+    // plugin type
+    enum class GrPluginType {
+        kStream,
+        kUtil,
+    };
+
     // encoded video type
     enum class GrPluginEncodedVideoType {
         kH264,
@@ -51,6 +57,8 @@ namespace tc
 
         // info
         virtual std::string GetPluginName();
+        virtual GrPluginType GetPluginType();
+        virtual bool IsStreamPlugin();
 
         // version
         virtual std::string GetVersionName();
@@ -61,6 +69,9 @@ namespace tc
         virtual void EnablePlugin();
         virtual void DisablePlugin();
 
+        // working
+        virtual bool IsWorking();
+
         // lifecycle
         virtual bool OnCreate(const GrPluginParam& param);
         virtual bool OnResume();
@@ -69,22 +80,23 @@ namespace tc
 
         // video
         virtual void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height);
+        // data: encode video frame, h264/h265/...
         virtual void OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
                                          const std::shared_ptr<Data>& data,
                                          uint64_t frame_index,
                                          int frame_width,
                                          int frame_height,
-                                         bool key,
-                                         int mon_idx,
-                                         const std::string& display_name,
-                                         int mon_left,
-                                         int mon_top,
-                                         int mon_right,
-                                         int mon_bottom);
+                                         bool key);
         // to see format detail in tc_message_new/tc_message.proto
         // message VideoFrame { ... }
         // you can send it to any clients
         virtual void OnEncodedVideoFrameInProtobufFormat(const std::string& msg);
+        // raw video frame
+        // handle: D3D Shared texture handle
+        virtual void OnRawVideoFrame(uint64_t handle);
+        // raw video frame
+        // image: Raw image
+        virtual void OnRawVideoFrame(const std::shared_ptr<Image>& image);
 
         // audio
         virtual void OnAudioFormat(int samples, int channels, int bits);
@@ -113,6 +125,7 @@ namespace tc
         GrPluginEventCallback event_cbk_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
         std::string plugin_file_name_;
+        GrPluginType plugin_type_ = GrPluginType::kUtil;
     };
 
 }

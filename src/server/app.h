@@ -97,6 +97,8 @@ namespace tc
         void SendConfigurationBack();
         void RequestRestartMe();
 
+        void PostRawImageReaderThread(std::function<void()>&& task);
+
     protected:
         Settings* settings_ = nullptr;
         std::shared_ptr<WSClient> ws_client_ = nullptr;
@@ -136,6 +138,8 @@ namespace tc
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
+
+        std::shared_ptr<Thread> raw_image_reader_thread_ = nullptr;
     };
 
     // Windows

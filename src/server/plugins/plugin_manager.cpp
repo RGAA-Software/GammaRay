@@ -123,9 +123,7 @@ namespace tc
     }
 
     void PluginManager::On1Second() {
-        LOGI("On1Second...");
         VisitPlugins([=, this](GrPluginInterface* plugin) {
-            LOGI("On1Second...{}", plugin->GetPluginName());
             plugin->On1Second();
         });
     }

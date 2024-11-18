@@ -416,6 +416,14 @@ namespace tc
                 return;
             }
 
+            // plugins
+            {
+                plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                    plugin->OnRawVideoFrame(msg.handle_);
+                });
+
+            }
+
             // calculate gaps between 2 captured frames.
             {
                 auto current_time = TimeExt::GetCurrentTimestamp();
@@ -452,13 +460,19 @@ namespace tc
             return;
         }
 
-        //LOGI("Frame ws ipc pass from shm: adapter uid: {}, type: {}, frame index: {}, frame_width: {}, frame_height: {}, buffer size: {}",
-        //     msg->adapter_uid_, (int)msg->type_, msg->frame_index_, msg->frame_width_, msg->frame_height_,  0);
+//        LOGI("Frame ws ipc pass from shm: adapter uid: {}, type: {}, frame index: {}, frame_width: {}, frame_height: {}, buffer size: {}",
+//             msg->adapter_uid_, (int)msg->type_, msg->frame_index_, msg->frame_width_, msg->frame_height_,  0);
         encoder_thread_->Encode(*msg);
     }
 
     bool Application::HasConnectedPeer() {
-        return connection_ && connection_->GetConnectionPeerCount() > 0;
+        bool has_working_stream_plugin = false;
+        plugin_manager_->VisitPlugins([&](GrPluginInterface* plugin) {
+            if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
+                has_working_stream_plugin = true;
+            }
+        });
+        return (connection_ && connection_->GetConnectionPeerCount() > 0) || has_working_stream_plugin;
     }
 
     void Application::WriteBoostUpInfoForPid(uint32_t pid) {
@@ -577,6 +591,14 @@ namespace tc
         r->set_monitor_name(name);
         r->set_result(ok);
         connection_->PostNetMessage(m.SerializeAsString());
+    }
+
+    void Application::PostRawImageReaderThread(std::function<void()>&& task) {
+        if (!raw_image_reader_thread_) {
+            raw_image_reader_thread_ = Thread::Make("raw_image_reader", 1024);
+            raw_image_reader_thread_->Poll();
+        }
+        raw_image_reader_thread_->Post(std::move(task));
     }
 
     void Application::Exit() {

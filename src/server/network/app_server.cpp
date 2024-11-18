@@ -121,6 +121,9 @@ namespace tc
     }
 
     bool AppServer::OnlyAudioClient() {
+        if (media_routers_.Size() <= 0) {
+            return false;
+        }
         bool only_audio_client = true;
         media_routers_.VisitAllCond([&](auto k, auto& v) -> bool {
             if (v->enable_video_) {
