@@ -197,7 +197,7 @@ namespace tc
                 }
             } ();
             plugin_manager_->VisitPlugins([=, this](GrPluginInterface* plugin) {
-                //plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
+                plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
             });
 
             static uint64_t write_buffer = 0;
@@ -230,13 +230,7 @@ namespace tc
                                                 frame_index,
                                                 frame->width,
                                                 frame->height,
-                                                key,
-                                                msg.monitor_index_,
-                                                msg.monitor_name_,
-                                                msg.monitor_left_,
-                                                msg.monitor_top_,
-                                                msg.monitor_right_,
-                                                msg.monitor_bottom_);
+                                                key);
                 });
             });
 

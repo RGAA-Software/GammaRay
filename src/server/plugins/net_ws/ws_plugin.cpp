@@ -29,6 +29,7 @@ namespace tc
         GrPluginInterface::OnCreate(param);
         Logger::InitLog(plugin_file_name_+".log", true);
         LOGI("{} OnCreate", GetPluginName());
+        plugin_type_ = GrPluginType::kStream;
         ws_server_ = std::make_shared<WsPluginServer>();
         ws_server_->Start();
         return true;
@@ -48,6 +49,10 @@ namespace tc
         CallbackEvent(evt);
     }
 
+    bool WsPlugin::IsWorking() {
+        return ws_server_ && ws_server_->GetConnectionPeerCount() > 0;
+    }
+
     void WsPlugin::OnVideoEncoderCreated(const tc::GrPluginEncodedVideoType& type, int width, int height) {
         LOGI("OnVideoEncoderCreated: {}, {}x{}", (int)type, width, height);
     }
@@ -57,13 +62,7 @@ namespace tc
                              uint64_t frame_index,
                              int frame_width,
                              int frame_height,
-                             bool key,
-                             int mon_idx,
-                             const std::string &display_name,
-                             int mon_left,
-                             int mon_top,
-                             int mon_right,
-                             int mon_bottom) {
+                             bool key) {
     }
 
     void WsPlugin::OnEncodedVideoFrameInProtobufFormat(const std::string& msg) {

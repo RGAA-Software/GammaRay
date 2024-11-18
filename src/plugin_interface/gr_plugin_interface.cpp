@@ -15,6 +15,14 @@ namespace tc
         return "dummy";
     }
 
+    GrPluginType GrPluginInterface::GetPluginType() {
+        return plugin_type_;
+    }
+
+    bool GrPluginInterface::IsStreamPlugin() {
+        return plugin_type_ == GrPluginType::kStream;
+    }
+
     std::string GrPluginInterface::GetVersionName() {
         return "1.0.0";
     }
@@ -33,6 +41,10 @@ namespace tc
 
     void GrPluginInterface::DisablePlugin() {
         enabled_ = false;
+    }
+
+    bool GrPluginInterface::IsWorking() {
+        return false;
     }
 
     bool GrPluginInterface::OnCreate(const GrPluginParam& param) {
@@ -80,17 +92,19 @@ namespace tc
                                  uint64_t frame_index,
                                  int frame_width,
                                  int frame_height,
-                                 bool key,
-                                 int mon_idx,
-                                 const std::string& display_name,
-                                 int mon_left,
-                                 int mon_top,
-                                 int mon_right,
-                                 int mon_bottom) {
+                                 bool key) {
 
     }
 
     void GrPluginInterface::OnEncodedVideoFrameInProtobufFormat(const std::string& msg) {
+
+    }
+
+    void GrPluginInterface::OnRawVideoFrame(uint64_t handle) {
+
+    }
+
+    void GrPluginInterface::OnRawVideoFrame(const std::shared_ptr<Image>& image) {
 
     }
 
