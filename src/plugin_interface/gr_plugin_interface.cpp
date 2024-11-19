@@ -18,6 +18,10 @@ namespace tc
         return "dummy";
     }
 
+    std::string GrPluginInterface::GetPluginDescription() {
+        return "plugin description";
+    }
+
     GrPluginType GrPluginInterface::GetPluginType() {
         return plugin_type_;
     }
@@ -57,6 +61,9 @@ namespace tc
             auto n = param.cluster_.at("name");
             plugin_file_name_ = std::any_cast<std::string>(n);
         }
+
+        Logger::InitLog(plugin_file_name_+".log", true);
+        LOGI("{} OnCreate", GetPluginName());
 
         work_thread_ = Thread::Make(GetPluginName(), 1024);
         work_thread_->Poll();

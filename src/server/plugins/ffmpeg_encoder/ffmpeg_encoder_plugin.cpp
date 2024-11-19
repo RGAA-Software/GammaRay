@@ -21,15 +21,15 @@ namespace tc
 {
 
     std::string FFmpegEncoderPlugin::GetPluginName() {
-        return "FFmpeg Encoder Plugin";
+        return kFFmpegPluginName;
     }
 
     std::string FFmpegEncoderPlugin::GetVersionName() {
-        return "1.1.0";
+        return "1.0.2";
     }
 
     uint32_t FFmpegEncoderPlugin::GetVersionCode() {
-        return 110;
+        return 102;
     }
 
     void FFmpegEncoderPlugin::On1Second() {
@@ -37,9 +37,8 @@ namespace tc
     }
 
     bool FFmpegEncoderPlugin::OnCreate(const tc::GrPluginParam& plugin_param) {
-        GrPluginInterface::OnCreate(plugin_param);
-        Logger::InitLog(plugin_file_name_+".log", true);
-        LOGI("{} OnCreate", GetPluginName());
+        tc::GrEncoderPlugin::OnCreate(plugin_param);
+
         return true;
     }
 
@@ -55,13 +54,10 @@ namespace tc
         return init_success_;
     }
 
-    bool FFmpegEncoderPlugin::Init() {
-        auto encoder_id = AV_CODEC_ID_H264;//encoder_config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
+    bool FFmpegEncoderPlugin::Init(const EncoderConfig& config) {
+        GrEncoderPlugin::Init(config);
+        auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
         const AVCodec* encoder = avcodec_find_encoder(encoder_id);
-//        const AVCodec* encoder = avcodec_find_encoder_by_name("libx264");
-
-        out_width_ = 1920;
-        out_height_ = 1080;
 
         context_ = avcodec_alloc_context3(encoder);
         if (!context_) {
@@ -83,7 +79,7 @@ namespace tc
 
         LOGI("ffmpeg encoder config:");
         LOGI("bitrate: {}", context_->bit_rate);
-        LOGI("format: {}", "H264"/*(encoder_config.codec_type == EVideoCodecType::kHEVC ? "HEVC" : "H264")*/);
+        LOGI("format: {}", (config.codec_type == EVideoCodecType::kHEVC ? "HEVC" : "H264"));
         LOGI("refresh rate(fps): {}", this->refresh_rate_);
         LOGI("thread count: {}", context_->thread_count);
         LOGI("gop size: {}", context_->gop_size);
@@ -115,7 +111,7 @@ namespace tc
 
         av_frame_get_buffer(frame_, 0);
         packet_ = av_packet_alloc();
-
+        init_success_ = true;
         LOGI("Line 1: {} 2: {} 3: {}", frame_->linesize[0], frame_->linesize[1], frame_->linesize[2]);
         return true;
     }
@@ -124,16 +120,11 @@ namespace tc
 
     }
 
-    void FFmpegEncoderPlugin::Encode(ID3D11Texture2D* tex2d) {
+    void FFmpegEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) {
 
     }
 
     void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) {
-        if (!init_success_) {
-            init_success_ = Init();
-            LOGI("Init result: {}", init_success_);
-        }
-        //
         auto img_width = i420_image->width;
         auto img_height = i420_image->height;
         auto i420_data = i420_image->data;
@@ -165,18 +156,23 @@ namespace tc
                 break;
             }
 
-            LOGI("Packet frame is key: {}", (packet_->flags & AV_PKT_FLAG_KEY));
+            bool key_frame = (packet_->flags & AV_PKT_FLAG_KEY);
             auto encoded_data = Data::Make((char*)packet_->data, packet_->size);
-//            if (encoder_callback_) {
-//                auto image = Image::Make(encoded_data, img_width, img_height, 3);
-//                encoder_callback_(image, frame_index, false);
-//            }
 
-            static std::ofstream file("123123.h264", std::ios::binary);
-            file.write(encoded_data->CStr(), encoded_data->Size());
+            auto event = std::make_shared<GrPluginEncodedVideoFrameEvent>();
+            event->data_ = encoded_data;
+            event->frame_width_ = img_width;
+            event->frame_height_ = img_height;
+            event->key_frame_ = key_frame;
+            event->frame_index_ = frame_index;
+            CallbackEvent(event);
 
             av_packet_unref(packet_);
         }
+    }
+
+    void FFmpegEncoderPlugin::Exit() {
+
     }
 
 }

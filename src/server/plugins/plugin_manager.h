@@ -32,6 +32,10 @@ namespace tc
         void ReleasePlugin(const std::string& name);
 
         GrPluginInterface* GetPluginByName(const std::string& name);
+        GrEncoderPlugin* GetFFmpegEncoderPlugin();
+        GrEncoderPlugin* GetNvencEncoderPlugin();
+        GrEncoderPlugin* GetAmfEncoderPlugin();
+
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);
         void VisitUtilPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
@@ -45,6 +49,7 @@ namespace tc
         tc::ConcurrentHashMap<std::string, GrPluginInterface*> plugins_;
         std::map<std::string, QLibrary*> libs_;
         std::shared_ptr<PluginEventRouter> evt_router_ = nullptr;
+        GrEncoderPlugin* working_encoder_plugin_ = nullptr;
     };
 
 }

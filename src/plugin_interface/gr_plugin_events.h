@@ -1,22 +1,36 @@
 //
-// Created by hy on 15/11/2024.
+// Created by RGAA on 15/11/2024.
 //
 
 #ifndef GAMMARAY_GR_PLUGIN_EVENTS_H
 #define GAMMARAY_GR_PLUGIN_EVENTS_H
 
 #include <string>
+#include <memory>
 
 namespace tc
 {
 
-    enum class GrPluginEventType {
+    class Data;
+    class Image;
 
+    enum class GrPluginEventType {
+        kPluginUnknownType,
+        kPluginKeyboardEvent,
+        kPluginMouseEvent,
+        kPluginGamePadEvent,
+        kPluginClientConnectedEvent,
+        kPluginClientDisConnectedEvent,
+        kPluginInsertIdrEvent,
+        kPluginEncodedVideoFrameEvent,
     };
 
     class GrPluginBaseEvent {
     public:
+        virtual ~GrPluginBaseEvent() = default;
+    public:
         std::string plugin_name_;
+        GrPluginEventType plugin_type_{GrPluginEventType::kPluginUnknownType};
     };
 
     // GrKeyboardEvent
@@ -53,6 +67,20 @@ namespace tc
     class GrPluginInsertIdrEvent : public GrPluginBaseEvent {
     public:
 
+    };
+
+    // GrPluginEncodedVideoFrameEvent
+    class GrPluginEncodedVideoFrameEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginEncodedVideoFrameEvent() {
+            plugin_type_ = GrPluginEventType::kPluginEncodedVideoFrameEvent;
+        }
+    public:
+        std::shared_ptr<Data> data_ = nullptr;
+        uint32_t frame_width_ = 0;
+        uint32_t frame_height_ = 0;
+        bool key_frame_ = false;
+        uint64_t frame_index_ = 0;
     };
 }
 

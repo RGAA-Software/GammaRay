@@ -63,6 +63,7 @@ namespace tc
 
         // info
         virtual std::string GetPluginName();
+        virtual std::string GetPluginDescription();
         virtual GrPluginType GetPluginType();
         virtual bool IsStreamPlugin();
 
@@ -115,6 +116,7 @@ namespace tc
         std::string plugin_file_name_;
         GrPluginType plugin_type_ = GrPluginType::kUtil;
         QWidget* root_widget_ = nullptr;
+        std::string plugin_desc_;
     };
 
 }

@@ -45,6 +45,7 @@ namespace tc
     EncoderThread::EncoderThread(const std::shared_ptr<Context>& ctx) {
         context_ = ctx;
         settings_ = Settings::Instance();
+        plugin_manager_ = context_->GetPluginManager();
         enc_thread_ = Thread::Make("encoder_thread", 5);
         enc_thread_->Poll();
 
@@ -57,9 +58,13 @@ namespace tc
             if (video_encoder_) {
                 video_encoder_->InsertIDR();
             }
+            // plugins: InsertIdr
+            {
+                plugin_manager_->VisitEncoderPlugins([=](GrEncoderPlugin* plugin) {
+                    plugin->InsertIdr();
+                });
+            }
         });
-
-        plugin_manager_ = context_->GetPluginManager();
     }
 
     void EncoderThread::Encode(const std::shared_ptr<Data>& data, int width, int height, uint64_t frame_index) {
@@ -188,6 +193,30 @@ namespace tc
                 return;
             }
 
+            // plugins: Create encoder plugin
+            {
+                auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
+                if (nvenc_encoder && nvenc_encoder->Init(encoder_config)) {
+                    working_encoder_plugin_ = nvenc_encoder;
+                } else {
+                    LOGW("Init NVENC failed, will try AMF.");
+                    auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
+                    if (amf_encoder && amf_encoder->Init(encoder_config)) {
+                        working_encoder_plugin_ = amf_encoder;
+                    } else {
+                        LOGW("Init AMF failed, will try FFmpeg.");
+                        auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                        if (ffmpeg_encoder && ffmpeg_encoder->Init(encoder_config)) {
+                            working_encoder_plugin_ = ffmpeg_encoder;
+                        } else {
+                            LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                            return;
+                        }
+                    }
+                }
+                LOGI("Finally, we use encoder plugin: {}, version: {}", working_encoder_plugin_->GetPluginName(), working_encoder_plugin_->GetVersionName());
+            }
+
             auto video_type = [=]() -> GrPluginEncodedVideoType {
                 if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264) {
                     return GrPluginEncodedVideoType::kH264;
@@ -254,11 +283,11 @@ namespace tc
 
                 // test encoder plugins:
                 {
-                    plugin_manager_->VisitEncoderPlugins([=, this](GrEncoderPlugin* plugin) {
-                        video_encoder_->VisitRawImageYuv([=](const std::shared_ptr<Image>& image) {
-                            plugin->Encode(image, frame_index);
+                    if (working_encoder_plugin_ != nullptr) {
+                        video_encoder_->VisitRawImageYuv([=, this](const std::shared_ptr<Image>& image) {
+                            working_encoder_plugin_->Encode(image, frame_index);
                         });
-                    });
+                    }
                 }
             });
 
