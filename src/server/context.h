@@ -40,6 +40,7 @@ namespace tc
         }
 
         void PostTask(std::function<void()>&& task);
+        void PostStreamPluginTask(std::function<void()>&& task);
         std::shared_ptr<asio2::iopool> GetAsio2IoPool();
         static std::string GetCurrentExeFolder();
 
@@ -48,6 +49,7 @@ namespace tc
         std::shared_ptr<Thread> msg_thread_ = nullptr;
         std::shared_ptr<asio2::iopool> asio2_pool_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
+        std::shared_ptr<Thread> stream_plugin_thread_ = nullptr;
     };
 }
 

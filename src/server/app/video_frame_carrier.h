@@ -27,12 +27,24 @@ namespace tc
     // move video frames from provider / capture
     class VideoFrameCarrier {
     public:
-        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx);
+        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id);
 
         bool D3D11Texture2DLockMutex(ComPtr<ID3D11Texture2D> texture2d);
         bool D3D11Texture2DReleaseMutex(ComPtr<ID3D11Texture2D> texture2d);
         bool CopyID3D11Texture2D(ComPtr<ID3D11Texture2D> shared_texture2d);
         ComPtr<ID3D11Texture2D> OpenSharedTexture(HANDLE handle);
+
+        bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
+                           std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
+                           std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
+
+        ID3D11Texture2D* CopyTexture(uint64_t handle, uint64_t frame_index);
+        void Exit();
+
+    private:
+        bool CopyToRawImage(const uint8_t* data, int row_pitch_bytes, int height);
+        void ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
+        int GetRawImageType() const;
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
@@ -41,10 +53,8 @@ namespace tc
         ComPtr<ID3D11Texture2D> texture2d_;
         std::shared_ptr<FrameRender> frame_render_ = nullptr;
 
-        std::mutex raw_image_rgba_mtx_;
         std::shared_ptr<Image> raw_image_rgba_ = nullptr;
         int raw_image_rgba_format_ = -1;
-        std::mutex raw_image_yuv_mtx_;
         std::shared_ptr<Image> raw_image_yuv_ = nullptr;
 
         // async yuv converter

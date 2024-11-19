@@ -28,6 +28,7 @@
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_encoder_plugin.h"
+#include "video_frame_carrier.h"
 #endif
 
 #define DEBUG_FILE 0
@@ -193,6 +194,15 @@ namespace tc
                 return;
             }
 
+            // video frame carrier
+            {
+                if (frame_carrier_ != nullptr) {
+                    frame_carrier_->Exit();
+                    frame_carrier_.reset();
+                }
+                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_);
+            }
+
             // plugins: Create encoder plugin
             {
                 auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
@@ -228,11 +238,11 @@ namespace tc
             } ();
 
             // plugins: VideoEncoderCreated
-            {
+            context_->PostStreamPluginTask([=, this]() {
                 plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
                     plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
                 });
-            }
+            });
 
             static uint64_t write_buffer = 0;
             video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
@@ -259,7 +269,7 @@ namespace tc
                 context_->SendAppMessage(msg);
 
                 // stream plugins: Raw frame / Encoded frame
-                {
+                context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
                         // rgba
                         video_encoder_->VisitRawImageRgba([=](const std::shared_ptr<Image>& image) {
@@ -272,17 +282,13 @@ namespace tc
                         });
 
                         // encoded(h264/h265)
-                        plugin->OnEncodedVideoFrame(video_type,
-                                                    frame->data,
-                                                    frame_index,
-                                                    frame->width,
-                                                    frame->height,
-                                                    key);
+                        plugin->OnEncodedVideoFrame(video_type, frame->data, frame_index, frame->width,
+                                                    frame->height, key);
                     });
-                }
+                });
 
                 // test encoder plugins:
-                {
+                if (false) {
                     if (working_encoder_plugin_ != nullptr) {
                         video_encoder_->VisitRawImageYuv([=, this](const std::shared_ptr<Image>& image) {
                             working_encoder_plugin_->Encode(image, frame_index);
@@ -297,11 +303,35 @@ namespace tc
         }
 
         enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
+//            auto beg = TimeExt::GetCurrentTimestamp();
+//            video_encoder_->Encode(cap_video_msg.handle_, cap_video_msg.frame_index_);
+//            auto end = TimeExt::GetCurrentTimestamp();
+//            auto diff = end - beg;
+//            Statistics::Instance()->AppendEncodeDuration(diff);
+
+            //
+            if (frame_carrier_ == nullptr) {
+                return;
+            }
             auto beg = TimeExt::GetCurrentTimestamp();
-            video_encoder_->Encode(cap_video_msg.handle_, cap_video_msg.frame_index_);
-            auto end = TimeExt::GetCurrentTimestamp();
-            auto diff = end - beg;
-            Statistics::Instance()->AppendEncodeDuration(diff);
+            auto target_texture = frame_carrier_->CopyTexture(cap_video_msg.handle_, cap_video_msg.frame_index_);
+            if (target_texture != nullptr) {
+                video_encoder_->Encode(target_texture);
+                auto end = TimeExt::GetCurrentTimestamp();
+                auto diff = end - beg;
+                Statistics::Instance()->AppendEncodeDuration(diff);
+
+                // TODO: May make latency !!!
+                D3D11_TEXTURE2D_DESC desc;
+                target_texture->GetDesc(&desc);
+                auto rgba_cbk = [=, this](const std::shared_ptr<Image>& image) {
+                    //LOGI("RGBA Callback...{}x{}, size: {}", image->width, image->height, image->GetData()->Size());
+                };
+                auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
+                    //LOGI("YUV Callback...{}x{}, size: {}", image->width, image->height, image->GetData()->Size());
+                };
+                frame_carrier_->MapRawTexture(target_texture, desc.Format, (int)desc.Height, rgba_cbk, yuv_cbk);
+            }
         }));
     }
 

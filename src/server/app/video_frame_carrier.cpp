@@ -5,12 +5,69 @@
 #include "video_frame_carrier.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/time_ext.h"
+#include "tc_encoder_new/frame_render/FrameRender.h"
+#include "tc_common_new/image.h"
+#include "tc_common_new/thread.h"
+#include "tc_common_new/defer.h"
+#include <libyuv/convert.h>
+#include <atlcomcli.h>
 
 namespace tc
 {
 
-    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx) {
+    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id) {
         context_ = ctx;
+        yuv_converter_thread_ = Thread::Make("video frame carrier", 1024);
+        yuv_converter_thread_->Poll();
+
+        LOGI("adapter_uid_ = {}", adapter_id);
+        ComPtr<IDXGIFactory1> factory1;
+        ComPtr<IDXGIAdapter1> adapter;
+        DXGI_ADAPTER_DESC desc;
+        HRESULT res = NULL;
+        bool found_adapter = false;
+        int adapter_index = 0;
+        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
+        if (res != S_OK) {
+            LOGE("CreateDXGIFactory1 failed");
+            return;
+        }
+        while (true) {
+            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
+            if (res != S_OK) {
+                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
+                return;
+            }
+            D3D_FEATURE_LEVEL featureLevel;
+
+            adapter->GetDesc(&desc);
+            if (adapter_id == desc.AdapterLuid.LowPart) {
+                found_adapter = true;
+                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
+                LOGI("find adapter");
+                break;
+            }
+            ++adapter_index;
+        }
+
+        if (!found_adapter) {
+            LOGE("can not found adapter\n");
+            return;
+        }
+
+        D3D_FEATURE_LEVEL featureLevel;
+        res = D3D11CreateDevice(adapter.Get(),
+                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
+                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+                                nullptr, 0, D3D11_SDK_VERSION,
+                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
+
+        if (res != S_OK || !d3d11_device_) {
+            LOGE("D3D11CreateDevice failed: {}", res);
+        } else {
+            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
+        }
     }
 
     bool VideoFrameCarrier::D3D11Texture2DLockMutex(ComPtr<ID3D11Texture2D> texture2d) {
@@ -114,5 +171,175 @@ namespace tc
         }
         return sharedTexture;
     }
-    
+
+    ID3D11Texture2D* VideoFrameCarrier::CopyTexture(uint64_t handle, uint64_t frame_index) {
+        ComPtr<ID3D11Texture2D> shared_texture;
+        shared_texture = OpenSharedTexture(reinterpret_cast<HANDLE>(handle));
+        if (!shared_texture) {
+            LOGE("OpenSharedTexture failed.");
+            return nullptr;
+        }
+
+        //DebugOutDDS(shared_texture.Get(), "1.dds");
+
+        D3D11_TEXTURE2D_DESC desc;
+        shared_texture->GetDesc(&desc);
+        if (false/*encoder_config_.frame_resize*/) {
+//            auto beg = TimeExt::GetCurrentTimestamp();
+//            if (!frame_render_ && d3d11_device_ && d3d11_device_context_) {
+//                frame_render_ = FrameRender::Make(d3d11_device_.Get(), d3d11_device_context_.Get());
+//                SIZE target_size = {encoder_config_.encode_width, encoder_config_.encode_height};
+//                frame_render_->Prepare(target_size, {(long) desc.Width, (long) desc.Height}, desc.Format);
+//            }
+//
+//            auto resize_ctx = frame_render_->GetD3D11DeviceContext();
+//
+//            {
+//                if (!D3D11Texture2DLockMutex(shared_texture)) {
+//                    LOGE("D3D11Texture2DLockMutex error\n");
+//                    return nullptr;
+//                }
+//                std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
+//                    D3D11Texture2DReleaseMutex(shared_texture);
+//                });
+//                auto pre_texture = frame_render_->GetSrcTexture();
+//                ID3D11Device* dev;
+//                shared_texture->GetDevice(&dev);
+//                resize_ctx->CopyResource(pre_texture, shared_texture.Get());
+//                //DebugOutDDS(pre_texture, "2.dds");
+//            }
+//            frame_render_->Draw();
+//            auto final_texture = frame_render_->GetFinalTexture();
+//            //DebugOutDDS(final_texture, "3.dds");
+//            if (!final_texture) {
+//                LOGE("Draw failed");
+//                return nullptr;
+//            }
+//
+//            // plugins: Copy
+//            {
+//                D3D11_TEXTURE2D_DESC resize_desc;
+//                final_texture->GetDesc(&resize_desc);
+//                CopyRawTexture(final_texture, resize_desc.Format, resize_desc.Height);
+//            }
+//
+//            Encode(final_texture);
+
+        } else {
+            if (!CopyID3D11Texture2D(shared_texture)) {
+                LOGE("CopyID3D11Texture2D failed.");
+                return nullptr;
+            }
+            //Encode(texture2d_.Get());
+            return texture2d_.Get();
+        }
+    }
+
+    bool VideoFrameCarrier::MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
+                                          std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
+                                          std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
+        CComPtr<IDXGISurface> staging_surface = nullptr;
+        auto hr = texture->QueryInterface(IID_PPV_ARGS(&staging_surface));
+        if (FAILED(hr)) {
+            LOGE("TEST COPY !QueryInterface(IDXGISurface) err");
+            return false;
+        }
+        DXGI_MAPPED_RECT mapped_rect{};
+        hr = staging_surface->Map(&mapped_rect, DXGI_MAP_READ);
+        if (FAILED(hr)) {
+            LOGE("TEST COPY !Map(IDXGISurface)");
+            return false;
+        }
+        auto defer = Defer::Make([staging_surface]() {
+            staging_surface->Unmap();
+        });
+
+        // copy to raw image buffer
+        raw_image_rgba_format_ = format;
+        bool ok = CopyToRawImage(mapped_rect.pBits, mapped_rect.Pitch, height);
+        if (ok) {
+            rgba_cbk(raw_image_rgba_);
+        }
+
+        ConvertToYuv(std::move(yuv_cbk));
+
+        return ok;
+    }
+
+    bool VideoFrameCarrier::CopyToRawImage(const uint8_t* data, int row_pitch_bytes, int height) {
+        auto total_size = row_pitch_bytes * height;
+        auto width = row_pitch_bytes / 4;
+        if (raw_image_rgba_ == nullptr || (raw_image_rgba_->GetData() && raw_image_rgba_->GetData()->Size() != total_size)) {
+            raw_image_rgba_ = Image::Make(Data::Make(nullptr, total_size), width, height);
+        }
+
+        if (total_size > raw_image_rgba_->GetData()->Size()) {
+            LOGE("raw image buffer is too small, you need to resize it!");
+            return false;
+        }
+        memcpy(raw_image_rgba_->GetData()->DataAddr(), data, total_size);
+        raw_image_rgba_->raw_img_type_ = (RawImageType)GetRawImageType();
+        return true;
+    }
+
+    void VideoFrameCarrier::ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
+        auto task = [=, this]() {
+//            std::lock(raw_image_rgba_mtx_, raw_image_yuv_mtx_);
+//            std::lock_guard<std::mutex> guard1(raw_image_rgba_mtx_, std::adopt_lock );
+//            std::lock_guard<std::mutex> guard2(raw_image_yuv_mtx_, std::adopt_lock );
+
+            auto beg = TimeExt::GetCurrentTimestamp();
+            if (!raw_image_rgba_ || !raw_image_rgba_->GetData()) {
+                return;
+            }
+            if (!raw_image_yuv_ ||
+                (raw_image_yuv_->GetWidth() != raw_image_rgba_->GetWidth() || raw_image_yuv_->GetHeight() != raw_image_yuv_->GetHeight())) {
+                raw_image_yuv_ = Image::Make(Data::Make(nullptr, raw_image_rgba_->GetWidth() * raw_image_rgba_->GetHeight() * 1.5),
+                                             raw_image_rgba_->GetWidth(), raw_image_rgba_->GetHeight(), RawImageType::kI420);
+            }
+            int width = raw_image_rgba_->GetWidth();
+            int height = raw_image_rgba_->GetHeight();
+            size_t pixel_size = width * height;
+
+            const int uv_stride = width >> 1;
+            uint8_t* y = (uint8_t*)raw_image_yuv_->GetData()->DataAddr();
+            uint8_t* u = y + pixel_size;
+            uint8_t* v = u + (pixel_size >> 2);
+
+            auto pitch = raw_image_rgba_->GetWidth() * 4;
+            auto data_buffer = (uint8_t*)raw_image_rgba_->GetData()->DataAddr();
+            if (DXGI_FORMAT_B8G8R8A8_UNORM == raw_image_rgba_format_) {
+                libyuv::ARGBToI420(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
+            }
+            else if (DXGI_FORMAT_R8G8B8A8_UNORM == raw_image_rgba_format_) {
+                libyuv::ABGRToI420(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
+            }
+            else {
+                libyuv::ARGBToI420(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
+            }
+
+            yuv_cbk(raw_image_yuv_);
+        };
+        yuv_converter_thread_->Post(std::move(task));
+
+    }
+
+    int VideoFrameCarrier::GetRawImageType() const {
+        if (DXGI_FORMAT_B8G8R8A8_UNORM == raw_image_rgba_format_) {
+            return (int)RawImageType::kBGRA;
+        }
+        else if (DXGI_FORMAT_R8G8B8A8_UNORM == raw_image_rgba_format_) {
+            return (int)RawImageType::kRGBA;
+        }
+        else {
+            return (int)RawImageType::kRGBA;
+        }
+    }
+
+    void VideoFrameCarrier::Exit() {
+        if (yuv_converter_thread_) {
+            yuv_converter_thread_->Exit();
+        }
+    }
+
 }
