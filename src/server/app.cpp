@@ -44,7 +44,7 @@
 #include "statistics.h"
 #include "app/clipboard_manager.h"
 #include "plugins/plugin_manager.h"
-#include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_stream_plugin.h"
 
 namespace tc
 {
@@ -231,9 +231,12 @@ namespace tc
                 opus_encoder_->SetComplexity(8);
             }
 
-            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
-                plugin->OnAudioFormat(samples, channels, bits);
-            });
+            // plugins
+            {
+                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                    plugin->OnAudioFormat(samples, channels, bits);
+                });
+            }
         });
 
         audio_capture_->RegisterSplitDataCallback([=, this](const tc::DataPtr& left, const tc::DataPtr& right) {
@@ -252,7 +255,7 @@ namespace tc
             memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
             memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
 
-            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+            plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin* plugin) {
                 plugin->OnSplitRawAudioData(left, right);
                 plugin->OnSplitFFTAudioData(fft_left, fft_right);
             });
@@ -260,7 +263,7 @@ namespace tc
         });
 
         audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
-            plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+            plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin* plugin) {
                 plugin->OnRawAudioData(data);
             });
 
@@ -404,7 +407,7 @@ namespace tc
 
             // plugins: Frame encoded
             {
-                plugin_manager_->VisitPlugins([=](GrPluginInterface *plugin) {
+                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
                     plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
                 });
             }
@@ -420,7 +423,7 @@ namespace tc
 
             // plugins: SharedTexture
             {
-                plugin_manager_->VisitPlugins([=](GrPluginInterface* plugin) {
+                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin* plugin) {
                     plugin->OnRawVideoFrameSharedTexture(msg.handle_);
                 });
             }
@@ -468,7 +471,7 @@ namespace tc
 
     bool Application::HasConnectedPeer() {
         bool has_working_stream_plugin = false;
-        plugin_manager_->VisitPlugins([&](GrPluginInterface* plugin) {
+        plugin_manager_->VisitStreamPlugins([&](GrStreamPlugin* plugin) {
             if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
                 has_working_stream_plugin = true;
             }

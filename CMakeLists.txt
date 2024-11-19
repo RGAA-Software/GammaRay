@@ -133,7 +133,7 @@ add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRaySe
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()
-add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector)
+add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector plugin_ffmpeg_encoder)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gr_plugins
@@ -153,6 +153,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_obj_detector.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_obj_detector.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/obj_detector/plugin_obj_detector.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_obj_detector.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_ffmpeg_encoder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_ffmpeg_encoder.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/ffmpeg_encoder/plugin_ffmpeg_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_ffmpeg_encoder.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

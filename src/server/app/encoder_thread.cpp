@@ -26,7 +26,8 @@
 #include "tc_common_new/win32/d3d_render.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
 #include "plugins/plugin_manager.h"
-#include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_encoder_plugin.h"
 #endif
 
 #define DEBUG_FILE 0
@@ -199,7 +200,7 @@ namespace tc
 
             // plugins: VideoEncoderCreated
             {
-                plugin_manager_->VisitPlugins([=, this](GrPluginInterface *plugin) {
+                plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
                     plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
                 });
             }
@@ -228,9 +229,9 @@ namespace tc
                 };
                 context_->SendAppMessage(msg);
 
-                // plugins: Raw frame / Encoded frame
+                // stream plugins: Raw frame / Encoded frame
                 {
-                    plugin_manager_->VisitPlugins([=, this](GrPluginInterface *plugin) {
+                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
                         // rgba
                         video_encoder_->VisitRawImageRgba([=](const std::shared_ptr<Image>& image) {
                             plugin->OnRawVideoFrameRgba(image);
@@ -248,6 +249,15 @@ namespace tc
                                                     frame->width,
                                                     frame->height,
                                                     key);
+                    });
+                }
+
+                // test encoder plugins:
+                {
+                    plugin_manager_->VisitEncoderPlugins([=, this](GrEncoderPlugin* plugin) {
+                        video_encoder_->VisitRawImageYuv([=](const std::shared_ptr<Image>& image) {
+                            plugin->Encode(image, frame_index);
+                        });
                     });
                 }
             });
