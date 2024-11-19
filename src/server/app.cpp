@@ -232,11 +232,11 @@ namespace tc
             }
 
             // plugins
-            {
+            context_->PostStreamPluginTask([=, this]() {
                 plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
                     plugin->OnAudioFormat(samples, channels, bits);
                 });
-            }
+            });
         });
 
         audio_capture_->RegisterSplitDataCallback([=, this](const tc::DataPtr& left, const tc::DataPtr& right) {
@@ -255,16 +255,19 @@ namespace tc
             memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
             memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
 
-            plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin* plugin) {
-                plugin->OnSplitRawAudioData(left, right);
-                plugin->OnSplitFFTAudioData(fft_left, fft_right);
+            context_->PostStreamPluginTask([=, this]() {
+                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                    plugin->OnSplitRawAudioData(left, right);
+                    plugin->OnSplitFFTAudioData(fft_left, fft_right);
+                });
             });
-
         });
 
         audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
-            plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin* plugin) {
-                plugin->OnRawAudioData(data);
+            context_->PostStreamPluginTask([=, this]() {
+                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                    plugin->OnRawAudioData(data);
+                });
             });
 
             if (debug_opus_decoder_) {
@@ -406,11 +409,11 @@ namespace tc
             statistics_->fps_video_encode_->Tick();
 
             // plugins: Frame encoded
-            {
+            context_->PostStreamPluginTask([=, this]() {
                 plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
                     plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
                 });
-            }
+            });
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
@@ -422,11 +425,11 @@ namespace tc
             }
 
             // plugins: SharedTexture
-            {
-                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin* plugin) {
+            context_->PostStreamPluginTask([=, this]() {
+                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
                     plugin->OnRawVideoFrameSharedTexture(msg.handle_);
                 });
-            }
+            });
 
             // calculate gaps between 2 captured frames.
             {

@@ -21,6 +21,7 @@ namespace tc
     class MessageListener;
     class PluginManager;
     class GrEncoderPlugin;
+    class VideoFrameCarrier;
 
     class EncoderThread {
     public:
@@ -52,6 +53,7 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         GrEncoderPlugin* working_encoder_plugin_ = nullptr;
+        std::shared_ptr<VideoFrameCarrier> frame_carrier_ = nullptr;
     };
 
 }

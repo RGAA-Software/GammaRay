@@ -18,6 +18,9 @@ namespace tc
         msg_notifier_ = std::make_shared<MessageNotifier>();
         asio2_pool_ = std::make_shared<asio2::iopool>();
         asio2_pool_->start();
+
+        stream_plugin_thread_ = Thread::Make("stream plugin thread", 128);
+        stream_plugin_thread_->Poll();
     }
 
     bool Context::Init() {
@@ -42,6 +45,10 @@ namespace tc
 
     void Context::PostTask(std::function<void()>&& task) {
         asio2_pool_->post(std::move(task));
+    }
+
+    void Context::PostStreamPluginTask(std::function<void()>&& task) {
+        stream_plugin_thread_->Post(std::move(task));
     }
 
     std::shared_ptr<asio2::iopool> Context::GetAsio2IoPool() {
