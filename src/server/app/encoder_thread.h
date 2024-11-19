@@ -20,6 +20,7 @@ namespace tc
     class Context;
     class MessageListener;
     class PluginManager;
+    class GrEncoderPlugin;
 
     class EncoderThread {
     public:
@@ -50,6 +51,7 @@ namespace tc
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
+        GrEncoderPlugin* working_encoder_plugin_ = nullptr;
     };
 
 }

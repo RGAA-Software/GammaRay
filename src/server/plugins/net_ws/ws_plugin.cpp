@@ -27,8 +27,6 @@ namespace tc
 
     bool WsPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrPluginInterface::OnCreate(param);
-        Logger::InitLog(plugin_file_name_+".log", true);
-        LOGI("{} OnCreate", GetPluginName());
         plugin_type_ = GrPluginType::kStream;
         ws_server_ = std::make_shared<WsPluginServer>();
         ws_server_->Start();
@@ -43,10 +41,7 @@ namespace tc
     }
 
     void WsPlugin::On1Second() {
-        GrPluginInterface::On1Second();
-        auto evt = std::make_shared<GrPluginKeyboardEvent>();
-        evt->plugin_name_ = GetPluginName();
-        CallbackEvent(evt);
+
     }
 
     bool WsPlugin::IsWorking() {

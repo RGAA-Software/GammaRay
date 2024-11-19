@@ -9,6 +9,7 @@
 #include <QApplication>
 #include "plugin_interface/gr_plugin_interface.h"
 #include "plugin_event_router.h"
+#include "plugins/ffmpeg_encoder/ffmpeg_encoder_defs.h"
 
 typedef void *(*FnGetInstance)();
 
@@ -59,12 +60,15 @@ namespace tc
                                 {"name", info.fileName().toStdString()},
                             },
                         };
-                        plugin->OnCreate(param);
+                        if (!plugin->OnCreate(param)) {
+                            LOGE("Plugin: {} OnCreate failed!", plugin->GetPluginName());
+                            continue;
+                        }
 
                         plugins_.Insert(plugin_name, plugin);
                         libs_.insert({plugin_name, lib});
 
-                        LOGI("{} version: {}", plugin->GetPluginName(), plugin->GetVersionName());
+                        LOGI("{} loaded, version: {}", plugin->GetPluginName(), plugin->GetVersionName());
                     } else {
                         LOGE("{} object create failed.", info.fileName().toStdString().c_str());
                         lib->unload();
@@ -110,8 +114,24 @@ namespace tc
 
     }
 
-    GrPluginInterface *PluginManager::GetPluginByName(const std::string &name) {
+    GrPluginInterface* PluginManager::GetPluginByName(const std::string& name) {
         return plugins_.Get(name);
+    }
+
+    GrEncoderPlugin* PluginManager::GetFFmpegEncoderPlugin() {
+        auto plugin = GetPluginByName(kFFmpegPluginName);
+        if (plugin) {
+            return (GrEncoderPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
+    GrEncoderPlugin* PluginManager::GetNvencEncoderPlugin() {
+        return nullptr;
+    }
+
+    GrEncoderPlugin* PluginManager::GetAmfEncoderPlugin() {
+        return nullptr;
     }
 
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
