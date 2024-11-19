@@ -86,7 +86,7 @@ namespace tc
     }
 
     void PluginManager::RegisterPluginEventsCallback() {
-        VisitPlugins([=, this](GrPluginInterface* plugin) {
+        VisitAllPlugins([=, this](GrPluginInterface* plugin) {
             plugin->RegisterEventCallback([=, this](const std::shared_ptr<GrPluginBaseEvent>& event) {
                 evt_router_->ProcessPluginEvent(event);
             });
@@ -114,7 +114,7 @@ namespace tc
         return plugins_.Get(name);
     }
 
-    void PluginManager::VisitPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
+    void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
             if (visitor && plugin->IsPluginEnabled()) {
                 visitor(plugin);
@@ -122,8 +122,32 @@ namespace tc
         });
     }
 
+    void PluginManager::VisitStreamPlugins(const std::function<void(GrStreamPlugin *)>&& visitor) {
+        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+            if (plugin->GetPluginType() == GrPluginType::kStream) {
+                visitor((GrStreamPlugin*)plugin);
+            }
+        });
+    }
+
+    void PluginManager::VisitUtilPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
+        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+            if (plugin->GetPluginType() == GrPluginType::kUtil) {
+                visitor(plugin);
+            }
+        });
+    }
+
+    void PluginManager::VisitEncoderPlugins(const std::function<void(GrEncoderPlugin*)>&& visitor) {
+        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+            if (plugin->GetPluginType() == GrPluginType::kEncoder) {
+                visitor((GrEncoderPlugin*)plugin);
+            }
+        });
+    }
+
     void PluginManager::On1Second() {
-        VisitPlugins([=, this](GrPluginInterface* plugin) {
+        VisitAllPlugins([=, this](GrPluginInterface* plugin) {
             plugin->On1Second();
         });
     }
@@ -131,7 +155,7 @@ namespace tc
     void PluginManager::DumpPluginInfo() {
         LOGI("====> Total plugins: {}", plugins_.Size());
         int index = 1;
-        VisitPlugins([&](GrPluginInterface *plugin) {
+        VisitAllPlugins([&](GrPluginInterface *plugin) {
             LOGI("Plugin {}. {} Version name:{}, Version code: {}", index++, plugin->GetPluginName(),
                  plugin->GetVersionName(), plugin->GetVersionCode());
         });

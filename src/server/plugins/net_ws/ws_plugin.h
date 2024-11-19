@@ -5,14 +5,14 @@
 #ifndef GAMMARAY_WS_PLUGIN_H
 #define GAMMARAY_WS_PLUGIN_H
 
-#include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_stream_plugin.h"
 
 namespace tc
 {
 
     class WsPluginServer;
 
-    class WsPlugin : public GrPluginInterface {
+    class WsPlugin : public GrStreamPlugin {
     public:
 
         std::string GetPluginName() override;

@@ -91,51 +91,6 @@ namespace tc
         return true;
     }
 
-    void GrPluginInterface::OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {
-
-    }
-
-    void GrPluginInterface::OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
-                                 const std::shared_ptr<Data>& data,
-                                 uint64_t frame_index,
-                                 int frame_width,
-                                 int frame_height,
-                                 bool key) {
-
-    }
-
-    void GrPluginInterface::OnEncodedVideoFrameInProtobufFormat(const std::string& msg) {
-
-    }
-
-    void GrPluginInterface::OnRawVideoFrameSharedTexture(uint64_t handle) {
-
-    }
-
-    void GrPluginInterface::OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) {
-
-    }
-
-    void GrPluginInterface::OnRawVideoFrameYuv(const std::shared_ptr<Image>& image) {
-
-    }
-
-    void GrPluginInterface::OnAudioFormat(int samples, int channels, int bits) {
-
-    }
-
-    void GrPluginInterface::OnRawAudioData(const std::shared_ptr<Data>& data) {
-
-    }
-
-    void GrPluginInterface::OnSplitRawAudioData(const std::shared_ptr<Data>& left_ch_data, const std::shared_ptr<Data>& right_ch_data) {
-
-    }
-
-    void GrPluginInterface::OnSplitFFTAudioData(const std::vector<double>& left_fft, const std::vector<double>& right_fft) {
-
-    }
-
     void GrPluginInterface::PostWorkThread(std::function<void()>&& task) {
         if (work_thread_ && !stopped_) {
             work_thread_->Post(std::move(task));

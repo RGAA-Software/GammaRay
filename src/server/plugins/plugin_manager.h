@@ -15,8 +15,10 @@ namespace tc
 {
 
     class Context;
-    class GrPluginInterface;
     class PluginEventRouter;
+    class GrPluginInterface;
+    class GrStreamPlugin;
+    class GrEncoderPlugin;
 
     class PluginManager {
     public:
@@ -30,7 +32,10 @@ namespace tc
         void ReleasePlugin(const std::string& name);
 
         GrPluginInterface* GetPluginByName(const std::string& name);
-        void VisitPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
+        void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
+        void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);
+        void VisitUtilPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
+        void VisitEncoderPlugins(const std::function<void(GrEncoderPlugin*)>&& visitor);
         void DumpPluginInfo();
 
         void On1Second();

@@ -12,6 +12,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core
 
 set(PLUGIN_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_stream_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_encoder_plugin.cpp
 )
 
 add_library(${PROJECT_NAME} ${PLUGIN_SRCS})

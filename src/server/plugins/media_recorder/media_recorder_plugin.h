@@ -5,12 +5,12 @@
 #ifndef GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
-#include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_stream_plugin.h"
 
 namespace tc
 {
 
-    class MediaRecorderPlugin : public GrPluginInterface {
+    class MediaRecorderPlugin : public GrStreamPlugin {
     public:
 
         std::string GetPluginName() override;
