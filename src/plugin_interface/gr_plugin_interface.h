@@ -17,15 +17,13 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtGui/QPixmap>
 
-#include "asio2/asio2.hpp"
-
 namespace tc
 {
 
     class Data;
     class Image;
-    class Thread;
     class GrPluginBaseEvent;
+    class GrPluginContext;
 
     // param
     class GrPluginParam {
@@ -92,9 +90,6 @@ namespace tc
         void RegisterEventCallback(const GrPluginEventCallback& cbk);
         void CallbackEvent(const std::shared_ptr<GrPluginBaseEvent>& event);
 
-        // timer
-        void StartTimer(int millis, std::function<void()>&& cbk);
-
         virtual void On1Second();
 
         // key frame
@@ -107,16 +102,19 @@ namespace tc
         void HideRootWidget();
 
     protected:
+        std::shared_ptr<GrPluginContext> plugin_context_ = nullptr;
         std::atomic_bool enabled_ = false;
         std::atomic_bool stopped_ = false;
         GrPluginParam param_;
-        std::shared_ptr<Thread> work_thread_ = nullptr;
         GrPluginEventCallback event_cbk_ = nullptr;
-        std::shared_ptr<asio2::timer> timer_ = nullptr;
         std::string plugin_file_name_;
         GrPluginType plugin_type_ = GrPluginType::kUtil;
         QWidget* root_widget_ = nullptr;
+        std::string plugin_author_;
         std::string plugin_desc_;
+        std::string plugin_version_name_;
+        int64_t plugin_version_code_;
+        bool plugin_enabled_ = false;
     };
 
 }

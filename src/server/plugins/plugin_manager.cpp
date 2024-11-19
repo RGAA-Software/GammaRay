@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QFile>
 #include <QApplication>
+#include "toml/toml.hpp"
 #include "plugin_interface/gr_plugin_interface.h"
 #include "plugin_event_router.h"
 #include "plugins/ffmpeg_encoder/ffmpeg_encoder_defs.h"
@@ -26,12 +27,12 @@ namespace tc
     }
 
     void PluginManager::LoadAllPlugins() {
-        QDir pluginDir(QCoreApplication::applicationDirPath() + R"(/gr_plugins)");
+        QDir plugin_dir(QCoreApplication::applicationDirPath() + R"(/gr_plugins)");
         QStringList filters;
         filters << QString("*%1").arg(".dll");
-        pluginDir.setNameFilters(filters);
+        plugin_dir.setNameFilters(filters);
 
-        auto entryInfoList = pluginDir.entryInfoList();
+        auto entryInfoList = plugin_dir.entryInfoList();
         for (const auto &info: entryInfoList) {
             auto lib = new QLibrary(QCoreApplication::applicationDirPath() + R"(/gr_plugins/)" + info.fileName());
             if (lib->isLoaded()) {
@@ -54,12 +55,43 @@ namespace tc
                         }
 
                         // create it
-                        // todo: load config
+                        auto filename = info.fileName();
                         auto param = GrPluginParam {
                             .cluster_ = {
-                                {"name", info.fileName().toStdString()},
+                                {"name", filename.toStdString()},
                             },
                         };
+
+                        auto config_filepath = plugin_dir.path() + "/" + filename + ".toml";
+                        if (QFile::exists(config_filepath)) {
+                            try {
+                                auto cfg = toml::parse_file(config_filepath.toStdString());
+                                cfg.for_each([&](auto& k, auto& v) {
+                                    auto str_key = (std::string)k;
+                                    if constexpr (toml::is_string<decltype(v)>) {
+                                        auto str_value = toml::value<std::string>(v).get();
+                                        param.cluster_.insert({str_key, str_value});
+                                    }
+                                    else if constexpr (toml::is_boolean<decltype(v)>) {
+                                        auto bool_value = toml::value<bool>(v).get();
+                                        param.cluster_.insert({str_key, bool_value});
+                                    }
+                                    else if constexpr (toml::is_integer<decltype(v)>) {
+                                        auto int_value = toml::value<int64_t>(v).get();
+                                        param.cluster_.insert({str_key, int_value});
+                                    }
+                                    else if constexpr (toml::is_floating_point<decltype(v)>) {
+                                        auto float_value = toml::value<double>(v).get();
+                                        param.cluster_.insert({str_key, float_value});
+                                    }
+                                });
+                            } catch (const std::exception& e) {
+                                LOGE("Parse config: {} failed!", config_filepath.toStdString());
+                            }
+                        } else {
+                            LOGW("The config: {} is not exist!", config_filepath.toStdString());
+                        }
+
                         if (!plugin->OnCreate(param)) {
                             LOGE("Plugin: {} OnCreate failed!", plugin->GetPluginName());
                             continue;
