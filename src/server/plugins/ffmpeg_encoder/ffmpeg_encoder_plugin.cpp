@@ -25,11 +25,15 @@ namespace tc
     }
 
     std::string FFmpegEncoderPlugin::GetVersionName() {
-        return "1.0.2";
+        return plugin_version_name_;
     }
 
     uint32_t FFmpegEncoderPlugin::GetVersionCode() {
-        return 102;
+        return plugin_version_code_;
+    }
+
+    std::string FFmpegEncoderPlugin::GetPluginDescription() {
+        return plugin_desc_;
     }
 
     void FFmpegEncoderPlugin::On1Second() {
@@ -51,7 +55,7 @@ namespace tc
     }
 
     bool FFmpegEncoderPlugin::IsWorking() {
-        return init_success_;
+        return init_success_ && plugin_enabled_;
     }
 
     bool FFmpegEncoderPlugin::Init(const EncoderConfig& config) {

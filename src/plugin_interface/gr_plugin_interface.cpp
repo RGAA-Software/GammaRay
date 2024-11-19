@@ -8,6 +8,7 @@
 #include "tc_common_new/thread.h"
 #include "gr_plugin_events.h"
 #include "tc_common_new/log.h"
+#include "gr_plugin_context.h"
 
 #include <QtCore/QEvent>
 
@@ -61,14 +62,44 @@ namespace tc
             auto n = param.cluster_.at("name");
             plugin_file_name_ = std::any_cast<std::string>(n);
         }
+        plugin_context_ = std::make_shared<GrPluginContext>(GetPluginName());
 
         Logger::InitLog(plugin_file_name_+".log", true);
         LOGI("{} OnCreate", GetPluginName());
 
-        work_thread_ = Thread::Make(GetPluginName(), 1024);
-        work_thread_->Poll();
+        // print params
+        LOGI("Input params size : {}", param.cluster_.size());
+        for (const auto& [key, value]: param.cluster_) {
+            if (value.type() == typeid(std::string)) {
+                LOGI(" * {} => {}", key, std::any_cast<std::string>(value));
+            }
+            else if (value.type() == typeid(int64_t)) {
+                LOGI(" * {} => {}", key, std::any_cast<int64_t>(value));
+            }
+            else if (value.type() == typeid(double)) {
+                LOGI(" * {} => {}", key, std::any_cast<double>(value));
+            }
+            else if (value.type() == typeid(bool)) {
+                LOGI(" * {} => {}", key, std::any_cast<bool>(value));
+            }
 
-        timer_ = std::make_shared<asio2::timer>();
+            // parse
+            if (key == "author") {
+                plugin_author_ = std::any_cast<std::string>(value);
+            }
+            else if (key == "description") {
+                plugin_desc_ = std::any_cast<std::string>(value);
+            }
+            else if (key == "version_name") {
+                plugin_version_name_ = std::any_cast<std::string>(value);
+            }
+            else if (key == "version_code") {
+                plugin_version_code_ = std::any_cast<int64_t>(value);
+            }
+            else if (key == "enabled") {
+                plugin_enabled_ = std::any_cast<bool>(value);
+            }
+        }
 
         root_widget_ = new QWidget();
         root_widget_->resize(960, 540);
@@ -89,18 +120,13 @@ namespace tc
     }
 
     bool GrPluginInterface::OnDestroy() {
-        if (work_thread_) {
-            work_thread_->Exit();
-        }
-        if (timer_) {
-            timer_->stop_all_timers();
-        }
+        plugin_context_->OnDestroy();
         return true;
     }
 
     void GrPluginInterface::PostWorkThread(std::function<void()>&& task) {
-        if (work_thread_ && !stopped_) {
-            work_thread_->Post(std::move(task));
+        if (plugin_context_ && !stopped_) {
+            plugin_context_->PostWorkThread(std::move(task));
         }
     }
 
@@ -115,12 +141,6 @@ namespace tc
         PostWorkThread([=, this]() {
             event_cbk_(event);
         });
-    }
-
-    void GrPluginInterface::StartTimer(int millis, std::function<void()>&& cbk) {
-        if (timer_) {
-            timer_->start_timer(std::to_string(millis), millis, std::move(cbk));
-        }
     }
 
     void GrPluginInterface::On1Second() {
