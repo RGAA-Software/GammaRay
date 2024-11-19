@@ -12,6 +12,7 @@ if (WIN32)
         win/app_manager_win.cpp
         win/dx_address_loader.cpp
         win/win_event_replayer.cpp
+        video_frame_carrier.cpp
     )
     target_link_libraries(app_manager fftw3)
     target_link_libraries(app_manager Qt6::Core Qt6::Core5Compat Qt6::Widgets)
