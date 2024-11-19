@@ -23,7 +23,7 @@ namespace tc
     class GrPluginContext : public QObject {
     public:
         explicit GrPluginContext(const std::string& plugin_name);
-        ~GrPluginContext() = default;
+        ~GrPluginContext() override = default;
 
         void OnDestroy();
 
