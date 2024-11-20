@@ -196,37 +196,33 @@ namespace tc
             }
 
             // video frame carrier
-            {
-                if (frame_carrier_ != nullptr) {
-                    frame_carrier_->Exit();
-                    frame_carrier_.reset();
-                }
-                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_);
+            if (frame_carrier_ != nullptr) {
+                frame_carrier_->Exit();
+                frame_carrier_.reset();
             }
+            frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_);
 
             // plugins: Create encoder plugin
-            {
-                auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-                if (nvenc_encoder && nvenc_encoder->Init(encoder_config)) {
-                    working_encoder_plugin_ = nvenc_encoder;
+            auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
+            if (nvenc_encoder && nvenc_encoder->Init(encoder_config)) {
+                working_encoder_plugin_ = nvenc_encoder;
+            } else {
+                LOGW("Init NVENC failed, will try AMF.");
+                auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
+                if (amf_encoder && amf_encoder->Init(encoder_config)) {
+                    working_encoder_plugin_ = amf_encoder;
                 } else {
-                    LOGW("Init NVENC failed, will try AMF.");
-                    auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                    if (amf_encoder && amf_encoder->Init(encoder_config)) {
-                        working_encoder_plugin_ = amf_encoder;
+                    LOGW("Init AMF failed, will try FFmpeg.");
+                    auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                    if (ffmpeg_encoder && ffmpeg_encoder->Init(encoder_config)) {
+                        working_encoder_plugin_ = ffmpeg_encoder;
                     } else {
-                        LOGW("Init AMF failed, will try FFmpeg.");
-                        auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                        if (ffmpeg_encoder && ffmpeg_encoder->Init(encoder_config)) {
-                            working_encoder_plugin_ = ffmpeg_encoder;
-                        } else {
-                            LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
-                            return;
-                        }
+                        LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                        return;
                     }
                 }
-                LOGI("Finally, we use encoder plugin: {}, version: {}", working_encoder_plugin_->GetPluginName(), working_encoder_plugin_->GetVersionName());
             }
+            LOGI("Finally, we use encoder plugin: {}, version: {}", working_encoder_plugin_->GetPluginName(), working_encoder_plugin_->GetVersionName());
 
             auto video_type = [=]() -> GrPluginEncodedVideoType {
                 if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264) {
@@ -289,9 +285,10 @@ namespace tc
                 return;
             }
 
-            video_encoder_->Encode(target_texture);
-            bool can_encode_texture = working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture();
-            if (can_encode_texture) {
+            video_encoder_->Encode(target_texture, frame_index);
+            bool can_encode_texture = false;
+            if (working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture()) {
+                can_encode_texture = true;
                 working_encoder_plugin_->Encode(target_texture, frame_index);
             }
             auto end = TimeExt::GetCurrentTimestamp();
@@ -311,7 +308,7 @@ namespace tc
             };
             auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
                 // callback in YUV converter thread
-                if (working_encoder_plugin_) {
+                if (working_encoder_plugin_ && !can_encode_texture) {
                     PostEncTask([=, this]() {
                         working_encoder_plugin_->Encode(image, frame_index);
                     });

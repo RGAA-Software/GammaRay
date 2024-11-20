@@ -46,10 +46,9 @@ namespace tc
 
     private:
         std::shared_ptr<Context> context_ = nullptr;
-        tc::ConcurrentHashMap<std::string, GrPluginInterface*> plugins_;
+        std::map<std::string, GrPluginInterface*> plugins_;
         std::map<std::string, QLibrary*> libs_;
         std::shared_ptr<PluginEventRouter> evt_router_ = nullptr;
-        GrEncoderPlugin* working_encoder_plugin_ = nullptr;
     };
 
 }

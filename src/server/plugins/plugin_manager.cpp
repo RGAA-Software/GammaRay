@@ -9,8 +9,11 @@
 #include <QApplication>
 #include "toml/toml.hpp"
 #include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_event_router.h"
 #include "plugins/ffmpeg_encoder/ffmpeg_encoder_defs.h"
+#include "context.h"
 
 typedef void *(*FnGetInstance)();
 
@@ -23,7 +26,6 @@ namespace tc
 
     PluginManager::PluginManager(const std::shared_ptr<Context> &ctx) {
         this->context_ = ctx;
-        this->evt_router_ = std::make_shared<PluginEventRouter>(ctx);
     }
 
     void PluginManager::LoadAllPlugins() {
@@ -46,7 +48,7 @@ namespace tc
                     auto plugin = (GrPluginInterface *) func();
                     if (plugin) {
                         auto plugin_name = plugin->GetPluginName();
-                        if (plugins_.HasKey(plugin_name)) {
+                        if (plugins_.contains(plugin_name)) {
                             LOGE("{} repeated loading.", plugin_name);
                             lib->unload();
                             lib->deleteLater();
@@ -97,7 +99,7 @@ namespace tc
                             continue;
                         }
 
-                        plugins_.Insert(plugin_name, plugin);
+                        plugins_.insert({plugin_name, plugin});
                         libs_.insert({plugin_name, lib});
 
                         LOGI("{} loaded, version: {}", plugin->GetPluginName(), plugin->GetVersionName());
@@ -122,7 +124,8 @@ namespace tc
     }
 
     void PluginManager::RegisterPluginEventsCallback() {
-        VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+        this->evt_router_ = std::make_shared<PluginEventRouter>(context_);
+        VisitAllPlugins([&](GrPluginInterface* plugin) {
             plugin->RegisterEventCallback([=, this](const std::shared_ptr<GrPluginBaseEvent>& event) {
                 evt_router_->ProcessPluginEvent(event);
             });
@@ -130,15 +133,15 @@ namespace tc
     }
 
     void PluginManager::ReleaseAllPlugins() {
-        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+        for (const auto& [k, plugin] : plugins_) {
             plugin->OnStop();
             plugin->OnDestroy();
-        });
+        }
         for (auto &[k, lib]: libs_) {
             lib->unload();
             lib->deleteLater();
         }
-        plugins_.Clear();
+        plugins_.clear();
         libs_.clear();
     }
 
@@ -147,7 +150,10 @@ namespace tc
     }
 
     GrPluginInterface* PluginManager::GetPluginByName(const std::string& name) {
-        return plugins_.Get(name);
+        if (!plugins_.contains(name)) {
+            return nullptr;
+        }
+        return plugins_.at(name);
     }
 
     GrEncoderPlugin* PluginManager::GetFFmpegEncoderPlugin() {
@@ -167,35 +173,35 @@ namespace tc
     }
 
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
-        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+        for (const auto& [k, plugin] : plugins_) {
             if (visitor && plugin->IsPluginEnabled()) {
                 visitor(plugin);
             }
-        });
+        }
     }
 
     void PluginManager::VisitStreamPlugins(const std::function<void(GrStreamPlugin *)>&& visitor) {
-        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+        for (const auto& [k, plugin] : plugins_) {
             if (plugin->GetPluginType() == GrPluginType::kStream) {
-                visitor((GrStreamPlugin*)plugin);
+                visitor((GrStreamPlugin *) plugin);
             }
-        });
+        }
     }
 
     void PluginManager::VisitUtilPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
-        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+        for (const auto& [k, plugin] : plugins_) {
             if (plugin->GetPluginType() == GrPluginType::kUtil) {
                 visitor(plugin);
             }
-        });
+        }
     }
 
     void PluginManager::VisitEncoderPlugins(const std::function<void(GrEncoderPlugin*)>&& visitor) {
-        plugins_.ApplyAll([=](auto k, GrPluginInterface* plugin) {
+        for (const auto& [k, plugin] : plugins_) {
             if (plugin->GetPluginType() == GrPluginType::kEncoder) {
-                visitor((GrEncoderPlugin*)plugin);
+                visitor((GrEncoderPlugin *) plugin);
             }
-        });
+        }
     }
 
     void PluginManager::On1Second() {
@@ -205,7 +211,7 @@ namespace tc
     }
 
     void PluginManager::DumpPluginInfo() {
-        LOGI("====> Total plugins: {}", plugins_.Size());
+        LOGI("====> Total plugins: {}", plugins_.size());
         int index = 1;
         VisitAllPlugins([&](GrPluginInterface *plugin) {
             LOGI("Plugin {}. {} Version name:{}, Version code: {}", index++, plugin->GetPluginName(),

@@ -474,11 +474,11 @@ namespace tc
 
     bool Application::HasConnectedPeer() {
         bool has_working_stream_plugin = false;
-        plugin_manager_->VisitStreamPlugins([&](GrStreamPlugin* plugin) {
-            if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
-                has_working_stream_plugin = true;
-            }
-        });
+//        plugin_manager_->VisitStreamPlugins([&](GrStreamPlugin* plugin) {
+//            if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
+//                has_working_stream_plugin = true;
+//            }
+//        });
         return (connection_ && connection_->GetConnectionPeerCount() > 0) || has_working_stream_plugin;
     }
 

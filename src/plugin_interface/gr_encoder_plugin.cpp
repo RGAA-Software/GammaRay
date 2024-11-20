@@ -49,7 +49,7 @@ namespace tc
     }
 
     void GrEncoderPlugin::InsertIdr() {
-
+        insert_idr_ = true;
     }
 
     void GrEncoderPlugin::Exit() {
