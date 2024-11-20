@@ -26,7 +26,6 @@ namespace tc
         ComPtr<IDXGIAdapter1> adapter;
         DXGI_ADAPTER_DESC desc;
         HRESULT res = NULL;
-        bool found_adapter = false;
         int adapter_index = 0;
         res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
         if (res != S_OK) {
@@ -43,17 +42,11 @@ namespace tc
 
             adapter->GetDesc(&desc);
             if (adapter_id == desc.AdapterLuid.LowPart) {
-                found_adapter = true;
                 LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
                 LOGI("find adapter");
                 break;
             }
             ++adapter_index;
-        }
-
-        if (!found_adapter) {
-            LOGE("can not found adapter\n");
-            return;
         }
 
         D3D_FEATURE_LEVEL featureLevel;
@@ -70,39 +63,39 @@ namespace tc
         }
     }
 
-    bool VideoFrameCarrier::D3D11Texture2DLockMutex(ComPtr<ID3D11Texture2D> texture2d) {
-        HRESULT hres;
+    bool VideoFrameCarrier::D3D11Texture2DLockMutex(const ComPtr<ID3D11Texture2D>& texture2d) {
+        HRESULT res;
         ComPtr<IDXGIKeyedMutex> key_mutex;
-        hres = texture2d.As<IDXGIKeyedMutex>(&key_mutex);
-        if (FAILED(hres)) {
+        res = texture2d.As<IDXGIKeyedMutex>(&key_mutex);
+        if (FAILED(res)) {
             printf("D3D11Texture2DReleaseMutex IDXGIKeyedMutex. error\n");
             return false;
         }
-        hres = key_mutex->AcquireSync(0, INFINITE);
-        if (FAILED(hres)) {
+        res = key_mutex->AcquireSync(0, INFINITE);
+        if (FAILED(res)) {
             printf("D3D11Texture2DReleaseMutex AcquireSync failed.\n");
             return false;
         }
         return true;
     }
 
-    bool VideoFrameCarrier::D3D11Texture2DReleaseMutex(ComPtr<ID3D11Texture2D> texture2d) {
-        HRESULT hres;
+    bool VideoFrameCarrier::D3D11Texture2DReleaseMutex(const ComPtr<ID3D11Texture2D>& texture2d) {
+        HRESULT res;
         ComPtr<IDXGIKeyedMutex> key_mutex;
-        hres = texture2d.As<IDXGIKeyedMutex>(&key_mutex);
-        if (FAILED(hres)) {
+        res = texture2d.As<IDXGIKeyedMutex>(&key_mutex);
+        if (FAILED(res)) {
             printf("D3D11Texture2DReleaseMutex IDXGIKeyedMutex. error\n");
             return false;
         }
-        hres = key_mutex->ReleaseSync(0);
-        if (FAILED(hres)) {
+        res = key_mutex->ReleaseSync(0);
+        if (FAILED(res)) {
             printf("D3D11Texture2DReleaseMutex ReleaseSync failed.\n");
             return false;
         }
         return true;
     }
 
-    bool VideoFrameCarrier::CopyID3D11Texture2D(ComPtr<ID3D11Texture2D> shared_texture) {
+    bool VideoFrameCarrier::CopyID3D11Texture2D(const ComPtr<ID3D11Texture2D>& shared_texture) {
         if (!D3D11Texture2DLockMutex(shared_texture)) {
             LOGE("D3D11Texture2DLockMutex error");
             return false;
@@ -111,7 +104,7 @@ namespace tc
             D3D11Texture2DReleaseMutex(shared_texture);
         });
 
-        HRESULT hres;
+        HRESULT res;
         D3D11_TEXTURE2D_DESC desc;
         shared_texture->GetDesc(&desc);
 
@@ -148,9 +141,9 @@ namespace tc
             //createDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
             createDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             createDesc.Usage = D3D11_USAGE_STAGING;
-            hres = curDevice->CreateTexture2D(&createDesc, NULL, texture2d_.GetAddressOf());
-            if (FAILED(hres)) {
-                LOGE("desktop capture create texture failed with:{}", StringExt::GetErrorStr(hres).c_str());
+            res = curDevice->CreateTexture2D(&createDesc, NULL, texture2d_.GetAddressOf());
+            if (FAILED(res)) {
+                LOGE("desktop capture create texture failed with:{}", StringExt::GetErrorStr(res).c_str());
                 return false;
             }
         }
@@ -163,10 +156,10 @@ namespace tc
 
     ComPtr<ID3D11Texture2D> VideoFrameCarrier::OpenSharedTexture(HANDLE handle) {
         ComPtr<ID3D11Texture2D> sharedTexture;
-        HRESULT hres;
-        hres = d3d11_device_->OpenSharedResource(handle, IID_PPV_ARGS(sharedTexture.GetAddressOf()));
-        if (FAILED(hres)) {
-            LOGE("OpenSharedResource failed: {}", hres);
+        HRESULT res;
+        res = d3d11_device_->OpenSharedResource(handle, IID_PPV_ARGS(sharedTexture.GetAddressOf()));
+        if (FAILED(res)) {
+            LOGE("OpenSharedResource failed: {}", res);
             return nullptr;
         }
         return sharedTexture;
@@ -241,13 +234,13 @@ namespace tc
         CComPtr<IDXGISurface> staging_surface = nullptr;
         auto hr = texture->QueryInterface(IID_PPV_ARGS(&staging_surface));
         if (FAILED(hr)) {
-            LOGE("TEST COPY !QueryInterface(IDXGISurface) err");
+            LOGE("MapRawTexture !QueryInterface(IDXGISurface) err");
             return false;
         }
         DXGI_MAPPED_RECT mapped_rect{};
         hr = staging_surface->Map(&mapped_rect, DXGI_MAP_READ);
         if (FAILED(hr)) {
-            LOGE("TEST COPY !Map(IDXGISurface)");
+            LOGE("MapRawTexture !Map(IDXGISurface)");
             return false;
         }
         auto defer = Defer::Make([staging_surface]() {
@@ -262,7 +255,6 @@ namespace tc
         }
 
         ConvertToYuv(std::move(yuv_cbk));
-
         return ok;
     }
 
@@ -284,10 +276,6 @@ namespace tc
 
     void VideoFrameCarrier::ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
         auto task = [=, this]() {
-//            std::lock(raw_image_rgba_mtx_, raw_image_yuv_mtx_);
-//            std::lock_guard<std::mutex> guard1(raw_image_rgba_mtx_, std::adopt_lock );
-//            std::lock_guard<std::mutex> guard2(raw_image_yuv_mtx_, std::adopt_lock );
-
             auto beg = TimeExt::GetCurrentTimestamp();
             if (!raw_image_rgba_ || !raw_image_rgba_->GetData()) {
                 return;

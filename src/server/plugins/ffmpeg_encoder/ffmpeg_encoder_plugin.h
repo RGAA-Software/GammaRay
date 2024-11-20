@@ -32,9 +32,8 @@ namespace tc
         void InsertIdr() override;
         bool IsWorking() override;
 
+        bool CanEncodeTexture() override;
         bool Init(const EncoderConfig& config) override;
-        void Encode(uint64_t handle, uint64_t frame_index) override;
-        void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) override;
         void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) override;
         void Exit() override;
 

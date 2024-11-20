@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include "gr_plugin_interface.h"
 
 namespace tc
 {
@@ -76,6 +77,7 @@ namespace tc
             plugin_type_ = GrPluginEventType::kPluginEncodedVideoFrameEvent;
         }
     public:
+        GrPluginEncodedVideoType type_;
         std::shared_ptr<Data> data_ = nullptr;
         uint32_t frame_width_ = 0;
         uint32_t frame_height_ = 0;

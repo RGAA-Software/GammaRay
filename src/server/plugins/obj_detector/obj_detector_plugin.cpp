@@ -32,7 +32,7 @@ namespace tc
         GrPluginInterface::OnCreate(param);
         plugin_type_ = GrPluginType::kStream;
 
-        //root_widget_->show();
+        root_widget_->show();
         {
             auto root_layout = new QVBoxLayout();
             label_ = new QLabel(root_widget_);
@@ -45,13 +45,13 @@ namespace tc
     }
 
     void ObjDetectorPlugin::OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) {
-//        QMetaObject::invokeMethod(this, [=]() {
-//            QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
-//            QPixmap pixmap = QPixmap::fromImage(img);
-//            pixmap = pixmap.scaled(root_widget_->size().width(), root_widget_->size().height());
-//            label_->setPixmap(pixmap);
-//            label_->repaint();
-//        });
+        QMetaObject::invokeMethod(this, [=]() {
+            QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
+            QPixmap pixmap = QPixmap::fromImage(img);
+            pixmap = pixmap.scaled(root_widget_->size().width(), root_widget_->size().height());
+            label_->setPixmap(pixmap);
+            label_->repaint();
+        });
     }
 
     void ObjDetectorPlugin::OnRawVideoFrameYuv(const std::shared_ptr<Image>& image) {

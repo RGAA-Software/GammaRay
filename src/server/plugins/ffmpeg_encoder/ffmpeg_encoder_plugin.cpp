@@ -58,6 +58,10 @@ namespace tc
         return init_success_ && plugin_enabled_;
     }
 
+    bool FFmpegEncoderPlugin::CanEncodeTexture() {
+        return false;
+    }
+
     bool FFmpegEncoderPlugin::Init(const EncoderConfig& config) {
         GrEncoderPlugin::Init(config);
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
@@ -120,14 +124,6 @@ namespace tc
         return true;
     }
 
-    void FFmpegEncoderPlugin::Encode(uint64_t handle, uint64_t frame_index) {
-
-    }
-
-    void FFmpegEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) {
-
-    }
-
     void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) {
         auto img_width = i420_image->width;
         auto img_height = i420_image->height;
@@ -164,6 +160,15 @@ namespace tc
             auto encoded_data = Data::Make((char*)packet_->data, packet_->size);
 
             auto event = std::make_shared<GrPluginEncodedVideoFrameEvent>();
+            event->type_ = [=, this]() {
+                if (encoder_config_.codec_type == EVideoCodecType::kHEVC) {
+                    return GrPluginEncodedVideoType::kH265;
+                } else if (encoder_config_.codec_type == EVideoCodecType::kH264) {
+                    return GrPluginEncodedVideoType::kH264;
+                } else {
+                    return GrPluginEncodedVideoType::kH264;
+                }
+            }();
             event->data_ = encoded_data;
             event->frame_width_ = img_width;
             event->frame_height_ = img_height;

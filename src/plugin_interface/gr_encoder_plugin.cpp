@@ -25,6 +25,10 @@ namespace tc
         return true;
     }
 
+    bool GrEncoderPlugin::CanEncodeTexture() {
+        return false;
+    }
+
     bool GrEncoderPlugin::Init(const EncoderConfig& config) {
         LOGI("GrEncoderPlugin Init, {}x{}", config.encode_width, config.encode_height);
         encoder_config_ = config;
@@ -34,10 +38,6 @@ namespace tc
         out_height_ = config.encode_height;
         refresh_rate_ = config.fps;
         return true;
-    }
-
-    void GrEncoderPlugin::Encode(uint64_t handle, uint64_t frame_index) {
-
     }
 
     void GrEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) {

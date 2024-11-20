@@ -135,6 +135,7 @@ namespace tc
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
         auto settings = Settings::Instance();
         last_capture_video_frame_ = cap_video_msg;
+        auto frame_index = cap_video_msg.frame_index_;
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
         Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
         if(g_render) {
@@ -268,33 +269,6 @@ namespace tc
                 };
                 context_->SendAppMessage(msg);
 
-                // stream plugins: Raw frame / Encoded frame
-                context_->PostStreamPluginTask([=, this]() {
-                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        // rgba
-                        video_encoder_->VisitRawImageRgba([=](const std::shared_ptr<Image>& image) {
-                            plugin->OnRawVideoFrameRgba(image);
-                        });
-
-                        // yuv/i420
-                        video_encoder_->VisitRawImageYuv([=](const std::shared_ptr<Image>& image) {
-                            plugin->OnRawVideoFrameYuv(image);
-                        });
-
-                        // encoded(h264/h265)
-                        plugin->OnEncodedVideoFrame(video_type, frame->data, frame_index, frame->width,
-                                                    frame->height, key);
-                    });
-                });
-
-                // test encoder plugins:
-                if (false) {
-                    if (working_encoder_plugin_ != nullptr) {
-                        video_encoder_->VisitRawImageYuv([=, this](const std::shared_ptr<Image>& image) {
-                            working_encoder_plugin_->Encode(image, frame_index);
-                        });
-                    }
-                }
             });
 
             frame_width_ = cap_video_msg.frame_width_;
@@ -302,37 +276,54 @@ namespace tc
             encoder_format_ = settings->encoder_.encoder_format_;
         }
 
-        enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
-//            auto beg = TimeExt::GetCurrentTimestamp();
-//            video_encoder_->Encode(cap_video_msg.handle_, cap_video_msg.frame_index_);
-//            auto end = TimeExt::GetCurrentTimestamp();
-//            auto diff = end - beg;
-//            Statistics::Instance()->AppendEncodeDuration(diff);
-
-            //
+        PostEncTask([=, this]() {
+            // copy shared texture
             if (frame_carrier_ == nullptr) {
+                LOGI("Don't have frame carrier !");
                 return;
             }
             auto beg = TimeExt::GetCurrentTimestamp();
-            auto target_texture = frame_carrier_->CopyTexture(cap_video_msg.handle_, cap_video_msg.frame_index_);
-            if (target_texture != nullptr) {
-                video_encoder_->Encode(target_texture);
-                auto end = TimeExt::GetCurrentTimestamp();
-                auto diff = end - beg;
-                Statistics::Instance()->AppendEncodeDuration(diff);
-
-                // TODO: May make latency !!!
-                D3D11_TEXTURE2D_DESC desc;
-                target_texture->GetDesc(&desc);
-                auto rgba_cbk = [=, this](const std::shared_ptr<Image>& image) {
-                    //LOGI("RGBA Callback...{}x{}, size: {}", image->width, image->height, image->GetData()->Size());
-                };
-                auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
-                    //LOGI("YUV Callback...{}x{}, size: {}", image->width, image->height, image->GetData()->Size());
-                };
-                frame_carrier_->MapRawTexture(target_texture, desc.Format, (int)desc.Height, rgba_cbk, yuv_cbk);
+            auto target_texture = frame_carrier_->CopyTexture(cap_video_msg.handle_, frame_index);
+            if (target_texture == nullptr) {
+                LOGI("Don't have target texture, frame carrier copies texture failed!");
+                return;
             }
-        }));
+
+            video_encoder_->Encode(target_texture);
+            bool can_encode_texture = working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture();
+            if (can_encode_texture) {
+                working_encoder_plugin_->Encode(target_texture, frame_index);
+            }
+            auto end = TimeExt::GetCurrentTimestamp();
+            auto diff = end - beg;
+            Statistics::Instance()->AppendEncodeDuration(diff);
+
+            // TODO: May make latency !!!
+            D3D11_TEXTURE2D_DESC desc;
+            target_texture->GetDesc(&desc);
+            auto rgba_cbk = [=, this](const std::shared_ptr<Image>& image) {
+                // callback in Enc thread
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                        plugin->OnRawVideoFrameRgba(image);
+                    });
+                });
+            };
+            auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
+                // callback in YUV converter thread
+                if (working_encoder_plugin_) {
+                    PostEncTask([=, this]() {
+                        working_encoder_plugin_->Encode(image, frame_index);
+                    });
+                }
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                        plugin->OnRawVideoFrameYuv(image);
+                    });
+                });
+            };
+            frame_carrier_->MapRawTexture(target_texture, desc.Format, (int)desc.Height, rgba_cbk, yuv_cbk);
+        });
     }
 
     void EncoderThread::Exit() {
@@ -340,4 +331,9 @@ namespace tc
             enc_thread_->Exit();
         }
     }
+
+    void EncoderThread::PostEncTask(std::function<void()>&& task) {
+        enc_thread_->Post(std::move(task));
+    }
+
 }
