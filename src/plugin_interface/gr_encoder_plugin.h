@@ -23,8 +23,8 @@ namespace tc
         bool OnDestroy() override;
         void InsertIdr() override;
 
+        virtual bool CanEncodeTexture();
         virtual bool Init(const EncoderConfig& config);
-        virtual void Encode(uint64_t handle, uint64_t frame_index);
         virtual void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index);
         virtual void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index);
         virtual void Exit();

@@ -29,11 +29,6 @@ namespace tc
     public:
         explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id);
 
-        bool D3D11Texture2DLockMutex(ComPtr<ID3D11Texture2D> texture2d);
-        bool D3D11Texture2DReleaseMutex(ComPtr<ID3D11Texture2D> texture2d);
-        bool CopyID3D11Texture2D(ComPtr<ID3D11Texture2D> shared_texture2d);
-        ComPtr<ID3D11Texture2D> OpenSharedTexture(HANDLE handle);
-
         bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                            std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
@@ -42,9 +37,13 @@ namespace tc
         void Exit();
 
     private:
+        static bool D3D11Texture2DLockMutex(const ComPtr<ID3D11Texture2D>& texture2d);
+        static bool D3D11Texture2DReleaseMutex(const ComPtr<ID3D11Texture2D>& texture2d);
+        bool CopyID3D11Texture2D(const ComPtr<ID3D11Texture2D>& shared_texture2d);
+        ComPtr<ID3D11Texture2D> OpenSharedTexture(HANDLE handle);
         bool CopyToRawImage(const uint8_t* data, int row_pitch_bytes, int height);
         void ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
-        int GetRawImageType() const;
+        [[nodiscard]] int GetRawImageType() const;
 
     private:
         std::shared_ptr<Context> context_ = nullptr;

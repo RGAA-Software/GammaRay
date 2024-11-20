@@ -36,13 +36,16 @@ namespace tc
         void Exit();
 
     private:
+        void PostEncTask(std::function<void()>&& task);
+
+    private:
         Settings* settings_ = nullptr;
         std::shared_ptr<Thread> enc_thread_ = nullptr;
         std::shared_ptr<VideoEncoder> video_encoder_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
 
-        int frame_width_ = 0;
-        int frame_height_ = 0;
+        uint32_t frame_width_ = 0;
+        uint32_t frame_height_ = 0;
         Encoder::EncoderFormat encoder_format_ = Encoder::EncoderFormat::kH264;
 
         CaptureVideoFrame last_capture_video_frame_{};
