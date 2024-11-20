@@ -21,10 +21,9 @@ set(EXT_SRCS
 
 set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/amf_encoder_plugin.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/D3DTextureDebug.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/EncodeDataCallback.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/VideoEncoderVCE.cpp
-        ${CMAKE_SOURCE_DIR}/deps/tc_encoder_new/video_encoder.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/d3d_texture_debug.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/encode_debug_callback.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/video_encoder_vce.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS} ${EXT_SRCS})

@@ -50,15 +50,15 @@ namespace tc
     };
 
     // Video encoder for AMD VCE.
-    class VideoEncoderVCE : public VideoEncoder {
+    class VideoEncoderVCE {
     public:
-        VideoEncoderVCE(const std::shared_ptr<MessageNotifier> &msg_notifier, const EncoderFeature &encoder_feature);
-        ~VideoEncoderVCE() override;
+        explicit VideoEncoderVCE(uint64_t adapter_uid);
+        ~VideoEncoderVCE();
 
-        bool Initialize(const tc::EncoderConfig &config) override;
-        void Encode(ID3D11Texture2D *tex2d, uint64_t frame_index) override;
-        void Encode(const std::shared_ptr<Image> &i420_data, uint64_t frame_index) override;
-        void Exit() override;
+        bool Initialize(const tc::EncoderConfig &config);
+        void Encode(ID3D11Texture2D *tex2d, uint64_t frame_index);
+        void Encode(const std::shared_ptr<Image> &i420_data, uint64_t frame_index);
+        void Exit();
         void Shutdown();
         void Receive(amf::AMFData *data);
 
@@ -76,7 +76,11 @@ namespace tc
         EVideoCodecType codec_type_{};
         bool insert_idr_ = false;
         int gop_ = 180;
-        std::ofstream dbg_file_;
+
+        ComPtr<ID3D11Device> d3d11_device_;
+        ComPtr<ID3D11DeviceContext> d3d11_device_context_;
+        ComPtr<ID3D11Texture2D> texture2d_;
+        std::shared_ptr<FrameRender> frame_render_ = nullptr;
     };
 
 }

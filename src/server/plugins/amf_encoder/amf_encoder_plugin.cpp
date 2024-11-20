@@ -4,12 +4,14 @@
 
 #include "amf_encoder_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
+#include "video_encoder_vce.h"
+#include "amf_encoder_defs.h"
 
 namespace tc
 {
 
     std::string AmfEncoderPlugin::GetPluginName() {
-        return "Media Recorder Plugin";
+        return kAmfPluginName;
     }
 
     std::string AmfEncoderPlugin::GetVersionName() {
@@ -41,15 +43,20 @@ namespace tc
     }
 
     bool AmfEncoderPlugin::IsWorking() {
-        return init_success_ && plugin_enabled_;
+        return init_success_ && plugin_enabled_ && video_encoder_;
     }
 
     bool AmfEncoderPlugin::Init(const EncoderConfig& config) {
-        return true;
+        GrEncoderPlugin::Init(config);
+        video_encoder_ = std::make_shared<VideoEncoderVCE>(config.adapter_uid_);
+        init_success_ = video_encoder_->Initialize(config);
+        return init_success_;
     }
 
     void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) {
-
+        if (IsWorking()) {
+            video_encoder_->Encode(tex2d, frame_index);
+        }
     }
 
     void AmfEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) {

@@ -1,4 +1,4 @@
-#include "VideoEncoderVCE.h"
+#include "video_encoder_vce.h"
 
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
@@ -6,8 +6,9 @@
 #include "tc_encoder_new/encoder_config.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/defer.h"
-#include "D3DTextureDebug.h"
+#include "d3d_texture_debug.h"
 #include "tc_encoder_new/frame_render/FrameRender.h"
+#include "tc_common_new/string_ext.h"
 #include <combaseapi.h>
 #include <atlbase.h>
 #include <fstream>
@@ -188,8 +189,47 @@ namespace tc
         }
     }
 
-    VideoEncoderVCE::VideoEncoderVCE(const std::shared_ptr<MessageNotifier> &msg_notifier, const EncoderFeature &encoder_feature)
-        : VideoEncoder(msg_notifier, encoder_feature) {
+    VideoEncoderVCE::VideoEncoderVCE(uint64_t adapter_uid) {
+        ComPtr<IDXGIFactory1> factory1;
+        ComPtr<IDXGIAdapter1> adapter;
+        DXGI_ADAPTER_DESC desc;
+        HRESULT res = NULL;
+        bool found_adapter = false;
+        int adapter_index = 0;
+        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
+        if (res != S_OK) {
+            LOGE("CreateDXGIFactory1 failed");
+            return;
+        }
+        while (true) {
+            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
+            if (res != S_OK) {
+                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
+                return;
+            }
+
+            adapter->GetDesc(&desc);
+            if (adapter_uid == desc.AdapterLuid.LowPart) {
+                found_adapter = true;
+                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
+                LOGI("find adapter");
+                break;
+            }
+            ++adapter_index;
+        }
+
+        D3D_FEATURE_LEVEL featureLevel;
+        res = D3D11CreateDevice(adapter.Get(),
+                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
+                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+                                nullptr, 0, D3D11_SDK_VERSION,
+                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
+
+        if (res != S_OK || !d3d11_device_) {
+            LOGE("D3D11CreateDevice failed: {}", res);
+        } else {
+            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
+        }
     }
 
     VideoEncoderVCE::~VideoEncoderVCE() {
@@ -208,7 +248,6 @@ namespace tc
     }
 
     bool VideoEncoderVCE::Initialize(const tc::EncoderConfig &config) {
-        VideoEncoder::Initialize(config);
         codec_type_ = config.codec_type;
         auto ret = g_AMFFactory.Init();
         AMF_LOG_ERR_IF(ret);
@@ -238,12 +277,6 @@ namespace tc
         encoder_->Start();
         converter_->Start();
 
-#if DEBUG_FILE
-        dbg_file_ = std::ofstream("cccc.h264", std::ios::binary | std::ios::beg);
-        if (!dbg_file_) {
-            LOGI("Unable to open output file");
-        }
-#endif
         LOGI("Successfully initialized VideoEncoderVCE.");
         return true;
     }
@@ -259,7 +292,6 @@ namespace tc
     }
 
     void VideoEncoderVCE::Exit() {
-        VideoEncoder::Exit();
         this->Shutdown();
     }
 
@@ -268,108 +300,8 @@ namespace tc
         encoder_->Shutdown();
         converter_->Shutdown();
         amf_restore_timer_precision();
-#if DEBUG_FILE
-        if (dbg_file_) {
-            dbg_file_.close();
-        }
-#endif
         LOGI("Successfully shutdown VideoEncoderVCE.");
     }
-
-//    void VideoEncoderVCE::EncodeTextureHandle(uint64_t handle, uint64_t frame_index) {
-//        ComPtr<ID3D11Texture2D> shared_texture;
-//        shared_texture = OpenSharedTexture(reinterpret_cast<HANDLE>(handle));
-//        if (!shared_texture) {
-//            LOGE("OpenSharedTexture failed.");
-//            return;
-//        }
-//
-//        D3D11_TEXTURE2D_DESC origin_desc;
-//        shared_texture->GetDesc(&origin_desc);
-//
-//        // resize it.
-//        if (encoder_config_.frame_resize) {
-//            auto beg = TimeExt::GetCurrentTimestamp();
-//            if (!frame_render_ && d3d11_device_ && d3d11_device_context_) {
-//                frame_render_ = FrameRender::Make(d3d11_device_.Get(), d3d11_device_context_.Get());
-//                SIZE target_size = {encoder_config_.encode_width, encoder_config_.encode_height};
-//                frame_render_->Prepare(target_size, {(long) origin_desc.Width, (long) origin_desc.Height}, origin_desc.Format);
-//            }
-//
-//            auto resize_ctx = frame_render_->GetD3D11DeviceContext();
-//
-//            {
-//                if (!D3D11Texture2DLockMutex(shared_texture)) {
-//                    LOGE("D3D11Texture2DLockMutex error\n");
-//                    return;
-//                }
-//                std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=](void *temp) {
-//                    D3D11Texture2DReleaseMutex(shared_texture);
-//                });
-//                auto pre_texture = frame_render_->GetSrcTexture();
-//                ID3D11Device *dev;
-//                shared_texture->GetDevice(&dev);
-//                resize_ctx->CopyResource(pre_texture, shared_texture.Get());
-//                //DebugOutDDS(pre_texture, "2.dds");
-//            }
-//            frame_render_->Draw();
-//            auto final_texture = frame_render_->GetFinalTexture();
-//            //DebugOutDDS(final_texture, "3.dds");
-//            if (!final_texture) {
-//                LOGE("Resize draw failed");
-//                return;
-//            }
-//
-//            // plugins: Copy
-//            {
-//                D3D11_TEXTURE2D_DESC resize_desc;
-//                shared_texture->GetDesc(&resize_desc);
-//                CopyRawTexture(final_texture, resize_desc.Format, resize_desc.Height);
-//            }
-//
-//            auto end = TimeExt::GetCurrentTimestamp();
-//            auto diff = end - beg;
-//            EncodeTexture(final_texture, encoder_config_.encode_width, encoder_config_.encode_height, frame_index);
-//        } else {
-//            if (!CopyID3D11Texture2D(shared_texture)) {
-//                LOGE("CopyID3D11Texture2D failed.");
-//                return;
-//            }
-//            EncodeTexture(texture2d_.Get(), origin_desc.Width, origin_desc.Height, frame_index);
-//
-//            // plugins: Copy
-//            {
-//                CopyRawTexture(texture2d_.Get(), origin_desc.Format, origin_desc.Height);
-//            }
-//        }
-//
-//    }
-//
-//    void VideoEncoderVCE::CopyRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height) {
-//        CComPtr<IDXGISurface> staging_surface = nullptr;
-//        auto hr = texture->QueryInterface(IID_PPV_ARGS(&staging_surface));
-//        if (FAILED(hr)) {
-//            LOGE("TEST COPY !QueryInterface(IDXGISurface) err");
-//            return;
-//        }
-//        DXGI_MAPPED_RECT mapped_rect{};
-//        hr = staging_surface->Map(&mapped_rect, DXGI_MAP_READ);
-//        if (FAILED(hr)) {
-//            LOGE("TEST COPY !Map(IDXGISurface)");
-//            return;
-//        }
-//        auto defer = Defer::Make([staging_surface]() {
-//            staging_surface->Unmap();
-//        });
-//
-//        // copy to raw image buffer
-//        raw_image_rgba_format_ = format;
-//        EnsureRawImage(mapped_rect.Pitch, height);
-//        CopyToRawImage(mapped_rect.pBits, mapped_rect.Pitch, height);
-//
-//        // to yuv
-//        ConvertToYuv();
-//    }
 
     void VideoEncoderVCE::EncodeTexture(ID3D11Texture2D* texture, int width, int height, int64_t frame_idx) {
         amf::AMFSurfacePtr surface = nullptr;
@@ -430,10 +362,13 @@ namespace tc
         }
 #endif
         auto encoded_data = Data::Make((char*)p, length);
-        if (encoder_callback_) {
-            auto image = Image::Make(encoded_data, out_width_, out_height_, 3);
-            encoder_callback_(image, ++encoded_frame_index_, insert_idr_);
-        }
+//        if (encoder_callback_) {
+//            auto image = Image::Make(encoded_data, out_width_, out_height_, 3);
+//            encoder_callback_(image, ++encoded_frame_index_, insert_idr_);
+//        }
+
+        static std::ofstream file("234234.h264", std::ios::binary);
+        file.write(encoded_data->CStr(), encoded_data->Size());
 
         fps++;
         uint64_t ct = tc::TimeExt::GetCurrentTimestamp();

@@ -1,5 +1,5 @@
 //
-// Created by hy on 19/11/2024.
+// Created by RGAA on 19/11/2024.
 //
 
 #ifndef GAMMARAY_FFMPEG_ENCODER_DEFS_H
