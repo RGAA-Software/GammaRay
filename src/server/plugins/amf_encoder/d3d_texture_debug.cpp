@@ -1,4 +1,4 @@
-#include "D3DTextureDebug.h"
+#include "d3d_texture_debug.h"
 
 #include "tc_common_new/log.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"

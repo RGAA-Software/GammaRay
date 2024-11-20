@@ -13,6 +13,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_event_router.h"
 #include "plugins/ffmpeg_encoder/ffmpeg_encoder_defs.h"
+#include "plugins/amf_encoder/amf_encoder_defs.h"
 #include "context.h"
 
 typedef void *(*FnGetInstance)();
@@ -169,6 +170,10 @@ namespace tc
     }
 
     GrEncoderPlugin* PluginManager::GetAmfEncoderPlugin() {
+        auto plugin = GetPluginByName(kAmfPluginName);
+        if (plugin) {
+            return (GrEncoderPlugin*)plugin;
+        }
         return nullptr;
     }
 

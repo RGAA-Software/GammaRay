@@ -114,7 +114,7 @@ namespace tc
         std::string plugin_desc_;
         std::string plugin_version_name_;
         int64_t plugin_version_code_;
-        bool plugin_enabled_ = false;
+        bool plugin_enabled_ = true;
     };
 
 }

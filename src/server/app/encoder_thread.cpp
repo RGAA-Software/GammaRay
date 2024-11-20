@@ -184,6 +184,7 @@ namespace tc
             encoder_config.supports_intra_refresh = true;
             encoder_config.texture_format = cap_video_msg.frame_format_;
             encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
+            encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
             EncoderFeature encoder_feature{cap_video_msg.adapter_uid_, 0};
             video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
                                                                 encoder_feature,

@@ -10,6 +10,8 @@
 namespace tc
 {
 
+    class VideoEncoderVCE;
+
     class AmfEncoderPlugin : public GrEncoderPlugin {
     public:
 
@@ -28,6 +30,9 @@ namespace tc
         void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) override;
         void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) override;
         void Exit() override;
+
+    private:
+        std::shared_ptr<VideoEncoderVCE> video_encoder_ = nullptr;
 
     };
 
