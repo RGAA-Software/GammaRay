@@ -51,7 +51,7 @@ namespace tc
     }
 
     void FFmpegEncoderPlugin::InsertIdr() {
-
+        GrEncoderPlugin::InsertIdr();
     }
 
     bool FFmpegEncoderPlugin::IsWorking() {
