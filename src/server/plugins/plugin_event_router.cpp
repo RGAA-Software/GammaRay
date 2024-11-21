@@ -9,6 +9,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_encoder_plugin.h"
 #include "plugin_manager.h"
+#include "plugin_stream_event_router.h"
 #include "context.h"
 #include <fstream>
 
@@ -18,20 +19,14 @@ namespace tc
     PluginEventRouter::PluginEventRouter(const std::shared_ptr<Context>& ctx) {
         context_ = ctx;
         plugin_manager_ = context_->GetPluginManager();
+        stream_event_router_ = std::make_shared<PluginStreamEventRouter>(ctx);
     }
 
     void PluginEventRouter::ProcessPluginEvent(const std::shared_ptr<GrPluginBaseEvent>& event) {
         // encoded video frame
         if (event->plugin_type_ == GrPluginEventType::kPluginEncodedVideoFrameEvent) {
             auto target_event = std::dynamic_pointer_cast<GrPluginEncodedVideoFrameEvent>(event);
-
-            // stream plugins: Raw frame / Encoded frame
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                    plugin->OnEncodedVideoFrame(target_event->type_, target_event->data_, target_event->frame_index_,
-                                                target_event->frame_width_, target_event->frame_height_, target_event->key_frame_);
-                });
-            });
+            stream_event_router_->ProcessEncodedVideoFrameEvent(target_event);
         }
     }
 

@@ -57,7 +57,6 @@ namespace tc
 
     bool GrPluginInterface::OnCreate(const GrPluginParam& param) {
         this->param_ = param;
-        this->enabled_ = true;
         if (param.cluster_.contains("name")) {
             auto n = param.cluster_.at("name");
             plugin_file_name_ = std::any_cast<std::string>(n);
@@ -100,6 +99,8 @@ namespace tc
                 plugin_enabled_ = std::any_cast<bool>(value);
             }
         }
+
+        this->enabled_ = plugin_enabled_;
 
         root_widget_ = new QWidget();
         root_widget_->resize(960, 540);

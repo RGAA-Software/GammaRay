@@ -13,6 +13,7 @@ namespace tc
     class Context;
     class GrPluginBaseEvent;
     class PluginManager;
+    class PluginStreamEventRouter;
 
     class PluginEventRouter {
     public:
@@ -23,6 +24,7 @@ namespace tc
     private:
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
+        std::shared_ptr<PluginStreamEventRouter> stream_event_router_ = nullptr;
     };
 
 }

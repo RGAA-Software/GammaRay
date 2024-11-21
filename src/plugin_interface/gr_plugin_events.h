@@ -32,6 +32,7 @@ namespace tc
     public:
         std::string plugin_name_;
         GrPluginEventType plugin_type_{GrPluginEventType::kPluginUnknownType};
+        std::any extra_;
     };
 
     // GrKeyboardEvent

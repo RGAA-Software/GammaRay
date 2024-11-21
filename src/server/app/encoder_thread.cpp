@@ -56,9 +56,9 @@ namespace tc
 
         msg_listener_ = context_->CreateMessageListener();
         msg_listener_->Listen<MsgInsertKeyFrame>([=, this](const MsgInsertKeyFrame& msg) {
-            if (video_encoder_) {
-                video_encoder_->InsertIDR();
-            }
+//            if (video_encoder_) {
+//                video_encoder_->InsertIDR();
+//            }
             // plugins: InsertIdr
             {
                 plugin_manager_->VisitEncoderPlugins([=](GrEncoderPlugin* plugin) {
@@ -74,62 +74,62 @@ namespace tc
     }
 
     void EncoderThread::Encode(const std::shared_ptr<Image>& image, uint64_t frame_index) {
-        if (frame_width_ != image->width || frame_height_ != image->height || !video_encoder_) {
-            auto settings = Settings::Instance();
-            if (video_encoder_) {
-                video_encoder_->Exit();
-                video_encoder_.reset();
-            }
-            tc::EncoderConfig encoder_config;
-            encoder_config.width = image->width;
-            encoder_config.height = image->height;
-            encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
-            encoder_config.gop_size = -1;
-            encoder_config.fps = 60;
-            encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
-            EncoderFeature encoder_feature{-1, 0};
-            video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
-                                                                encoder_feature,
-                                                                settings_->encoder_.encoder_select_type_,
-                                                                encoder_config,
-                                                                ECreateEncoderName::kFFmpeg);
-            if (!video_encoder_) {
-                LOGE("Create encoder failed, width: {}, height: {}, select type : {}, encoder name: {}",
-                     image->width, image->height, (int)settings->encoder_.encoder_select_type_, (int)settings->encoder_.encoder_name_);
-                return;
-            }
-
-            static uint64_t write_buffer = 0;
-            video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
-                LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}", frame->data->Size(), frame_index, key);
-                if (debug_file_) {
-                    debug_file_->Write(write_buffer, frame->data);
-                    write_buffer += frame->data->Size();
-                }
-
-                //
-                MsgVideoFrameEncoded msg {
-                    .frame_width_ = static_cast<uint32_t>(frame->width),
-                    .frame_height_ = static_cast<uint32_t>(frame->height),
-                    .frame_format_ = (uint32_t )settings->encoder_.encoder_format_,
-                    .frame_index_ = frame_index,
-                    .key_frame_ = key,
-                    .image_ = frame,
-                };
-                context_->SendAppMessage(msg);
-            });
-
-            frame_width_ = image->width;
-            frame_height_ = image->height;
-        }
-
-        enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
-            auto beg = TimeExt::GetCurrentTimestamp();
-            video_encoder_->Encode(image, frame_index);
-            auto end = TimeExt::GetCurrentTimestamp();
-            auto diff = end - beg;
-            Statistics::Instance()->AppendEncodeDuration(diff);
-        }));
+//        if (frame_width_ != image->width || frame_height_ != image->height || !video_encoder_) {
+//            auto settings = Settings::Instance();
+//            if (video_encoder_) {
+//                video_encoder_->Exit();
+//                video_encoder_.reset();
+//            }
+//            tc::EncoderConfig encoder_config;
+//            encoder_config.width = image->width;
+//            encoder_config.height = image->height;
+//            encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
+//            encoder_config.gop_size = -1;
+//            encoder_config.fps = 60;
+//            encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
+//            EncoderFeature encoder_feature{-1, 0};
+//            video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
+//                                                                encoder_feature,
+//                                                                settings_->encoder_.encoder_select_type_,
+//                                                                encoder_config,
+//                                                                ECreateEncoderName::kFFmpeg);
+//            if (!video_encoder_) {
+//                LOGE("Create encoder failed, width: {}, height: {}, select type : {}, encoder name: {}",
+//                     image->width, image->height, (int)settings->encoder_.encoder_select_type_, (int)settings->encoder_.encoder_name_);
+//                return;
+//            }
+//
+//            static uint64_t write_buffer = 0;
+//            video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
+//                LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}", frame->data->Size(), frame_index, key);
+//                if (debug_file_) {
+//                    debug_file_->Write(write_buffer, frame->data);
+//                    write_buffer += frame->data->Size();
+//                }
+//
+//                //
+//                MsgVideoFrameEncoded msg {
+//                    .frame_width_ = static_cast<uint32_t>(frame->width),
+//                    .frame_height_ = static_cast<uint32_t>(frame->height),
+//                    .frame_format_ = (uint32_t )settings->encoder_.encoder_format_,
+//                    .frame_index_ = frame_index,
+//                    .key_frame_ = key,
+//                    .image_ = frame,
+//                };
+//                context_->SendAppMessage(msg);
+//            });
+//
+//            frame_width_ = image->width;
+//            frame_height_ = image->height;
+//        }
+//
+//        enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
+//            auto beg = TimeExt::GetCurrentTimestamp();
+//            video_encoder_->Encode(image, frame_index);
+//            auto end = TimeExt::GetCurrentTimestamp();
+//            auto diff = end - beg;
+//            Statistics::Instance()->AppendEncodeDuration(diff);
+//        }));
     }
 
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
@@ -154,10 +154,10 @@ namespace tc
         }
 #endif
         if (frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
-            || encoder_format_ != settings->encoder_.encoder_format_ || !video_encoder_) {
-            if (video_encoder_) {
-                video_encoder_->Exit();
-                video_encoder_.reset();
+            || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
+            if (working_encoder_plugin_) {
+                // todo : Test it!
+                working_encoder_plugin_->Exit();
             }
             tc::EncoderConfig encoder_config;
             if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
@@ -185,16 +185,16 @@ namespace tc
             encoder_config.texture_format = cap_video_msg.frame_format_;
             encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
             encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
-            EncoderFeature encoder_feature{cap_video_msg.adapter_uid_, 0};
-            video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
-                                                                encoder_feature,
-                                                                settings_->encoder_.encoder_select_type_,
-                                                                encoder_config,
-                                                                ECreateEncoderName::kNVENC);
-            if (!video_encoder_) {
-                printf("video_encoder_ create error\n");
-                return;
-            }
+//            EncoderFeature encoder_feature{cap_video_msg.adapter_uid_, 0};
+//            video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
+//                                                                encoder_feature,
+//                                                                settings_->encoder_.encoder_select_type_,
+//                                                                encoder_config,
+//                                                                ECreateEncoderName::kNVENC);
+//            if (!video_encoder_) {
+//                printf("video_encoder_ create error\n");
+//                return;
+//            }
 
             // video frame carrier
             if (frame_carrier_ != nullptr) {
@@ -205,17 +205,17 @@ namespace tc
 
             // plugins: Create encoder plugin
             auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-            if (nvenc_encoder && nvenc_encoder->Init(encoder_config)) {
+            if (nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config)) {
                 working_encoder_plugin_ = nvenc_encoder;
             } else {
                 LOGW("Init NVENC failed, will try AMF.");
                 auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                if (amf_encoder && amf_encoder->Init(encoder_config)) {
+                if (amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config)) {
                     working_encoder_plugin_ = amf_encoder;
                 } else {
                     LOGW("Init AMF failed, will try FFmpeg.");
                     auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                    if (ffmpeg_encoder && ffmpeg_encoder->Init(encoder_config)) {
+                    if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config)) {
                         working_encoder_plugin_ = ffmpeg_encoder;
                     } else {
                         LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
@@ -242,31 +242,31 @@ namespace tc
                 });
             });
 
-            static uint64_t write_buffer = 0;
-            video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
-                if (key) {
-                    LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
-                         frame->data->Size(), frame_index, key, frame->width, frame->height, last_capture_video_frame_.monitor_index_, last_capture_video_frame_.display_name_,
-                         last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);
-                }
-
-                MsgVideoFrameEncoded msg {
-                    .frame_width_ = static_cast<uint32_t>(frame->width),
-                    .frame_height_ = static_cast<uint32_t>(frame->height),
-                    .frame_format_ = (uint32_t)settings->encoder_.encoder_format_,
-                    .frame_index_ = frame_index,
-                    .key_frame_ = key,
-                    .image_ = frame,
-                    .monitor_index_ = last_capture_video_frame_.monitor_index_,
-                    .monitor_name_ = last_capture_video_frame_.display_name_,
-                    .monitor_left_ = last_capture_video_frame_.left_,
-                    .monitor_top_ = last_capture_video_frame_.top_,
-                    .monitor_right_ = last_capture_video_frame_.right_,
-                    .monitor_bottom_ = last_capture_video_frame_.bottom_,
-                };
-                context_->SendAppMessage(msg);
-
-            });
+//            static uint64_t write_buffer = 0;
+//            video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
+//                if (key) {
+//                    LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
+//                         frame->data->Size(), frame_index, key, frame->width, frame->height, last_capture_video_frame_.monitor_index_, last_capture_video_frame_.display_name_,
+//                         last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);
+//                }
+//
+//                MsgVideoFrameEncoded msg {
+//                    .frame_width_ = static_cast<uint32_t>(frame->width),
+//                    .frame_height_ = static_cast<uint32_t>(frame->height),
+//                    .frame_format_ = (uint32_t)settings->encoder_.encoder_format_,
+//                    .frame_index_ = frame_index,
+//                    .key_frame_ = key,
+//                    .image_ = frame,
+//                    .monitor_index_ = last_capture_video_frame_.monitor_index_,
+//                    .monitor_name_ = last_capture_video_frame_.display_name_,
+//                    .monitor_left_ = last_capture_video_frame_.left_,
+//                    .monitor_top_ = last_capture_video_frame_.top_,
+//                    .monitor_right_ = last_capture_video_frame_.right_,
+//                    .monitor_bottom_ = last_capture_video_frame_.bottom_,
+//                };
+//                context_->SendAppMessage(msg);
+//
+//            });
 
             frame_width_ = cap_video_msg.frame_width_;
             frame_height_ = cap_video_msg.frame_height_;
@@ -286,11 +286,11 @@ namespace tc
                 return;
             }
 
-            video_encoder_->Encode(target_texture, frame_index);
+            //video_encoder_->Encode(target_texture, frame_index);
             bool can_encode_texture = false;
             if (working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture()) {
                 can_encode_texture = true;
-                working_encoder_plugin_->Encode(target_texture, frame_index);
+                working_encoder_plugin_->Encode(target_texture, frame_index, cap_video_msg);
             }
             auto end = TimeExt::GetCurrentTimestamp();
             auto diff = end - beg;
@@ -311,7 +311,7 @@ namespace tc
                 // callback in YUV converter thread
                 if (working_encoder_plugin_ && !can_encode_texture) {
                     PostEncTask([=, this]() {
-                        working_encoder_plugin_->Encode(image, frame_index);
+                        working_encoder_plugin_->Encode(image, frame_index, cap_video_msg);
                     });
                 }
                 context_->PostStreamPluginTask([=, this]() {

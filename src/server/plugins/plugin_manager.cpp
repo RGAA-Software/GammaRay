@@ -219,8 +219,13 @@ namespace tc
         LOGI("====> Total plugins: {}", plugins_.size());
         int index = 1;
         VisitAllPlugins([&](GrPluginInterface *plugin) {
-            LOGI("Plugin {}. {} Version name:{}, Version code: {}", index++, plugin->GetPluginName(),
-                 plugin->GetVersionName(), plugin->GetVersionCode());
+            LOGI("Plugin {}. [{}] version name: [{}], version code: [{}], enabled: [{}]",
+                 index++,
+                 plugin->GetPluginName(),
+                 plugin->GetVersionName(),
+                 plugin->GetVersionCode(),
+                 plugin->IsPluginEnabled()
+            );
         });
     }
 

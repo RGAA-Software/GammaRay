@@ -6,6 +6,12 @@
 #include "plugin_interface/gr_plugin_events.h"
 #include "video_encoder_vce.h"
 #include "amf_encoder_defs.h"
+#include "tc_common_new/log.h"
+
+static void* GetInstance() {
+    static tc::AmfEncoderPlugin plugin;
+    return (void*)&plugin;
+}
 
 namespace tc
 {
@@ -30,7 +36,8 @@ namespace tc
 
     }
 
-    bool AmfEncoderPlugin::OnCreate(const tc::GrPluginParam &param) {
+    bool AmfEncoderPlugin::OnCreate(const tc::GrPluginParam& param) {
+        tc::GrEncoderPlugin::OnCreate(param);
         return true;
     }
 
@@ -48,23 +55,32 @@ namespace tc
 
     bool AmfEncoderPlugin::Init(const EncoderConfig& config) {
         GrEncoderPlugin::Init(config);
-        video_encoder_ = std::make_shared<VideoEncoderVCE>(config.adapter_uid_);
+        video_encoder_ = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
         init_success_ = video_encoder_->Initialize(config);
+        if (!init_success_) {
+            LOGE("AMF encoder init failed!");
+        }
         return init_success_;
     }
 
-    void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) {
+    void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra) {
         if (IsWorking()) {
-            video_encoder_->Encode(tex2d, frame_index);
+            video_encoder_->Encode(tex2d, frame_index, extra);
+        }
+        else {
+            LOGI("Amf encoder is not working, ignore it.");
         }
     }
 
-    void AmfEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) {
+    void AmfEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) {
 
     }
 
     void AmfEncoderPlugin::Exit() {
-
+        if (video_encoder_) {
+            video_encoder_->Exit();
+            LOGI("Amf encoder exit.");
+        }
     }
 
 }

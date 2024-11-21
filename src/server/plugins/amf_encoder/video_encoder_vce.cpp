@@ -8,7 +8,10 @@
 #include "tc_common_new/defer.h"
 #include "d3d_texture_debug.h"
 #include "tc_encoder_new/frame_render/FrameRender.h"
+#include "tc_encoder_new/encoder_config.h"
 #include "tc_common_new/string_ext.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "amf_encoder_plugin.h"
 #include <combaseapi.h>
 #include <atlbase.h>
 #include <fstream>
@@ -22,6 +25,8 @@
 
 const wchar_t* START_TIME_PROPERTY = L"StartTimeProperty";
 const wchar_t* FRAME_INDEX_PROPERTY = L"FrameIndexProperty";
+const wchar_t* WIDTH_INDEX_PROPERTY = L"FrameWidthIndexProperty";
+const wchar_t* HEIGHT_INDEX_PROPERTY = L"FrameHeightIndexProperty";
 const wchar_t* IS_KEY_FRAME = L"IsKeyFrame";
 static uint64_t last_time = tc::TimeExt::GetCurrentTimestamp();
 static int fps = 0;
@@ -35,7 +40,9 @@ namespace tc
         const wchar_t* pCodec = L"";
 
         amf_int32 frameRateIn = config.fps;
-        amf_int64 bitRateIn = config.bitrate * 000000L; //5Mbits// Settings::Instance().m_encodeBitrateInMBits * 1000000L; // in bits
+        //5Mbits : 5*1000000
+        amf_int64 bitRateIn = config.bitrate;
+        LOGI("Amf encoder bitrate: {}, fps: {}", bitRateIn, config.fps);
 
         switch (codec_) {
             case EVideoCodecType::kH264:
@@ -60,7 +67,8 @@ namespace tc
             //m_amfEncoder->SetProperty(AMF_VIDEO_ENCODER_USAGE, AMF_VIDEO_ENCODER_USAGE_TRANSCODING);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_USAGE, AMF_VIDEO_ENCODER_USAGE_LOW_LATENCY);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_B_PIC_PATTERN, 0);
-            amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_QUALITY_PRESET, AMF_VIDEO_ENCODER_QUALITY_PRESET_QUALITY);
+            //amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_QUALITY_PRESET, AMF_VIDEO_ENCODER_QUALITY_PRESET_QUALITY);
+            amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_QUALITY_PRESET, AMF_VIDEO_ENCODER_QUALITY_PRESET_BALANCED);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_TARGET_BITRATE, bitRateIn);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_FRAMESIZE, ::AMFConstructSize(config.width, config.height));
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_FRAMERATE, ::AMFConstructRate(frameRateIn, 1));
@@ -189,7 +197,8 @@ namespace tc
         }
     }
 
-    VideoEncoderVCE::VideoEncoderVCE(uint64_t adapter_uid) {
+    VideoEncoderVCE::VideoEncoderVCE(AmfEncoderPlugin* plugin, uint64_t adapter_uid) {
+        this->plugin_ = plugin;
         ComPtr<IDXGIFactory1> factory1;
         ComPtr<IDXGIAdapter1> adapter;
         DXGI_ADAPTER_DESC desc;
@@ -248,6 +257,7 @@ namespace tc
     }
 
     bool VideoEncoderVCE::Initialize(const tc::EncoderConfig &config) {
+        encoder_config_ = config;
         codec_type_ = config.codec_type;
         auto ret = g_AMFFactory.Init();
         AMF_LOG_ERR_IF(ret);
@@ -281,14 +291,15 @@ namespace tc
         return true;
     }
 
-    void VideoEncoderVCE::Encode(ID3D11Texture2D *tex2d, uint64_t frame_index) {
+    void VideoEncoderVCE::Encode(ID3D11Texture2D *tex2d, uint64_t frame_index, std::any extra) {
+        extra_ = extra;
         D3D11_TEXTURE2D_DESC desc;
         tex2d->GetDesc(&desc);
         EncodeTexture(tex2d, desc.Width, desc.Height, frame_index);
     }
 
-    void VideoEncoderVCE::Encode(const std::shared_ptr<Image> &i420_data, uint64_t frame_index) {
-
+    void VideoEncoderVCE::Encode(const std::shared_ptr<Image> &i420_data, uint64_t frame_index, std::any extra) {
+        extra_ = extra;
     }
 
     void VideoEncoderVCE::Exit() {
@@ -325,6 +336,8 @@ namespace tc
         amf_pts start_time = amf_high_precision_clock();
         surface->SetProperty(START_TIME_PROPERTY, start_time);
         surface->SetProperty(FRAME_INDEX_PROPERTY, frame_idx);
+        surface->SetProperty(WIDTH_INDEX_PROPERTY, width);
+        surface->SetProperty(HEIGHT_INDEX_PROPERTY, height);
 
         if (!insert_idr_) {
             if (frame_idx % gop_ == 0) {
@@ -343,11 +356,15 @@ namespace tc
     void VideoEncoderVCE::Receive(amf::AMFData *data) {
         amf_pts current_time = amf_high_precision_clock();
         amf_pts start_time = 0;
-        uint64_t frameIndex;
-        bool is_key_frame;
+        uint64_t frame_index;
+        bool key_frame;
+        int frame_width;
+        int frame_height;
         data->GetProperty(START_TIME_PROPERTY, &start_time);
-        data->GetProperty(FRAME_INDEX_PROPERTY, &frameIndex);
-        data->GetProperty(IS_KEY_FRAME, &is_key_frame);
+        data->GetProperty(FRAME_INDEX_PROPERTY, &frame_index);
+        data->GetProperty(IS_KEY_FRAME, &key_frame);
+        data->GetProperty(WIDTH_INDEX_PROPERTY, &frame_width);
+        data->GetProperty(HEIGHT_INDEX_PROPERTY, &frame_height);
 
         amf::AMFBufferPtr buffer(data); // query for buffer interface
         char *p = reinterpret_cast<char *>(buffer->GetNative());
@@ -356,28 +373,33 @@ namespace tc
         SkipAUD(&p, &length);
 
         //LOGI("VCE encode latency: {} ms. Size={} bytes frameIndex={}, length : {}", double(current_time - start_time) / MILLISEC_TIME, (int)buffer->GetSize(), frameIndex, length);
-#if DEBUG_FILE
-        if (dbg_file_.is_open()) {
-            dbg_file_.write(p, length);
-        }
-#endif
-        auto encoded_data = Data::Make((char*)p, length);
-//        if (encoder_callback_) {
-//            auto image = Image::Make(encoded_data, out_width_, out_height_, 3);
-//            encoder_callback_(image, ++encoded_frame_index_, insert_idr_);
-//        }
 
-        static std::ofstream file("234234.h264", std::ios::binary);
-        file.write(encoded_data->CStr(), encoded_data->Size());
+        auto encoded_data = Data::Make((char*)p, length);
+        auto event = std::make_shared<GrPluginEncodedVideoFrameEvent>();
+        event->type_ = [=]() {
+            if (encoder_config_.codec_type == EVideoCodecType::kHEVC) {
+                return GrPluginEncodedVideoType::kH265;
+            } else if (encoder_config_.codec_type == EVideoCodecType::kH264) {
+                return GrPluginEncodedVideoType::kH264;
+            } else {
+                return GrPluginEncodedVideoType::kH264;
+            }
+        }();
+        event->data_ = encoded_data;
+        event->frame_width_ = frame_width;
+        event->frame_height_ = frame_height;
+        event->key_frame_ = key_frame;
+        event->frame_index_ = frame_index;
+        event->extra_ = this->extra_;
+        this->plugin_->CallbackEvent(event);
 
         fps++;
         uint64_t ct = tc::TimeExt::GetCurrentTimestamp();
         if (ct - last_time > 1000) {
-            //LOGI("Recv FPS : {}", fps);
+            //LOGI("Amf encoder FPS : {}", fps);
             last_time = ct;
             fps = 0;
         }
-
     }
 
     void VideoEncoderVCE::ApplyFrameProperties(const amf::AMFSurfacePtr &surface, bool insertIDR) {

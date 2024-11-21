@@ -40,16 +40,20 @@ namespace tc
         return true;
     }
 
-    void GrEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index) {
+    void GrEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra) {
 
     }
 
-    void GrEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) {
+    void GrEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) {
 
     }
 
     void GrEncoderPlugin::InsertIdr() {
         insert_idr_ = true;
+    }
+
+    EncoderConfig GrEncoderPlugin::GetEncoderConfig() {
+        return encoder_config_;
     }
 
     void GrEncoderPlugin::Exit() {

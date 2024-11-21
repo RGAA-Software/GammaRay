@@ -41,7 +41,7 @@ namespace tc
     private:
         Settings* settings_ = nullptr;
         std::shared_ptr<Thread> enc_thread_ = nullptr;
-        std::shared_ptr<VideoEncoder> video_encoder_ = nullptr;
+        //std::shared_ptr<VideoEncoder> video_encoder_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
 
         uint32_t frame_width_ = 0;

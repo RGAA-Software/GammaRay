@@ -124,7 +124,7 @@ namespace tc
         return true;
     }
 
-    void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) {
+    void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) {
         auto img_width = i420_image->width;
         auto img_height = i420_image->height;
         auto i420_data = i420_image->data;
@@ -174,6 +174,7 @@ namespace tc
             event->frame_height_ = img_height;
             event->key_frame_ = key_frame;
             event->frame_index_ = frame_index;
+            event->extra_ = extra;
             CallbackEvent(event);
 
             av_packet_unref(packet_);

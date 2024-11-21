@@ -34,7 +34,7 @@ namespace tc
 
         bool CanEncodeTexture() override;
         bool Init(const EncoderConfig& config) override;
-        void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index) override;
+        void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) override;
         void Exit() override;
 
     private:
