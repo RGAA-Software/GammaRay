@@ -406,23 +406,16 @@ namespace tc
             //LOGI("monitor: {} - {} , ({},{} {},{})",
             //     msg.monitor_index_, msg.monitor_name_, msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
             connection_->PostVideoMessage(net_msg);
-            statistics_->fps_video_encode_->Tick();
-
-            // plugins: Frame encoded
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                    plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
-                });
-            });
+            //statistics_->fps_video_encode_->Tick();
         });
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
             if (!HasConnectedPeer()) {
                 return;
             }
-            if (!connection_ || connection_->OnlyAudioClient()) {
-                return;
-            }
+//            if (!connection_ || connection_->OnlyAudioClient()) {
+//                return;
+//            }
 
             // plugins: SharedTexture
             context_->PostStreamPluginTask([=, this]() {
@@ -474,11 +467,11 @@ namespace tc
 
     bool Application::HasConnectedPeer() {
         bool has_working_stream_plugin = false;
-//        plugin_manager_->VisitStreamPlugins([&](GrStreamPlugin* plugin) {
-//            if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
-//                has_working_stream_plugin = true;
-//            }
-//        });
+        plugin_manager_->VisitStreamPlugins([&](GrStreamPlugin* plugin) {
+            if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
+                has_working_stream_plugin = true;
+            }
+        });
         return (connection_ && connection_->GetConnectionPeerCount() > 0) || has_working_stream_plugin;
     }
 

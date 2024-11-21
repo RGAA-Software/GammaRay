@@ -13,6 +13,7 @@ namespace tc
 
     class Context;
     class PluginManager;
+    class Statistics;
 
     class PluginStreamEventRouter {
     public:
@@ -21,6 +22,7 @@ namespace tc
         void ProcessEncodedVideoFrameEvent(const std::shared_ptr<GrPluginEncodedVideoFrameEvent>& event);
 
     private:
+        Statistics* statistics_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
     };
