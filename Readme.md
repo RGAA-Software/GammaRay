@@ -1,4 +1,7 @@
 ![](docs/images/GammaRay.png)
+
+#### !!!主分支正在进行结构调整，还不稳定，请等待2周!!!
+
 #### [简体中文](docs/Readme_CN.md)
 #### Showcase【演示地址 B站】
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)
