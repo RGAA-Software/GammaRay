@@ -35,6 +35,7 @@ namespace tc
     enum class GrPluginType {
         kStream,
         kEncoder,
+        kNet,
         kUtil,
     };
 

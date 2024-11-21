@@ -1,5 +1,5 @@
 //
-// Created by hy on 19/11/2024.
+// Created by RGAA on 19/11/2024.
 //
 
 #ifndef GAMMARAY_GR_STREAM_PLUGIN_H
@@ -24,10 +24,6 @@ namespace tc
                                          int frame_width,
                                          int frame_height,
                                          bool key);
-        // to see format detail in tc_message_new/tc_message.proto
-        // message VideoFrame { ... }
-        // you can send it to any clients
-        virtual void OnEncodedVideoFrameInProtobufFormat(const std::string& msg);
         // raw video frame
         // handle: D3D Shared texture handle
         virtual void OnRawVideoFrameSharedTexture(uint64_t handle);

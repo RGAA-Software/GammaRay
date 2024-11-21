@@ -5,12 +5,12 @@
 #ifndef GAMMARAY_UDP_PLUGIN_H
 #define GAMMARAY_UDP_PLUGIN_H
 
-#include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
 
-    class UdpPlugin : public GrStreamPlugin {
+    class UdpPlugin : public GrNetPlugin {
     public:
 
         std::string GetPluginName() override;

@@ -45,6 +45,7 @@
 #include "app/clipboard_manager.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
@@ -467,8 +468,8 @@ namespace tc
 
     bool Application::HasConnectedPeer() {
         bool has_working_stream_plugin = false;
-        plugin_manager_->VisitStreamPlugins([&](GrStreamPlugin* plugin) {
-            if (plugin->IsStreamPlugin() && plugin->IsWorking()) {
+        plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
+            if (plugin->IsWorking()) {
                 has_working_stream_plugin = true;
             }
         });
