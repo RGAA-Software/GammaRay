@@ -61,6 +61,7 @@ namespace tc
         bool Initialize(const tc::EncoderConfig &config);
         void Encode(ID3D11Texture2D *tex2d, uint64_t frame_index, std::any extra);
         void Encode(const std::shared_ptr<Image> &i420_data, uint64_t frame_index, std::any extra);
+        void InsertIdr();
         void Exit();
         void Shutdown();
         void Receive(amf::AMFData *data);

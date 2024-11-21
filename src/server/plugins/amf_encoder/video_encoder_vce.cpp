@@ -429,6 +429,10 @@ namespace tc
         }
     }
 
+    void VideoEncoderVCE::InsertIdr() {
+        insert_idr_ = true;
+    }
+
     void VideoEncoderVCE::SkipAUD(char **buffer, int *length) {
         // H.265 encoder always produces AUD NAL even if AMF_VIDEO_ENCODER_HEVC_INSERT_AUD is set. But it is not needed.
         static const int AUD_NAL_SIZE = 7;

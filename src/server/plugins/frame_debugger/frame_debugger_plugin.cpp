@@ -29,7 +29,8 @@ namespace tc
 
     }
 
-    bool FrameDebuggerPlugin::OnCreate(const tc::GrPluginParam &param) {
+    bool FrameDebuggerPlugin::OnCreate(const tc::GrPluginParam& param) {
+        GrPluginInterface::OnCreate(param);
         return true;
     }
 

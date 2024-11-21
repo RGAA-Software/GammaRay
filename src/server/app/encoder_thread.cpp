@@ -50,27 +50,13 @@ namespace tc
         enc_thread_ = Thread::Make("encoder_thread", 5);
         enc_thread_->Poll();
 
-#if DEBUG_FILE
-        debug_file_ = File::OpenForWriteB("debug_encoder.h264");
-#endif
-
         msg_listener_ = context_->CreateMessageListener();
         msg_listener_->Listen<MsgInsertKeyFrame>([=, this](const MsgInsertKeyFrame& msg) {
-//            if (video_encoder_) {
-//                video_encoder_->InsertIDR();
-//            }
             // plugins: InsertIdr
-            {
-                plugin_manager_->VisitEncoderPlugins([=](GrEncoderPlugin* plugin) {
-                    plugin->InsertIdr();
-                });
-            }
+            plugin_manager_->VisitEncoderPlugins([=](GrEncoderPlugin* plugin) {
+                plugin->InsertIdr();
+            });
         });
-    }
-
-    void EncoderThread::Encode(const std::shared_ptr<Data>& data, int width, int height, uint64_t frame_index) {
-        auto image = Image::Make(data, width, height, 0);
-        this->Encode(image, frame_index);
     }
 
     void EncoderThread::Encode(const std::shared_ptr<Image>& image, uint64_t frame_index) {
@@ -134,7 +120,6 @@ namespace tc
 
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
         auto settings = Settings::Instance();
-        last_capture_video_frame_ = cap_video_msg;
         auto frame_index = cap_video_msg.frame_index_;
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
         Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
@@ -185,16 +170,6 @@ namespace tc
             encoder_config.texture_format = cap_video_msg.frame_format_;
             encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
             encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
-//            EncoderFeature encoder_feature{cap_video_msg.adapter_uid_, 0};
-//            video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
-//                                                                encoder_feature,
-//                                                                settings_->encoder_.encoder_select_type_,
-//                                                                encoder_config,
-//                                                                ECreateEncoderName::kNVENC);
-//            if (!video_encoder_) {
-//                printf("video_encoder_ create error\n");
-//                return;
-//            }
 
             // video frame carrier
             if (frame_carrier_ != nullptr) {
@@ -241,32 +216,6 @@ namespace tc
                     plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
                 });
             });
-
-//            static uint64_t write_buffer = 0;
-//            video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
-//                if (key) {
-//                    LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
-//                         frame->data->Size(), frame_index, key, frame->width, frame->height, last_capture_video_frame_.monitor_index_, last_capture_video_frame_.display_name_,
-//                         last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);
-//                }
-//
-//                MsgVideoFrameEncoded msg {
-//                    .frame_width_ = static_cast<uint32_t>(frame->width),
-//                    .frame_height_ = static_cast<uint32_t>(frame->height),
-//                    .frame_format_ = (uint32_t)settings->encoder_.encoder_format_,
-//                    .frame_index_ = frame_index,
-//                    .key_frame_ = key,
-//                    .image_ = frame,
-//                    .monitor_index_ = last_capture_video_frame_.monitor_index_,
-//                    .monitor_name_ = last_capture_video_frame_.display_name_,
-//                    .monitor_left_ = last_capture_video_frame_.left_,
-//                    .monitor_top_ = last_capture_video_frame_.top_,
-//                    .monitor_right_ = last_capture_video_frame_.right_,
-//                    .monitor_bottom_ = last_capture_video_frame_.bottom_,
-//                };
-//                context_->SendAppMessage(msg);
-//
-//            });
 
             frame_width_ = cap_video_msg.frame_width_;
             frame_height_ = cap_video_msg.frame_height_;

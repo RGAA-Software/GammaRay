@@ -179,7 +179,7 @@ namespace tc
 
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
-            if (visitor && plugin->IsPluginEnabled()) {
+            if (visitor) {
                 visitor(plugin);
             }
         }
@@ -219,7 +219,7 @@ namespace tc
         LOGI("====> Total plugins: {}", plugins_.size());
         int index = 1;
         VisitAllPlugins([&](GrPluginInterface *plugin) {
-            LOGI("Plugin {}. [{}] version name: [{}], version code: [{}], enabled: [{}]",
+            LOGI("Plugin {}. [{}] vn: [{}], vc: [{}], enabled: [{}]",
                  index++,
                  plugin->GetPluginName(),
                  plugin->GetVersionName(),

@@ -47,6 +47,9 @@ namespace tc
 
     void AmfEncoderPlugin::InsertIdr() {
         GrEncoderPlugin::InsertIdr();
+        if (IsWorking()) {
+            video_encoder_->InsertIdr();
+        }
     }
 
     bool AmfEncoderPlugin::IsWorking() {
