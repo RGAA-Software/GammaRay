@@ -15,6 +15,7 @@ set(PLUGIN_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_stream_plugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_encoder_plugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_net_plugin.cpp
 )
 
 add_library(${PROJECT_NAME} ${PLUGIN_SRCS})

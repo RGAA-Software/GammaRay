@@ -5,12 +5,12 @@
 #ifndef GAMMARAY_RTC_PLUGIN_H
 #define GAMMARAY_RTC_PLUGIN_H
 
-#include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
 
-    class RtcPlugin : public GrStreamPlugin {
+    class RtcPlugin : public GrNetPlugin {
     public:
         std::string GetPluginName() override;
         std::string GetVersionName() override;

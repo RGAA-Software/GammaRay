@@ -1,5 +1,5 @@
 //
-// Created by hy on 15/11/2024.
+// Created by RGAA on 15/11/2024.
 //
 
 #ifndef GAMMARAY_PLUGIN_MANAGER_H
@@ -19,6 +19,7 @@ namespace tc
     class GrPluginInterface;
     class GrStreamPlugin;
     class GrEncoderPlugin;
+    class GrNetPlugin;
 
     class PluginManager {
     public:
@@ -40,6 +41,7 @@ namespace tc
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);
         void VisitUtilPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitEncoderPlugins(const std::function<void(GrEncoderPlugin*)>&& visitor);
+        void VisitNetPlugins(const std::function<void(GrNetPlugin*)>&& visitor);
         void DumpPluginInfo();
 
         void On1Second();

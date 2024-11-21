@@ -13,6 +13,10 @@
 namespace tc
 {
 
+    WsPlugin::WsPlugin() : GrNetPlugin() {
+
+    }
+
     std::string WsPlugin::GetPluginName() {
         return "WS Plugin";
     }
@@ -27,7 +31,6 @@ namespace tc
 
     bool WsPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrPluginInterface::OnCreate(param);
-        plugin_type_ = GrPluginType::kStream;
         ws_server_ = std::make_shared<WsPluginServer>();
         ws_server_->Start();
         return true;
@@ -48,19 +51,7 @@ namespace tc
         return ws_server_ && ws_server_->GetConnectionPeerCount() > 0;
     }
 
-    void WsPlugin::OnVideoEncoderCreated(const tc::GrPluginEncodedVideoType& type, int width, int height) {
-        LOGI("OnVideoEncoderCreated: {}, {}x{}", (int)type, width, height);
-    }
-
-    void WsPlugin::OnEncodedVideoFrame(const tc::GrPluginEncodedVideoType& video_type,
-                             const std::shared_ptr<Data>& data,
-                             uint64_t frame_index,
-                             int frame_width,
-                             int frame_height,
-                             bool key) {
-    }
-
-    void WsPlugin::OnEncodedVideoFrameInProtobufFormat(const std::string& msg) {
+    void WsPlugin::OnProtoMessage(const std::string& msg) {
         if (ws_server_) {
             ws_server_->PostVideoMessage(msg);
         }

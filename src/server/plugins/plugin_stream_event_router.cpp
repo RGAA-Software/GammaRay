@@ -1,5 +1,5 @@
 //
-// Created by hy on 21/11/2024.
+// Created by RGAA on 21/11/2024.
 //
 
 #include "plugin_stream_event_router.h"
@@ -11,6 +11,7 @@
 #include "tc_common_new/image.h"
 #include "app/app_messages.h"
 #include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 #include "network/net_message_maker.h"
 #include "settings/settings.h"
 #include "statistics.h"
@@ -71,11 +72,13 @@ namespace tc
                                                           msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
         statistics_->fps_video_encode_->Tick();
 
+        // plugins: Frame encoded
+        plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
+            plugin->OnProtoMessage(net_msg);
+        });
+
         context_->PostStreamPluginTask([=, this]() {
             plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                // plugins: Frame encoded
-                plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
-
                 // stream plugins: Raw frame / Encoded frame
                 plugin->OnEncodedVideoFrame(event->type_, event->data_, event->frame_index_,
                                             event->frame_width_, event->frame_height_, event->key_frame_);

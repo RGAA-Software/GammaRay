@@ -1,5 +1,5 @@
 //
-// Created by hy on 19/11/2024.
+// Created by RGAA on 19/11/2024.
 //
 
 #include "gr_stream_plugin.h"
@@ -25,10 +25,6 @@ namespace tc
                                                 int frame_width,
                                                 int frame_height,
                                                 bool key) {
-
-    }
-
-    void GrStreamPlugin::OnEncodedVideoFrameInProtobufFormat(const std::string& msg) {
 
     }
 

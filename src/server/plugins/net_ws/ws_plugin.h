@@ -5,16 +5,16 @@
 #ifndef GAMMARAY_WS_PLUGIN_H
 #define GAMMARAY_WS_PLUGIN_H
 
-#include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
 
     class WsPluginServer;
 
-    class WsPlugin : public GrStreamPlugin {
+    class WsPlugin : public GrNetPlugin {
     public:
-
+        WsPlugin();
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
@@ -23,14 +23,8 @@ namespace tc
         bool OnDestroy() override;
         void On1Second() override;
         bool IsWorking() override;
-        void OnVideoEncoderCreated(const tc::GrPluginEncodedVideoType& type, int width, int height) override;
-        void OnEncodedVideoFrame(const tc::GrPluginEncodedVideoType& video_type,
-                                 const std::shared_ptr<Data> &data,
-                                 uint64_t frame_index,
-                                 int frame_width,
-                                 int frame_height,
-                                 bool key) override;
-        void OnEncodedVideoFrameInProtobufFormat(const std::string& msg) override;
+
+        void OnProtoMessage(const std::string &msg) override;
 
     private:
 

@@ -1,5 +1,5 @@
 //
-// Created by hy on 19/11/2024.
+// Created by RGAA on 19/11/2024.
 //
 
 #include "gr_encoder_plugin.h"

@@ -214,6 +214,14 @@ namespace tc
         }
     }
 
+    void PluginManager::VisitNetPlugins(const std::function<void(GrNetPlugin*)>&& visitor) {
+        for (const auto& [k, plugin] : plugins_) {
+            if (plugin->GetPluginType() == GrPluginType::kNet) {
+                visitor((GrNetPlugin*) plugin);
+            }
+        }
+    }
+
     void PluginManager::On1Second() {
         VisitAllPlugins([=, this](GrPluginInterface* plugin) {
             plugin->On1Second();
