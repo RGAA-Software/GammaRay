@@ -11,12 +11,16 @@
 #include "tc_common_new/image.h"
 #include "app/app_messages.h"
 #include "plugin_interface/gr_stream_plugin.h"
+#include "network/net_message_maker.h"
+#include "settings/settings.h"
+#include "statistics.h"
 
 namespace tc
 {
     PluginStreamEventRouter::PluginStreamEventRouter(const std::shared_ptr<Context>& ctx) {
         context_ = ctx;
         plugin_manager_ = ctx->GetPluginManager();
+        statistics_ = Statistics::Instance();
     }
 
     void PluginStreamEventRouter::ProcessEncodedVideoFrameEvent(const std::shared_ptr<GrPluginEncodedVideoFrameEvent>& event) {
@@ -37,7 +41,7 @@ namespace tc
         uint32_t frame_width = event->frame_width_;
         uint32_t frame_height = event->frame_height_;
 
-        if (event->key_frame_) {
+        if (event->key_frame_ && 0) {
             LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
                  event->data_->Size(), frame_index, key, frame_width, frame_height, last_capture_video_frame_.monitor_index_, last_capture_video_frame_.display_name_,
                  last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);
@@ -59,9 +63,20 @@ namespace tc
         };
         context_->SendAppMessage(msg);
 
-        // stream plugins: Raw frame / Encoded frame
+        auto video_type = [=]() -> tc::VideoType {
+            return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
+        } ();
+        auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
+                                                          msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
+                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
+        statistics_->fps_video_encode_->Tick();
+
         context_->PostStreamPluginTask([=, this]() {
-            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+            plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                // plugins: Frame encoded
+                plugin->OnEncodedVideoFrameInProtobufFormat(net_msg);
+
+                // stream plugins: Raw frame / Encoded frame
                 plugin->OnEncodedVideoFrame(event->type_, event->data_, event->frame_index_,
                                             event->frame_width_, event->frame_height_, event->key_frame_);
             });
