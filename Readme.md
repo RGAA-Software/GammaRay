@@ -1,6 +1,7 @@
 ![](docs/images/GammaRay.png)
 
-#### !!!主分支正在进行结构调整，还不稳定，请等待2周!!!
+#### !!! 主分支正在进行结构调整，还不稳定，请等待2周 !!!
+#### !!! The app's framework is changing, you need to wait 2 weeks !!!
 
 #### [简体中文](docs/Readme_CN.md)
 #### Showcase【演示地址 B站】
