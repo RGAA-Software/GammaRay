@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 #include <string_view>
-#include "tc_message.pb.h"
+#include "plugin_interface/gr_plugin_events.h"
 
 namespace tc
 {
@@ -17,21 +17,18 @@ namespace tc
     class Settings;
     class Data;
     class Statistics;
-    class WsMediaRouter;
     class MessageListener;
+    class Message;
 
     class PluginNetEventRouter {
     public :
         explicit PluginNetEventRouter(const std::shared_ptr<Application>& app);
-        void HandleMessage(const std::shared_ptr<WsMediaRouter>& router, std::string_view message_str);
+        void ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event);
 
     private:
-        void ProcessHelloEvent(const std::shared_ptr<WsMediaRouter>& router, std::shared_ptr<Message>&& msg);
+        void ProcessHelloEvent(std::shared_ptr<Message>&& msg);
         void ProcessMouseEvent(std::shared_ptr<Message>&& msg);
         void ProcessKeyboardEvent(std::shared_ptr<Message>&& msg);
-#if ENABLE_SHM
-        void PostIpcMessage(std::shared_ptr<Data>&& data);
-#endif
         void PostIpcMessage(const std::string& msg);
         void ProcessGamepadState(std::shared_ptr<Message>&& msg);
         void ProcessClientStatistics(std::shared_ptr<Message>&& msg);

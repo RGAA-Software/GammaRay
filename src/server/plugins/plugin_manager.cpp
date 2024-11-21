@@ -16,18 +16,20 @@
 #include "plugins/amf_encoder/amf_encoder_defs.h"
 #include "plugins/nvenc_encoder/nvenc_encoder_defs.h"
 #include "context.h"
+#include "app.h"
 
 typedef void *(*FnGetInstance)();
 
 namespace tc
 {
 
-    std::shared_ptr<PluginManager> PluginManager::Make(const std::shared_ptr<Context> &ctx) {
-        return std::make_shared<PluginManager>(ctx);
+    std::shared_ptr<PluginManager> PluginManager::Make(const std::shared_ptr<Application>& app) {
+        return std::make_shared<PluginManager>(app);
     }
 
-    PluginManager::PluginManager(const std::shared_ptr<Context> &ctx) {
-        this->context_ = ctx;
+    PluginManager::PluginManager(const std::shared_ptr<Application>& app) {
+        this->app_ = app;
+        this->context_ = app->GetContext();
     }
 
     void PluginManager::LoadAllPlugins() {
@@ -126,7 +128,7 @@ namespace tc
     }
 
     void PluginManager::RegisterPluginEventsCallback() {
-        this->evt_router_ = std::make_shared<PluginEventRouter>(context_);
+        this->evt_router_ = std::make_shared<PluginEventRouter>(app_);
         VisitAllPlugins([&](GrPluginInterface* plugin) {
             plugin->RegisterEventCallback([=, this](const std::shared_ptr<GrPluginBaseEvent>& event) {
                 evt_router_->ProcessPluginEvent(event);

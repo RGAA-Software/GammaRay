@@ -15,6 +15,7 @@ namespace tc
 {
 
     class Context;
+    class Application;
     class PluginEventRouter;
     class GrPluginInterface;
     class GrStreamPlugin;
@@ -23,9 +24,9 @@ namespace tc
 
     class PluginManager {
     public:
-        static std::shared_ptr<PluginManager> Make(const std::shared_ptr<Context>& ctx);
+        static std::shared_ptr<PluginManager> Make(const std::shared_ptr<Application>& app);
 
-        explicit PluginManager(const std::shared_ptr<Context>& ctx);
+        explicit PluginManager(const std::shared_ptr<Application>& app);
 
         void LoadAllPlugins();
         void RegisterPluginEventsCallback();
@@ -47,6 +48,7 @@ namespace tc
         void On1Second();
 
     private:
+        std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         std::map<std::string, GrPluginInterface*> plugins_;
         std::map<std::string, QLibrary*> libs_;

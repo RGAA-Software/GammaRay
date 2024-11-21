@@ -24,10 +24,6 @@ namespace tc
     }
 
     bool Context::Init() {
-        plugin_manager_ = PluginManager::Make(shared_from_this());
-        plugin_manager_->LoadAllPlugins();
-        plugin_manager_->RegisterPluginEventsCallback();
-        plugin_manager_->DumpPluginInfo();
         return true;
     }
 
@@ -37,6 +33,10 @@ namespace tc
 
     std::shared_ptr<MessageListener> Context::CreateMessageListener() {
         return msg_notifier_->CreateListener();
+    }
+
+    void Context::SetPluginManager(const std::shared_ptr<PluginManager>& pm) {
+        plugin_manager_ = pm;
     }
 
     std::shared_ptr<PluginManager> Context::GetPluginManager() {
