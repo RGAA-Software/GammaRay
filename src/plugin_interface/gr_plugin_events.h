@@ -17,9 +17,7 @@ namespace tc
 
     enum class GrPluginEventType {
         kPluginUnknownType,
-        kPluginKeyboardEvent,
-        kPluginMouseEvent,
-        kPluginGamePadEvent,
+        kPluginNetClientEvent,
         kPluginClientConnectedEvent,
         kPluginClientDisConnectedEvent,
         kPluginInsertIdrEvent,
@@ -35,22 +33,15 @@ namespace tc
         std::any extra_;
     };
 
-    // GrKeyboardEvent
-    class GrPluginKeyboardEvent : public GrPluginBaseEvent {
+    // kPluginNetClientEvent
+    class GrPluginNetClientEvent : public GrPluginBaseEvent {
     public:
-
-    };
-
-    // GrMouseEvent
-    class GrPluginMouseEvent : public GrPluginBaseEvent {
+        GrPluginNetClientEvent() {
+            plugin_type_ = GrPluginEventType::kPluginNetClientEvent;
+        }
     public:
-
-    };
-
-    // GrGamePadEvent
-    class GrPluginGamePadEvent : public GrPluginBaseEvent {
-    public:
-
+        bool is_proto_;
+        std::string message_;
     };
 
     // GrClientConnectedEvent

@@ -28,6 +28,9 @@ namespace tc
         void PostBinaryMessage(const std::shared_ptr<Data> &data) override;
         void PostBinaryMessage(const std::string &data) override;
 
+    public:
+        bool enable_video_ = true;
+
     };
 
 }

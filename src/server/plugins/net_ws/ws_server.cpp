@@ -5,12 +5,8 @@
 #include "ws_server.h"
 
 #include <memory>
-//#include "app.h"
-//#include "context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
-//#include "ws_media_router.h"
-//#include "ws_ipc_router.h"
 #include "tc_common_new/data.h"
 #include "server/network/ws_media_router.h"
 //#include "message_processor.h"
@@ -38,14 +34,13 @@ namespace tc
         }
     };
 
-    WsPluginServer::WsPluginServer(){
-//        this->app_ = app;
-//        this->context_ = app->GetContext();
+    WsPluginServer::WsPluginServer(tc::WsPlugin* plugin){
+        this->plugin_ = plugin;
         //http_handler_ = std::make_shared<HttpHandler>(this->app_);
     }
 
     void WsPluginServer::Start() {
-        http_server_ = std::make_shared<asio2::http_server>();//*this->context_->GetAsio2IoPool()
+        http_server_ = std::make_shared<asio2::http_server>();
         http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             LOGI("client disconnected: {}", socket_fd);
@@ -60,8 +55,7 @@ namespace tc
         http_server_->support_websocket(true);
         ws_data_ = std::make_shared<WsData>(WsData{
             .vars_ = {
-//                {"app",  this->app_},
-//                {"proc", this->msg_processor_}
+                {"plugin",  this->plugin_},
             }
         });
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlMedia, http_server_);
@@ -75,24 +69,11 @@ namespace tc
 
     }
 
-    void WsPluginServer::PostVideoMessage(const std::string& data) {
-        media_routers_.ApplyAll([=](const auto& k, const std::shared_ptr<WsPluginRouter>& v) {
-//            if (!v->enable_video_) {
-//                return;
-//            }
-            v->PostBinaryMessage(data);
-
-        });
-    }
-
-    void WsPluginServer::PostAudioMessage(const std::string& data) {
-        media_routers_.ApplyAll([=](const auto &k, const auto &v) {
-            v->PostBinaryMessage(data);
-        });
-    }
-
     void WsPluginServer::PostNetMessage(const std::string& data) {
         media_routers_.ApplyAll([=](const auto &k, const auto &v) {
+            if (!v->enable_video_) {
+                return;
+            }
             v->PostBinaryMessage(data);
         });
     }

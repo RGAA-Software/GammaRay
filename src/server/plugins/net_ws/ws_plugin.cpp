@@ -10,6 +10,11 @@
 
 #include <QFile>
 
+static void* GetInstance() {
+    static tc::WsPlugin plugin;
+    return (void*)&plugin;
+}
+
 namespace tc
 {
 
@@ -31,7 +36,7 @@ namespace tc
 
     bool WsPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrPluginInterface::OnCreate(param);
-        ws_server_ = std::make_shared<WsPluginServer>();
+        ws_server_ = std::make_shared<WsPluginServer>(this);
         ws_server_->Start();
         return true;
     }
@@ -52,8 +57,8 @@ namespace tc
     }
 
     void WsPlugin::OnProtoMessage(const std::string& msg) {
-        if (ws_server_) {
-            ws_server_->PostVideoMessage(msg);
+        if (IsWorking()) {
+            ws_server_->PostNetMessage(msg);
         }
     }
 
