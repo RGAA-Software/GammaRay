@@ -15,12 +15,14 @@
 #include "network/net_message_maker.h"
 #include "settings/settings.h"
 #include "statistics.h"
+#include "app.h"
 
 namespace tc
 {
-    PluginStreamEventRouter::PluginStreamEventRouter(const std::shared_ptr<Context>& ctx) {
-        context_ = ctx;
-        plugin_manager_ = ctx->GetPluginManager();
+    PluginStreamEventRouter::PluginStreamEventRouter(const std::shared_ptr<Application>& app) {
+        app_ = app;
+        context_ = app->GetContext();
+        plugin_manager_ = context_->GetPluginManager();
         statistics_ = Statistics::Instance();
     }
 

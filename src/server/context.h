@@ -25,6 +25,7 @@ namespace tc
         ~Context() = default;
 
         bool Init();
+        void SetPluginManager(const std::shared_ptr<PluginManager>& pm);
 
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
         std::shared_ptr<MessageListener> CreateMessageListener();

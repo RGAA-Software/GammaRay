@@ -82,7 +82,13 @@ namespace tc
         context_->Init();
         statistics_->SetContext(context_);
 
-        plugin_manager_ = context_->GetPluginManager();
+        plugin_manager_ = PluginManager::Make(shared_from_this());
+        context_->SetPluginManager(plugin_manager_);
+
+        plugin_manager_->LoadAllPlugins();
+        plugin_manager_->RegisterPluginEventsCallback();
+        plugin_manager_->DumpPluginInfo();
+
 
         // clipboard
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);

@@ -10,6 +10,8 @@
 namespace tc
 {
 
+    class NVENCVideoEncoder;
+
     class NvencEncoderPlugin : public GrEncoderPlugin {
     public:
 
@@ -20,12 +22,16 @@ namespace tc
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
         void InsertIdr() override;
+        bool IsWorking() override;
 
         bool CanEncodeTexture() override;
         bool Init(const EncoderConfig& config) override;
         void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra) override;
         void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) override;
         void Exit() override;
+
+    private:
+        std::shared_ptr<NVENCVideoEncoder> video_encoder_ = nullptr;
     };
 
 }

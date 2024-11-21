@@ -17,10 +17,10 @@
 #include "app/app_messages.h"
 #include "context.h"
 #include "statistics.h"
-#include "ws_media_router.h"
-#include "net_message_maker.h"
+#include "network/net_message_maker.h"
 #include "app/clipboard_manager.h"
 #include "tc_capture_new/desktop_capture.h"
+#include "tc_message.pb.h"
 
 namespace tc {
 
@@ -36,67 +36,71 @@ namespace tc {
         });
     }
 
-    void PluginNetEventRouter::HandleMessage(const std::shared_ptr<WsMediaRouter>& router, const std::string_view message_str) {
-        auto msg = std::make_shared<Message>();
-        auto parse_res = msg->ParseFromArray(message_str.data(), message_str.size());
-        if(!parse_res) {
-            std::cout << "PluginNetEventRouter HandleMessage parse error" << std::endl;
-            return;
-        }
-        switch (msg->type()) {
-            case kHello: {
-                this->ProcessHelloEvent(router, std::move(msg));
-                break;
+    void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {
+        if (event->is_proto_) {
+            auto msg = std::make_shared<Message>();
+            auto parse_res = msg->ParseFromString(event->message_);
+            if (!parse_res) {
+                std::cout << "PluginNetEventRouter HandleMessage parse error" << std::endl;
+                return;
             }
-            case kAck:
-                break;
-            case kHeartBeat: {
-                ProcessHeartBeat(std::move(msg));
-                break;
+            switch (msg->type()) {
+                case kHello: {
+                    this->ProcessHelloEvent(std::move(msg));
+                    break;
+                }
+                case kAck:
+                    break;
+                case kHeartBeat: {
+                    ProcessHeartBeat(std::move(msg));
+                    break;
+                }
+                case MessageType::kKeyEvent: {
+                    ProcessKeyboardEvent(std::move(msg));
+                    break;
+                }
+                case MessageType::kMouseEvent: {
+                    ProcessMouseEvent(std::move(msg));
+                    break;
+                }
+                case MessageType::kGamepadState: {
+                    ProcessGamepadState(std::move(msg));
+                    break;
+                }
+                case MessageType::kClientStatistics: {
+                    ProcessClientStatistics(std::move(msg));
+                    break;
+                }
+                case kClipboardInfo: {
+                    ProcessClipboardInfo(std::move(msg));
+                    break;
+                }
+                case kSwitchMonitor: {
+                    ProcessSwitchMonitor(std::move(msg));
+                    break;
+                }
+                case kSwitchWorkMode: {
+                    ProcessSwitchWorkMode(std::move(msg));
+                    break;
+                }
+                case kChangeMonitorResolution: {
+                    ProcessChangeMonitorResolution(std::move(msg));
+                    break;
+                }
+                case kInsertKeyFrame: {
+                    ProcessInsertKeyFrame(std::move(msg));
+                    break;
+                }
             }
-            case MessageType::kKeyEvent: {
-                ProcessKeyboardEvent(std::move(msg));
-                break;
-            }
-            case MessageType::kMouseEvent: {
-                ProcessMouseEvent(std::move(msg));
-                break;
-            }
-            case MessageType::kGamepadState: {
-                ProcessGamepadState(std::move(msg));
-                break;
-            }
-            case MessageType::kClientStatistics: {
-                ProcessClientStatistics(std::move(msg));
-                break;
-            }
-            case kClipboardInfo: {
-                ProcessClipboardInfo(std::move(msg));
-                break;
-            }
-            case kSwitchMonitor: {
-                ProcessSwitchMonitor(std::move(msg));
-                break;
-            }
-            case kSwitchWorkMode: {
-                ProcessSwitchWorkMode(std::move(msg));
-                break;
-            }
-            case kChangeMonitorResolution: {
-                ProcessChangeMonitorResolution(std::move(msg));
-                break;
-            }
-            case kInsertKeyFrame: {
-                ProcessInsertKeyFrame(std::move(msg));
-                break;
-            }
+        } else {
+
         }
     }
 
-    void PluginNetEventRouter::ProcessHelloEvent(const std::shared_ptr<WsMediaRouter>& router, std::shared_ptr<Message>&& msg) {
+    void PluginNetEventRouter::ProcessHelloEvent(std::shared_ptr<Message>&& msg) {
         const auto& hello = msg->hello();
-        router->enable_audio_ = hello.enable_audio();
-        router->enable_video_ = hello.enable_video();
+        //router->enable_audio_ = hello.enable_audio();
+        //router->enable_video_ = hello.enable_video();
         app_->GetContext()->SendAppMessage(MsgHello {
             .enable_audio_ = hello.enable_audio(),
             .enable_video_ = hello.enable_video(),

@@ -5,6 +5,8 @@
 #include "nvenc_encoder_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "nvenc_encoder_defs.h"
+#include "nvenc_video_encoder.h"
+#include "tc_common_new/log.h"
 
 static void* GetInstance() {
     static tc::NvencEncoderPlugin plugin;
@@ -41,6 +43,13 @@ namespace tc
 
     void NvencEncoderPlugin::InsertIdr() {
         GrEncoderPlugin::InsertIdr();
+        if (IsWorking()) {
+            video_encoder_->InsertIdr();
+        }
+    }
+
+    bool NvencEncoderPlugin::IsWorking() {
+        return init_success_ && plugin_enabled_ && video_encoder_;
     }
 
     bool NvencEncoderPlugin::CanEncodeTexture() {
@@ -48,12 +57,21 @@ namespace tc
     }
 
     bool NvencEncoderPlugin::Init(const EncoderConfig& config) {
-
-        return false;
+        if (video_encoder_) {
+            video_encoder_->Exit();
+        }
+        video_encoder_ = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
+        init_success_ = video_encoder_->Initialize(config);
+        if (!init_success_) {
+            LOGE("Init NVENC encoder failed!");
+        }
+        return init_success_;
     }
 
     void NvencEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra) {
-
+        if (IsWorking()) {
+            video_encoder_->Encode(tex2d, frame_index, extra);
+        }
     }
 
     void NvencEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) {
