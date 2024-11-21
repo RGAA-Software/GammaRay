@@ -30,7 +30,6 @@ namespace tc
         explicit EncoderThread(const std::shared_ptr<Context>& ctx);
         ~EncoderThread() = default;
 
-        void Encode(const std::shared_ptr<Data>& data, int width, int height, uint64_t frame_index);
         void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index);
         void Encode(const CaptureVideoFrame& msg);
         void Exit();
@@ -41,14 +40,11 @@ namespace tc
     private:
         Settings* settings_ = nullptr;
         std::shared_ptr<Thread> enc_thread_ = nullptr;
-        //std::shared_ptr<VideoEncoder> video_encoder_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
 
         uint32_t frame_width_ = 0;
         uint32_t frame_height_ = 0;
         Encoder::EncoderFormat encoder_format_ = Encoder::EncoderFormat::kH264;
-
-        CaptureVideoFrame last_capture_video_frame_{};
 
         // debug
         std::shared_ptr<File> debug_file_ = nullptr;
