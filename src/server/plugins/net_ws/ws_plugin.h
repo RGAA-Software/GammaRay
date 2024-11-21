@@ -36,10 +36,4 @@ namespace tc
 
 extern "C" __declspec(dllexport) void* GetInstance();
 
-void* GetInstance() {
-    static tc::WsPlugin plugin;
-    return (void*)&plugin;
-}
-
-
 #endif //GAMMARAY_UDP_PLUGIN_H

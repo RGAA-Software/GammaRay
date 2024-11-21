@@ -28,6 +28,10 @@ namespace tc
             auto target_event = std::dynamic_pointer_cast<GrPluginEncodedVideoFrameEvent>(event);
             stream_event_router_->ProcessEncodedVideoFrameEvent(target_event);
         }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginNetClientEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginNetClientEvent>(event);
+
+        }
     }
 
 }

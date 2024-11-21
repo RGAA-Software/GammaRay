@@ -14,17 +14,16 @@ namespace tc
 {
     class WsPluginRouter;
     class HttpHandler;
+    class WsPlugin;
 
     class WsPluginServer {
     public:
 
-        explicit WsPluginServer();
+        explicit WsPluginServer(tc::WsPlugin* plugin);
 
         void Start();
         void Exit();
 
-        void PostVideoMessage(const std::string& data);
-        void PostAudioMessage(const std::string& data);
         void PostNetMessage(const std::string& data);
         int GetConnectionPeerCount();
         void NotifyPeerConnected();
@@ -43,7 +42,7 @@ namespace tc
         void NotifyMediaClientDisConnected();
 
     private:
-
+        tc::WsPlugin* plugin_ = nullptr;
         std::shared_ptr<asio2::http_server> http_server_ = nullptr;
 
         WsDataPtr ws_data_ = nullptr;

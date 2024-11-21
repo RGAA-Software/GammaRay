@@ -20,6 +20,9 @@ namespace tc
         // you can send it to any clients
         virtual void OnProtoMessage(const std::string& msg);
 
+        //
+        void CallbackClientEvent(bool is_proto, const std::string& msg);
+
     };
 
 }
