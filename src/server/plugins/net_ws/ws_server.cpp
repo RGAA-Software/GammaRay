@@ -34,8 +34,9 @@ namespace tc
         }
     };
 
-    WsPluginServer::WsPluginServer(tc::WsPlugin* plugin){
+    WsPluginServer::WsPluginServer(tc::WsPlugin* plugin, uint16_t listen_port){
         this->plugin_ = plugin;
+        this->listen_port_ = listen_port;
         //http_handler_ = std::make_shared<HttpHandler>(this->app_);
     }
 
@@ -60,8 +61,10 @@ namespace tc
         });
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlMedia, http_server_);
         AddHttpRouter<std::shared_ptr<asio2::http_server>>("/", http_server_);
-
-        bool ret = http_server_->start("0.0.0.0", std::to_string(9090));
+        if (listen_port_ <= 0) {
+            LOGE("Listen port invalid: {}", listen_port_);
+        }
+        bool ret = http_server_->start("0.0.0.0", std::to_string(listen_port_));
         LOGI("App server start result: {}", ret);
     }
 

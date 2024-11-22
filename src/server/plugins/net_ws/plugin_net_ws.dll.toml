@@ -1,0 +1,17 @@
+#
+author = "RGAA"
+
+#
+description = "This is FFmpeg software encoder"
+
+#
+version_name = "1.2.0"
+
+#
+version_code = 120
+
+#
+enabled = true
+
+# listen port
+listen-port = 20371

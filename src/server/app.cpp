@@ -95,8 +95,8 @@ namespace tc
         clipboard_mgr_->Monitor();
 
         // websocket server
-        connection_ = NetworkFactory::MakeConnection(shared_from_this());
-        connection_->Start();
+//        connection_ = NetworkFactory::MakeConnection(shared_from_this());
+//        connection_->Start();
 
         ws_client_ = std::make_shared<WSClient>(context_);
         ws_client_->Start();
@@ -308,7 +308,8 @@ namespace tc
                 auto encoded_data = Data::Make((char*)ef.data(), ef.size());
                 auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
                                                                   opus_encoder_->Channels(), opus_encoder_->Bits(), frame_size);
-                connection_->PostAudioMessage(net_msg);
+                //connection_->PostAudioMessage(net_msg);
+                PostNetMessage(net_msg);
 
                 if (debug_opus_decoder_) {
                     if (!opus_decoder_) {
@@ -354,14 +355,18 @@ namespace tc
 
     void Application::PostIpcMessage(const std::string& msg) {
         if (settings_->capture_.IsVideoHook()) {
-            connection_->PostIpcMessage(msg);
+            //connection_->PostIpcMessage(msg);
+            PostNetMessage(msg);
         }
     }
 
     void Application::PostNetMessage(const std::string& msg) {
-        if (connection_) {
-            connection_->PostNetMessage(msg);
-        }
+//        if (connection_) {
+//            connection_->PostNetMessage(msg);
+//        }
+        plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
+            plugin->OnProtoMessage(msg);
+        });
     }
 
     void Application::StartProcessWithHook() {
@@ -378,7 +383,8 @@ namespace tc
                 debug_encode_file_->Append(msg.image_->data->AsString());
                 LOGI("encoded frame callback, size: {}x{}, buffer size: {}", msg.frame_width_, msg.frame_height_, msg.image_->data->Size());
             }
-            connection_->PostVideoMessage(net_msg);
+            //connection_->PostVideoMessage(net_msg);
+            PostNetMessage(net_msg);
         });
 
         auto fn_start_process = [=, this]() {
@@ -403,18 +409,18 @@ namespace tc
     }
 
     void Application::StartProcessWithScreenCapture() {
-        msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
-            auto video_type = [=]() -> tc::VideoType {
-                return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
-            } ();
-            auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
-                                                              msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
-                                                              msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
+        //msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
+            //auto video_type = [=]() -> tc::VideoType {
+            //    return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
+            //} ();
+            //auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
+            //                                                  msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
+            //                                                  msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
             //LOGI("monitor: {} - {} , ({},{} {},{})",
             //     msg.monitor_index_, msg.monitor_name_, msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
-            connection_->PostVideoMessage(net_msg);
+            //connection_->PostVideoMessage(net_msg);
             //statistics_->fps_video_encode_->Tick();
-        });
+        //});
 
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
             if (!HasConnectedPeer()) {
@@ -452,7 +458,8 @@ namespace tc
             auto net_msg = NetMessageMaker::MakeCursorInfoSyncMsg(cursor_msg.x_, cursor_msg.y_, cursor_msg.hotspot_x_,
                                                                   cursor_msg.hotspot_y_, cursor_msg.width_, cursor_msg.height_,
                                                                   cursor_msg.visible_, cursor_msg.data_, cursor_msg.type_);
-            connection_->PostVideoMessage(net_msg);
+            //connection_->PostVideoMessage(net_msg);
+            PostNetMessage(net_msg);
         });
 
         if(desktop_capture_) {
@@ -473,13 +480,14 @@ namespace tc
     }
 
     bool Application::HasConnectedPeer() {
-        bool has_working_stream_plugin = false;
+        bool has_working_net_plugin = false;
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
             if (plugin->IsWorking()) {
-                has_working_stream_plugin = true;
+                has_working_net_plugin = true;
             }
         });
-        return (connection_ && connection_->GetConnectionPeerCount() > 0) || has_working_stream_plugin;
+        return has_working_net_plugin;
+        //return (connection_ && connection_->GetConnectionPeerCount() > 0) || has_working_stream_plugin;
     }
 
     void Application::WriteBoostUpInfoForPid(uint32_t pid) {
@@ -534,16 +542,18 @@ namespace tc
         }
 
         // audio spectrum
-        if (connection_) {
-            connection_->PostAudioMessage(net_msg);
-        }
+//        if (connection_) {
+//            connection_->PostAudioMessage(net_msg);
+//        }
+        PostNetMessage(net_msg);
     }
 
     void Application::SendClipboardMessage(const std::string& msg) {
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
         m.mutable_clipboard_info()->set_msg(msg);
-        connection_->PostNetMessage(m.SerializeAsString());
+        //connection_->PostNetMessage(m.SerializeAsString());
+        PostNetMessage(m.SerializeAsString());
     }
 
     void Application::SendConfigurationBack() {
@@ -570,8 +580,8 @@ namespace tc
         config->set_current_capturing_index(capturing_idx);
 
         //
-
-        connection_->PostNetMessage(m.SerializeAsString());
+        //connection_->PostNetMessage(m.SerializeAsString());
+        PostNetMessage(m.SerializeAsString());
     }
 
     void Application::RequestRestartMe() {
@@ -597,7 +607,8 @@ namespace tc
         auto r = m.mutable_change_monitor_resolution_result();
         r->set_monitor_name(name);
         r->set_result(ok);
-        connection_->PostNetMessage(m.SerializeAsString());
+        //connection_->PostNetMessage(m.SerializeAsString());
+        PostNetMessage(m.SerializeAsString());
     }
 
     void Application::Exit() {
@@ -611,9 +622,9 @@ namespace tc
         if (audio_capture_thread_ && audio_capture_thread_->IsJoinable()) {
             audio_capture_thread_->Join();
         }
-        if (connection_) {
-            connection_->Exit();
-        }
+//        if (connection_) {
+//            connection_->Exit();
+//        }
         if (app_manager_) {
             app_manager_->Exit();
         }

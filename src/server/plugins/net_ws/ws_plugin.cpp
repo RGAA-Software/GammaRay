@@ -34,9 +34,10 @@ namespace tc
         return 110;
     }
 
-    bool WsPlugin::OnCreate(const tc::GrPluginParam &param) {
+    bool WsPlugin::OnCreate(const tc::GrPluginParam& param) {
         GrPluginInterface::OnCreate(param);
-        ws_server_ = std::make_shared<WsPluginServer>(this);
+        auto listen_port = GetIntParam("listen-port");
+        ws_server_ = std::make_shared<WsPluginServer>(this, (uint16_t)listen_port);
         ws_server_->Start();
         return true;
     }
