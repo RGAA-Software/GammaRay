@@ -19,7 +19,7 @@ namespace tc
     class WsPluginServer {
     public:
 
-        explicit WsPluginServer(tc::WsPlugin* plugin);
+        explicit WsPluginServer(tc::WsPlugin* plugin, uint16_t listen_port);
 
         void Start();
         void Exit();
@@ -43,6 +43,7 @@ namespace tc
 
     private:
         tc::WsPlugin* plugin_ = nullptr;
+        uint16_t listen_port_ = 0;
         std::shared_ptr<asio2::http_server> http_server_ = nullptr;
 
         WsDataPtr ws_data_ = nullptr;

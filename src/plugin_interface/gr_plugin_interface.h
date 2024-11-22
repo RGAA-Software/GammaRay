@@ -103,6 +103,20 @@ namespace tc
         void HideRootWidget();
 
     protected:
+
+        template<typename T>
+        T GetParam(const std::string& k) {
+            if (param_.cluster_.count(k) > 0) {
+                return std::any_cast<T>(param_.cluster_[k]);
+            }
+            return T{};
+        }
+        std::string GetStringParam(const std::string& k) { return GetParam<std::string>(k); }
+        int64_t GetIntParam(const std::string& k) { return GetParam<int64_t>(k); }
+        bool GetBoolParam(const std::string& k) {return GetParam<bool>(k); }
+        double GetDoubleParam(const std::string& k) { return GetParam<double>(k); }
+
+    protected:
         std::shared_ptr<GrPluginContext> plugin_context_ = nullptr;
         std::atomic_bool enabled_ = false;
         std::atomic_bool stopped_ = false;

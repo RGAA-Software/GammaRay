@@ -97,8 +97,6 @@ namespace tc
         void SendConfigurationBack();
         void RequestRestartMe();
 
-        void PostRawImageReaderThread(std::function<void()>&& task);
-
     protected:
         Settings* settings_ = nullptr;
         std::shared_ptr<WSClient> ws_client_ = nullptr;
