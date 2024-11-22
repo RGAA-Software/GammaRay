@@ -5,9 +5,14 @@
 #include "frame_debugger_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "tc_common_new/file.h"
+#include "server/plugins/plugin_ids.h"
 
 namespace tc
 {
+
+    std::string FrameDebuggerPlugin::GetPluginId() {
+        return kFrameDebuggerPluginId;
+    }
 
     std::string FrameDebuggerPlugin::GetPluginName() {
         return "Frame Debugger";

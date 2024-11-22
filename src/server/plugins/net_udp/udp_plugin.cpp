@@ -3,9 +3,14 @@
 //
 
 #include "udp_plugin.h"
+#include "server/plugins/plugin_ids.h"
 
 namespace tc
 {
+
+    std::string UdpPlugin::GetPluginId() {
+        return kNetUdpPluginId;
+    }
 
     std::string UdpPlugin::GetPluginName() {
         return "UDP Plugin";

@@ -7,7 +7,7 @@
 #include "ws_server.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
-
+#include "server/plugins/plugin_ids.h"
 #include <QFile>
 
 static void* GetInstance() {
@@ -20,6 +20,10 @@ namespace tc
 
     WsPlugin::WsPlugin() : GrNetPlugin() {
 
+    }
+
+    std::string WsPlugin::GetPluginId() {
+        return kNetWsPluginId;
     }
 
     std::string WsPlugin::GetPluginName() {

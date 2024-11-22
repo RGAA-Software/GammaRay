@@ -3,9 +3,14 @@
 //
 
 #include "rtc_plugin.h"
+#include "server/plugins/plugin_ids.h"
 
 namespace tc
 {
+
+    std::string RtcPlugin::GetPluginId() {
+        return kNetRtcPluginId;
+    }
 
     std::string RtcPlugin::GetPluginName() {
         return "RTC Plugin";

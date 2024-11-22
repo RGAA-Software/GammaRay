@@ -12,7 +12,7 @@ namespace tc
 
     class MediaRecorderPlugin : public GrStreamPlugin {
     public:
-
+        std::string GetPluginId() override;
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;

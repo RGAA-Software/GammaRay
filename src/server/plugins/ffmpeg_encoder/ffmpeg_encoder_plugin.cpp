@@ -14,11 +14,16 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_common_new/defer.h"
+#include "server/plugins/plugin_ids.h"
 
 #include <Winerror.h>
 
 namespace tc
 {
+
+    std::string FFmpegEncoderPlugin::GetPluginId() {
+        return kFFmpegEncoderPluginId;
+    }
 
     std::string FFmpegEncoderPlugin::GetPluginName() {
         return kFFmpegPluginName;

@@ -3,6 +3,7 @@
 //
 
 #include "dda_capture_plugin.h"
+#include "server/plugins/plugin_ids.h"
 
 static void* GetInstance() {
     static tc::DDACapturePlugin plugin;
@@ -14,6 +15,10 @@ namespace tc
 
     DDACapturePlugin::DDACapturePlugin() : GrDataProviderPlugin() {
 
+    }
+
+    std::string DDACapturePlugin::GetPluginId() {
+        return kDdaCapturePluginId;
     }
 
     std::string DDACapturePlugin::GetPluginName() {

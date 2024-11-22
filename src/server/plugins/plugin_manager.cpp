@@ -12,9 +12,7 @@
 #include "plugin_interface/gr_encoder_plugin.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_event_router.h"
-#include "plugins/ffmpeg_encoder/ffmpeg_encoder_defs.h"
-#include "plugins/amf_encoder/amf_encoder_defs.h"
-#include "plugins/nvenc_encoder/nvenc_encoder_defs.h"
+#include "plugin_ids.h"
 #include "context.h"
 #include "app.h"
 
@@ -49,11 +47,11 @@ namespace tc
             if (lib->load()) {
                 auto func = (FnGetInstance) lib->resolve("GetInstance");
                 if (func) {
-                    auto plugin = (GrPluginInterface *) func();
+                    auto plugin = (GrPluginInterface*)func();
                     if (plugin) {
-                        auto plugin_name = plugin->GetPluginName();
-                        if (plugins_.contains(plugin_name)) {
-                            LOGE("{} repeated loading.", plugin_name);
+                        auto plugin_id = plugin->GetPluginId();
+                        if (plugins_.contains(plugin_id)) {
+                            LOGE("{} repeated loading.", plugin_id);
                             lib->unload();
                             lib->deleteLater();
                             lib = nullptr;
@@ -103,8 +101,8 @@ namespace tc
                             continue;
                         }
 
-                        plugins_.insert({plugin_name, plugin});
-                        libs_.insert({plugin_name, lib});
+                        plugins_.insert({plugin_id, plugin});
+                        libs_.insert({plugin_id, lib});
 
                         LOGI("{} loaded, version: {}", plugin->GetPluginName(), plugin->GetVersionName());
                     } else {
@@ -153,15 +151,15 @@ namespace tc
 
     }
 
-    GrPluginInterface* PluginManager::GetPluginByName(const std::string& name) {
-        if (!plugins_.contains(name)) {
+    GrPluginInterface* PluginManager::GetPluginById(const std::string& id) {
+        if (!plugins_.contains(id)) {
             return nullptr;
         }
-        return plugins_.at(name);
+        return plugins_.at(id);
     }
 
     GrEncoderPlugin* PluginManager::GetFFmpegEncoderPlugin() {
-        auto plugin = GetPluginByName(kFFmpegPluginName);
+        auto plugin = GetPluginById(kFFmpegEncoderPluginId);
         if (plugin) {
             return (GrEncoderPlugin*)plugin;
         }
@@ -169,7 +167,7 @@ namespace tc
     }
 
     GrEncoderPlugin* PluginManager::GetNvencEncoderPlugin() {
-        auto plugin = GetPluginByName(kNvencPluginName);
+        auto plugin = GetPluginById(kNvencEncoderPluginId);
         if (plugin) {
             return (GrEncoderPlugin*)plugin;
         }
@@ -177,7 +175,7 @@ namespace tc
     }
 
     GrEncoderPlugin* PluginManager::GetAmfEncoderPlugin() {
-        auto plugin = GetPluginByName(kAmfPluginName);
+        auto plugin = GetPluginById(kAmfEncoderPluginId);
         if (plugin) {
             return (GrEncoderPlugin*)plugin;
         }

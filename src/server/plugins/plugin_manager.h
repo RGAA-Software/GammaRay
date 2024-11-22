@@ -33,7 +33,7 @@ namespace tc
         void ReleaseAllPlugins();
         void ReleasePlugin(const std::string& name);
 
-        GrPluginInterface* GetPluginByName(const std::string& name);
+        GrPluginInterface* GetPluginById(const std::string& id);
         GrEncoderPlugin* GetFFmpegEncoderPlugin();
         GrEncoderPlugin* GetNvencEncoderPlugin();
         GrEncoderPlugin* GetAmfEncoderPlugin();

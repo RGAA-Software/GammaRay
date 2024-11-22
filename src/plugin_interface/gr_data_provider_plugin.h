@@ -1,5 +1,5 @@
 //
-// Created by hy on 22/11/2024.
+// Created by RGAA on 22/11/2024.
 //
 
 #ifndef GAMMARAY_GR_DATA_PROVIDER_PLUGIN_H

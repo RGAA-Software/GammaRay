@@ -138,6 +138,7 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}"
 
