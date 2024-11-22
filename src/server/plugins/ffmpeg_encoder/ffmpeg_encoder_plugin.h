@@ -20,6 +20,7 @@ namespace tc
     class FFmpegEncoderPlugin : public GrEncoderPlugin {
     public:
 
+        std::string GetPluginId() override;
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;

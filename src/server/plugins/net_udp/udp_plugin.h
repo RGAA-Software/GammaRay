@@ -12,7 +12,7 @@ namespace tc
 
     class UdpPlugin : public GrNetPlugin {
     public:
-
+        std::string GetPluginId() override;
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;

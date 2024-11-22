@@ -7,6 +7,7 @@
 #include "nvenc_encoder_defs.h"
 #include "nvenc_video_encoder.h"
 #include "tc_common_new/log.h"
+#include "server/plugins/plugin_ids.h"
 
 static void* GetInstance() {
     static tc::NvencEncoderPlugin plugin;
@@ -15,6 +16,10 @@ static void* GetInstance() {
 
 namespace tc
 {
+    std::string NvencEncoderPlugin::GetPluginId() {
+        return kNvencEncoderPluginId;
+    }
+
     std::string NvencEncoderPlugin::GetPluginName() {
         return kNvencPluginName;
     }

@@ -15,6 +15,7 @@ namespace tc
     class WsPlugin : public GrNetPlugin {
     public:
         WsPlugin();
+        std::string GetPluginId() override;
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;

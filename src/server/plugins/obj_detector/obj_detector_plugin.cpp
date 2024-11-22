@@ -7,9 +7,14 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
+#include "server/plugins/plugin_ids.h"
 
 namespace tc
 {
+
+    std::string ObjDetectorPlugin::GetPluginId() {
+        return kNetObjDetectorPluginId;
+    }
 
     std::string ObjDetectorPlugin::GetPluginName() {
         return "Obj Detector Plugin";

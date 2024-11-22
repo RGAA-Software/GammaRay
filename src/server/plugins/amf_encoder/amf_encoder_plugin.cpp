@@ -7,6 +7,7 @@
 #include "video_encoder_vce.h"
 #include "amf_encoder_defs.h"
 #include "tc_common_new/log.h"
+#include "server/plugins/plugin_ids.h"
 
 static void* GetInstance() {
     static tc::AmfEncoderPlugin plugin;
@@ -15,6 +16,10 @@ static void* GetInstance() {
 
 namespace tc
 {
+
+    std::string AmfEncoderPlugin::GetPluginId() {
+        return kAmfEncoderPluginId;
+    }
 
     std::string AmfEncoderPlugin::GetPluginName() {
         return kAmfPluginName;

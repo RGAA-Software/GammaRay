@@ -4,9 +4,13 @@
 
 #include "media_recorder_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
+#include "server/plugins/plugin_ids.h"
 
 namespace tc
 {
+    std::string MediaRecorderPlugin::GetPluginId() {
+        return kMediaRecorderPluginId;
+    }
 
     std::string MediaRecorderPlugin::GetPluginName() {
         return "Media Recorder Plugin";

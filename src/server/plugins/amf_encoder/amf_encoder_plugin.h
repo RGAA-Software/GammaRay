@@ -6,6 +6,7 @@
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
 #include "plugin_interface/gr_encoder_plugin.h"
+#include "server/plugins/plugin_ids.h"
 
 namespace tc
 {
@@ -15,6 +16,7 @@ namespace tc
     class AmfEncoderPlugin : public GrEncoderPlugin {
     public:
 
+        std::string GetPluginId() override;
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
