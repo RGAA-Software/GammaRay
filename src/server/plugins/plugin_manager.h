@@ -21,6 +21,7 @@ namespace tc
     class GrStreamPlugin;
     class GrEncoderPlugin;
     class GrNetPlugin;
+    class GrMonitorCapturePlugin;
 
     class PluginManager {
     public:
@@ -37,6 +38,7 @@ namespace tc
         GrEncoderPlugin* GetFFmpegEncoderPlugin();
         GrEncoderPlugin* GetNvencEncoderPlugin();
         GrEncoderPlugin* GetAmfEncoderPlugin();
+        GrMonitorCapturePlugin* GetDDACapturePlugin();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);

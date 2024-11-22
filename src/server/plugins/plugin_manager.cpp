@@ -182,6 +182,14 @@ namespace tc
         return nullptr;
     }
 
+    GrMonitorCapturePlugin* PluginManager::GetDDACapturePlugin() {
+        auto plugin = GetPluginById(kDdaCapturePluginId);
+        if (plugin) {
+            return (GrMonitorCapturePlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

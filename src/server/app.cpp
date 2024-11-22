@@ -46,6 +46,7 @@
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc
 {
@@ -129,6 +130,8 @@ namespace tc
         // desktop capture
         auto target_monitor = settings_->capture_.capture_monitor_;
         desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
+        //
+        working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
@@ -463,7 +466,12 @@ namespace tc
         });
 
         if(desktop_capture_) {
-            desktop_capture_->StartCapture();
+            //desktop_capture_->StartCapture();
+        }
+        if (working_monitor_capture_plugin_) {
+            auto target_monitor = settings_->capture_.capture_monitor_;
+            LOGI("Capture target monitor name: {}", target_monitor);
+            working_monitor_capture_plugin_->StartCapturing(target_monitor);
         }
         app_manager_->StartProcess();
     }
