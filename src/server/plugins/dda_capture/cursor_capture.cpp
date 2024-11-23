@@ -9,6 +9,8 @@
 #include "tc_capture_new/capture_message.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "dda_capture_plugin.h"
 
 namespace tc
 {
@@ -260,9 +262,9 @@ namespace tc
             return;
         }
         DestroyIcon(icon);
-        // todo:
-//        if (msg_notifier_) {
-//            msg_notifier_->SendAppMessage(cursor_bitmap);
-//        }
+
+        auto event = std::make_shared<GrPluginCursorEvent>();
+        event->cursor_info_ = cursor_bitmap;
+        this->plugin_->CallbackEvent(event);
     }
 }

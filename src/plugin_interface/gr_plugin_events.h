@@ -25,6 +25,7 @@ namespace tc
         kPluginEncodedVideoFrameEvent,
         kPluginCapturingMonitorInfoEvent,
         kPluginCapturedVideoFrameEvent,
+        kPluginCursorEvent,
     };
 
     class GrPluginBaseEvent {
@@ -106,6 +107,16 @@ namespace tc
         }
     public:
 
+    };
+
+    //
+    class GrPluginCursorEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginCursorEvent() {
+            plugin_type_ = GrPluginEventType::kPluginCursorEvent;
+        }
+    public:
+        CaptureCursorBitmap cursor_info_;
     };
 }
 
