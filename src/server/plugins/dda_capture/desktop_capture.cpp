@@ -3,10 +3,10 @@
 //
 
 #include "desktop_capture.h"
-//#include "capture_message.h"
 #include "tc_common_new/log.h"
-//#include "tc_common_new/message_notifier.h"
+#include "plugin_interface/gr_plugin_events.h"
 #include <Shlobj.h>
+#include "dda_capture_plugin.h"
 
 namespace tc
 {
@@ -49,6 +49,9 @@ namespace tc
 //            .monitors_ = sorted_monitors_,
 //            .capturing_monitor_name_ = this->capturing_monitor_name_,
 //        });
+
+        auto event = std::make_shared<GrPluginCapturingMonitorInfoEvent>();
+        this->plugin_->CallbackEvent(event);
     }
 
     int DesktopCapture::GetCapturingMonitorIndex() const {

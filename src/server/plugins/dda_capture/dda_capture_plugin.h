@@ -24,6 +24,11 @@ namespace tc
         bool OnDestroy() override;
         bool StartCapturing(const std::string& target) override;
         void StopCapturing() override;
+        std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo() override;
+        int GetCapturingMonitorIndex() override;
+        std::string GetCapturingMonitorName() override;
+        void SetCaptureMonitor(int index, const std::string& name) override;
+        void SetCaptureFps(int fps) override;
 
     private:
         std::shared_ptr<tc::DesktopCapture> capture_ = nullptr;

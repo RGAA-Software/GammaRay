@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
     // dump
     CaptureDump();
 
-    //MessageBoxA(0,0,0,0);
+    MessageBoxA(0,0,0,0);
 
     // Log
     std::cout << "logfile: " << FLAGS_logfile << std::endl;

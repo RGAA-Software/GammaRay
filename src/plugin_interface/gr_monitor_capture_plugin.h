@@ -25,8 +25,11 @@ namespace tc
         virtual void StopCapturing();
         bool IsMonitorTarget();
 
-        std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo();
-        int GetCapturingMonitorIndex() const;
+        virtual std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo();
+        virtual int GetCapturingMonitorIndex();
+        virtual void SetCaptureMonitor(int index, const std::string& name);
+        virtual void SetCaptureFps(int fps);
+        virtual std::string GetCapturingMonitorName();
 
     protected:
         bool is_monitor_target_ = false;

@@ -224,6 +224,7 @@ namespace tc {
         app_->PostGlobalTask([=, this]() {
             auto sm = msg->switch_monitor();
             auto dc = app_->GetDesktopCapture();
+            // !!! dc is null in plugin mode !!!
             dc->SetCaptureMonitor(sm.index(), sm.name());
             dc->SendCapturingMonitorMessage();
 
@@ -236,6 +237,7 @@ namespace tc {
         app_->PostGlobalTask([=, this]() {
             auto wm = msg->work_mode();
             auto dc = app_->GetDesktopCapture();
+            // !!! dc is null in plugin mode !!!
             if (wm.mode() == SwitchWorkMode::kWork) {
                 dc->SetCaptureFps(30);
             } else if (wm.mode() == SwitchWorkMode::kGame) {

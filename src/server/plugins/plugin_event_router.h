@@ -16,6 +16,7 @@ namespace tc
     class PluginManager;
     class PluginStreamEventRouter;
     class PluginNetEventRouter;
+    class MessageNotifier;
 
     class PluginEventRouter {
     public:
@@ -29,6 +30,8 @@ namespace tc
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         std::shared_ptr<PluginStreamEventRouter> stream_event_router_ = nullptr;
         std::shared_ptr<PluginNetEventRouter> net_event_router_ = nullptr;
+        std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
+
     };
 
 }

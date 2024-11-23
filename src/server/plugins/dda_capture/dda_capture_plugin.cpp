@@ -63,4 +63,37 @@ namespace tc
         init_success_ = false;
     }
 
+    std::vector<CaptureMonitorInfo> DDACapturePlugin::GetCaptureMonitorInfo() {
+        if (!IsWorking()) {
+            return GrMonitorCapturePlugin::GetCaptureMonitorInfo();
+        }
+        return capture_->GetCaptureMonitorInfo();
+    }
+
+    int DDACapturePlugin::GetCapturingMonitorIndex() {
+        if (!IsWorking()) {
+            return GrMonitorCapturePlugin::GetCapturingMonitorIndex();
+        }
+        return capture_->GetCapturingMonitorIndex();
+    }
+
+    std::string DDACapturePlugin::GetCapturingMonitorName() {
+        if (!IsWorking()) {
+            return GrMonitorCapturePlugin::GetCapturingMonitorName();
+        }
+        return capture_->GetCapturingMonitorName();
+    }
+
+    void DDACapturePlugin::SetCaptureMonitor(int index, const std::string& name) {
+        if (IsWorking()) {
+            capture_->SetCaptureMonitor(index, name);
+        }
+    }
+
+    void DDACapturePlugin::SetCaptureFps(int fps) {
+        if (IsWorking()) {
+            capture_->SetCaptureFps(fps);
+        }
+    }
+
 }

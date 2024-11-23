@@ -18,6 +18,7 @@ namespace tc
     class Data;
     class Statistics;
     class MessageListener;
+    class MessageNotifier;
     class Message;
     class Context;
     class PluginManager;
@@ -28,6 +29,7 @@ namespace tc
         void ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event);
         void ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
         void ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
+        void ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event);
 
     private:
         void ProcessHelloEvent(std::shared_ptr<Message>&& msg);
@@ -51,6 +53,7 @@ namespace tc
         std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
+        std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
     };
 }
 
