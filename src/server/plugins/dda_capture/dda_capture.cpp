@@ -103,7 +103,7 @@ namespace tc
                 }});
                 dxgi_output_duplication_[index].output_desc_ = output_desc;
                 dxgi_output_duplication_[index].monitor_win_info_ = monitors_[index];
-                LOGI("{}", monitors_[index].Dump());
+                LOGI("=> {}", monitors_[index].Dump());
 
                 if (dev_name == capturing_monitor_name_) {
                     capturing_monitor_index_ = index;
@@ -122,13 +122,13 @@ namespace tc
                         continue;
                     }
                     static const int max_retry_count = 5;
-                    for (int j = 0;; ++j) {
+                    for (int j = 0; j < max_retry_count; ++j) {
                         HRESULT error = output1->DuplicateOutput(d3d11_device_, &(dxgi_output_duplication_[index].duplication_));
                         if (error != S_OK || !dxgi_output_duplication_[index].duplication_) {
                             if (error == E_UNEXPECTED) {
                                 LOGE("DuplicateOutput E_UNEXPECTED");
                             }
-                            if (error == E_ACCESSDENIED && j < max_retry_count) {
+                            if (error == E_ACCESSDENIED) {
                                 const ACCESS_MASK ac = GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE;
                                 HDESK desk = ::OpenInputDesktop(0, 0, ac);
                                 if (desk) {
@@ -139,7 +139,8 @@ namespace tc
                             }
                             LOGE("Failed to duplicate output from IDXGIOutput1, error {} with code {}",
                                    StringExt::GetErrorStr(error).c_str(), error);
-                            return false;
+                            //return false;
+                            continue;
                         } else {
                             LOGI("Init DDA mode success: {}", index);
                             //return true;
@@ -427,9 +428,6 @@ namespace tc
     }
 
     void DDACapture::SendTextureHandle(const HANDLE &shared_handle, MonitorIndex monitor_index, uint32_t width, uint32_t height, DXGI_FORMAT format) {
-//        if (!msg_notifier_) {
-//            return;
-//        }
         CaptureVideoFrame cap_video_frame{};
         cap_video_frame.type_ = kCaptureVideoFrame;
         cap_video_frame.capture_type_ = kCaptureVideoByHandle;

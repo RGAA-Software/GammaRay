@@ -20,6 +20,7 @@ namespace tc
 //            this->RefreshScreen();
 //            LOGI("Refresh screen.");
 //        });
+        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     }
 
     void DesktopCapture::SetCaptureMonitor(int index, const std::string& name) {

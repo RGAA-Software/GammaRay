@@ -33,7 +33,7 @@ namespace tc
 
         class DXGIOutputDuplication {
         public:
-            CComPtr<IDXGIOutputDuplication> duplication_;
+            CComPtr<IDXGIOutputDuplication> duplication_ = nullptr;
             DXGI_OUTPUT_DESC output_desc_{};
             CaptureMonitorInfo monitor_win_info_{};
 
