@@ -23,6 +23,10 @@ namespace tc
         //
         void CallbackClientEvent(bool is_proto, const std::string& msg);
 
+        virtual bool IsOnlyAudioClients();
+
+        virtual int ConnectedClientSize();
+
     };
 
 }

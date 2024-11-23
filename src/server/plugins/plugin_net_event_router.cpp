@@ -21,11 +21,16 @@
 #include "app/clipboard_manager.h"
 #include "tc_capture_new/desktop_capture.h"
 #include "tc_message.pb.h"
+#include "tc_encoder_new/encoder_messages.h"
+#include "plugin_manager.h"
+#include "plugin_interface/gr_encoder_plugin.h"
 
 namespace tc {
 
     PluginNetEventRouter::PluginNetEventRouter(const std::shared_ptr<Application>& app) {
         this->app_ = app;
+        this->context_ = app->GetContext();
+        this->plugin_manager_ = app->GetPluginManager();
         this->settings_ = Settings::Instance();
         this->statistics_ = Statistics::Instance();
         win_event_replayer_ = std::make_shared<WinEventReplayer>();
@@ -34,6 +39,20 @@ namespace tc {
         msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
             win_event_replayer_->UpdateCaptureMonitorInfo(msg);
         });
+    }
+
+    void PluginNetEventRouter::ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event) {
+        // has no effects in plugin mode
+        context_->SendAppMessage(MsgInsertIDR {});
+        context_->SendAppMessage(RefreshScreenMessage {});
+        //
+        plugin_manager_->VisitEncoderPlugins([=, this](GrEncoderPlugin* plugin) {
+            plugin->InsertIdr();
+        });
+    }
+
+    void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
+
     }
 
     void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {

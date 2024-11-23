@@ -19,11 +19,15 @@ namespace tc
     class Statistics;
     class MessageListener;
     class Message;
+    class Context;
+    class PluginManager;
 
     class PluginNetEventRouter {
     public :
         explicit PluginNetEventRouter(const std::shared_ptr<Application>& app);
         void ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event);
+        void ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
+        void ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
 
     private:
         void ProcessHelloEvent(std::shared_ptr<Message>&& msg);
@@ -43,8 +47,10 @@ namespace tc
         Settings* settings_ = nullptr;
         Statistics* statistics_ = nullptr;
         std::shared_ptr<Application> app_ = nullptr;
+        std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
     };
 }
 

@@ -67,4 +67,20 @@ namespace tc
         }
     }
 
+    bool WsPlugin::IsOnlyAudioClients() {
+        if (IsWorking()) {
+            return ws_server_->IsOnlyAudioClients();
+        } else {
+            return false;
+        }
+    }
+
+    int WsPlugin::ConnectedClientSize() {
+        if (IsWorking()) {
+            return ws_server_->GetConnectionPeerCount();
+        } else {
+            return 0;
+        }
+    }
+
 }

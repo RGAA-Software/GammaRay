@@ -47,19 +47,27 @@ namespace tc
     // GrClientConnectedEvent
     class GrPluginClientConnectedEvent : public GrPluginBaseEvent {
     public:
+        GrPluginClientConnectedEvent() {
+            plugin_type_ = GrPluginEventType::kPluginClientConnectedEvent;
+        }
 
     };
 
     // GrClientDisConnectedEvent
     class GrPluginClientDisConnectedEvent : public GrPluginBaseEvent {
     public:
+        GrPluginClientDisConnectedEvent() {
+            plugin_type_ = GrPluginEventType::kPluginClientDisConnectedEvent;
+        }
 
     };
 
     // GrPluginInsertIdrEvent
     class GrPluginInsertIdrEvent : public GrPluginBaseEvent {
     public:
-
+        GrPluginInsertIdrEvent() {
+            plugin_type_ = GrPluginEventType::kPluginInsertIdrEvent;
+        }
     };
 
     // GrPluginEncodedVideoFrameEvent

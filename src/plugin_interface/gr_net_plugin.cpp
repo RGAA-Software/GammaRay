@@ -27,4 +27,12 @@ namespace tc
         CallbackEvent(event);
     }
 
+    bool GrNetPlugin::IsOnlyAudioClients() {
+        return false;
+    }
+
+    int GrNetPlugin::ConnectedClientSize() {
+        return 0;
+    }
+
 }
