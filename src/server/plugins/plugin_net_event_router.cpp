@@ -132,7 +132,7 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessHelloEvent(std::shared_ptr<Message>&& msg) {
         const auto& hello = msg->hello();
-        // todo: 
+        // todo:
         //router->enable_audio_ = hello.enable_audio();
         //router->enable_video_ = hello.enable_video();
         app_->GetContext()->SendAppMessage(MsgHello {

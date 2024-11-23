@@ -53,6 +53,10 @@ namespace tc
             auto target_event = std::dynamic_pointer_cast<GrPluginCapturingMonitorInfoEvent>(event);
             net_event_router_->ProcessCapturingMonitorInfoEvent(target_event);
         }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginCursorEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginCursorEvent>(event);
+            msg_notifier_->SendAppMessage(target_event->cursor_info_);
+        }
     }
 
 }
