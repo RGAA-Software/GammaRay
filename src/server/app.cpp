@@ -412,26 +412,20 @@ namespace tc
     }
 
     void Application::StartProcessWithScreenCapture() {
-        //msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
-            //auto video_type = [=]() -> tc::VideoType {
-            //    return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
-            //} ();
-            //auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
-            //                                                  msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
-            //                                                  msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
-            //LOGI("monitor: {} - {} , ({},{} {},{})",
-            //     msg.monitor_index_, msg.monitor_name_, msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
-            //connection_->PostVideoMessage(net_msg);
-            //statistics_->fps_video_encode_->Tick();
-        //});
-
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
             if (!HasConnectedPeer()) {
                 return;
             }
-//            if (!connection_ || connection_->OnlyAudioClient()) {
-//                return;
-//            }
+            bool only_audio_clients = true;
+            plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
+                if (plugin->IsWorking() && !plugin->IsOnlyAudioClients()) {
+                    only_audio_clients = false;
+                }
+            });
+            if (only_audio_clients) {
+                LOGI("Only audio clients, ignore video frame.");
+                return;
+            }
 
             // plugins: SharedTexture
             context_->PostStreamPluginTask([=, this]() {
@@ -461,17 +455,16 @@ namespace tc
             auto net_msg = NetMessageMaker::MakeCursorInfoSyncMsg(cursor_msg.x_, cursor_msg.y_, cursor_msg.hotspot_x_,
                                                                   cursor_msg.hotspot_y_, cursor_msg.width_, cursor_msg.height_,
                                                                   cursor_msg.visible_, cursor_msg.data_, cursor_msg.type_);
-            //connection_->PostVideoMessage(net_msg);
             PostNetMessage(net_msg);
         });
 
         if(desktop_capture_) {
-            //desktop_capture_->StartCapture();
+            desktop_capture_->StartCapture();
         }
         if (working_monitor_capture_plugin_) {
             auto target_monitor = settings_->capture_.capture_monitor_;
             LOGI("Capture target monitor name: {}", target_monitor);
-            working_monitor_capture_plugin_->StartCapturing(target_monitor);
+            //working_monitor_capture_plugin_->StartCapturing(target_monitor);
         }
         app_manager_->StartProcess();
     }
@@ -490,12 +483,11 @@ namespace tc
     bool Application::HasConnectedPeer() {
         bool has_working_net_plugin = false;
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->IsWorking()) {
+            if (plugin->IsWorking() && plugin->ConnectedClientSize() > 0) {
                 has_working_net_plugin = true;
             }
         });
         return has_working_net_plugin;
-        //return (connection_ && connection_->GetConnectionPeerCount() > 0) || has_working_stream_plugin;
     }
 
     void Application::WriteBoostUpInfoForPid(uint32_t pid) {
@@ -617,6 +609,10 @@ namespace tc
         r->set_result(ok);
         //connection_->PostNetMessage(m.SerializeAsString());
         PostNetMessage(m.SerializeAsString());
+    }
+
+    std::shared_ptr<PluginManager> Application::GetPluginManager() {
+        return plugin_manager_;
     }
 
     void Application::Exit() {

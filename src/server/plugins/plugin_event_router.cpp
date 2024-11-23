@@ -36,6 +36,14 @@ namespace tc
             auto target_event = std::dynamic_pointer_cast<GrPluginNetClientEvent>(event);
             net_event_router_->ProcessNetEvent(target_event);
         }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginClientConnectedEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginClientConnectedEvent>(event);
+            net_event_router_->ProcessClientConnectedEvent(target_event);
+        }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginClientDisConnectedEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginClientDisConnectedEvent>(event);
+            net_event_router_->ProcessClientDisConnectedEvent(target_event);
+        }
     }
 
 }

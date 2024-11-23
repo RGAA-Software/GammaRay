@@ -9,9 +9,10 @@
 #include "tc_common_new/time_ext.h"
 #include "tc_common_new/data.h"
 #include "server/network/ws_media_router.h"
-//#include "message_processor.h"
-//#include "http_handler.h"
 #include "ws_plugin_router.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "ws_plugin.h"
+#include "tc_common_new/url_helper.h"
 
 static std::string kUrlMedia = "/media";
 
@@ -93,7 +94,7 @@ namespace tc
 
     }
 
-    bool WsPluginServer::OnlyAudioClient() {
+    bool WsPluginServer::IsOnlyAudioClients() {
         bool only_audio_client = true;
         media_routers_.VisitAllCond([&](auto k, auto& v) -> bool {
             if (v->enable_video_) {
@@ -123,8 +124,13 @@ namespace tc
                 }
             })
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
-                LOGI("App server {} open", path);
-
+                auto query = sess_ptr->get_request().get_query();
+                auto params = UrlHelper::ParseQueryString(std::string(query.data(), query.size()));
+                for (const auto& [k, v] : params) {
+                    LOGI("query param, k: {}, v: {}", k, v);
+                }
+                LOGI("App server {} open, query: {}", path, query);
+                bool only_audio = std::atoi(params["only_audio"].c_str()) == 1;
                 //auto& s = sess_ptr->socket();
                 //asio::error_code ec;
                 //s.set_option(asio::ip::tcp::no_delay(false), ec);
@@ -135,7 +141,7 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 std::shared_ptr<WsPluginRouter> router = nullptr;
                 if (path == kUrlMedia) {
-                    router = WsPluginRouter::Make(ws_data_);
+                    router = WsPluginRouter::Make(ws_data_, only_audio);
                     media_routers_.Insert(socket_fd, router);
                     NotifyMediaClientConnected();
                 }
@@ -183,14 +189,12 @@ namespace tc
     }
 
     void WsPluginServer::NotifyMediaClientConnected() {
-//        context_->SendAppMessage(MsgClientConnected {
-//            .client_size_ = static_cast<int>(media_routers_.Size()),
-//        });
+        auto event = std::make_shared<GrPluginClientConnectedEvent>();
+        this->plugin_->CallbackEvent(event);
     }
 
     void WsPluginServer::NotifyMediaClientDisConnected() {
-//        context_->SendAppMessage(MsgClientDisconnected {
-//            .client_size_ = static_cast<int>(media_routers_.Size()),
-//        });
+        auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
+        this->plugin_->CallbackEvent(event);
     }
 }

@@ -75,6 +75,7 @@ namespace tc
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
         void ProcessGamepadState(const MsgGamepadState& state);
         void ResetMonitorResolution(const std::string& name, int w, int h);
+        std::shared_ptr<PluginManager> GetPluginManager();
 
         template<typename T>
         void SendAppMessage(const T& m) {

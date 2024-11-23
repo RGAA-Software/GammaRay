@@ -26,6 +26,8 @@ namespace tc
         bool IsWorking() override;
 
         void OnProtoMessage(const std::string &msg) override;
+        bool IsOnlyAudioClients() override;
+        int ConnectedClientSize() override;
 
     private:
 

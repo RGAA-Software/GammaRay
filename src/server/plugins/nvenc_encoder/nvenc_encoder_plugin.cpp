@@ -66,6 +66,7 @@ namespace tc
             video_encoder_->Exit();
         }
         video_encoder_ = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
+        LOGI("config bitrate: {}", config.bitrate);
         init_success_ = video_encoder_->Initialize(config);
         if (!init_success_) {
             LOGE("Init NVENC encoder failed!");

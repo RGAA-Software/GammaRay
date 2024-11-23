@@ -28,7 +28,7 @@ namespace tc
         int GetConnectionPeerCount();
         void NotifyPeerConnected();
         void NotifyPeerDisconnected();
-        bool OnlyAudioClient();
+        bool IsOnlyAudioClients();
 
     private:
 

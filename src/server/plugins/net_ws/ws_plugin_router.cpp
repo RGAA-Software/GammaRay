@@ -49,4 +49,8 @@ namespace tc
             });
         }
     }
+
+    bool WsPluginRouter::IsVideoEnabled() {
+        return enable_video_;
+    }
 }
