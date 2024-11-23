@@ -74,7 +74,7 @@ namespace tc
 
     int Application::Run() {
         // presets
-        WinHelper::DontCareDPI();
+        //WinHelper::DontCareDPI();
 
         statistics_ = Statistics::Instance();
 
@@ -358,15 +358,11 @@ namespace tc
 
     void Application::PostIpcMessage(const std::string& msg) {
         if (settings_->capture_.IsVideoHook()) {
-            //connection_->PostIpcMessage(msg);
             PostNetMessage(msg);
         }
     }
 
     void Application::PostNetMessage(const std::string& msg) {
-//        if (connection_) {
-//            connection_->PostNetMessage(msg);
-//        }
         plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
             plugin->OnProtoMessage(msg);
         });
@@ -464,7 +460,7 @@ namespace tc
         if (working_monitor_capture_plugin_) {
             auto target_monitor = settings_->capture_.capture_monitor_;
             LOGI("Capture target monitor name: {}", target_monitor);
-            //working_monitor_capture_plugin_->StartCapturing(target_monitor);
+            working_monitor_capture_plugin_->StartCapturing(target_monitor);
         }
         app_manager_->StartProcess();
     }
@@ -651,9 +647,6 @@ namespace tc
     }
 
     int WinApplication::Run() {
-        if(!tc::SetDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
-            LOGE("SetDpiAwarenessContext error");
-        }
         LoadDxAddress();
         Application::Run();
         return 0;
