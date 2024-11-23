@@ -9,6 +9,8 @@
 #include "tc_common_new/time_ext.h"
 #include "tc_capture_new/capture_message.h"
 #include "cursor_capture.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "dda_capture_plugin.h"
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -137,8 +139,8 @@ namespace tc
                                 CloseDesktop(desk);
                                 continue;
                             }
-                            LOGE("Failed to duplicate output from IDXGIOutput1, error {} with code {}",
-                                   StringExt::GetErrorStr(error).c_str(), error);
+                            LOGE("Failed to duplicate output from IDXGIOutput1, error {} with code {:x}",
+                                   StringExt::GetErrorStr(error).c_str(), (uint32_t)error);
                             //return false;
                             continue;
                         } else {
@@ -451,6 +453,11 @@ namespace tc
         // todo:
         //msg_notifier_->SendAppMessage(cap_video_frame);
         LOGI("Captured...{}", cap_video_frame.handle_);
+
+        auto event = std::make_shared<GrPluginCapturedVideoFrameEvent>();
+        event->frame_ = cap_video_frame;
+        this->plugin_->CallbackEvent(event);
+
     }
 
     int DDACapture::GetFrameIndex(MonitorIndex monitor_index) {

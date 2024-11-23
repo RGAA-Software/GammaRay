@@ -129,7 +129,7 @@ namespace tc
         control_thread_->Poll();
         // desktop capture
         auto target_monitor = settings_->capture_.capture_monitor_;
-        desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
+        //desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
         //
         working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
 
@@ -382,7 +382,6 @@ namespace tc
                 debug_encode_file_->Append(msg.image_->data->AsString());
                 LOGI("encoded frame callback, size: {}x{}, buffer size: {}", msg.frame_width_, msg.frame_height_, msg.image_->data->Size());
             }
-            //connection_->PostVideoMessage(net_msg);
             PostNetMessage(net_msg);
         });
 
@@ -400,10 +399,6 @@ namespace tc
             return;
         }
 
-#if ENABLE_SHM
-        // only one, easyhook start & hook
-        InitHostIpcManager(settings_->transmission_.listening_port_);
-#endif
         fn_start_process();
     }
 
@@ -454,9 +449,9 @@ namespace tc
             PostNetMessage(net_msg);
         });
 
-        if(desktop_capture_) {
-            desktop_capture_->StartCapture();
-        }
+//        if(desktop_capture_) {
+//            desktop_capture_->StartCapture();
+//        }
         if (working_monitor_capture_plugin_) {
             auto target_monitor = settings_->capture_.capture_monitor_;
             LOGI("Capture target monitor name: {}", target_monitor);
@@ -538,9 +533,6 @@ namespace tc
         }
 
         // audio spectrum
-//        if (connection_) {
-//            connection_->PostAudioMessage(net_msg);
-//        }
         PostNetMessage(net_msg);
     }
 
@@ -548,18 +540,24 @@ namespace tc
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
         m.mutable_clipboard_info()->set_msg(msg);
-        //connection_->PostNetMessage(m.SerializeAsString());
         PostNetMessage(m.SerializeAsString());
     }
 
     void Application::SendConfigurationBack() {
+        if (!working_monitor_capture_plugin_) {
+            LOGE("SendConfigurationBack failed, working monitor capture plugin is null.");
+            return;
+        }
         tc::Message m;
         m.set_type(tc::kServerConfiguration);
         auto config = m.mutable_config();
         // screen info
         auto monitor_info = config->mutable_monitor_info();
-        auto capturing_idx = desktop_capture_->GetCapturingMonitorIndex();
-        auto monitors = desktop_capture_->GetCaptureMonitorInfo();
+        // todo:
+//        auto capturing_idx = desktop_capture_->GetCapturingMonitorIndex();
+//        auto monitors = desktop_capture_->GetCaptureMonitorInfo();
+        auto capturing_idx = working_monitor_capture_plugin_->GetCapturingMonitorIndex();
+        auto monitors = working_monitor_capture_plugin_->GetCaptureMonitorInfo();
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
             MonitorInfo info;
@@ -576,7 +574,6 @@ namespace tc
         config->set_current_capturing_index(capturing_idx);
 
         //
-        //connection_->PostNetMessage(m.SerializeAsString());
         PostNetMessage(m.SerializeAsString());
     }
 
@@ -622,9 +619,6 @@ namespace tc
         if (audio_capture_thread_ && audio_capture_thread_->IsJoinable()) {
             audio_capture_thread_->Join();
         }
-//        if (connection_) {
-//            connection_->Exit();
-//        }
         if (app_manager_) {
             app_manager_->Exit();
         }

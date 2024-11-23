@@ -71,11 +71,13 @@ namespace tc
         std::shared_ptr<Context> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
         std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
-        std::shared_ptr<DesktopCapture> GetDesktopCapture() { return desktop_capture_; }
+        // DesktopCapture is null in plugin mode
+        std::shared_ptr<DesktopCapture> GetDesktopCapture() { return nullptr/*desktop_capture_*/; }
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
         void ProcessGamepadState(const MsgGamepadState& state);
         void ResetMonitorResolution(const std::string& name, int w, int h);
         std::shared_ptr<PluginManager> GetPluginManager();
+        tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin() { return working_monitor_capture_plugin_; }
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -107,7 +109,7 @@ namespace tc
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<EncoderThread> encoder_thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        std::shared_ptr<DesktopCapture> desktop_capture_ = nullptr;
+        //std::shared_ptr<DesktopCapture> desktop_capture_ = nullptr;
         std::shared_ptr<AppTimer> app_timer_ = nullptr;
 
         std::shared_ptr<File> debug_encode_file_ = nullptr;

@@ -24,6 +24,7 @@ namespace tc
         plugin_manager_ = context_->GetPluginManager();
         stream_event_router_ = std::make_shared<PluginStreamEventRouter>(app);
         net_event_router_ = std::make_shared<PluginNetEventRouter>(app);
+        msg_notifier_ = app_->GetContext()->GetMessageNotifier();
     }
 
     void PluginEventRouter::ProcessPluginEvent(const std::shared_ptr<GrPluginBaseEvent>& event) {
@@ -43,6 +44,14 @@ namespace tc
         else if (event->plugin_type_ == GrPluginEventType::kPluginClientDisConnectedEvent) {
             auto target_event = std::dynamic_pointer_cast<GrPluginClientDisConnectedEvent>(event);
             net_event_router_->ProcessClientDisConnectedEvent(target_event);
+        }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginCapturedVideoFrameEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginCapturedVideoFrameEvent>(event);
+            msg_notifier_->SendAppMessage(target_event->frame_);
+        }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginCapturingMonitorInfoEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginCapturingMonitorInfoEvent>(event);
+            net_event_router_->ProcessCapturingMonitorInfoEvent(target_event);
         }
     }
 

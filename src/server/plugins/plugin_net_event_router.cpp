@@ -24,6 +24,7 @@
 #include "tc_encoder_new/encoder_messages.h"
 #include "plugin_manager.h"
 #include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc {
 
@@ -34,7 +35,7 @@ namespace tc {
         this->settings_ = Settings::Instance();
         this->statistics_ = Statistics::Instance();
         win_event_replayer_ = std::make_shared<WinEventReplayer>();
-
+        msg_notifier_ = this->app_->GetContext()->GetMessageNotifier();
         msg_listener_ = this->app_->GetContext()->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
             win_event_replayer_->UpdateCaptureMonitorInfo(msg);
@@ -53,6 +54,19 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
 
+    }
+
+    void PluginNetEventRouter::ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) {
+        auto plugin = app_->GetWorkingMonitorCapturePlugin();
+        if (!plugin) {
+            LOGE("ProcessCapturingMonitorInfoEvent failed, plugin is null.");
+            return;
+        }
+        auto cm_msg = CaptureMonitorInfoMessage {
+            .monitors_ = plugin->GetCaptureMonitorInfo(),
+            .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+        };
+        win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
     }
 
     void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {
@@ -118,6 +132,7 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessHelloEvent(std::shared_ptr<Message>&& msg) {
         const auto& hello = msg->hello();
+        // todo: 
         //router->enable_audio_ = hello.enable_audio();
         //router->enable_video_ = hello.enable_video();
         app_->GetContext()->SendAppMessage(MsgHello {
@@ -176,15 +191,6 @@ namespace tc {
             PostIpcMessage(msg_str);
         }
     }
-
-#if ENABLE_SHM
-    void PluginNetEventRouter::PostIpcMessage(std::shared_ptr<Data>&& msg_data) {
-        auto task_msg = AppMessageMaker::MakeTaskMessage([this, msg = std::move(msg_data)]() mutable {
-            this->app_->PostIpcMessage(std::move(msg));
-        });
-        app_->PostGlobalAppMessage(std::move(task_msg));
-    }
-#endif
 
     void PluginNetEventRouter::PostIpcMessage(const std::string& msg) {
         auto task_msg = AppMessageMaker::MakeTaskMessage([=, this]() mutable {
@@ -246,23 +252,32 @@ namespace tc {
     void PluginNetEventRouter::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {
         app_->PostGlobalTask([=, this]() {
             auto sm = msg->switch_monitor();
-            auto dc = app_->GetDesktopCapture();
-            dc->SetCaptureMonitor(sm.index(), sm.name());
-            dc->SendCapturingMonitorMessage();
+            auto plugin = app_->GetWorkingMonitorCapturePlugin();
+            if (plugin) {
+                plugin->SetCaptureMonitor(sm.index(), sm.name());
+                //plugin->SendCapturingMonitorMessage();
 
-            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
-            app_->PostNetMessage(proto_msg);
+                auto cm_msg = CaptureMonitorInfoMessage {
+                    .monitors_ = plugin->GetCaptureMonitorInfo(),
+                    .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+                };
+                //msg_notifier_->SendAppMessage(msg);
+                win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+
+                auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
+                app_->PostNetMessage(proto_msg);
+            }
         });
     }
 
     void PluginNetEventRouter::ProcessSwitchWorkMode(std::shared_ptr<Message>&& msg) {
         app_->PostGlobalTask([=, this]() {
             auto wm = msg->work_mode();
-            auto dc = app_->GetDesktopCapture();
+            auto plugin = app_->GetWorkingMonitorCapturePlugin();
             if (wm.mode() == SwitchWorkMode::kWork) {
-                dc->SetCaptureFps(30);
+                plugin->SetCaptureFps(30);
             } else if (wm.mode() == SwitchWorkMode::kGame) {
-                dc->SetCaptureFps(60);
+                plugin->SetCaptureFps(60);
             }
         });
     }

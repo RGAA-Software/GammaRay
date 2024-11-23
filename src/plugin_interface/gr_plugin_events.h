@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include "gr_plugin_interface.h"
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {
@@ -22,6 +23,8 @@ namespace tc
         kPluginClientDisConnectedEvent,
         kPluginInsertIdrEvent,
         kPluginEncodedVideoFrameEvent,
+        kPluginCapturingMonitorInfoEvent,
+        kPluginCapturedVideoFrameEvent,
     };
 
     class GrPluginBaseEvent {
@@ -83,6 +86,26 @@ namespace tc
         uint32_t frame_height_ = 0;
         bool key_frame_ = false;
         uint64_t frame_index_ = 0;
+    };
+
+    //
+    class GrPluginCapturedVideoFrameEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginCapturedVideoFrameEvent() {
+            plugin_type_ = GrPluginEventType::kPluginCapturedVideoFrameEvent;
+        }
+    public:
+        CaptureVideoFrame frame_;
+    };
+
+    //
+    class GrPluginCapturingMonitorInfoEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginCapturingMonitorInfoEvent() {
+            plugin_type_ = GrPluginEventType::kPluginCapturingMonitorInfoEvent;
+        }
+    public:
+
     };
 }
 
