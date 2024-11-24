@@ -10,14 +10,18 @@
 #include "tc_common_new/image.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
+#include "tc_common_new/win32/d3d_debug_helper.h"
 #include <libyuv/convert.h>
 #include <atlcomcli.h>
 
 namespace tc
 {
 
-    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id) {
+    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id, bool resize, int resize_width, int resize_height) {
         context_ = ctx;
+        resize_ = resize;
+        resize_width_ = resize_width;
+        resize_height_ = resize_height;
         yuv_converter_thread_ = Thread::Make("video frame carrier", 1024);
         yuv_converter_thread_->Poll();
 
@@ -177,53 +181,50 @@ namespace tc
 
         D3D11_TEXTURE2D_DESC desc;
         shared_texture->GetDesc(&desc);
-        if (false/*encoder_config_.frame_resize*/) {
-//            auto beg = TimeExt::GetCurrentTimestamp();
-//            if (!frame_render_ && d3d11_device_ && d3d11_device_context_) {
-//                frame_render_ = FrameRender::Make(d3d11_device_.Get(), d3d11_device_context_.Get());
-//                SIZE target_size = {encoder_config_.encode_width, encoder_config_.encode_height};
-//                frame_render_->Prepare(target_size, {(long) desc.Width, (long) desc.Height}, desc.Format);
-//            }
-//
-//            auto resize_ctx = frame_render_->GetD3D11DeviceContext();
-//
-//            {
-//                if (!D3D11Texture2DLockMutex(shared_texture)) {
-//                    LOGE("D3D11Texture2DLockMutex error\n");
-//                    return nullptr;
-//                }
-//                std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
-//                    D3D11Texture2DReleaseMutex(shared_texture);
-//                });
-//                auto pre_texture = frame_render_->GetSrcTexture();
-//                ID3D11Device* dev;
-//                shared_texture->GetDevice(&dev);
-//                resize_ctx->CopyResource(pre_texture, shared_texture.Get());
-//                //DebugOutDDS(pre_texture, "2.dds");
-//            }
-//            frame_render_->Draw();
-//            auto final_texture = frame_render_->GetFinalTexture();
-//            //DebugOutDDS(final_texture, "3.dds");
-//            if (!final_texture) {
-//                LOGE("Draw failed");
-//                return nullptr;
-//            }
-//
-//            // plugins: Copy
-//            {
-//                D3D11_TEXTURE2D_DESC resize_desc;
-//                final_texture->GetDesc(&resize_desc);
-//                CopyRawTexture(final_texture, resize_desc.Format, resize_desc.Height);
-//            }
-//
-//            Encode(final_texture);
+        if (resize_) {
+            auto beg = TimeExt::GetCurrentTimestamp();
+            if (!frame_render_ && d3d11_device_ && d3d11_device_context_) {
+                frame_render_ = FrameRender::Make(d3d11_device_.Get(), d3d11_device_context_.Get());
+                SIZE target_size = {resize_width_, resize_height_};
+                auto ret = frame_render_->Prepare(target_size, {(long) desc.Width, (long) desc.Height}, desc.Format);
+                if (ret != S_OK) {
+                    LOGE("Prepare for frame render failed! {:x}", (uint32_t)ret);
+                    return nullptr;
+                }
+            }
 
+            auto resize_ctx = frame_render_->GetD3D11DeviceContext();
+
+            {
+                if (!D3D11Texture2DLockMutex(shared_texture)) {
+                    LOGE("D3D11Texture2DLockMutex error\n");
+                    return nullptr;
+                }
+                std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
+                    D3D11Texture2DReleaseMutex(shared_texture);
+                });
+                auto pre_texture = frame_render_->GetSrcTexture();
+                ID3D11Device* dev;
+                shared_texture->GetDevice(&dev);
+                resize_ctx->CopyResource(pre_texture, shared_texture.Get());
+                //DebugOutDDS(pre_texture, "2.dds");
+            }
+            frame_render_->Draw();
+            auto final_texture = frame_render_->GetFinalTexture();
+            if (!final_texture) {
+                LOGE("Draw failed");
+                return nullptr;
+            }
+            LOGI("after frame render...");
+            //Encode(final_texture);
+            DebugOutDDS(final_texture, "3.dds");
+            return final_texture;
         } else {
             if (!CopyID3D11Texture2D(shared_texture)) {
                 LOGE("CopyID3D11Texture2D failed.");
                 return nullptr;
             }
-            //Encode(texture2d_.Get());
+            //DebugOutDDS(texture2d_.Get(), "2.dds");
             return texture2d_.Get();
         }
     }

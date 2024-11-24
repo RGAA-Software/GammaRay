@@ -449,9 +449,6 @@ namespace tc
             PostNetMessage(net_msg);
         });
 
-//        if(desktop_capture_) {
-//            desktop_capture_->StartCapture();
-//        }
         if (working_monitor_capture_plugin_) {
             auto target_monitor = settings_->capture_.capture_monitor_;
             LOGI("Capture target monitor name: {}", target_monitor);

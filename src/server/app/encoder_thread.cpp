@@ -176,7 +176,13 @@ namespace tc
                 frame_carrier_->Exit();
                 frame_carrier_.reset();
             }
-            frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_);
+            if (encoder_config.frame_resize) {
+                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_, true,
+                                                                     encoder_config.encode_width, encoder_config.encode_height);
+            }
+            else {
+                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_, false, -1, -1);
+            }
 
             // plugins: Create encoder plugin
             auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();

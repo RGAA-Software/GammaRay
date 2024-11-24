@@ -27,7 +27,7 @@ namespace tc
     // move video frames from provider / capture
     class VideoFrameCarrier {
     public:
-        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id);
+        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id, bool resize, int resize_width, int resize_height);
 
         bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
@@ -58,6 +58,10 @@ namespace tc
 
         // async yuv converter
         std::shared_ptr<Thread> yuv_converter_thread_ = nullptr;
+
+        bool resize_ = false;
+        int resize_width_ = 0;
+        int resize_height_ = 0;
     };
 
 }
