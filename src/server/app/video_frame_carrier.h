@@ -27,7 +27,13 @@ namespace tc
     // move video frames from provider / capture
     class VideoFrameCarrier {
     public:
-        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id, bool resize, int resize_width, int resize_height);
+        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx,
+                                   const ComPtr<ID3D11Device>& d3d11_device,
+                                   const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
+                                   uint64_t adapter_id,
+                                   bool resize,
+                                   int resize_width,
+                                   int resize_height);
 
         bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,

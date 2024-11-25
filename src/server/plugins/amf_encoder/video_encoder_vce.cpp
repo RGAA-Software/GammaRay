@@ -12,6 +12,7 @@
 #include "tc_common_new/string_ext.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "amf_encoder_plugin.h"
+#include "tc_common_new/win32/d3d_debug_helper.h"
 #include <combaseapi.h>
 #include <atlbase.h>
 #include <fstream>
@@ -199,46 +200,48 @@ namespace tc
 
     VideoEncoderVCE::VideoEncoderVCE(AmfEncoderPlugin* plugin, uint64_t adapter_uid) {
         this->plugin_ = plugin;
-        ComPtr<IDXGIFactory1> factory1;
-        ComPtr<IDXGIAdapter1> adapter;
-        DXGI_ADAPTER_DESC desc;
-        HRESULT res = NULL;
-        bool found_adapter = false;
-        int adapter_index = 0;
-        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
-        if (res != S_OK) {
-            LOGE("CreateDXGIFactory1 failed");
-            return;
-        }
-        while (true) {
-            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
-            if (res != S_OK) {
-                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
-                return;
-            }
-
-            adapter->GetDesc(&desc);
-            if (adapter_uid == desc.AdapterLuid.LowPart) {
-                found_adapter = true;
-                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
-                LOGI("find adapter");
-                break;
-            }
-            ++adapter_index;
-        }
-
-        D3D_FEATURE_LEVEL featureLevel;
-        res = D3D11CreateDevice(adapter.Get(),
-                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
-                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-                                nullptr, 0, D3D11_SDK_VERSION,
-                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
-
-        if (res != S_OK || !d3d11_device_) {
-            LOGE("D3D11CreateDevice failed: {}", res);
-        } else {
-            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
-        }
+        this->d3d11_device_ = plugin->d3d11_device_;
+        this->d3d11_device_context_ = plugin->d3d11_device_context_;
+//        ComPtr<IDXGIFactory1> factory1;
+//        ComPtr<IDXGIAdapter1> adapter;
+//        DXGI_ADAPTER_DESC desc;
+//        HRESULT res = NULL;
+//        bool found_adapter = false;
+//        int adapter_index = 0;
+//        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
+//        if (res != S_OK) {
+//            LOGE("CreateDXGIFactory1 failed");
+//            return;
+//        }
+//        while (true) {
+//            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
+//            if (res != S_OK) {
+//                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
+//                return;
+//            }
+//
+//            adapter->GetDesc(&desc);
+//            if (adapter_uid == desc.AdapterLuid.LowPart) {
+//                found_adapter = true;
+//                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
+//                LOGI("find adapter");
+//                break;
+//            }
+//            ++adapter_index;
+//        }
+//
+//        D3D_FEATURE_LEVEL featureLevel;
+//        res = D3D11CreateDevice(adapter.Get(),
+//                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
+//                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+//                                nullptr, 0, D3D11_SDK_VERSION,
+//                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
+//
+//        if (res != S_OK || !d3d11_device_) {
+//            LOGE("D3D11CreateDevice failed: {}", res);
+//        } else {
+//            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
+//        }
     }
 
     VideoEncoderVCE::~VideoEncoderVCE() {
@@ -322,16 +325,15 @@ namespace tc
             LOGE("AllocSurface failed!");
             return;
         }
-        auto textureDX11 = (ID3D11Texture2D *) surface->GetPlaneAt(0)->GetNative(); // no reference counting - do not Release()
+        auto textureDX11 = (ID3D11Texture2D*)surface->GetPlaneAt(0)->GetNative(); // no reference counting - do not Release()
         d3d11_device_context_->CopyResource(textureDX11, texture);
 
-        // print to check the format equal or not
-        //D3DTextureDebug::PrintTextureDesc(textureDX11);
-        //D3DTextureDebug::PrintTextureDesc(texture);
+        //DebugOutDDS(textureDX11, "1-encoder");
+        //DebugOutDDS(texture, "2-resource");
 
-        // save to dds
-        //D3DTextureDebug::SaveAsDDS(d3d11_device_context_.Get(), textureDX11, "aaaa.dds");
-        //D3DTextureDebug::SaveAsDDS(d3d11_device_context_.Get(), shared_texture.Get(), "bbbb.dds");
+        // print to check the format equal or not
+        //PrintD3DTexture2DDesc("encoder", textureDX11);
+        //PrintD3DTexture2DDesc("source", texture);
 
         amf_pts start_time = amf_high_precision_clock();
         surface->SetProperty(START_TIME_PROPERTY, start_time);

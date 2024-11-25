@@ -22,12 +22,13 @@ namespace tc
     class PluginManager;
     class GrEncoderPlugin;
     class VideoFrameCarrier;
+    class Application;
 
     class EncoderThread {
     public:
-        static std::shared_ptr<EncoderThread> Make(const std::shared_ptr<Context>& ctx);
+        static std::shared_ptr<EncoderThread> Make(const std::shared_ptr<Application>& app);
 
-        explicit EncoderThread(const std::shared_ptr<Context>& ctx);
+        explicit EncoderThread(const std::shared_ptr<Application>& app);
         ~EncoderThread() = default;
 
         void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index);
@@ -41,7 +42,7 @@ namespace tc
         Settings* settings_ = nullptr;
         std::shared_ptr<Thread> enc_thread_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
-
+        std::shared_ptr<Application> app_ = nullptr;
         uint32_t frame_width_ = 0;
         uint32_t frame_height_ = 0;
         Encoder::EncoderFormat encoder_format_ = Encoder::EncoderFormat::kH264;
