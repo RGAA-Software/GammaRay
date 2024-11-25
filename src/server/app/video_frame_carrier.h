@@ -23,6 +23,8 @@ namespace tc
     class Thread;
     class Context;
     class FrameRender;
+    class GrFrameProcessorPlugin;
+    class PluginManager;
 
     // move video frames from provider / capture
     class VideoFrameCarrier {
@@ -68,6 +70,9 @@ namespace tc
         bool resize_ = false;
         int resize_width_ = 0;
         int resize_height_ = 0;
+
+        std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
+        GrFrameProcessorPlugin* frame_resize_plugin_ = nullptr;
     };
 
 }

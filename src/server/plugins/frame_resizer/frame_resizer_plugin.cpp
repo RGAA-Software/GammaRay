@@ -53,7 +53,16 @@ namespace tc
                 return nullptr;
             }
         }
-        return nullptr;
+
+        auto resize_ctx = frame_render_->GetD3D11DeviceContext();
+        auto pre_texture = frame_render_->GetSrcTexture();
+        resize_ctx->CopyResource(pre_texture, input);
+
+        //DebugOutDDS(pre_texture, "2.dds");
+
+        frame_render_->Draw();
+        auto final_texture = frame_render_->GetFinalTexture();
+        return final_texture;
     }
 
 

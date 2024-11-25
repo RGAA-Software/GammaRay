@@ -2,7 +2,6 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/log.h"
-//#include "frame_render/FrameRender.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_common_new/thread.h"
