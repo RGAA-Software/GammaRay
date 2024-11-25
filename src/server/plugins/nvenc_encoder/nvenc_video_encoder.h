@@ -45,7 +45,6 @@ namespace tc
         ComPtr<ID3D11Device> d3d11_device_;
         ComPtr<ID3D11DeviceContext> d3d11_device_context_;
         ComPtr<ID3D11Texture2D> texture2d_;
-        std::shared_ptr<FrameRender> frame_render_ = nullptr;
     };
 
 }

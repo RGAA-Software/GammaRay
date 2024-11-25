@@ -7,7 +7,6 @@
 #include "tc_common_new/image.h"
 #include "tc_common_new/defer.h"
 #include "d3d_texture_debug.h"
-#include "tc_encoder_new/frame_render/FrameRender.h"
 #include "tc_encoder_new/encoder_config.h"
 #include "tc_common_new/string_ext.h"
 #include "plugin_interface/gr_plugin_events.h"

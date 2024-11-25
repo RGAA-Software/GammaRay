@@ -10,6 +10,7 @@
 #include <map>
 #include <QLibrary>
 #include "tc_common_new/concurrent_hashmap.h"
+#include "plugin_ids.h"
 
 namespace tc
 {
