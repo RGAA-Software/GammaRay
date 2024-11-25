@@ -172,10 +172,16 @@ namespace tc
             encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
 
             // generate d3d device/context
-            if (!app_->GenerateD3DDevice(cap_video_msg.adapter_uid_)) {
-                LOGE("Generate D3DDevice failed!");
-                return;
+            if (!app_->GetD3DDevice() || !app_->GetD3DContext()) {
+                if (!app_->GenerateD3DDevice(cap_video_msg.adapter_uid_)) {
+                    LOGE("Generate D3DDevice failed!");
+                    return;
+                }
             }
+            else {
+                LOGI("We use d3d device from capture.");
+            }
+
             encoder_config.d3d11_device_ = app_->GetD3DDevice();
             encoder_config.d3d11_device_context_ = app_->GetD3DContext();
 
