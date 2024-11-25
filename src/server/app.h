@@ -16,10 +16,12 @@
 #include "tc_capture_new/capture_message.h"
 #include "context.h"
 #include <QApplication>
+#include <d3d11.h>
+#include <wrl/client.h>
 
 namespace tc
 {
-
+    using namespace Microsoft::WRL;
     using AppParams = std::unordered_map<std::string, std::string>;
 
     class Data;
@@ -78,6 +80,9 @@ namespace tc
         void ResetMonitorResolution(const std::string& name, int w, int h);
         std::shared_ptr<PluginManager> GetPluginManager();
         tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin() { return working_monitor_capture_plugin_; }
+        bool GenerateD3DDevice(uint64_t adapter_uid);
+        ComPtr<ID3D11Device> GetD3DDevice();
+        ComPtr<ID3D11DeviceContext> GetD3DContext();
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -141,6 +146,9 @@ namespace tc
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         tc::GrMonitorCapturePlugin* working_monitor_capture_plugin_ = nullptr;
+
+        ComPtr<ID3D11Device> d3d11_device_ = nullptr;
+        ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
     };
 
     // Windows

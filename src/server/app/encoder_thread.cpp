@@ -20,7 +20,6 @@
 #include "app/app_messages.h"
 #include "settings/settings.h"
 #include "server/statistics.h"
-#ifdef WIN32
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "tc_common_new/win32/d3d_render.h"
@@ -29,7 +28,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_encoder_plugin.h"
 #include "video_frame_carrier.h"
-#endif
+#include "app.h"
 
 #define DEBUG_FILE 0
 #define DEBUG_SAVE_D3D11TEXTURE_TO_FILE 0
@@ -39,12 +38,13 @@ namespace tc
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
     std::shared_ptr<D3DRender> g_render;
 #endif
-    std::shared_ptr<EncoderThread> EncoderThread::Make(const std::shared_ptr<Context>& ctx) {
-        return std::make_shared<EncoderThread>(ctx);
+    std::shared_ptr<EncoderThread> EncoderThread::Make(const std::shared_ptr<Application>& app) {
+        return std::make_shared<EncoderThread>(app);
     }
 
-    EncoderThread::EncoderThread(const std::shared_ptr<Context>& ctx) {
-        context_ = ctx;
+    EncoderThread::EncoderThread(const std::shared_ptr<Application>& app) {
+        app_ = app;
+        context_ = app->GetContext();
         settings_ = Settings::Instance();
         plugin_manager_ = context_->GetPluginManager();
         enc_thread_ = Thread::Make("encoder_thread", 5);
@@ -171,17 +171,26 @@ namespace tc
             encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
             encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
 
+            // generate d3d device/context
+            if (!app_->GenerateD3DDevice(cap_video_msg.adapter_uid_)) {
+                LOGE("Generate D3DDevice failed!");
+                return;
+            }
+            encoder_config.d3d11_device_ = app_->GetD3DDevice();
+            encoder_config.d3d11_device_context_ = app_->GetD3DContext();
+
             // video frame carrier
             if (frame_carrier_ != nullptr) {
                 frame_carrier_->Exit();
                 frame_carrier_.reset();
             }
             if (encoder_config.frame_resize) {
-                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_, true,
-                                                                     encoder_config.encode_width, encoder_config.encode_height);
+                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(), cap_video_msg.adapter_uid_,
+                                                                     true, encoder_config.encode_width, encoder_config.encode_height);
             }
             else {
-                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, cap_video_msg.adapter_uid_, false, -1, -1);
+                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(),
+                                                                     cap_video_msg.adapter_uid_,false, -1, -1);
             }
 
             // plugins: Create encoder plugin

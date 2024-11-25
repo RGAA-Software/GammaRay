@@ -17,54 +17,62 @@
 namespace tc
 {
 
-    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx, uint64_t adapter_id, bool resize, int resize_width, int resize_height) {
+    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx,
+                                         const ComPtr<ID3D11Device>& d3d11_device,
+                                         const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
+                                         uint64_t adapter_id,
+                                         bool resize,
+                                         int resize_width,
+                                         int resize_height) {
         context_ = ctx;
+        d3d11_device_ = d3d11_device;
+        d3d11_device_context_ = d3d11_device_context;
         resize_ = resize;
         resize_width_ = resize_width;
         resize_height_ = resize_height;
         yuv_converter_thread_ = Thread::Make("video frame carrier", 1024);
         yuv_converter_thread_->Poll();
 
-        LOGI("adapter_uid_ = {}", adapter_id);
-        ComPtr<IDXGIFactory1> factory1;
-        ComPtr<IDXGIAdapter1> adapter;
-        DXGI_ADAPTER_DESC desc;
-        HRESULT res = NULL;
-        int adapter_index = 0;
-        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
-        if (res != S_OK) {
-            LOGE("CreateDXGIFactory1 failed");
-            return;
-        }
-        while (true) {
-            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
-            if (res != S_OK) {
-                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
-                return;
-            }
-            D3D_FEATURE_LEVEL featureLevel;
-
-            adapter->GetDesc(&desc);
-            if (adapter_id == desc.AdapterLuid.LowPart) {
-                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
-                LOGI("find adapter");
-                break;
-            }
-            ++adapter_index;
-        }
-
-        D3D_FEATURE_LEVEL featureLevel;
-        res = D3D11CreateDevice(adapter.Get(),
-                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
-                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-                                nullptr, 0, D3D11_SDK_VERSION,
-                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
-
-        if (res != S_OK || !d3d11_device_) {
-            LOGE("D3D11CreateDevice failed: {}", res);
-        } else {
-            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
-        }
+//        LOGI("adapter_uid_ = {}", adapter_id);
+//        ComPtr<IDXGIFactory1> factory1;
+//        ComPtr<IDXGIAdapter1> adapter;
+//        DXGI_ADAPTER_DESC desc;
+//        HRESULT res = NULL;
+//        int adapter_index = 0;
+//        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
+//        if (res != S_OK) {
+//            LOGE("CreateDXGIFactory1 failed");
+//            return;
+//        }
+//        while (true) {
+//            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
+//            if (res != S_OK) {
+//                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
+//                return;
+//            }
+//            D3D_FEATURE_LEVEL featureLevel;
+//
+//            adapter->GetDesc(&desc);
+//            if (adapter_id == desc.AdapterLuid.LowPart) {
+//                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
+//                LOGI("find adapter");
+//                break;
+//            }
+//            ++adapter_index;
+//        }
+//
+//        D3D_FEATURE_LEVEL featureLevel;
+//        res = D3D11CreateDevice(adapter.Get(),
+//                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
+//                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+//                                nullptr, 0, D3D11_SDK_VERSION,
+//                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
+//
+//        if (res != S_OK || !d3d11_device_) {
+//            LOGE("D3D11CreateDevice failed: {}", res);
+//        } else {
+//            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
+//        }
     }
 
     bool VideoFrameCarrier::D3D11Texture2DLockMutex(const ComPtr<ID3D11Texture2D>& texture2d) {
@@ -215,9 +223,8 @@ namespace tc
                 LOGE("Draw failed");
                 return nullptr;
             }
-            LOGI("after frame render...");
             //Encode(final_texture);
-            DebugOutDDS(final_texture, "3.dds");
+            //DebugOutDDS(final_texture, "3.dds");
             return final_texture;
         } else {
             if (!CopyID3D11Texture2D(shared_texture)) {
@@ -225,6 +232,7 @@ namespace tc
                 return nullptr;
             }
             //DebugOutDDS(texture2d_.Get(), "2.dds");
+            //PrintD3DTexture2DDesc("frame carrier, texture2d", texture2d_.Get());
             return texture2d_.Get();
         }
     }
