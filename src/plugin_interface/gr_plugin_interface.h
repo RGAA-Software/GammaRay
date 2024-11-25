@@ -16,6 +16,9 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
 #include <QtGui/QPixmap>
+#include <d3d11.h>
+#include <mutex>
+#include <wrl/client.h>
 
 namespace tc
 {
@@ -131,6 +134,10 @@ namespace tc
         std::string plugin_version_name_;
         int64_t plugin_version_code_;
         bool plugin_enabled_ = true;
+
+    public:
+        Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;
+        Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
     };
 
 }

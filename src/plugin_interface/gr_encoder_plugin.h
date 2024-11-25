@@ -42,9 +42,6 @@ namespace tc
         bool insert_idr_ = false;
         std::atomic_bool init_success_ = false;
         EncoderConfig encoder_config_;
-
-        Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;
-        Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
     };
 
 }

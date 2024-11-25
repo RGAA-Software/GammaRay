@@ -18,46 +18,6 @@ namespace tc
         plugin_ = plugin;
         d3d11_device_ = plugin->d3d11_device_;
         d3d11_device_context_ = plugin->d3d11_device_context_;
-//        ComPtr<IDXGIFactory1> factory1;
-//        ComPtr<IDXGIAdapter1> adapter;
-//        DXGI_ADAPTER_DESC desc;
-//        HRESULT res = NULL;
-//        bool found_adapter = false;
-//        int adapter_index = 0;
-//        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
-//        if (res != S_OK) {
-//            LOGE("CreateDXGIFactory1 failed");
-//            return;
-//        }
-//        while (true) {
-//            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
-//            if (res != S_OK) {
-//                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
-//                return;
-//            }
-//
-//            adapter->GetDesc(&desc);
-//            if (adapter_uid == desc.AdapterLuid.LowPart) {
-//                found_adapter = true;
-//                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
-//                LOGI("find adapter");
-//                break;
-//            }
-//            ++adapter_index;
-//        }
-//
-//        D3D_FEATURE_LEVEL featureLevel;
-//        res = D3D11CreateDevice(adapter.Get(),
-//                                D3D_DRIVER_TYPE_UNKNOWN, nullptr,
-//                                D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-//                                nullptr, 0, D3D11_SDK_VERSION,
-//                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
-//
-//        if (res != S_OK || !d3d11_device_) {
-//            LOGE("D3D11CreateDevice failed: {}", res);
-//        } else {
-//            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
-//        }
     }
 
     NVENCVideoEncoder::~NVENCVideoEncoder() = default;

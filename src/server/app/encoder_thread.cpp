@@ -179,6 +179,12 @@ namespace tc
             encoder_config.d3d11_device_ = app_->GetD3DDevice();
             encoder_config.d3d11_device_context_ = app_->GetD3DContext();
 
+            // all plugins
+            plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                plugin->d3d11_device_ = app_->GetD3DDevice();
+                plugin->d3d11_device_context_ = app_->GetD3DContext();
+            });
+
             // video frame carrier
             if (frame_carrier_ != nullptr) {
                 frame_carrier_->Exit();
