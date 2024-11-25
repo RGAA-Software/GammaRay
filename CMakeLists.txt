@@ -135,7 +135,7 @@ if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector plugin_ffmpeg_encoder
-        plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture)
+        plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/gr_plugins
@@ -171,6 +171,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_dda_capture.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_dda_capture.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/dda_capture/plugin_dda_capture.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_dda_capture.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_frame_resizer.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_resizer.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/frame_resizer/plugin_frame_resizer.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_resizer.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
