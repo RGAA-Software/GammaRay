@@ -47,6 +47,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
+#include "plugin_interface/gr_data_provider_plugin.h"
 
 namespace tc
 {
@@ -131,7 +132,8 @@ namespace tc
         auto target_monitor = settings_->capture_.capture_monitor_;
         //desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
         //
-        working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+        //working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+        working_data_provider_plugin_ = plugin_manager_->GetMockVideoStreamPlugin();
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
@@ -336,10 +338,6 @@ namespace tc
         }, "global audio capture", false);
     }
 
-    void Application::InitWebRtc() {
-
-    }
-
     void Application::PostGlobalAppMessage(std::shared_ptr<AppMessage>&& msg) {
         QMetaObject::invokeMethod(this, [m = std::move(msg)]() {
             if (m->task_) {
@@ -419,11 +417,13 @@ namespace tc
             }
 
             // plugins: SharedTexture
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                    plugin->OnRawVideoFrameSharedTexture(msg.handle_);
+            if (msg.handle_ > 0) {
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                        plugin->OnRawVideoFrameSharedTexture(msg.handle_);
+                    });
                 });
-            });
+            }
 
             // calculate gaps between 2 captured frames.
             {
@@ -453,6 +453,9 @@ namespace tc
             auto target_monitor = settings_->capture_.capture_monitor_;
             LOGI("Capture target monitor name: {}", target_monitor);
             working_monitor_capture_plugin_->StartCapturing(target_monitor);
+        }
+        if (working_data_provider_plugin_) {
+            working_data_provider_plugin_->StartProviding();
         }
         app_manager_->StartProcess();
     }
@@ -634,7 +637,7 @@ namespace tc
             D3D_FEATURE_LEVEL featureLevel;
 
             adapter->GetDesc(&desc);
-            if (adapter_uid == desc.AdapterLuid.LowPart) {
+            if (adapter_uid == desc.AdapterLuid.LowPart || adapter_uid == -1 /* todo: try to find hardware.*/) {
                 LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
                 LOGI("find adapter");
                 break;
