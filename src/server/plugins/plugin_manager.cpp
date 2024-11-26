@@ -190,6 +190,14 @@ namespace tc
         return nullptr;
     }
 
+    GrDataProviderPlugin* PluginManager::GetMockVideoStreamPlugin() {
+        auto plugin = GetPluginById(kMockVideoStreamPluginId);
+        if (plugin) {
+            return (GrDataProviderPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

@@ -5,6 +5,7 @@ add_subdirectory(plugins)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)
+find_package(OpenCV CONFIG REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
@@ -53,6 +54,7 @@ add_executable(${PROJECT_NAME} WIN32 srv_main.cpp)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_plugin) # tc_rtc
 target_link_libraries(${PROJECT_NAME} sqlite_orm EasyHook64 gflags::gflags)
+target_link_libraries(${PROJECT_NAME} opencv_ml opencv_dnn opencv_core opencv_flann)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/settings.toml"  "${CMAKE_BINARY_DIR}"

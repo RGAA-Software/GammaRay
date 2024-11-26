@@ -5,12 +5,14 @@
 #include "plugin_event_router.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
+#include "tc_common_new/image.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_encoder_plugin.h"
 #include "plugin_manager.h"
 #include "plugin_stream_event_router.h"
 #include "plugin_net_event_router.h"
+#include "tc_capture_new/capture_message.h"
 #include "context.h"
 #include <fstream>
 #include "app.h"
@@ -56,6 +58,16 @@ namespace tc
         else if (event->plugin_type_ == GrPluginEventType::kPluginCursorEvent) {
             auto target_event = std::dynamic_pointer_cast<GrPluginCursorEvent>(event);
             msg_notifier_->SendAppMessage(target_event->cursor_info_);
+        }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginRawVideoFrameEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginRawVideoFrameEvent>(event);
+            auto msg = CaptureVideoFrame{};
+            msg.frame_width_ = target_event->image_->width;
+            msg.frame_height_ = target_event->image_->height;
+            msg.frame_index_ = target_event->frame_index_;
+            msg.raw_image_ = target_event->image_;
+            msg.adapter_uid_ = -1;
+            msg_notifier_->SendAppMessage(msg);
         }
     }
 

@@ -250,53 +250,70 @@ namespace tc
         }
 
         PostEncTask([=, this]() {
-            // copy shared texture
-            if (frame_carrier_ == nullptr) {
-                LOGI("Don't have frame carrier !");
-                return;
-            }
-            auto beg = TimeExt::GetCurrentTimestamp();
-            auto target_texture = frame_carrier_->CopyTexture(cap_video_msg.handle_, frame_index);
-            if (target_texture == nullptr) {
-                LOGI("Don't have target texture, frame carrier copies texture failed!");
-                return;
-            }
-
-            //video_encoder_->Encode(target_texture, frame_index);
-            bool can_encode_texture = false;
-            if (working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture()) {
-                can_encode_texture = true;
-                working_encoder_plugin_->Encode(target_texture, frame_index, cap_video_msg);
-            }
-            auto end = TimeExt::GetCurrentTimestamp();
-            auto diff = end - beg;
-            Statistics::Instance()->AppendEncodeDuration(diff);
-
-            // TODO: May make latency !!!
-            D3D11_TEXTURE2D_DESC desc;
-            target_texture->GetDesc(&desc);
-            auto rgba_cbk = [=, this](const std::shared_ptr<Image>& image) {
-                // callback in Enc thread
-                context_->PostStreamPluginTask([=, this]() {
-                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        plugin->OnRawVideoFrameRgba(image);
-                    });
-                });
-            };
-            auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
-                // callback in YUV converter thread
-                if (working_encoder_plugin_ && !can_encode_texture) {
-                    PostEncTask([=, this]() {
-                        working_encoder_plugin_->Encode(image, frame_index, cap_video_msg);
-                    });
+            // from texture
+            if (cap_video_msg.handle_ > 0) {
+                // copy shared texture
+                if (frame_carrier_ == nullptr) {
+                    LOGI("Don't have frame carrier !");
+                    return;
                 }
+                auto beg = TimeExt::GetCurrentTimestamp();
+                auto target_texture = frame_carrier_->CopyTexture(cap_video_msg.handle_, frame_index);
+                if (target_texture == nullptr) {
+                    LOGI("Don't have target texture, frame carrier copies texture failed!");
+                    return;
+                }
+
+                //video_encoder_->Encode(target_texture, frame_index);
+                bool can_encode_texture = false;
+                if (working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture()) {
+                    can_encode_texture = true;
+                    working_encoder_plugin_->Encode(target_texture, frame_index, cap_video_msg);
+                }
+                auto end = TimeExt::GetCurrentTimestamp();
+                auto diff = end - beg;
+                Statistics::Instance()->AppendEncodeDuration(diff);
+
+                // TODO: May make latency !!!
+                D3D11_TEXTURE2D_DESC desc;
+                target_texture->GetDesc(&desc);
+                auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                    // callback in Enc thread
+                    context_->PostStreamPluginTask([=, this]() {
+                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                            plugin->OnRawVideoFrameRgba(image);
+                        });
+                    });
+                };
+                auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                    // callback in YUV converter thread
+                    if (working_encoder_plugin_ && !can_encode_texture) {
+                        PostEncTask([=, this]() {
+                            working_encoder_plugin_->Encode(image, frame_index, cap_video_msg);
+                        });
+                    }
+                    context_->PostStreamPluginTask([=, this]() {
+                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                            plugin->OnRawVideoFrameYuv(image);
+                        });
+                    });
+                };
+                frame_carrier_->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+            }
+            else {
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        plugin->OnRawVideoFrameYuv(image);
+                        plugin->OnRawVideoFrameRgba(cap_video_msg.raw_image_);
                     });
                 });
-            };
-            frame_carrier_->MapRawTexture(target_texture, desc.Format, (int)desc.Height, rgba_cbk, yuv_cbk);
+
+                // todo: convert to YUV
+
+                // raw video frame
+                if (working_encoder_plugin_) {
+                    working_encoder_plugin_->Encode(cap_video_msg.raw_image_, frame_index, cap_video_msg);
+                }
+            }
         });
     }
 

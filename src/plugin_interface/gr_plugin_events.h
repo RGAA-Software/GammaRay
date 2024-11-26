@@ -26,6 +26,7 @@ namespace tc
         kPluginCapturingMonitorInfoEvent,
         kPluginCapturedVideoFrameEvent,
         kPluginCursorEvent,
+        kPluginRawVideoFrameEvent,
     };
 
     class GrPluginBaseEvent {
@@ -117,6 +118,17 @@ namespace tc
         }
     public:
         CaptureCursorBitmap cursor_info_;
+    };
+
+    //
+    class GrPluginRawVideoFrameEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRawVideoFrameEvent() {
+            plugin_type_ = GrPluginEventType::kPluginRawVideoFrameEvent;
+        }
+    public:
+        std::shared_ptr<Image> image_ = nullptr;
+        uint64_t frame_index_ = 0;
     };
 }
 
