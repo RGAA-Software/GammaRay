@@ -74,9 +74,6 @@ namespace tc
     }
 
     int Application::Run() {
-        // presets
-        //WinHelper::DontCareDPI();
-
         statistics_ = Statistics::Instance();
 
         // context
@@ -91,14 +88,9 @@ namespace tc
         plugin_manager_->RegisterPluginEventsCallback();
         plugin_manager_->DumpPluginInfo();
 
-
         // clipboard
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
         clipboard_mgr_->Monitor();
-
-        // websocket server
-//        connection_ = NetworkFactory::MakeConnection(shared_from_this());
-//        connection_->Start();
 
         ws_client_ = std::make_shared<WSClient>(context_);
         ws_client_->Start();
@@ -123,8 +115,6 @@ namespace tc
             InitGlobalAudioCapture();
         }
 
-        // init webrtc
-        //InitWebRtc();
         // vigem control thread
         control_thread_ = Thread::Make("control", 16);
         control_thread_->Poll();
@@ -132,8 +122,8 @@ namespace tc
         auto target_monitor = settings_->capture_.capture_monitor_;
         //desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
         //
-        //working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
-        working_data_provider_plugin_ = plugin_manager_->GetMockVideoStreamPlugin();
+        working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+        //working_data_provider_plugin_ = plugin_manager_->GetMockVideoStreamPlugin();
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
@@ -313,7 +303,6 @@ namespace tc
                 auto encoded_data = Data::Make((char*)ef.data(), ef.size());
                 auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
                                                                   opus_encoder_->Channels(), opus_encoder_->Bits(), frame_size);
-                //connection_->PostAudioMessage(net_msg);
                 PostNetMessage(net_msg);
 
                 if (debug_opus_decoder_) {
@@ -600,7 +589,6 @@ namespace tc
         auto r = m.mutable_change_monitor_resolution_result();
         r->set_monitor_name(name);
         r->set_result(ok);
-        //connection_->PostNetMessage(m.SerializeAsString());
         PostNetMessage(m.SerializeAsString());
     }
 

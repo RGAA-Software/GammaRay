@@ -344,46 +344,62 @@
     </message>
     <message>
         <location filename="../src/ui/tab_server.cpp" line="163"/>
-        <source>Server Status</source>
+        <source>Renderer Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="183"/>
+        <source>Restart Renderer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="183"/>
+        <source>Do you want to restart Renderer?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="211"/>
+        <source>Service Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="230"/>
+        <source>Restart Service</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="230"/>
+        <source>Do you want to restart Service?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/ui/tab_server.cpp" line="176"/>
+        <location filename="../src/ui/tab_server.cpp" line="224"/>
         <source>RESTART</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="183"/>
-        <source>Restart Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tab_server.cpp" line="183"/>
-        <source>Do you want to restart server?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tab_server.cpp" line="212"/>
+        <location filename="../src/ui/tab_server.cpp" line="253"/>
         <source>Detected IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="244"/>
+        <location filename="../src/ui/tab_server.cpp" line="285"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="268"/>
+        <location filename="../src/ui/tab_server.cpp" line="309"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="292"/>
+        <location filename="../src/ui/tab_server.cpp" line="333"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="315"/>
+        <location filename="../src/ui/tab_server.cpp" line="356"/>
         <source>Audio Spectrum</source>
         <translation type="unfinished"></translation>
     </message>

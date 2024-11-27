@@ -44,7 +44,8 @@ namespace tc
         RnApp* rn_app_ = nullptr;
         //RnEmpty* rn_empty_ = nullptr;
         QLabel* lbl_vigem_state_ = nullptr;
-        QLabel* lbl_server_state_ = nullptr;
+        QLabel* lbl_renderer_state_ = nullptr;
+        QLabel* lbl_service_state_ = nullptr;
         QLabel* lbl_audio_format_ = nullptr;
         QtCircle* spectrum_circle_ = nullptr;
 
