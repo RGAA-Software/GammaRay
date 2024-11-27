@@ -5,11 +5,17 @@
 #ifndef GAMMARAY_SERVICE_H
 #define GAMMARAY_SERVICE_H
 
-#include <memory>
 #include <Windows.h>
+#include <memory>
+#include <mutex>
+#include <thread>
+#include <queue>
+#include <functional>
 
 namespace tc
 {
+
+    using SrvTask = std::function<void()>;
 
     class ServiceContext;
 
@@ -31,9 +37,23 @@ namespace tc
         void OnSessionLock(int id);
         void OnSessionUnlock(int id);
 
+        void TaskThread();
+        void PostTask(SrvTask&& task);
+        void SetStatus(DWORD dwState, DWORD dwErrCode = NO_ERROR, DWORD dwWait = 0);
+        // stop all apps
+        void StopAll();
+        void SimulateCtrlAltDelete();
+
     private:
         std::shared_ptr<ServiceContext> context_ = nullptr;
+        SERVICE_STATUS service_status_ = { 0 };
+        SERVICE_STATUS_HANDLE status_handle_ = nullptr;
 
+        std::mutex cv_mtx_;
+        std::condition_variable cv_;
+        std::queue<SrvTask> tasks_;
+        std::atomic_bool exit_ = false;
+        std::thread task_thread_;
     };
 
 }
