@@ -109,7 +109,6 @@ namespace tc
     protected:
         Settings* settings_ = nullptr;
         std::shared_ptr<WSClient> ws_client_ = nullptr;
-        std::shared_ptr<Connection> connection_ = nullptr;
         std::shared_ptr<AppManager> app_manager_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<EncoderThread> encoder_thread_ = nullptr;

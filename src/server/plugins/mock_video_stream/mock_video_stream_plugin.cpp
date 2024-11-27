@@ -58,6 +58,9 @@ namespace tc
     }
 
     void MockVideoStreamPlugin::ReGenerate() {
+        if (mock_image_.empty()) {
+            return;
+        }
         for (int y = 0; y < height_; y++) {
             for (int x = 0; x < width_; x++) {
                 uchar r = rand() % 256;

@@ -160,12 +160,12 @@ namespace tc
 
                     auto label = new QLabel(this);
                     label->setFixedSize(170, 40);
-                    label->setText(tr("Server Status"));
+                    label->setText(tr("Renderer Status"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
 
                     auto status = new QLabel(this);
-                    lbl_server_state_ = status;
+                    lbl_renderer_state_ = status;
                     status->setAlignment(Qt::AlignCenter);
                     status->setFixedSize(80, 26);
                     status->setText("OK");
@@ -180,7 +180,7 @@ namespace tc
 
                     connect(btn, &QPushButton::clicked, this, [=, this]() {
                        // restart
-                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Server"), tr("Do you want to restart server?"));
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Renderer"), tr("Do you want to restart Renderer?"));
                         if (msg_box->exec() == 0) {
                             this->context_->PostTask([=, this]() {
                                 RestartServer();
@@ -190,6 +190,47 @@ namespace tc
                                 //this->context_->SendAppMessage(MsgServerAlive {
                                 //    .alive_ = false,
                                 //});
+                            });
+                        }
+                    });
+
+                    layout->addLayout(item_layout);
+                }
+
+                // service status
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    item_layout->addSpacing(margin_left);
+                    auto icon = new QLabel(this);
+                    icon->setFixedSize(38, 38);
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_server.svg"));
+                    item_layout->addWidget(icon);
+
+                    auto label = new QLabel(this);
+                    label->setFixedSize(170, 40);
+                    label->setText(tr("Service Status"));
+                    label->setStyleSheet("font-size: 14px;");
+                    item_layout->addWidget(label);
+
+                    auto status = new QLabel(this);
+                    lbl_service_state_ = status;
+                    status->setAlignment(Qt::AlignCenter);
+                    status->setFixedSize(80, 26);
+                    status->setText("OK");
+                    item_layout->addWidget(status);
+
+                    auto btn = new QPushButton(this);
+                    btn->setFixedSize(80, 28);
+                    btn->setText(tr("RESTART"));
+                    item_layout->addSpacing(55);
+                    item_layout->addWidget(btn);
+                    item_layout->addStretch();
+
+                    connect(btn, &QPushButton::clicked, this, [=, this]() {
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Service"), tr("Do you want to restart Service?"));
+                        if (msg_box->exec() == 0) {
+                            this->context_->PostTask([=, this]() {
+
                             });
                         }
                     });
@@ -409,7 +450,7 @@ namespace tc
     }
 
     void TabServer::RefreshServerState(bool ok) {
-        RefreshIndicatorState(lbl_server_state_, ok);
+        RefreshIndicatorState(lbl_renderer_state_, ok);
     }
 
     void TabServer::RefreshIndicatorState(QLabel* indicator, bool ok) {
