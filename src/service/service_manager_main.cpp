@@ -19,6 +19,7 @@ int main(int argc, char** argv) {
     std::string base_path = app.applicationDirPath().toStdString();
     std::cout << "path: " << base_path << std::endl;
     std::string bin_path = std::format("{}/GammaRayService.exe", base_path);
+    std::cout << "binpath: " << bin_path << std::endl;
 
     g_service_manager = ServiceManager::Make();
     g_service_manager->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
@@ -38,20 +39,20 @@ int main(int argc, char** argv) {
         std::cin >> command;
 
         if (command == "install" || command == "i") {
-            //g_service_manager->Install();
+            g_service_manager->Install();
 
-            QProcess process;
-
-            QStringList arguments;
-            arguments << "create" << "GammaRayService" << "binPath=" << "D:/source/GammaRay/cmake-build-relwithdebinfo/GammaRayService.exe" << "start=auto" << "DisplayName=GammaRat Service";
-
-            process.start("sc", arguments);
-            process.waitForFinished();
-
-            QByteArray result = process.readAllStandardOutput();
-            QString resultString = QString::fromUtf8(result);
-
-            qDebug() << "Command output:" << resultString;
+//            QProcess process;
+//
+//            QStringList arguments;
+//            arguments << "create" << "GammaRayService" << "binPath=" << "D:/source/GammaRay/cmake-build-relwithdebinfo/GammaRayService.exe" << "start=auto" << "DisplayName=GammaRat Service";
+//
+//            process.start("sc", arguments);
+//            process.waitForFinished();
+//
+//            QByteArray result = process.readAllStandardOutput();
+//            QString resultString = QString::fromUtf8(result);
+//
+//            qDebug() << "Command output:" << resultString;
 
         }
         else if (command == "start") {
