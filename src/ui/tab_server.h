@@ -33,6 +33,7 @@ namespace tc
         QString GetItemIconStyleSheet(const QString& url);
         void RefreshVigemState(bool ok);
         void RefreshServerState(bool ok);
+        void RefreshServiceState(bool ok);
         void RefreshIndicatorState(QLabel* indicator, bool ok);
         void RefreshUIEverySecond();
         void RestartServer();

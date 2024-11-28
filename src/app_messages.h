@@ -25,6 +25,12 @@ namespace tc
         bool alive_ = false;
     };
 
+    //
+    class MsgServiceAlive {
+    public:
+        bool alive_ = false;
+    };
+
     // capture statistics
     class MsgCaptureStatistics {
     public:

@@ -363,19 +363,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="230"/>
-        <source>Restart Service</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tab_server.cpp" line="230"/>
-        <source>Do you want to restart Service?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/ui/tab_server.cpp" line="176"/>
-        <location filename="../src/ui/tab_server.cpp" line="224"/>
         <source>RESTART</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="224"/>
+        <source>REMOVE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="230"/>
+        <source>Remove Service</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="230"/>
+        <source>Do you want to remove Service?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
