@@ -155,7 +155,7 @@ namespace tc
                     item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
-                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_server.svg"));
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_renderer.svg"));
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
@@ -203,7 +203,7 @@ namespace tc
                     item_layout->addSpacing(margin_left);
                     auto icon = new QLabel(this);
                     icon->setFixedSize(38, 38);
-                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_server.svg"));
+                    icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_service.svg"));
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
@@ -221,13 +221,13 @@ namespace tc
 
                     auto btn = new QPushButton(this);
                     btn->setFixedSize(80, 28);
-                    btn->setText(tr("RESTART"));
+                    btn->setText(tr("REMOVE"));
                     item_layout->addSpacing(55);
                     item_layout->addWidget(btn);
                     item_layout->addStretch();
 
                     connect(btn, &QPushButton::clicked, this, [=, this]() {
-                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Service"), tr("Do you want to restart Service?"));
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"), tr("Do you want to remove Service?"));
                         if (msg_box->exec() == 0) {
                             this->context_->PostTask([=, this]() {
 
@@ -412,6 +412,12 @@ namespace tc
             });
         });
 
+        msg_listener_->Listen<MsgServiceAlive>([=, this](const MsgServiceAlive& state) {
+            context_->PostUITask([=, this]() {
+                this->RefreshServiceState(state.alive_);
+            });
+        });
+
         msg_listener_->Listen<MsgGrTimer100>([=, this](const auto& m) {
             context_->PostUITask([=, this]() {
                 this->RefreshUIEverySecond();
@@ -451,6 +457,10 @@ namespace tc
 
     void TabServer::RefreshServerState(bool ok) {
         RefreshIndicatorState(lbl_renderer_state_, ok);
+    }
+
+    void TabServer::RefreshServiceState(bool ok) {
+        RefreshIndicatorState(lbl_service_state_, ok);
     }
 
     void TabServer::RefreshIndicatorState(QLabel* indicator, bool ok) {

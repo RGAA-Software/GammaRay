@@ -18,6 +18,7 @@ namespace tc
     class GrApplication;
     class VigemDriverManager;
     class MessageListener;
+    class ServiceManager;
 
     class GrSystemMonitor {
     public:
@@ -49,6 +50,7 @@ namespace tc
         bool connect_vigem_success_ = false;
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<ServiceManager> service_manager_ = nullptr;
     };
 
 }

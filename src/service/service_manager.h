@@ -24,10 +24,7 @@ namespace tc
 
         void Init(const std::string& srv_name, const std::string& path, const std::string& display_name, const std::string& description);
         void Install();
-        void Start();
-        void Stop();
         void Remove();
-        void RemoveImmediately();
         ServiceStatus QueryStatus();
 
         static std::string StatusAsString(ServiceStatus status);

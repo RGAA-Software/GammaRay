@@ -17,6 +17,8 @@
 #include "gr_run_game_manager.h"
 #include "network/ws_server.h"
 #include "gr_settings.h"
+#include "service/service_manager.h"
+#include <QApplication>
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
@@ -36,11 +38,17 @@ namespace tc
     void GrSystemMonitor::Start() {
         vigem_driver_manager_ = VigemDriverManager::Make();
         msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
+        service_manager_ = ServiceManager::Make();
         RegisterMessageListener();
 
         if (!CheckViGEmDriver()) {
             InstallViGem(true);
         }
+
+        std::string base_path = qApp->applicationDirPath().toStdString();
+        std::string bin_path = std::format("{}/GammaRayService.exe", base_path);
+        service_manager_->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
+        service_manager_->Install();
 
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
             while (!exit_) {
@@ -103,6 +111,15 @@ namespace tc
                             .game_ids_ = game_ids,
                         });
                     });
+                }
+
+                // check service status
+                {
+                    auto status = service_manager_->QueryStatus();
+                    ctx_->SendAppMessage(MsgServiceAlive {
+                        .alive_ = (status == ServiceStatus::kRunning),
+                    });
+                    LOGI("Status: {}", (int)status);
                 }
 
                 std::this_thread::sleep_for(std::chrono::seconds(3));
