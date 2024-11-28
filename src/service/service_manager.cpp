@@ -6,9 +6,12 @@
 #include <format>
 #include <iostream>
 #include <QString>
+#include <windows.h>
 
 #include "tc_common_new/log.h"
 #include "tc_common_new/process_util.h"
+
+#pragma comment(lib, "Advapi32.lib")
 
 namespace tc
 {
@@ -28,49 +31,52 @@ namespace tc
     }
 
     void ServiceManager::Install() {
-        auto cmd = std::format(R"(sc create {} binPath= "{}" start=auto DisplayName="{}")",
-                               this->srv_name_, this->srv_exe_path_, this->srv_display_name_);
-        std::cout << "==> create cmd: " << cmd << std::endl;
-        auto lines = ProcessUtil::StartProcessAndOutput(cmd, {});
-        std::cout << "install result: \n";
-        for (auto& line : lines) {
-            std::cout << "line: " << line << std::endl;
+        SC_HANDLE schSCManager;
+        SC_HANDLE schService;
+
+        schSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+        if (NULL == schSCManager) {
+            LOGE("OpenSCManager failed {}", GetLastError());
+            return;
         }
 
-        auto config = std::format(R"(sc config {} start= auto)", this->srv_name_);
-        std::cout << "==> config cmd: " << config << std::endl;
-        lines.clear();
-        lines = ProcessUtil::StartProcessAndOutput(config, {});
-        std::cout << "config result: \n";
-        for (auto& line : lines) {
-            std::cout << "line: " << line << std::endl;
+        schService = CreateServiceW(
+                schSCManager,              // SCM database
+                QString::fromStdString(this->srv_name_).toStdWString().c_str(),                   // name of service
+                QString::fromStdString(this->srv_name_).toStdWString().c_str(),                   // service name to display
+                SERVICE_ALL_ACCESS,        // desired access
+                SERVICE_WIN32_OWN_PROCESS, // service type
+                SERVICE_AUTO_START,      // start type
+                SERVICE_ERROR_NORMAL,      // error control type
+                QString::fromStdString(this->srv_exe_path_).toStdWString().c_str(),                    // path to service's binary
+                NULL,                      // no load ordering group
+                NULL,                      // no tag identifier
+                NULL,                      // no dependencies
+                NULL,                      // LocalSystem account
+                NULL);                     // no password
+
+
+        if (schService == NULL) {
+            LOGE("CreateService failed {}", GetLastError());
+            CloseServiceHandle(schSCManager);
+            return;
+        }
+        else {
+            LOGI("Service installed successfully");
         }
 
-        config = std::format(R"(sc failure {} reset= 0 actions= restart/1000)", this->srv_name_);
-        std::cout << "==> config failure action: " << config << std::endl;
-        lines.clear();
-        lines = ProcessUtil::StartProcessAndOutput(config, {});
-        std::cout << "config result: \n";
-        for (auto& line : lines) {
-            std::cout << "line: " << line << std::endl;
+        if (!StartService(schService, 0, NULL)) {
+            LOGI("StartService failed {}", GetLastError());
+            CloseServiceHandle(schService);
+            CloseServiceHandle(schSCManager);
+            return;
+        }
+        else {
+            LOGI("Service start pending.");
         }
 
-        auto desc = std::format(R"(sc description {} "{}")", this->srv_name_, this->srv_description_);
-        std::cout << "==> desc cmd: " << desc << std::endl;
-        lines.clear();
-        lines = ProcessUtil::StartProcessAndOutput(desc, {});
-        std::cout << "desc result: " << std::endl;
-        for (auto& line : lines) {
-            std::cout << "line: " << line << std::endl;
-        }
-
-        auto status = this->QueryStatus();
-        if (status != ServiceStatus::kRunning) {
-            std::cout << "service is not in running state, will start it" << std::endl;
-            this->Start();
-            std::cout << "re-check service state:" << std::endl;
-            this->QueryStatus();
-        }
+        CloseServiceHandle(schService);
+        CloseServiceHandle(schSCManager);
     }
 
     void ServiceManager::Start() {

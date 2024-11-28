@@ -143,6 +143,7 @@ namespace tc
             insert_idr_ = false;
             frame_->key_frame = 1;
             frame_->pict_type = AV_PICTURE_TYPE_I;
+            LOGI("Insert an I Frame!");
         } else {
             frame_->key_frame = 0;
             frame_->pict_type = AV_PICTURE_TYPE_NONE;
