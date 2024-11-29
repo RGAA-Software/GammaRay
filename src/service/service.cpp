@@ -5,6 +5,8 @@
 #include "service.h"
 #include "service_context.h"
 #include "tc_common_new/log.h"
+#include "service_msg_server.h"
+#include "render_manager.h"
 
 static HMODULE sasLibrary = nullptr;
 typedef void(__stdcall* SendSAS_proto)(BOOL AsUser);
@@ -15,9 +17,13 @@ namespace tc
 
     GrService::GrService(const std::shared_ptr<ServiceContext>& ctx) {
         context_ = ctx;
+        msg_server_ = std::make_shared<ServiceMsgServer>(ctx);
+        msg_server_->Start();
+        render_manager_ = std::make_shared<RenderManager>(ctx);
     }
 
     void GrService::Run(DWORD dwArgc, LPWSTR* lpszArgv, SERVICE_STATUS_HANDLE handle) {
+        msg_server_->Init(shared_from_this());
         DWORD Status = E_FAIL;
         status_handle_ = handle;
 
@@ -155,6 +161,10 @@ namespace tc
         if (_SendSAS) {
             _SendSAS(FALSE);
         }
+    }
+
+    std::shared_ptr<RenderManager> GrService::GetRenderManager() {
+        return render_manager_;
     }
 
 }

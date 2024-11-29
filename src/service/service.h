@@ -18,6 +18,8 @@ namespace tc
     using SrvTask = std::function<void()>;
 
     class ServiceContext;
+    class ServiceMsgServer;
+    class RenderManager;
 
     class GrService : public std::enable_shared_from_this<GrService> {
     public:
@@ -44,6 +46,8 @@ namespace tc
         void StopAll();
         void SimulateCtrlAltDelete();
 
+        std::shared_ptr<RenderManager> GetRenderManager();
+
     private:
         std::shared_ptr<ServiceContext> context_ = nullptr;
         SERVICE_STATUS service_status_ = { 0 };
@@ -54,6 +58,8 @@ namespace tc
         std::queue<SrvTask> tasks_;
         std::atomic_bool exit_ = false;
         std::thread task_thread_;
+        std::shared_ptr<ServiceMsgServer> msg_server_ = nullptr;
+        std::shared_ptr<RenderManager> render_manager_ = nullptr;
     };
 
 }

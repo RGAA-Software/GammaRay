@@ -25,6 +25,7 @@ namespace tc
     class GrResources;
     class GrServerManager;
     class GrRunGameManager;
+    class ServiceManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -45,6 +46,7 @@ namespace tc
         std::string MakeBroadcastMessage();
 
         std::shared_ptr<DBGameManager> GetDBGameManager();
+        std::shared_ptr<ServiceManager> GetServiceManager();
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -75,6 +77,7 @@ namespace tc
         std::shared_ptr<GrServerManager> srv_manager_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
         std::shared_ptr<GrRunGameManager> run_game_manager_ = nullptr;
+        std::shared_ptr<ServiceManager> service_manager_ =  nullptr;
     };
 
 }

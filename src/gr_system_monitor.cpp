@@ -33,22 +33,17 @@ namespace tc
     GrSystemMonitor::GrSystemMonitor(const std::shared_ptr<GrApplication>& app) {
         this->app_ = app;
         this->ctx_ = app->GetContext();
+        this->service_manager_ = ctx_->GetServiceManager();
     }
 
     void GrSystemMonitor::Start() {
         vigem_driver_manager_ = VigemDriverManager::Make();
         msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
-        service_manager_ = ServiceManager::Make();
         RegisterMessageListener();
 
         if (!CheckViGEmDriver()) {
             InstallViGem(true);
         }
-
-        std::string base_path = qApp->applicationDirPath().toStdString();
-        std::string bin_path = std::format("{}/GammaRayService.exe", base_path);
-        service_manager_->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
-        service_manager_->Install();
 
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
             while (!exit_) {
@@ -77,7 +72,7 @@ namespace tc
                             });
                         } else {
                             LOGI("server is not running, we'll start it.");
-                            this->StartServer();
+                            //this->StartServer();
                             // check again
                             ctx_->PostUIDelayTask([=, this]() {
                                 ctx_->PostTask([=, this]() {
