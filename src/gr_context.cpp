@@ -18,6 +18,7 @@
 #include "app_messages.h"
 #include "tc_controller/hardware.h"
 #include "tc_common_new/md5.h"
+#include "service/service_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -61,6 +62,12 @@ namespace tc
         res_manager_->ExtractIconsIfNeeded();
 
         run_game_manager_ = std::make_shared<GrRunGameManager>(shared_from_this());
+
+        service_manager_ = ServiceManager::Make();
+        std::string base_path = qApp->applicationDirPath().toStdString();
+        std::string bin_path = std::format("{}/GammaRayService.exe", base_path);
+        service_manager_->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
+        service_manager_->Install();
 
         StartTimers();
     }
@@ -184,6 +191,10 @@ namespace tc
 
     std::string GrContext::GetCurrentExeFolder() {
         return QCoreApplication::applicationDirPath().toStdString();
+    }
+
+    std::shared_ptr<ServiceManager> GrContext::GetServiceManager() {
+        return service_manager_;
     }
 
 }

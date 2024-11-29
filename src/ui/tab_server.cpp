@@ -32,6 +32,7 @@
 #include "widgets/sized_msg_box.h"
 #include "gr_application.h"
 #include "src/gr_server_manager.h"
+#include "service/service_manager.h"
 
 namespace tc
 {
@@ -132,14 +133,21 @@ namespace tc
                     status->setText("OK");
                     item_layout->addWidget(status);
 
-                    auto btn = new QPushButton(this);
-                    btn->setFixedSize(80, 28);
-                    btn->setText(tr("INSTALL"));
-                    item_layout->addSpacing(55);
-                    item_layout->addWidget(btn);
+                    auto btn_install = new QPushButton(this);
+                    btn_install->setFixedSize(80, 28);
+                    btn_install->setText(tr("INSTALL"));
+                    item_layout->addSpacing(25);
+                    item_layout->addWidget(btn_install);
+
+                    auto btn_remove = new QPushButton(this);
+                    btn_remove->hide();
+                    btn_remove->setFixedSize(80, 28);
+                    btn_remove->setText(tr("REMOVE"));
+                    item_layout->addSpacing(5);
+                    item_layout->addWidget(btn_remove);
                     item_layout->addStretch();
 
-                    connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    connect(btn_install, &QPushButton::clicked, this, [=, this]() {
                         auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install ViGEm"), tr("Do you want to install ViGEm?"));
                         if (msg_box->exec() == 0) {
                             context_->SendAppMessage(MsgInstallViGEm{});
@@ -171,25 +179,26 @@ namespace tc
                     status->setText("OK");
                     item_layout->addWidget(status);
 
-                    auto btn = new QPushButton(this);
-                    btn->setFixedSize(80, 28);
-                    btn->setText(tr("RESTART"));
-                    item_layout->addSpacing(55);
-                    item_layout->addWidget(btn);
+                    auto btn_restart = new QPushButton(this);
+                    btn_restart->setFixedSize(80, 28);
+                    btn_restart->setText(tr("RESTART"));
+                    item_layout->addSpacing(25);
+                    item_layout->addWidget(btn_restart);
+
+                    auto btn_remove = new QPushButton(this);
+                    btn_remove->hide();
+                    btn_remove->setFixedSize(80, 28);
+                    btn_remove->setText(tr("REMOVE"));
+                    item_layout->addSpacing(5);
+                    item_layout->addWidget(btn_remove);
                     item_layout->addStretch();
 
-                    connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    connect(btn_restart, &QPushButton::clicked, this, [=, this]() {
                        // restart
                         auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Renderer"), tr("Do you want to restart Renderer?"));
                         if (msg_box->exec() == 0) {
                             this->context_->PostTask([=, this]() {
                                 RestartServer();
-                                //auto srv_mgr = this->context_->GetServerManager();
-                                ////srv_mgr->StopServer();
-                                //srv_mgr->ReStart();
-                                //this->context_->SendAppMessage(MsgServerAlive {
-                                //    .alive_ = false,
-                                //});
                             });
                         }
                     });
@@ -219,18 +228,33 @@ namespace tc
                     status->setText("OK");
                     item_layout->addWidget(status);
 
-                    auto btn = new QPushButton(this);
-                    btn->setFixedSize(80, 28);
-                    btn->setText(tr("REMOVE"));
-                    item_layout->addSpacing(55);
-                    item_layout->addWidget(btn);
+                    auto btn_install = new QPushButton(this);
+                    btn_install->setFixedSize(80, 28);
+                    btn_install->setText(tr("INSTALL"));
+                    item_layout->addSpacing(25);
+                    item_layout->addWidget(btn_install);
+
+                    auto btn_remove = new QPushButton(this);
+                    btn_remove->setFixedSize(80, 28);
+                    btn_remove->setText(tr("REMOVE"));
+                    item_layout->addSpacing(5);
+                    item_layout->addWidget(btn_remove);
                     item_layout->addStretch();
 
-                    connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    connect(btn_install, &QPushButton::clicked, this, [=, this]() {
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install Service"), tr("Do you want to install Service?"));
+                        if (msg_box->exec() == 0) {
+                            this->context_->PostTask([=, this]() {
+                                this->context_->GetServiceManager()->Install();
+                            });
+                        }
+                    });
+
+                    connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
                         auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"), tr("Do you want to remove Service?"));
                         if (msg_box->exec() == 0) {
                             this->context_->PostTask([=, this]() {
-
+                                this->context_->GetServiceManager()->Remove();
                             });
                         }
                     });
