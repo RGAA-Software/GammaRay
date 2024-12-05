@@ -31,7 +31,7 @@
 #include "gr_statistics.h"
 #include "widgets/sized_msg_box.h"
 #include "gr_application.h"
-#include "src/gr_server_manager.h"
+#include "src/gr_render_controller.h"
 #include "service/service_manager.h"
 
 namespace tc

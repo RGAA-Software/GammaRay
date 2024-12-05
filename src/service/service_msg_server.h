@@ -33,9 +33,9 @@ namespace tc
         void PostBinaryMessage(const std::string& msg);
 
     private:
-        void ProcessStartServer(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
-        void ProcessStopServer();
-        void ProcessRestartServer();
+        void ProcessStartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        void ProcessStopRender();
+        void ProcessRestartRender();
         void ProcessHeartBeat(int64_t index);
 
     private:

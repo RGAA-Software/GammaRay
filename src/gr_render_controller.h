@@ -21,27 +21,20 @@ namespace tc
     class GrServiceClient;
     class GrApplication;
 
-    class RunningAppInfo {
-    public:
-        uint32_t pid_{0};
-        std::shared_ptr<QProcess> process_ = nullptr;
-    };
-
-    class GrServerManager {
+    class GrRenderController {
     public:
 
-        explicit GrServerManager(const std::shared_ptr<GrApplication>& app);
-        ~GrServerManager();
+        explicit GrRenderController(const std::shared_ptr<GrApplication>& app);
+        ~GrRenderController();
 
-        Response<bool, uint32_t> StartServer();
-        Response<bool, bool> StopServer();
-        Response<bool, uint32_t> ReStart();
+        bool StartServer();
+        bool StopServer();
+        bool ReStart();
         void Exit();
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
-//        std::shared_ptr<RunningAppInfo> running_srv_;
     };
 
 }

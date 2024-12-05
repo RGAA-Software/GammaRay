@@ -7,6 +7,7 @@
 #include "tc_common_new/log.h"
 #include "service_msg_server.h"
 #include "render_manager.h"
+#include "tc_common_new/win32/process_helper.h"
 
 static HMODULE sasLibrary = nullptr;
 typedef void(__stdcall* SendSAS_proto)(BOOL AsUser);
@@ -18,12 +19,13 @@ namespace tc
     GrService::GrService(const std::shared_ptr<ServiceContext>& ctx) {
         context_ = ctx;
         render_manager_ = std::make_shared<RenderManager>(ctx);
-        msg_server_ = std::make_shared<ServiceMsgServer>(ctx, render_manager_);
-        msg_server_->Start();
     }
 
     void GrService::Run(DWORD dwArgc, LPWSTR* lpszArgv, SERVICE_STATUS_HANDLE handle) {
+        msg_server_ = std::make_shared<ServiceMsgServer>(context_, render_manager_);
         msg_server_->Init(shared_from_this());
+        msg_server_->Start();
+
         DWORD Status = E_FAIL;
         status_handle_ = handle;
 
@@ -121,7 +123,17 @@ namespace tc
     }
 
     void GrService::StopAll() {
-
+        render_manager_->Exit();
+        // GammaRay.exe
+        auto processes = tc::ProcessHelper::GetProcessList(false);
+        for (auto& process : processes) {
+            if (process->exe_full_path_.find(kGammaRayName) != std::string::npos) {
+                tc::ProcessHelper::CloseProcess(process->pid_);
+            }
+            if (process->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
+                tc::ProcessHelper::CloseProcess(process->pid_);
+            }
+        }
     }
 
     void GrService::TaskThread() {

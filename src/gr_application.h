@@ -17,7 +17,7 @@ namespace tc
     class HttpServer;
     class WSServer;
     class UdpBroadcaster;
-    class GrServerManager;
+    class GrRenderController;
     class GrSettings;
     class GrSystemMonitor;
     class FileTransferChannel;

@@ -17,6 +17,9 @@
 namespace tc
 {
 
+    static const std::string kGammaRayName = "GammaRay.exe";
+    static const std::string kGammaRayServerName = "GammaRayServer.exe";
+
     class ServiceContext;
     class MessageListener;
     class ProcessInfo;
@@ -34,7 +37,7 @@ namespace tc
         [[nodiscard]] bool IsRenderAlive() const;
 
     private:
-        void CheckRenderAlive();
+        bool CheckRenderAlive();
         bool StartServerInternal(const std::string& work_dir, const std::string& app_path, const std::string& args);
 
     private:

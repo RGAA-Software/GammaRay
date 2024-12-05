@@ -13,7 +13,7 @@
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/process_helper.h"
-#include "gr_server_manager.h"
+#include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
 #include "network/ws_server.h"
 #include "gr_settings.h"
@@ -114,7 +114,7 @@ namespace tc
                     ctx_->SendAppMessage(MsgServiceAlive {
                         .alive_ = (status == ServiceStatus::kRunning),
                     });
-                    LOGI("Status: {}", (int)status);
+                    LOGI("Service Status: {}", (int)status);
                 }
 
                 std::this_thread::sleep_for(std::chrono::seconds(3));
