@@ -448,7 +448,7 @@ namespace tc
             });
         });
 
-        msg_listener_->Listen<MsgRestartServer>([=, this](const MsgRestartServer& msg) {
+        msg_listener_->Listen<AppMsgRestartServer>([=, this](const AppMsgRestartServer& msg) {
             context_->PostTask([=, this]() {
                 RestartServer();
             });

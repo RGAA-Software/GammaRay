@@ -18,12 +18,8 @@ namespace tc
 {
 
     class ServiceContext;
-
-    class RunningAppInfo {
-    public:
-        uint32_t pid_{0};
-        std::shared_ptr<QProcess> process_ = nullptr;
-    };
+    class MessageListener;
+    class ProcessInfo;
 
     class RenderManager {
     public:
@@ -31,14 +27,24 @@ namespace tc
         explicit RenderManager(const std::shared_ptr<ServiceContext>& ctx);
         ~RenderManager();
 
-        Response<bool, uint32_t> StartServer();
-        Response<bool, bool> StopServer();
-        Response<bool, uint32_t> ReStart();
+        bool StartServer(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        bool StopServer();
+        bool ReStart();
         void Exit();
+        [[nodiscard]] bool IsRenderAlive() const;
+
+    private:
+        void CheckRenderAlive();
+        bool StartServerInternal(const std::string& work_dir, const std::string& app_path, const std::string& args);
 
     private:
         std::shared_ptr<ServiceContext> context_ = nullptr;
-        std::shared_ptr<RunningAppInfo> running_srv_;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        bool is_render_alive_ = false;
+        std::shared_ptr<ProcessInfo> render_process_ = nullptr;
+        std::string app_path_;
+        std::string app_args_;
+        std::string work_dir_;
     };
 
 }

@@ -127,7 +127,7 @@ namespace tc
             });
 
         }  else if (proto_msg->type() == tc::kRestartServer) {
-            context_->SendAppMessage(MsgRestartServer {});
+            context_->SendAppMessage(AppMsgRestartServer {});
         }
     }
 

@@ -18,6 +18,7 @@
 #include "transfer/file_transfer.h"
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/log.h"
+#include "network/gr_service_client.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -44,7 +45,7 @@ namespace tc
         QtDirectory::CreateDir(std::format("{}/clients/android", exeDir));
 
         context_ = std::make_shared<GrContext>();
-        context_->Init();
+        context_->Init(shared_from_this());
 
         // register firewall
         auto app_path = qApp->applicationDirPath() + "/" + kGammaRayName.c_str();
@@ -88,11 +89,21 @@ namespace tc
         file_transfer_ = FileTransferChannel::Make(context_);
         file_transfer_->Start();
 
+        service_client_ = std::make_shared<GrServiceClient>(shared_from_this());
+        service_client_->Start();
+
     }
 
     void GrApplication::Exit() {
         context_->Exit();
     }
 
+    bool GrApplication::PostMessage2Service(const std::string& msg) {
+        if (!service_client_ || !service_client_->IsAlive()) {
+            return false;
+        }
+        service_client_->PostNetMessage(msg);
+        return true;
+    }
 
 }

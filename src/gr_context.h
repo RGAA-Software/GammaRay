@@ -26,12 +26,13 @@ namespace tc
     class GrServerManager;
     class GrRunGameManager;
     class ServiceManager;
+    class GrApplication;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
         GrContext();
 
-        void Init();
+        void Init(const std::shared_ptr<GrApplication>& app);
         void Exit();
         std::shared_ptr<SteamManager> GetSteamManager();
         std::shared_ptr<TaskRuntime> GetTaskRuntime();
@@ -67,6 +68,7 @@ namespace tc
     private:
         GrSettings* settings_ = nullptr;
         SharedPreference* sp_ = nullptr;
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;
         std::string unique_id_{};

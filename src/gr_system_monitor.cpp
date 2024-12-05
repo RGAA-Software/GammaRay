@@ -62,7 +62,7 @@ namespace tc
                 }
 
                 // check server alive or not
-                {
+                if (false) {
                     auto resp = this->CheckServerAlive();
                     if (resp.ok_) {
                         if (resp.value_) {
@@ -222,6 +222,10 @@ namespace tc
                 tc::GrSystemMonitor::InstallViGem(false);
             });
         });
+
+        msg_listener_->Listen<MsgConnectedToService>([=, this](const MsgConnectedToService& msg) {
+            StartServer();
+        });
     }
 
     Response<bool, bool> GrSystemMonitor::CheckServerAlive() {
@@ -232,8 +236,9 @@ namespace tc
         }
         resp.ok_ = true;
 
+        LOGI("-------------------------------------------------------------------");
         for (auto& p : processes) {
-            //LOGI("p.exe_name: {}", p.exe_name_);
+            LOGI("p.exe_name: {}", p->exe_full_path_);
             if (p->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
                 resp.value_ = true;
                 //LOGI("Yes, find it.");

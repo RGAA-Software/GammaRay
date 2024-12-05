@@ -14,6 +14,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ws_server.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/udp_broadcaster.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ip_util.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/network/gr_service_client.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qrcodegen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qrcode/qrcodegen.hpp
