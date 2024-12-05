@@ -18,6 +18,8 @@ namespace tc
 {
 
     class GrContext;
+    class GrServiceClient;
+    class GrApplication;
 
     class RunningAppInfo {
     public:
@@ -28,7 +30,7 @@ namespace tc
     class GrServerManager {
     public:
 
-        explicit GrServerManager(const std::shared_ptr<GrContext>& ctx);
+        explicit GrServerManager(const std::shared_ptr<GrApplication>& app);
         ~GrServerManager();
 
         Response<bool, uint32_t> StartServer();
@@ -37,9 +39,9 @@ namespace tc
         void Exit();
 
     private:
-
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<RunningAppInfo> running_srv_;
+//        std::shared_ptr<RunningAppInfo> running_srv_;
     };
 
 }

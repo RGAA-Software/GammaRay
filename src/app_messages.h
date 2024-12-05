@@ -49,13 +49,23 @@ namespace tc
     public:
     };
 
+    class MsgGrTimer1S {
+    public:
+    };
+
     // running game ids
     class MsgRunningGameIds {
     public:
         std::vector<uint64_t> game_ids_;
     };
 
-    class MsgRestartServer {
+    class AppMsgRestartServer {
+    public:
+
+    };
+
+    // connected to service
+    class MsgConnectedToService {
     public:
 
     };

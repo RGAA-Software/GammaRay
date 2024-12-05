@@ -17,9 +17,9 @@ namespace tc
 
     GrService::GrService(const std::shared_ptr<ServiceContext>& ctx) {
         context_ = ctx;
-        msg_server_ = std::make_shared<ServiceMsgServer>(ctx);
-        msg_server_->Start();
         render_manager_ = std::make_shared<RenderManager>(ctx);
+        msg_server_ = std::make_shared<ServiceMsgServer>(ctx, render_manager_);
+        msg_server_->Start();
     }
 
     void GrService::Run(DWORD dwArgc, LPWSTR* lpszArgv, SERVICE_STATUS_HANDLE handle) {

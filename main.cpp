@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     DxgiMonitorDetector::Instance()->DetectAdapters();
     GrWorkspace workspace;
-    workspace.setFixedSize(1820, 960);
+    workspace.setFixedSize(900, 300);
     workspace.show();
 
     return app.exec();

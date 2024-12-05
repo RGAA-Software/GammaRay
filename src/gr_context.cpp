@@ -32,13 +32,14 @@ namespace tc
 
     }
 
-    void GrContext::Init() {
+    void GrContext::Init(const std::shared_ptr<GrApplication>& app) {
+        app_ = app;
         settings_ = GrSettings::Instance();
         sp_ = SharedPreference::Instance();
         // unique id
         LoadUniqueId();
 
-        srv_manager_ = std::make_shared<GrServerManager>(shared_from_this());
+        srv_manager_ = std::make_shared<GrServerManager>(app);
 
         task_runtime_ = std::make_shared<TaskRuntime>();
         steam_mgr_ = SteamManager::Make(task_runtime_);
@@ -182,6 +183,10 @@ namespace tc
         timer_ = std::make_shared<asio2::timer>();
         timer_->start_timer(1, 100, [=, this]() {
             this->SendAppMessage(MsgGrTimer100{});
+        });
+
+        timer_->start_timer(2, 1000, [=, this]() {
+            this->SendAppMessage(MsgGrTimer1S{});
         });
     }
 
