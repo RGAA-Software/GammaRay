@@ -9,7 +9,7 @@
 #include "tc_steam_manager_new/steam_entities.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_application.h"
-#include "src/gr_server_manager.h"
+#include "src/gr_render_controller.h"
 #include "tc_common_new/net_resp.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "src/gr_run_game_manager.h"

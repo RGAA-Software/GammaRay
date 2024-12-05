@@ -23,7 +23,7 @@ namespace tc
     class GrSettings;
     class DBGameManager;
     class GrResources;
-    class GrServerManager;
+    class GrRenderController;
     class GrRunGameManager;
     class ServiceManager;
     class GrApplication;
@@ -56,7 +56,7 @@ namespace tc
             }
         }
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
-        std::shared_ptr<GrServerManager> GetServerManager();
+        std::shared_ptr<GrRenderController> GetServerManager();
         std::shared_ptr<GrRunGameManager> GetRunGameManager();
         static std::string GetCurrentExeFolder();
 
@@ -76,7 +76,7 @@ namespace tc
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::shared_ptr<GrResources> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
-        std::shared_ptr<GrServerManager> srv_manager_ = nullptr;
+        std::shared_ptr<GrRenderController> srv_manager_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
         std::shared_ptr<GrRunGameManager> run_game_manager_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ =  nullptr;

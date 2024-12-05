@@ -14,8 +14,6 @@
 
 #include <QCoreApplication>
 
-static const std::string kGammaRayName = "GammaRay.exe";
-static const std::string kGammaRayServerName = "GammaRayServer.exe";
 static const std::string kKeyWorkDir = "render_work_dir";
 static const std::string kKeyAppPath = "render_app_path";
 static const std::string kKeyAppArgs = "render_app_args";
@@ -28,13 +26,21 @@ namespace tc
         msg_listener_ = context_->CreateMessageListener();
         msg_listener_->Listen<MsgTimer3S>([=, this](const MsgTimer3S& msg) {
             context_->PostBgTask([=, this]() {
-                this->CheckRenderAlive();
+                if (!this->CheckRenderAlive() && !this->work_dir_.empty() && !this->app_path_.empty() && !this->app_args_.empty()) {
+                    LOGI("GammaRayServer.exe not exist! Will start!");
+                    StartServerInternal(this->work_dir_, this->app_path_, this->app_args_);
+                }
             });
         });
+
+        auto sp = context_->GetSp();
+        this->work_dir_ = sp->Get(kKeyWorkDir);
+        this->app_path_ = sp->Get(kKeyAppPath);
+        this->app_args_ = sp->Get(kKeyAppArgs);
     }
 
     RenderManager::~RenderManager() {
-        Exit();
+
     }
 
     bool RenderManager::StartServer(const std::string& _work_dir, const std::string& _app_path, const std::vector<std::string>& _args) {
@@ -49,9 +55,14 @@ namespace tc
         auto exist_work_dir = sp->Get(kKeyWorkDir);
         auto exist_app_path = sp->Get(kKeyAppPath);
         auto exist_app_args = sp->Get(kKeyAppArgs);
-        if (render_process_ != nullptr) {
+        CheckRenderAlive();
+        if (render_process_ != nullptr && is_render_alive_) {
             if (exist_work_dir != _work_dir || exist_app_path != _app_path || exist_app_args != ss.str()) {
                 StopServer();
+            }
+            else {
+                LOGI("Render is already alive, pid: {}", render_process_->pid_);
+                return true;
             }
         }
 
@@ -69,24 +80,36 @@ namespace tc
             ProcessHelper::CloseProcess(render_process_->pid_);
             render_process_ = nullptr;
         }
+
+        // kill all
+        auto processes = ProcessHelper::GetProcessList(false);
+        for (auto& p : processes) {
+            if (p->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
+                ProcessHelper::CloseProcess(p->pid_);
+            }
+        }
+
         return true;
     }
 
     bool RenderManager::ReStart() {
         this->StopServer();
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        return this->StartServer("", "", {});
+        if (this->work_dir_.empty() || this->app_path_.empty() || this->app_args_.empty()) {
+            return false;
+        }
+        return StartServerInternal(work_dir_, app_path_, app_args_);
     }
 
     void RenderManager::Exit() {
         StopServer();
     }
 
-    void RenderManager::CheckRenderAlive() {
+    bool RenderManager::CheckRenderAlive() {
         auto processes = ProcessHelper::GetProcessList(false);
         if (processes.empty()) {
             LOGW("Can't get process list.");
-            return;
+            return false;
         }
 
         for (auto& p : processes) {
@@ -101,14 +124,13 @@ namespace tc
                 sp->Put(kKeyAppPath, this->app_path_);
                 sp->Put(kKeyAppArgs, this->app_args_);
 
-                return;
+                return true;
             }
         }
         is_render_alive_ = false;
         render_process_ = nullptr;
 
-        // restart it
-        StartServerInternal(this->work_dir_, this->app_path_, this->app_args_);
+        return false;
     }
 
     bool RenderManager::StartServerInternal(const std::string& _work_dir, const std::string& _app_path, const std::string& args) {

@@ -13,7 +13,7 @@
 #include "gr_settings.h"
 #include "db/db_game_manager.h"
 #include "gr_resources.h"
-#include "gr_server_manager.h"
+#include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
 #include "app_messages.h"
 #include "tc_controller/hardware.h"
@@ -39,7 +39,7 @@ namespace tc
         // unique id
         LoadUniqueId();
 
-        srv_manager_ = std::make_shared<GrServerManager>(app);
+        srv_manager_ = std::make_shared<GrRenderController>(app);
 
         task_runtime_ = std::make_shared<TaskRuntime>();
         steam_mgr_ = SteamManager::Make(task_runtime_);
@@ -175,7 +175,7 @@ namespace tc
         return msg_notifier_;
     }
 
-    std::shared_ptr<GrServerManager> GrContext::GetServerManager() {
+    std::shared_ptr<GrRenderController> GrContext::GetServerManager() {
         return srv_manager_;
     }
 

@@ -29,16 +29,11 @@ namespace tc
     void GrServiceClient::Start() {
         client_ = std::make_shared<asio2::ws_client>();
         client_->set_auto_reconnect(true);
-        client_->set_timeout(std::chrono::milliseconds(2000));
+        client_->set_timeout(std::chrono::milliseconds(3000));
 
         client_->bind_init([&]() {
             client_->ws_stream().binary(true);
             client_->set_no_delay(true);
-            client_->ws_stream().set_option(
-                websocket::stream_base::decorator([](websocket::request_type &req) {
-                    req.set(http::field::authorization, "websocket-client-authorization");}
-                )
-            );
 
         }).bind_connect([&]() {
             if (asio2::get_last_error()) {

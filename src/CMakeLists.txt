@@ -6,7 +6,7 @@ set(MAIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_statistics.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_system_monitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_resources.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gr_server_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_render_controller.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_run_game_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/network/http_handler.cpp

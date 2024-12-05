@@ -43,7 +43,7 @@ namespace tc
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto query = sess_ptr->get_request().get_query();
                 auto params = UrlHelper::ParseQueryString(std::string(query.data(), query.size()));
-                std::string from = "";
+                std::string from;
                 for (const auto& [k, v] : params) {
                     LOGI("query param, k: {}, v: {}", k, v);
                     if (k == "from") {
@@ -87,13 +87,13 @@ namespace tc
                 for (int i = 0; i < sub.args_size(); i++) {
                     args.push_back(sub.args(i));
                 }
-                ProcessStartServer(sub.work_dir(), sub.app_path(), args);
+                ProcessStartRender(sub.work_dir(), sub.app_path(), args);
             }
             else if (type == ServiceMessageType::kStopServer) {
-
+                ProcessStopRender();
             }
             else if (type == ServiceMessageType::kRestartServer) {
-
+                ProcessRestartRender();
             }
             else if (type == ServiceMessageType::kHeartBeat) {
                 auto sub = msg.heart_beat();
@@ -105,18 +105,18 @@ namespace tc
         }
     }
 
-    void ServiceMsgServer::ProcessStartServer(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args) {
+    void ServiceMsgServer::ProcessStartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args) {
         if (!render_manager_->StartServer(work_dir, app_path, args)) {
             LOGE("Start server failed!");
         }
     }
 
-    void ServiceMsgServer::ProcessStopServer() {
-
+    void ServiceMsgServer::ProcessStopRender() {
+        render_manager_->StopServer();
     }
 
-    void ServiceMsgServer::ProcessRestartServer() {
-
+    void ServiceMsgServer::ProcessRestartRender() {
+        render_manager_->ReStart();
     }
 
     void ServiceMsgServer::ProcessHeartBeat(int64_t index) {
