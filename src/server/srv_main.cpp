@@ -6,6 +6,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/base64.h"
+#include "tc_common_new/folder_util.h"
 #include "gflags/gflags.h"
 
 using namespace tc;
@@ -43,27 +44,6 @@ DEFINE_string(app_game_path, "", "");
 DEFINE_string(app_game_args, "", "");
 
 void UpdateSettings(Settings* settings) {
-    LOGI("--------------In args begin--------------");
-    LOGI("steam_app_id: {}", FLAGS_steam_app_id);
-    LOGI("logfile: {}", FLAGS_logfile);
-    LOGI("encoder_select_type: {}", FLAGS_encoder_select_type);
-    LOGI("encoder_name: {}", FLAGS_encoder_name);
-    LOGI("encoder_format: {}", FLAGS_encoder_format);
-    LOGI("encoder_bitrate: {}", FLAGS_encoder_bitrate);
-    LOGI("encoder_resolution_type: {}", FLAGS_encoder_resolution_type);
-    LOGI("encoder_width: {}", FLAGS_encoder_width);
-    LOGI("encoder_height: {}", FLAGS_encoder_height);
-    LOGI("capture_audio: {}", FLAGS_capture_audio);
-    LOGI("capture_audio_type: {}", FLAGS_capture_audio_type);
-    LOGI("capture_video: {}", FLAGS_capture_video);
-    LOGI("capture_video_type: {}", FLAGS_capture_video_type);
-    LOGI("network_type: {}", FLAGS_network_type);
-    LOGI("network_listen_port: {}", FLAGS_network_listen_port);
-    LOGI("capture monitor: {}", Base64::Base64Decode(FLAGS_capture_monitor));
-    LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));
-    LOGI("app_game_path: {}", FLAGS_app_game_path);
-    LOGI("app_game_args: {}", FLAGS_app_game_args);
-    LOGI("--------------In args end----------------");
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
         settings->app_.steam_app_.steam_url_ = std::format("steam://rungameid/{}", FLAGS_steam_app_id);
@@ -134,6 +114,30 @@ void UpdateSettings(Settings* settings) {
     }
 }
 
+void PrintInputArgs() {
+    LOGI("--------------In args begin--------------");
+    LOGI("steam_app_id: {}", FLAGS_steam_app_id);
+    LOGI("logfile: {}", FLAGS_logfile);
+    LOGI("encoder_select_type: {}", FLAGS_encoder_select_type);
+    LOGI("encoder_name: {}", FLAGS_encoder_name);
+    LOGI("encoder_format: {}", FLAGS_encoder_format);
+    LOGI("encoder_bitrate: {}", FLAGS_encoder_bitrate);
+    LOGI("encoder_resolution_type: {}", FLAGS_encoder_resolution_type);
+    LOGI("encoder_width: {}", FLAGS_encoder_width);
+    LOGI("encoder_height: {}", FLAGS_encoder_height);
+    LOGI("capture_audio: {}", FLAGS_capture_audio);
+    LOGI("capture_audio_type: {}", FLAGS_capture_audio_type);
+    LOGI("capture_video: {}", FLAGS_capture_video);
+    LOGI("capture_video_type: {}", FLAGS_capture_video_type);
+    LOGI("network_type: {}", FLAGS_network_type);
+    LOGI("network_listen_port: {}", FLAGS_network_listen_port);
+    LOGI("capture monitor: {}", Base64::Base64Decode(FLAGS_capture_monitor));
+    LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));
+    LOGI("app_game_path: {}", FLAGS_app_game_path);
+    LOGI("app_game_args: {}", FLAGS_app_game_args);
+    LOGI("--------------In args end----------------");
+}
+
 int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     // dump
@@ -141,16 +145,21 @@ int main(int argc, char** argv) {
 
     //MessageBoxA(0,0,0,0);
 
-    // Log
-    std::cout << "logfile: " << FLAGS_logfile << std::endl;
-    Logger::InitLog("GammaRayServer.log", FLAGS_logfile);
-
     // 1. load from config.toml
     auto settings = Settings::Instance();
     settings->LoadSettings("settings.toml");
     if (!FLAGS_isolate) {
         UpdateSettings(settings);
     }
+
+    // Log
+    std::cout << "logfile: " << FLAGS_logfile << std::endl;
+    auto log_file_path = std::format("{}/gr_logs/gammaray_render_{}.log",
+         QString::fromStdWString(FolderUtil::GetCurrentFolderPath()).toStdString(), settings->transmission_.listening_port_);
+    Logger::InitLog(log_file_path, FLAGS_logfile);
+
+    PrintInputArgs();
+
     auto settings_str = settings->Dump();
     LOGI("\n" + settings_str);
 

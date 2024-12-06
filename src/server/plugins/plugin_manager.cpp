@@ -31,14 +31,16 @@ namespace tc
     }
 
     void PluginManager::LoadAllPlugins() {
-        QDir plugin_dir(QCoreApplication::applicationDirPath() + R"(/gr_plugins)");
+        auto base_path = QCoreApplication::applicationDirPath();
+        LOGI("plugin base path: {}", base_path.toStdString());
+        QDir plugin_dir(base_path + R"(/gr_plugins)");
         QStringList filters;
         filters << QString("*%1").arg(".dll");
         plugin_dir.setNameFilters(filters);
 
         auto entryInfoList = plugin_dir.entryInfoList();
         for (const auto &info: entryInfoList) {
-            auto lib = new QLibrary(QCoreApplication::applicationDirPath() + R"(/gr_plugins/)" + info.fileName());
+            auto lib = new QLibrary(base_path + R"(/gr_plugins/)" + info.fileName());
             if (lib->isLoaded()) {
                 LOGI("{} is loaded.", info.fileName().toStdString().c_str());
                 continue;
@@ -63,6 +65,7 @@ namespace tc
                         auto param = GrPluginParam {
                             .cluster_ = {
                                 {"name", filename.toStdString()},
+                                {"base_path", base_path.toStdString()},
                             },
                         };
 

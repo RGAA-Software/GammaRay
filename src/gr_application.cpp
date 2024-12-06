@@ -35,7 +35,8 @@ namespace tc
     GrApplication::~GrApplication() = default;
 
     void GrApplication::Init() {
-        SharedPreference::Instance()->Init("", "game.dat");
+        auto sp_dir = qApp->applicationDirPath() + "/gr_data";
+        SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
         settings_ = GrSettings::Instance();
         settings_->Load();
         settings_->Dump();
