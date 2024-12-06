@@ -76,6 +76,9 @@ namespace tc
                                                           msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
         statistics_->fps_video_encode_->Tick();
 
+        // statistics
+        Statistics::Instance()->AppendMediaBytes(net_msg.size());
+
         // plugins: Frame encoded
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
             plugin->OnProtoMessage(net_msg);
