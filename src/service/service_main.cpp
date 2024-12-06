@@ -120,7 +120,7 @@ void WINAPI ServiceMain(DWORD argc, LPWSTR* argv) {
 }
 
 int main(int argc, char** argv) {
-    auto path = std::string(GetModulePath(nullptr)) + "/GammaRayService.log";
+    auto path = std::string(GetModulePath(nullptr)) + "/gr_logs/gammaray_service.log";
     Logger::InitLog(path, true);
     LOGI("----------Service Start----------");
     g_context_ = std::make_shared<ServiceContext>();

@@ -61,9 +61,14 @@ namespace tc
             auto n = param.cluster_.at("name");
             plugin_file_name_ = std::any_cast<std::string>(n);
         }
+
+        std::string base_path;
+        if (param.cluster_.contains("base_path")) {
+            base_path = std::any_cast<std::string>(param.cluster_.at("base_path"));
+        }
         plugin_context_ = std::make_shared<GrPluginContext>(GetPluginName());
 
-        Logger::InitLog(plugin_file_name_+".log", true);
+        Logger::InitLog(base_path + "/gr_logs/" + plugin_file_name_+".log", true);
         LOGI("{} OnCreate", GetPluginName());
 
         // print params

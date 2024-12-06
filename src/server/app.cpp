@@ -39,6 +39,7 @@
 #include "app/win/dx_address_loader.h"
 #include "tc_common_new/win32/win_helper.h"
 #include "tc_common_new/fft_32.h"
+#include "tc_common_new/shared_preference.h"
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "statistics.h"
@@ -70,7 +71,12 @@ namespace tc
 
     void Application::Init(int argc, char** argv) {
         qapp_ = std::make_shared<QApplication>(argc, argv);
-        // parse args
+
+        // sp
+        sp_ = SharedPreference::Instance();
+        auto path = qapp_->applicationDirPath() + "/gr_data";
+        std::string sp_name = std::format("gammaray_render_{}.dat", settings_->transmission_.listening_port_);
+        sp_->Init(path.toStdString(), sp_name);
     }
 
     int Application::Run() {

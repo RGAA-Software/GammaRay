@@ -36,6 +36,7 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/sqlite_orm/include)
 include_directories(${VCPKG_ROOT}/installed/x64-windows-static/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/include/third_party/libyuv/include)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/leveldb/include)
 
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64)

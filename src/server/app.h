@@ -52,6 +52,7 @@ namespace tc
     class PluginManager;
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
+    class SharedPreference;
 
     class Application : public std::enable_shared_from_this<Application>, public QObject {
     public:
@@ -84,6 +85,7 @@ namespace tc
         bool GenerateD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11Device> GetD3DDevice();
         ComPtr<ID3D11DeviceContext> GetD3DContext();
+        SharedPreference* GetSp() { return sp_; }
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -135,6 +137,7 @@ namespace tc
         uint64_t last_post_video_time_ = 0;
         uint64_t last_post_audio_time_ = 0;
         Statistics* statistics_ = nullptr;
+        SharedPreference* sp_ = nullptr;
 
         std::shared_ptr<Data> audio_cache_ = nullptr;
         int audio_callback_count_ = 0;
