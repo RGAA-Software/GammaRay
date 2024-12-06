@@ -62,9 +62,9 @@ find_package(gflags CONFIG REQUIRED)
 find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")
 
 ### CPY
-file(COPY ${CMAKE_SOURCE_DIR}/src/server/settings.toml DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/src/server/private.key DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/src/server/certificate.pem DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/render/settings.toml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/render/private.key DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/src/render/certificate.pem DESTINATION ${CMAKE_BINARY_DIR})
 ### CPY
 
 add_subdirectory(deps)
@@ -154,40 +154,40 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_udp.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_udp/plugin_net_udp.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_udp/plugin_net_udp.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_rtc.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_rtc.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_rtc/plugin_net_rtc.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_rtc.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_rtc/plugin_net_rtc.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_rtc.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_ws.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/net_ws/plugin_net_ws.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_ws/plugin_net_ws.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_ws.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_media_recorder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_media_recorder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/media_recorder/plugin_media_recorder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_media_recorder.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/media_recorder/plugin_media_recorder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_media_recorder.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_obj_detector.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_obj_detector.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/obj_detector/plugin_obj_detector.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_obj_detector.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/obj_detector/plugin_obj_detector.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_obj_detector.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_ffmpeg_encoder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_ffmpeg_encoder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/ffmpeg_encoder/plugin_ffmpeg_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_ffmpeg_encoder.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/ffmpeg_encoder/plugin_ffmpeg_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_ffmpeg_encoder.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_amf_encoder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_amf_encoder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/amf_encoder/plugin_amf_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_amf_encoder.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/amf_encoder/plugin_amf_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_amf_encoder.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_frame_debugger.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_debugger.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/frame_debugger/plugin_frame_debugger.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_debugger.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/frame_debugger/plugin_frame_debugger.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_debugger.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_nvenc_encoder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_nvenc_encoder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/nvenc_encoder/plugin_nvenc_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_nvenc_encoder.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/nvenc_encoder/plugin_nvenc_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_nvenc_encoder.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_dda_capture.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_dda_capture.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/dda_capture/plugin_dda_capture.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_dda_capture.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/dda_capture/plugin_dda_capture.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_dda_capture.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_frame_resizer.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_resizer.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/frame_resizer/plugin_frame_resizer.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_resizer.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/frame_resizer/plugin_frame_resizer.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_frame_resizer.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_mock_video_stream.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_mock_video_stream.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/server/plugins/mock_video_stream/plugin_mock_video_stream.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_mock_video_stream.dll.toml"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/mock_video_stream/plugin_mock_video_stream.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_mock_video_stream.dll.toml"
 
 )
 
