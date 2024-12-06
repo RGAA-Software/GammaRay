@@ -141,7 +141,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayServer GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin)
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
 endif ()

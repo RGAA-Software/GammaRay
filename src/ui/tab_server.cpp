@@ -343,7 +343,7 @@ namespace tc
                     layout->addLayout(item_layout);
                 }
 
-                // GammaRayServer port
+                // GammaRayRender port
                 {
                     auto item_layout = new NoMarginHLayout();
                     item_layout->addSpacing(margin_left);

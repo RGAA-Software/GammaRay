@@ -1,4 +1,4 @@
-project(GammaRayServer VERSION 0.1 LANGUAGES CXX)
+project(GammaRayRender VERSION 0.1 LANGUAGES CXX)
 
 add_subdirectory(settings)
 add_subdirectory(plugins)
