@@ -52,4 +52,4 @@ set(MAIN_SRCS
         PARENT_SCOPE
 )
 
-add_subdirectory(server)
+add_subdirectory(render)
