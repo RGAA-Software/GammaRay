@@ -42,7 +42,7 @@ namespace tc
     static const std::string kNetworkTypeWebsocket = "Websocket";
 
     static const std::string kGammaRayName = "GammaRay.exe";
-    static const std::string kGammaRayServerName = "GammaRayServer.exe";
+    static const std::string kGammaRayRenderName = "GammaRayRender.exe";
 
     class SharedPreference;
 

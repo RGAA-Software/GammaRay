@@ -130,7 +130,7 @@ namespace tc
             if (process->exe_full_path_.find(kGammaRayName) != std::string::npos) {
                 tc::ProcessHelper::CloseProcess(process->pid_);
             }
-            if (process->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
+            if (process->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
                 tc::ProcessHelper::CloseProcess(process->pid_);
             }
         }

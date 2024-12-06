@@ -67,7 +67,7 @@ namespace tc
                 http_handler_->HandleRunningGames(req, res);
             });
 
-            // stop the GammaRayServer.exe
+            // stop the GammaRayRender.exe
             server_->Get(kPathStopServer, [=, this](const auto& req, auto& res) {
                 http_handler_->HandleStopServer(req, res);
             });

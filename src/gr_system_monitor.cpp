@@ -239,7 +239,7 @@ namespace tc
         LOGI("-------------------------------------------------------------------");
         for (auto& p : processes) {
             LOGI("p.exe_name: {}", p->exe_full_path_);
-            if (p->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
+            if (p->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
                 resp.value_ = true;
                 //LOGI("Yes, find it.");
                 break;

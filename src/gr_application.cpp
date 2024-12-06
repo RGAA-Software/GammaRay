@@ -50,7 +50,7 @@ namespace tc
 
         // register firewall
         auto app_path = qApp->applicationDirPath() + "/" + kGammaRayName.c_str();
-        auto srv_path = qApp->applicationDirPath() + "/" + kGammaRayServerName.c_str();
+        auto srv_path = qApp->applicationDirPath() + "/" + kGammaRayRenderName.c_str();
         auto fh = FirewallHelper::Instance();
         fh->RemoveProgramFromFirewall("GammaRayIn");
         fh->RemoveProgramFromFirewall("GammaRayOut");

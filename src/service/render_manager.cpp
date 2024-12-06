@@ -27,7 +27,7 @@ namespace tc
         msg_listener_->Listen<MsgTimer3S>([=, this](const MsgTimer3S& msg) {
             context_->PostBgTask([=, this]() {
                 if (!this->CheckRenderAlive() && !this->work_dir_.empty() && !this->app_path_.empty() && !this->app_args_.empty()) {
-                    LOGI("GammaRayServer.exe not exist! Will start!");
+                    LOGI("GammaRayRender.exe not exist! Will start!");
                     StartServerInternal(this->work_dir_, this->app_path_, this->app_args_);
                 }
             });
@@ -84,7 +84,7 @@ namespace tc
         // kill all
         auto processes = ProcessHelper::GetProcessList(false);
         for (auto& p : processes) {
-            if (p->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
+            if (p->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
                 ProcessHelper::CloseProcess(p->pid_);
             }
         }
@@ -114,7 +114,7 @@ namespace tc
 
         for (auto& p : processes) {
             //LOGI("p.exe_name: {}", p->exe_full_path_);
-            if (p->exe_full_path_.find(kGammaRayServerName) != std::string::npos) {
+            if (p->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
                 //LOGI("Yes, find it.");
                 is_render_alive_ = true;
                 render_process_ = p;
@@ -135,7 +135,7 @@ namespace tc
 
     bool RenderManager::StartServerInternal(const std::string& _work_dir, const std::string& _app_path, const std::string& args) {
         QString work_dir = QString::fromStdString(_work_dir);
-        QString current_path = QString::fromStdString(std::format("{}/{} {}", _work_dir, kGammaRayServerName, args));
+        QString current_path = QString::fromStdString(std::format("{}/{} {}", _work_dir, kGammaRayRenderName, args));
         return ProcessUtil::StartProcessAsUser(current_path.toStdWString(), work_dir.toStdWString(), false);
     }
 

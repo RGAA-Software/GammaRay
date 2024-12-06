@@ -28,7 +28,7 @@ namespace tc
 
         QString current_path = QCoreApplication::applicationDirPath();
         QString work_dir = current_path;
-        current_path = current_path.append("/").append(kGammaRayServerName);
+        current_path = current_path.append("/").append(kGammaRayRenderName);
 
         auto args = GrSettings::Instance()->GetArgs();
         QStringList arg_list;
