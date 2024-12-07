@@ -127,8 +127,6 @@ namespace tc
         control_thread_->Poll();
         // desktop capture
         auto target_monitor = settings_->capture_.capture_monitor_;
-        //desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
-        //
         monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
         //data_provider_plugin = plugin_manager_->GetMockVideoStreamPlugin();
 
@@ -524,9 +522,6 @@ namespace tc
         auto config = m.mutable_config();
         // screen info
         auto monitor_info = config->mutable_monitor_info();
-        // todo:
-//        auto capturing_idx = desktop_capture_->GetCapturingMonitorIndex();
-//        auto monitors = desktop_capture_->GetCaptureMonitorInfo();
         auto capturing_idx = monitor_capture_plugin_->GetCapturingMonitorIndex();
         auto monitors = monitor_capture_plugin_->GetCaptureMonitorInfo();
         for (int i = 0; i < monitors.size(); i++) {
