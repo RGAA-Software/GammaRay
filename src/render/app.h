@@ -52,6 +52,7 @@ namespace tc
     class PluginManager;
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
+    class GrAudioEncoderPlugin;
     class SharedPreference;
 
     class Application : public std::enable_shared_from_this<Application>, public QObject {
@@ -81,7 +82,7 @@ namespace tc
         void ProcessGamepadState(const MsgGamepadState& state);
         void ResetMonitorResolution(const std::string& name, int w, int h);
         std::shared_ptr<PluginManager> GetPluginManager();
-        tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin() { return working_monitor_capture_plugin_; }
+        tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin() { return monitor_capture_plugin_; }
         bool GenerateD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11Device> GetD3DDevice();
         ComPtr<ID3D11DeviceContext> GetD3DContext();
@@ -123,7 +124,6 @@ namespace tc
         bool exit_app_ = false;
 
         std::shared_ptr<Thread> audio_capture_thread_ = nullptr;
-        std::shared_ptr<IAudioCapture> audio_capture_ = nullptr;
         std::shared_ptr<OpusAudioEncoder> opus_encoder_ = nullptr;
         bool debug_opus_decoder_ = false;
         std::shared_ptr<OpusAudioDecoder> opus_decoder_ = nullptr;
@@ -147,9 +147,10 @@ namespace tc
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
-        tc::GrMonitorCapturePlugin* working_monitor_capture_plugin_ = nullptr;
-        tc::GrDataProviderPlugin* working_data_provider_plugin_ = nullptr;
+        tc::GrMonitorCapturePlugin* monitor_capture_plugin_ = nullptr;
+        tc::GrDataProviderPlugin* data_provider_plugin = nullptr;
         tc::GrDataProviderPlugin* audio_capture_plugin_ = nullptr;
+        tc::GrAudioEncoderPlugin* audio_encoder_plugin_ = nullptr;
 
         ComPtr<ID3D11Device> d3d11_device_ = nullptr;
         ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;

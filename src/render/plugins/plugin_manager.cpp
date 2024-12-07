@@ -9,7 +9,7 @@
 #include <QApplication>
 #include "toml/toml.hpp"
 #include "plugin_interface/gr_plugin_interface.h"
-#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_event_router.h"
 #include "plugin_ids.h"
@@ -167,26 +167,26 @@ namespace tc
         return plugins_.at(id);
     }
 
-    GrEncoderPlugin* PluginManager::GetFFmpegEncoderPlugin() {
+    GrVideoEncoderPlugin* PluginManager::GetFFmpegEncoderPlugin() {
         auto plugin = GetPluginById(kFFmpegEncoderPluginId);
         if (plugin) {
-            return (GrEncoderPlugin*)plugin;
+            return (GrVideoEncoderPlugin*)plugin;
         }
         return nullptr;
     }
 
-    GrEncoderPlugin* PluginManager::GetNvencEncoderPlugin() {
+    GrVideoEncoderPlugin* PluginManager::GetNvencEncoderPlugin() {
         auto plugin = GetPluginById(kNvencEncoderPluginId);
         if (plugin) {
-            return (GrEncoderPlugin*)plugin;
+            return (GrVideoEncoderPlugin*)plugin;
         }
         return nullptr;
     }
 
-    GrEncoderPlugin* PluginManager::GetAmfEncoderPlugin() {
+    GrVideoEncoderPlugin* PluginManager::GetAmfEncoderPlugin() {
         auto plugin = GetPluginById(kAmfEncoderPluginId);
         if (plugin) {
-            return (GrEncoderPlugin*)plugin;
+            return (GrVideoEncoderPlugin*)plugin;
         }
         return nullptr;
     }
@@ -215,6 +215,14 @@ namespace tc
         return nullptr;
     }
 
+    GrAudioEncoderPlugin* PluginManager::GetAudioEncoderPlugin() {
+        auto plugin = GetPluginById(kOpusEncoderPluginId);
+        if (plugin) {
+            return (GrAudioEncoderPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {
@@ -239,10 +247,10 @@ namespace tc
         }
     }
 
-    void PluginManager::VisitEncoderPlugins(const std::function<void(GrEncoderPlugin*)>&& visitor) {
+    void PluginManager::VisitEncoderPlugins(const std::function<void(GrVideoEncoderPlugin*)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (plugin->GetPluginType() == GrPluginType::kEncoder) {
-                visitor((GrEncoderPlugin *) plugin);
+                visitor((GrVideoEncoderPlugin *) plugin);
             }
         }
     }

@@ -11,14 +11,15 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Comp
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
 
 set(PLUGIN_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_interface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_stream_plugin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_encoder_plugin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_context.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_net_plugin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_monitor_capture_plugin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_frame_processor_plugin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_data_provider_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_interface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_stream_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_video_encoder_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_context.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_net_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_monitor_capture_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_frame_processor_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_data_provider_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_audio_encoder_plugin.cpp
 )
 
 add_library(${PROJECT_NAME} ${PLUGIN_SRCS})

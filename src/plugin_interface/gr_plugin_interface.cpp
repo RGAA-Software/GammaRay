@@ -149,6 +149,12 @@ namespace tc
         });
     }
 
+    void GrPluginInterface::CallbackEventDirectly(const std::shared_ptr<GrPluginBaseEvent>& event) {
+        if (event_cbk_) {
+            event_cbk_(event);
+        }
+    }
+
     void GrPluginInterface::On1Second() {
 
     }

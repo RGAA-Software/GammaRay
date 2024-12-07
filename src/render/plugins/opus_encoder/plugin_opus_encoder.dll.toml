@@ -1,0 +1,17 @@
+#
+author = "RGAA"
+
+#
+description = "This is Opus Encoder"
+
+#
+version_name = "1.2.0"
+
+#
+version_code = 120
+
+#
+enabled = true
+
+#
+save_debug_file = false

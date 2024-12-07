@@ -40,15 +40,13 @@ namespace tc
 
     }
 
-    void GrStreamPlugin::OnAudioFormat(int samples, int channels, int bits) {
+    void GrStreamPlugin::OnRawAudioData(const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
 
     }
 
-    void GrStreamPlugin::OnRawAudioData(const std::shared_ptr<Data>& data) {
-
-    }
-
-    void GrStreamPlugin::OnSplitRawAudioData(const std::shared_ptr<Data>& left_ch_data, const std::shared_ptr<Data>& right_ch_data) {
+    void GrStreamPlugin::OnSplitRawAudioData(const std::shared_ptr<Data>& left_ch_data,
+                                             const std::shared_ptr<Data>& right_ch_data,
+                                             int samples, int channels, int bits) {
 
     }
 

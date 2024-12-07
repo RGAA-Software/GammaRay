@@ -26,7 +26,7 @@
 #include "tc_common_new/win32/d3d_debug_helper.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
-#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 #include "video_frame_carrier.h"
 #include "app.h"
 
@@ -53,7 +53,7 @@ namespace tc
         msg_listener_ = context_->CreateMessageListener();
         msg_listener_->Listen<MsgInsertKeyFrame>([=, this](const MsgInsertKeyFrame& msg) {
             // plugins: InsertIdr
-            plugin_manager_->VisitEncoderPlugins([=](GrEncoderPlugin* plugin) {
+            plugin_manager_->VisitEncoderPlugins([=](GrVideoEncoderPlugin* plugin) {
                 plugin->InsertIdr();
             });
         });

@@ -37,17 +37,17 @@ namespace tc
     }
 
     bool NvencEncoderPlugin::OnCreate(const tc::GrPluginParam& param) {
-        GrEncoderPlugin::OnCreate(param);
+        GrVideoEncoderPlugin::OnCreate(param);
         return true;
     }
 
     bool NvencEncoderPlugin::OnDestroy() {
-        GrEncoderPlugin::OnDestroy();
+        GrVideoEncoderPlugin::OnDestroy();
         return true;
     }
 
     void NvencEncoderPlugin::InsertIdr() {
-        GrEncoderPlugin::InsertIdr();
+        GrVideoEncoderPlugin::InsertIdr();
         if (IsWorking()) {
             video_encoder_->InsertIdr();
         }

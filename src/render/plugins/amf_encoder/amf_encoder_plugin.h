@@ -5,7 +5,7 @@
 #ifndef GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
-#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 #include "render/plugins/plugin_ids.h"
 
 namespace tc
@@ -13,7 +13,7 @@ namespace tc
 
     class VideoEncoderVCE;
 
-    class AmfEncoderPlugin : public GrEncoderPlugin {
+    class AmfEncoderPlugin : public GrVideoEncoderPlugin {
     public:
 
         std::string GetPluginId() override;

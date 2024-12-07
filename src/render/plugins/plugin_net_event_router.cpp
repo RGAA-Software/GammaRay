@@ -23,7 +23,7 @@
 #include "tc_message.pb.h"
 #include "tc_encoder_new/encoder_messages.h"
 #include "plugin_manager.h"
-#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc {
@@ -47,7 +47,7 @@ namespace tc {
         context_->SendAppMessage(MsgInsertIDR {});
         context_->SendAppMessage(RefreshScreenMessage {});
         //
-        plugin_manager_->VisitEncoderPlugins([=, this](GrEncoderPlugin* plugin) {
+        plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
             plugin->InsertIdr();
         });
     }
@@ -293,5 +293,11 @@ namespace tc {
         app_->PostGlobalTask([=, this]() {
             app_->SendAppMessage(MsgInsertKeyFrame{});
         });
+    }
+
+    void PluginNetEventRouter::ProcessEncodedAudioFrameEvent(const std::shared_ptr<Data>& data, int samples, int channels, int bits, int frame_size) {
+        auto net_msg = NetMessageMaker::MakeAudioFrameMsg(data, samples, channels, bits, frame_size);
+        statistics_->AppendMediaBytes(net_msg.size());
+        app_->PostNetMessage(net_msg);
     }
 }
