@@ -38,6 +38,7 @@ namespace tc
     void UdpPlugin::OnProtoMessage(const std::string& msg) {
         if (session_ && session_->is_started()) {
             session_->async_send(msg);
+            LOGI("send msg: {}bytes", msg.size());
         }
     }
 
