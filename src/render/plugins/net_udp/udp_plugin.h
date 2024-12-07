@@ -6,6 +6,7 @@
 #define GAMMARAY_UDP_PLUGIN_H
 
 #include "plugin_interface/gr_net_plugin.h"
+#include <asio2/udp/udp_server.hpp>
 
 namespace tc
 {
@@ -17,6 +18,16 @@ namespace tc
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
 
+        bool OnCreate(const tc::GrPluginParam &param) override;
+        bool OnDestroy() override;
+        void OnProtoMessage(const std::string &msg) override;
+
+    private:
+        void StartInternal();
+
+    private:
+        std::shared_ptr<asio2::udp_server> server_ = nullptr;
+        std::shared_ptr<asio2::udp_session> session_ = nullptr;
     };
 
 }
