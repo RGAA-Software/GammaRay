@@ -95,7 +95,7 @@ namespace tc
     private:
         void InitAppTimer();
         void InitMessages();
-        void InitGlobalAudioCapture();
+        void InitAudioCapture();
         void WriteBoostUpInfoForPid(uint32_t pid);
         void StartProcessWithHook();
         void StartProcessWithScreenCapture();
@@ -149,9 +149,13 @@ namespace tc
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         tc::GrMonitorCapturePlugin* working_monitor_capture_plugin_ = nullptr;
         tc::GrDataProviderPlugin* working_data_provider_plugin_ = nullptr;
+        tc::GrDataProviderPlugin* audio_capture_plugin_ = nullptr;
 
         ComPtr<ID3D11Device> d3d11_device_ = nullptr;
         ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
+
+        std::vector<double> fft_left_;
+        std::vector<double> fft_right_;
     };
 
     // Windows

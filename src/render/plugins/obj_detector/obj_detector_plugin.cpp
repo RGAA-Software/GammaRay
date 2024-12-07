@@ -37,6 +37,10 @@ namespace tc
         GrPluginInterface::OnCreate(param);
         plugin_type_ = GrPluginType::kStream;
 
+        if (!IsPluginEnabled()) {
+            return true;
+        }
+
         root_widget_->show();
         {
             auto root_layout = new QVBoxLayout();
@@ -50,6 +54,9 @@ namespace tc
     }
 
     void ObjDetectorPlugin::OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) {
+        if (!IsPluginEnabled()) {
+            return;
+        }
         QMetaObject::invokeMethod(this, [=]() {
             QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
             QPixmap pixmap = QPixmap::fromImage(img);

@@ -35,6 +35,7 @@ namespace tc
 
     private:
         GrPluginEncodedVideoType encoded_video_type_{};
+        bool save_encoded_video_ = false;
         std::shared_ptr<File> encoded_video_file_ = nullptr;
     };
 

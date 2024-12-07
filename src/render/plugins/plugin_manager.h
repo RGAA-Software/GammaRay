@@ -42,6 +42,7 @@ namespace tc
         GrEncoderPlugin* GetAmfEncoderPlugin();
         GrMonitorCapturePlugin* GetDDACapturePlugin();
         GrDataProviderPlugin* GetMockVideoStreamPlugin();
+        GrDataProviderPlugin* GetAudioCapturePlugin();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);

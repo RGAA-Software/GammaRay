@@ -69,6 +69,25 @@ namespace tc
             msg.adapter_uid_ = -1;
             msg_notifier_->SendAppMessage(msg);
         }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginRawAudioFrameEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginRawAudioFrameEvent>(event);
+            auto msg = CaptureAudioFrame{};
+            msg.samples_ = target_event->sample_rate_;
+            msg.channels_ = target_event->channels_;
+            msg.bits_ = target_event->bits_;
+            msg.full_data_ = target_event->full_data_;
+            msg_notifier_->SendAppMessage(msg);
+        }
+        else if (event->plugin_type_ == GrPluginEventType::kPluginSplitRawAudioFrameEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginSplitRawAudioFrameEvent>(event);
+            auto msg = CaptureAudioFrame{};
+            msg.samples_ = target_event->sample_rate_;
+            msg.channels_ = target_event->channels_;
+            msg.bits_ = target_event->bits_;
+            msg.left_ch_data_ = target_event->left_ch_data_;
+            msg.right_ch_data_ = target_event->right_ch_data_;
+            msg_notifier_->SendAppMessage(msg);
+        }
     }
 
 }

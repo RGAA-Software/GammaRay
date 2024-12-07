@@ -36,6 +36,10 @@ namespace tc
 
     bool FrameDebuggerPlugin::OnCreate(const tc::GrPluginParam& param) {
         GrPluginInterface::OnCreate(param);
+        auto key_save_encoded_video = "save_encoded_video";
+        if (HasParam(key_save_encoded_video)) {
+            save_encoded_video_ = GetParam<bool>(key_save_encoded_video);
+        }
         return true;
     }
 
@@ -52,7 +56,9 @@ namespace tc
         if (File::Exists(encoded_video_file_name)) {
             File::Delete(encoded_video_file_name);
         }
-        encoded_video_file_ = File::OpenForAppendB(encoded_video_file_name);
+        if (save_encoded_video_) {
+            encoded_video_file_ = File::OpenForAppendB(encoded_video_file_name);
+        }
     }
 
     void FrameDebuggerPlugin::OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
@@ -61,7 +67,9 @@ namespace tc
                                      int frame_width,
                                      int frame_height,
                                      bool key) {
-        encoded_video_file_->Append(data);
+        if (save_encoded_video_) {
+            encoded_video_file_->Append(data);
+        }
     }
 
 }

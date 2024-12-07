@@ -118,7 +118,7 @@ namespace tc
         InitMessages();
         // global audio capture
         if (settings_->capture_.enable_audio_) {
-            InitGlobalAudioCapture();
+            InitAudioCapture();
         }
 
         // vigem control thread
@@ -222,114 +222,136 @@ namespace tc
         });
     }
 
-    void Application::InitGlobalAudioCapture() {
+    void Application::InitAudioCapture() {
         if (settings_->capture_.capture_audio_type_ != Capture::CaptureAudioType::kAudioGlobal) {
             return;
         }
 
-        audio_capture_ = AudioCaptureFactory::Make(settings_->capture_.capture_audio_device_);
-        audio_capture_->RegisterFormatCallback([=, this](int samples, int channels, int bits) {
-            LOGI("audio format, samples: {}, channels: {}, bits: {}", samples, channels, bits);
-            auto stat = Statistics::Instance();
-            stat->audio_samples_ = samples;
-            stat->audio_channels_ = channels;
-            stat->audio_bits_ = bits;
-            opus_encoder_ = std::make_shared<OpusAudioEncoder>(samples, channels, bits, OPUS_APPLICATION_AUDIO);
-            if (opus_encoder_->valid()) {
-                opus_encoder_->SetComplexity(8);
-            }
+        audio_capture_plugin_ = plugin_manager_->GetAudioCapturePlugin();
+        if (!audio_capture_plugin_) {
+            return;
+        }
 
-            // plugins
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                    plugin->OnAudioFormat(samples, channels, bits);
-                });
-            });
-        });
+        msg_listener_->Listen<CaptureAudioFrame>([=, this] (const CaptureAudioFrame& frame) {
+            if (frame.full_data_) {
+                if (!opus_encoder_) {
+                    int samples = frame.samples_;
+                    int channels = frame.channels_;
+                    int bits = frame.bits_;
+                    LOGI("audio format, samples: {}, channels: {}, bits: {}", samples, channels, bits);
+                    auto stat = Statistics::Instance();
+                    stat->audio_samples_ = samples;
+                    stat->audio_channels_ = channels;
+                    stat->audio_bits_ = bits;
+                    opus_encoder_ = std::make_shared<OpusAudioEncoder>(samples, channels, bits, OPUS_APPLICATION_AUDIO);
+                    if (!opus_encoder_->valid()) {
+                        opus_encoder_ = nullptr;
+                        return;
+                    }
+                    opus_encoder_->SetComplexity(8);
 
-        audio_capture_->RegisterSplitDataCallback([=, this](const tc::DataPtr& left, const tc::DataPtr& right) {
-            std::vector<double> fft_left;
-            std::vector<double> fft_right;
-            FFT32::DoFFT(fft_left, left, 960);
-            FFT32::DoFFT(fft_right, right, 960);
-            int cpy_size = 120;
-            if (fft_left.size() < cpy_size || fft_right.size() < cpy_size) {
-                return;
-            }
-            if (statistics_->left_spectrum_.size() != cpy_size) {
-                statistics_->left_spectrum_.resize(cpy_size);
-                statistics_->right_spectrum_.resize(cpy_size);
-            }
-            memcpy(statistics_->left_spectrum_.data(), fft_left.data(), sizeof(double)*cpy_size);
-            memcpy(statistics_->right_spectrum_.data(), fft_right.data(), sizeof(double)*cpy_size);
-
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                    plugin->OnSplitRawAudioData(left, right);
-                    plugin->OnSplitFFTAudioData(fft_left, fft_right);
-                });
-            });
-        });
-
-        audio_capture_->RegisterDataCallback([=, this](const tc::DataPtr& data) {
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                    plugin->OnRawAudioData(data);
-                });
-            });
-
-            if (debug_opus_decoder_) {
-                static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
-                pcm_file->Append((char*)data->DataAddr(), data->Size());
-            }
-            if (!HasConnectedPeer()) {
-                return;
-            }
-
-            audio_cache_->Append(data->DataAddr(), data->Size());
-            // 2 or 6
-            if (++audio_callback_count_ < 2) {
-                return;
-            }
-
-            {
-                auto current_time = TimeExt::GetCurrentTimestamp();
-                if (last_post_audio_time_ == 0) {
-                    last_post_audio_time_ = current_time;
+                    // plugins
+                    context_->PostStreamPluginTask([=, this]() {
+                        plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                            plugin->OnAudioFormat(samples, channels, bits);
+                        });
+                    });
                 }
-                auto diff = current_time - last_post_audio_time_;
-                last_post_audio_time_ = current_time;
-                statistics_->AppendAudioFrameGap(diff);
-            }
 
-            //int frame_size = data->Size() / 2 / 2;
-            int frame_size = audio_cache_->Offset()/2/2;
-            auto encoded_frames = opus_encoder_->Encode(audio_cache_->CStr(), audio_cache_->Offset(), frame_size);
-            for (const auto& ef : encoded_frames) {
-                auto encoded_data = Data::Make((char*)ef.data(), ef.size());
-                auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
-                                                                  opus_encoder_->Channels(), opus_encoder_->Bits(), frame_size);
-                PostNetMessage(net_msg);
+                if (!opus_encoder_) {
+                    return;
+                }
+
+                auto data = frame.full_data_;
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
+                        plugin->OnRawAudioData(data);
+                    });
+                });
 
                 if (debug_opus_decoder_) {
-                    if (!opus_decoder_) {
-                        opus_decoder_ = std::make_shared<OpusAudioDecoder>(opus_encoder_->SampleRate(), opus_encoder_->Channels());
-                    }
-                    std::vector<unsigned char> buffer(ef.begin(), ef.end());
-                    auto pcm_data = opus_decoder_->Decode(buffer, frame_size, false);
-                    static auto pcm_file = File::OpenForWriteB("1.test.pcm");
-                    pcm_file->Append((char*)pcm_data.data(), pcm_data.size()*2);
+                    static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
+                    pcm_file->Append((char*)data->DataAddr(), data->Size());
                 }
-            }
+                if (!HasConnectedPeer()) {
+                    return;
+                }
 
-            audio_cache_->Reset();
-            audio_callback_count_ = 0;
+                audio_cache_->Append(data->DataAddr(), data->Size());
+                // 2 or 6
+                if (++audio_callback_count_ < 2) {
+                    return;
+                }
+
+                {
+                    auto current_time = TimeExt::GetCurrentTimestamp();
+                    if (last_post_audio_time_ == 0) {
+                        last_post_audio_time_ = current_time;
+                    }
+                    auto diff = current_time - last_post_audio_time_;
+                    last_post_audio_time_ = current_time;
+                    statistics_->AppendAudioFrameGap(diff);
+                }
+
+                //int frame_size = data->Size() / 2 / 2;
+                int frame_size = audio_cache_->Offset()/2/2;
+                auto encoded_frames = opus_encoder_->Encode(audio_cache_->CStr(), audio_cache_->Offset(), frame_size);
+                for (const auto& ef : encoded_frames) {
+                    auto encoded_data = Data::Make((char*)ef.data(), ef.size());
+                    auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
+                                                                      opus_encoder_->Channels(), opus_encoder_->Bits(), frame_size);
+                    statistics_->AppendMediaBytes(net_msg.size());
+                    PostNetMessage(net_msg);
+
+                    if (debug_opus_decoder_) {
+                        if (!opus_decoder_) {
+                            opus_decoder_ = std::make_shared<OpusAudioDecoder>(opus_encoder_->SampleRate(), opus_encoder_->Channels());
+                        }
+                        std::vector<unsigned char> buffer(ef.begin(), ef.end());
+                        auto pcm_data = opus_decoder_->Decode(buffer, frame_size, false);
+                        static auto pcm_file = File::OpenForWriteB("1.test.pcm");
+                        pcm_file->Append((char*)pcm_data.data(), pcm_data.size()*2);
+                    }
+                }
+
+                audio_cache_->Reset();
+                audio_callback_count_ = 0;
+            }
+            else if (frame.left_ch_data_ && frame.right_ch_data_) {
+                PostGlobalTask([=, this]() {
+                    auto bytes = 960;
+                    auto single_bytes = bytes/2;
+                    if (fft_left_.size() != single_bytes) {
+                        fft_left_.resize(single_bytes);
+                    }
+                    if (fft_right_.size() != single_bytes) {
+                        fft_right_.resize(single_bytes);
+                    }
+                    FFT32::DoFFT(fft_left_, frame.left_ch_data_, 960, true);
+                    FFT32::DoFFT(fft_right_, frame.right_ch_data_, 960, true);
+                    int cpy_size = 120;
+                    if (fft_left_.size() < cpy_size || fft_right_.size() < cpy_size) {
+                        return;
+                    }
+                    if (statistics_->left_spectrum_.size() != cpy_size) {
+                        statistics_->left_spectrum_.resize(cpy_size);
+                        statistics_->right_spectrum_.resize(cpy_size);
+                    }
+                    memcpy(statistics_->left_spectrum_.data(), fft_left_.data(), sizeof(double)*cpy_size);
+                    memcpy(statistics_->right_spectrum_.data(), fft_right_.data(), sizeof(double)*cpy_size);
+                });
+
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                        plugin->OnSplitRawAudioData(frame.left_ch_data_, frame.right_ch_data_);
+                        plugin->OnSplitFFTAudioData(fft_left_, fft_right_);
+                    });
+                });
+            }
         });
 
         audio_capture_thread_ = std::make_shared<Thread>([=, this]() {
-            audio_capture_->Prepare();
-            audio_capture_->StartRecording();
-            LOGI("Start audio recording...");
+            audio_capture_plugin_->StartProviding();
         }, "global audio capture", false);
     }
 

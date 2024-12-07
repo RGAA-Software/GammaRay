@@ -158,6 +158,10 @@ namespace tc
         CallbackEvent(event);
     }
 
+    void GrPluginInterface::OnCommand(const std::string& command) {
+
+    }
+
     QWidget* GrPluginInterface::GetRootWidget() {
         return root_widget_;
     }
