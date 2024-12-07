@@ -158,6 +158,17 @@ namespace tc
         setCentralWidget(root_widget);
 
         ChangeTab(TabName::kTabServer);
+
+        // adjust window's position
+        QTimer::singleShot(50, [this]() {
+            auto screen = qApp->primaryScreen();
+            if (!screen) {return;}
+
+            auto screen_size = screen->size();
+            auto x = (screen_size.width() - this->size().width())/2;
+            auto y = (screen_size.height() - this->size().height() - 48)/2;
+            this->move(x, y);
+        });
     }
 
     void GrWorkspace::ChangeTab(const TabName& tn) {
@@ -185,13 +196,6 @@ namespace tc
 
     void GrWorkspace::resizeEvent(QResizeEvent *event) {
         QMainWindow::resizeEvent(event);
-        auto screen = qApp->primaryScreen();
-        if (!screen) {return;}
-
-        auto screen_size = screen->size();
-        auto x = (screen_size.width() - event->size().width())/2;
-        auto y = (screen_size.height() - event->size().height() - 48)/2;
-        this->move(x, y);
     }
 
 }

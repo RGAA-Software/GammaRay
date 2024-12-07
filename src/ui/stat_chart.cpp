@@ -33,7 +33,7 @@ namespace tc
         layout->addWidget(chart_view_);
 
         x_axis_ = new QValueAxis();
-        x_axis_->setTickCount(30);
+        x_axis_->setTickCount(20);
         x_axis_->setRange(0, 180);
         x_axis_->setLabelFormat("%d");
         chart_->addAxis(x_axis_, Qt::AlignBottom);

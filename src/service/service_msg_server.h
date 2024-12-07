@@ -20,7 +20,7 @@ namespace tc
     class SessionWrapper {
     public:
         uint64_t socket_fd_ = 0;
-        std::shared_ptr<asio2::http_session> session_;
+        std::shared_ptr<asio2::ws_session> session_;
         std::string from_ = "";
     };
 
@@ -29,7 +29,7 @@ namespace tc
         explicit ServiceMsgServer(const std::shared_ptr<ServiceContext>& context, const std::shared_ptr<RenderManager>& rm);
         void Init(const std::shared_ptr<GrService>& service);
         void Start();
-        void ParseMessage(std::string_view data);
+        void ParseMessage(const std::shared_ptr<SessionWrapper>& sw, std::string_view data);
         void PostBinaryMessage(const std::string& msg);
 
     private:
@@ -40,7 +40,7 @@ namespace tc
 
     private:
         std::shared_ptr<RenderManager> render_manager_ = nullptr;
-        std::shared_ptr<asio2::http_server> http_server_ = nullptr;
+        std::shared_ptr<asio2::ws_server> ws_server_ = nullptr;
         tc::ConcurrentHashMap<uint64_t, std::shared_ptr<SessionWrapper>> sessions_;
         std::shared_ptr<ServiceContext> context_ = nullptr;
         std::shared_ptr<GrService> service_ = nullptr;
