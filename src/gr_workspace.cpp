@@ -183,4 +183,15 @@ namespace tc
         }
     }
 
+    void GrWorkspace::resizeEvent(QResizeEvent *event) {
+        QMainWindow::resizeEvent(event);
+        auto screen = qApp->primaryScreen();
+        if (!screen) {return;}
+
+        auto screen_size = screen->size();
+        auto x = (screen_size.width() - event->size().width())/2;
+        auto y = (screen_size.height() - event->size().height() - 48)/2;
+        this->move(x, y);
+    }
+
 }

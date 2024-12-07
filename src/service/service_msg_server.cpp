@@ -35,12 +35,13 @@ namespace tc
             auto& s = sess_ptr->socket();
             return (uint64_t)s.native_handle();
         };
+
         http_server_->bind(service_path_, websocket::listener<asio2::http_session>{}
             .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
-                auto socket_fd = fn_get_socket_fd(sess_ptr);
                 this->ParseMessage(data);
             })
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
+                sess_ptr->keep_alive(true);
                 auto query = sess_ptr->get_request().get_query();
                 auto params = UrlHelper::ParseQueryString(std::string(query.data(), query.size()));
                 std::string from;
@@ -120,6 +121,7 @@ namespace tc
     }
 
     void ServiceMsgServer::ProcessHeartBeat(int64_t index) {
+        LOGI("HeartBeat: {}", index);
         auto is_render_alive = render_manager_->IsRenderAlive();
         ServiceMessage msg;
         msg.set_type(ServiceMessageType::kHeartBeatResp);

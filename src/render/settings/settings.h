@@ -131,13 +131,13 @@ namespace tc
         uint32_t GetShmBufferSize() const;
 
     public:
-
         Description desc_;
         Encoder encoder_{};
         Capture capture_{};
         Transmission transmission_{};
         TargetApplication app_;
 
+        bool block_debug_ = false;
     };
 
 }
