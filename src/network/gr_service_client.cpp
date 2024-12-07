@@ -33,6 +33,8 @@ namespace tc
         client_->set_timeout(std::chrono::milliseconds(3000));
 
         client_->bind_init([&]() {
+            client_->ws_stream().binary(true);
+            client_->set_no_delay(true);
 
         }).bind_connect([&]() {
             if (asio2::get_last_error()) {
@@ -40,8 +42,6 @@ namespace tc
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }
-            client_->ws_stream().binary(true);
-            client_->set_no_delay(true);
 
             context_->PostTask([=, this]() {
                 context_->SendAppMessage(MsgConnectedToService{});
@@ -57,7 +57,7 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        if (!client_->async_start("127.0.0.1", 20375, "/service/message?from=panel")) {
+        if (!client_->start("127.0.0.1", 20375, "/service/message?from=panel")) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }
@@ -99,6 +99,7 @@ namespace tc
         msg.set_type(ServiceMessageType::kHeartBeat);
         auto sub = msg.mutable_heart_beat();
         sub->set_index(hb_idx++);
+        sub->set_from("panel");
         PostNetMessage(msg.SerializeAsString());
     }
 
