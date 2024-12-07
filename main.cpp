@@ -3,6 +3,7 @@
 #include <QElapsedTimer>
 #include <QFile>
 #include <QDir>
+#include <QLockFile>
 
 #include "tc_common_new/log.h"
 #include "tc_common_new/folder_util.h"
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) {
 
     DxgiMonitorDetector::Instance()->DetectAdapters();
     GrWorkspace workspace;
-    workspace.setFixedSize(1920, 1000);
+    workspace.setFixedSize(1720, 900);
 //    workspace.setFixedSize(920, 300);
     workspace.show();
 

@@ -110,8 +110,6 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         // app shared info
         app_shared_info_ = AppSharedInfo::Make(context_);
-        // audio cache
-        audio_cache_ = Data::Make(nullptr, 1024*16);
 
         // app timer
         InitAppTimer();

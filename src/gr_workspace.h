@@ -36,6 +36,7 @@ namespace tc
     public:
         GrWorkspace();
         void closeEvent(QCloseEvent *event) override;
+        void resizeEvent(QResizeEvent *event) override;
 
     private:
         void ChangeTab(const TabName& tn);

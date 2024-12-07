@@ -9,6 +9,9 @@
 #include "tc_common_new/folder_util.h"
 #include "gflags/gflags.h"
 
+#include <QLockFile>
+#include <QMessageBox>
+
 using namespace tc;
 
 DEFINE_int32(steam_app_id, 0, "steam app id");
@@ -42,6 +45,8 @@ DEFINE_string(capture_audio_device, "", "capture audio device");
 // application
 DEFINE_string(app_game_path, "", "");
 DEFINE_string(app_game_args, "", "");
+
+DEFINE_bool(debug_block, false, "block the render process");
 
 void UpdateSettings(Settings* settings) {
     if (FLAGS_steam_app_id > 0) {
@@ -112,6 +117,8 @@ void UpdateSettings(Settings* settings) {
     if (!FLAGS_app_game_args.empty()) {
         settings->app_.game_arguments_ = FLAGS_app_game_args;
     }
+
+    settings->block_debug_ = FLAGS_debug_block;
 }
 
 void PrintInputArgs() {
@@ -138,12 +145,24 @@ void PrintInputArgs() {
     LOGI("--------------In args end----------------");
 }
 
+std::shared_ptr<QLockFile> g_instance_lock = nullptr;
+bool CanWeRun(const QString& lock_path) {
+    g_instance_lock = std::make_shared<QLockFile>(lock_path);
+    bool is_locked = g_instance_lock->isLocked();
+//    if (!is_locked) {
+//        return true;
+//    }
+    (void)is_locked;
+    if (!g_instance_lock->tryLock(1000)) {
+        return false;
+    }
+    return true;
+}
+
 int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     // dump
     CaptureDump();
-
-    //MessageBoxA(0,0,0,0);
 
     // 1. load from config.toml
     auto settings = Settings::Instance();
@@ -162,6 +181,20 @@ int main(int argc, char** argv) {
 
     auto settings_str = settings->Dump();
     LOGI("\n" + settings_str);
+
+    if (settings->block_debug_) {
+        MessageBoxA(0, 0, 0, 0);
+    }
+
+    auto lock_name = std::format("gammaray_render_lock_{}", settings->transmission_.listening_port_);
+    QString lock_path = QDir::temp().absoluteFilePath(lock_name.c_str());
+    auto can_we_run = CanWeRun(lock_path);
+    if (!can_we_run) {
+        LOGE("We can't run because of already running instance!");
+        QString reason = "Already locked at: " + lock_path;
+        QMessageBox::critical(nullptr, "Start render failed!", reason);
+        return -1;
+    }
 
     // start application
     tc::AppParams params = {};

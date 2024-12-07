@@ -33,13 +33,13 @@ namespace tc
     RnApp::RnApp(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto root_layout = new NoMarginVLayout();
         auto place_holder = new QLabel();
-        place_holder->setFixedWidth(1300);
+        place_holder->setFixedWidth(1100);
         root_layout->addWidget(place_holder);
 
         {
             auto head_layout = new NoMarginHLayout();
             // app info
-            auto label_size = QSize(250, 35);
+            auto label_size = QSize(220, 35);
             auto btn_height = 25;
 
             // 1st column
@@ -230,7 +230,7 @@ namespace tc
         {
             auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
             stat_chart_ = chart;
-            chart->setFixedSize(1100, 400);
+            chart->setFixedSize(900, 400);
             root_layout->addWidget(chart);
         }
 

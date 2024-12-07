@@ -64,6 +64,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
     folders_path.append(base_path + "platforminputcontexts")
     folders_path.append(base_path + "qml")
     folders_path.append(base_path + "qmltooling")
+    folders_path.append(base_path + "gr_plugins")
 
     target_path = base_path + "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:

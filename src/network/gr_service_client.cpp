@@ -29,11 +29,10 @@ namespace tc
     void GrServiceClient::Start() {
         client_ = std::make_shared<asio2::ws_client>();
         client_->set_auto_reconnect(true);
+        client_->keep_alive(true);
         client_->set_timeout(std::chrono::milliseconds(3000));
 
         client_->bind_init([&]() {
-            client_->ws_stream().binary(true);
-            client_->set_no_delay(true);
 
         }).bind_connect([&]() {
             if (asio2::get_last_error()) {
@@ -41,7 +40,12 @@ namespace tc
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }
-            context_->SendAppMessage(MsgConnectedToService{});
+            client_->ws_stream().binary(true);
+            client_->set_no_delay(true);
+
+            context_->PostTask([=, this]() {
+                context_->SendAppMessage(MsgConnectedToService{});
+            });
 
         }).bind_upgrade([&]() {
             if (asio2::get_last_error()) {
@@ -101,7 +105,7 @@ namespace tc
     void GrServiceClient::PostNetMessage(const std::string& msg) {
         if (client_ && client_->is_started()) {
             if (queued_msg_count_ > kMaxClientQueuedMessage) {
-                //LOGW("too many message in queue, discard the message in GrServiceClient");
+                LOGW("too many message in queue, discard the message in GrServiceClient");
                 return;
             }
             queued_msg_count_++;
