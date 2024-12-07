@@ -116,7 +116,6 @@ namespace tc
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<EncoderThread> encoder_thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        //std::shared_ptr<DesktopCapture> desktop_capture_ = nullptr;
         std::shared_ptr<AppTimer> app_timer_ = nullptr;
 
         std::shared_ptr<File> debug_encode_file_ = nullptr;
@@ -124,10 +123,6 @@ namespace tc
         bool exit_app_ = false;
 
         std::shared_ptr<Thread> audio_capture_thread_ = nullptr;
-        std::shared_ptr<OpusAudioEncoder> opus_encoder_ = nullptr;
-        bool debug_opus_decoder_ = false;
-        std::shared_ptr<OpusAudioDecoder> opus_decoder_ = nullptr;
-
         std::shared_ptr<AppSharedInfo> app_shared_info_ = nullptr;
 
         std::shared_ptr<Thread> control_thread_ = nullptr;
@@ -138,9 +133,6 @@ namespace tc
         uint64_t last_post_audio_time_ = 0;
         Statistics* statistics_ = nullptr;
         SharedPreference* sp_ = nullptr;
-
-        std::shared_ptr<Data> audio_cache_ = nullptr;
-        int audio_callback_count_ = 0;
 
         std::shared_ptr<QApplication> qapp_ = nullptr;
 
