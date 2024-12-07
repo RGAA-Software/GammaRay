@@ -57,7 +57,7 @@ namespace tc
         if (!IsPluginEnabled()) {
             return;
         }
-        QMetaObject::invokeMethod(this, [=]() {
+        QMetaObject::invokeMethod(this, [=, this]() {
             QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
             QPixmap pixmap = QPixmap::fromImage(img);
             pixmap = pixmap.scaled(root_widget_->size().width(), root_widget_->size().height());

@@ -30,6 +30,7 @@ namespace tc
         void ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
         void ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
         void ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event);
+        void ProcessEncodedAudioFrameEvent(const std::shared_ptr<Data>& data, int samples, int channels, int bits, int frame_size);
 
     private:
         void ProcessHelloEvent(std::shared_ptr<Message>&& msg);

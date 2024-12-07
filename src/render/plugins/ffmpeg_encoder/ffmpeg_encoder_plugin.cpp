@@ -46,7 +46,7 @@ namespace tc
     }
 
     bool FFmpegEncoderPlugin::OnCreate(const tc::GrPluginParam& plugin_param) {
-        tc::GrEncoderPlugin::OnCreate(plugin_param);
+        tc::GrVideoEncoderPlugin::OnCreate(plugin_param);
 
         return true;
     }
@@ -56,7 +56,7 @@ namespace tc
     }
 
     void FFmpegEncoderPlugin::InsertIdr() {
-        GrEncoderPlugin::InsertIdr();
+        GrVideoEncoderPlugin::InsertIdr();
     }
 
     bool FFmpegEncoderPlugin::IsWorking() {
@@ -68,7 +68,7 @@ namespace tc
     }
 
     bool FFmpegEncoderPlugin::Init(const EncoderConfig& config) {
-        GrEncoderPlugin::Init(config);
+        GrVideoEncoderPlugin::Init(config);
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
         const AVCodec* encoder = avcodec_find_encoder(encoder_id);
 

@@ -2,8 +2,8 @@
 // Created by RGAA on 19/11/2024.
 //
 
-#ifndef GAMMARAY_GR_ENCODER_PLUGIN_H
-#define GAMMARAY_GR_ENCODER_PLUGIN_H
+#ifndef GAMMARAY_GR_VIDEO_ENCODER_PLUGIN_H
+#define GAMMARAY_GR_VIDEO_ENCODER_PLUGIN_H
 
 #include <d3d11.h>
 #include <mutex>
@@ -14,10 +14,10 @@ namespace tc
 {
     class Image;
 
-    class GrEncoderPlugin : public GrPluginInterface {
+    class GrVideoEncoderPlugin : public GrPluginInterface {
     public:
-        GrEncoderPlugin();
-        ~GrEncoderPlugin() override;
+        GrVideoEncoderPlugin();
+        ~GrVideoEncoderPlugin() override;
 
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
@@ -46,4 +46,4 @@ namespace tc
 
 }
 
-#endif //GAMMARAY_GR_ENCODER_PLUGIN_H
+#endif //GAMMARAY_GR_VIDEO_ENCODER_PLUGIN_H

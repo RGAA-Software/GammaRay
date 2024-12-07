@@ -5,14 +5,14 @@
 #ifndef GAMMARAY_NVENC_ENCODER_PLUGIN_H
 #define GAMMARAY_NVENC_ENCODER_PLUGIN_H
 
-#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 
 namespace tc
 {
 
     class NVENCVideoEncoder;
 
-    class NvencEncoderPlugin : public GrEncoderPlugin {
+    class NvencEncoderPlugin : public GrVideoEncoderPlugin {
     public:
         std::string GetPluginId() override;
         std::string GetPluginName() override;

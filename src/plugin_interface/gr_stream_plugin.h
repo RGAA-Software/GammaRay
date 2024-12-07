@@ -35,9 +35,10 @@ namespace tc
         virtual void OnRawVideoFrameYuv(const std::shared_ptr<Image>& image);
 
         // audio
-        virtual void OnAudioFormat(int samples, int channels, int bits);
-        virtual void OnRawAudioData(const std::shared_ptr<Data>& data);
-        virtual void OnSplitRawAudioData(const std::shared_ptr<Data>& left_ch_data, const std::shared_ptr<Data>& right_ch_data);
+        virtual void OnRawAudioData(const std::shared_ptr<Data>& data, int samples, int channels, int bits);
+        virtual void OnSplitRawAudioData(const std::shared_ptr<Data>& left_ch_data,
+                                         const std::shared_ptr<Data>& right_ch_data,
+                                         int samples, int channels, int bits);
         virtual void OnSplitFFTAudioData(const std::vector<double>& left_fft, const std::vector<double>& right_fft);
 
     };

@@ -94,6 +94,7 @@ namespace tc
         // event
         void RegisterEventCallback(const GrPluginEventCallback& cbk);
         void CallbackEvent(const std::shared_ptr<GrPluginBaseEvent>& event);
+        void CallbackEventDirectly(const std::shared_ptr<GrPluginBaseEvent>& event);
 
         virtual void On1Second();
 

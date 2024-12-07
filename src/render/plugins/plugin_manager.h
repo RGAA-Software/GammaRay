@@ -20,10 +20,11 @@ namespace tc
     class PluginEventRouter;
     class GrPluginInterface;
     class GrStreamPlugin;
-    class GrEncoderPlugin;
+    class GrVideoEncoderPlugin;
     class GrNetPlugin;
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
+    class GrAudioEncoderPlugin;
 
     class PluginManager {
     public:
@@ -37,17 +38,18 @@ namespace tc
         void ReleasePlugin(const std::string& name);
 
         GrPluginInterface* GetPluginById(const std::string& id);
-        GrEncoderPlugin* GetFFmpegEncoderPlugin();
-        GrEncoderPlugin* GetNvencEncoderPlugin();
-        GrEncoderPlugin* GetAmfEncoderPlugin();
+        GrVideoEncoderPlugin* GetFFmpegEncoderPlugin();
+        GrVideoEncoderPlugin* GetNvencEncoderPlugin();
+        GrVideoEncoderPlugin* GetAmfEncoderPlugin();
         GrMonitorCapturePlugin* GetDDACapturePlugin();
         GrDataProviderPlugin* GetMockVideoStreamPlugin();
         GrDataProviderPlugin* GetAudioCapturePlugin();
+        GrAudioEncoderPlugin* GetAudioEncoderPlugin();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);
         void VisitUtilPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
-        void VisitEncoderPlugins(const std::function<void(GrEncoderPlugin*)>&& visitor);
+        void VisitEncoderPlugins(const std::function<void(GrVideoEncoderPlugin*)>&& visitor);
         void VisitNetPlugins(const std::function<void(GrNetPlugin*)>&& visitor);
         void DumpPluginInfo();
 

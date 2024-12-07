@@ -49,6 +49,7 @@
 #include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_data_provider_plugin.h"
+#include "plugin_interface/gr_audio_encoder_plugin.h"
 
 namespace tc
 {
@@ -128,8 +129,8 @@ namespace tc
         auto target_monitor = settings_->capture_.capture_monitor_;
         //desktop_capture_ = DesktopCaptureFactory::Make(context_->GetMessageNotifier(), target_monitor);
         //
-        working_monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
-        //working_data_provider_plugin_ = plugin_manager_->GetMockVideoStreamPlugin();
+        monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+        //data_provider_plugin = plugin_manager_->GetMockVideoStreamPlugin();
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
@@ -228,61 +229,38 @@ namespace tc
         }
 
         audio_capture_plugin_ = plugin_manager_->GetAudioCapturePlugin();
-        if (!audio_capture_plugin_) {
+        audio_encoder_plugin_ = plugin_manager_->GetAudioEncoderPlugin();
+        if (!audio_capture_plugin_ || !audio_encoder_plugin_) {
             return;
         }
 
         msg_listener_->Listen<CaptureAudioFrame>([=, this] (const CaptureAudioFrame& frame) {
-            if (frame.full_data_) {
-                if (!opus_encoder_) {
-                    int samples = frame.samples_;
-                    int channels = frame.channels_;
-                    int bits = frame.bits_;
-                    LOGI("audio format, samples: {}, channels: {}, bits: {}", samples, channels, bits);
-                    auto stat = Statistics::Instance();
-                    stat->audio_samples_ = samples;
-                    stat->audio_channels_ = channels;
-                    stat->audio_bits_ = bits;
-                    opus_encoder_ = std::make_shared<OpusAudioEncoder>(samples, channels, bits, OPUS_APPLICATION_AUDIO);
-                    if (!opus_encoder_->valid()) {
-                        opus_encoder_ = nullptr;
-                        return;
-                    }
-                    opus_encoder_->SetComplexity(8);
+            if (!HasConnectedPeer()) {
+                return;
+            }
 
-                    // plugins
+            int samples = (int)frame.samples_;
+            int channels = (int)frame.channels_;
+            int bits = (int)frame.bits_;
+
+            if (frame.full_data_) {
+                audio_encoder_plugin_->Encode(frame.full_data_, samples, channels, bits);
+
+                auto stat = Statistics::Instance();
+                stat->audio_samples_ = samples;
+                stat->audio_channels_ = channels;
+                stat->audio_bits_ = bits;
+
+                // plugins
+                {
+                    auto data = frame.full_data_;
                     context_->PostStreamPluginTask([=, this]() {
-                        plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                            plugin->OnAudioFormat(samples, channels, bits);
+                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                            plugin->OnRawAudioData(data, samples, channels, bits);
                         });
                     });
                 }
-
-                if (!opus_encoder_) {
-                    return;
-                }
-
-                auto data = frame.full_data_;
-                context_->PostStreamPluginTask([=, this]() {
-                    plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                        plugin->OnRawAudioData(data);
-                    });
-                });
-
-                if (debug_opus_decoder_) {
-                    static auto pcm_file = File::OpenForWriteB("1.origin.pcm");
-                    pcm_file->Append((char*)data->DataAddr(), data->Size());
-                }
-                if (!HasConnectedPeer()) {
-                    return;
-                }
-
-                audio_cache_->Append(data->DataAddr(), data->Size());
-                // 2 or 6
-                if (++audio_callback_count_ < 2) {
-                    return;
-                }
-
+                // statistics
                 {
                     auto current_time = TimeExt::GetCurrentTimestamp();
                     if (last_post_audio_time_ == 0) {
@@ -292,30 +270,6 @@ namespace tc
                     last_post_audio_time_ = current_time;
                     statistics_->AppendAudioFrameGap(diff);
                 }
-
-                //int frame_size = data->Size() / 2 / 2;
-                int frame_size = audio_cache_->Offset()/2/2;
-                auto encoded_frames = opus_encoder_->Encode(audio_cache_->CStr(), audio_cache_->Offset(), frame_size);
-                for (const auto& ef : encoded_frames) {
-                    auto encoded_data = Data::Make((char*)ef.data(), ef.size());
-                    auto net_msg = NetMessageMaker::MakeAudioFrameMsg(encoded_data, opus_encoder_->SampleRate(),
-                                                                      opus_encoder_->Channels(), opus_encoder_->Bits(), frame_size);
-                    statistics_->AppendMediaBytes(net_msg.size());
-                    PostNetMessage(net_msg);
-
-                    if (debug_opus_decoder_) {
-                        if (!opus_decoder_) {
-                            opus_decoder_ = std::make_shared<OpusAudioDecoder>(opus_encoder_->SampleRate(), opus_encoder_->Channels());
-                        }
-                        std::vector<unsigned char> buffer(ef.begin(), ef.end());
-                        auto pcm_data = opus_decoder_->Decode(buffer, frame_size, false);
-                        static auto pcm_file = File::OpenForWriteB("1.test.pcm");
-                        pcm_file->Append((char*)pcm_data.data(), pcm_data.size()*2);
-                    }
-                }
-
-                audio_cache_->Reset();
-                audio_callback_count_ = 0;
             }
             else if (frame.left_ch_data_ && frame.right_ch_data_) {
                 PostGlobalTask([=, this]() {
@@ -343,7 +297,7 @@ namespace tc
 
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        plugin->OnSplitRawAudioData(frame.left_ch_data_, frame.right_ch_data_);
+                        plugin->OnSplitRawAudioData(frame.left_ch_data_, frame.right_ch_data_, samples, channels, bits);
                         plugin->OnSplitFFTAudioData(fft_left_, fft_right_);
                     });
                 });
@@ -466,13 +420,13 @@ namespace tc
             PostNetMessage(net_msg);
         });
 
-        if (working_monitor_capture_plugin_) {
+        if (monitor_capture_plugin_) {
             auto target_monitor = settings_->capture_.capture_monitor_;
             LOGI("Capture target monitor name: {}", target_monitor);
-            working_monitor_capture_plugin_->StartCapturing(target_monitor);
+            monitor_capture_plugin_->StartCapturing(target_monitor);
         }
-        if (working_data_provider_plugin_) {
-            working_data_provider_plugin_->StartProviding();
+        if (data_provider_plugin) {
+            data_provider_plugin->StartProviding();
         }
         app_manager_->StartProcess();
     }
@@ -561,7 +515,7 @@ namespace tc
     }
 
     void Application::SendConfigurationBack() {
-        if (!working_monitor_capture_plugin_) {
+        if (!monitor_capture_plugin_) {
             LOGE("SendConfigurationBack failed, working monitor capture plugin is null.");
             return;
         }
@@ -573,8 +527,8 @@ namespace tc
         // todo:
 //        auto capturing_idx = desktop_capture_->GetCapturingMonitorIndex();
 //        auto monitors = desktop_capture_->GetCaptureMonitorInfo();
-        auto capturing_idx = working_monitor_capture_plugin_->GetCapturingMonitorIndex();
-        auto monitors = working_monitor_capture_plugin_->GetCaptureMonitorInfo();
+        auto capturing_idx = monitor_capture_plugin_->GetCapturingMonitorIndex();
+        auto monitors = monitor_capture_plugin_->GetCaptureMonitorInfo();
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
             MonitorInfo info;
@@ -688,10 +642,6 @@ namespace tc
     void Application::Exit() {
         if (app_shared_info_) {
             app_shared_info_->Exit();
-        }
-        if (audio_capture_) {
-            audio_capture_->Pause();
-            audio_capture_->Stop();
         }
         if (audio_capture_thread_ && audio_capture_thread_->IsJoinable()) {
             audio_capture_thread_->Join();

@@ -42,7 +42,7 @@ namespace tc
     }
 
     bool AmfEncoderPlugin::OnCreate(const tc::GrPluginParam& param) {
-        tc::GrEncoderPlugin::OnCreate(param);
+        tc::GrVideoEncoderPlugin::OnCreate(param);
         return true;
     }
 
@@ -51,7 +51,7 @@ namespace tc
     }
 
     void AmfEncoderPlugin::InsertIdr() {
-        GrEncoderPlugin::InsertIdr();
+        GrVideoEncoderPlugin::InsertIdr();
         if (IsWorking()) {
             video_encoder_->InsertIdr();
         }
@@ -62,7 +62,7 @@ namespace tc
     }
 
     bool AmfEncoderPlugin::Init(const EncoderConfig& config) {
-        GrEncoderPlugin::Init(config);
+        GrVideoEncoderPlugin::Init(config);
         video_encoder_ = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
         init_success_ = video_encoder_->Initialize(config);
         if (!init_success_) {

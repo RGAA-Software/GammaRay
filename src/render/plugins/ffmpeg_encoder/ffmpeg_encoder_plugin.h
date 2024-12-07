@@ -5,7 +5,7 @@
 #ifndef GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
-#include "plugin_interface/gr_encoder_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 #include "ffmpeg_encoder_defs.h"
 extern "C" {
     #include "libavcodec/avcodec.h"
@@ -17,7 +17,7 @@ namespace tc
     class Data;
     class Image;
 
-    class FFmpegEncoderPlugin : public GrEncoderPlugin {
+    class FFmpegEncoderPlugin : public GrVideoEncoderPlugin {
     public:
 
         std::string GetPluginId() override;
