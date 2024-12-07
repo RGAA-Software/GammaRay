@@ -18,7 +18,6 @@ namespace tc
         bool OnDestroy() override;
         virtual void StartProviding();
         virtual void StopProviding();
-
     };
 
 }

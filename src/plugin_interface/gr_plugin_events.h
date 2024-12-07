@@ -27,6 +27,8 @@ namespace tc
         kPluginCapturedVideoFrameEvent,
         kPluginCursorEvent,
         kPluginRawVideoFrameEvent,
+        kPluginRawAudioFrameEvent,
+        kPluginSplitRawAudioFrameEvent,
     };
 
     class GrPluginBaseEvent {
@@ -120,7 +122,7 @@ namespace tc
         CaptureCursorBitmap cursor_info_;
     };
 
-    //
+    // Raw video frame from plugins
     class GrPluginRawVideoFrameEvent : public GrPluginBaseEvent {
     public:
         GrPluginRawVideoFrameEvent() {
@@ -129,6 +131,38 @@ namespace tc
     public:
         std::shared_ptr<Image> image_ = nullptr;
         uint64_t frame_index_ = 0;
+    };
+
+    // Raw audio frame from plugins
+    class GrPluginRawAudioFrameEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRawAudioFrameEvent() {
+            plugin_type_ = GrPluginEventType::kPluginRawAudioFrameEvent;
+        }
+    public:
+        // left/right/left/right...
+        std::shared_ptr<Data> full_data_ = nullptr;
+        //
+        int sample_rate_ = 0;
+        int channels_ = 0;
+        int bits_ = 0;
+    };
+
+    // Raw audio frame
+    class GrPluginSplitRawAudioFrameEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginSplitRawAudioFrameEvent() {
+            plugin_type_ = GrPluginEventType::kPluginSplitRawAudioFrameEvent;
+        }
+    public:
+        // left/left/left/...
+        std::shared_ptr<Data> left_ch_data_ = nullptr;
+        // right/right/right...
+        std::shared_ptr<Data> right_ch_data_ = nullptr;
+        //
+        int sample_rate_ = 0;
+        int channels_ = 0;
+        int bits_ = 0;
     };
 }
 

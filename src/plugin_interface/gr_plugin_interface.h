@@ -100,6 +100,8 @@ namespace tc
         // key frame
         virtual void InsertIdr();
 
+        virtual void OnCommand(const std::string& command);
+
         // widget
         QWidget* GetRootWidget();
         bool eventFilter(QObject *watched, QEvent *event) override;
@@ -107,6 +109,10 @@ namespace tc
         void HideRootWidget();
 
     protected:
+
+        bool HasParam(const std::string& k) {
+            return param_.cluster_.count(k) > 0;
+        }
 
         template<typename T>
         T GetParam(const std::string& k) {

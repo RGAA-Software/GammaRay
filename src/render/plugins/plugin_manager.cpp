@@ -97,10 +97,16 @@ namespace tc
                             }
                         } else {
                             LOGW("The config: {} is not exist!", config_filepath.toStdString());
+                            continue;
                         }
 
                         if (!plugin->OnCreate(param)) {
                             LOGE("Plugin: {} OnCreate failed!", plugin->GetPluginName());
+                            continue;
+                        }
+
+                        if (!plugin->IsPluginEnabled()) {
+                            LOGW("Plugin: {} is disabled!", plugin->GetPluginName());
                             continue;
                         }
 
@@ -195,6 +201,14 @@ namespace tc
 
     GrDataProviderPlugin* PluginManager::GetMockVideoStreamPlugin() {
         auto plugin = GetPluginById(kMockVideoStreamPluginId);
+        if (plugin) {
+            return (GrDataProviderPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
+    GrDataProviderPlugin* PluginManager::GetAudioCapturePlugin() {
+        auto plugin = GetPluginById(kWasAudioCapturePluginId);
         if (plugin) {
             return (GrDataProviderPlugin*)plugin;
         }
