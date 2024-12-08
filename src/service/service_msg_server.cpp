@@ -91,7 +91,7 @@ namespace tc
         try {
             msg.ParseFromString(std::string(data.data(), data.size()));
             auto type = msg.type();
-            if (type == ServiceMessageType::kStartServer) {
+            if (type == ServiceMessageType::kSrvStartServer) {
                 auto sub = msg.start_server();
                 std::vector<std::string> args;
                 for (int i = 0; i < sub.args_size(); i++) {
@@ -99,10 +99,10 @@ namespace tc
                 }
                 ProcessStartRender(sub.work_dir(), sub.app_path(), args);
             }
-            else if (type == ServiceMessageType::kStopServer) {
+            else if (type == ServiceMessageType::kSrvStopServer) {
                 ProcessStopRender();
             }
-            else if (type == ServiceMessageType::kRestartServer) {
+            else if (type == ServiceMessageType::kSrvRestartServer) {
                 auto sub = msg.restart_server();
                 std::vector<std::string> args;
                 for (int i = 0; i < sub.args_size(); i++) {
@@ -110,7 +110,7 @@ namespace tc
                 }
                 ProcessRestartRender(sub.work_dir(), sub.app_path(), args);
             }
-            else if (type == ServiceMessageType::kHeartBeat) {
+            else if (type == ServiceMessageType::kSrvHeartBeat) {
                 auto sub = msg.heart_beat();
                 sw->from_ = sub.from();
                 ProcessHeartBeat(sub.index());
@@ -138,7 +138,7 @@ namespace tc
     void ServiceMsgServer::ProcessHeartBeat(int64_t index) {
         auto is_render_alive = render_manager_->IsRenderAlive();
         ServiceMessage msg;
-        msg.set_type(ServiceMessageType::kHeartBeatResp);
+        msg.set_type(ServiceMessageType::kSrvHeartBeatResp);
         auto sub = msg.mutable_heart_beat_resp();
         sub->set_index(index);
         sub->set_render_status(is_render_alive ? RenderStatus::kWorking : RenderStatus::kStopped);

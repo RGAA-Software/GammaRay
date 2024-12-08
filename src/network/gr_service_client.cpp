@@ -72,7 +72,7 @@ namespace tc
             return;
         }
 
-        if (sm.type() == ServiceMessageType::kHeartBeatResp) {
+        if (sm.type() == ServiceMessageType::kSrvHeartBeatResp) {
             auto sub = sm.heart_beat_resp();
             auto hb_idx = sub.index();
             auto is_render_alive = sub.render_status() == RenderStatus::kWorking;
@@ -96,7 +96,7 @@ namespace tc
     void GrServiceClient::HeartBeat() {
         static int64_t hb_idx = 0;
         tc::ServiceMessage msg;
-        msg.set_type(ServiceMessageType::kHeartBeat);
+        msg.set_type(ServiceMessageType::kSrvHeartBeat);
         auto sub = msg.mutable_heart_beat();
         sub->set_index(hb_idx++);
         sub->set_from("panel");
