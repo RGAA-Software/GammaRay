@@ -25,6 +25,7 @@ set(SRCS
         network/ws_client.cpp
         network/net_message_maker.cpp
         network/server_cast.cpp
+        network/render_service_client.cpp
         ipc/host_ipc_manager.cpp
         app/encoder_thread.cpp
         plugins/plugin_manager.cpp

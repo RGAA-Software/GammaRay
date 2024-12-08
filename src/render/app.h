@@ -54,6 +54,7 @@ namespace tc
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
     class SharedPreference;
+    class RenderServiceClient;
 
     class Application : public std::enable_shared_from_this<Application>, public QObject {
     public:
@@ -149,6 +150,8 @@ namespace tc
 
         std::vector<double> fft_left_;
         std::vector<double> fft_right_;
+
+        std::shared_ptr<tc::RenderServiceClient> service_client_ = nullptr;
     };
 
     // Windows
