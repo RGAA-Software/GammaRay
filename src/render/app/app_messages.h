@@ -104,7 +104,12 @@ namespace tc
 
     // Insert key frame
     class MsgInsertKeyFrame {
+    public:
+    };
 
+    //
+    class MsgRenderConnected2Service {
+    public:
     };
 }
 

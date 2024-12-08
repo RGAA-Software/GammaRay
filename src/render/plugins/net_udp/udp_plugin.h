@@ -10,6 +10,13 @@
 
 namespace tc
 {
+    class Data;
+
+    struct UdpMessagePack {
+        uint32_t magic_ = 0;
+        uint32_t length_ = 0;
+        // data below...
+    };
 
     class UdpPlugin : public GrNetPlugin {
     public:

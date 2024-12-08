@@ -5,6 +5,7 @@
 #include "udp_plugin.h"
 #include "render/plugins/plugin_ids.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/data.h"
 
 namespace tc
 {
@@ -37,8 +38,20 @@ namespace tc
 
     void UdpPlugin::OnProtoMessage(const std::string& msg) {
         if (session_ && session_->is_started()) {
-            session_->async_send(msg);
-            LOGI("send msg: {}bytes", msg.size());
+            //LOGI("send msg: {}bytes", msg.size());
+#if 0
+            UdpMessagePack pack;
+            pack.magic_ = 0x11223344;
+            pack.length_ = msg.size();
+            auto total_size = sizeof(UdpMessagePack) + msg.size();
+            std::string buffer;
+            buffer.resize(total_size);
+            memcpy(buffer.data(), (char*)&pack, sizeof(UdpMessagePack));
+            memcpy(buffer.data() + sizeof(UdpMessagePack), msg.data(), msg.size());
+#endif
+            session_->async_send(msg, [](std::size_t bytes_sent) {
+                //LOGI("===> sent msg: {}bytes", bytes_sent);
+            });
         }
     }
 

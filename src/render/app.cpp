@@ -44,6 +44,7 @@
 #include "tc_controller/vigem_driver_manager.h"
 #include "statistics.h"
 #include "app/clipboard_manager.h"
+#include "network/render_service_client.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
@@ -135,6 +136,11 @@ namespace tc
                 StartProcessWithScreenCapture();
             }
         }
+
+        // connect to service
+        service_client_ = std::make_shared<RenderServiceClient>(shared_from_this());
+        service_client_->Start();
+
         return qapp_->exec();
     }
 

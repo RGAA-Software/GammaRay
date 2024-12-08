@@ -63,7 +63,9 @@ namespace tc
                     return nullptr;
                }
            } ();
-           this->ParseMessage(sw, data);
+           if (sw) {
+               this->ParseMessage(sw, data);
+           }
        })
        .bind_connect([=, this](std::shared_ptr<asio2::ws_session>& sess_ptr) {
            sess_ptr->set_disconnect_timeout((std::chrono::steady_clock::duration::max)());

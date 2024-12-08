@@ -303,6 +303,7 @@ namespace tc
         if (!insert_idr_) {
             if (frame_idx % gop_ == 0) {
                 insert_idr_ = true;
+                LOGI("Insert IDR!!!!");
             }
         }
         surface->SetProperty(IS_KEY_FRAME, insert_idr_);
