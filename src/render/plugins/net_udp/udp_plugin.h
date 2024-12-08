@@ -28,6 +28,11 @@ namespace tc
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
         void OnProtoMessage(const std::string &msg) override;
+        int ConnectedClientSize() override;
+        bool IsOnlyAudioClients() override;
+        bool IsWorking() override;
+        void NotifyMediaClientConnected();
+        void NotifyMediaClientDisConnected();
 
     private:
         void StartInternal();

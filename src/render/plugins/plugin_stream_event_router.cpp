@@ -66,7 +66,7 @@ namespace tc
             .monitor_right_ = last_capture_video_frame_.right_,
             .monitor_bottom_ = last_capture_video_frame_.bottom_,
         };
-        context_->SendAppMessage(msg);
+        //context_->SendAppMessage(msg);
 
         auto video_type = [=]() -> tc::VideoType {
             return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
