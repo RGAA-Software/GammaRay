@@ -26,8 +26,6 @@ namespace tc
 
         void PostNetMessage(const std::string& data);
         int GetConnectionPeerCount();
-        void NotifyPeerConnected();
-        void NotifyPeerDisconnected();
         bool IsOnlyAudioClients();
 
     private:

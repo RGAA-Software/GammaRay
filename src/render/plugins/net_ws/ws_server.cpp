@@ -51,7 +51,6 @@ namespace tc
                 NotifyMediaClientDisConnected();
                 LOGI("App server media close, media router size: {}", media_routers_.Size());
             }
-            this->NotifyPeerDisconnected();
         });
 
         http_server_->support_websocket(true);
@@ -84,14 +83,6 @@ namespace tc
 
     int WsPluginServer::GetConnectionPeerCount() {
         return (int)media_routers_.Size();
-    }
-
-    void WsPluginServer::NotifyPeerConnected() {
-
-    }
-
-    void WsPluginServer::NotifyPeerDisconnected() {
-
     }
 
     bool WsPluginServer::IsOnlyAudioClients() {
@@ -149,9 +140,6 @@ namespace tc
                 if (router) {
                     router->OnOpen(sess_ptr);
                 }
-                LOGI("After ws open");
-                this->NotifyPeerConnected();
-                LOGI("After notify peer connected.");
             })
             .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
@@ -160,8 +148,6 @@ namespace tc
                     media_routers_.Remove(socket_fd);
                     NotifyMediaClientDisConnected();
                 }
-
-                this->NotifyPeerDisconnected();
             })
             .on_ping([=, this](auto &sess_ptr) {
 

@@ -22,7 +22,7 @@ namespace tc
         WsRouter::OnMessage(sess_ptr, data);
         auto plugin = Get<WsPlugin*>("plugin");
         auto msg = std::string(data.data(), data.size());
-        plugin->CallbackClientEvent(plugin, msg);
+        plugin->CallbackClientEvent(true, msg);
     }
 
     void WsPluginRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {

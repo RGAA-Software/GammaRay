@@ -6,6 +6,7 @@
 #include "render/plugins/plugin_ids.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
+#include "plugin_interface/gr_plugin_events.h"
 
 namespace tc
 {
@@ -57,17 +58,20 @@ namespace tc
 
     void UdpPlugin::StartInternal() {
         server_ = std::make_shared<asio2::udp_server>();
-        server_->bind_recv([](std::shared_ptr<asio2::udp_session> &session_ptr, std::string_view data) {
-            LOGI("recv : {} {}", data.size(), (int) data.size(), data.data());
-
+        server_->bind_recv([this](std::shared_ptr<asio2::udp_session> &session_ptr, std::string_view data) {
+            //LOGI("recv : {} {}", data.size(), (int) data.size(), data.data());
+            auto msg = std::string(data.data(), data.size());
+            this->CallbackClientEvent(true, msg);
 
         }).bind_connect([this](auto &session_ptr) {
             session_ = session_ptr;
+            NotifyMediaClientConnected();
             LOGI("client enter : {} {} ; {} {}",
                    session_ptr->remote_address().c_str(), session_ptr->remote_port(),
                    session_ptr->local_address().c_str(), session_ptr->local_port());
         }).bind_disconnect([this](auto &session_ptr) {
             session_ = nullptr;
+            NotifyMediaClientDisConnected();
             LOGI("client leave : {} {} {}",
                    session_ptr->remote_address().c_str(), session_ptr->remote_port(),
                    asio2::last_error_msg().c_str());
@@ -100,6 +104,28 @@ namespace tc
 
         // to use kcp, the last param must be : asio2::use_kcp
         server_->start("0.0.0.0", 20400, asio2::use_kcp);
+    }
+
+    void UdpPlugin::NotifyMediaClientConnected() {
+        auto event = std::make_shared<GrPluginClientConnectedEvent>();
+        this->CallbackEvent(event);
+    }
+
+    void UdpPlugin::NotifyMediaClientDisConnected() {
+        auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
+        this->CallbackEvent(event);
+    }
+
+    int UdpPlugin::ConnectedClientSize() {
+        return (session_ && session_->is_started()) ? 1 : 0;
+    }
+
+    bool UdpPlugin::IsOnlyAudioClients() {
+        return false;
+    }
+
+    bool UdpPlugin::IsWorking() {
+        return ConnectedClientSize() > 0;
     }
 
 }
