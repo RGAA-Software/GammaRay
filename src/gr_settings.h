@@ -66,7 +66,7 @@ namespace tc
         void SetCaptureVideo(bool enabled);
         void SetCaptureAudio(bool enabled);
         void SetCaptureMonitor(const std::string& name);
-        void SetCaptureAudioDevice(const std::string& name);
+        void SetCaptureAudioDeviceId(const std::string& name);
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
 

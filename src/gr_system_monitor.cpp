@@ -114,7 +114,7 @@ namespace tc
                     ctx_->SendAppMessage(MsgServiceAlive {
                         .alive_ = (status == ServiceStatus::kRunning),
                     });
-                    LOGI("Service Status: {}", (int)status);
+                    //LOGI("Service Status: {}", (int)status);
                 }
 
                 std::this_thread::sleep_for(std::chrono::seconds(3));

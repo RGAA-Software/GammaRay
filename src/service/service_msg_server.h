@@ -35,7 +35,7 @@ namespace tc
     private:
         void ProcessStartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
         void ProcessStopRender();
-        void ProcessRestartRender();
+        void ProcessRestartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
         void ProcessHeartBeat(int64_t index);
 
     private:

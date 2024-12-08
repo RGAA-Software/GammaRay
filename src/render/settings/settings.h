@@ -75,13 +75,6 @@ namespace tc
 
     // Transmission
     struct Transmission {
-        enum NetworkType {
-            kWebsocket,
-            kQUIC,
-            kWebRtc,
-        };
-
-        NetworkType network_type_;
         int listening_port_ = 8888;
     };
 

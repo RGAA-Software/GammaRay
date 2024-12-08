@@ -25,6 +25,7 @@ namespace tc
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
+    class Settings;
 
     class PluginManager {
     public:
@@ -56,6 +57,7 @@ namespace tc
         void On1Second();
 
     private:
+        Settings* settings_ = nullptr;
         std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         std::map<std::string, GrPluginInterface*> plugins_;

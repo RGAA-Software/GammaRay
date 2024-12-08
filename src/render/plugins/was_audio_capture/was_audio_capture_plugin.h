@@ -26,7 +26,6 @@ namespace tc
         void StopProviding() override;
 
     private:
-        std::string audio_device_id_;
         int samples_ = 0;
         int channels_ = 0;
         int bits_ = 0;

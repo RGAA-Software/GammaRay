@@ -37,8 +37,13 @@ namespace tc
                 if (dxgi_output && SUCCEEDED(r)) {
                     DXGI_OUTPUT_DESC desc;
                     dxgi_output->GetDesc(&desc);
-
                     info.display_name = StringExt::ToUTF8(desc.DeviceName);
+
+                    if (desc.AttachedToDesktop && desc.Monitor == MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY)) {
+                        LOGI("Primary monitor is : {}", info.display_name);
+                        info.primary = true;
+                    }
+
                     info.rect = desc.DesktopCoordinates;
                     info.width = info.rect.right - info.rect.left;
                     info.height = info.rect.bottom - info.rect.top;

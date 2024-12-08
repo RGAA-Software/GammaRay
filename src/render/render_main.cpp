@@ -103,11 +103,6 @@ void UpdateSettings(Settings* settings) {
     settings->capture_.capture_audio_device_ = Base64::Base64Decode(FLAGS_capture_audio_device);
 
     // network !! only support websocket now
-    if (FLAGS_network_type == "websocket") {
-        settings->transmission_.network_type_ = Transmission::NetworkType::kWebsocket;
-    } else {
-        settings->transmission_.network_type_ = Transmission::NetworkType::kWebsocket;
-    }
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
 
     // app

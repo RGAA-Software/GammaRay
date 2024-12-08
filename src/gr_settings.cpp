@@ -6,6 +6,8 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/base64.h"
+#include "util/dxgi_mon_detector.h"
+#include "tc_common_new/win32/audio_device_helper.h"
 #include <sstream>
 #include <QApplication>
 
@@ -41,6 +43,25 @@ namespace tc
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
             file_transfer_folder_ = qApp->applicationDirPath().toStdString();
+        }
+
+        // default
+        if (capture_monitor_.empty()) {
+            auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
+            for (const auto& adapter : adapters) {
+                if (adapter.primary) {
+                    SetCaptureMonitor(adapter.display_name);
+                }
+            }
+        }
+
+        if (capture_audio_device_.empty()) {
+            auto audio_devices = AudioDeviceHelper::DetectAudioDevices();
+            for (const auto& dev : audio_devices) {
+                if (dev.default_device_) {
+                    SetCaptureAudioDeviceId(dev.id_);
+                }
+            }
         }
     }
 
@@ -140,7 +161,7 @@ namespace tc
         sp_->Put(kStCaptureMonitor, capture_monitor_);
     }
 
-    void GrSettings::SetCaptureAudioDevice(const std::string& name) {
+    void GrSettings::SetCaptureAudioDeviceId(const std::string& name) {
         capture_audio_device_ = name;
         sp_->Put(kStCaptureAudioDevice, capture_audio_device_);
     }

@@ -20,7 +20,7 @@ namespace tc
         return true;
     }
 
-    bool GrMonitorCapturePlugin::StartCapturing(const std::string& target) {
+    bool GrMonitorCapturePlugin::StartCapturing() {
         return true;
     }
 
