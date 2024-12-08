@@ -38,7 +38,7 @@ namespace tc
 
         //
         tc::ServiceMessage srv_msg;
-        srv_msg.set_type(ServiceMessageType::kStartServer);
+        srv_msg.set_type(ServiceMessageType::kSrvStartServer);
         auto sub = srv_msg.mutable_start_server();
         sub->set_work_dir(GetWorkDir().toStdString());
         sub->set_app_path(GetAppPath().toStdString());
@@ -51,7 +51,7 @@ namespace tc
 
     bool GrRenderController::StopServer() {
         tc::ServiceMessage srv_msg;
-        srv_msg.set_type(ServiceMessageType::kStopServer);
+        srv_msg.set_type(ServiceMessageType::kSrvStopServer);
         auto sub = srv_msg.mutable_stop_server();
         app_->PostMessage2Service(srv_msg.SerializeAsString());
         return true;
@@ -59,7 +59,7 @@ namespace tc
 
     bool GrRenderController::ReStart() {
         tc::ServiceMessage srv_msg;
-        srv_msg.set_type(ServiceMessageType::kRestartServer);
+        srv_msg.set_type(ServiceMessageType::kSrvRestartServer);
         auto sub = srv_msg.mutable_restart_server();
         sub->set_work_dir(GetWorkDir().toStdString());
         sub->set_app_path(GetAppPath().toStdString());
