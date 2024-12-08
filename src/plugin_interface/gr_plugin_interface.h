@@ -141,6 +141,9 @@ namespace tc
         std::string plugin_version_name_;
         int64_t plugin_version_code_;
         bool plugin_enabled_ = true;
+        std::string base_path_;
+        std::string capture_monitor_name_;
+        std::string capture_audio_device_id_;
 
     public:
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;

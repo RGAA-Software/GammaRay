@@ -32,7 +32,7 @@ namespace tc
 
         bool StartServer(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
         bool StopServer();
-        bool ReStart();
+        bool ReStart(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
         void Exit();
         [[nodiscard]] bool IsRenderAlive() const;
 

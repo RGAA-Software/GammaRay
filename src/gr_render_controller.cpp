@@ -24,12 +24,6 @@ namespace tc
     }
 
     bool GrRenderController::StartServer() {
-        auto resp = Response<bool, uint32_t>::Make(false, 0, "");
-
-        QString current_path = QCoreApplication::applicationDirPath();
-        QString work_dir = current_path;
-        current_path = current_path.append("/").append(kGammaRayRenderName);
-
         auto args = GrSettings::Instance()->GetArgs();
         QStringList arg_list;
         for (auto& arg : args) {
@@ -46,8 +40,8 @@ namespace tc
         tc::ServiceMessage srv_msg;
         srv_msg.set_type(ServiceMessageType::kStartServer);
         auto sub = srv_msg.mutable_start_server();
-        sub->set_work_dir(work_dir.toStdString());
-        sub->set_app_path(current_path.toStdString());
+        sub->set_work_dir(GetWorkDir().toStdString());
+        sub->set_app_path(GetAppPath().toStdString());
         for (auto& arg : args) {
             sub->add_args(arg);
         }
@@ -67,12 +61,28 @@ namespace tc
         tc::ServiceMessage srv_msg;
         srv_msg.set_type(ServiceMessageType::kRestartServer);
         auto sub = srv_msg.mutable_restart_server();
+        sub->set_work_dir(GetWorkDir().toStdString());
+        sub->set_app_path(GetAppPath().toStdString());
+        auto args = GrSettings::Instance()->GetArgs();
+        for (auto& arg : args) {
+            sub->add_args(arg);
+        }
         app_->PostMessage2Service(srv_msg.SerializeAsString());
         return true;
     }
 
     void GrRenderController::Exit() {
 
+    }
+
+    QString GrRenderController::GetWorkDir() {
+        return QCoreApplication::applicationDirPath();
+    }
+
+    QString GrRenderController::GetAppPath() {
+        QString current_path = QCoreApplication::applicationDirPath();
+        current_path = current_path.append("/").append(kGammaRayRenderName);
+        return current_path;
     }
 
 }

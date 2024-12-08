@@ -22,7 +22,7 @@ namespace tc
         bool IsWorking() override;
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
-        bool StartCapturing(const std::string& target) override;
+        bool StartCapturing() override;
         void StopCapturing() override;
         std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo() override;
         int GetCapturingMonitorIndex() override;

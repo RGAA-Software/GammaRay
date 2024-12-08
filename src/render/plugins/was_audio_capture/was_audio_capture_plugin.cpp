@@ -32,11 +32,6 @@ namespace tc
 
     bool WasAudioCapturePlugin::OnCreate(const tc::GrPluginParam& param) {
         GrDataProviderPlugin::OnCreate(param);
-        auto key_audio_device_id = "audio_device_id";
-        if (HasParam(key_audio_device_id)) {
-            audio_device_id_ = GetParam<std::string>(key_audio_device_id);
-        }
-
         return true;
     }
 
@@ -45,7 +40,7 @@ namespace tc
     }
 
     void WasAudioCapturePlugin::StartProviding() {
-        audio_capture_ = WASAPIAudioCapture::Make(audio_device_id_);
+        audio_capture_ = WASAPIAudioCapture::Make(capture_audio_device_id_);
         audio_capture_->RegisterFormatCallback([=, this](int samples, int channels, int bits) {
             this->samples_ = samples;
             this->channels_ = channels;

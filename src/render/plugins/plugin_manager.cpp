@@ -15,6 +15,7 @@
 #include "plugin_ids.h"
 #include "context.h"
 #include "app.h"
+#include "settings/settings.h"
 
 typedef void *(*FnGetInstance)();
 
@@ -28,6 +29,7 @@ namespace tc
     PluginManager::PluginManager(const std::shared_ptr<Application>& app) {
         this->app_ = app;
         this->context_ = app->GetContext();
+        settings_ = Settings::Instance();
     }
 
     void PluginManager::LoadAllPlugins() {
@@ -66,6 +68,8 @@ namespace tc
                             .cluster_ = {
                                 {"name", filename.toStdString()},
                                 {"base_path", base_path.toStdString()},
+                                {"capture_monitor_name", settings_->capture_.capture_monitor_},
+                                {"capture_audio_device_id", settings_->capture_.capture_audio_device_},
                             },
                         };
 

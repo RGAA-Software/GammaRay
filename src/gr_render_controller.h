@@ -33,6 +33,10 @@ namespace tc
         void Exit();
 
     private:
+        QString GetWorkDir();
+        QString GetAppPath();
+
+    private:
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
     };

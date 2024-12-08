@@ -423,9 +423,7 @@ namespace tc
         });
 
         if (monitor_capture_plugin_) {
-            auto target_monitor = settings_->capture_.capture_monitor_;
-            LOGI("Capture target monitor name: {}", target_monitor);
-            monitor_capture_plugin_->StartCapturing(target_monitor);
+            monitor_capture_plugin_->StartCapturing();
         }
         if (data_provider_plugin) {
             data_provider_plugin->StartProviding();

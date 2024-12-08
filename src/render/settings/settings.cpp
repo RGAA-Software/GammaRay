@@ -102,16 +102,6 @@ namespace tc
         capture_.send_video_frame_by_shm_ = result["capture"]["send-video-msg-by-shm"].value_or(false);
 
         // transmission
-        auto nt_type = result["transmission"]["network-type"].value_or("websocket");;
-        transmission_.network_type_ = [&]() -> Transmission::NetworkType {
-            if (std::string(nt_type) == std::string("websocket")) {
-                return Transmission::NetworkType::kWebsocket;
-            }
-            else if (std::string(nt_type) == "QUIC") {
-                return Transmission::NetworkType::kQUIC;
-            }
-            return Transmission::NetworkType::kWebsocket;
-        }();
         transmission_.listening_port_ = result["transmission"]["listening-port"].value_or(8888);
 
         // TargetApplication
@@ -164,7 +154,6 @@ namespace tc
         ss << "  - enable audio: " << capture_.enable_video_ << std::endl;
         ss << "  - capture video type: " << capture_.capture_video_type_ << " (0 => Hook 1 => Primary Screen) " << std::endl;
         ss << "Transmission: \n";
-        ss << "  - network type: " << transmission_.network_type_  << " ( 0 => websocket, 1 => QUIC)"<< std::endl;
         ss << "  - listening port: " << transmission_.listening_port_ << std::endl;
         ss << "Application: \n";
         ss << "  - game path: " << app_.game_path_ << std::endl;

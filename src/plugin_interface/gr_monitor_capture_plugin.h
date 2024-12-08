@@ -21,7 +21,7 @@ namespace tc
         bool OnDestroy() override;
 
         // target: monitor
-        virtual bool StartCapturing(const std::string& target);
+        virtual bool StartCapturing();
         virtual void StopCapturing();
         bool IsMonitorTarget();
 

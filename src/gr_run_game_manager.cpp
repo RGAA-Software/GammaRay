@@ -184,8 +184,8 @@ namespace tc
         auto beg = TimeExt::GetCurrentTimestamp();
         running_processes_ = ProcessHelper::GetProcessList(true);
         auto db_games = this->db_game_manager_->GetAllGames();
-        LOGI("running process: {}", running_processes_.size());
-        LOGI("db games: {}",db_games.size());
+        //LOGI("running process: {}", running_processes_.size());
+        //LOGI("db games: {}",db_games.size());
         for (auto& rp : running_processes_) {
             if (rp->icon_) {
                 QString icons_path = qApp->applicationDirPath() + "/www/icons";
@@ -214,7 +214,7 @@ namespace tc
                     std::string rp_exe_full_path = rp->exe_full_path_;
                     StringExt::Replace(rp_exe_full_path, "\\", "/");
                     if (rp_exe_full_path == exe_full_path) {
-                        LOGI("********Found running game: {}", exe_full_path);
+                        //LOGI("********Found running game: {}", exe_full_path);
                         running_pids.push_back(rp->pid_);
                         break;
                     }
@@ -228,7 +228,7 @@ namespace tc
             }
         }
         auto end = TimeExt::GetCurrentTimestamp();
-        LOGI("check game alive used : {}ms", end - beg);
+        //LOGI("check game alive used : {}ms", end - beg);
     }
 
     std::string GrRunGameManager::GetRunningGamesAsJson() {

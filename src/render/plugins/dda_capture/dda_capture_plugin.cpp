@@ -48,10 +48,10 @@ namespace tc
         return capture_ && init_success_;
     }
 
-    bool DDACapturePlugin::StartCapturing(const std::string& target) {
-        capture_ =  std::make_shared<DDACapture>(this, target);
+    bool DDACapturePlugin::StartCapturing() {
+        capture_ = std::make_shared<DDACapture>(this, capture_monitor_name_);
         if (!capture_->Init()) {
-            LOGE("dda capture init failed for target: {}", target);
+            LOGE("dda capture init failed for target: {}", capture_monitor_name_);
             //msg_notifier->SendAppMessage(CaptureInitFailedMessage {});
             return false;
         }

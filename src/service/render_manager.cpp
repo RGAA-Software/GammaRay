@@ -49,7 +49,7 @@ namespace tc
             ss << arg << " ";
         }
         ss << std::endl;
-        LOGI("Start server \nwork_dir: {} \napp_path: {} \nargs:{}", _work_dir, _app_path, ss.str());
+        LOGI("Start render \nwork_dir: {} \napp_path: {} \nargs:{}", _work_dir, _app_path, ss.str());
 
         auto sp = context_->GetSp();
         auto exist_work_dir = sp->Get(kKeyWorkDir);
@@ -92,9 +92,21 @@ namespace tc
         return true;
     }
 
-    bool RenderManager::ReStart() {
+    bool RenderManager::ReStart(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& _args) {
+        std::stringstream ss;
+        for (auto& arg : _args) {
+            ss << arg << " ";
+        }
+        ss << std::endl;
+        LOGI("ReStart render \nwork_dir: {} \napp_path: {} \nargs:{}", work_dir, app_path, ss.str());
+
+        this->work_dir_ = work_dir;
+        this->app_path_ = app_path;
+        this->app_args_ = ss.str();
+
         this->StopServer();
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
         if (this->work_dir_.empty() || this->app_path_.empty() || this->app_args_.empty()) {
             return false;
         }

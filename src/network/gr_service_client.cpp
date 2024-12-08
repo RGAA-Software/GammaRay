@@ -76,7 +76,7 @@ namespace tc
             auto sub = sm.heart_beat_resp();
             auto hb_idx = sub.index();
             auto is_render_alive = sub.render_status() == RenderStatus::kWorking;
-            LOGI("hb_idx: {}, is render alive: {}", hb_idx, is_render_alive);
+            //LOGI("hb_idx: {}, is render alive: {}", hb_idx, is_render_alive);
             context_->SendAppMessage(MsgServerAlive{
                 .alive_ = is_render_alive,
             });

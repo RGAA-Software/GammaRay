@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
+    DxgiMonitorDetector::Instance()->DetectAdapters();
+
     auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());
     auto log_path = base_dir + "/gr_logs/gammaray.log";
     std::cout << "log path: " << log_path.toStdString() << std::endl;
@@ -50,13 +52,10 @@ int main(int argc, char *argv[]) {
         LOGI("font family : {}", f.toStdString());
     }
 
-    // prepare dirs
     PrepareDirs(base_dir);
 
-    DxgiMonitorDetector::Instance()->DetectAdapters();
     GrWorkspace workspace;
     workspace.setFixedSize(1720, 900);
-//    workspace.setFixedSize(920, 300);
     workspace.show();
 
     return app.exec();

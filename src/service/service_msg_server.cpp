@@ -103,7 +103,12 @@ namespace tc
                 ProcessStopRender();
             }
             else if (type == ServiceMessageType::kRestartServer) {
-                ProcessRestartRender();
+                auto sub = msg.restart_server();
+                std::vector<std::string> args;
+                for (int i = 0; i < sub.args_size(); i++) {
+                    args.push_back(sub.args(i));
+                }
+                ProcessRestartRender(sub.work_dir(), sub.app_path(), args);
             }
             else if (type == ServiceMessageType::kHeartBeat) {
                 auto sub = msg.heart_beat();
@@ -126,8 +131,8 @@ namespace tc
         render_manager_->StopServer();
     }
 
-    void ServiceMsgServer::ProcessRestartRender() {
-        render_manager_->ReStart();
+    void ServiceMsgServer::ProcessRestartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args) {
+        render_manager_->ReStart(work_dir, app_path, args);
     }
 
     void ServiceMsgServer::ProcessHeartBeat(int64_t index) {

@@ -270,7 +270,7 @@ namespace tc
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetCaptureAudio(enabled);
-                    cb_capture_audio_device_->setEnabled(enabled);
+                    cb_capture_audio_device_name_->setEnabled(enabled);
                 });
             }
 
@@ -284,7 +284,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QComboBox(this);
-                cb_capture_audio_device_ = edit;
+                cb_capture_audio_device_name_ = edit;
                 edit->setEnabled(settings_->capture_audio_ == kStTrue);
                 edit->setFixedSize(input_size);
 
@@ -309,7 +309,7 @@ namespace tc
                     if (default_idx != -1) {
                         edit->setCurrentIndex(default_idx);
                     }
-                    settings_->SetCaptureAudioDevice("");
+                    settings_->SetCaptureAudioDeviceId("");
                 }
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -318,7 +318,7 @@ namespace tc
 
                 connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
                     auto target_device_id = devices.at(idx).id_;
-                    settings_->SetCaptureAudioDevice(target_device_id);
+                    settings_->SetCaptureAudioDeviceId(target_device_id);
                 });
             }
             column1_layout->addLayout(segment_layout);
@@ -417,7 +417,7 @@ namespace tc
 
             auto layout = new NoMarginHLayout();
             auto btn = new QPushButton(this);
-            btn->setText(tr("S.A.V.E"));
+            btn->setText(tr("SAVE"));
             btn->setFixedSize(QSize(150, 35));
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
@@ -446,6 +446,22 @@ namespace tc
                         return;
                     }
                     settings_->SetResHeight(res_height);
+                }
+
+                auto monitor_name = cb_capture_monitor_->currentText();
+                auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
+                for (const auto& adapter : adapters) {
+                    if (monitor_name.contains(QString::fromStdString(adapter.display_name))) {
+                        settings_->SetCaptureMonitor(adapter.display_name);
+                    }
+                }
+
+                auto audio_devices = AudioDeviceHelper::DetectAudioDevices();
+                auto audio_device_name = cb_capture_audio_device_name_->currentText().toStdString();
+                for (const auto& dev : audio_devices) {
+                    if (dev.name_ == audio_device_name) {
+                        settings_->SetCaptureAudioDeviceId(dev.id_);
+                    }
                 }
 
                 // Load again

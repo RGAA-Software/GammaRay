@@ -26,6 +26,7 @@ namespace tc
         RECT rect{};
         int width = 0;
         int height = 0;
+        bool primary = false;
 
     public:
         [[nodiscard]] bool IsValid() const {
