@@ -67,6 +67,8 @@ file(COPY ${CMAKE_SOURCE_DIR}/src/render/private.key DESTINATION ${CMAKE_BINARY_
 file(COPY ${CMAKE_SOURCE_DIR}/src/render/certificate.pem DESTINATION ${CMAKE_BINARY_DIR})
 ### CPY
 
+set(ENABLE_HOOK_CAPTURE ON)
+
 add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(src/tests)
@@ -143,7 +145,7 @@ install(TARGETS ${PROJECT_NAME}
 add_custom_target(tc_build_all COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin)
 if(ENABLE_HOOK_CAPTURE)
-    add_dependencies(tc_build_all tc_graphics tc_capture_library tc_graphics_helper tc_graphics_util)
+    add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer plugin_mock_video_stream
