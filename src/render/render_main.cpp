@@ -47,6 +47,7 @@ DEFINE_string(app_game_path, "", "");
 DEFINE_string(app_game_args, "", "");
 
 DEFINE_bool(debug_block, false, "block the render process");
+DEFINE_bool(mock_video, false, "use mocking video plugin");
 
 void UpdateSettings(Settings* settings) {
     if (FLAGS_steam_app_id > 0) {
@@ -114,6 +115,7 @@ void UpdateSettings(Settings* settings) {
     }
 
     settings->block_debug_ = FLAGS_debug_block;
+    settings->capture_.mock_video_ = FLAGS_mock_video;
 }
 
 void PrintInputArgs() {
@@ -137,6 +139,8 @@ void PrintInputArgs() {
     LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));
     LOGI("app_game_path: {}", FLAGS_app_game_path);
     LOGI("app_game_args: {}", FLAGS_app_game_args);
+    LOGI("block debug: {}", FLAGS_debug_block);
+    LOGI("mock video: {}", FLAGS_mock_video);
     LOGI("--------------In args end----------------");
 }
 

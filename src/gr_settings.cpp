@@ -110,6 +110,8 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
         args.push_back(std::format("--{}={}", kStAppGamePath, "desktop"));
         args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
+        args.push_back(std::format("--{}={}", kStDebugBlock, false));
+        args.push_back(std::format("--{}={}", kStMockVideo, false));
         return args;
     }
 

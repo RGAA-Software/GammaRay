@@ -125,9 +125,19 @@ namespace tc
         control_thread_ = Thread::Make("control", 16);
         control_thread_->Poll();
         // desktop capture
-        auto target_monitor = settings_->capture_.capture_monitor_;
-        monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
-        //data_provider_plugin = plugin_manager_->GetMockVideoStreamPlugin();
+        if (settings_->capture_.mock_video_) {
+            LOGI("Use mocking video plugin.");
+            data_provider_plugin = plugin_manager_->GetMockVideoStreamPlugin();
+        }
+        else {
+            if (settings_->capture_.IsVideoHook()) {
+                LOGI("Use hook.");
+            }
+            else {
+                LOGI("Use dda capture plugin.");
+                monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+            }
+        }
 
         if (settings_->capture_.enable_video_) {
             if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {

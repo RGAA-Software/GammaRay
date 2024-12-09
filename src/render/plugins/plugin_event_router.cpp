@@ -67,6 +67,7 @@ namespace tc
             msg.frame_index_ = target_event->frame_index_;
             msg.raw_image_ = target_event->image_;
             msg.adapter_uid_ = -1;
+            msg.frame_format_ = target_event->frame_format_;
             msg_notifier_->SendAppMessage(msg);
         }
         else if (event->event_type_ == GrPluginEventType::kPluginRawAudioFrameEvent) {

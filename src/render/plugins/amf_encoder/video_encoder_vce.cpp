@@ -260,7 +260,7 @@ namespace tc
         EncodeTexture(tex2d, desc.Width, desc.Height, frame_index);
     }
 
-    void VideoEncoderVCE::Encode(const std::shared_ptr<Image> &i420_data, uint64_t frame_index, std::any extra) {
+    void VideoEncoderVCE::Encode(const std::shared_ptr<Image>& i420_data, uint64_t frame_index, std::any extra) {
         extra_ = extra;
     }
 

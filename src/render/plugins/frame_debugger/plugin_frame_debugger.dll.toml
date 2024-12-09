@@ -14,4 +14,4 @@ version_code = 120
 enabled = true
 
 #
-save_encoded_video = false
+save_encoded_video = true
