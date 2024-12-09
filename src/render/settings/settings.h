@@ -55,11 +55,11 @@ namespace tc
         };
 
     public:
-        bool IsVideoHook() {
+        bool IsVideoHook() const {
             return capture_video_type_ == CaptureVideoType::kVideoHook;
         }
 
-        bool IsAudioHook() {
+        bool IsAudioHook() const {
             return capture_audio_type_ == CaptureAudioType::kAudioHook;
         }
 
@@ -71,6 +71,7 @@ namespace tc
         bool send_video_frame_by_shm_;
         std::string capture_monitor_;
         std::string capture_audio_device_;
+        bool mock_video_ = false;
     };
 
     // Transmission

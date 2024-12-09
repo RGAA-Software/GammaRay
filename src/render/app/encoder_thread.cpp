@@ -206,13 +206,15 @@ namespace tc
             }
 
             // plugins: Create encoder plugin
+            // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
+            bool is_mocking = settings_->capture_.mock_video_;
             auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-            if (nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config)) {
+            if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config)) {
                 working_encoder_plugin_ = nvenc_encoder;
             } else {
                 LOGW("Init NVENC failed, will try AMF.");
                 auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                if (amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config)) {
+                if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config)) {
                     working_encoder_plugin_ = amf_encoder;
                 } else {
                     LOGW("Init AMF failed, will try FFmpeg.");

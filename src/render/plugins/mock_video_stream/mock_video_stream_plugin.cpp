@@ -49,6 +49,7 @@ namespace tc
             auto size = mock_image_.cols * mock_image_.rows * mock_image_.channels();
             event->image_ = Image::Make(Data::Make((char*)mock_image_.data, size), width_, height_);
             event->frame_index_ = frame_index_;
+            event->frame_format_ = DXGI_FORMAT_R8G8B8A8_UNORM;
             CallbackEvent(event);
         });
     }

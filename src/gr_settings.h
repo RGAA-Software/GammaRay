@@ -27,6 +27,8 @@ namespace tc
     static const std::string kStNetworkListenPort = "network_listen_port";
     static const std::string kStAppGamePath = "app_game_path";
     static const std::string kStAppGameArgs = "app_game_args";
+    static const std::string kStDebugBlock = "debug_block";
+    static const std::string kStMockVideo = "mock_video";
     static const std::string kStHttpPort = "k_http_port";
     static const std::string kStWsPort = "k_ws_port";
     static const std::string kStCaptureMonitor = "capture_monitor";

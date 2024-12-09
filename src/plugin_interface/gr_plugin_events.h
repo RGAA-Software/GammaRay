@@ -132,6 +132,7 @@ namespace tc
     public:
         std::shared_ptr<Image> image_ = nullptr;
         uint64_t frame_index_ = 0;
+        uint64_t frame_format_ = 0;
     };
 
     // Raw audio frame from plugins
