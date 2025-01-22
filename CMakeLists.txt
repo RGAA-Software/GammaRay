@@ -74,6 +74,7 @@ add_subdirectory(src)
 add_subdirectory(src/tests)
 add_subdirectory(src/service)
 add_subdirectory(src/plugin_interface)
+add_subdirectory(src/uninstall)
 
 ### Translation
 set(TRANSLATION ON)
@@ -135,6 +136,17 @@ target_link_libraries(GammaRayServiceManager PRIVATE Qt${QT_VERSION_MAJOR}::Widg
 target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin sqlite_orm winmm.lib SetupAPI.lib)
 ### Service End
 
+### Uninstall
+add_executable(uninstall WIN32 ${UNINSTALL_SRCS} ${SERVICE_MGR_SRCS})
+SET_TARGET_PROPERTIES(uninstall PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
+add_executable(shadow_deleter ${SHADOW_DELETER_SRCS})
+SET_TARGET_PROPERTIES(shadow_deleter PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
+
+target_link_libraries(uninstall PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
+        Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
+target_link_libraries(uninstall PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin sqlite_orm winmm.lib SetupAPI.lib)
+### Uninstall End
+
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
         BUNDLE DESTINATION .
@@ -143,7 +155,8 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin)
+add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
+        uninstall shadow_deleter)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()

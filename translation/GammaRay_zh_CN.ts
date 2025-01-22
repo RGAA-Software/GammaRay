@@ -238,7 +238,7 @@
     </message>
     <message>
         <location filename="../src/ui/st_general.cpp" line="420"/>
-        <source>S.A.V.E</source>
+        <source>SAVE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -257,22 +257,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="455"/>
+        <location filename="../src/ui/st_general.cpp" line="471"/>
         <source>Save Success</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="455"/>
+        <location filename="../src/ui/st_general.cpp" line="471"/>
         <source>Save settings success! You may RESTART server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="471"/>
+        <location filename="../src/ui/st_general.cpp" line="487"/>
         <source>File Transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="480"/>
+        <location filename="../src/ui/st_general.cpp" line="496"/>
         <source>Default Transfer Folder</source>
         <translation type="unfinished"></translation>
     </message>
