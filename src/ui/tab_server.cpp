@@ -236,7 +236,7 @@ namespace tc
 
                     auto btn_remove = new QPushButton(this);
                     btn_remove->setFixedSize(80, 28);
-                    btn_remove->setText(tr("REMOVE"));
+                    btn_remove->setText(tr("STOP ALL"));
                     item_layout->addSpacing(5);
                     item_layout->addWidget(btn_remove);
                     item_layout->addStretch();

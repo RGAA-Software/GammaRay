@@ -37,6 +37,8 @@ namespace tc
 
     bool DDACapturePlugin::OnCreate(const tc::GrPluginParam& param) {
         GrMonitorCapturePlugin::OnCreate(param);
+        LOGI("DDA Capture monitor: {}", capture_monitor_name_);
+        LOGI("DDA Capture audio device: {}", capture_audio_device_id_);
         return true;
     }
 

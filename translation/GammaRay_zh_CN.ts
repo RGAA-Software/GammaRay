@@ -371,8 +371,12 @@
     <message>
         <location filename="../src/ui/tab_server.cpp" line="145"/>
         <location filename="../src/ui/tab_server.cpp" line="191"/>
-        <location filename="../src/ui/tab_server.cpp" line="239"/>
         <source>REMOVE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="239"/>
+        <source>STOP ALL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

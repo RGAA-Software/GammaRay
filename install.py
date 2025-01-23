@@ -24,9 +24,34 @@ def collceion_program_files(type, force_update, publish, in_target_path):
 
     print("the path is : {}".format(base_path))
 
+    ignore_files = [
+        "plugin_amf_encoder.dll",
+        "plugin_dda_capture.dll",
+        "plugin_ffmpeg_encoder.dll",
+        "plugin_frame_debugger.dll",
+        "plugin_frame_resizer.dll",
+        "plugin_media_recorder.dll",
+        "plugin_mock_video_stream.dll",
+        "plugin_net_rtc.dll",
+        "plugin_net_udp.dll",
+        "plugin_net_ws.dll",
+        "plugin_nvenc_encoder.dll",
+        "plugin_obj_detector.dll",
+        "plugin_opus_encoder.dll",
+        "plugin_was_audio_capture.dll"
+    ]
+
     files_with_ref_path = []
     files = os.listdir(base_path)
     for file in files:
+        found = False
+        for ignore_file in ignore_files:
+            if file == ignore_file:
+                found = True
+                break
+        if found:
+            continue
+
         file_path = base_path + "/" + file
         if ".dll" in file:
             files_with_ref_path.append(file_path)
@@ -37,6 +62,8 @@ def collceion_program_files(type, force_update, publish, in_target_path):
         if ".key" in file:
             files_with_ref_path.append(file_path)
         if ".toml" in file:
+            files_with_ref_path.append(file_path)
+        if ".ico" in file:
             files_with_ref_path.append(file_path)
         if not publish:
             if "data.dat" in file:

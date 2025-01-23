@@ -46,13 +46,21 @@ namespace tc
                 continue;
             }
 
+            if (inter.flags().testFlag(QNetworkInterface::IsLoopBack)
+                || inter.flags().testFlag(QNetworkInterface::IsPointToPoint)) {
+                continue;
+            }
+
             if (inter.flags() & (QNetworkInterface::IsUp | QNetworkInterface::IsRunning)) {
                 entry = inter.addressEntries();
                 int cnt = entry.size() - 1;
                 for (int i = 1; i <= cnt; ++i) {
                     if (entry.at(i).ip().protocol() == QAbstractSocket::IPv4Protocol) {
+                        auto ip = entry.at(i).ip().toString().toStdString();
+                        auto broadcast = entry.at(i).broadcast().toString().toStdString();
+                        LOGI("IP: {}, broadcast: {}", ip, broadcast);
                         if (-1 != inter.name().indexOf("wireless")) {
-                            map_ip.insert({entry.at(i).ip().toString().toStdString(), IPNetworkType::kWireless});
+                            map_ip.insert({ip, IPNetworkType::kWireless});
                         } else if (-1 != inter.name().indexOf("ethernet")) {
                             LOGI("Net Name: {}", inter.name().toStdString());
                             map_ip.insert({entry.at(i).ip().toString().toStdString(), IPNetworkType::kWired});

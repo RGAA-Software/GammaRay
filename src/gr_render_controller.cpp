@@ -64,8 +64,10 @@ namespace tc
         sub->set_work_dir(GetWorkDir().toStdString());
         sub->set_app_path(GetAppPath().toStdString());
         auto args = GrSettings::Instance()->GetArgs();
+        LOGI("Restart args:");
         for (auto& arg : args) {
             sub->add_args(arg);
+            LOGI("{}", arg);
         }
         app_->PostMessage2Service(srv_msg.SerializeAsString());
         return true;

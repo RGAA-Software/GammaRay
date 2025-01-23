@@ -137,7 +137,11 @@ target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_mana
 ### Service End
 
 ### Uninstall
-add_executable(uninstall WIN32 ${UNINSTALL_SRCS} ${SERVICE_MGR_SRCS})
+add_executable(uninstall WIN32
+        icon.rc
+        ${UNINSTALL_SRCS}
+        ${SERVICE_MGR_SRCS}
+        ${CMAKE_SOURCE_DIR}/src/widgets/sized_msg_box.cpp)
 SET_TARGET_PROPERTIES(uninstall PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 add_executable(shadow_deleter ${SHADOW_DELETER_SRCS})
 SET_TARGET_PROPERTIES(shadow_deleter PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
@@ -169,6 +173,7 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/icon.ico"  "${CMAKE_BINARY_DIR}/icon.ico"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_net_udp.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_udp/plugin_net_udp.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_net_udp.dll.toml"

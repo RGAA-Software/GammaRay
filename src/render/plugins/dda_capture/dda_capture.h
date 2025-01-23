@@ -58,7 +58,7 @@ namespace tc
         void Start();
         bool Exit();
         void Capture();
-        CaptureResult CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex, int monitor_index = 0);
+        CaptureResult CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex, int monitor_index);
         void OnCaptureFrame(ID3D11Texture2D *texture, uint8_t monitor_index);
         void SendTextureHandle(const HANDLE &shared_handle, MonitorIndex monitor_index, uint32_t width, uint32_t height, DXGI_FORMAT format);
         int GetFrameIndex(MonitorIndex monitor_index);

@@ -109,7 +109,7 @@ namespace tc
 
                 if (dev_name == capturing_monitor_name_) {
                     capturing_monitor_index_ = index;
-                    LOGI("Capture monitor index: {}, name: {}", capturing_monitor_index_, capturing_monitor_name_);
+                    LOGI("Target capture monitor index: {}, name: {}", capturing_monitor_index_, capturing_monitor_name_);
                 }
 
                 auto func_valid_rect = [](const RECT &rect) -> bool {
