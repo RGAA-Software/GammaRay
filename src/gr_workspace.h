@@ -9,6 +9,7 @@
 #include <memory>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QSystemTrayIcon>
 #include "theme/QtAdvancedStylesheet.h"
 
 namespace tc
@@ -50,6 +51,7 @@ namespace tc
         QPushButton* btn_tab_settings_ = nullptr;
         QStackedWidget* stacked_widget_ = nullptr;
         MainWindowPrivate* theme_ = nullptr;
+        QSystemTrayIcon* sys_tray_icon_ = nullptr;
     };
 
 }

@@ -249,7 +249,7 @@ namespace tc
     }
 
     void GrSystemMonitor::StartServer() {
-        auto srv_mgr = ctx_->GetServerManager();
+        auto srv_mgr = ctx_->GetRenderController();
         srv_mgr->StartServer();
     }
 

@@ -175,7 +175,7 @@ namespace tc
         return msg_notifier_;
     }
 
-    std::shared_ptr<GrRenderController> GrContext::GetServerManager() {
+    std::shared_ptr<GrRenderController> GrContext::GetRenderController() {
         return srv_manager_;
     }
 

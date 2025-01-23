@@ -8,16 +8,16 @@ from shutil import copytree
 
 def collceion_program_files(type, force_update, publish, in_target_path):
     base_path = ""
-    target_folder_suffix = ""
+    #target_folder_suffix = ""
     if type == "debug":
-        base_path = "./cmake-build-debug/"
-        target_folder_suffix = "_debug"
+        base_path = "./../../cmake-build-debug/"
+        #target_folder_suffix = "_debug"
     elif type == "release":
-        base_path = "./cmake-build-release/"
-        target_folder_suffix = "_server_windows"
+        base_path = "./../../cmake-build-release/"
+        #target_folder_suffix = "_server_windows"
     elif type == "rel-debug":
-        base_path = "./cmake-build-relwithdebinfo/"
-        target_folder_suffix = "_server_windows_dbginfo"
+        base_path = "./../../cmake-build-relwithdebinfo/"
+        #target_folder_suffix = "_server_windows_dbginfo"
     else:
         print("don't known the mode : {}, must debug/release".format(sys.argv[1]))
         return
@@ -93,7 +93,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
     folders_path.append(base_path + "qmltooling")
     folders_path.append(base_path + "gr_plugins")
 
-    target_path = base_path + "gammaray" + target_folder_suffix
+    target_path = base_path + "package/packages/com.rgaa.gammaray/data/"#+ "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:
         target_path = in_target_path
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     # param 1. release / debug
     #
     print("arg : {}".format(sys.argv))
-    force_update = False
+    force_update = True
     publish = False
     compile_type = sys.argv[1]
     if len(sys.argv) >= 2:

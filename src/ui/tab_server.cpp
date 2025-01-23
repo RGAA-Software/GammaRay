@@ -502,7 +502,7 @@ namespace tc
     }
 
     void TabServer::RestartServer() {
-        auto srv_mgr = this->context_->GetServerManager();
+        auto srv_mgr = this->context_->GetRenderController();
         //srv_mgr->StopServer();
         srv_mgr->ReStart();
         this->context_->SendAppMessage(MsgServerAlive {

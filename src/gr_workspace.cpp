@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QStackedWidget>
 #include <QApplication>
+#include <QMenu>
 
 #include "widgets/custom_tab_btn.h"
 #include "widgets/layout_helper.h"
@@ -18,6 +19,9 @@
 #include "ui/tab_settings.h"
 #include "gr_settings.h"
 #include "widgets/sized_msg_box.h"
+#include "gr_context.h"
+#include "gr_render_controller.h"
+#include "service/service_manager.h"
 
 namespace tc
 {
@@ -25,6 +29,34 @@ namespace tc
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
+
+        auto menu = new QMenu(this);
+        sys_tray_icon_ = new QSystemTrayIcon(this);
+        sys_tray_icon_->setIcon(QIcon(":/resources/tc_icon.png"));
+        sys_tray_icon_->setToolTip(tr("GammaRay"));
+
+        auto ac_show = new QAction(tr("Show"), this);
+        auto ac_exit = new QAction(tr("Exit"), this);
+
+        connect(ac_show, &QAction::triggered, this, [=, this](bool) {
+            this->show();
+        });
+
+        connect(ac_exit, &QAction::triggered, this, [=, this](bool) {
+            //this->app_->Exit();
+            auto srv_mgr = this->app_->GetContext()->GetServiceManager();
+            srv_mgr->Remove();
+        });
+
+        menu->addAction(ac_show);
+        menu->addAction(ac_exit);
+        sys_tray_icon_->setContextMenu(menu);
+        sys_tray_icon_->show();
+        connect(sys_tray_icon_, &QSystemTrayIcon::activated, this, [=, this](QSystemTrayIcon::ActivationReason reason) {
+            if (reason == QSystemTrayIcon::ActivationReason::DoubleClick) {
+                this->show();
+            }
+        });
 
         theme_ = new MainWindowPrivate(this);
         QString app_dir = qApp->applicationDirPath();
@@ -185,10 +217,10 @@ namespace tc
     }
 
     void GrWorkspace::closeEvent(QCloseEvent *event) {
-        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit GammaRay?"));
+        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Hide"), tr("Do you want to hide GammaRay?"));
         if (dlg->exec() == 0) {
-            app_->Exit();
-            event->accept();
+            this->hide();
+            event->ignore();
         } else {
             event->ignore();
         }

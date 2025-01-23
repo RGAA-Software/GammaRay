@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>GammaRay</DisplayName>
+    <Description>Stream your games and desktop to other devices, and replay gamepad/keyboard/mouse events in host PC</Description>
+    <Version>1.2.0</Version>
+    <ReleaseDate>2025-01-01</ReleaseDate>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+</Package>

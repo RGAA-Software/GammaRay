@@ -114,7 +114,7 @@ namespace tc
     }
 
     void HttpHandler::HandleStopServer(const httplib::Request& req, httplib::Response& res) {
-        auto srv_mgr = context_->GetServerManager();
+        auto srv_mgr = context_->GetRenderController();
         srv_mgr->StopServer();
         auto nr = NetResp::Make(kNetOk, "OK", "");
         res.set_content(nr.Dump(), "application/json");
