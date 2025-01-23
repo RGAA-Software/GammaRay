@@ -119,10 +119,11 @@ namespace tc
     }
 
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
-        auto settings = Settings::Instance();
-        auto frame_index = cap_video_msg.frame_index_;
+        PostEncTask([=, this]() {
+            auto settings = Settings::Instance();
+            auto frame_index = cap_video_msg.frame_index_;
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
-        Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
+            Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
         if(g_render) {
             shared_texture = g_render->OpenSharedTexture(reinterpret_cast<HANDLE>(handle));
             if(!shared_texture) {
@@ -138,120 +139,119 @@ namespace tc
             CopyID3D11Texture2D(shared_texture);
         }
 #endif
-        if (frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
-            || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
-            if (working_encoder_plugin_) {
-                // todo : Test it!
-                working_encoder_plugin_->Exit();
-            }
-            tc::EncoderConfig encoder_config;
-            if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
-                encoder_config.width = cap_video_msg.frame_width_;
-                encoder_config.height = cap_video_msg.frame_height_;
-                encoder_config.encode_width = cap_video_msg.frame_width_;
-                encoder_config.encode_height = cap_video_msg.frame_height_;
-                encoder_config.frame_resize = false;
-            } else {
-                encoder_config.width = settings_->encoder_.encode_width_;
-                encoder_config.height = settings_->encoder_.encode_height_;
-                encoder_config.encode_width = settings_->encoder_.encode_width_;
-                encoder_config.encode_height = settings_->encoder_.encode_height_;
-                encoder_config.frame_resize = true;
-            }
-            encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
-            encoder_config.enable_adaptive_quantization = true;
-            encoder_config.gop_size = -1;
-            encoder_config.quality_preset = 1;
-            encoder_config.fps = 60;
-            encoder_config.multi_pass = tc::ENvdiaEncMultiPass::kMultiPassDisabled;
-            encoder_config.rate_control_mode = tc::ERateControlMode::kRateControlModeCbr;
-            encoder_config.sample_desc_count = 1;
-            encoder_config.supports_intra_refresh = true;
-            encoder_config.texture_format = cap_video_msg.frame_format_;
-            encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
-            encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
-
-            // generate d3d device/context
-            if (!app_->GetD3DDevice() || !app_->GetD3DContext()) {
-                if (!app_->GenerateD3DDevice(cap_video_msg.adapter_uid_)) {
-                    LOGE("Generate D3DDevice failed!");
-                    return;
+            if (frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
+                || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
+                if (working_encoder_plugin_) {
+                    // todo : Test it!
+                    working_encoder_plugin_->Exit();
                 }
-            }
-            else {
-                LOGI("We use d3d device from capture.");
-            }
-
-            encoder_config.d3d11_device_ = app_->GetD3DDevice();
-            encoder_config.d3d11_device_context_ = app_->GetD3DContext();
-
-            // all plugins
-            plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
-                plugin->d3d11_device_ = app_->GetD3DDevice();
-                plugin->d3d11_device_context_ = app_->GetD3DContext();
-            });
-
-            // video frame carrier
-            if (frame_carrier_ != nullptr) {
-                frame_carrier_->Exit();
-                frame_carrier_.reset();
-            }
-            if (encoder_config.frame_resize) {
-                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(), cap_video_msg.adapter_uid_,
-                                                                     true, encoder_config.encode_width, encoder_config.encode_height);
-            }
-            else {
-                frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(),
-                                                                     cap_video_msg.adapter_uid_,false, -1, -1);
-            }
-
-            // plugins: Create encoder plugin
-            // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
-            bool is_mocking = settings_->capture_.mock_video_;
-            auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-            if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config)) {
-                working_encoder_plugin_ = nvenc_encoder;
-            } else {
-                LOGW("Init NVENC failed, will try AMF.");
-                auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config)) {
-                    working_encoder_plugin_ = amf_encoder;
+                tc::EncoderConfig encoder_config;
+                if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
+                    encoder_config.width = cap_video_msg.frame_width_;
+                    encoder_config.height = cap_video_msg.frame_height_;
+                    encoder_config.encode_width = cap_video_msg.frame_width_;
+                    encoder_config.encode_height = cap_video_msg.frame_height_;
+                    encoder_config.frame_resize = false;
                 } else {
-                    LOGW("Init AMF failed, will try FFmpeg.");
-                    auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                    if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config)) {
-                        working_encoder_plugin_ = ffmpeg_encoder;
-                    } else {
-                        LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                    encoder_config.width = settings_->encoder_.encode_width_;
+                    encoder_config.height = settings_->encoder_.encode_height_;
+                    encoder_config.encode_width = settings_->encoder_.encode_width_;
+                    encoder_config.encode_height = settings_->encoder_.encode_height_;
+                    encoder_config.frame_resize = true;
+                }
+                encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
+                encoder_config.enable_adaptive_quantization = true;
+                encoder_config.gop_size = -1;
+                encoder_config.quality_preset = 1;
+                encoder_config.fps = 60;
+                encoder_config.multi_pass = tc::ENvdiaEncMultiPass::kMultiPassDisabled;
+                encoder_config.rate_control_mode = tc::ERateControlMode::kRateControlModeCbr;
+                encoder_config.sample_desc_count = 1;
+                encoder_config.supports_intra_refresh = true;
+                encoder_config.texture_format = cap_video_msg.frame_format_;
+                encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
+                encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
+
+                // generate d3d device/context
+                if (!app_->GetD3DDevice() || !app_->GetD3DContext()) {
+                    if (!app_->GenerateD3DDevice(cap_video_msg.adapter_uid_)) {
+                        LOGE("Generate D3DDevice failed!");
                         return;
                     }
                 }
-            }
-            LOGI("Finally, we use encoder plugin: {}, version: {}", working_encoder_plugin_->GetPluginName(), working_encoder_plugin_->GetVersionName());
-
-            auto video_type = [=]() -> GrPluginEncodedVideoType {
-                if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264) {
-                    return GrPluginEncodedVideoType::kH264;
-                } else if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kHEVC) {
-                    return GrPluginEncodedVideoType::kH265;
-                } else {
-                    return GrPluginEncodedVideoType::kH264;
+                else {
+                    LOGI("We use d3d device from capture.");
                 }
-            } ();
 
-            // plugins: VideoEncoderCreated
-            context_->PostStreamPluginTask([=, this]() {
-                plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                    plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
+                encoder_config.d3d11_device_ = app_->GetD3DDevice();
+                encoder_config.d3d11_device_context_ = app_->GetD3DContext();
+
+                // all plugins
+                plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                    plugin->d3d11_device_ = app_->GetD3DDevice();
+                    plugin->d3d11_device_context_ = app_->GetD3DContext();
                 });
-            });
 
-            frame_width_ = cap_video_msg.frame_width_;
-            frame_height_ = cap_video_msg.frame_height_;
-            encoder_format_ = settings->encoder_.encoder_format_;
-        }
+                // video frame carrier
+                if (frame_carrier_ != nullptr) {
+                    frame_carrier_->Exit();
+                    frame_carrier_.reset();
+                }
+                if (encoder_config.frame_resize) {
+                    frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(), cap_video_msg.adapter_uid_,
+                                                                         true, encoder_config.encode_width, encoder_config.encode_height);
+                }
+                else {
+                    frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(),
+                                                                         cap_video_msg.adapter_uid_,false, -1, -1);
+                }
 
-        PostEncTask([=, this]() {
+                // plugins: Create encoder plugin
+                // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
+                bool is_mocking = settings_->capture_.mock_video_;
+                auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
+                if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config)) {
+                    working_encoder_plugin_ = nvenc_encoder;
+                } else {
+                    LOGW("Init NVENC failed, will try AMF.");
+                    auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
+                    if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config)) {
+                        working_encoder_plugin_ = amf_encoder;
+                    } else {
+                        LOGW("Init AMF failed, will try FFmpeg.");
+                        auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config)) {
+                            working_encoder_plugin_ = ffmpeg_encoder;
+                        } else {
+                            LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                            return;
+                        }
+                    }
+                }
+                LOGI("Finally, we use encoder plugin: {}, version: {}", working_encoder_plugin_->GetPluginName(), working_encoder_plugin_->GetVersionName());
+
+                auto video_type = [=]() -> GrPluginEncodedVideoType {
+                    if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264) {
+                        return GrPluginEncodedVideoType::kH264;
+                    } else if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kHEVC) {
+                        return GrPluginEncodedVideoType::kH265;
+                    } else {
+                        return GrPluginEncodedVideoType::kH264;
+                    }
+                } ();
+
+                // plugins: VideoEncoderCreated
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                        plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
+                    });
+                });
+
+                frame_width_ = cap_video_msg.frame_width_;
+                frame_height_ = cap_video_msg.frame_height_;
+                encoder_format_ = settings->encoder_.encoder_format_;
+            }
+
             // from texture
             if (cap_video_msg.handle_ > 0) {
                 // copy shared texture
