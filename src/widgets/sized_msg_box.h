@@ -18,6 +18,8 @@ namespace tc
 
         static std::shared_ptr<SizedMessageBox> MakeOkBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeOkCancelBox(const QString& title, const QString& msg);
+        static std::shared_ptr<SizedMessageBox> Make2BtnsBox(const QString& title, const QString& msg,
+                                                             const QString& btn_left_text, const QString& btn_right_text);
         static std::shared_ptr<SizedMessageBox> MakeErrorOkBox(const QString& title, const QString& msg);
         static std::shared_ptr<SizedMessageBox> MakeInfoOkBox(const QString& title, const QString& msg);
 

@@ -43,7 +43,7 @@ namespace tc
         });
 
         auto fun_stop_all = [=, this]() {
-            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to EXIT program?"));
+            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit program?"));
             if (msg_box->exec() == 0) {
                 auto srv_mgr = this->app_->GetContext()->GetServiceManager();
                 srv_mgr->Remove();

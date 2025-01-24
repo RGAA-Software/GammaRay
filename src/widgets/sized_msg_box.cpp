@@ -37,6 +37,23 @@ namespace tc
         return msg_box;
     }
 
+    std::shared_ptr<SizedMessageBox> SizedMessageBox::Make2BtnsBox(const QString& title, const QString& msg,
+                                                         const QString& btn_left_text, const QString& btn_right_text) {
+        auto msg_box = std::make_shared<SizedMessageBox>(true, true);
+        msg_box->Resize(400, 220);
+        msg_box->setWindowTitle(title);
+        msg_box->lbl_message_->setText(msg);
+        msg_box->btn_ok_->setText(btn_right_text);
+        connect(msg_box->btn_ok_, &QPushButton::clicked, msg_box.get(), [=]() {
+            msg_box->done(0);
+        });
+        msg_box->btn_cancel_->setText(btn_left_text);
+        connect(msg_box->btn_cancel_, &QPushButton::clicked, msg_box.get(), [=]() {
+            msg_box->done(1);
+        });
+        return msg_box;
+    }
+
     std::shared_ptr<SizedMessageBox> SizedMessageBox::MakeErrorOkBox(const QString& title, const QString& msg) {
         auto box = MakeOkBox(title, msg);
         box->setWindowTitle(title);

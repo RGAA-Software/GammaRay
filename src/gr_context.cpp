@@ -127,7 +127,16 @@ namespace tc
         LOGI("Seed: {}, disks size: {}", seed, disks.size());
         auto md5_str = MD5::Hex(seed);
         std::stringstream ss;
-        ss << md5_str[0]%10 << md5_str[2]%10 << md5_str[4]%10 << md5_str[6]%10 << md5_str[8]%10 << md5_str[10]%10;
+        ss
+        << md5_str[0]%10
+        << md5_str[7]%10
+        << md5_str[11]%10
+        << md5_str[16]%10
+        << md5_str[18]%10
+        << md5_str[23]%10
+        << md5_str[26]%10
+        << md5_str[28]%10
+        << md5_str[30]%10;
         unique_id_ = ss.str();
     }
 

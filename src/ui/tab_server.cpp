@@ -33,6 +33,7 @@
 #include "gr_application.h"
 #include "src/gr_render_controller.h"
 #include "service/service_manager.h"
+#include "tc_common_new/uid_spacer.h"
 
 namespace tc
 {
@@ -59,33 +60,62 @@ namespace tc
             content_layout->addSpacing(20);
 
             // machine code
+            left_layout->addSpacing(26);
             {
                 auto layout = new NoMarginVLayout();
                 layout->addSpacing(30);
 
-                int size = 140;
-                auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
-                auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
-                layout->addWidget(avatar, 0, Qt::AlignHCenter);
+//                int size = 140;
+//                auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
+//                auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
+//                layout->addWidget(avatar, 0, Qt::AlignLeft);
 
-                auto title = new QLabel(this);
-                title->setFixedWidth(250);
-                title->setText(tr("Machine Code"));
-                title->setAlignment(Qt::AlignCenter);
-                title->setStyleSheet(R"(font-size: 15px;)");
-                layout->addSpacing(15);
-                layout->addWidget(title, 0, Qt::AlignHCenter);
+                // Machine Code //
+                {
+                    auto title = new QLabel(this);
+                    title->setFixedWidth(230);
+                    title->setText(tr("Machine Code"));
+                    title->setAlignment(Qt::AlignLeft);
+                    title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
+                    //layout->addSpacing(2);
+                    layout->addWidget(title, 0, Qt::AlignLeft);
 
-                auto msg = new QLabel(this);
-                msg->setText(context_->GetSysUniqueId().c_str());
-                msg->setStyleSheet(R"(font-size: 40px; font-family: ScreenMatrix;)");
-                layout->addSpacing(8);
-                layout->addWidget(msg, 0, Qt::AlignHCenter);
-                layout->addStretch();
-                left_layout->addLayout(layout);
+                    auto msg = new QLabel(this);
+                    msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
+                    auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
+                    msg->setText(uid);
+                    //msg->setStyleSheet(R"(font-size: 30px; font-family: ScreenMatrix;)");
+                    msg->setStyleSheet(R"(font-size: 30px; font-weight: 700; color: #2979ff;)");
+                    layout->addSpacing(5);
+                    layout->addWidget(msg, 0, Qt::AlignLeft);
+                    left_layout->addLayout(layout);
+                }
+
+                // Random Password
+                {
+                    layout->addSpacing(18);
+
+                    auto title = new QLabel(this);
+                    title->setFixedWidth(230);
+                    title->setText(tr("Random Password"));
+                    title->setAlignment(Qt::AlignLeft);
+                    title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
+                    //layout->addSpacing(2);
+                    layout->addWidget(title, 0, Qt::AlignLeft);
+
+                    auto msg = new QLabel(this);
+                    msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
+                    msg->setText("3fdsarg4");
+                    //msg->setStyleSheet(R"(font-size: 30px; font-family: ScreenMatrix;)");
+                    msg->setStyleSheet(R"(font-size: 30px; font-weight: 700; color: #2979ff;)");
+                    layout->addSpacing(5);
+                    layout->addWidget(msg, 0, Qt::AlignLeft);
+                    layout->addStretch();
+                    left_layout->addLayout(layout);
+                }
             }
 
-            left_layout->addSpacing(15);
+            //left_layout->addSpacing(15);
 
             {
                 auto layout = new NoMarginVLayout();
@@ -103,14 +133,22 @@ namespace tc
                 layout->addWidget(qr_info);
                 layout->addStretch();
                 left_layout->addLayout(layout);
+
+                int size = 40;
+                auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
+                auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
+                avatar->setParent(qr_info);
+                avatar->setGeometry((qr_pixmap_.width()-size)/2, (qr_pixmap_.height()-size)/2, size, size);
+
             }
 
             left_root->addSpacing(15);
 
+            auto label_width = 195;
             {
                 auto layout = new NoMarginVLayout();
                 left_root->addLayout(layout);
-                int margin_left = 40;
+                int margin_left = 20;
                 // driver status
                 {
                     auto item_layout = new NoMarginHLayout();
@@ -121,7 +159,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("ViGEm Driver Status"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -136,7 +174,7 @@ namespace tc
                     auto btn_install = new QPushButton(this);
                     btn_install->setFixedSize(80, 28);
                     btn_install->setText(tr("INSTALL"));
-                    item_layout->addSpacing(25);
+                    item_layout->addSpacing(40);
                     item_layout->addWidget(btn_install);
 
                     auto btn_remove = new QPushButton(this);
@@ -167,7 +205,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Renderer Status"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -182,7 +220,7 @@ namespace tc
                     auto btn_restart = new QPushButton(this);
                     btn_restart->setFixedSize(80, 28);
                     btn_restart->setText(tr("RESTART"));
-                    item_layout->addSpacing(25);
+                    item_layout->addSpacing(40);
                     item_layout->addWidget(btn_restart);
 
                     auto btn_remove = new QPushButton(this);
@@ -216,7 +254,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Service Status"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -231,7 +269,7 @@ namespace tc
                     auto btn_install = new QPushButton(this);
                     btn_install->setFixedSize(80, 28);
                     btn_install->setText(tr("INSTALL"));
-                    item_layout->addSpacing(25);
+                    item_layout->addSpacing(40);
                     item_layout->addWidget(btn_install);
 
 //                    auto btn_remove = new QPushButton(this);
@@ -274,7 +312,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Detected IP"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -306,7 +344,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Http Port"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -330,7 +368,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Websocket Port"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -354,7 +392,7 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Streaming Port"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
@@ -377,13 +415,13 @@ namespace tc
                     item_layout->addWidget(icon);
 
                     auto label = new QLabel(this);
-                    label->setFixedSize(170, 40);
+                    label->setFixedSize(label_width, 40);
                     label->setText(tr("Audio Spectrum"));
                     label->setStyleSheet("font-size: 14px;");
                     item_layout->addWidget(label);
 
                     auto value = new QLabel(this);
-                    value->setFixedSize(170, 40);
+                    value->setFixedSize(label_width, 40);
                     value->setStyleSheet("font-size: 14px;");
                     lbl_audio_format_ = value;
                     item_layout->addWidget(value);

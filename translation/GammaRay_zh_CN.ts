@@ -152,127 +152,137 @@
 <context>
     <name>tc::StGeneral</name>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="56"/>
+        <location filename="../src/ui/st_general.cpp" line="57"/>
         <source>Encoder Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="65"/>
+        <location filename="../src/ui/st_general.cpp" line="66"/>
         <source>Bitrate(M)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="84"/>
+        <location filename="../src/ui/st_general.cpp" line="85"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="118"/>
+        <location filename="../src/ui/st_general.cpp" line="119"/>
         <source>Resize Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="140"/>
+        <location filename="../src/ui/st_general.cpp" line="141"/>
         <source>Resize Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="158"/>
+        <location filename="../src/ui/st_general.cpp" line="159"/>
         <source>Resize Height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="183"/>
+        <location filename="../src/ui/st_general.cpp" line="184"/>
         <source>Capture Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="192"/>
+        <location filename="../src/ui/st_general.cpp" line="193"/>
         <source>Capture Video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="215"/>
+        <location filename="../src/ui/st_general.cpp" line="216"/>
         <source>Capture Video Monitor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="258"/>
+        <location filename="../src/ui/st_general.cpp" line="259"/>
         <source>Capture Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="281"/>
+        <location filename="../src/ui/st_general.cpp" line="282"/>
         <source>Capture Audio Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="332"/>
+        <location filename="../src/ui/st_general.cpp" line="333"/>
         <source>Network Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="341"/>
+        <location filename="../src/ui/st_general.cpp" line="342"/>
         <source>Network Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="359"/>
+        <location filename="../src/ui/st_general.cpp" line="360"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="377"/>
+        <location filename="../src/ui/st_general.cpp" line="378"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="395"/>
+        <location filename="../src/ui/st_general.cpp" line="396"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="414"/>
+        <location filename="../src/ui/st_general.cpp" line="415"/>
         <source>Save Settings Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="420"/>
+        <location filename="../src/ui/st_general.cpp" line="421"/>
         <source>SAVE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="428"/>
+        <location filename="../src/ui/st_general.cpp" line="429"/>
         <source>Bitrate is none!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="437"/>
+        <location filename="../src/ui/st_general.cpp" line="438"/>
         <source>Resolution width is none!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="445"/>
+        <location filename="../src/ui/st_general.cpp" line="446"/>
         <source>Resolution height is none!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="471"/>
+        <location filename="../src/ui/st_general.cpp" line="472"/>
         <source>Save Success</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="471"/>
-        <source>Save settings success! You may RESTART server.</source>
+        <location filename="../src/ui/st_general.cpp" line="473"/>
+        <source>Save settings success! Do you want to restart Renderer?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="487"/>
+        <location filename="../src/ui/st_general.cpp" line="473"/>
+        <source>Later</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/st_general.cpp" line="473"/>
+        <source>Restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/st_general.cpp" line="493"/>
         <source>File Transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/st_general.cpp" line="496"/>
+        <location filename="../src/ui/st_general.cpp" line="502"/>
         <source>Default Transfer Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -318,94 +328,99 @@
 <context>
     <name>tc::TabServer</name>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="73"/>
+        <location filename="../src/ui/tab_server.cpp" line="77"/>
         <source>Machine Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="125"/>
+        <location filename="../src/ui/tab_server.cpp" line="100"/>
+        <source>Random Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tab_server.cpp" line="161"/>
         <source>ViGEm Driver Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="138"/>
-        <location filename="../src/ui/tab_server.cpp" line="233"/>
+        <location filename="../src/ui/tab_server.cpp" line="174"/>
+        <location filename="../src/ui/tab_server.cpp" line="269"/>
         <source>INSTALL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="151"/>
+        <location filename="../src/ui/tab_server.cpp" line="187"/>
         <source>Install ViGEm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="151"/>
+        <location filename="../src/ui/tab_server.cpp" line="187"/>
         <source>Do you want to install ViGEm?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="171"/>
+        <location filename="../src/ui/tab_server.cpp" line="207"/>
         <source>Renderer Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="198"/>
+        <location filename="../src/ui/tab_server.cpp" line="234"/>
         <source>Restart Renderer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="198"/>
+        <location filename="../src/ui/tab_server.cpp" line="234"/>
         <source>Do you want to restart Renderer?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="220"/>
+        <location filename="../src/ui/tab_server.cpp" line="256"/>
         <source>Service Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="184"/>
+        <location filename="../src/ui/tab_server.cpp" line="220"/>
         <source>RESTART</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="145"/>
-        <location filename="../src/ui/tab_server.cpp" line="191"/>
+        <location filename="../src/ui/tab_server.cpp" line="181"/>
+        <location filename="../src/ui/tab_server.cpp" line="227"/>
         <source>REMOVE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="246"/>
+        <location filename="../src/ui/tab_server.cpp" line="282"/>
         <source>Install Service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="246"/>
+        <location filename="../src/ui/tab_server.cpp" line="282"/>
         <source>Do you want to install Service?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="278"/>
+        <location filename="../src/ui/tab_server.cpp" line="314"/>
         <source>Detected IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="310"/>
+        <location filename="../src/ui/tab_server.cpp" line="346"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="334"/>
+        <location filename="../src/ui/tab_server.cpp" line="370"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="358"/>
+        <location filename="../src/ui/tab_server.cpp" line="394"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="381"/>
+        <location filename="../src/ui/tab_server.cpp" line="417"/>
         <source>Audio Spectrum</source>
         <translation type="unfinished"></translation>
     </message>

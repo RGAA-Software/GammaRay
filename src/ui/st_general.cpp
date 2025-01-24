@@ -12,6 +12,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/audio_device_helper.h"
+#include "app_messages.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -468,8 +469,13 @@ namespace tc
                 settings_->Load();
 
                 // Save success dialog
-                auto msg_box = SizedMessageBox::MakeOkBox(tr("Save Success"), tr("Save settings success! You may RESTART server."));
-                msg_box->exec();
+                auto msg_box = SizedMessageBox::Make2BtnsBox(tr("Save Success"),
+                    tr("Save settings success! Do you want to restart Renderer?"), tr("Later"), tr("Restart"));
+                if (msg_box->exec() == 0) {
+                    // restart server now
+                    this->context_->SendAppMessage(AppMsgRestartServer{});
+                }
+
             });
 
             layout->addStretch();
