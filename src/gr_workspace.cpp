@@ -35,8 +35,8 @@ namespace tc
         sys_tray_icon_->setIcon(QIcon(":/resources/tc_icon.png"));
         sys_tray_icon_->setToolTip(tr("GammaRay"));
 
-        auto ac_show = new QAction(tr("Show"), this);
-        auto ac_exit = new QAction(tr("STOP ALL"), this);
+        auto ac_show = new QAction(tr("Show Panel"), this);
+        auto ac_exit = new QAction(tr("Exit Program"), this);
 
         connect(ac_show, &QAction::triggered, this, [=, this](bool) {
             this->showNormal();
