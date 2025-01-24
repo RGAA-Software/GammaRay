@@ -46,10 +46,12 @@ namespace tc
         }
 
         // default
+        LOGI("Load from db, capture monitor is: {}", capture_monitor_);
         if (capture_monitor_.empty()) {
             auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
             for (const auto& adapter : adapters) {
                 if (adapter.primary) {
+                    LOGI("Use primary monitor: {}", adapter.display_name);
                     SetCaptureMonitor(adapter.display_name);
                 }
             }

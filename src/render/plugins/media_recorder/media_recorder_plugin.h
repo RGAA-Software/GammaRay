@@ -5,7 +5,7 @@
 #ifndef GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
-#include "plugin_interface/gr_stream_plugin.h"
+#include "render/plugin_interface/gr_stream_plugin.h"
 
 namespace tc
 {

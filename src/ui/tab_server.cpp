@@ -234,11 +234,12 @@ namespace tc
                     item_layout->addSpacing(25);
                     item_layout->addWidget(btn_install);
 
-                    auto btn_remove = new QPushButton(this);
-                    btn_remove->setFixedSize(80, 28);
-                    btn_remove->setText(tr("STOP ALL"));
-                    item_layout->addSpacing(5);
-                    item_layout->addWidget(btn_remove);
+//                    auto btn_remove = new QPushButton(this);
+//                    btn_remove->setFixedSize(80, 28);
+//                    btn_remove->setText(tr("STOP ALL"));
+//                    btn_remove->setProperty("class", "danger");
+//                    item_layout->addSpacing(5);
+//                    item_layout->addWidget(btn_remove);
                     item_layout->addStretch();
 
                     connect(btn_install, &QPushButton::clicked, this, [=, this]() {
@@ -250,14 +251,14 @@ namespace tc
                         }
                     });
 
-                    connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
-                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"), tr("Do you want to remove Service?"));
-                        if (msg_box->exec() == 0) {
-                            this->context_->PostTask([=, this]() {
-                                this->context_->GetServiceManager()->Remove();
-                            });
-                        }
-                    });
+//                    connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
+//                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"), tr("Do you want to STOP ALL?"));
+//                        if (msg_box->exec() == 0) {
+//                            this->context_->PostTask([=, this]() {
+//                                this->context_->GetServiceManager()->Remove();
+//                            });
+//                        }
+//                    });
 
                     layout->addLayout(item_layout);
                 }

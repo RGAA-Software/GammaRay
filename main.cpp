@@ -39,12 +39,14 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    DxgiMonitorDetector::Instance()->DetectAdapters();
-
     auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());
     auto log_path = base_dir + "/gr_logs/gammaray.log";
     std::cout << "log path: " << log_path.toStdString() << std::endl;
     Logger::InitLog(log_path.toStdString(), true);
+
+    auto mon_detector = DxgiMonitorDetector::Instance();
+    mon_detector->DetectAdapters();
+    mon_detector->PrintAdapters();
 
     int id = QFontDatabase::addApplicationFont(":/resources/font/matrix.ttf");
     auto families = QFontDatabase::applicationFontFamilies(id);

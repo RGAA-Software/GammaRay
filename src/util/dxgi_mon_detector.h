@@ -14,6 +14,7 @@
 #include <cctype>
 #include <locale>
 #include <codecvt>
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -31,6 +32,11 @@ namespace tc
     public:
         [[nodiscard]] bool IsValid() const {
             return width > 0 && height > 0;
+        }
+
+        void Dump() {
+            LOGI("Monitor Info: {}, primary: {}, LowPart: {}, ({},{}), {}x{}",
+                 display_name, primary, LowPart, rect.left, rect.top, width, height);
         }
 
     };

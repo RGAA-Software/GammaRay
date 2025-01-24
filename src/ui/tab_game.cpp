@@ -227,7 +227,7 @@ namespace tc
             }
 
             steam_mgr_->ScanInstalledGames(false);
-            steam_mgr_->DumpGamesInfo();
+            //steam_mgr_->DumpGamesInfo();
 
             auto steam_apps = steam_mgr_->GetInstalledGames();
             std::vector<TcDBGamePtr> scan_games;

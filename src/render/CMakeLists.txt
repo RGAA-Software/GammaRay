@@ -1,6 +1,7 @@
 project(GammaRayRender VERSION 0.1 LANGUAGES CXX)
 
 add_subdirectory(settings)
+add_subdirectory(plugin_interface)
 add_subdirectory(plugins)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network)

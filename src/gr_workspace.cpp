@@ -36,16 +36,22 @@ namespace tc
         sys_tray_icon_->setToolTip(tr("GammaRay"));
 
         auto ac_show = new QAction(tr("Show"), this);
-        auto ac_exit = new QAction(tr("Exit"), this);
+        auto ac_exit = new QAction(tr("STOP ALL"), this);
 
         connect(ac_show, &QAction::triggered, this, [=, this](bool) {
-            this->show();
+            this->showNormal();
         });
 
+        auto fun_stop_all = [=, this]() {
+            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to EXIT program?"));
+            if (msg_box->exec() == 0) {
+                auto srv_mgr = this->app_->GetContext()->GetServiceManager();
+                srv_mgr->Remove();
+            }
+        };
+
         connect(ac_exit, &QAction::triggered, this, [=, this](bool) {
-            //this->app_->Exit();
-            auto srv_mgr = this->app_->GetContext()->GetServiceManager();
-            srv_mgr->Remove();
+            fun_stop_all();
         });
 
         menu->addAction(ac_show);
@@ -151,6 +157,20 @@ namespace tc
             }
 
             layout->addStretch();
+
+            // stop all
+            {
+                auto btn = new QPushButton(this);
+                btn->setText(tr("Exit Program"));
+                btn->setProperty("class", "danger");
+                btn->setProperty("flat", true);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    fun_stop_all();
+                });
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+                layout->addSpacing(15);
+            }
 
             // version
             {
