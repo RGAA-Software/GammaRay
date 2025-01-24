@@ -375,52 +375,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="239"/>
-        <source>STOP ALL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tab_server.cpp" line="245"/>
+        <location filename="../src/ui/tab_server.cpp" line="246"/>
         <source>Install Service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="245"/>
+        <location filename="../src/ui/tab_server.cpp" line="246"/>
         <source>Do you want to install Service?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="254"/>
-        <source>Remove Service</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tab_server.cpp" line="254"/>
-        <source>Do you want to remove Service?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tab_server.cpp" line="277"/>
+        <location filename="../src/ui/tab_server.cpp" line="278"/>
         <source>Detected IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="309"/>
+        <location filename="../src/ui/tab_server.cpp" line="310"/>
         <source>Http Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="333"/>
+        <location filename="../src/ui/tab_server.cpp" line="334"/>
         <source>Websocket Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="357"/>
+        <location filename="../src/ui/tab_server.cpp" line="358"/>
         <source>Streaming Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/tab_server.cpp" line="380"/>
+        <location filename="../src/ui/tab_server.cpp" line="381"/>
         <source>Audio Spectrum</source>
         <translation type="unfinished"></translation>
     </message>

@@ -25,3 +25,6 @@
 [submodule "deps/tc_opus_codec_new"]
 	path = deps/tc_opus_codec_new
 	url = git@github.com:RGAA-Software/tc_opus_codec_new.git
+[submodule "deps/tc_client_sdk_new"]
+	path = deps/tc_client_sdk_new
+	url = git@github.com:RGAA-Software/tc_client_sdk_new.git
