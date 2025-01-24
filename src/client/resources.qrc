@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/image/bc_icon.png</file>
+        <file>resources/image/bc_icon_raw.png</file>
+        <file>resources/image/empty.svg</file>
+        <file>resources/image/windows.svg</file>
+        <file>resources/image/ic_expand.svg</file>
+        <file>resources/image/ic_audio_off.svg</file>
+        <file>resources/image/ic_audio_on.svg</file>
+        <file>resources/image/ic_clipboard_off.svg</file>
+        <file>resources/image/ic_clipboard_on.svg</file>
+        <file>resources/image/ic_close.svg</file>
+        <file>resources/image/ic_debug_on.svg</file>
+        <file>resources/image/ic_debug_off.svg</file>
+        <file>resources/image/ic_fullscreen_exit.svg</file>
+        <file>resources/image/ic_fullscreen.svg</file>
+        <file>resources/image/ic_settings.svg</file>
+        <file>resources/image/ic_stream.svg</file>
+        <file>resources/image/ic_minimize.svg</file>
+        <file>resources/image/ic_volume_on.svg</file>
+        <file>resources/image/ic_volume_off.svg</file>
+        <file>resources/image/ic_control.svg</file>
+        <file>resources/image/ic_desktop.svg</file>
+        <file>resources/image/ic_file_transfer.svg</file>
+        <file>resources/image/ic_mode.svg</file>
+        <file>resources/image/ic_open_notification.svg</file>
+        <file>resources/image/ic_close_notification.svg</file>
+        <file>resources/image/ic_mail.svg</file>
+        <file>resources/image/test_cover.jpg</file>
+        <file>resources/image/tc_icon.png</file>
+        <file>resources/image/tc_icon_raw.png</file>
+        <file>resources/font/blade.ttf</file>
+        <file>resources/font/quixotic-1.otf</file>
+        <file>resources/image/ic_transfer.svg</file>
+        <file>resources/image/ic_arrow_right_1.svg</file>
+        <file>resources/image/ic_arrow_right_2.svg</file>
+        <file>resources/image/ic_computer.svg</file>
+        <file>resources/image/ic_check.svg</file>
+        <file>resources/image/logo_text.png</file>
+    </qresource>
+</RCC>

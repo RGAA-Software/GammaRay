@@ -28,3 +28,6 @@
 [submodule "deps/tc_client_sdk_new"]
 	path = deps/tc_client_sdk_new
 	url = git@github.com:RGAA-Software/tc_client_sdk_new.git
+[submodule "deps/tc_qt_widget"]
+	path = deps/tc_qt_widget
+	url = git@github.com:RGAA-Software/tc_qt_widget.git

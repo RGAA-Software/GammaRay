@@ -1,0 +1,63 @@
+{
+    "name" : "material",
+    "icon" : "material_icon_x.svg",
+    "css_template" : "material.css.template",
+    "default_theme" : "dark_teal",
+
+    "variables" : {
+        "font_family" : "Roboto",
+        "font_size" : "12px",
+        "line_height" : "12px",
+        "danger" :  "#dc3545",
+        "warning" : "#ffc107",
+        "success" : "#17a2b8"
+    },
+
+    "resources" : {
+        "primary" : {
+            "#0000ff" : "primaryColor",
+            "#ff0000" : "secondaryColor",
+            "#000000" : "#ffffff00"
+        },
+        "disabled" : {
+            "#0000ff" : "secondaryLightColor",
+            "#ff0000" : "secondaryColor",
+            "#000000" : "#ffffff00"
+        }
+    },
+    
+    "icon_colors" : {
+        "#03b8e5" : "secondaryTextColor"
+    },    
+
+    "palette" : {
+        "active" : {
+            "Window" : "",
+            "WindowText" : "secondaryTextColor",
+            "Base" : "",
+            "AlternateBase" : "",
+            "ToolTipBase" : "",
+            "ToolTipText" : "",
+            "PlaceholderText" : "",
+            "Text" : "secondaryTextColor",
+            "Button" : "",
+            "ButtonText" : "secondaryTextColor",
+            "BrightText" : "",
+            "Light" : "secondaryColor",
+            "Midlight" : "",
+            "Dark" : "",
+            "Mid" : "",
+            "Shadow" : "",
+            "Highlight" : "",
+            "HighlightedText" : ""
+        },
+
+        "inactive" : {
+
+        },
+
+        "disabled" : {
+
+        }
+    }
+}

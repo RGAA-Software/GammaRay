@@ -18,6 +18,7 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 #find_package(OpenSSL REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
+find_package(SDL2 CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -38,6 +39,8 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/include/third_party/libyuv/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/leveldb/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/render)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_qt_widget)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_client_sdk_new)
 
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64)
@@ -46,6 +49,12 @@ link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/openssl/x64/lib/VC/static)
 if(MSVC)
     add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
     add_compile_options("/bigobj")
+    include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/include)
+    link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64)
+    include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/include)
+    link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/x64)
+    include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/openssl/include)
+    link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/openssl/x64/lib/VC)
 endif()
 
 if(MSVC)
@@ -75,6 +84,7 @@ add_subdirectory(src)
 add_subdirectory(src/tests)
 add_subdirectory(src/service)
 add_subdirectory(src/uninstall)
+add_subdirectory(src/client)
 
 ### Translation
 set(TRANSLATION ON)
@@ -160,13 +170,13 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter)
+        uninstall shadow_deleter GammaRayClient GammaRayClientInner)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer plugin_mock_video_stream
-        plugin_was_audio_capture plugin_opus_encoder tc_sdk
+        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget
 )
 
 add_custom_command(TARGET tc_build_all POST_BUILD
