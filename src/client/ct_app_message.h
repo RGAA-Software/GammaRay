@@ -10,7 +10,7 @@
 
 #include "db/stream_item.h"
 #include "tc_message.pb.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 
 namespace tc
 {

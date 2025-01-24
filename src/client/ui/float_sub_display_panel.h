@@ -7,7 +7,7 @@
 
 #include "base_widget.h"
 #include <QPainter>
-#include "app_message.h"
+#include "client/ct_app_message.h"
 
 namespace tc
 {

@@ -2,9 +2,9 @@
 // Created by RGAA on 2024/3/8.
 //
 
-#include "application.h"
+#include "client/ct_application.h"
 
-#include "app_message.h"
+#include "client/ct_app_message.h"
 #include <QApplication>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
@@ -17,13 +17,13 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread.h"
 #include "ui/create_stream_dialog.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "ui/widget_helper.h"
 #include "ui/stream_content.h"
 #include "ui/settings_content.h"
 #include "ui/about_content.h"
 #include "ui/no_margin_layout.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 #include "ui/sized_msg_box.h"
 
 namespace tc

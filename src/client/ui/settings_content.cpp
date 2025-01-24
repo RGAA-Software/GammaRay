@@ -6,7 +6,7 @@
 
 #include "switch_button.h"
 #include "widget_helper.h"
-#include "Settings.h"
+#include "client/ct_settings.h"
 #include "no_margin_layout.h"
 #include "multi_display_mode_widget.h"
 

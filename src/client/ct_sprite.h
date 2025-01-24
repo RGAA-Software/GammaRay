@@ -6,7 +6,7 @@
 
 #include <QOpenGLFunctions_3_3_Core>
 
-#include "renderer.h"
+#include "client/ct_renderer.h"
 
 namespace tc
 {

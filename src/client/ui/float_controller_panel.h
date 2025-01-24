@@ -6,7 +6,7 @@
 #define GAMMARAYPC_FLOAT_CONTROLLER_PANEL_H
 
 #include "base_widget.h"
-#include "app_message.h"
+#include "client/ct_app_message.h"
 
 namespace tc
 {

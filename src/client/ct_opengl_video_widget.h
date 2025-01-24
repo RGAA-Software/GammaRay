@@ -16,7 +16,7 @@
 
 #include "tc_client_sdk_new/gl/raw_image.h"
 #include "tc_message.pb.h"
-#include "video_widget_event.h"
+#include "ct_video_widget_event.h"
 #include "sdk_messages.h"
 
 namespace tc

@@ -3,11 +3,11 @@
 //
 
 #include "file_transfer.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/time_ext.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 #include "fs_object.h"
 #include "tc_message.pb.h"
 #include "ui/sized_msg_box.h"

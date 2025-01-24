@@ -5,7 +5,7 @@
 #include "notification_panel.h"
 #include "no_margin_layout.h"
 #include "notification_item.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
 

@@ -4,7 +4,7 @@
 
 #include "debug_panel.h"
 #include "key_state_panel.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "no_margin_layout.h"
 #include <QLabel>
 #include "float_icon.h"

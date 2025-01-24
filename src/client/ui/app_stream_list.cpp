@@ -11,13 +11,13 @@
 
 #include "db/stream_item.h"
 #include "db/stream_db_manager.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "widget_helper.h"
 #include "message_dialog.h"
 #include "stream_item_widget.h"
-#include "Application.h"
-#include "client/app_message.h"
+#include "client/ct_application.h"
+#include "client/ct_app_message.h"
 #include "create_stream_dialog.h"
 #include "stream_content.h"
 

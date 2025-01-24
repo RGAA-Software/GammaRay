@@ -4,8 +4,8 @@
 
 #include "create_stream_dialog.h"
 
-#include "app_message.h"
-#include "client_context.h"
+#include "client/ct_app_message.h"
+#include "client/ct_client_context.h"
 
 #include <QValidator>
 

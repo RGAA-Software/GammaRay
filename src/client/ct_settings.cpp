@@ -2,7 +2,7 @@
 // Created by RGAA on 2023-08-10.
 //
 
-#include "Settings.h"
+#include "client/ct_settings.h"
 
 #include "tc_common_new/shared_preference.h"
 

@@ -4,7 +4,7 @@
 
 #include "app_content.h"
 
-#include "settings.h"
+#include "client/ct_settings.h"
 
 #include <QPainter>
 #include <QPen>

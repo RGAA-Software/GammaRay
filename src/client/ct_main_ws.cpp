@@ -11,12 +11,12 @@
 #include <QDebug>
 
 #include "thunder_sdk.h"
-#include "client_context.h"
-#include "workspace.h"
-#include "application.h"
+#include "client/ct_client_context.h"
+#include "client/ct_workspace.h"
+#include "client/ct_application.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 

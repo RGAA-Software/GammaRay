@@ -16,14 +16,14 @@
 #include <chrono>
 #include <thread>
 
-#include "shader_program.h"
-#include "opengl_video_widget.h"
-#include "video_widget_shaders.h"
+#include "ct_shader_program.h"
+#include "ct_opengl_video_widget.h"
+#include "ct_video_widget_shaders.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
-#include "director.h"
-#include "sprite.h"
+#include "client/ct_director.h"
+#include "ct_sprite.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/file.h"
 

@@ -1,13 +1,13 @@
-#include "video_widget_event.h"
+#include "ct_video_widget_event.h"
 
 #include "tc_message.pb.h"
-#include "qt_key_converter.h"
+#include "ct_qt_key_converter.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
-#include "client_context.h"
-#include "app_message.h"
-#include "settings.h"
+#include "client/ct_client_context.h"
+#include "client/ct_app_message.h"
+#include "client/ct_settings.h"
 
 #ifdef WIN32
 #include <Windows.h>

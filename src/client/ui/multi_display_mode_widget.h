@@ -9,8 +9,7 @@
 #include <QPainter>
 #include <functional>
 
-#include "Settings.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 
 namespace tc
 {

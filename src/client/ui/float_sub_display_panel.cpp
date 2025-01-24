@@ -6,10 +6,10 @@
 #include "no_margin_layout.h"
 #include "switch_button.h"
 #include "background_widget.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 #include "float_3rd_scale_panel.h"
 #include "float_3rd_resolution_panel.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include <QLabel>
 

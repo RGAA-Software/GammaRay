@@ -7,9 +7,9 @@
 #include <QFontDatabase>
 
 #include "thunder_sdk.h"
-#include "client_context.h"
-#include "workspace.h"
-#include "application.h"
+#include "client/ct_client_context.h"
+#include "client/ct_workspace.h"
+#include "client/ct_application.h"
 
 using namespace tc;
 

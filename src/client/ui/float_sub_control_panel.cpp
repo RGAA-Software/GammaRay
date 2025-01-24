@@ -6,7 +6,7 @@
 #include "no_margin_layout.h"
 #include "switch_button.h"
 #include "background_widget.h"
-#include "settings.h"
+#include "client/ct_settings.h"
 #include <QLabel>
 
 namespace tc

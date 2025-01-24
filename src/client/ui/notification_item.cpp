@@ -4,7 +4,7 @@
 
 #include"notification_item.h"
 #include "no_margin_layout.h"
-#include "client_context.h"
+#include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/num_formatter.h"
 #include "tc_common_new/time_ext.h"

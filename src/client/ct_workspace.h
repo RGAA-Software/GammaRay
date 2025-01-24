@@ -9,7 +9,7 @@
 #include <QMainWindow>
 #include "thunder_sdk.h"
 #include "theme/QtAdvancedStylesheet.h"
-#include "app_message.h"
+#include "client/ct_app_message.h"
 
 namespace tc
 {

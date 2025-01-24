@@ -2,13 +2,13 @@
 // Created by RGAA on 16/08/2024.
 //
 
-#include "clipboard_manager.h"
-#include "client_context.h"
+#include "client/ct_clipboard_manager.h"
+#include "client/ct_client_context.h"
 #include <QGuiApplication>
 #include <QClipboard>
 #include "tc_common_new/log.h"
-#include "app_message.h"
-#include "settings.h"
+#include "client/ct_app_message.h"
+#include "client/ct_settings.h"
 
 namespace tc
 {

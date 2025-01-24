@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "opengl_api.h"
+#include "ct_opengl_api.h"
 
 namespace tc
 {

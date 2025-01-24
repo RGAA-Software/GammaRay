@@ -2,14 +2,14 @@
 // Created by RGAA on 2023-12-27.
 //
 
-#include "client_context.h"
+#include "client/ct_client_context.h"
 
-#include "settings.h"
+#include "client/ct_settings.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/thread.h"
 #include "db/stream_db_manager.h"
-#include "app_message.h"
+#include "client/ct_app_message.h"
 #include <QTimer>
 
 namespace tc

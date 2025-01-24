@@ -15,8 +15,8 @@ link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
 set(RES ${CMAKE_SOURCE_DIR}/resources/font.qrc ${CMAKE_SOURCE_DIR}/resources/main.qrc ${CMAKE_SOURCE_DIR}/resources/qss.qrc resources.qrc)
 add_compile_options(/bigobj)
 set(SRCS
-        main.cpp
-        client_context.cpp
+        ct_main.cpp
+        ct_client_context.cpp
         icon.rc ${RES}
         ui/switch_button.cpp
         ui/float_button.cpp
@@ -37,25 +37,25 @@ set(SRCS
         ui/multi_display_mode_widget.cpp
         db/stream_db_manager.cpp
         db/stream_item.cpp
-        application.cpp
-        settings.cpp
+        ct_application.cpp
+        ct_settings.cpp
         ../theme/QtAdvancedStylesheet.cpp
 )
 
 set(SRCS_WS
-        main_ws.cpp
-        client_context.cpp
-        workspace.cpp
-        director.cpp
-        video_widget_event.cpp
-        shader_program.cpp
-        opengl_image_reader.cpp
-        renderer.cpp
-        sprite.cpp
-        opengl_video_widget.cpp
-        qt_key_converter.cpp
-        audio_player.cpp
-        clipboard_manager.cpp
+        ct_main_ws.cpp
+        ct_client_context.cpp
+        ct_workspace.cpp
+        ct_director.cpp
+        ct_video_widget_event.cpp
+        ct_shader_program.cpp
+        ct_opengl_image_reader.cpp
+        ct_renderer.cpp
+        ct_sprite.cpp
+        ct_opengl_video_widget.cpp
+        ct_qt_key_converter.cpp
+        ct_audio_player.cpp
+        ct_clipboard_manager.cpp
         icon.rc ${RES}
         ui/switch_button.cpp
         ui/float_button.cpp
@@ -69,7 +69,7 @@ set(SRCS_WS
         ui/background_widget.cpp
         db/stream_db_manager.cpp
         db/stream_item.cpp
-        settings.cpp
+        ct_settings.cpp
         ../theme/QtAdvancedStylesheet.cpp
         ui/float_controller.cpp
         ui/base_widget.cpp
