@@ -37,9 +37,16 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
      component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@StartMenuDir@/GammaRay.lnk",
-            "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/icon.ico",
+            "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/gr_icon.ico",
             "description=Open GammaRay");
 
-    component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@DesktopDir@/GammaRay.lnk", "iconPath=@TargetDir@/icon.ico",
+     component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@DesktopDir@/GammaRay.lnk", "iconPath=@TargetDir@/gr_icon.ico",
+        "workingDirectory=@TargetDir@");
+
+     component.addOperation("CreateShortcut", "@TargetDir@/GammaRayClient.exe", "@StartMenuDir@/GammaRayClient.lnk",
+            "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/gr_client_icon.ico",
+            "description=Open GammaRayClient");
+
+     component.addOperation("CreateShortcut", "@TargetDir@/GammaRayClient.exe", "@DesktopDir@/GammaRayClient.lnk", "iconPath=@TargetDir@/gr_client_icon.ico",
         "workingDirectory=@TargetDir@");
 }

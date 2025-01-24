@@ -1,3 +1,3 @@
 python install.py release
 
-binarycreator.exe -c config/config.xml -p packages GammaRayInstall.exe -v
+binarycreator.exe -c config/config.xml -p packages GammaRaySetup.exe -v

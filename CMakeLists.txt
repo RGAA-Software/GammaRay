@@ -183,7 +183,8 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gr_plugins
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/icon.ico"  "${CMAKE_BINARY_DIR}/icon.ico"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/icon.ico"  "${CMAKE_BINARY_DIR}/gr_icon.ico"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/icon.ico"  "${CMAKE_BINARY_DIR}/gr_client_icon.ico"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/install.py"  "${CMAKE_BINARY_DIR}/package/install.py"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/package"  "${CMAKE_BINARY_DIR}/package"
 
