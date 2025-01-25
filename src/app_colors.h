@@ -1,5 +1,5 @@
 //
-// Created by hy on 25/01/2025.
+// Created by RGAA on 25/01/2025.
 //
 
 #ifndef GAMMARAY_APP_COLORS_H

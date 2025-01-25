@@ -33,6 +33,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_resources.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_render_controller.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_run_game_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_running_pipe.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/transfer/file_transfer.cpp
 

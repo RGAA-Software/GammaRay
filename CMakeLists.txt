@@ -175,7 +175,7 @@ if(ENABLE_HOOK_CAPTURE)
 endif ()
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer plugin_mock_video_stream
-        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget
+        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer
 )
 
 add_custom_command(TARGET tc_build_all POST_BUILD
@@ -230,6 +230,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_opus_encoder.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_opus_encoder.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/opus_encoder/plugin_opus_encoder.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_opus_encoder.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/plugin_file_transfer.dll"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_file_transfer.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/file_transfer/plugin_file_transfer.dll.toml"  "${CMAKE_BINARY_DIR}/gr_plugins/plugin_file_transfer.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

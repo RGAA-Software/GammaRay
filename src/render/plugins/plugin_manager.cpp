@@ -11,6 +11,7 @@
 #include "plugin_interface/gr_plugin_interface.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_stream_plugin.h"
+#include "file_transfer/file_transfer_plugin.h"
 #include "plugin_event_router.h"
 #include "plugin_ids.h"
 #include "context.h"
@@ -136,6 +137,16 @@ namespace tc
                 lib = nullptr;
             }
         }
+
+        // file transfer plugin
+        auto ft_plugin = GetFileTransferPlugin();
+
+        // attach to
+        VisitNetPlugins([=, this](GrNetPlugin* plugin) {
+            if (ft_plugin) {
+                ft_plugin->AttachNetPlugin(plugin->GetPluginId(), plugin);
+            }
+        });
     }
 
     void PluginManager::RegisterPluginEventsCallback() {
@@ -223,6 +234,14 @@ namespace tc
         auto plugin = GetPluginById(kOpusEncoderPluginId);
         if (plugin) {
             return (GrAudioEncoderPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
+    FileTransferPlugin* PluginManager::GetFileTransferPlugin() {
+        auto plugin = GetPluginById(kNetFileTransferPluginId);
+        if (plugin) {
+            return (FileTransferPlugin*)plugin;
         }
         return nullptr;
     }

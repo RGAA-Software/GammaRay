@@ -27,6 +27,7 @@ namespace tc
     class Image;
     class GrPluginBaseEvent;
     class GrPluginContext;
+    class GrNetPlugin;
 
     // param
     class GrPluginParam {
@@ -109,6 +110,8 @@ namespace tc
         void ShowRootWidget();
         void HideRootWidget();
 
+        void AttachNetPlugin(const std::string& id, const GrNetPlugin* plugin);
+
     protected:
 
         bool HasParam(const std::string& k) {
@@ -144,6 +147,8 @@ namespace tc
         std::string base_path_;
         std::string capture_monitor_name_;
         std::string capture_audio_device_id_;
+        // active net plugins...
+        std::map<std::string, const GrNetPlugin*> net_plugins_;
 
     public:
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;

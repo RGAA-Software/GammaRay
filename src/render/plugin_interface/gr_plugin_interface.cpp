@@ -194,4 +194,8 @@ namespace tc
         root_widget_->hide();
     }
 
+    void GrPluginInterface::AttachNetPlugin(const std::string& id, const GrNetPlugin* plugin) {
+        net_plugins_[id] = plugin;
+    }
+
 }

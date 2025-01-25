@@ -26,6 +26,7 @@ namespace tc
     const std::string kMockVideoStreamPluginId = "0a82e7bf-2841-4b7a-b681-ece0ae651d8c";
     const std::string kWasAudioCapturePluginId = "75f2c0ba-d76b-4955-944c-220838e7b0fe";
     const std::string kOpusEncoderPluginId = "e25954da-205e-430f-af61-99e0e200d119";
+    const std::string kNetFileTransferPluginId = "7170706f-fa8a-4615-8e1c-ba7acac04cb8";
 
 }
 

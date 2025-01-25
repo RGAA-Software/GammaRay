@@ -9,6 +9,7 @@
 #include "tc_common_new/folder_util.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
+#include "render_panel/gr_running_pipe.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 
 using namespace tc;
@@ -33,6 +34,8 @@ bool PrepareDirs(const QString& base_path) {
     return result;
 }
 
+std::shared_ptr<GrWorkspace> g_workspace = nullptr;
+
 int main(int argc, char *argv[]) {
 //    AllocConsole();
 //    freopen("CONOUT$", "w", stdout);
@@ -43,6 +46,16 @@ int main(int argc, char *argv[]) {
     auto log_path = base_dir + "/gr_logs/gammaray.log";
     std::cout << "log path: " << log_path.toStdString() << std::endl;
     Logger::InitLog(log_path.toStdString(), true);
+
+    // pipe
+    auto rn_pipe = std::make_shared<GrRunningPipe>();
+    if (!rn_pipe->SendHello()) {
+        rn_pipe->StartListening([=]() {
+            if (g_workspace) {
+                g_workspace->showNormal();
+            }
+        });
+    }
 
     auto mon_detector = DxgiMonitorDetector::Instance();
     mon_detector->DetectAdapters();
@@ -56,9 +69,9 @@ int main(int argc, char *argv[]) {
 
     PrepareDirs(base_dir);
 
-    GrWorkspace workspace;
-    workspace.setFixedSize(1720, 900);
-    workspace.show();
+    g_workspace = std::make_shared<GrWorkspace>();
+    g_workspace->setFixedSize(1720, 900);
+    g_workspace->show();
 
     return app.exec();
 }

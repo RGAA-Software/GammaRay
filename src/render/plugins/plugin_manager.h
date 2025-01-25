@@ -25,6 +25,7 @@ namespace tc
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
+    class FileTransferPlugin;
     class Settings;
 
     class PluginManager {
@@ -46,6 +47,7 @@ namespace tc
         GrDataProviderPlugin* GetMockVideoStreamPlugin();
         GrDataProviderPlugin* GetAudioCapturePlugin();
         GrAudioEncoderPlugin* GetAudioEncoderPlugin();
+        FileTransferPlugin* GetFileTransferPlugin();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);
