@@ -1,12 +1,17 @@
-#pragma once
+//
+// Created by hy on 25/01/2025.
+//
+
+#ifndef GAMMARAY_APP_COLORS_H
+#define GAMMARAY_APP_COLORS_H
 
 #include <QColor>
 
 namespace tc
 {
 
-	class AppSkin {
-	public:
+    class AppColors {
+    public:
 
         static QColor kTabBtnInActiveColor;
 
@@ -23,6 +28,8 @@ namespace tc
         static QColor kVideoWpHoverColor;
         static QColor kVideoWpPressedColor;
 
-	};
+    };
 
 }
+
+#endif //GAMMARAY_APP_COLORS_H

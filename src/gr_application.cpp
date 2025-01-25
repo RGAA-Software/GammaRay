@@ -6,9 +6,9 @@
 
 #include "gr_context.h"
 #include "gr_settings.h"
-#include "network/ws_server.h"
-#include "network/http_server.h"
-#include "network/udp_broadcaster.h"
+#include "render_panel/network/ws_server.h"
+#include "render_panel/network/http_server.h"
+#include "render_panel/network/udp_broadcaster.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/shared_preference.h"
@@ -18,7 +18,7 @@
 #include "transfer/file_transfer.h"
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/log.h"
-#include "network/gr_service_client.h"
+#include "render_panel/network/gr_service_client.h"
 
 #include <QTimer>
 #include <QApplication>

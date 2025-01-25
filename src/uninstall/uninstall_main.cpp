@@ -13,7 +13,7 @@
 #include <QTimer>
 #include <windows.h>
 #include "service/service_manager.h"
-#include "widgets/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 
 using namespace tc;
 

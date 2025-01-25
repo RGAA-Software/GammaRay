@@ -3,9 +3,9 @@
 //
 
 #include "game_info_preview.h"
-#include "widgets/no_margin_layout.h"
-#include "widgets/round_img_display.h"
-#include "db/db_game.h"
+#include "tc_qt_widget/no_margin_layout.h"
+#include "tc_qt_widget/round_img_display.h"
+#include "render_panel/db/db_game.h"
 
 namespace tc
 {

@@ -3,11 +3,11 @@
 //
 
 #include "st_general.h"
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include "gr_context.h"
 #include "gr_application.h"
 #include "gr_settings.h"
-#include "widgets/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 #include "util/dxgi_mon_detector.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"

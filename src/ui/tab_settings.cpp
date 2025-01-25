@@ -3,11 +3,12 @@
 //
 
 #include "tab_settings.h"
-#include "widgets/custom_tab_btn.h"
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/custom_tab_btn.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include "ui/st_general.h"
 #include "ui/st_client.h"
 #include "ui/st_about_me.h"
+#include "app_colors.h"
 
 namespace tc
 {
@@ -24,7 +25,7 @@ namespace tc
         int border_radius = btn_size.height()/2;
         // Clients
         if (false) {
-            auto btn = new CustomTabBtn(this);
+            auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
             btn_client_ = btn;
             btn->SetBorderRadius(border_radius);
             btn->SetText(tr("Clients"));
@@ -40,7 +41,7 @@ namespace tc
         }
         // General
         {
-            auto btn = new CustomTabBtn(this);
+            auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
             btn_input_ = btn;
             btn->SetBorderRadius(border_radius);
             btn->SetText(tr("General"));
@@ -56,7 +57,7 @@ namespace tc
         }
         // About me
         {
-            auto btn = new CustomTabBtn(this);
+            auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
             btn_about_me_ = btn;
             btn->SetBorderRadius(border_radius);
             btn->SetText(tr("AboutMe"));

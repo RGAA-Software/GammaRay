@@ -24,7 +24,7 @@
 #include "app/app_manager_factory.h"
 #include "app/app_messages.h"
 #include "settings/settings.h"
-#include "network/ws_server.h"
+#include "render_panel/network/ws_server.h"
 #include "ipc/host_ipc_manager.h"
 #include "app/encoder_thread.h"
 #include "network/net_message_maker.h"

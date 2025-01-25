@@ -7,9 +7,9 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QApplication>
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include "util/qt_directory.h"
-#include "qrcode/qr_generator.h"
+#include "tc_common_new/qrcode/qr_generator.h"
 #include "gr_application.h"
 #include "gr_context.h"
 #include "gr_settings.h"

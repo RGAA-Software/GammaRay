@@ -11,7 +11,7 @@
 #include "tc_common_new/log.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_settings.h"
-#include "db/db_game_manager.h"
+#include "render_panel/db/db_game_manager.h"
 #include "gr_resources.h"
 #include "gr_render_controller.h"
 #include "gr_run_game_manager.h"

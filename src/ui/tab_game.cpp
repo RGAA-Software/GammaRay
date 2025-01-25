@@ -11,16 +11,16 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
+#include <QStyledItemDelegate>
 #include <utility>
 #include "shellapi.h"
-#include "db/db_game.h"
-#include "db/db_game_manager.h"
+#include "render_panel/db/db_game.h"
+#include "render_panel/db/db_game_manager.h"
 #include "gr_context.h"
 #include "app_messages.h"
-#include "widgets/main_item_delegate.h"
-#include "widgets/round_img_display.h"
-#include "widgets/cover_widget.h"
-#include "widgets/layout_helper.h"
+#include "tc_qt_widget/round_img_display.h"
+#include "tc_qt_widget/cover_widget.h"
+#include "tc_qt_widget/layout_helper.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
@@ -30,12 +30,22 @@
 #include "util/qt_directory.h"
 #include "src/gr_run_game_manager.h"
 #include "tc_common_new/process_util.h"
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include "add_game_panel.h"
-#include "widgets/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 
 namespace tc
 {
+
+    class MainItemDelegate : public QStyledItemDelegate {
+    public:
+        explicit MainItemDelegate(QObject *pParent) : QStyledItemDelegate(pParent) {}
+        ~MainItemDelegate() override {}
+        void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
+                                  const QModelIndex &index) const override {
+            editor->setGeometry(option.rect);
+        }
+    };
 
     TabGame::TabGame(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent) {
         steam_mgr_ = context_->GetSteamManager();

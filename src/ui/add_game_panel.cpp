@@ -3,12 +3,12 @@
 //
 
 #include "add_game_panel.h"
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
-#include "widgets/sized_msg_box.h"
-#include "db/db_game.h"
-#include "db/db_game_manager.h"
+#include "tc_qt_widget/sized_msg_box.h"
+#include "render_panel/db/db_game.h"
+#include "render_panel/db/db_game_manager.h"
 #include "gr_context.h"
 #include <QPushButton>
 #include <QLineEdit>

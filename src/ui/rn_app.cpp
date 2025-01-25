@@ -8,7 +8,7 @@
 #include <QTimer>
 #include <QPushButton>
 
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include "stat_chart.h"
 #include "gr_statistics.h"
 #include "gr_context.h"
@@ -17,9 +17,8 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/num_formatter.h"
-#include "widgets/round_img_display.h"
 #include "src/gr_run_game_manager.h"
-#include "db/db_game.h"
+#include "render_panel/db/db_game.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartAudioFrameGap = "Capture Audio Gap";

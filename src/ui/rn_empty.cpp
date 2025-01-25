@@ -4,7 +4,7 @@
 
 #include "rn_empty.h"
 
-#include "widgets/no_margin_layout.h"
+#include "tc_qt_widget/no_margin_layout.h"
 #include <QPixmap>
 #include <QLabel>
 #include <QPushButton>

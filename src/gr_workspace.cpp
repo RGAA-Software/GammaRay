@@ -12,16 +12,17 @@
 #include <QApplication>
 #include <QMenu>
 
-#include "widgets/custom_tab_btn.h"
-#include "widgets/layout_helper.h"
+#include "tc_qt_widget/custom_tab_btn.h"
+#include "tc_qt_widget/layout_helper.h"
 #include "ui/tab_game.h"
 #include "ui/tab_server.h"
 #include "ui/tab_settings.h"
 #include "gr_settings.h"
-#include "widgets/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 #include "gr_context.h"
 #include "gr_render_controller.h"
 #include "service/service_manager.h"
+#include "app_colors.h"
 
 namespace tc
 {
@@ -115,7 +116,7 @@ namespace tc
             auto btn_font_color = "#ffffff";
             auto btn_size = QSize(left_area_width - 30, 36);
             {
-                auto btn = new CustomTabBtn(this);
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn_tab_server_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Server"));
@@ -129,7 +130,7 @@ namespace tc
             }
 
             {
-                auto btn = new CustomTabBtn(this);
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn_tab_games_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Games"));
@@ -143,7 +144,7 @@ namespace tc
             }
 
             {
-                auto btn = new CustomTabBtn(this);
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn_tab_settings_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Settings"));
