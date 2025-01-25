@@ -607,7 +607,7 @@ QMenu::item {
   height: 26px;
   border: 8px solid transparent;
   color: {{secondaryTextColor}};
-  font-size: 14px;
+  font-size: 12px;
 }
 
 QCalendarWidget QMenu::item,

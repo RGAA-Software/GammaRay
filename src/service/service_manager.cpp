@@ -111,6 +111,19 @@ namespace tc
             } else {
                 LOGI("Service start pending.");
             }
+
+            // restart config
+            SERVICE_FAILURE_ACTIONS failureActions;
+            failureActions.dwResetPeriod = 600;
+            failureActions.lpRebootMsg = NULL;
+            failureActions.lpCommand = NULL;
+            failureActions.cActions = 1; // action count
+            SC_ACTION restartAction;
+            restartAction.Type = SC_ACTION_RESTART;
+            restartAction.Delay = 3000; // 3000ms to restart
+            failureActions.lpsaActions = &restartAction;
+
+            ChangeServiceConfig2W(schService, SERVICE_CONFIG_FAILURE_ACTIONS, &failureActions);
         }
     }
 
