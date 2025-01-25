@@ -2,6 +2,7 @@
 // Created by RGAA on 2023-12-26.
 //
 
+#include <QDir>
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QFontDatabase>
@@ -10,8 +11,29 @@
 #include "client/ct_client_context.h"
 #include "client/ct_workspace.h"
 #include "client/ct_application.h"
+#include "tc_common_new/log.h"
 
 using namespace tc;
+
+bool PrepareDirs(const QString& base_path) {
+    std::vector<QString> dirs = {
+        "gr_logs", "gr_data"
+    };
+
+    bool result = true;
+    for (const QString& dir : dirs) {
+        auto target_dir_path = base_path + "/" + dir;
+        QDir target_dir(target_dir_path);
+        if (target_dir.exists()) {
+            continue;
+        }
+        if (!target_dir.mkpath(target_dir_path)) {
+            result = false;
+            LOGI("Make path failed: {}", target_dir_path.toStdString());
+        }
+    }
+    return result;
+}
 
 int main(int argc, char** argv) {
 
@@ -39,6 +61,8 @@ int main(int argc, char** argv) {
     font.setPointSize(10);
     qApp->setFont(font);
 #endif
+
+    PrepareDirs(app.applicationDirPath());
 
     auto ctx = std::make_shared<ClientContext>("ui");
     ctx->Init(false);

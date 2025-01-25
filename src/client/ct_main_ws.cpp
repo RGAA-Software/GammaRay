@@ -19,6 +19,7 @@
 #include "client/ct_settings.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <QDir>
 
 using namespace tc;
 
@@ -68,6 +69,26 @@ void ParseCommandLine(QApplication& app) {
     LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
 }
 
+bool PrepareDirs(const QString& base_path) {
+    std::vector<QString> dirs = {
+        "gr_logs", "gr_data"
+    };
+
+    bool result = true;
+    for (const QString& dir : dirs) {
+        auto target_dir_path = base_path + "/" + dir;
+        QDir target_dir(target_dir_path);
+        if (target_dir.exists()) {
+            continue;
+        }
+        if (!target_dir.mkpath(target_dir_path)) {
+            result = false;
+            LOGI("Make path failed: {}", target_dir_path.toStdString());
+        }
+    }
+    return result;
+}
+
 int main(int argc, char** argv) {
 #ifdef WIN32
     //CaptureDump();
@@ -96,6 +117,8 @@ int main(int argc, char** argv) {
     qApp->setFont(font);
 #endif
 
+    PrepareDirs(app.applicationDirPath());
+
     auto host = g_host_;
     auto port = g_port_;
     if (host.empty() || port <= 0 || port >= 65535) {
@@ -103,7 +126,7 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    auto name = MD5::Hex(host).substr(0, 10);
+    auto name = g_host_ + "_" + MD5::Hex(host).substr(0, 10);
     auto ctx = std::make_shared<ClientContext>(name);
     ctx->Init(true);
     static Workspace ws(ctx, ThunderSdkParams {

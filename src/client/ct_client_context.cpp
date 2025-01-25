@@ -8,9 +8,11 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/thread.h"
+#include "tc_common_new/log.h"
 #include "db/stream_db_manager.h"
 #include "client/ct_app_message.h"
 #include <QTimer>
+#include <QApplication>
 
 namespace tc
 {
@@ -30,7 +32,12 @@ namespace tc
     void ClientContext::Init(bool render) {
         render_ = render;
         sp_ = std::make_shared<SharedPreference>();
-        sp_->Init("", std::format("app.{}.dat", this->name_));
+        sp_->Init("", std::format("./gr_data/app.{}.dat", this->name_));
+
+        auto base_dir = QApplication::applicationDirPath();
+        auto log_path = base_dir + std::format("/gr_logs/app.{}.log", this->name_).c_str();
+        std::cout << "log path: " << log_path.toStdString() << std::endl;
+        Logger::InitLog(log_path.toStdString(), true);
 
         auto settings = Settings::Instance();
         settings->SetSharedPreference(sp_);
