@@ -16,8 +16,8 @@
 #include "shellapi.h"
 #include "render_panel/db/db_game.h"
 #include "render_panel/db/db_game_manager.h"
-#include "gr_context.h"
-#include "app_messages.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/app_messages.h"
 #include "tc_qt_widget/round_img_display.h"
 #include "tc_qt_widget/cover_widget.h"
 #include "tc_qt_widget/layout_helper.h"
@@ -27,12 +27,13 @@
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_steam_manager_new/steam_entities.h"
 #include "game_info_preview.h"
-#include "util/qt_directory.h"
-#include "src/gr_run_game_manager.h"
+#include "tc_common_new/folder_util.h"
+#include "render_panel/gr_run_game_manager.h"
 #include "tc_common_new/process_util.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "add_game_panel.h"
 #include "tc_qt_widget/sized_msg_box.h"
+#include "tc_common_new/folder_util.h"
 
 namespace tc
 {
@@ -187,7 +188,7 @@ namespace tc
                     });
                 } else if (i == 3) {
                     QObject::connect(action, &QAction::triggered, this, [=, this]() {
-                        QtDirectory::OpenDir(game->game_installed_dir_);
+                        FolderUtil::OpenDir(game->game_installed_dir_);
                     });
                 }
             }

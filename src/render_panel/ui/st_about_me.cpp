@@ -3,8 +3,8 @@
 //
 
 #include "st_about_me.h"
-#include "gr_application.h"
-#include "gr_context.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include <QLabel>
 #include <QPushButton>

@@ -10,14 +10,14 @@
 
 #include "tc_qt_widget/no_margin_layout.h"
 #include "stat_chart.h"
-#include "gr_statistics.h"
-#include "gr_context.h"
-#include "gr_application.h"
-#include "app_messages.h"
+#include "render_panel/gr_statistics.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/app_messages.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/num_formatter.h"
-#include "src/gr_run_game_manager.h"
+#include "render_panel/gr_run_game_manager.h"
 #include "render_panel/db/db_game.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";

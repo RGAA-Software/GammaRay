@@ -14,9 +14,9 @@
 
 #include "tc_qt_widget/custom_tab_btn.h"
 #include "tc_qt_widget/layout_helper.h"
-#include "ui/tab_game.h"
-#include "ui/tab_server.h"
-#include "ui/tab_settings.h"
+#include "render_panel/ui/tab_game.h"
+#include "render_panel/ui/tab_server.h"
+#include "render_panel/ui/tab_settings.h"
 #include "gr_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "gr_context.h"

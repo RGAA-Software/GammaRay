@@ -15,8 +15,8 @@
 #include <utility>
 #include <QPushButton>
 #include <QComboBox>
-#include "gr_context.h"
-#include "gr_settings.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/gr_settings.h"
 #include "tc_common_new/qrcode/qr_generator.h"
 #include "tc_qt_widget/layout_helper.h"
 #include "tc_qt_widget/no_margin_layout.h"
@@ -24,13 +24,13 @@
 #include "rn_app.h"
 #include "rn_empty.h"
 #include "tc_common_new/message_notifier.h"
-#include "app_messages.h"
+#include "render_panel/app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
-#include "gr_statistics.h"
+#include "render_panel/gr_statistics.h"
+#include "render_panel/gr_application.h"
 #include "tc_qt_widget/sized_msg_box.h"
-#include "gr_application.h"
-#include "src/gr_render_controller.h"
+#include "render_panel/gr_render_controller.h"
 #include "service/service_manager.h"
 #include "tc_common_new/uid_spacer.h"
 

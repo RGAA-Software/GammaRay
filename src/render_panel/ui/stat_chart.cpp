@@ -3,7 +3,7 @@
 //
 
 #include "stat_chart.h"
-#include "gr_context.h"
+#include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"

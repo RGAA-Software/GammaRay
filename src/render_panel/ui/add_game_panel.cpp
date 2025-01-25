@@ -9,7 +9,7 @@
 #include "tc_qt_widget/sized_msg_box.h"
 #include "render_panel/db/db_game.h"
 #include "render_panel/db/db_game_manager.h"
-#include "gr_context.h"
+#include "render_panel/gr_context.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>

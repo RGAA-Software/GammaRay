@@ -3,11 +3,11 @@
 //
 
 #include "ws_server.h"
-#include "gr_settings.h"
+#include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
-#include "gr_context.h"
-#include "app_messages.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/app_messages.h"
 
 namespace tc
 {

@@ -4,15 +4,15 @@
 
 #include "st_general.h"
 #include "tc_qt_widget/no_margin_layout.h"
-#include "gr_context.h"
-#include "gr_application.h"
-#include "gr_settings.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/gr_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
-#include "util/dxgi_mon_detector.h"
+#include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/audio_device_helper.h"
-#include "app_messages.h"
+#include "render_panel/app_messages.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>

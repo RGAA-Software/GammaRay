@@ -6,7 +6,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/base64.h"
-#include "util/dxgi_mon_detector.h"
+#include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include <sstream>
 #include <QApplication>

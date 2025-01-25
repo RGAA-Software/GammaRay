@@ -14,7 +14,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "gr_system_monitor.h"
 #include "gr_statistics.h"
-#include "util/qt_directory.h"
+#include "tc_common_new/folder_util.h"
 #include "transfer/file_transfer.h"
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/log.h"
@@ -42,8 +42,8 @@ namespace tc
         settings_->Dump();
 
         auto exeDir = QApplication::applicationDirPath().toStdString();
-        QtDirectory::CreateDir(std::format("{}/clients/windows", exeDir));
-        QtDirectory::CreateDir(std::format("{}/clients/android", exeDir));
+        FolderUtil::CreateDir(std::format("{}/clients/windows", exeDir));
+        FolderUtil::CreateDir(std::format("{}/clients/android", exeDir));
 
         context_ = std::make_shared<GrContext>();
         context_->Init(shared_from_this());

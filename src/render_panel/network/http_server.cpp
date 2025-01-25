@@ -4,11 +4,11 @@
 #include "tc_3rdparty/http/httplib.h"
 
 #include "http_handler.h"
-#include "gr_context.h"
+#include "render_panel/gr_context.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
-#include "gr_application.h"
-#include "gr_settings.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/gr_settings.h"
 
 #include <QString>
 #include <QApplication>

@@ -9,7 +9,7 @@
 #include <QWidget>
 
 #include <mutex>
-#include "gr_statistics.h"
+#include "render_panel/gr_statistics.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_common_new/audio_filter.h"

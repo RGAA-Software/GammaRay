@@ -3,8 +3,8 @@
 //
 
 #include "file_transfer.h"
-#include "gr_settings.h"
-#include "gr_context.h"
+#include "render_panel/gr_settings.h"
+#include "render_panel/gr_context.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/thread.h"

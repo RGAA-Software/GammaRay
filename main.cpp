@@ -7,9 +7,9 @@
 
 #include "tc_common_new/log.h"
 #include "tc_common_new/folder_util.h"
-#include "gr_application.h"
-#include "gr_workspace.h"
-#include "util/dxgi_mon_detector.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/gr_workspace.h"
+#include "tc_common_new/win32/dxgi_mon_detector.h"
 
 using namespace tc;
 

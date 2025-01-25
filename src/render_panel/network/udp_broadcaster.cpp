@@ -5,7 +5,7 @@
 #include "udp_broadcaster.h"
 #include "tc_common_new/log.h"
 #include "tc_3rdparty/json/json.hpp"
-#include "gr_settings.h"
+#include "render_panel/gr_settings.h"
 
 namespace tc
 {
