@@ -19,6 +19,7 @@
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/log.h"
 #include "render_panel/network/gr_service_client.h"
+#include "render_panel/network/ws_sig_client.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -93,6 +94,8 @@ namespace tc
         service_client_ = std::make_shared<GrServiceClient>(shared_from_this());
         service_client_->Start();
 
+        sig_client_ = std::make_shared<WsSigClient>(shared_from_this());
+        sig_client_->Start();
     }
 
     void GrApplication::Exit() {

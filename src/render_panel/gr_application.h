@@ -22,6 +22,7 @@ namespace tc
     class GrSystemMonitor;
     class FileTransferChannel;
     class GrServiceClient;
+    class WsSigClient;
 
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -45,6 +46,7 @@ namespace tc
         std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;
         std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         std::shared_ptr<GrServiceClient> service_client_ = nullptr;
+        std::shared_ptr<WsSigClient> sig_client_ = nullptr;
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;
 
