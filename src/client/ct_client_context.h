@@ -33,8 +33,6 @@ namespace tc
         std::shared_ptr<StreamDBManager> GetDBManager();
         void SaveKeyValue(const std::string& k, const std::string& v);
         std::string GetValueByKey(const std::string& k);
-        std::shared_ptr<boost::asio::io_context> GetBoostIoContext();
-        bool IsRender();
         void UpdateCapturingMonitorInfo(const CaptureMonitorInfo& info);
         CaptureMonitorInfo GetCapturingMonitorInfo();
         int GetCapturingMonitorIndex();

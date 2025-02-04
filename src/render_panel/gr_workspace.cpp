@@ -38,7 +38,7 @@ namespace tc
         sys_tray_icon_->setToolTip(tr("GammaRay"));
 
         auto ac_show = new QAction(tr("Show Panel"), this);
-        auto ac_exit = new QAction(tr("Exit Program"), this);
+        auto ac_exit = new QAction(tr("Exit All Programs"), this);
 
         connect(ac_show, &QAction::triggered, this, [=, this](bool) {
             this->showNormal();
@@ -179,7 +179,7 @@ namespace tc
             // stop all
             {
                 auto btn = new QPushButton(this);
-                btn->setText(tr("Exit Program"));
+                btn->setText(tr("Exit All Programs"));
                 btn->setProperty("class", "danger");
                 btn->setProperty("flat", true);
                 btn->setFixedSize(btn_size);

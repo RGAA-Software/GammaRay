@@ -14,8 +14,10 @@ link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
 
 set(RES ${CMAKE_SOURCE_DIR}/resources/font.qrc ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
 add_compile_options(/bigobj)
+
+set(SRCS_MAIN ct_main.cpp)
+
 set(SRCS
-        ct_main.cpp
         ct_client_context.cpp
         icon.rc ${RES}
         ui/switch_button.cpp
@@ -93,8 +95,12 @@ set(SRCS_WS
         transfer/fs_folder.cpp
 )
 
+add_library(lib_${PROJECT_NAME} ${SRCS})
+target_link_libraries(lib_${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm
+)
 
-qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS})
+qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS} ${SRCS_MAIN})
 qt_add_executable(GammaRayClientInner  MANUAL_FINALIZATION ${SRCS_WS}) #WIN32
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
@@ -115,11 +121,9 @@ if (APPLE)
     )
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets
-        Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_message tc_sdk tc_qt_widget)
-target_link_libraries(${PROJECT_NAME} PRIVATE sqlite_orm::sqlite_orm ${Boost_LIBRARIES})
 
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets
         Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg

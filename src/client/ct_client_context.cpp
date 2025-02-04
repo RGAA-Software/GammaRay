@@ -81,10 +81,6 @@ namespace tc
         return db_mgr_;
     }
 
-    std::shared_ptr<boost::asio::io_context> ClientContext::GetBoostIoContext() {
-        return boost_io_ctx_;
-    }
-
     void ClientContext::Exit() {
         if (task_thread_ && task_thread_->IsJoinable()) {
             task_thread_->Exit();
@@ -102,10 +98,6 @@ namespace tc
 
     std::string ClientContext::GetValueByKey(const std::string& k) {
         return sp_->Get(k);
-    }
-
-    bool ClientContext::IsRender() {
-        return render_;
     }
 
     void ClientContext::UpdateCapturingMonitorInfo(const CaptureMonitorInfo& info) {

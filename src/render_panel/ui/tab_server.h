@@ -20,6 +20,10 @@ namespace tc
     class MessageListener;
     class QtCircle;
 
+    // client
+    class ClientContext;
+    class StreamContent;
+
     class TabServer : public TabBase {
     public:
         explicit TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent);
@@ -30,8 +34,10 @@ namespace tc
 
     private:
         QPixmap qr_pixmap_;
-//        QStackedWidget* rn_stack_ = nullptr;
-//        RnApp* rn_app_ = nullptr;
+
+        // client
+        std::shared_ptr<ClientContext> client_ctx_ = nullptr;
+        StreamContent* stream_content_ = nullptr;
 
     };
 }

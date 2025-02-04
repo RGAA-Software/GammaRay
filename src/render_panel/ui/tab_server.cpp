@@ -34,12 +34,19 @@
 #include "render_panel/gr_render_controller.h"
 #include "service/service_manager.h"
 #include "tc_common_new/uid_spacer.h"
+#include "client/ct_client_context.h"
+#include "client/ui/stream_content.h"
 
 namespace tc
 {
 
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto broadcast_msg = context_->MakeBroadcastMessage();
+
+        // client
+        client_ctx_ = std::make_shared<ClientContext>("ui");
+        client_ctx_->Init(false);
+
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
         // root layout
         auto root_layout = new QVBoxLayout();
@@ -212,8 +219,13 @@ namespace tc
             left_root->addStretch(120);
         }
 
-        //
-        content_layout->addStretch(100);
+        // clients
+        {
+            stream_content_ = new StreamContent(client_ctx_, this);
+            content_layout->addWidget(stream_content_);
+
+        }
+        //content_layout->addStretch(100);
 
         root_layout->addLayout(content_layout);
         setLayout(root_layout);

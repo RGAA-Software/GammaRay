@@ -10,13 +10,10 @@
 namespace tc
 {
 
-    // ATTENTION : This class is ported from my another project, using only some fields.
-
+    // WARN: Ported from another project, some fields are deprecated.
     class StreamItem {
     public:
-
-
-        bool IsValid() const;
+        [[nodiscard]] bool IsValid() const;
 
     public:
 

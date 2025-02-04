@@ -50,6 +50,7 @@ namespace tc
 
     TabServerStatus::TabServerStatus(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto content_root = new NoMarginHLayout();
+
         // LEFT
         auto label_width = 195;
         int margin_left = 20;

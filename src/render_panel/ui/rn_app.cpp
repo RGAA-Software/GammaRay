@@ -51,7 +51,7 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("App Running");
+                    label->setText("Renderer Running");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 

@@ -7,7 +7,7 @@
 
 #include "app_content.h"
 
-#include "db/stream_item.h"
+#include "client/db/stream_item.h"
 
 namespace tc
 {
