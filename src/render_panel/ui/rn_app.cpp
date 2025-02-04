@@ -33,39 +33,15 @@ namespace tc
         auto root_layout = new NoMarginVLayout();
         auto place_holder = new QLabel();
         place_holder->setFixedWidth(1100);
+        place_holder->setFixedHeight(1);
         root_layout->addWidget(place_holder);
+        auto margin_left = 40;
 
         {
             auto head_layout = new NoMarginHLayout();
+            head_layout->addSpacing(margin_left);
             // app info
             auto label_size = QSize(220, 35);
-            auto btn_height = 25;
-
-            // 1st column
-            {
-                auto layout = new NoMarginVLayout();
-                {
-                    auto label = new QLabel(this);
-                    label->setFixedSize(label_size);
-                    label->setText("Running Games");
-                    label->setStyleSheet("font-size: 13px;font-weight:700;");
-                    layout->addWidget(label);
-                }
-                {
-                    auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
-                    lbl_running_games_ = label;
-                    label->setFixedSize(label_size);
-                    label->setText("");
-                    label->setStyleSheet("font-size: 14px;");
-                    item_layout->addWidget(label);
-                    item_layout->addStretch();
-                    layout->addLayout(item_layout);
-                }
-                layout->addStretch();
-                head_layout->addSpacing(10);
-                head_layout->addLayout(layout);
-            }
 
             // 2nd column
             {
@@ -76,14 +52,14 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("App Running");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     lbl_app_running_time_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -93,14 +69,14 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("FPS(Encode)");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     lbl_fps_encode_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -110,14 +86,14 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("Sent Data");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     lbl_send_media_bytes_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -127,20 +103,20 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("Capture Size");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     lbl_capture_size_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
-                layout->addStretch();
-                head_layout->addSpacing(10);
+                //layout->addStretch();
+                //head_layout->addSpacing(10);
                 head_layout->addLayout(layout);
             }
 
@@ -153,14 +129,14 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("FPS(Video Receive)");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     lbl_fps_video_recv_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -170,14 +146,14 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("FPS(Client Render)");
-                    label->setStyleSheet("font-size: 13px;"); // background-color:#909090;
+                    label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
                     lbl_fps_render_ = op;
-                    op->setText("Serious");
+                    op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -194,7 +170,7 @@ namespace tc
                     lbl_recv_media_data_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
@@ -211,26 +187,28 @@ namespace tc
                     lbl_render_size_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px;");
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
-                layout->addStretch();
-                head_layout->addSpacing(10);
                 head_layout->addLayout(layout);
             }
             head_layout->addStretch();
 
-            root_layout->addSpacing(15);
             root_layout->addLayout(head_layout);
         }
 
         {
+            auto layout = new NoMarginHLayout();
+            layout->addSpacing(margin_left);
             auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
             stat_chart_ = chart;
-            chart->setFixedSize(900, 400);
-            root_layout->addWidget(chart);
+            chart->setFixedSize(900, 360);
+            layout->addWidget(chart);
+            layout->addStretch();
+            root_layout->addSpacing(20);
+            root_layout->addLayout(layout);
         }
 
         root_layout->addStretch();
@@ -240,21 +218,6 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgGrTimer100>([=, this](const MsgGrTimer100& msg) {
             this->UpdateUI();
-        });
-
-        msg_listener_->Listen<MsgRunningGameIds>([=, this](const MsgRunningGameIds& msg) {
-            this->context_->PostUITask([=, this]() {
-                auto rgm = this->context_->GetRunGameManager();
-                auto running_games = rgm->GetRunningGames();
-                std::string running_games_name;
-                for (const auto& rg : running_games) {
-                    running_games_name = running_games_name
-                            .append(std::to_string(rg->game_->game_id_))
-                            .append(" - ")
-                            .append(rg->game_->game_name_).append("\n");
-                }
-                lbl_running_games_->setText(running_games_name.c_str());
-            });
         });
     }
 

@@ -14,6 +14,7 @@ namespace tc
     class GrSettings;
     class GrApplication;
     class MessageListener;
+    class GrStatistics;
 
     class TabBase : public QWidget {
     public:
@@ -31,6 +32,7 @@ namespace tc
         QObject* attach_ = nullptr;
         GrSettings* settings_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        GrStatistics* statistics_ = nullptr;
     };
 }
 

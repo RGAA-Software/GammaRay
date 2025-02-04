@@ -19,7 +19,6 @@ namespace tc
     class RnEmpty;
     class MessageListener;
     class QtCircle;
-    class GrStatistics;
 
     class TabServer : public TabBase {
     public:
@@ -30,27 +29,9 @@ namespace tc
         void OnTabHide() override;
 
     private:
-        QString GetItemIconStyleSheet(const QString& url);
-        void RefreshVigemState(bool ok);
-        void RefreshServerState(bool ok);
-        void RefreshServiceState(bool ok);
-        void RefreshIndicatorState(QLabel* indicator, bool ok);
-        void RefreshUIEverySecond();
-        void RestartServer();
-
-    private:
-        GrStatistics* statistics_ = nullptr;
         QPixmap qr_pixmap_;
-        QStackedWidget* rn_stack_ = nullptr;
-        RnApp* rn_app_ = nullptr;
-        //RnEmpty* rn_empty_ = nullptr;
-        QLabel* lbl_vigem_state_ = nullptr;
-        QLabel* lbl_renderer_state_ = nullptr;
-        QLabel* lbl_service_state_ = nullptr;
-        QLabel* lbl_audio_format_ = nullptr;
-        QtCircle* spectrum_circle_ = nullptr;
-
-        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+//        QStackedWidget* rn_stack_ = nullptr;
+//        RnApp* rn_app_ = nullptr;
 
     };
 }

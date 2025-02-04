@@ -27,8 +27,6 @@ namespace tc
         StatChart* stat_chart_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_;
 
-        QLabel* lbl_running_games_ = nullptr;
-
         QLabel* lbl_fps_video_recv_ = nullptr;
         QLabel* lbl_fps_render_ = nullptr;
         QLabel* lbl_recv_media_data_ = nullptr;

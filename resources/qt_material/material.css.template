@@ -231,8 +231,9 @@ QSpinBox::down-button:disabled {
 /*  ------------------------------------------------------------------------  */
 /*  QPushButton  */
 
+/* text-transform: uppercase; */
+
 QPushButton {
-  text-transform: uppercase;
   margin: 0px;
   padding: 0px 0px;
   height: 34px;

@@ -23,6 +23,7 @@
 #include "gr_render_controller.h"
 #include "service/service_manager.h"
 #include "app_colors.h"
+#include "render_panel/ui/tab_server_status.h"
 
 namespace tc
 {
@@ -115,17 +116,33 @@ namespace tc
             // buttons
             auto btn_font_color = "#ffffff";
             auto btn_size = QSize(left_area_width - 30, 36);
+            // remote control
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn_tab_server_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("Server"));
+                btn->SetText(tr("Remote Control"));
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabServer);
                 });
                 layout->addSpacing(30);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
+            // server status
+            {
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn_tab_server_status_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetText(tr("Server Status"));
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabServerStatus);
+                });
+                layout->addSpacing(10);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
@@ -188,10 +205,12 @@ namespace tc
         {
             // tabs
             tabs_.insert({TabName::kTabServer, new TabServer(app_, this)});
+            tabs_.insert({TabName::kTabServerStatus, new TabServerStatus(app_, this)});
             tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
+            tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
             tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
 
@@ -199,6 +218,7 @@ namespace tc
             LayoutHelper::ClearMargins(root_layout);
             auto stack_widget = new QStackedWidget(this);
             stack_widget->addWidget(tabs_[TabName::kTabServer]);
+            stack_widget->addWidget(tabs_[TabName::kTabServerStatus]);
             stack_widget->addWidget(tabs_[TabName::kTabGames]);
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
             stacked_widget_ = stack_widget;

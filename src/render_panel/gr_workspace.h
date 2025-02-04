@@ -25,6 +25,7 @@ namespace tc
 
     enum class TabName {
         kTabServer,
+        kTabServerStatus,
         kTabGames,
         kTabSettings,
     };
@@ -47,6 +48,7 @@ namespace tc
         GrSettings* settings_ = nullptr;
         std::map<TabName, TabBase*> tabs_;
         QPushButton* btn_tab_server_ = nullptr;
+        QPushButton* btn_tab_server_status_ = nullptr;
         QPushButton* btn_tab_games_ = nullptr;
         QPushButton* btn_tab_settings_ = nullptr;
         QStackedWidget* stacked_widget_ = nullptr;

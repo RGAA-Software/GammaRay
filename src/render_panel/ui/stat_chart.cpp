@@ -17,7 +17,7 @@ namespace tc
 
     StatChart::StatChart(const std::shared_ptr<GrContext>& ctx, const std::vector<QString>& line_names, QWidget* parent) : QWidget(parent) {
         ctx_ = ctx;
-        setStyleSheet("background-color:#ffffff;");
+        setStyleSheet("background-color:#ffffff; border: 1px solid #eeeeee;");
         auto layout = new NoMarginVLayout();
         chart_ = new QChart();
         for (auto& n : line_names) {
