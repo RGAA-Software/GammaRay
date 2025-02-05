@@ -83,7 +83,7 @@ namespace tc
         http_server_ = std::make_shared<HttpServer>(shared_from_this());
         http_server_->Start();
 
-        ws_server_ = WSServer::Make(context_);
+        ws_server_ = WSServer::Make(shared_from_this());
         ws_server_->Start();
 
         sys_monitor_ = GrSystemMonitor::Make(shared_from_this());

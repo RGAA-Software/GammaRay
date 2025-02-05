@@ -32,30 +32,27 @@ namespace tc
         this->run_game_mgr_ = app->GetContext()->GetRunGameManager();
     }
 
-    void HttpHandler::HandlePing(const httplib::Request& req, httplib::Response &res) {
-        res.set_content("Pong", "text/plain");
+    void HttpHandler::HandlePing(http::web_request &req, http::web_response &rep) {
+        auto data = WrapBasicInfo(200, "ok", std::string("Pong"));
+        rep.fill_json(data);
     }
 
-    void HttpHandler::HandleSimpleInfo(const httplib::Request& req, httplib::Response &res) {
+    void HttpHandler::HandleSimpleInfo(http::web_request &req, http::web_response &rep) {
         auto info = this->context_->MakeBroadcastMessage();
-        auto resp = WrapBasicInfo(200, "ok", info);
-        res.set_content(resp, "application/json");
+        auto data = WrapBasicInfo(200, "ok", info);
+        rep.fill_json(data);
     }
 
-    void HttpHandler::HandleSupportApis(const httplib::Request& req, httplib::Response& res) {
-        res.set_content(GetSupportedApis(), "text/plain");
+    void HttpHandler::HandleGames(http::web_request &req, http::web_response &rep) {
+        auto data = GetInstalledGamesAsJson();
+        rep.fill_json(data);
     }
 
-    void HttpHandler::HandleGames(const httplib::Request& req, httplib::Response& res) {
-        auto games_json_info = GetInstalledGamesAsJson();
-        res.set_content(games_json_info, "application/json");
-    }
-
-    void HttpHandler::HandleGameStart(const httplib::Request& req, httplib::Response& res) {
-        LOGI("start body: {}", req.body);
+    void HttpHandler::HandleGameStart(http::web_request &req, http::web_response &rep) {
+        LOGI("start body: {}", req.body());
         std::string game_path;
         try {
-            auto obj = nlohmann::json::parse(req.body);
+            auto obj = nlohmann::json::parse(req.body());
             game_path = obj["game_path"].get<std::string>();
             game_path = QString::fromStdString(game_path).trimmed().toStdString();
             if (game_path.empty()) {
@@ -63,9 +60,9 @@ namespace tc
                 return;
             }
         } catch (std::exception& e) {
-            LOGE("parse json failed, body:{}", req.body);\
-            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body), "");
-            res.set_content(nr.Dump(), "application/json");
+            LOGE("parse json failed, body:{}", req.body());
+            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body()), "");
+            rep.fill_json(nr.Dump());
             return;
         }
 
@@ -76,14 +73,14 @@ namespace tc
         } else {
             nr = NetResp::Make(kStartFailed, "start app failed", "");
         }
-        res.set_content(nr.Dump(), "application/json");
+        rep.fill_json(nr.Dump());
     }
 
-    void HttpHandler::HandleGameStop(const httplib::Request& req, httplib::Response& res) {
-        LOGI("stop body: {}", req.body);
+    void HttpHandler::HandleGameStop(http::web_request &req, http::web_response &rep) {
+        LOGI("stop body: {}", req.body());
         std::string game_id;
         try {
-            auto obj = nlohmann::json::parse(req.body);
+            auto obj = nlohmann::json::parse(req.body());
             game_id = obj["game_id"].get<std::string>();
             game_id = QString::fromStdString(game_id).trimmed().toStdString();
             if (game_id.empty()) {
@@ -91,9 +88,9 @@ namespace tc
                 return;
             }
         } catch (std::exception& e) {
-            LOGE("parse json failed, body:{}", req.body);
-            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body), "");
-            res.set_content(nr.Dump(), "application/json");
+            LOGE("parse json failed, body:{}", req.body());
+            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body()), "");
+            rep.fill_json(nr.Dump());
             return;
         }
 
@@ -104,27 +101,27 @@ namespace tc
         } else {
             nr = NetResp::Make(kStartFailed, "start app failed", "");
         }
-        res.set_content(nr.Dump(), "application/json");
+        rep.fill_json(nr.Dump());
     }
 
-    void HttpHandler::HandleRunningGames(const httplib::Request& req, httplib::Response& res) {
+    void HttpHandler::HandleRunningGames(http::web_request &req, http::web_response &rep) {
         auto run_games_info = this->run_game_mgr_->GetRunningGamesAsJson();
-        auto resp = WrapBasicInfo(200, "ok", run_games_info);
-        res.set_content(resp, "application/json");
+        auto data = WrapBasicInfo(200, "ok", run_games_info);
+        rep.fill_json(data);
     }
 
-    void HttpHandler::HandleStopServer(const httplib::Request& req, httplib::Response& res) {
+    void HttpHandler::HandleStopServer(http::web_request &req, http::web_response &rep) {
         auto srv_mgr = context_->GetRenderController();
         srv_mgr->StopServer();
         auto nr = NetResp::Make(kNetOk, "OK", "");
-        res.set_content(nr.Dump(), "application/json");
+        rep.fill_json(nr.Dump());
 
         this->context_->SendAppMessage(MsgServerAlive {
             .alive_ = false,
         });
     }
 
-    void HttpHandler::HandleAllRunningProcesses(const httplib::Request& req, httplib::Response& res) {
+    void HttpHandler::HandleAllRunningProcesses(http::web_request &req, http::web_response &rep) {
         auto rgm = context_->GetRunGameManager();
         auto rps = rgm->GetRunningProcesses();
         json obj = json::array();
@@ -138,25 +135,25 @@ namespace tc
             obj.push_back(item);
         }
         auto resp = WrapBasicInfo(200, "ok", obj);
-        res.set_content(resp, "application/json");
+        rep.fill_json(resp);
     }
 
-    void HttpHandler::HandleKillProcess(const httplib::Request& req, httplib::Response& res) {
+    void HttpHandler::HandleKillProcess(http::web_request &req, http::web_response &rep) {
         int pid = 0;
         try {
-            auto obj = nlohmann::json::parse(req.body);
+            auto obj = nlohmann::json::parse(req.body());
             auto pid_str = obj["pid"].get<std::string>();
             pid = std::atoi(pid_str.c_str());
         } catch (std::exception& e) {
-            LOGE("parse json failed, body:{}", req.body);
-            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body), "");
-            res.set_content(nr.Dump(), "application/json");
+            LOGE("parse json failed, body:{}", req.body());
+            auto nr = NetResp::Make(kParamError, std::format("param error: {}", req.body()), "");
+            rep.fill_json(nr.Dump());
             return;
         }
 
         ProcessUtil::KillProcess(pid);
         auto nr = NetResp::Make(kNetOk, "OK", "");
-        res.set_content(nr.Dump(), "application/json");
+        rep.fill_json(nr.Dump());
     }
 
     // impl
@@ -219,7 +216,11 @@ namespace tc
         json obj;
         obj["code"] = code;
         obj["message"] = msg;
-        obj["data"] = json::parse(data);
+        try {
+            obj["data"] = json::parse(data);
+        } catch(...) {
+            obj["data"] = data;
+        }
         return obj.dump();
     }
 

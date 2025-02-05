@@ -33,54 +33,49 @@ namespace tc
             //server_ = std::make_shared<httplib::SSLServer>("./certificate.pem", "./private.key");
             server_ = std::make_shared<httplib::Server>();
             // response a "Pong" for checking server state
-            server_->Get(kPathPing, [=, this](const auto &req, auto &res) {
-                http_handler_->HandlePing(req, res);
-            });
+//            server_->Get(kPathPing, [=, this](const auto &req, auto &res) {
+//                http_handler_->HandlePing(req, res);
+//            });
 
             // response the information that equals to the QR Code
-            server_->Get(kPathSimpleInfo, [=, this](const auto &req, auto &res) {
-                http_handler_->HandleSimpleInfo(req, res);
-            });
-
-            // response all apis that we support
-            server_->Get(kPathSupportApis, [=, this](const auto &req, auto &res) {
-                http_handler_->HandleSupportApis(req, res);
-            });
+//            server_->Get(kPathSimpleInfo, [=, this](const auto &req, auto &res) {
+//                http_handler_->HandleSimpleInfo(req, res);
+//            });
 
             // response all apps that we found in system and added by user
-            server_->Get(kPathGames, [=, this](const auto &req, auto &res) {
-                http_handler_->HandleGames(req, res);
-            });
+//            server_->Get(kPathGames, [=, this](const auto &req, auto &res) {
+//                http_handler_->HandleGames(req, res);
+//            });
 
             // start game
-            server_->Post(kPathGameStart, [=, this](const auto &req, auto &res) {
-                http_handler_->HandleGameStart(req, res);
-            });
+//            server_->Post(kPathGameStart, [=, this](const auto &req, auto &res) {
+//                http_handler_->HandleGameStart(req, res);
+//            });
 
             // stop game
-            server_->Post(kPathGameStop, [=, this](const auto &req, auto &res) {
-                http_handler_->HandleGameStop(req, res);
-            });
+//            server_->Post(kPathGameStop, [=, this](const auto &req, auto &res) {
+//                http_handler_->HandleGameStop(req, res);
+//            });
 
             // running games
-            server_->Get(kPathRunningGames, [=, this](const auto &req, auto &res) {
-                http_handler_->HandleRunningGames(req, res);
-            });
+//            server_->Get(kPathRunningGames, [=, this](const auto &req, auto &res) {
+//                http_handler_->HandleRunningGames(req, res);
+//            });
 
             // stop the GammaRayRender.exe
-            server_->Get(kPathStopServer, [=, this](const auto& req, auto& res) {
-                http_handler_->HandleStopServer(req, res);
-            });
+//            server_->Get(kPathStopServer, [=, this](const auto& req, auto& res) {
+//                http_handler_->HandleStopServer(req, res);
+//            });
 
             // all running processes in th PC, equals the process list in TaskManager
-            server_->Get(kPathAllRunningProcesses, [=, this](const auto& req, auto& res) {
-                http_handler_->HandleAllRunningProcesses(req, res);
-            });
+//            server_->Get(kPathAllRunningProcesses, [=, this](const auto& req, auto& res) {
+//                http_handler_->HandleAllRunningProcesses(req, res);
+//            });
 
             // kill a process by pid
-            server_->Post(kPathKillProcess, [=, this](const auto& req, auto& res) {
-                http_handler_->HandleKillProcess(req, res);
-            });
+//            server_->Post(kPathKillProcess, [=, this](const auto& req, auto& res) {
+//                http_handler_->HandleKillProcess(req, res);
+//            });
 
             server_->set_mount_point("/", "./www");
             auto steam_manager = context_->GetSteamManager();

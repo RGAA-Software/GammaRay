@@ -74,7 +74,7 @@ namespace tc
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
 
-        std::string GetCaptureMonitor() const;
+        [[nodiscard]] std::string GetCaptureMonitor() const;
 
     public:
         SharedPreference* sp_ = nullptr;
