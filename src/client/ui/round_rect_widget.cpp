@@ -8,8 +8,8 @@
 namespace tc
 {
 
-    RoundRectWidget::RoundRectWidget(int color, int radius, QWidget *parent) : QWidget(parent) {
-        this->bg_color_ = color;
+    RoundRectWidget::RoundRectWidget(int bg_color, int radius, QWidget *parent) : QWidget(parent) {
+        this->bg_color_ = bg_color;
         this->radius_ = radius;
     }
 

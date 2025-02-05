@@ -29,16 +29,14 @@ namespace tc
     class Application;
     class StreamContent;
     class MessageListener;
+    class Settings;
 
     using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
-    class AppStreamList : public RoundRectWidget {
+    class AppStreamList : public QWidget {
     public:
-
         explicit AppStreamList(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         ~AppStreamList() override;
-
-        void paintEvent(QPaintEvent *event) override;
 
         void LoadStreamItems();
 
@@ -64,6 +62,7 @@ namespace tc
 
         Application* application_ = nullptr;
         StreamContent* stream_content_ = nullptr;
+        Settings* settings_ = nullptr;
     };
 
 }

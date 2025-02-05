@@ -44,7 +44,7 @@ namespace tc
         auto broadcast_msg = context_->MakeBroadcastMessage();
 
         // client
-        client_ctx_ = std::make_shared<ClientContext>("ui");
+        client_ctx_ = std::make_shared<ClientContext>("ui.embed");
         client_ctx_->Init(false);
 
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
@@ -68,8 +68,7 @@ namespace tc
                 title->setFixedWidth(item_width);
                 title->setText(tr("This Device"));
                 title->setAlignment(Qt::AlignLeft);
-                //title->setStyleSheet(R"(font-size: 27px; font-weight:700; font-family: ScreenMatrix;)"); //; padding-left: 10px
-                title->setStyleSheet(R"(font-size: 25px; font-weight:700;)"); //; padding-left: 10px
+                title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
                 left_root->addSpacing(18);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
@@ -223,14 +222,10 @@ namespace tc
         {
             stream_content_ = new StreamContent(client_ctx_, this);
             content_layout->addWidget(stream_content_);
-
         }
-        //content_layout->addStretch(100);
 
         root_layout->addLayout(content_layout);
         setLayout(root_layout);
-
-//        rn_stack_->setCurrentIndex(0);
     }
 
     TabServer::~TabServer() {

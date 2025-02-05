@@ -114,20 +114,6 @@ namespace tc
 
     void Application::Init() {
         msg_listener_ = context_->ObtainMessageListener();
-        msg_listener_->Listen<StreamItem>([=, this](const StreamItem& item) {
-            StartStreaming(item);
-        });
-    }
-
-    void Application::StartStreaming(const StreamItem& item) {
-        auto process = new QProcess(this);
-        QStringList arguments;
-        arguments << std::format("--host={}", item.stream_host).c_str()
-            << std::format("--port={}", item.stream_port).c_str()
-            << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
-            << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str();
-        qDebug() << "args: " << arguments;
-        process->start("./GammaRayClientInner.exe", arguments);
     }
 
     void Application::changeEvent(QEvent* event) {

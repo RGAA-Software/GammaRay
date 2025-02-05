@@ -38,11 +38,11 @@ namespace tc
             QPen pen;
             QColor c;
             if (pressed_) {
-                c = QColor(0x4fb4ff);
+                c = QColor(0x2979ff);
             } else if (enter_) {
-                c = QColor(0x4fb4ff);
+                c = QColor(0x2979ff);
             } else {
-                c = QColor(0x4fb4ff - 0x111111);
+                c = QColor(0x2979ff - 0x111111);
             }
             painter.setBrush(QBrush(c));
             pen.setColor(c);
@@ -99,7 +99,6 @@ namespace tc
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
     StreamContent::StreamContent(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : AppContent(ctx, parent) {
-
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
 
@@ -126,9 +125,7 @@ namespace tc
         stream_list_->LoadStreamItems();
     }
 
-    StreamContent::~StreamContent() {
-
-    }
+    StreamContent::~StreamContent() = default;
 
     void StreamContent::OnContentShow() {
         AppContent::OnContentShow();

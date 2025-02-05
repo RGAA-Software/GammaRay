@@ -9,7 +9,6 @@
 
 #include <QObject>
 #include <QWidget>
-#include <boost/asio.hpp>
 #include "tc_common_new/message_notifier.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 
@@ -22,7 +21,6 @@ namespace tc
 
     class ClientContext : public QObject, public std::enable_shared_from_this<ClientContext> {
     public:
-
         explicit ClientContext(const std::string& name, QObject* parent = nullptr);
         ~ClientContext() override;
         void Init(bool render);
@@ -35,7 +33,7 @@ namespace tc
         std::string GetValueByKey(const std::string& k);
         void UpdateCapturingMonitorInfo(const CaptureMonitorInfo& info);
         CaptureMonitorInfo GetCapturingMonitorInfo();
-        int GetCapturingMonitorIndex();
+        int GetCapturingMonitorIndex() const;
 
         template<class T>
         void SendAppMessage(const T& msg) {
@@ -50,9 +48,6 @@ namespace tc
         std::shared_ptr<SharedPreference> sp_ = nullptr;
         std::shared_ptr<Thread> task_thread_ = nullptr;
         std::string name_;
-        std::shared_ptr<Thread> io_ctx_thread_ = nullptr;
-        std::shared_ptr<boost::asio::io_context> boost_io_ctx_ = nullptr;
-        std::unique_ptr<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> work_guard_;
         bool render_ = false;
         std::atomic_int capturing_monitor_index_ = -1;
         std::string capturing_monitor_name_;

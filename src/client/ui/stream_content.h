@@ -6,7 +6,6 @@
 #define SAILFISH_SERVER_INFORMATIONCONTENT_H
 
 #include "app_content.h"
-
 #include "client/db/stream_item.h"
 
 namespace tc
@@ -44,20 +43,16 @@ namespace tc
 
     class StreamContent : public AppContent {
     public:
-
         explicit StreamContent(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         ~StreamContent() override;
-
         void OnContentShow() override;
         void OnContentHide() override;
-
         void resizeEvent(QResizeEvent *event) override;
 
         void ShowEmptyTip();
         void HideEmptyTip();
 
     private:
-
         AppStreamList* stream_list_ = nullptr;
         AddButton* add_btn_ = nullptr;
         QLabel* empty_tip_ = nullptr;

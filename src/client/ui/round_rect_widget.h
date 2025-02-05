@@ -12,13 +12,10 @@ namespace tc
 
     class RoundRectWidget : public QWidget {
     public:
-
-        RoundRectWidget(int color, int radius, QWidget *parent = nullptr);
-
+        RoundRectWidget(int bg_color, int radius, QWidget *parent = nullptr);
         void paintEvent(QPaintEvent *event) override;
 
     private:
-
         int bg_color_ = 0;
         int radius_ = 0;
 

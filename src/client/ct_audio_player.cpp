@@ -18,13 +18,11 @@ namespace tc
     }
 
     int AudioPlayer::Init(int freq, int channels) {
-        // 初始化 SDL
         if (SDL_Init(SDL_INIT_AUDIO) < 0) {
             LOGE("SDL initialization failed: {}", SDL_GetError());
             return -1;
         }
 
-        // 设置音频参数
         SDL_AudioSpec spec;
         spec.freq = freq;
         spec.format = AUDIO_S16SYS;
@@ -36,16 +34,13 @@ namespace tc
             player->AudioCallback(userdata, stream, len);
         };
 
-        // 打开音频设备
         if (SDL_OpenAudio(&spec, nullptr) < 0) {
             LOGE("Failed to open audio: {}", SDL_GetError());
             SDL_Quit();
             return 1;
         }
 
-        // 开始播放音频
         SDL_PauseAudio(0);
-
         return 0;
     }
 
@@ -67,7 +62,6 @@ namespace tc
     }
 
     void AudioPlayer::Write(const char* data, int size) {
-        // 将接收到的PCM数据存储到队列中
         queue_mutex_.lock();
         for (int i = 0; i < size; i++) {
             pcm_queue_.push(data[i]);

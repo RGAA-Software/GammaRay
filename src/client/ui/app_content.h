@@ -22,21 +22,15 @@ namespace tc
 
     class AppContent : public RoundRectWidget {
     public:
-
         explicit AppContent(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
-        ~AppContent();
+        ~AppContent() override;
 
         virtual void OnContentShow();
         virtual void OnContentHide();
 
-        void paintEvent(QPaintEvent *event) override;
-
     protected:
-
         std::shared_ptr<ClientContext> context_ = nullptr;
-
         Settings* settings_ = nullptr;
-
     };
 
 }

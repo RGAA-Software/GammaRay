@@ -51,12 +51,6 @@ namespace tc
 
         task_thread_ = Thread::Make("context_thread", 128);
         task_thread_->Poll();
-
-        io_ctx_thread_ = std::make_shared<Thread>([=, this]() {
-            boost_io_ctx_ = std::make_shared<boost::asio::io_context>();
-            work_guard_ = std::make_unique<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>(boost::asio::make_work_guard(*boost_io_ctx_));
-            boost_io_ctx_->run();
-        }, "", false);
     }
 
     void ClientContext::PostTask(std::function<void()>&& task) {
@@ -85,11 +79,6 @@ namespace tc
         if (task_thread_ && task_thread_->IsJoinable()) {
             task_thread_->Exit();
         }
-        work_guard_->reset();
-        boost_io_ctx_->stop();
-        if (io_ctx_thread_->IsJoinable()) {
-            io_ctx_thread_->Join();
-        }
     }
 
     void ClientContext::SaveKeyValue(const std::string& k, const std::string& v) {
@@ -112,7 +101,7 @@ namespace tc
         return capturing_info_;
     }
 
-    int ClientContext::GetCapturingMonitorIndex() {
+    int ClientContext::GetCapturingMonitorIndex() const {
         return capturing_info_.mon_idx_;
     }
 

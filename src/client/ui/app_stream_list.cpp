@@ -8,6 +8,7 @@
 #include <QStyleOptionViewItem>
 #include <QtWidgets/QMenu>
 #include <QWidget>
+#include <QProcess>
 
 #include "db/stream_item.h"
 #include "db/stream_db_manager.h"
@@ -20,13 +21,12 @@
 #include "client/ct_app_message.h"
 #include "create_stream_dialog.h"
 #include "stream_content.h"
+#include "client/ct_settings.h"
 
 namespace tc
 {
 
-    class MainItemDelegate : public QStyledItemDelegate
-    {
-
+    class MainItemDelegate : public QStyledItemDelegate {
     public:
         explicit MainItemDelegate(QObject* pParent) {}
         ~MainItemDelegate() override = default;
@@ -38,22 +38,20 @@ namespace tc
 
     // - - -- - - -- - - - -- -
 
-    AppStreamList::AppStreamList(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : RoundRectWidget(0xEAF7FF, 10, parent) {
+    AppStreamList::AppStreamList(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
+        settings_ = Settings::Instance();
         db_mgr_ = context_->GetDBManager();
         stream_content_ = (StreamContent*)parent;
         application_ = (Application*)parent->parent();
 
         CreateLayout();
         Init();
+
+        setStyleSheet("background-color: #ffffff;");
     }
 
-    AppStreamList::~AppStreamList() {
-    }
-
-    void AppStreamList::paintEvent(QPaintEvent *event) {
-        QWidget::paintEvent(event);
-    }
+    AppStreamList::~AppStreamList() = default;
 
     void AppStreamList::CreateLayout() {
         auto root_layout = new QHBoxLayout();
@@ -167,7 +165,15 @@ namespace tc
     }
 
     void AppStreamList::StartStream(const StreamItem& item) {
-        context_->SendAppMessage(item);
+        //context_->SendAppMessage(item);
+        auto process = new QProcess(this);
+        QStringList arguments;
+        arguments << std::format("--host={}", item.stream_host).c_str()
+                  << std::format("--port={}", item.stream_port).c_str()
+                  << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
+                  << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str();
+        qDebug() << "args: " << arguments;
+        process->start("./GammaRayClientInner.exe", arguments);
     }
 
     void AppStreamList::StopStream(const StreamItem& item) {
