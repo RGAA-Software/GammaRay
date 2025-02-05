@@ -92,17 +92,12 @@ namespace tc
         list_widget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         list_widget_->setSpacing(10);
         list_widget_->setResizeMode(QListWidget::Adjust);
-        auto format = std::format(R"(
-            QListWidget {{ outline: none; border:0px solid gray; color: black; background-color: none; padding-left: {}; padding-right: {}; padding-bottom: {};}}
-        )", 25, 20, 20);
-
         //
         QObject::connect(list_widget_, &QListWidget::clicked, this, [=, this](const QModelIndex& index) {
             int row = index.row();
             if (row >= this->games_.size()) {
                 return;
             }
-            LOGI("click: {}", row);
         });
 
         QObject::connect(list_widget_, &QListWidget::doubleClicked, this, [=, this](const QModelIndex& index) {
@@ -110,7 +105,6 @@ namespace tc
             if (row >= this->games_.size()) {
                 return;
             }
-            LOGI("double click: {}", row);
         });
 
         list_widget_->setContextMenuPolicy(Qt::CustomContextMenu);
