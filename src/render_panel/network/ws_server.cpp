@@ -7,7 +7,7 @@
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
 #include "render_panel/gr_context.h"
-#include "render_panel/app_messages.h"
+#include "render_panel/gr_app_messages.h"
 
 namespace tc
 {

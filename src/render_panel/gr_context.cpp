@@ -15,7 +15,7 @@
 #include "gr_resources.h"
 #include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
-#include "app_messages.h"
+#include "gr_app_messages.h"
 #include "tc_controller/hardware.h"
 #include "tc_common_new/md5.h"
 #include "service/service_manager.h"

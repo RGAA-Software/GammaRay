@@ -15,7 +15,7 @@
 #include "render_panel//gr_run_game_manager.h"
 #include "render_panel/db/db_game.h"
 #include "render_panel/db/db_game_manager.h"
-#include "render_panel//app_messages.h"
+#include "render_panel/gr_app_messages.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"

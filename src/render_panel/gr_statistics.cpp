@@ -4,7 +4,7 @@
 
 #include "gr_statistics.h"
 #include "tc_message.pb.h"
-#include "app_messages.h"
+#include "gr_app_messages.h"
 #include "gr_context.h"
 #include "tc_common_new/log.h"
 

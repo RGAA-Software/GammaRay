@@ -5,7 +5,7 @@
 #include "gr_system_monitor.h"
 #include "gr_context.h"
 #include "gr_application.h"
-#include "app_messages.h"
+#include "gr_app_messages.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
 #include "tc_controller/vigem_driver_manager.h"

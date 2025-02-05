@@ -13,7 +13,7 @@
 #include "render_panel/gr_statistics.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
-#include "render_panel/app_messages.h"
+#include "render_panel/gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/num_formatter.h"

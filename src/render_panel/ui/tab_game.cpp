@@ -17,7 +17,7 @@
 #include "render_panel/db/db_game.h"
 #include "render_panel/db/db_game_manager.h"
 #include "render_panel/gr_context.h"
-#include "render_panel/app_messages.h"
+#include "render_panel/gr_app_messages.h"
 #include "tc_qt_widget/round_img_display.h"
 #include "tc_qt_widget/cover_widget.h"
 #include "tc_qt_widget/layout_helper.h"

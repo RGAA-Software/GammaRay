@@ -25,7 +25,7 @@
 #include "rn_app.h"
 #include "rn_empty.h"
 #include "tc_common_new/message_notifier.h"
-#include "render_panel/app_messages.h"
+#include "render_panel/gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
 #include "render_panel/gr_statistics.h"
