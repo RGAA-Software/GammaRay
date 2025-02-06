@@ -32,6 +32,8 @@ namespace tc
         void HandleStopServer(http::web_request &req, http::web_response &rep);
         void HandleAllRunningProcesses(http::web_request &req, http::web_response &rep);
         void HandleKillProcess(http::web_request &req, http::web_response &rep);
+        void HandleResourcesFile(http::web_request &req, http::web_response &rep);
+        void HandleSteamCacheFile(http::web_request &req, http::web_response &rep);
 
     private:
         std::string GetInstalledGamesAsJson();

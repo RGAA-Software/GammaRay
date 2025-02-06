@@ -19,6 +19,8 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"
+#include "tc_common_new/folder_util.h"
+#include "tc_common_new/file_ext.h"
 #include <QString>
 
 using namespace nlohmann;
@@ -154,6 +156,41 @@ namespace tc
         ProcessUtil::KillProcess(pid);
         auto nr = NetResp::Make(kNetOk, "OK", "");
         rep.fill_json(nr.Dump());
+    }
+
+    void HttpHandler::HandleResourcesFile(http::web_request &req, http::web_response &rep) {
+        std::string_view target = req.target();
+        std::string_view query = req.query();
+        auto file_path = this->context_->GetCurrentExeFolder() + std::string(target);
+        LOGI("Res file path: {}", file_path);
+        rep.fill_file(target);
+    }
+
+    void HttpHandler::HandleSteamCacheFile(http::web_request &req, http::web_response &rep) {
+        std::string_view target = req.target();
+        std::string_view query = req.query();
+        LOGI("target: {}, query: {}", target, query);
+        std::string prefix = R"(/steam/cache/)";
+        if (!target.starts_with(prefix)) {
+            return;
+        }
+        std::string steam_id = std::string(target).substr(prefix.size(), target.size());
+        LOGI("Steam id: {}", steam_id);
+
+        auto steam_manager = context_->GetSteamManager();
+        if (!steam_manager) {
+            return;
+        }
+        auto image_cache_path = steam_manager->GetSteamImageCachePath();
+        std::string from_cover_path = std::format("{}/{}/library_600x900.jpg", image_cache_path, steam_id);
+        LOGI("cover path: {}", from_cover_path);
+
+        std::string steam_cover_folder_path = this->context_->GetCurrentExeFolder() + "/resources/steam_covers";
+        FolderUtil::CreateDir(steam_cover_folder_path);
+        std::string target_cover_name = std::format("{}_library_600x900.jpg", steam_id);
+        std::string target_cover_path = std::format("{}/{}", steam_cover_folder_path, target_cover_name);
+        FileExt::CopyFileExt(from_cover_path, target_cover_path, false);
+        rep.fill_file(std::format("/resources/steam_covers/{}", target_cover_name));
     }
 
     // impl

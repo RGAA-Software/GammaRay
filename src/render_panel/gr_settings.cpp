@@ -36,8 +36,8 @@ namespace tc
         capture_audio_device_ = sp_->Get(kStCaptureAudioDevice, "");
 
         network_type_ = sp_->Get(kStNetworkType, "websocket");
-        http_server_port_ = sp_->GetInt(kStHttpPort, 20368);
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
+        http_server_port_ = ws_server_port_;
         network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
 
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");

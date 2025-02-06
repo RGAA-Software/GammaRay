@@ -40,7 +40,6 @@ namespace tc
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<HttpServer> http_server_ = nullptr;
         std::shared_ptr<WSServer> ws_server_ = nullptr;
         std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
         std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;

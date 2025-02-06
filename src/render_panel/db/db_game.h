@@ -27,6 +27,7 @@ namespace tc
         std::string steam_url_{};
         std::string cover_name_{};
         std::string engine_type_{};
+        // steam changed cache dir, this field was deprecated
         std::string cover_url_{};
 
         // not in database

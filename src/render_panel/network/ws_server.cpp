@@ -44,10 +44,10 @@ namespace tc
         http_server_ = std::make_shared<asio2::http_server>();
         http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
-            LOGI("client disconnected: {}", socket_fd);
             if (sessions_.HasKey(socket_fd)) {
                 sessions_.Remove(socket_fd);
                 //NotifyMediaClientDisConnected();
+                LOGI("client disconnected: {}", socket_fd);
                 LOGI("App server media close, media router size: {}", sessions_.Size());
             }
             //this->NotifyPeerDisconnected();
@@ -61,7 +61,7 @@ namespace tc
         });
 
         // response a "Pong" for checking server state
-        AddHttpGetRouter("/ping", [=, this](const auto& path, auto& req, auto& rep) {
+        AddHttpGetRouter(kPathPing, [=, this](const auto& path, auto& req, auto& rep) {
             http_handler_->HandlePing(req, rep);
         });
 
@@ -103,6 +103,16 @@ namespace tc
         // kill a process by pid
         AddHttpPostRouter(kPathKillProcess, [=, this](const auto& path, auto& req, auto& rep) {
             http_handler_->HandleKillProcess(req, rep);
+        });
+
+        // res
+        AddHttpGetRouter("/res/*", [=, this](const auto& path, auto& req, auto& rep) {
+            http_handler_->HandleResourcesFile(req, rep);
+        });
+
+        // cache
+        AddHttpGetRouter("/steam/cache/*", [=, this](const auto& path, auto& req, auto& rep) {
+            http_handler_->HandleSteamCacheFile(req, rep);
         });
 
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanel, http_server_);

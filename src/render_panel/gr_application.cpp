@@ -7,7 +7,6 @@
 #include "gr_context.h"
 #include "gr_settings.h"
 #include "render_panel/network/ws_server.h"
-#include "render_panel/network/http_server.h"
 #include "render_panel/network/udp_broadcaster.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_steam_manager_new/steam_manager.h"
@@ -79,9 +78,6 @@ namespace tc
         auto st = GrStatistics::Instance();
         st->SetContext(context_);
         st->RegisterEventListeners();
-
-        http_server_ = std::make_shared<HttpServer>(shared_from_this());
-        http_server_->Start();
 
         ws_server_ = WSServer::Make(shared_from_this());
         ws_server_->Start();

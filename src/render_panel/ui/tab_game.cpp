@@ -34,6 +34,7 @@
 #include "add_game_panel.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_common_new/folder_util.h"
+#include "tc_common_new/file_ext.h"
 
 namespace tc
 {
@@ -333,10 +334,24 @@ namespace tc
         });
     }
 
-    void TabGame::LoadCover(const tc::TcDBGamePtr &game) {
+    void TabGame::LoadCover(const tc::TcDBGamePtr& game) {
+        auto steam_manager = context_->GetSteamManager();
+        if (!steam_manager) {
+            return;
+        }
+        auto image_cache_path = steam_manager->GetSteamImageCachePath();
+        std::string from_cover_path = std::format("{}/{}/library_600x900.jpg", image_cache_path, game->game_id_);
+        LOGI("cover path: {}", from_cover_path);
+
+        std::string steam_cover_folder_path = this->context_->GetCurrentExeFolder() + "/resources/steam_covers";
+        FolderUtil::CreateDir(steam_cover_folder_path);
+        std::string target_cover_name = std::format("{}_library_600x900.jpg", game->game_id_);
+        std::string target_cover_path = std::format("{}/{}", steam_cover_folder_path, target_cover_name);
+        FileExt::CopyFileExt(from_cover_path, target_cover_path, false);
+
         QImage image;
-        if (!image.load(QString::fromStdString(game->cover_url_))) {
-            LOGI("not find cover: {}", game->cover_url_);
+        if (!image.load(QString::fromStdString(target_cover_path))) {
+            LOGI("not find cover: {}", target_cover_path);
             return;
         }
         auto item_size = GetItemSize();
