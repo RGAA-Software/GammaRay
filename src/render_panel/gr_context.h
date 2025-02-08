@@ -42,7 +42,7 @@ namespace tc
 
         std::string GetSysUniqueId();
         int GetIndexByUniqueId();
-        std::map<std::string, IPNetworkType> GetIps();
+        std::vector<EthernetInfo> GetIps();
 
         std::string MakeBroadcastMessage();
 
@@ -72,7 +72,7 @@ namespace tc
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<TaskRuntime> task_runtime_ = nullptr;
         std::string unique_id_{};
-        std::map<std::string, IPNetworkType> ips_;
+        std::vector<EthernetInfo> ips_;
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::shared_ptr<GrResources> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;

@@ -38,7 +38,8 @@ namespace tc
         network_type_ = sp_->Get(kStNetworkType, "websocket");
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         http_server_port_ = ws_server_port_;
-        network_listen_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
+        network_listening_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
+        network_listening_ip_ = sp_->Get(kStListeningIp, "");
 
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
@@ -85,7 +86,7 @@ namespace tc
         ss << "network_type_: " << network_type_ << std::endl;
         ss << "http_server_port_: " << http_server_port_ << std::endl;
         ss << "ws_server_port_: " << ws_server_port_ << std::endl;
-        ss << "network_listen_port_: " << network_listen_port_ << std::endl;
+        ss << "network_listening_port_: " << network_listening_port_ << std::endl;
         ss << "capture_monitor_: " << GetCaptureMonitor() << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
@@ -107,7 +108,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
         args.push_back(std::format("--{}={}", kStNetworkType, network_type_));
-        args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listen_port_));
+        args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listening_port_));
         args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
         args.push_back(std::format("--{}={}", kStAppGamePath, "desktop"));
@@ -181,6 +182,11 @@ namespace tc
 
     std::string GrSettings::GetCaptureMonitor() const {
         return sp_->Get(kStCaptureMonitor, "");
+    }
+
+    void GrSettings::SetListeningIp(const std::string& ip) {
+        network_listening_ip_ = ip;
+        sp_->Put(kStListeningIp, ip);
     }
 
 }

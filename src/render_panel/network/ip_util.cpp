@@ -37,7 +37,7 @@ namespace tc
     }
 
     // 0 - wireless , 1 - wire
-    static void GetIps(std::map<std::string, IPNetworkType> &map_ip) {
+    static void GetIps(std::vector<EthernetInfo>& all_et_info) {
         QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
         QList<QNetworkAddressEntry> entry;
         foreach(QNetworkInterface inter, interfaces) {
@@ -60,10 +60,18 @@ namespace tc
                         auto broadcast = entry.at(i).broadcast().toString().toStdString();
                         LOGI("IP: {}, broadcast: {}", ip, broadcast);
                         if (-1 != inter.name().indexOf("wireless")) {
-                            map_ip.insert({ip, IPNetworkType::kWireless});
+                            all_et_info.push_back(EthernetInfo{
+                                .human_readable_name_ = inter.humanReadableName().toStdString(),
+                                .ip_addr_ = ip,
+                                .nt_type_ = IPNetworkType::kWireless,
+                            });
                         } else if (-1 != inter.name().indexOf("ethernet")) {
                             LOGI("Net Name: {}", inter.name().toStdString());
-                            map_ip.insert({entry.at(i).ip().toString().toStdString(), IPNetworkType::kWired});
+                            all_et_info.push_back(EthernetInfo{
+                                    .human_readable_name_ = inter.humanReadableName().toStdString(),
+                                    .ip_addr_ = entry.at(i).ip().toString().toStdString(),
+                                    .nt_type_ = IPNetworkType::kWired,
+                            });
                         }
                     }
                 }
@@ -72,8 +80,8 @@ namespace tc
         }
     }
 
-    std::map<std::string, IPNetworkType> IPUtil::ScanIPs() {
-        std::map<std::string, IPNetworkType> ips;
+    std::vector<EthernetInfo> IPUtil::ScanIPs() {
+        std::vector<EthernetInfo> ips;
         GetIps(ips);
         return ips;
     }

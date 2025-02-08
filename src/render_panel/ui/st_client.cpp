@@ -74,7 +74,7 @@ namespace tc
             item_layout->addWidget(qrcode);
             auto ips = app_->GetContext()->GetIps();
             if (!ips.empty()) {
-                auto url = std::format("http://{}:{}/clients/android/a.webp", (*ips.begin()).first, GrSettings::Instance()->http_server_port_);
+                auto url = std::format("http://{}:{}/clients/android/a.webp", (*ips.begin()).ip_addr_, GrSettings::Instance()->http_server_port_);
                 auto qr_pixmap = QrGenerator::GenQRPixmap(url.c_str(), 128);
                 qrcode->setPixmap(qr_pixmap);
             }

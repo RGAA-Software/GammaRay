@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace tc
 {
@@ -16,10 +17,17 @@ namespace tc
         kWireless,
     };
 
+    class EthernetInfo {
+    public:
+        std::string human_readable_name_;
+        std::string ip_addr_;
+        IPNetworkType nt_type_;
+    };
+
     class IPUtil {
     public:
 
-        static std::map<std::string, IPNetworkType> ScanIPs();
+        static std::vector<EthernetInfo> ScanIPs();
 
     };
 

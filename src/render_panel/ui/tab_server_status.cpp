@@ -226,7 +226,7 @@ namespace tc
 
             auto ips = context_->GetIps();
             // IPs
-            for (auto& [ip, ip_type] : ips) {
+            for (auto& item : ips) {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
                 auto icon = new QLabel(this);
@@ -242,13 +242,13 @@ namespace tc
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(ip.c_str());
+                value->setText(item.ip_addr_.c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
 
                 auto nt_type = new QLabel(this);
                 nt_type->setFixedSize(80, 40);
-                nt_type->setText(ip_type == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
+                nt_type->setText(item.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
                 nt_type->setStyleSheet("font-size: 14px;");
                 item_layout->addSpacing(18);
                 item_layout->addWidget(nt_type);
@@ -322,7 +322,7 @@ namespace tc
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(std::to_string(settings_->network_listen_port_).c_str());
+                value->setText(std::to_string(settings_->network_listening_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();

@@ -52,8 +52,8 @@ namespace tc
 
         LOGI("Unique Id: {}", unique_id_);
         LOGI("Scan IP size: {}", ips_.size());
-        for (auto& [ip, type] : ips_) {
-            LOGI("IP: {} -> {}", ip, type == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
+        for (auto& item : ips_) {
+            LOGI("IP: {} -> {}", item.ip_addr_, item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
         }
 
         db_game_manager_ = std::make_shared<DBGameManager>(shared_from_this());
@@ -148,7 +148,7 @@ namespace tc
         return std::atoi(GetSysUniqueId().c_str())%30+1;
     }
 
-    std::map<std::string, IPNetworkType> GrContext::GetIps() {
+    std::vector<EthernetInfo> GrContext::GetIps() {
         return ips_;
     }
 
@@ -160,10 +160,10 @@ namespace tc
         // ips
         auto ip_array = json::array();
         auto ips = this->GetIps();
-        for (auto& [ip, type] : ips) {
+        for (auto& item : ips) {
             json ip_obj;
-            ip_obj["ip"] = ip;
-            ip_obj["type"] = type == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
+            ip_obj["ip"] = item.ip_addr_;
+            ip_obj["type"] = item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
             ip_array.push_back(ip_obj);
         }
         obj["ips"] = ip_array;
@@ -171,7 +171,7 @@ namespace tc
         obj["http_server_port"] = settings_->http_server_port_;
         obj["ws_server_port"] = settings_->ws_server_port_;
         obj["udp_server_port"] = settings_->udp_server_port_;
-        obj["stream_ws_port"] = settings_->network_listen_port_;
+        obj["stream_ws_port"] = settings_->network_listening_port_;
 
         return obj.dump();
     }

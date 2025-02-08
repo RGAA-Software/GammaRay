@@ -13,14 +13,13 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
+#include "render_panel/network/ip_util.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDebug>
-//#include <QAudioDevice>
-//#include <QMediaDevices>
 #include <QFileDialog>
 #include <Windows.h>
 #include <Mmsystem.h>
@@ -63,7 +62,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Bitrate(M)"));
+                label->setText(tr("Bitrate(Mbps)"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -339,15 +338,78 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Network Type"));
+                label->setText(tr("WebSocket"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                edit->setEnabled(true);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->websocket_enabled_ == kStTrue);
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    //settings_->SetCaptureAudio(enabled);
+                });
+            }
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("WebRTC"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                edit->setEnabled(true);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->webrtc_enabled_ == kStTrue);
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    //settings_->SetCaptureAudio(enabled);
+                });
+            }
+            // Ethernet adapter
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Ethernet Adapter"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
 
                 auto edit = new QComboBox(this);
                 edit->setFixedSize(input_size);
-                edit->addItem("Websocket");
-                //edit->addItem("WebRTC");
+                edit->addItem("Auto");
+                auto all_et_info = context_->GetIps();
+                int index = 0;
+                int target_index_ = -1;
+                for (const auto& et_info : all_et_info) {
+                    if (et_info.ip_addr_ == settings_->network_listening_ip_ && !et_info.ip_addr_.empty()) {
+                        target_index_ = index;
+                    }
+                    edit->addItem(std::format("{} {} {}", et_info.ip_addr_, (et_info.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS"), et_info.human_readable_name_).c_str());
+                    index++;
+                }
+                if (target_index_ != -1) {
+                    edit->setCurrentIndex(target_index_ + 1);
+                }
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
+                    if (idx <= 0) {
+                        settings_->SetListeningIp("");
+                        return;
+                    }
+                    auto target_ip = all_et_info.at(idx-1).ip_addr_;
+                    settings_->SetListeningIp(target_ip);
+                });
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -400,7 +462,7 @@ namespace tc
 
                 auto edit = new QLineEdit(this);
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->network_listen_port_).c_str());
+                edit->setText(std::to_string(settings_->network_listening_port_).c_str());
                 edit->setEnabled(false);
                 layout->addWidget(edit);
                 layout->addStretch();
