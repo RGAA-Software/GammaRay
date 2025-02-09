@@ -118,11 +118,20 @@ namespace tc
     }
 
     void StreamDBManager::AddStream(StreamItem &stream) {
-        stream.stream_id = GenUUID();
+        if (stream.stream_id.empty()) {
+            stream.stream_id = GenUUID();
+        }
         stream.bg_color = RandomColor();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);
         storage.insert(stream);
+    }
+
+    bool StreamDBManager::HasStream(const std::string& stream_id) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage);
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id) == stream_id));
+        return !streams.empty();
     }
 
     void StreamDBManager::UpdateStream(const StreamItem &stream) {

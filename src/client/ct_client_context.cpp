@@ -48,6 +48,17 @@ namespace tc
         }
 
         db_mgr_ = std::make_shared<StreamDBManager>();
+        auto stream_id = "steam_my_self";
+        if (!db_mgr_->HasStream(stream_id)) {
+            auto item = StreamItem {
+                .stream_id = stream_id,
+                .stream_name = "MY SELF",
+                .stream_host = "127.0.0.1",
+                .stream_port = 20371,
+                .bg_color = db_mgr_->RandomColor(),
+            };
+            db_mgr_->AddStream(item);
+        }
 
         task_thread_ = Thread::Make("context_thread", 128);
         task_thread_->Poll();

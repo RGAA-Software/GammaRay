@@ -19,20 +19,14 @@ namespace tc
     public:
 
         StreamDBManager();
-
         ~StreamDBManager();
-
         static std::string GenUUID();
-
         void AddStream(StreamItem &stream);
-
         void UpdateStream(const StreamItem &stream);
-
         std::vector<StreamItem> GetAllStreams();
-
         void DeleteStream(int id);
-
         int RandomColor();
+        bool HasStream(const std::string& stream_id);
 
     private:
 

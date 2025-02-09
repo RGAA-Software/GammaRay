@@ -20,6 +20,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <QDir>
+#include "client/ui/sized_msg_box.h"
 
 using namespace tc;
 
@@ -122,7 +123,8 @@ int main(int argc, char** argv) {
     auto host = g_host_;
     auto port = g_port_;
     if (host.empty() || port <= 0 || port >= 65535) {
-        QMessageBox::critical(nullptr, "Error Params", "You must give HOST & PORT");
+        auto msg_box = SizedMessageBox::MakeOkBox("Error Params", "You must give valid HOST & PORT");
+        msg_box->exec();
         return -1;
     }
 
