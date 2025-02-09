@@ -34,7 +34,8 @@ DEFINE_bool(capture_video, true, "");
 DEFINE_string(capture_video_type, "hook", "hook/global");
 
 // network
-DEFINE_string(network_type, "websocket", "");
+DEFINE_bool(websocket_enabled, true, "");
+DEFINE_bool(webrtc_enabled, true, "");
 DEFINE_int32(network_listen_port, 20371, "");
 
 static const std::string kStCaptureMonitor = "capture_monitor";
@@ -105,6 +106,8 @@ void UpdateSettings(Settings* settings) {
 
     // network !! only support websocket now
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
+    settings->transmission_.websocket_enabled_ = FLAGS_websocket_enabled;
+    settings->transmission_.webrtc_enabled_ = FLAGS_webrtc_enabled;
 
     // app
     if (!FLAGS_app_game_path.empty()) {
@@ -133,7 +136,8 @@ void PrintInputArgs() {
     LOGI("capture_audio_type: {}", FLAGS_capture_audio_type);
     LOGI("capture_video: {}", FLAGS_capture_video);
     LOGI("capture_video_type: {}", FLAGS_capture_video_type);
-    LOGI("network_type: {}", FLAGS_network_type);
+    LOGI("websocket enabled: {}", FLAGS_websocket_enabled);
+    LOGI("webrtc enabled: {}", FLAGS_webrtc_enabled);
     LOGI("network_listen_port: {}", FLAGS_network_listen_port);
     LOGI("capture monitor: {}", Base64::Base64Decode(FLAGS_capture_monitor));
     LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));

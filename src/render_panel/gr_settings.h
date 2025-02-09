@@ -23,7 +23,8 @@ namespace tc
     static const std::string kStCaptureAudioType = "capture_audio_type";
     static const std::string kStCaptureVideo = "capture_video";
     static const std::string kStCaptureVideoType = "capture_video_type";
-    static const std::string kStNetworkType = "network_type";
+    static const std::string kStWebSocketEnabled = "websocket_enabled";
+    static const std::string kStWebRTCEnabled = "webrtc_enabled";
     static const std::string kStNetworkListenPort = "network_listen_port";
     static const std::string kStAppGamePath = "app_game_path";
     static const std::string kStAppGameArgs = "app_game_args";
@@ -42,7 +43,6 @@ namespace tc
     static const std::string kEncFormatH265 = "h265";
     static const std::string kResTypeOrigin = "origin";
     static const std::string kResTypeResize = "resize";
-    static const std::string kNetworkTypeWebsocket = "Websocket";
 
     static const std::string kGammaRayName = "GammaRay.exe";
     static const std::string kGammaRayRenderName = "GammaRayRender.exe";
@@ -75,6 +75,8 @@ namespace tc
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
         void SetListeningIp(const std::string& ip);
+        void SetWebSocketEnabled(bool enabled);
+        void SetWebRTCEnabled(bool enabled);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
@@ -101,7 +103,6 @@ namespace tc
         std::string capture_monitor_;
         std::string capture_audio_device_;
 
-        std::string network_type_;
         int network_listening_port_{};
         std::string network_listening_ip_{};
         std::string websocket_enabled_ = kStTrue;

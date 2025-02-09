@@ -561,7 +561,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Default Transfer Folder"));
+                label->setText(tr("Drag&Drop Receive Folder"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);

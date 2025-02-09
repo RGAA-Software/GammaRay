@@ -77,6 +77,8 @@ namespace tc
     // Transmission
     struct Transmission {
         int listening_port_ = 8888;
+        bool websocket_enabled_ = true;
+        bool webrtc_enabled_ = true;
     };
 
     // Application

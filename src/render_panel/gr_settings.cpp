@@ -35,11 +35,12 @@ namespace tc
         capture_monitor_ = sp_->Get(kStCaptureMonitor, "");
         capture_audio_device_ = sp_->Get(kStCaptureAudioDevice, "");
 
-        network_type_ = sp_->Get(kStNetworkType, "websocket");
         ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
         http_server_port_ = ws_server_port_;
         network_listening_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
         network_listening_ip_ = sp_->Get(kStListeningIp, "");
+        websocket_enabled_ = sp_->Get(kStWebSocketEnabled, kStTrue);
+        webrtc_enabled_ = sp_->Get(kStWebRTCEnabled, kStTrue);
 
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
@@ -83,10 +84,11 @@ namespace tc
         ss << "capture_audio_type_: " << capture_audio_type_ << std::endl;
         ss << "capture_video_: " << capture_video_ << std::endl;
         ss << "capture_video_type: " << capture_video_type_ << std::endl;
-        ss << "network_type_: " << network_type_ << std::endl;
         ss << "http_server_port_: " << http_server_port_ << std::endl;
         ss << "ws_server_port_: " << ws_server_port_ << std::endl;
         ss << "network_listening_port_: " << network_listening_port_ << std::endl;
+        ss << "websocket_enabled_:" << websocket_enabled_ << std::endl;
+        ss << "webrtc_enabled_:" << webrtc_enabled_ << std::endl;
         ss << "capture_monitor_: " << GetCaptureMonitor() << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
@@ -107,7 +109,8 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureAudioType, capture_audio_type_));
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
-        args.push_back(std::format("--{}={}", kStNetworkType, network_type_));
+        args.push_back(std::format("--{}={}", kStWebSocketEnabled, websocket_enabled_));
+        args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
         args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listening_port_));
         args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
@@ -187,6 +190,16 @@ namespace tc
     void GrSettings::SetListeningIp(const std::string& ip) {
         network_listening_ip_ = ip;
         sp_->Put(kStListeningIp, ip);
+    }
+
+    void GrSettings::SetWebSocketEnabled(bool enabled) {
+        websocket_enabled_ = enabled ? kStTrue : kStFalse;
+        sp_->Put(kStWebSocketEnabled, websocket_enabled_);
+    }
+
+    void GrSettings::SetWebRTCEnabled(bool enabled) {
+        webrtc_enabled_ = enabled ? kStTrue : kStFalse;
+        sp_->Put(kStWebRTCEnabled, webrtc_enabled_);
     }
 
 }
