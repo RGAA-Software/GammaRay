@@ -17,6 +17,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_general.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_about_me.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_network.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/game_info_preview.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/rn_app.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/rn_empty.cpp

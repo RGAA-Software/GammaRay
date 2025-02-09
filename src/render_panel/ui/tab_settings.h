@@ -13,7 +13,7 @@ namespace tc
 {
 
     enum class StTabName {
-        kStClient,
+        kStNetwork,
         kStGeneral,
         kStAboutMe,
     };

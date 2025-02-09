@@ -60,6 +60,7 @@ namespace tc
 
             auto btn = new QPushButton();
             btn->setFixedWidth(button_width);
+            btn->setFixedHeight(35);
             btn->setText(tr("Server Repo"));
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
@@ -70,7 +71,8 @@ namespace tc
             root_layout->addSpacing(50);
             root_layout->addLayout(layout);
         }
-        {
+        // we don't use this repository
+        if (0) {
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto label = new QLabel();
@@ -107,6 +109,7 @@ namespace tc
             auto btn = new QPushButton();
             btn->setText(tr("Android Client Repo"));
             btn->setFixedWidth(button_width);
+            btn->setFixedHeight(35);
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
                 QDesktopServices::openUrl(QUrl(label->text()));
@@ -117,18 +120,6 @@ namespace tc
             root_layout->addLayout(layout);
         }
         root_layout->addStretch();
-
-        {
-            auto layout = new NoMarginHLayout();
-            root_layout->addLayout(layout);
-            layout->addStretch();
-
-            license_ = new QLabel(this);
-            license_->setText("License[Apache]");
-            license_->setStyleSheet(R"(font-size:25px; color:#bb2222;)");
-            layout->addWidget(license_);
-            layout->addSpacing(20);
-        }
 
         root_layout->addSpacing(20);
         setLayout(root_layout);

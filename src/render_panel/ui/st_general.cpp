@@ -324,7 +324,8 @@ namespace tc
             column1_layout->addLayout(segment_layout);
         }
 
-        {
+        // moved to Network page
+        if (false) {
             auto segment_layout = new NoMarginVLayout();
             {
                 // title
