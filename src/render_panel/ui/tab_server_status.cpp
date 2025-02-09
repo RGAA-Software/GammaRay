@@ -195,12 +195,24 @@ namespace tc
                 item_layout->addSpacing(40);
                 item_layout->addWidget(btn_install);
 
-//                    auto btn_remove = new QPushButton(this);
-//                    btn_remove->setFixedSize(80, 28);
-//                    btn_remove->setText(tr("STOP ALL"));
-//                    btn_remove->setProperty("class", "danger");
-//                    item_layout->addSpacing(5);
-//                    item_layout->addWidget(btn_remove);
+                if (0) {
+                    auto btn_remove = new QPushButton(this);
+                    btn_remove->setFixedSize(80, 28);
+                    btn_remove->setText(tr("STOP ALL"));
+                    btn_remove->setProperty("class", "danger");
+                    item_layout->addSpacing(5);
+                    item_layout->addWidget(btn_remove);
+
+                    connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
+                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"),
+                                                                        tr("Do you want to STOP ALL?"));
+                        if (msg_box->exec() == 0) {
+                            this->context_->PostTask([=, this]() {
+                                this->context_->GetServiceManager()->Remove();
+                            });
+                        }
+                    });
+                }
                 item_layout->addStretch();
 
                 connect(btn_install, &QPushButton::clicked, this, [=, this]() {
@@ -212,21 +224,21 @@ namespace tc
                     }
                 });
 
-//                    connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
-//                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"), tr("Do you want to STOP ALL?"));
-//                        if (msg_box->exec() == 0) {
-//                            this->context_->PostTask([=, this]() {
-//                                this->context_->GetServiceManager()->Remove();
-//                            });
-//                        }
-//                    });
-
                 layout->addLayout(item_layout);
             }
 
             auto ips = context_->GetIps();
+            EthernetInfo et_info;
+            if (!ips.empty()) {
+                et_info = ips.at(0);
+            }
             // IPs
             for (auto& item : ips) {
+                if (!settings_->network_listening_ip_.empty() && item.ip_addr_ == settings_->network_listening_ip_) {
+                    et_info = item;
+                }
+            }
+            {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
                 auto icon = new QLabel(this);
@@ -236,19 +248,19 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Detected IP"));
+                label->setText(tr("Listening IP"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(item.ip_addr_.c_str());
+                value->setText(et_info.ip_addr_.c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
 
                 auto nt_type = new QLabel(this);
                 nt_type->setFixedSize(80, 40);
-                nt_type->setText(item.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
+                nt_type->setText(et_info.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
                 nt_type->setStyleSheet("font-size: 14px;");
                 item_layout->addSpacing(18);
                 item_layout->addWidget(nt_type);
@@ -268,7 +280,7 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Http Port"));
+                label->setText(tr("Panel Listening Port"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
@@ -282,7 +294,7 @@ namespace tc
             }
 
             // ws server port
-            {
+            if (0) {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
                 auto icon = new QLabel(this);
@@ -316,7 +328,7 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Streaming Port"));
+                label->setText(tr("Renderer Streaming Port"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 

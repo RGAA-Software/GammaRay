@@ -416,7 +416,7 @@ namespace tc
                 segment_layout->addLayout(layout);
             }
             // Http port
-            {
+            if (0) {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
                 label->setText(tr("Http Port"));
@@ -437,7 +437,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Websocket Port"));
+                label->setText(tr("Panel Listening Port"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -455,7 +455,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Streaming Port"));
+                label->setText(tr("Renderer Streaming Port"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
