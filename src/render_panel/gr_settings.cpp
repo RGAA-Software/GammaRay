@@ -96,6 +96,10 @@ namespace tc
         ss << "webrtc_enabled_:" << webrtc_enabled_ << std::endl;
         ss << "capture_monitor_: " << GetCaptureMonitor() << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
+        ss << "sig_server_address_: " << sig_server_address_ << std::endl;
+        ss << "sig_server_port_: " << sig_server_port_ << std::endl;
+        ss << "coturn_server_address_: " << coturn_server_address_ << std::endl;
+        ss << "coturn_server_port_: " << coturn_server_port_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -123,6 +127,10 @@ namespace tc
         args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
         args.push_back(std::format("--{}={}", kStDebugBlock, false));
         args.push_back(std::format("--{}={}", kStMockVideo, false));
+        args.push_back(std::format("--{}={}", kStSigServerAddress, sig_server_address_));
+        args.push_back(std::format("--{}={}", kStSigServerPort, sig_server_port_));
+        args.push_back(std::format("--{}={}", kStCoturnAddress, coturn_server_address_));
+        args.push_back(std::format("--{}={}", kStCoturnPort, coturn_server_port_));
         return args;
     }
 

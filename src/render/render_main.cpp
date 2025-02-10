@@ -38,8 +38,11 @@ DEFINE_bool(websocket_enabled, true, "");
 DEFINE_bool(webrtc_enabled, true, "");
 DEFINE_int32(network_listen_port, 20371, "");
 
-static const std::string kStCaptureMonitor = "capture_monitor";
-static const std::string kStCaptureAudioDevice = "capture_audio_device";
+DEFINE_string(sig_server_address, "", "");
+DEFINE_string(sig_server_port, "", "");
+DEFINE_string(coturn_server_address, "", "");
+DEFINE_string(coturn_server_port, "", "");
+
 DEFINE_string(capture_monitor, "", "capture monitor");
 DEFINE_string(capture_audio_device, "", "capture audio device");
 
@@ -145,6 +148,10 @@ void PrintInputArgs() {
     LOGI("app_game_args: {}", FLAGS_app_game_args);
     LOGI("block debug: {}", FLAGS_debug_block);
     LOGI("mock video: {}", FLAGS_mock_video);
+    LOGI("sig server address: {}", FLAGS_sig_server_address);
+    LOGI("sig server port: {}", FLAGS_sig_server_port);
+    LOGI("coturn server address: {}", FLAGS_coturn_server_address);
+    LOGI("coturn server port: {}", FLAGS_coturn_server_port);
     LOGI("--------------In args end----------------");
 }
 

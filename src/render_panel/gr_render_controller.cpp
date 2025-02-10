@@ -25,16 +25,12 @@ namespace tc
 
     bool GrRenderController::StartServer() {
         auto args = GrSettings::Instance()->GetArgs();
+        LOGI("StartServer Params:");
         QStringList arg_list;
         for (auto& arg : args) {
             arg_list << arg.c_str();
+            LOGI("{}", arg);
         }
-
-        std::stringstream ss;
-        std::for_each(arg_list.begin(), arg_list.end(), [&](const auto &item) {
-            ss << item.toStdString();
-        });
-        LOGI("param: {}", ss.str());
 
         //
         tc::ServiceMessage srv_msg;
