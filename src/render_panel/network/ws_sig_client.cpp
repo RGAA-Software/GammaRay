@@ -77,7 +77,7 @@ namespace tc
             auto is_render_alive = sub.render_status() == RenderStatus::kWorking;
             //LOGI("hb_idx: {}, is render alive: {}", hb_idx, is_render_alive);
             context_->SendAppMessage(MsgServerAlive{
-                    .alive_ = is_render_alive,
+                .alive_ = is_render_alive,
             });
         }
     }

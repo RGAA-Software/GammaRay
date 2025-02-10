@@ -64,6 +64,7 @@ else()
 endif()
 
 add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+#add_compile_definitions(ASIO2_ENABLE_SSL ASIO2_ENABLE_LOG)
 add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX -DENABLE_SSL=0 -DCMAKE_GENERATOR_PLATFORM=x64 -D_AMD64_)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
@@ -174,7 +175,7 @@ if(ENABLE_HOOK_CAPTURE)
 endif ()
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder plugin_obj_detector plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer plugin_mock_video_stream
-        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer lib_GammaRayClient
+        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer lib_GammaRayClient tc_signaling_sdk
 )
 
 add_custom_command(TARGET tc_build_all POST_BUILD
