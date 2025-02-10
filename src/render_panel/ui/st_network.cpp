@@ -68,6 +68,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QCheckBox(this);
+                cb_websocket_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setEnabled(true);
                 layout->addWidget(edit);
@@ -77,7 +78,7 @@ namespace tc
                 edit->setChecked(settings_->websocket_enabled_ == kStTrue);
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
-                    //settings_->SetCaptureAudio(enabled);
+                    settings_->SetWebSocketEnabled(enabled);
                 });
             }
             {
@@ -89,6 +90,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QCheckBox(this);
+                cb_webrtc_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setEnabled(true);
                 layout->addWidget(edit);
@@ -98,7 +100,7 @@ namespace tc
                 edit->setChecked(settings_->webrtc_enabled_ == kStTrue);
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
-                    //settings_->SetCaptureAudio(enabled);
+                    settings_->SetWebRTCEnabled(enabled);
                 });
             }
             // Ethernet adapter
@@ -194,8 +196,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edt_sig_server_address_ = edit;
                 edit->setFixedSize(input_size);
-                //edit->setText(std::to_string(settings_->network_listening_port_).c_str());
+                edit->setText(settings_->sig_server_address_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -210,8 +213,10 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edt_sig_server_port_ = edit;
                 edit->setFixedSize(input_size);
-                //edit->setText(std::to_string(settings_->network_listening_port_).c_str());
+                edit->setValidator(new QIntValidator);
+                edit->setText(settings_->sig_server_port_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -236,8 +241,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edt_coturn_server_address_ = edit;
                 edit->setFixedSize(input_size);
-                //edit->setText(std::to_string(settings_->network_listening_port_).c_str());
+                edit->setText(settings_->coturn_server_address_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -252,8 +258,10 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edt_coturn_server_port_ = edit;
                 edit->setFixedSize(input_size);
-                //edit->setText(std::to_string(settings_->network_listening_port_).c_str());
+                edit->setValidator(new QIntValidator);
+                edit->setText(settings_->coturn_server_port_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -275,7 +283,10 @@ namespace tc
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                // todo: process
+                settings_->SetSigServerAddress(edt_sig_server_address_->text().toStdString());
+                settings_->SetSigServerPort(edt_sig_server_port_->text().toStdString());
+                settings_->SetCoturnServerAddress(edt_coturn_server_address_->text().toStdString());
+                settings_->SetCoturnServerPort(edt_coturn_server_port_->text().toStdString());
 
                 // Load again
                 settings_->Load();

@@ -67,6 +67,11 @@ namespace tc
                 }
             }
         }
+
+        sig_server_address_ = sp_->Get(kStSigServerAddress, "");
+        sig_server_port_ = sp_->Get(kStSigServerPort, "");
+        coturn_server_address_ = sp_->Get(kStCoturnAddress, "");
+        coturn_server_port_ = sp_->Get(kStCoturnPort, "");
     }
 
     void GrSettings::Dump() {
@@ -200,6 +205,26 @@ namespace tc
     void GrSettings::SetWebRTCEnabled(bool enabled) {
         webrtc_enabled_ = enabled ? kStTrue : kStFalse;
         sp_->Put(kStWebRTCEnabled, webrtc_enabled_);
+    }
+
+    void GrSettings::SetSigServerAddress(const std::string& address) {
+        sig_server_address_ = address;
+        sp_->Put(kStSigServerAddress, address);
+    }
+
+    void GrSettings::SetSigServerPort(const std::string& port) {
+        sig_server_port_ = port;
+        sp_->Put(kStSigServerPort, port);
+    }
+
+    void GrSettings::SetCoturnServerAddress(const std::string& address) {
+        coturn_server_address_ = address;
+        sp_->Put(kStCoturnAddress, address);
+    }
+
+    void GrSettings::SetCoturnServerPort(const std::string& port) {
+        coturn_server_port_ = port;
+        sp_->Put(kStCoturnPort, port);
     }
 
 }

@@ -36,6 +36,10 @@ namespace tc
     static const std::string kStCaptureAudioDevice = "capture_audio_device";
     static const std::string kStFileTransferFolder = "file_transfer_folder";
     static const std::string kStListeningIp = "listening_ip";
+    static const std::string kStSigServerAddress = "sig_server_address";
+    static const std::string kStSigServerPort = "sig_server_port";
+    static const std::string kStCoturnAddress = "coturn_server_address";
+    static const std::string kStCoturnPort = "coturn_server_port";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -77,6 +81,10 @@ namespace tc
         void SetListeningIp(const std::string& ip);
         void SetWebSocketEnabled(bool enabled);
         void SetWebRTCEnabled(bool enabled);
+        void SetSigServerAddress(const std::string& address);
+        void SetSigServerPort(const std::string& port);
+        void SetCoturnServerAddress(const std::string& address);
+        void SetCoturnServerPort(const std::string& port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
@@ -107,6 +115,10 @@ namespace tc
         std::string network_listening_ip_{};
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
+        std::string sig_server_address_;
+        std::string sig_server_port_;
+        std::string coturn_server_address_;
+        std::string coturn_server_port_;
 
         int file_transfer_port_ = 20372;
         std::string file_transfer_listen_path_ = "/file/transfer";
