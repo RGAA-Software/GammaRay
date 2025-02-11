@@ -1,3 +1,6 @@
+//
+// Created by hy RGAA
+//
 #pragma once
 
 #include <memory>
@@ -12,13 +15,13 @@
 namespace tc
 {
 
-    class RtcContext;
+    class SigSdkContext;
     class MessageNotifier;
-    class SigRouterInterface;
+    class SigSdkAbsRouter;
 
-    class SigMgrInterface {
+    class SigSdkBaseProcessor {
     public:
-        explicit SigMgrInterface(const std::shared_ptr<RtcContext>& ctx);
+        explicit SigSdkBaseProcessor(const std::shared_ptr<SigSdkContext>& ctx);
 
         virtual void Start(const SignalingParam& param);
         virtual void Stop();
@@ -46,10 +49,10 @@ namespace tc
 
     protected:
         SignalingParam sig_param_;
-        std::shared_ptr<RtcContext> rtc_ctx_ = nullptr;
+        std::shared_ptr<SigSdkContext> rtc_ctx_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         int64_t heart_beat_idx_ = 0;
-        std::shared_ptr<SigRouterInterface> sig_router_ = nullptr;
+        std::shared_ptr<SigSdkAbsRouter> sig_router_ = nullptr;
     };
 
 }

@@ -16,7 +16,7 @@
 #include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
 #include "gr_app_messages.h"
-#include "tc_controller/hardware.h"
+#include "tc_common_new/hardware.h"
 #include "tc_common_new/md5.h"
 #include "service/service_manager.h"
 #include <QApplication>
@@ -36,6 +36,11 @@ namespace tc
         app_ = app;
         settings_ = GrSettings::Instance();
         sp_ = SharedPreference::Instance();
+
+        auto hardware = Hardware::Instance();
+        hardware->Detect(false, true, false);
+        hardware->Dump();
+
         // unique id
         LoadUniqueId();
 
@@ -113,8 +118,6 @@ namespace tc
 
     void GrContext::GenUniqueId() {
         auto hardware = Hardware::Instance();
-        hardware->Detect(false, true, false);
-        hardware->Dump();
         auto disks = hardware->hw_disks_;
         std::string seed;
         if (!disks.empty()) {

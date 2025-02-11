@@ -6,6 +6,7 @@ namespace tc
     class Message;
     class CaptureStatistics;
     class ServerAudioSpectrum;
+    class GrSettings;
 
     // can't connect or not installed
     class MsgViGEmState {
@@ -68,6 +69,20 @@ namespace tc
     class MsgConnectedToService {
     public:
 
+    };
+
+    // Settings changed
+    class MsgSettingsChanged {
+    public:
+        GrSettings* settings_ = nullptr;
+    };
+
+    // Client id requested
+    class MsgClientIdRequested {
+    public:
+        std::string id_;
+        std::string random_pwd_;
+        bool force_update_{false};
     };
 
 }

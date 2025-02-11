@@ -1,3 +1,6 @@
+//
+// Created by hy RGAA
+//
 #pragma once
 
 #include <map>
@@ -15,9 +18,9 @@ namespace tc
     class MessageNotifier;
     class MessageListener;
 
-    class SigRouterInterface {
+    class SigSdkAbsRouter {
     public:
-        explicit SigRouterInterface(const std::shared_ptr<RtcContext>& ctx) {
+        explicit SigSdkAbsRouter(const std::shared_ptr<SigSdkContext>& ctx) {
             rtc_ctx_ = ctx;
             msg_notifier_ = rtc_ctx_->GetMessageNotifier();
             msg_listener_ = msg_notifier_->CreateListener();
@@ -30,12 +33,12 @@ namespace tc
         virtual void SendHeartBeat() = 0;
         virtual bool IsAlive() = 0;
 
-        void RegisterSigMesssageCallback(OnSigMessageCallback&& cbk) {
+        void RegisterSigMessageCallback(OnSigMessageCallback&& cbk) {
             sig_msg_cbk_ = std::move(cbk);
         }
 
     protected:
-        std::shared_ptr<RtcContext> rtc_ctx_ = nullptr;
+        std::shared_ptr<SigSdkContext> rtc_ctx_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         OnSigMessageCallback sig_msg_cbk_;

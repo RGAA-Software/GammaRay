@@ -1,5 +1,5 @@
 //
-// Created by RGAA on 2024/3/5.
+// Created by RGAA
 //
 
 #include "sig_sdk_maker.h"
@@ -10,7 +10,7 @@ using namespace nlohmann;
 namespace tc
 {
 
-    std::string SigMaker::MakeOfferSdp(const SigOfferSdpMessage& msg) {
+    std::string SigSdkMessageMaker::MakeOfferSdp(const SigOfferSdpMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigOfferSdp;
         obj[kKeyToken] = msg.token_;
@@ -23,7 +23,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeAnswerSdp(const SigAnswerSdpMessage& msg) {
+    std::string SigSdkMessageMaker::MakeAnswerSdp(const SigAnswerSdpMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigAnswerSdp;
         obj[kKeyToken] = msg.token_;
@@ -37,7 +37,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeIceCandidate(const SigIceMessage& msg) {
+    std::string SigSdkMessageMaker::MakeIceCandidate(const SigIceMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigIce;
         obj[kKeyToken] = msg.token_;
@@ -52,7 +52,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeHello(const SigHelloMessage& msg) {
+    std::string SigSdkMessageMaker::MakeHello(const SigHelloMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigHello;
         obj[kKeyToken] = msg.token_;
@@ -81,7 +81,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeCreateRoom(const SigCreateRoomMessage& msg) {
+    std::string SigSdkMessageMaker::MakeCreateRoom(const SigCreateRoomMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigCreateRoom;
         obj[kKeyToken] = msg.token_;
@@ -92,7 +92,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeJoinRoom(const SigJoinRoomMessage& msg) {
+    std::string SigSdkMessageMaker::MakeJoinRoom(const SigJoinRoomMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigJoinRoom;
         obj[kKeyToken] = msg.token_;
@@ -104,7 +104,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeLeaveRoom(const SigLeaveRoomMessage& msg) {
+    std::string SigSdkMessageMaker::MakeLeaveRoom(const SigLeaveRoomMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigLeaveRoom;
         obj[kKeyToken] = msg.token_;
@@ -115,7 +115,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeReqRemoteInfo(const SigReqRemoteInfoMessage& msg) {
+    std::string SigSdkMessageMaker::MakeReqRemoteInfo(const SigReqRemoteInfoMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigReqRemoteInfo;
         obj[kKeyToken] = msg.token_;
@@ -124,7 +124,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeOnRemoteInfo(const SigOnRemoteInfoMessage& msg) {
+    std::string SigSdkMessageMaker::MakeOnRemoteInfo(const SigOnRemoteInfoMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigOnRemoteInfo;
         obj[kKeyToken] = msg.token_;
@@ -148,7 +148,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeInviteRemoteClient(const SigInviteClientMessage& msg) {
+    std::string SigSdkMessageMaker::MakeInviteRemoteClient(const SigInviteClientMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigInviteClient;
         obj[kKeyToken] = msg.token_;
@@ -160,7 +160,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeHeartBeat(const SigHeartBeatMessage& msg) {
+    std::string SigSdkMessageMaker::MakeHeartBeat(const SigHeartBeatMessage& msg) {
         json obj;
         obj[kKeySigName] = kSigHeartBeat;
         obj[kKeyToken] = msg.token_;
@@ -185,7 +185,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeDataChannelReady(const SigOnDataChannelReadyMessage& msg) {
+    std::string SigSdkMessageMaker::MakeDataChannelReady(const SigOnDataChannelReadyMessage& msg) {
         json obj;
         obj[kKeySigName] = msg.sig_name_;
         obj[kKeyToken] = msg.token_;
@@ -197,7 +197,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeReqControl(const SigReqControlMessage& msg) {
+    std::string SigSdkMessageMaker::MakeReqControl(const SigReqControlMessage& msg) {
         json obj;
         obj[kKeySigName] = msg.sig_name_;
         obj[kKeyToken] = msg.token_;
@@ -208,7 +208,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeUnderControl(const SigUnderControlMessage& msg) {
+    std::string SigSdkMessageMaker::MakeUnderControl(const SigUnderControlMessage& msg) {
         json obj;
         obj[kKeySigName] = msg.sig_name_;
         obj[kKeyToken] = msg.token_;
@@ -219,7 +219,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::string SigMaker::MakeOnRejectControl(const SigOnRejectControlMessage& msg) {
+    std::string SigSdkMessageMaker::MakeOnRejectControl(const SigOnRejectControlMessage& msg) {
         json obj;
         obj[kKeySigName] = msg.sig_name_;
         obj[kKeyToken] = msg.token_;

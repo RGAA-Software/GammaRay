@@ -13,7 +13,7 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
-#include "render_panel/network/ip_util.h"
+#include "tc_common_new/ip_util.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -290,6 +290,10 @@ namespace tc
 
                 // Load again
                 settings_->Load();
+
+                this->context_->SendAppMessage(MsgSettingsChanged {
+                    .settings_ = settings_,
+                });
 
                 // Save success dialog
                 auto msg_box = SizedMessageBox::Make2BtnsBox(tr("Save Success"),

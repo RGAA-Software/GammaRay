@@ -1,6 +1,9 @@
+//
+// Created by hy RGAA
+//
 #pragma once
 
-#include "sig_sdk_router_interface.h"
+#include "sig_sdk_abs_router.h"
 #include <memory>
 #include <string>
 #include <thread>
@@ -12,9 +15,9 @@
 namespace tc
 {
 
-    class SigRouterWsImpl : public SigRouterInterface {
+    class SigSdkWsRouter : public SigSdkAbsRouter {
     public:
-        explicit SigRouterWsImpl(const std::shared_ptr<RtcContext>& ctx);
+        explicit SigSdkWsRouter(const std::shared_ptr<SigSdkContext>& ctx);
         void Init(const SignalingParam& params) override;
         void Start() override;
         void Exit() override;

@@ -242,6 +242,9 @@ namespace tc
             auto y = (screen_size.height() - this->size().height() - 48)/2;
             this->move(x, y);
         });
+
+        // last works
+        app_->RequestNewClientId(false);
     }
 
     void GrWorkspace::ChangeTab(const TabName& tn) {

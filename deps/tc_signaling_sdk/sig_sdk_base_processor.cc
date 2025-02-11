@@ -1,4 +1,8 @@
-#include "sig_sdk_mgr_interface.h"
+//
+// Created by hy RGAA
+//
+
+#include "sig_sdk_base_processor.h"
 
 #include <iostream>
 #include <chrono>
@@ -8,7 +12,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 #include "sig_sdk_context.h"
-#include "sig_sdk_router_interface.h"
+#include "sig_sdk_abs_router.h"
 #include "sig_sdk_maker.h"
 
 using namespace nlohmann;
@@ -16,149 +20,149 @@ using namespace nlohmann;
 namespace tc
 {
 
-    SigMgrInterface::SigMgrInterface(const std::shared_ptr<RtcContext>& ctx) {
+    SigSdkBaseProcessor::SigSdkBaseProcessor(const std::shared_ptr<SigSdkContext>& ctx) {
         rtc_ctx_ = ctx;
         this->msg_notifier_ = rtc_ctx_->GetMessageNotifier();
     }
 
-    void SigMgrInterface::Start(const SignalingParam& param) {
+    void SigSdkBaseProcessor::Start(const SignalingParam& param) {
         sig_param_ = param;
-        sig_router_->RegisterSigMesssageCallback([=](const std::string& msg) {
+        sig_router_->RegisterSigMessageCallback([=](const std::string &msg) {
             try {
                 this->ParseSigMessage(msg);
-            } catch (const std::exception& e) {
+            } catch (const std::exception &e) {
                 LOGE("Parse sig message failed, error: {}, msg: {}", e.what(), msg);
             }
         });
     }
 
-    void SigMgrInterface::Stop() {
+    void SigSdkBaseProcessor::Stop() {
 
     }
 
-    bool SigMgrInterface::IsAlive() {
+    bool SigSdkBaseProcessor::IsAlive() {
         bool alive = sig_router_ && sig_router_->IsAlive();
         return alive;
     }
 
-    void SigMgrInterface::SendHello(const SigHelloMessage& msg) {
+    void SigSdkBaseProcessor::SendHello(const SigHelloMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendHello failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeHello(msg);
+        auto info = SigSdkMessageMaker::MakeHello(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::CreateRoom(const SigCreateRoomMessage& msg) {
+    void SigSdkBaseProcessor::CreateRoom(const SigCreateRoomMessage& msg) {
         if (!IsAlive()) {
             LOGE("CreateRoom failed, router not alive!");
             return;
         }
-        std::string info = SigMaker::MakeCreateRoom(msg);
+        std::string info = SigSdkMessageMaker::MakeCreateRoom(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::JoinRoom(const SigJoinRoomMessage& msg) {
+    void SigSdkBaseProcessor::JoinRoom(const SigJoinRoomMessage& msg) {
         if (!IsAlive()) {
             LOGE("JoinRoom failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeJoinRoom(msg);
+        auto info = SigSdkMessageMaker::MakeJoinRoom(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::LeaveRoom(const SigLeaveRoomMessage& msg) {
+    void SigSdkBaseProcessor::LeaveRoom(const SigLeaveRoomMessage& msg) {
         if (!IsAlive()) {
             LOGE("LeaveRoom failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeLeaveRoom(msg);
+        auto info = SigSdkMessageMaker::MakeLeaveRoom(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::InviteClient(const SigInviteClientMessage& msg) {
+    void SigSdkBaseProcessor::InviteClient(const SigInviteClientMessage& msg) {
         if (!IsAlive()) {
             LOGE("InviteClient failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeInviteRemoteClient(msg);
+        auto info = SigSdkMessageMaker::MakeInviteRemoteClient(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::ReqRemoteInfo(const SigReqRemoteInfoMessage& msg) {
+    void SigSdkBaseProcessor::ReqRemoteInfo(const SigReqRemoteInfoMessage& msg) {
         if (!IsAlive()) {
             LOGE("ReqRemoteInfo failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeReqRemoteInfo(msg);
+        auto info = SigSdkMessageMaker::MakeReqRemoteInfo(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::OnRemoteInfo(const SigOnRemoteInfoMessage& msg) {
+    void SigSdkBaseProcessor::OnRemoteInfo(const SigOnRemoteInfoMessage& msg) {
         if (!IsAlive()) {
             LOGE("ReqRemoteInfo failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeOnRemoteInfo(msg);
+        auto info = SigSdkMessageMaker::MakeOnRemoteInfo(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::SendOfferSdp(const SigOfferSdpMessage& msg) {
+    void SigSdkBaseProcessor::SendOfferSdp(const SigOfferSdpMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendOfferSdp failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeOfferSdp(msg);
+        auto info = SigSdkMessageMaker::MakeOfferSdp(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::SendAnswerSdp(const SigAnswerSdpMessage& msg) {
+    void SigSdkBaseProcessor::SendAnswerSdp(const SigAnswerSdpMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendAnswerSdp failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeAnswerSdp(msg);
+        auto info = SigSdkMessageMaker::MakeAnswerSdp(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::SendIceCandidate(const SigIceMessage& msg) {
+    void SigSdkBaseProcessor::SendIceCandidate(const SigIceMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendIceCandidate failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeIceCandidate(msg);
+        auto info = SigSdkMessageMaker::MakeIceCandidate(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::SendDataChannelReady(const SigOnDataChannelReadyMessage& msg) {
+    void SigSdkBaseProcessor::SendDataChannelReady(const SigOnDataChannelReadyMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendIceCandidate failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeDataChannelReady(msg);
+        auto info = SigSdkMessageMaker::MakeDataChannelReady(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::SendReqControl(const SigReqControlMessage& msg) {
+    void SigSdkBaseProcessor::SendReqControl(const SigReqControlMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendReqControl failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeReqControl(msg);
+        auto info = SigSdkMessageMaker::MakeReqControl(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::SendUnderControl(const SigUnderControlMessage& msg) {
+    void SigSdkBaseProcessor::SendUnderControl(const SigUnderControlMessage& msg) {
         if (!IsAlive()) {
             LOGE("SendUnderControl failed, router not alive!");
             return;
         }
-        auto info = SigMaker::MakeUnderControl(msg);
+        auto info = SigSdkMessageMaker::MakeUnderControl(msg);
         sig_router_->SendSigMessage(msg.sig_name_, msg.token_, info);
     }
 
-    void SigMgrInterface::ParseSigMessage(const std::string& data) {
+    void SigSdkBaseProcessor::ParseSigMessage(const std::string& data) {
         json obj;
         try {
             obj = json::parse(data);
@@ -203,7 +207,7 @@ namespace tc
             if(json_ice_servers.is_array()){
                 for(int i = 0; i < json_ice_servers.size(); ++i) {
                     auto json_ice_server = json_ice_servers[i];
-                    RtcIceServer ice_server;
+                    SigSdkIceServer ice_server;
                     if(json_ice_server[kKeyIceUrls].is_string()) {
                         ice_server.urls = json_ice_server[kKeyIceUrls].get<std::string>();
                     }
@@ -448,7 +452,7 @@ namespace tc
         }
     }
 
-    std::vector<std::shared_ptr<Client>> SigMgrInterface::ParseClients(const nlohmann::json& obj) {
+    std::vector<std::shared_ptr<Client>> SigSdkBaseProcessor::ParseClients(const nlohmann::json& obj) {
         std::vector<std::shared_ptr<Client>> clients;
         if (!obj.is_array()) {
             return clients;
@@ -466,7 +470,7 @@ namespace tc
         return clients;
     }
 
-    std::vector<std::string> SigMgrInterface::ParseIps(const nlohmann::json& obj) {
+    std::vector<std::string> SigSdkBaseProcessor::ParseIps(const nlohmann::json& obj) {
         std::vector<std::string> ips;
         if (!obj.is_array()) {
             return ips;
@@ -477,7 +481,7 @@ namespace tc
         return ips;
     }
 
-    void SigMgrInterface::SendSigMessage(const std::string& sig_name, const std::string& token, const std::string& msg) {
+    void SigSdkBaseProcessor::SendSigMessage(const std::string& sig_name, const std::string& token, const std::string& msg) {
         if (!IsAlive()) {
             return;
         }

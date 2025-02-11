@@ -1,5 +1,5 @@
 //
-// Created by hy on 2024/5/27.
+// Created by hy RGAA
 //
 
 #ifndef TEST_WEBRTC_SIG_MESSAGE_H
@@ -186,7 +186,7 @@ namespace tc
     struct SigOnHelloMessage : public SigBaseMessage {
         std::string client_id_;
         // 信令服务配置的ice_server,0端口场景从信令服务获取此项配置。
-        std::vector<RtcIceServer> ice_servers;
+        std::vector<SigSdkIceServer> ice_servers;
     };
 
     // SigOnCreatedRoomMessage 创建完成回调给发起创建者

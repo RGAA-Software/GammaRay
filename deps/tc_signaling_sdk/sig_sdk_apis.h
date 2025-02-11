@@ -1,19 +1,13 @@
 //
-// Created by RGAA on 2024/5/28.
+// Created by RGAA
 //
-
-#ifndef TC_WEBRTC_SIG_APIS_H
-#define TC_WEBRTC_SIG_APIS_H
-
+#pragma once
 #include <string>
 
-const std::string kApiPing = "/ping";
-const std::string kApiSignaling = "/signaling";
-const std::string kApiRequestClientId = "/request/client/id";
-const std::string kApiCheckClientOnline = "/check/client/online";
-const std::string kApiOnlineClients = "/online/clients";
-const std::string kApiOnlineRooms = "/online/rooms";
-const std::string kApiRequestRoomStatus = "/request/room/status";
-const std::string kApiServerStatus = "/server/status";
+// for websocket connection
+const std::string kApiWsSig = "/ws_sig";
 
-#endif //TC_WEBRTC_SIG_APIS_H
+// for http
+const std::string kSigApiPing = "/ping";
+const std::string kSigApiReqClientId = "/request/client/id";
+const std::string kSigApiReqClientStatus = "/req/client/status";

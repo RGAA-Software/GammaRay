@@ -6,19 +6,22 @@
 
 #include "gr_context.h"
 #include "gr_settings.h"
+#include "gr_statistics.h"
+#include "gr_system_monitor.h"
+#include "gr_app_messages.h"
+#include "tc_common_new/folder_util.h"
+#include "tc_common_new/log.h"
+#include "tc_common_new/win32/firewall_helper.h"
+#include "tc_common_new/shared_preference.h"
+#include "tc_common_new/message_notifier.h"
 #include "render_panel/network/ws_server.h"
 #include "render_panel/network/udp_broadcaster.h"
-#include "tc_3rdparty/json/json.hpp"
-#include "tc_steam_manager_new/steam_manager.h"
-#include "tc_common_new/shared_preference.h"
-#include "gr_system_monitor.h"
-#include "gr_statistics.h"
-#include "tc_common_new/folder_util.h"
-#include "transfer/file_transfer.h"
-#include "tc_common_new/win32/firewall_helper.h"
-#include "tc_common_new/log.h"
 #include "render_panel/network/gr_service_client.h"
 #include "render_panel/network/ws_sig_client.h"
+#include "tc_3rdparty/json/json.hpp"
+#include "tc_steam_manager_new/steam_manager.h"
+#include "transfer/file_transfer.h"
+#include "tc_signaling_sdk/sig_sdk_context.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -102,6 +105,10 @@ namespace tc
 
         sig_client_ = std::make_shared<WsSigClient>(shared_from_this());
         sig_client_->Start();
+
+        sig_sdk_ctx_ = SigSdkContext::Make();
+        RefreshSigServerSettings();
+        RegisterMessageListener();
     }
 
     void GrApplication::Exit() {
@@ -114,6 +121,36 @@ namespace tc
         }
         service_client_->PostNetMessage(msg);
         return true;
+    }
+
+    void GrApplication::RefreshSigServerSettings() {
+        sig_sdk_ctx_->Init(SigSdkContextParam {
+            .sig_host_ = settings_->sig_server_address_,
+            .sig_port_ = std::atoi(settings_->sig_server_port_.c_str()),
+        });
+    }
+
+    void GrApplication::RegisterMessageListener() {
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgSettingsChanged>([=, this](const MsgSettingsChanged& msg) {
+            RefreshSigServerSettings();
+            RequestNewClientId(false);
+        });
+    }
+
+    void GrApplication::RequestNewClientId(bool force_update) {
+        context_->PostTask([=, this]() {
+            auto client_id = sig_sdk_ctx_->RequestNewClientId();
+            if (!client_id.IsValid()) {
+                LOGE("Client id is invalid!");
+                return;
+            }
+            context_->SendAppMessage(MsgClientIdRequested {
+                .id_ = client_id.id_,
+                .random_pwd_ = client_id.random_pwd_,
+                .force_update_ = force_update,
+            });
+        });
     }
 
 }

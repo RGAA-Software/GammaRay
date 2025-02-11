@@ -1,5 +1,5 @@
 //
-// Created by RGAA on 2024/3/5.
+// Created by RGAA
 //
 
 #ifndef TC_WEBRTC_SIG_MAKER_H
@@ -11,7 +11,7 @@
 namespace tc
 {
 
-    class SigMaker {
+    class SigSdkMessageMaker {
     public:
         static std::string MakeOfferSdp(const SigOfferSdpMessage& msg);
         static std::string MakeAnswerSdp(const SigAnswerSdpMessage& msg);

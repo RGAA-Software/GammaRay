@@ -18,6 +18,7 @@
 #include <QComboBox>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
+#include "render_panel/gr_app_messages.h"
 #include "tc_common_new/qrcode/qr_generator.h"
 #include "tc_qt_widget/layout_helper.h"
 #include "tc_qt_widget/no_margin_layout.h"
@@ -96,6 +97,7 @@ namespace tc
                     layout->addWidget(title, 0, Qt::AlignLeft);
 
                     auto msg = new QLabel(this);
+                    lbl_machine_code_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
                     msg->setText(tc::SpaceId("---------").c_str());
@@ -118,6 +120,7 @@ namespace tc
                     layout->addWidget(title, 0, Qt::AlignLeft);
 
                     auto msg = new QLabel(this);
+                    lbl_machine_random_pwd_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     msg->setText("********");
                     msg->setStyleSheet(R"(font-size: 25px; font-weight: 700; color: #2979ff;)");
@@ -226,11 +229,11 @@ namespace tc
 
         root_layout->addLayout(content_layout);
         setLayout(root_layout);
+
+        RegisterMessageListener();
     }
 
-    TabServer::~TabServer() {
-
-    }
+    TabServer::~TabServer() = default;
 
     void TabServer::OnTabShow() {
         TabBase::OnTabShow();
@@ -238,5 +241,15 @@ namespace tc
 
     void TabServer::OnTabHide() {
         TabBase::OnTabHide();
+    }
+
+    void TabServer::RegisterMessageListener() {
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgClientIdRequested>([=, this](const MsgClientIdRequested& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_machine_code_->setText(tc::SpaceId(msg.id_).c_str());
+                lbl_machine_random_pwd_->setText(msg.random_pwd_.c_str());
+            });
+        });
     }
 }

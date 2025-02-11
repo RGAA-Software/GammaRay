@@ -28,12 +28,15 @@ namespace tc
     public:
         explicit TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent);
         ~TabServer() override;
-
         void OnTabShow() override;
         void OnTabHide() override;
+        void RegisterMessageListener();
 
     private:
         QPixmap qr_pixmap_;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        QLabel* lbl_machine_code_ = nullptr;
+        QLabel* lbl_machine_random_pwd_ = nullptr;
 
         // client
         std::shared_ptr<ClientContext> client_ctx_ = nullptr;
