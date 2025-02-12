@@ -110,10 +110,8 @@
     .\vcpkg.exe install opus:x64-windows
     .\vcpkg.exe install protobuf:x64-windows
     .\vcpkg.exe install fftw3:x64-windows
-    .\vcpkg.exe install poco:x64-windows-static
     .\vcpkg.exe install easyhook:x64-windows
     .\vcpkg.exe install glm:x64-windows
-    .\vcpkg install boost:x64-windows
 ```
 
 - 2.4 You can open the project by Visual Studio 2022 or Clion, solve the problems and then compile the project.
