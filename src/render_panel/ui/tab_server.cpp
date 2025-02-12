@@ -231,8 +231,10 @@ namespace tc
         setLayout(root_layout);
 
         // set client id by settings
-        lbl_machine_code_->setText(tc::SpaceId(settings_->client_id_).c_str());
-        lbl_machine_random_pwd_->setText(settings_->client_random_pwd_.c_str());
+        if (!settings_->client_id_.empty() && !settings_->client_random_pwd_.empty()) {
+            lbl_machine_code_->setText(tc::SpaceId(settings_->client_id_).c_str());
+            lbl_machine_random_pwd_->setText(settings_->client_random_pwd_.c_str());
+        }
 
         RegisterMessageListener();
     }
