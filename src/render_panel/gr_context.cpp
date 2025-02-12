@@ -71,7 +71,8 @@ namespace tc
 
         service_manager_ = ServiceManager::Make();
         std::string base_path = qApp->applicationDirPath().toStdString();
-        std::string bin_path = std::format("{}/GammaRayService.exe", base_path);
+        std::string bin_path = std::format("{}/GammaRayService.exe {}", base_path, settings_->sys_service_port_);
+        LOGI("Service path: {}", bin_path);
         service_manager_->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
         service_manager_->Install();
 

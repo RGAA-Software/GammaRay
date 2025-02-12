@@ -16,11 +16,12 @@ namespace tc
 
     class ServiceContext {
     public:
-        ServiceContext();
+        ServiceContext(int port);
 
         void PostBgTask(std::function<void()>&& task);
         std::shared_ptr<MessageListener> CreateMessageListener();
         SharedPreference* GetSp() { return sp_; }
+        int GetListeningPort() {return listening_port_;}
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -34,6 +35,7 @@ namespace tc
         std::shared_ptr<asio2::iopool> iopool_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
+        int listening_port_ = 0;
     };
 
 }

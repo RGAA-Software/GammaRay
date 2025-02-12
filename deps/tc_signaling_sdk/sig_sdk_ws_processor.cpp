@@ -31,11 +31,10 @@ namespace tc
     }
 
     void SigSdkWsProcessor::Start(const SignalingParam& param) {
-        sig_router_ = std::make_shared<SigSdkWsRouter>(rtc_ctx_);
+        sig_router_ = std::make_shared<SigSdkWsRouter>(sdk_ctx_);
         SigSdkBaseProcessor::Start(param);
         sig_router_->Init(param);
         sig_router_->Start();
-        LOGI("SigWsManager start...");
     }
 
     void SigSdkWsProcessor::Stop() {

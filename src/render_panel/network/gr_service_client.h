@@ -2,7 +2,7 @@
 // Created by RGAA on 2024-04-20.
 //
 
-#ifndef GAMMARAY_WS_CLIENT_H
+#ifndef GAMMARAY_WS_PANEL_CLIENT_H
 #define GAMMARAY_WS_CLIENT_H
 
 #include <memory>
@@ -42,4 +42,4 @@ namespace tc
 
 }
 
-#endif //GAMMARAY_WS_CLIENT_H
+#endif //GAMMARAY_WS_PANEL_CLIENT_H

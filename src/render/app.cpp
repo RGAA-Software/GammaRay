@@ -24,7 +24,7 @@
 #include "app/app_manager_factory.h"
 #include "app/app_messages.h"
 #include "settings/settings.h"
-#include "render_panel/network/ws_server.h"
+#include "render_panel/network/ws_panel_server.h"
 #include "ipc/host_ipc_manager.h"
 #include "app/encoder_thread.h"
 #include "network/net_message_maker.h"
@@ -32,7 +32,7 @@
 #include "app/app_timer.h"
 #include "tc_opus_codec_new/opus_codec.h"
 #include "network/message_processor.h"
-#include "network/ws_client.h"
+#include "network/ws_panel_client.h"
 #include "network/network_factory.h"
 #include "network/server_cast.h"
 #include "app/app_shared_info.h"
@@ -100,8 +100,8 @@ namespace tc
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
         clipboard_mgr_->Monitor();
 
-        ws_client_ = std::make_shared<WSClient>(context_);
-        ws_client_->Start();
+        ws_panel_client_ = std::make_shared<WsPanelClient>(context_);
+        ws_panel_client_->Start();
 
         // app manager
         app_manager_ = AppManagerFactory::Make(context_);
@@ -509,8 +509,8 @@ namespace tc
         sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
         sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
         auto net_msg = msg->SerializeAsString();
-        if (ws_client_) {
-            ws_client_->PostNetMessage(net_msg);
+        if (ws_panel_client_) {
+            ws_panel_client_->PostNetMessage(net_msg);
         }
 
         // audio spectrum
@@ -559,7 +559,7 @@ namespace tc
         tc::Message m;
         m.set_type(tc::kRestartServer);
         m.mutable_restart_server()->set_reason("restart");
-        ws_client_->PostNetMessage(m.SerializeAsString());
+        ws_panel_client_->PostNetMessage(m.SerializeAsString());
     }
 
     void Application::ResetMonitorResolution(const std::string& name, int w, int h) {

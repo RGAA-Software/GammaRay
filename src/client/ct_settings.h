@@ -63,7 +63,7 @@ namespace tc
         VideoRenderType render_type_ = VideoRenderType::kOpenGL;
         std::shared_ptr<SharedPreference> sp_ = nullptr;
         std::string remote_address_;
-        int file_transfer_port_ = 20372;
+        int file_transfer_port_ = 20369;
         std::string file_transfer_path_ = "/file/transfer";
         bool ignore_mouse_event_ = false;
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;

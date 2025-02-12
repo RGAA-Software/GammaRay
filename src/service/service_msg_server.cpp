@@ -8,6 +8,7 @@
 #include "service.h"
 #include "tc_common_new/url_helper.h"
 #include "tc_service_message.pb.h"
+#include "service_context.h"
 
 namespace tc
 {
@@ -82,8 +83,8 @@ namespace tc
            sessions_.Remove(socket_fd);
        });
 
-        bool ret = ws_server_->start("0.0.0.0", 20375);
-        LOGI("service start at: 0.0.0.0:20375/service/message, result: {}", ret);
+        bool ret = ws_server_->start("0.0.0.0", context_->GetListeningPort());
+        LOGI("service start at: 0.0.0.0:{}/service/message, result: {}", context_->GetListeningPort(), ret);
     }
 
     void ServiceMsgServer::ParseMessage(const std::shared_ptr<SessionWrapper>& sw, std::string_view data) {

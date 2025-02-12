@@ -50,9 +50,7 @@ namespace tc
 
     class SigSdkContext {
     public:
-
         static std::shared_ptr<SigSdkContext> Make();
-
         SigSdkContext();
         ~SigSdkContext();
 
@@ -60,26 +58,15 @@ namespace tc
         void PostNetworkTask(std::function<void()>&& task);
         void PostBgTask(std::function<void()>&& task);
         SigSdkClientId RequestNewClientId();
+        void SetClientId(const std::string& id);
         void SetRandomPwd(const std::string& pwd);
         std::string GetClientId();
         std::string GetRandomPwd();
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
         SigSdkContextParam GetRtcContextParam();
-        void SetGroupId(const std::string& id);
-        std::string GetGroupId();
-        void SetUserId(const std::string& id);
-        std::string GetUserId();
         std::vector<std::string> GetLocalIps();
         void SetWwwIps(const std::vector<std::string>& ips);
         std::vector<std::string> GetWwwIps();
-
-        template<typename T>
-        void SendAppMessage(const T& m) {
-            if (msg_notifier_) {
-                msg_notifier_->SendAppMessage(m);
-            }
-        }
-
         void OnTimer1SCallback();
         void OnTimer5SCallback();
 

@@ -46,6 +46,12 @@ namespace tc
         QueryLocalIps();
     }
 
+    void SigSdkContext::SetClientId(const std::string& id) {
+        if (!id.empty()) {
+            client_id_ = id;
+        }
+    }
+
     void SigSdkContext::SetRandomPwd(const std::string& pwd) {
         if (!pwd.empty()) {
             random_pwd_ = pwd;
@@ -123,22 +129,6 @@ namespace tc
         PostBgTask([=]() {
             QueryLocalIps();
         });
-    }
-
-    void SigSdkContext::SetGroupId(const std::string& id) {
-        group_id_ = id;
-    }
-
-    std::string SigSdkContext::GetGroupId() {
-        return group_id_;
-    }
-
-    void SigSdkContext::SetUserId(const std::string& id) {
-        user_id_ = id;
-    }
-
-    std::string SigSdkContext::GetUserId() {
-        return user_id_;
     }
 
     std::vector<std::string> SigSdkContext::GetLocalIps() {

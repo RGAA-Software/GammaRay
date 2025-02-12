@@ -2,20 +2,22 @@
 // Created by RGAA on 2024-03-30.
 //
 
-#include "ws_server.h"
+#include "ws_panel_server.h"
+#include "apis.h"
+#include "http_handler.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_application.h"
-#include "http_handler.h"
-#include "apis.h"
+#include "render_panel/transfer/file_transfer.h"
 
 namespace tc
 {
 
     static std::string kUrlPanel = "/panel";
+    static std::string kUrlFileTransfer = "/file/transfer";
 
     struct aop_log {
         bool before(http::web_request &req, http::web_response &rep) {
@@ -30,25 +32,26 @@ namespace tc
         }
     };
 
-    std::shared_ptr<WSServer> WSServer::Make(const std::shared_ptr<GrApplication>& app) {
-        return std::make_shared<WSServer>(app);
+    std::shared_ptr<WsPanelServer> WsPanelServer::Make(const std::shared_ptr<GrApplication>& app) {
+        return std::make_shared<WsPanelServer>(app);
     }
 
-    WSServer::WSServer(const std::shared_ptr<GrApplication>& app) {
+    WsPanelServer::WsPanelServer(const std::shared_ptr<GrApplication>& app) {
         app_ = app;
         context_ = app_->GetContext();
         http_handler_ = std::make_shared<HttpHandler>(app_);
+        settings_ = GrSettings::Instance();
     }
 
-    void WSServer::Start() {
+    void WsPanelServer::Start() {
         http_server_ = std::make_shared<asio2::http_server>();
         http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
-            if (sessions_.HasKey(socket_fd)) {
-                sessions_.Remove(socket_fd);
+            if (panel_sessions_.HasKey(socket_fd)) {
+                panel_sessions_.Remove(socket_fd);
                 //NotifyMediaClientDisConnected();
                 LOGI("client disconnected: {}", socket_fd);
-                LOGI("App server media close, media router size: {}", sessions_.Size());
+                LOGI("App server media close, media router size: {}", panel_sessions_.Size());
             }
             //this->NotifyPeerDisconnected();
         });
@@ -115,17 +118,25 @@ namespace tc
             http_handler_->HandleSteamCacheFile(req, rep);
         });
 
+        // panel
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanel, http_server_);
 
-        bool ret = http_server_->start("0.0.0.0", GrSettings::Instance()->ws_server_port_);
+        // file transfer
+        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlFileTransfer, http_server_);
+
+        http_server_->start_timer(10, 2000, [=, this]() {
+            this->SyncPanelInfo();
+        });
+
+        bool ret = http_server_->start("0.0.0.0", settings_->ws_server_port_);
         LOGI("App server start result: {}", ret);
     }
 
-    void WSServer::Exit() {
+    void WsPanelServer::Exit() {
 
     }
 
-    WSServer::~WSServer() {
+    WsPanelServer::~WsPanelServer() {
         if (http_server_) {
             http_server_->stop_all_timers();
             http_server_->stop();
@@ -133,7 +144,7 @@ namespace tc
     }
 
     template<typename Server>
-    void WSServer::AddWebsocketRouter(const std::string &path, const Server &s) {
+    void WsPanelServer::AddWebsocketRouter(const std::string &path, const Server &s) {
         auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
             return (uint64_t)s.native_handle();
@@ -142,7 +153,10 @@ namespace tc
             .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlPanel) {
-                    this->ParseBinaryMessage(socket_fd, data);
+                    this->ParsePanelBinaryMessage(socket_fd, data);
+                }
+                else if (path == kUrlFileTransfer) {
+                    this->ParseFtBinaryMessage(socket_fd, data);
                 }
             })
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
@@ -154,19 +168,34 @@ namespace tc
                     auto ws_sess = std::make_shared<WSSession>();
                     ws_sess->socket_fd_ = socket_fd;
                     ws_sess->session_ = sess_ptr;
-                    this->sessions_.Insert(socket_fd, ws_sess);
+                    this->panel_sessions_.Insert(socket_fd, ws_sess);
                     LOGI("client connect : {}", socket_fd);
 
                     //this->NotifyPeerConnected();
+                }
+                else if (path == kUrlFileTransfer) {
+                    auto ft_sess = std::make_shared<FtSession>();
+                    ft_sess->socket_fd_ = socket_fd;
+                    ft_sess->session_ = sess_ptr;
+                    ft_sess->ch_ = std::make_shared<FileTransferChannel>(context_, sess_ptr);
+                    this->ft_sessions_.Insert(socket_fd, ft_sess);
+                    ft_sess->ch_->OnConnected();
                 }
             })
             .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlPanel) {
-                    if (sessions_.HasKey(socket_fd)) {
-                        sessions_.Remove(socket_fd);
+                    if (panel_sessions_.HasKey(socket_fd)) {
+                        panel_sessions_.Remove(socket_fd);
                     }
                     //this->NotifyPeerDisconnected();
+                }
+                else if (path == kUrlFileTransfer) {
+                    if (ft_sessions_.HasKey(socket_fd)) {
+                        auto ft_session = ft_sessions_.Get(socket_fd);
+                        ft_session->ch_->OnDisConnected();
+                        ft_sessions_.Remove(socket_fd);
+                    }
                 }
             })
             .on_ping([=, this](auto &sess_ptr) {
@@ -178,22 +207,22 @@ namespace tc
         );
     }
 
-    void WSServer::AddHttpGetRouter(const std::string &path,
+    void WsPanelServer::AddHttpGetRouter(const std::string &path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
         http_server_->bind<http::verb::get>(path, [=, this](http::web_request &req, http::web_response &rep) {
             cbk(path, req, rep);
         }, aop_log{});
     }
 
-    void WSServer::AddHttpPostRouter(const std::string& path,
+    void WsPanelServer::AddHttpPostRouter(const std::string& path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
         http_server_->bind<http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
             cbk(path, req, rep);
         }, aop_log{});
     }
 
-    void WSServer::PostBinaryMessage(const std::string& msg, bool only_inner) {
-        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
+    void WsPanelServer::PostPanelBinaryMessage(const std::string& msg, bool only_inner) {
+        panel_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
                 return;
             }
@@ -203,8 +232,8 @@ namespace tc
         });
     }
 
-    void WSServer::PostBinaryMessage(std::string_view msg, bool only_inner) {
-        sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
+    void WsPanelServer::PostPanelBinaryMessage(std::string_view msg, bool only_inner) {
+        panel_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
                 return;
             }
@@ -214,7 +243,7 @@ namespace tc
         });
     }
 
-    void WSServer::ParseBinaryMessage(uint64_t socket_fd, std::string_view msg) {
+    void WsPanelServer::ParsePanelBinaryMessage(uint64_t socket_fd, std::string_view msg) {
         auto proto_msg = std::make_shared<tc::Message>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
             LOGE("Parse binary message failed.");
@@ -222,7 +251,7 @@ namespace tc
         }
         if (proto_msg->type() == tc::kUIServerHello) {
             auto hello = proto_msg->ui_server_hello();
-            sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
+            panel_sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
                 if (v->socket_fd_ == socket_fd) {
                     v->session_type_ = hello.type();
                     LOGI("Update session type: {} for socket: {}", v->session_type_, socket_fd);
@@ -248,6 +277,22 @@ namespace tc
 
         }  else if (proto_msg->type() == tc::kRestartServer) {
             context_->SendAppMessage(AppMsgRestartServer {});
+        }
+    }
+
+    void WsPanelServer::SyncPanelInfo() {
+        tc::Message m;
+        m.set_type(MessageType::kSyncPanelInfo);
+        auto sub = m.mutable_sync_panel_info();
+        sub->set_client_id(settings_->client_id_);
+        sub->set_client_random_pwd(settings_->client_random_pwd_);
+        PostPanelBinaryMessage(m.SerializeAsString());
+    }
+
+    void WsPanelServer::ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg) {
+        if (ft_sessions_.HasKey(socket_fd)) {
+            auto sess = ft_sessions_.Get(socket_fd);
+            sess->ch_->ParseBinaryMessage(msg);
         }
     }
 
