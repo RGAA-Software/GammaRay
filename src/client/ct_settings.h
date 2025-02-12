@@ -68,6 +68,7 @@ namespace tc
         bool ignore_mouse_event_ = false;
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;
         ScaleMode scale_mode_ = ScaleMode::kFullWindow;
+        std::string device_id_;
 
     };
 

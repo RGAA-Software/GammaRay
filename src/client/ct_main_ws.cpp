@@ -48,6 +48,10 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_ignore_mouse("ignore_mouse", "Ignore mouse event", "value", "0");
     parser.addOption(opt_ignore_mouse);
 
+    QCommandLineOption opt_device_id("device_id", "Device id", "value", "");
+    parser.addOption(opt_device_id);
+
+
     parser.process(app);
 
     g_host_ = parser.value(opt_host).toStdString();
@@ -63,11 +67,14 @@ void ParseCommandLine(QApplication& app) {
     settings->clipboard_on_ = (clipboard_on == 1);
     settings->ignore_mouse_event_ = parser.value(opt_ignore_mouse).toInt() == 1;
 
+    settings->device_id_ = parser.value(opt_device_id).toStdString();
+
     LOGI("host: {}", g_host_);
     LOGI("port: {}", g_port_);
     LOGI("audio on: {}", settings->audio_on_);
     LOGI("clipboard on: {}", settings->clipboard_on_);
     LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
+    LOGI("device id: {}", settings->device_id_);
 }
 
 bool PrepareDirs(const QString& base_path) {

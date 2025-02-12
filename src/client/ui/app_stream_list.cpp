@@ -171,7 +171,8 @@ namespace tc
         arguments << std::format("--host={}", item.stream_host).c_str()
                   << std::format("--port={}", item.stream_port).c_str()
                   << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
-                  << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str();
+                  << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
+                  << std::format("--device_id={}", settings_->device_id_).c_str();
         qDebug() << "args: " << arguments;
         process->start("./GammaRayClientInner.exe", arguments);
     }

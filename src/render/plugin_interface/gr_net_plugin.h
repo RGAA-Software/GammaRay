@@ -15,12 +15,18 @@ namespace tc
         GrNetPlugin();
         virtual ~GrNetPlugin() override;
 
-        // to see format detail in tc_message_new/tc_message.proto
+        // to see format details in tc_message_new/tc_message.proto
         // such as : message VideoFrame { ... }
         // you can send it to any clients
+        //                       -> client 1
+        // Renderer Messages ->  -> client 2
+        //                       -> client 3
         virtual void OnProtoMessage(const std::string& msg);
 
-        //
+        // messages from remote(client) -> this plugin -> process it
+        // client 1 ->
+        // client 2 ->  -> Renderer
+        // client 3 ->
         void CallbackClientEvent(bool is_proto, const std::string& msg);
 
         virtual bool IsOnlyAudioClients();

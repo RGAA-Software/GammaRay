@@ -3,8 +3,9 @@
 //
 
 #include "client/ct_settings.h"
-
 #include "tc_common_new/shared_preference.h"
+#include "tc_common_new/hardware.h"
+#include "tc_common_new/md5.h"
 
 namespace tc
 {
@@ -15,6 +16,7 @@ namespace tc
     const std::string kKeyClipboardStatus = "key_clipboard_status";
     const std::string kKeyWorkMode = "key_work_mode";
     const std::string kKeyScaleMode = "key_scale_mode";
+    const std::string kKeyDeviceId = "key_device_id";
 
     void Settings::SetSharedPreference(const std::shared_ptr<SharedPreference>& sp) {
         version_ = "V 1.1.9";
@@ -33,6 +35,14 @@ namespace tc
             audio_on_ = std::atoi(sp_->Get(kKeyAudioStatus).c_str());
             clipboard_on_ = std::atoi(sp_->Get(kKeyClipboardStatus).c_str());
             display_mode_ = (MultiDisplayMode)std::atoi(sp_->Get(kKeyDisplayMode).c_str());
+        }
+
+        device_id_ = sp_->Get(kKeyDeviceId, "");
+        if (device_id_.empty()) {
+            auto hd = Hardware::Instance();
+            hd->Detect(false, true, false);
+            auto desc = MD5::Hex(hd->GetHardwareDescription());
+            device_id_ = desc;
         }
     }
 

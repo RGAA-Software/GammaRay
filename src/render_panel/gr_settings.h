@@ -42,6 +42,7 @@ namespace tc
     static const std::string kStCoturnPort = "coturn_server_port";
     static const std::string kStClientId = "client_id";
     static const std::string kStClientRandomPwd = "client_random_pwd";
+    static const std::string kStDeviceId = "device_id";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -130,6 +131,8 @@ namespace tc
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
+
+        std::string device_id_;
     };
 
 }
