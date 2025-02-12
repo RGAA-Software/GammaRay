@@ -123,7 +123,15 @@ int main(int argc, char** argv) {
     auto path = std::string(GetModulePath(nullptr)) + "/gr_logs/gammaray_service.log";
     Logger::InitLog(path, true);
     LOGI("----------Service Start----------");
-    g_context_ = std::make_shared<ServiceContext>();
+    LOGI("Args size: {}", argc);
+
+    // listening port
+    int listening_port = 0;
+    if (argc > 1) {
+        listening_port = std::atoi(argv[1]);
+        LOGI("arg 1: {}", listening_port);
+    }
+    g_context_ = std::make_shared<ServiceContext>(listening_port);
     g_service_ = std::make_shared<GrService>(g_context_);
     SERVICE_TABLE_ENTRY ServiceTable[] = {
             {(wchar_t*)kGrServiceName.c_str(), (LPSERVICE_MAIN_FUNCTION)ServiceMain},

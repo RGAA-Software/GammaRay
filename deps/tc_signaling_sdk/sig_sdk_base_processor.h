@@ -16,7 +16,6 @@ namespace tc
 {
 
     class SigSdkContext;
-    class MessageNotifier;
     class SigSdkAbsRouter;
 
     class SigSdkBaseProcessor {
@@ -49,8 +48,7 @@ namespace tc
 
     protected:
         SignalingParam sig_param_;
-        std::shared_ptr<SigSdkContext> rtc_ctx_ = nullptr;
-        std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
+        std::shared_ptr<SigSdkContext> sdk_ctx_ = nullptr;
         int64_t heart_beat_idx_ = 0;
         std::shared_ptr<SigSdkAbsRouter> sig_router_ = nullptr;
     };

@@ -14,7 +14,7 @@
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
-#include "render_panel/network/ws_server.h"
+#include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"
 #include "render_panel/network/gr_service_client.h"
 #include "render_panel/network/ws_sig_client.h"
@@ -82,8 +82,8 @@ namespace tc
         st->SetContext(context_);
         st->RegisterEventListeners();
 
-        ws_server_ = WSServer::Make(shared_from_this());
-        ws_server_->Start();
+        ws_panel_server_ = WsPanelServer::Make(shared_from_this());
+        ws_panel_server_->Start();
 
         sys_monitor_ = GrSystemMonitor::Make(shared_from_this());
         sys_monitor_->Start();
@@ -107,6 +107,9 @@ namespace tc
         sig_client_->Start();
 
         sig_sdk_ctx_ = SigSdkContext::Make();
+        sig_sdk_ctx_->SetClientId(settings_->client_id_);
+        sig_sdk_ctx_->SetRandomPwd(settings_->client_random_pwd_);
+
         RefreshSigServerSettings();
         RegisterMessageListener();
     }
@@ -139,17 +142,29 @@ namespace tc
     }
 
     void GrApplication::RequestNewClientId(bool force_update) {
+        if (!force_update && !settings_->client_id_.empty() && !settings_->client_random_pwd_.empty()) {
+            return;
+        }
+
         context_->PostTask([=, this]() {
             auto client_id = sig_sdk_ctx_->RequestNewClientId();
             if (!client_id.IsValid()) {
                 LOGE("Client id is invalid!");
                 return;
             }
+
+            settings_->SetClientId(client_id.id_);
+            settings_->SetClientRandomPwd(client_id.random_pwd_);
+
+            sig_sdk_ctx_->SetClientId(client_id.id_);
+            sig_sdk_ctx_->SetRandomPwd(client_id.random_pwd_);
+
             context_->SendAppMessage(MsgClientIdRequested {
                 .id_ = client_id.id_,
                 .random_pwd_ = client_id.random_pwd_,
                 .force_update_ = force_update,
             });
+
         });
     }
 

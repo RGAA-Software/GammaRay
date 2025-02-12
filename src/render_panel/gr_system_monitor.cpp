@@ -15,7 +15,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
-#include "render_panel/network/ws_server.h"
+#include "render_panel/network/ws_panel_server.h"
 #include "gr_settings.h"
 #include "service/service_manager.h"
 #include <QApplication>

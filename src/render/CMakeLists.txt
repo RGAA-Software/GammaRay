@@ -23,7 +23,7 @@ set(SRCS
         network/ws_ipc_router.cpp
         network/connection.cpp
         network/message_processor.cpp
-        network/ws_client.cpp
+        network/ws_panel_client.cpp
         network/net_message_maker.cpp
         network/server_cast.cpp
         network/render_service_client.cpp

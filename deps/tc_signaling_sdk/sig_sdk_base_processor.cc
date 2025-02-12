@@ -21,13 +21,12 @@ namespace tc
 {
 
     SigSdkBaseProcessor::SigSdkBaseProcessor(const std::shared_ptr<SigSdkContext>& ctx) {
-        rtc_ctx_ = ctx;
-        this->msg_notifier_ = rtc_ctx_->GetMessageNotifier();
+        sdk_ctx_ = ctx;
     }
 
     void SigSdkBaseProcessor::Start(const SignalingParam& param) {
         sig_param_ = param;
-        sig_router_->RegisterSigMessageCallback([=](const std::string &msg) {
+        sig_router_->RegisterSigMessageCallback([=, this](const std::string &msg) {
             try {
                 this->ParseSigMessage(msg);
             } catch (const std::exception &e) {
@@ -191,7 +190,7 @@ namespace tc
             msg.code_ = obj[kKeySigCode].get<int>();
             msg.info_ = obj[kKeySigInfo].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnHello) {
@@ -221,7 +220,7 @@ namespace tc
                 }
             }
 
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnCreatedRoom) {
@@ -233,7 +232,7 @@ namespace tc
             msg.remote_client_id_ = obj[kKeyRemoteClientId].get<std::string>();
             msg.room_id_ = obj[kKeyRoomId].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnJoinedRoom) {
@@ -248,7 +247,7 @@ namespace tc
             auto clients_obj = obj[kKeyClients];
             auto clients = ParseClients(clients_obj);
             msg.clients_ = clients;
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnRemoteJoinedRoom) {
@@ -262,7 +261,7 @@ namespace tc
             auto clients_obj = obj[kKeyClients];
             auto clients = ParseClients(clients_obj);
             msg.clients_ = clients;
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnLeftRoom) {
@@ -276,7 +275,7 @@ namespace tc
             auto clients_obj = obj[kKeyClients];
             auto clients = ParseClients(clients_obj);
             msg.clients_ = clients;
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnRemoteLeftRoom) {
@@ -288,7 +287,7 @@ namespace tc
             msg.room_id_ = obj[kKeyRoomId].get<std::string>();
             msg.clients_ = ParseClients(obj[kKeyClients]);
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnInvitedToRoom) {
@@ -302,7 +301,7 @@ namespace tc
             msg.sig_origin_msg_ = data.data();
             auto clients_obj = obj[kKeyClients];
             msg.clients_ = ParseClients(clients_obj);
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOnRemoteInvitedToRoom) {
@@ -316,7 +315,7 @@ namespace tc
             msg.sig_origin_msg_ = data.data();
             auto clients_obj = obj[kKeyClients];
             msg.clients_ = ParseClients(clients_obj);
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         } else if (sig_name == kSigReqRemoteInfo) {
             // 请求对方的信息
@@ -325,7 +324,7 @@ namespace tc
             msg.token_ = token;
             msg.client_id_ = obj[kKeyClientId].get<std::string>();
             msg.remote_client_id_ = obj[kKeyRemoteClientId].get<std::string>();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         } else if (sig_name == kSigOnRemoteInfo) {
             // 返回自己的信息给对端
@@ -336,7 +335,7 @@ namespace tc
             msg.controller_client_id_ = obj[kKeyControllerClientId].get<std::string>();
             msg.local_ips_ = ParseIps(obj[kKeyLocalIps]);
             msg.www_ips_ = ParseIps(obj[kKeyWwwIps]);
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         } else if (sig_name == kSigOnHeartBeat) {
             // 心跳
@@ -346,7 +345,7 @@ namespace tc
             msg.client_id_ = obj[kKeyClientId].get<std::string>();
             msg.index_ = obj[kKeyIndex].get<int64_t>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigOfferSdp) {
@@ -365,7 +364,7 @@ namespace tc
             if(obj[kKeySessionId].is_string())
                 msg.session_id = obj[kKeySessionId].get<std::string>();
 
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigAnswerSdp) {
@@ -377,7 +376,7 @@ namespace tc
             msg.room_id_ = obj[kKeyRoomId].get<std::string>();
             msg.sdp_ = obj[kKeySdp].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
 
         }
         else if (sig_name == kSigIce) {
@@ -392,7 +391,7 @@ namespace tc
             msg.sdp_mline_index_ = obj[kKeySdpMLineIndex].get<int>();
             msg.peer_conn_id = obj[kKeyPeerConnId].get<int>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
         else if (sig_name == kSigOnDataChannelReady) {
             SigOnDataChannelReadyMessage msg;
@@ -402,7 +401,7 @@ namespace tc
             msg.controller_client_id_ = obj[kKeyControllerClientId].get<std::string>();
             msg.room_id_ = obj[kKeyRoomId].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
         else if (sig_name == kSigReqControl) {
             SigReqControlMessage msg;
@@ -411,7 +410,7 @@ namespace tc
             msg.client_id_ = obj[kKeyClientId].get<std::string>();
             msg.remote_client_id_ = obj[kKeyRemoteClientId].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
         else if (sig_name == kSigUnderControl) {
             SigUnderControlMessage msg;
@@ -420,7 +419,7 @@ namespace tc
             msg.self_client_id_ = obj[kKeySelfClientId].get<std::string>();
             msg.controller_client_id_ = obj[kKeyControllerClientId].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
         else if (sig_name == kSigOnRejectControl) {
             SigOnRejectControlMessage msg;
@@ -430,7 +429,7 @@ namespace tc
             msg.controller_client_id_ = obj[kKeyControllerClientId].get<std::string>();
             msg.room_id_ = obj[kKeyRoomId].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
         else if (sig_name == kSigSendMessage) {
             SigSendMessage msg;
@@ -439,7 +438,7 @@ namespace tc
             msg.controller_client_id_ = obj[kKeyControllerClientId].get<std::string>();
             msg.message_ = obj[kKeyMessage].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
         else if (sig_name == kSigOnProcessedMessage) {
             SigOnProcessedMessage msg;
@@ -448,7 +447,7 @@ namespace tc
             msg.controller_client_id_ = obj[kKeyControllerClientId].get<std::string>();
             msg.message_ = obj[kKeyMessage].get<std::string>();
             msg.sig_origin_msg_ = data.data();
-            msg_notifier_->SendAppMessage(msg);
+            //msg_notifier_->SendAppMessage(msg);
         }
     }
 

@@ -11,7 +11,8 @@
 
 namespace tc
 {
-    ServiceContext::ServiceContext() {
+    ServiceContext::ServiceContext(int port) {
+        listening_port_ = port;
         // message notifier
         msg_notifier_ = std::make_shared<MessageNotifier>();
 

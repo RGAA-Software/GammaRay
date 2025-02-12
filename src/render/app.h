@@ -47,7 +47,7 @@ namespace tc
     class VigemController;
     class VigemDriverManager;
     class Statistics;
-    class WSClient;
+    class WsPanelClient;
     class ClipboardManager;
     class PluginManager;
     class GrMonitorCapturePlugin;
@@ -112,7 +112,7 @@ namespace tc
 
     protected:
         Settings* settings_ = nullptr;
-        std::shared_ptr<WSClient> ws_client_ = nullptr;
+        std::shared_ptr<WsPanelClient> ws_panel_client_ = nullptr;
         std::shared_ptr<AppManager> app_manager_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<EncoderThread> encoder_thread_ = nullptr;

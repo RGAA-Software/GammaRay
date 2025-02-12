@@ -2,7 +2,7 @@
 // Created by RGAA on 2024-03-30.
 //
 
-#include "ws_server.h"
+#include "ws_panel_server.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
@@ -30,17 +30,18 @@ namespace tc
         }
     };
 
-    std::shared_ptr<WSServer> WSServer::Make(const std::shared_ptr<GrApplication>& app) {
-        return std::make_shared<WSServer>(app);
+    std::shared_ptr<WsPanelServer> WsPanelServer::Make(const std::shared_ptr<GrApplication>& app) {
+        return std::make_shared<WsPanelServer>(app);
     }
 
-    WSServer::WSServer(const std::shared_ptr<GrApplication>& app) {
+    WsPanelServer::WsPanelServer(const std::shared_ptr<GrApplication>& app) {
         app_ = app;
         context_ = app_->GetContext();
         http_handler_ = std::make_shared<HttpHandler>(app_);
+        settings_ = GrSettings::Instance();
     }
 
-    void WSServer::Start() {
+    void WsPanelServer::Start() {
         http_server_ = std::make_shared<asio2::http_server>();
         http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
@@ -117,15 +118,19 @@ namespace tc
 
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanel, http_server_);
 
-        bool ret = http_server_->start("0.0.0.0", GrSettings::Instance()->ws_server_port_);
+        http_server_->start_timer(10, 2000, [=, this]() {
+            this->SyncPanelInfo();
+        });
+
+        bool ret = http_server_->start("0.0.0.0", settings_->ws_server_port_);
         LOGI("App server start result: {}", ret);
     }
 
-    void WSServer::Exit() {
+    void WsPanelServer::Exit() {
 
     }
 
-    WSServer::~WSServer() {
+    WsPanelServer::~WsPanelServer() {
         if (http_server_) {
             http_server_->stop_all_timers();
             http_server_->stop();
@@ -133,7 +138,7 @@ namespace tc
     }
 
     template<typename Server>
-    void WSServer::AddWebsocketRouter(const std::string &path, const Server &s) {
+    void WsPanelServer::AddWebsocketRouter(const std::string &path, const Server &s) {
         auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
             return (uint64_t)s.native_handle();
@@ -178,21 +183,21 @@ namespace tc
         );
     }
 
-    void WSServer::AddHttpGetRouter(const std::string &path,
+    void WsPanelServer::AddHttpGetRouter(const std::string &path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
         http_server_->bind<http::verb::get>(path, [=, this](http::web_request &req, http::web_response &rep) {
             cbk(path, req, rep);
         }, aop_log{});
     }
 
-    void WSServer::AddHttpPostRouter(const std::string& path,
+    void WsPanelServer::AddHttpPostRouter(const std::string& path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
         http_server_->bind<http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
             cbk(path, req, rep);
         }, aop_log{});
     }
 
-    void WSServer::PostBinaryMessage(const std::string& msg, bool only_inner) {
+    void WsPanelServer::PostBinaryMessage(const std::string& msg, bool only_inner) {
         sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
                 return;
@@ -203,7 +208,7 @@ namespace tc
         });
     }
 
-    void WSServer::PostBinaryMessage(std::string_view msg, bool only_inner) {
+    void WsPanelServer::PostBinaryMessage(std::string_view msg, bool only_inner) {
         sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
                 return;
@@ -214,7 +219,7 @@ namespace tc
         });
     }
 
-    void WSServer::ParseBinaryMessage(uint64_t socket_fd, std::string_view msg) {
+    void WsPanelServer::ParseBinaryMessage(uint64_t socket_fd, std::string_view msg) {
         auto proto_msg = std::make_shared<tc::Message>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
             LOGE("Parse binary message failed.");
@@ -251,4 +256,13 @@ namespace tc
         }
     }
 
+    void WsPanelServer::SyncPanelInfo() {
+        tc::Message m;
+        m.set_type(MessageType::kSyncPanelInfo);
+        auto sub = m.mutable_sync_panel_info();
+        sub->set_client_id(settings_->client_id_);
+        sub->set_client_random_pwd(settings_->client_random_pwd_);
+        PostBinaryMessage(m.SerializeAsString());
+    }
+    
 }

@@ -53,6 +53,11 @@ DEFINE_string(app_game_args, "", "");
 DEFINE_bool(debug_block, false, "block the render process");
 DEFINE_bool(mock_video, false, "use mocking video plugin");
 
+DEFINE_string(client_id, "", "client id");
+DEFINE_string(client_random_pwd, "", "client random pwd");
+
+DEFINE_int32(panel_server_port, 0, "");
+
 void UpdateSettings(Settings* settings) {
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
@@ -122,6 +127,11 @@ void UpdateSettings(Settings* settings) {
 
     settings->block_debug_ = FLAGS_debug_block;
     settings->capture_.mock_video_ = FLAGS_mock_video;
+
+    settings->client_id_ = FLAGS_client_id;
+    settings->client_random_pwd_ = FLAGS_client_random_pwd;
+
+    settings->panel_server_port_ = FLAGS_panel_server_port;
 }
 
 void PrintInputArgs() {
@@ -152,6 +162,9 @@ void PrintInputArgs() {
     LOGI("sig server port: {}", FLAGS_sig_server_port);
     LOGI("coturn server address: {}", FLAGS_coturn_server_address);
     LOGI("coturn server port: {}", FLAGS_coturn_server_port);
+    LOGI("client id: {}", FLAGS_client_id);
+    LOGI("client random pwd: {}", FLAGS_client_random_pwd);
+    LOGI("panel server port: {}", FLAGS_panel_server_port);
     LOGI("--------------In args end----------------");
 }
 

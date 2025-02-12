@@ -15,6 +15,7 @@ namespace tc
     class GrContext;
     class GrApplication;
     class HttpHandler;
+    class GrSettings;
 
     class WSSession {
     public:
@@ -23,12 +24,12 @@ namespace tc
         std::shared_ptr<asio2::http_session> session_ = nullptr;
     };
 
-    class WSServer {
+    class WsPanelServer {
     public:
 
-        static std::shared_ptr<WSServer> Make(const std::shared_ptr<GrApplication>& app);
-        explicit WSServer(const std::shared_ptr<GrApplication>& ctx);
-        ~WSServer();
+        static std::shared_ptr<WsPanelServer> Make(const std::shared_ptr<GrApplication>& app);
+        explicit WsPanelServer(const std::shared_ptr<GrApplication>& ctx);
+        ~WsPanelServer();
 
         void Start();
         void Exit();
@@ -47,6 +48,8 @@ namespace tc
         void AddHttpPostRouter(const std::string& path,
            std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk);
 
+        void SyncPanelInfo();
+
     private:
         std::shared_ptr<asio2::http_server> http_server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;
@@ -54,6 +57,7 @@ namespace tc
         std::shared_ptr<GrContext> context_ = nullptr;
         ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> sessions_;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
+        GrSettings* settings_ = nullptr;
     };
 }
 
