@@ -6,7 +6,7 @@
 #define GAMMARAY_FILETRANSFER_H
 
 #include <memory>
-#include <asio2/websocket/ws_server.hpp>
+#include <asio2/asio2.hpp>
 
 namespace tc
 {
@@ -16,23 +16,20 @@ namespace tc
     class Thread;
     class File;
 
+    // Drag & Drop file transferring
     class FileTransferChannel {
     public:
-        static std::shared_ptr<FileTransferChannel> Make(const std::shared_ptr<GrContext>& ctx);
-        explicit FileTransferChannel(const std::shared_ptr<GrContext>& ctx);
-        void Start();
-        void Exit();
-
-    private:
-        void ParseMessage(std::string_view data);
+        explicit FileTransferChannel(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<asio2::http_session>& sess);
+        void OnConnected();
+        void OnDisConnected();
+        void ParseBinaryMessage(std::string_view data);
         void PostBinaryMessage(const std::string& msg);
 
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<asio2::ws_server> server_ = nullptr;
-        std::shared_ptr<asio2::ws_session> session_ = nullptr;
         std::shared_ptr<File> transferring_file_ = nullptr;
+        std::shared_ptr<asio2::http_session> sess_ = nullptr;
     };
 
 }

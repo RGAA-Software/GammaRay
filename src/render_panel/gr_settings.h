@@ -127,8 +127,6 @@ namespace tc
         std::string client_id_;
         std::string client_random_pwd_;
 
-        int file_transfer_port_ = 20372;
-        std::string file_transfer_listen_path_ = "/file/transfer";
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;

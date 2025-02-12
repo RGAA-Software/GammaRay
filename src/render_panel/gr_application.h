@@ -18,7 +18,6 @@ namespace tc
     class GrRenderController;
     class GrSettings;
     class GrSystemMonitor;
-    class FileTransferChannel;
     class GrServiceClient;
     class WsSigClient;
     class SigSdkContext;
@@ -34,7 +33,7 @@ namespace tc
         void Exit();
 
         std::shared_ptr<GrContext> GetContext() { return context_; }
-        std::shared_ptr<WsPanelServer> GetWSServer() { return ws_panel_server_; }
+        std::shared_ptr<WsPanelServer> GetWsPanelServer() { return ws_panel_server_; }
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
         bool PostMessage2Service(const std::string& msg);
         void RequestNewClientId(bool force_update);
@@ -48,7 +47,6 @@ namespace tc
         std::shared_ptr<WsPanelServer> ws_panel_server_ = nullptr;
         std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
         std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;
-        std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         std::shared_ptr<GrServiceClient> service_client_ = nullptr;
         std::shared_ptr<WsSigClient> sig_client_ = nullptr;
         QTimer* timer_ = nullptr;

@@ -14,59 +14,24 @@
 namespace tc
 {
 
-    std::shared_ptr<FileTransferChannel> FileTransferChannel::Make(const std::shared_ptr<GrContext> &ctx) {
-        return std::make_shared<FileTransferChannel>(ctx);
-    }
-
-    FileTransferChannel::FileTransferChannel(const std::shared_ptr<GrContext> &ctx) {
+    FileTransferChannel::FileTransferChannel(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<asio2::http_session>& sess) {
         context_ = ctx;
+        sess_ = sess;
         settings_ = GrSettings::Instance();
     }
 
-    void FileTransferChannel::Start() {
-        server_ = std::make_shared<asio2::ws_server>();
-        server_->bind_accept([=, this](std::shared_ptr<asio2::ws_session> &session_ptr) {
-            if (!asio2::get_last_error()) {
-                session_ = session_ptr;
-                session_ptr->ws_stream().binary(true);
-                session_ptr->ws_stream().set_option(
-                    websocket::stream_base::decorator([session_ptr](websocket::response_type &rep) {
-                        const websocket::request_type &req = session_ptr->get_upgrade_request();
-                        auto it = req.find(http::field::authorization);
-                        if (it != req.end())
-                            rep.set(http::field::authentication_results, "200 OK");
-                        else
-                            rep.set(http::field::authentication_results, "401 unauthorized");
-                    }));
-            } else {
-                printf("error occurred when calling the accept function : %d %s\n",
-                       asio2::get_last_error_val(), asio2::get_last_error_msg().data());
-            }
-        }).bind_recv([=](auto &session_ptr, std::string_view data) {
-            this->ParseMessage(data);
-        }).bind_connect([](auto &session_ptr) {
-
-        }).bind_disconnect([=](auto &session_ptr) {
-            if (transferring_file_) {
-                transferring_file_.reset();
-                transferring_file_ = nullptr;
-            }
-        }).bind_upgrade([](auto &session_ptr) {
-
-        }).bind_start([&]() {
-
-        }).bind_stop([&]() {
-
-        });
-
-        server_->start("0.0.0.0", settings_->file_transfer_port_, settings_->file_transfer_listen_path_);
-    }
-
-    void FileTransferChannel::Exit() {
+    void FileTransferChannel::OnConnected() {
 
     }
 
-    void FileTransferChannel::ParseMessage(std::string_view _data) {
+    void FileTransferChannel::OnDisConnected() {
+        if (transferring_file_) {
+            transferring_file_.reset();
+            transferring_file_ = nullptr;
+        }
+    }
+
+    void FileTransferChannel::ParseBinaryMessage(std::string_view _data) {
         auto msg = std::make_shared<tc::Message>();
         std::string data(_data.data(), _data.size());
         if (!msg->ParseFromString(data)) {
@@ -191,8 +156,8 @@ namespace tc
     }
 
     void FileTransferChannel::PostBinaryMessage(const std::string &msg) {
-        if (session_ && server_ && server_->is_started()) {
-            session_->async_send(msg);
+        if (sess_) {
+            sess_->async_send(msg);
         }
     }
 }

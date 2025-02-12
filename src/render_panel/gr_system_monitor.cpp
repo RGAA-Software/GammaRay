@@ -96,9 +96,9 @@ namespace tc
                     ctx_->PostTask([=, this]() {
                         rgm->CheckRunningGame();
                         auto msg = rgm->GetRunningGamesAsProto();
-                        auto ws_server = app_->GetWSServer();
+                        auto ws_server = app_->GetWsPanelServer();
                         if (ws_server) {
-                            ws_server->PostBinaryMessage(msg);
+                            ws_server->PostPanelBinaryMessage(msg);
                         }
 
                         auto game_ids = rgm->GetRunningGameIds();

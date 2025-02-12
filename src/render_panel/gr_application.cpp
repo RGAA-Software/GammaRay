@@ -20,7 +20,6 @@
 #include "render_panel/network/ws_sig_client.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_steam_manager_new/steam_manager.h"
-#include "transfer/file_transfer.h"
 #include "tc_signaling_sdk/sig_sdk_context.h"
 
 #include <QTimer>
@@ -96,9 +95,6 @@ namespace tc
             udp_broadcaster_->Broadcast(broadcast_msg);
         });
         timer_->start(1000);
-
-        file_transfer_ = FileTransferChannel::Make(context_);
-        file_transfer_->Start();
 
         service_client_ = std::make_shared<GrServiceClient>(shared_from_this());
         service_client_->Start();

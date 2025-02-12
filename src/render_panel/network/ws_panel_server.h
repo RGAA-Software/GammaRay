@@ -16,12 +16,18 @@ namespace tc
     class GrApplication;
     class HttpHandler;
     class GrSettings;
+    class FileTransferChannel;
 
     class WSSession {
     public:
         uint64_t socket_fd_;
         int session_type_;
         std::shared_ptr<asio2::http_session> session_ = nullptr;
+    };
+
+    class FtSession : public WSSession {
+    public:
+        std::shared_ptr<FileTransferChannel> ch_ = nullptr;
     };
 
     class WsPanelServer {
@@ -34,9 +40,11 @@ namespace tc
         void Start();
         void Exit();
 
-        void PostBinaryMessage(const std::string& msg, bool only_inner = false);
-        void PostBinaryMessage(std::string_view msg, bool only_inner = false);
-        void ParseBinaryMessage(uint64_t socket_fd, std::string_view msg);
+        void PostPanelBinaryMessage(const std::string& msg, bool only_inner = false);
+        void PostPanelBinaryMessage(std::string_view msg, bool only_inner = false);
+        void ParsePanelBinaryMessage(uint64_t socket_fd, std::string_view msg);
+
+        void ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg);
 
     private:
         template<typename Server>
@@ -55,7 +63,8 @@ namespace tc
         WsDataPtr ws_data_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
-        ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> sessions_;
+        ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> panel_sessions_;
+        ConcurrentHashMap<uint64_t, std::shared_ptr<FtSession>> ft_sessions_;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
         GrSettings* settings_ = nullptr;
     };
