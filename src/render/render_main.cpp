@@ -204,7 +204,8 @@ int main(int argc, char** argv) {
 
     auto settings_str = settings->Dump();
     LOGI("\n" + settings_str);
-    
+
+    //settings->block_debug_ = true;
     if (settings->block_debug_) {
         MessageBoxA(0, 0, 0, 0);
     }
