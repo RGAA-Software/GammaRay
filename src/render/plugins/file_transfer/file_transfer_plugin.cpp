@@ -4,6 +4,7 @@
 
 #include "file_transfer_plugin.h"
 #include "render/plugins/plugin_ids.h"
+#include "tc_message.pb.h"
 
 void* GetInstance() {
     static tc::FileTransferPlugin plugin;
@@ -30,7 +31,9 @@ namespace tc
     }
 
     void FileTransferPlugin::OnProtoMessage(const std::string& msg) {
-
+        auto m = new tc::Message();
+        m->set_type(MessageType::kSyncPanelInfo);
+        auto info = m->SerializeAsString();
     }
 
 }

@@ -27,5 +27,4 @@ set(PLUGIN_SRCS
 )
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS} ${EXT_SRCS})
-target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new tc_message
-        tc_plugin sqlite_orm winmm.lib amf_encoder_shared SetupAPI.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_plugin winmm.lib amf_encoder_shared SetupAPI.lib)

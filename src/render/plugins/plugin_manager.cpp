@@ -43,24 +43,30 @@ namespace tc
 
         auto entryInfoList = plugin_dir.entryInfoList();
         for (const auto &info: entryInfoList) {
-            auto lib = new QLibrary(base_path + R"(/gr_plugins/)" + info.fileName());
-            lib->setLoadHints(QLibrary::ResolveAllSymbolsHint);
-            if (lib->isLoaded()) {
-                LOGI("{} is loaded.", info.fileName().toStdString().c_str());
-                continue;
-            }
+            auto target_plugin_path = base_path + R"(/gr_plugins/)" + info.fileName();
+            //auto lib = new QLibrary(base_path + R"(/gr_plugins/)" + info.fileName());
+            LOGI("Will load: {}", target_plugin_path.toStdString());
+            //auto lib = new QLibrary(base_path + R"(/)" + info.fileName());
+            //lib->setLoadHints(QLibrary::ResolveAllSymbolsHint);
+//            if (lib->isLoaded()) {
+//                LOGI("{} is loaded.", info.fileName().toStdString().c_str());
+//                continue;
+//            }
 
-            if (lib->load()) {
-                auto func = (FnGetInstance) lib->resolve("GetInstance");
+            HMODULE module = LoadLibraryW(target_plugin_path.toStdWString().c_str());
+            auto fn_get_instance = GetProcAddress(module, "GetInstance");
+            //if (lib->load()) {
+                //auto func = (FnGetInstance) lib->resolve("GetInstance");
+                auto func = (FnGetInstance) fn_get_instance;
                 if (func) {
                     auto plugin = (GrPluginInterface*)func();
                     if (plugin) {
                         auto plugin_id = plugin->GetPluginId();
                         if (plugins_.contains(plugin_id)) {
                             LOGE("{} repeated loading.", plugin_id);
-                            lib->unload();
-                            lib->deleteLater();
-                            lib = nullptr;
+//                            lib->unload();
+//                            lib->deleteLater();
+//                            lib = nullptr;
                             continue;
                         }
 
@@ -117,26 +123,26 @@ namespace tc
                         }
 
                         plugins_.insert({plugin_id, plugin});
-                        libs_.insert({plugin_id, lib});
+                        //libs_.insert({plugin_id, lib});
 
                         LOGI("{} loaded, version: {}", plugin->GetPluginName(), plugin->GetVersionName());
                     } else {
                         LOGE("{} object create failed.", info.fileName().toStdString().c_str());
-                        lib->unload();
-                        lib->deleteLater();
-                        lib = nullptr;
+//                        lib->unload();
+//                        lib->deleteLater();
+//                        lib = nullptr;
                     }
                 } else {
                     LOGE("{} cannot find symbol.", info.fileName().toStdString().c_str());
-                    lib->unload();
-                    lib->deleteLater();
-                    lib = nullptr;
+//                    lib->unload();
+//                    lib->deleteLater();
+//                    lib = nullptr;
                 }
-            } else {
-                LOGE("{} load failed. error message: {}", info.fileName().toStdString().c_str(), lib->errorString().toStdString().c_str());
-                lib->deleteLater();
-                lib = nullptr;
-            }
+//            } else {
+//                LOGE("{} load failed. error message: {}", info.fileName().toStdString().c_str(), lib->errorString().toStdString().c_str());
+//                lib->deleteLater();
+//                lib = nullptr;
+//            }
         }
 
         // file transfer plugin
