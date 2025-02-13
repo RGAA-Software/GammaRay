@@ -44,6 +44,7 @@ namespace tc
         auto entryInfoList = plugin_dir.entryInfoList();
         for (const auto &info: entryInfoList) {
             auto lib = new QLibrary(base_path + R"(/gr_plugins/)" + info.fileName());
+            lib->setLoadHints(QLibrary::ResolveAllSymbolsHint);
             if (lib->isLoaded()) {
                 LOGI("{} is loaded.", info.fileName().toStdString().c_str());
                 continue;
