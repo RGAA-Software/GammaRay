@@ -27,10 +27,10 @@ namespace tc
     }
 
     uint32_t FileTransferPlugin::GetVersionCode() {
-//        tc::Message m;
-//        m.set_type(MessageType::kFileTransfer);
-//        m.mutable_file_transfer()->set_filename("Jack Sparrow");
-//        auto ts = m.SerializeAsString();
+        tc::Message m;
+        m.set_type(MessageType::kFileTransfer);
+        m.mutable_file_transfer()->set_filename("Jack Sparrow");
+        auto ts = m.SerializeAsString();
         return 102;
     }
 

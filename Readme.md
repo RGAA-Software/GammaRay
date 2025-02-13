@@ -116,7 +116,14 @@
 ```
 
 - 2.4 You can open the project by Visual Studio 2022 or Clion, solve the problems and then compile the project.
-- 2.5 Really hard to build the project? You may download the prebuild binary...
+
+- 2.5 cmake building commands
+> 1. make a folder named build_relwithdebug
+> 2. cd build_relwithdebug
+> 3. cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_FROM=CMD -G "Visual Studio 17 2022" -A x64 ..
+> 4. cmake --build . --config RelWithDebInfo --target tc_build_all -j 20
+
+- 2.6 Really hard to build the project? You may download the prebuild binary...
 
 ### License
 ##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact me at: hollow.ichigo.yoo@gmail.com   

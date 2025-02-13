@@ -1,4 +1,4 @@
-project(plugin_net_ws VERSION 0.1 LANGUAGES CXX)
+project(plugin_net_ws)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

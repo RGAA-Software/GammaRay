@@ -1,4 +1,4 @@
-project(GammaRayRender VERSION 0.1 LANGUAGES CXX)
+project(GammaRayRender)
 
 add_subdirectory(settings)
 add_subdirectory(plugin_interface)

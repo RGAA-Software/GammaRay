@@ -1,4 +1,3 @@
-add_definitions(-DSTEAM_RELEASE=1)
 
 #HOME
 #set(VCPKG_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/vcpkg)
