@@ -29,7 +29,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 #find_package(OpenSSL REQUIRED)
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
+#find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
 find_package(SDL2 CONFIG REQUIRED)
 
@@ -180,7 +181,7 @@ install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-add_custom_target(tc_build_all COMMENT "Build all targets")
+add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
         uninstall shadow_deleter GammaRayClient GammaRayClientInner)
 if(ENABLE_HOOK_CAPTURE)
