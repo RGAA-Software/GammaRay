@@ -19,7 +19,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/client)
 
-link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
+#link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
 
 set(RES ${CMAKE_SOURCE_DIR}/resources/font.qrc ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
 add_compile_options(/bigobj)

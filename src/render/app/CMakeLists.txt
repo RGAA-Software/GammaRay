@@ -14,7 +14,7 @@ if (WIN32)
         win/win_event_replayer.cpp
         video_frame_carrier.cpp
     )
-    target_link_libraries(app_manager fftw3 frame_render)
+    target_link_libraries(app_manager frame_render)
     target_link_libraries(app_manager Qt6::Core Qt6::Core5Compat Qt6::Widgets)
 elseif (APPLE)
 

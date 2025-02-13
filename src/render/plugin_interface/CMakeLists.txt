@@ -1,4 +1,4 @@
-project(tc_plugin VERSION)
+project(tc_plugin)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
