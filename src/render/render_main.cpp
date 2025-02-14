@@ -54,6 +54,7 @@ DEFINE_bool(debug_block, false, "block the render process");
 DEFINE_bool(mock_video, false, "use mocking video plugin");
 
 DEFINE_string(client_id, "", "client id");
+DEFINE_string(device_id, "", "device id");
 DEFINE_string(client_random_pwd, "", "client random pwd");
 
 DEFINE_int32(panel_server_port, 0, "");
@@ -132,6 +133,8 @@ void UpdateSettings(Settings* settings) {
     settings->client_random_pwd_ = FLAGS_client_random_pwd;
 
     settings->panel_server_port_ = FLAGS_panel_server_port;
+
+    settings->device_id_ = FLAGS_device_id;
 }
 
 void PrintInputArgs() {
@@ -165,6 +168,7 @@ void PrintInputArgs() {
     LOGI("client id: {}", FLAGS_client_id);
     LOGI("client random pwd: {}", FLAGS_client_random_pwd);
     LOGI("panel server port: {}", FLAGS_panel_server_port);
+    LOGI("device id: {}", FLAGS_device_id);
     LOGI("--------------In args end----------------");
 }
 

@@ -132,6 +132,8 @@ namespace tc
 
         int sys_service_port_ = 20375;
 
+        // represent for this device
+        // If the cache of the GammaRay was cleared, it may have changed.
         std::string device_id_;
     };
 

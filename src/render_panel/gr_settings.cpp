@@ -6,6 +6,8 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/base64.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/uuid.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include <sstream>
@@ -75,6 +77,12 @@ namespace tc
 
         client_id_ = sp_->Get(kStClientId, "");
         client_random_pwd_ = sp_->Get(kStClientRandomPwd, "");
+
+        device_id_ = sp_->Get(kStDeviceId, "");
+        if (device_id_.empty()) {
+            device_id_ = MD5::Hex(GetUUID());
+            sp_->Put(kStDeviceId, device_id_);
+        }
     }
 
     void GrSettings::Dump() {
@@ -104,6 +112,7 @@ namespace tc
         ss << "coturn_server_address_: " << coturn_server_address_ << std::endl;
         ss << "coturn_server_port_: " << coturn_server_port_ << std::endl;
         ss << "client_id_: " << client_id_ << std::endl;
+        ss << "device_id_: " << device_id_ << std::endl;
         ss << "client_random_pwd_: " << client_random_pwd_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
@@ -139,6 +148,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStClientId, client_id_));
         args.push_back(std::format("--{}={}", kStClientRandomPwd, client_random_pwd_));
         args.push_back(std::format("--panel_server_port={}", this->http_server_port_));
+        args.push_back(std::format("--{}={}", kStDeviceId, device_id_));
         return args;
     }
 

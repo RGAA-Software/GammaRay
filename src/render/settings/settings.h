@@ -137,6 +137,7 @@ namespace tc
         int panel_server_port_ = 0;
         std::string client_id_;
         std::string client_random_pwd_;
+        std::string device_id_;
     };
 
 }
