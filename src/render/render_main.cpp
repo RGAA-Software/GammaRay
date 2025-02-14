@@ -126,7 +126,7 @@ void UpdateSettings(Settings* settings) {
     }
 
     settings->block_debug_ = FLAGS_debug_block;
-    settings->capture_.mock_video_ = true;//FLAGS_mock_video;
+    settings->capture_.mock_video_ = FLAGS_mock_video;
 
     settings->client_id_ = FLAGS_client_id;
     settings->client_random_pwd_ = FLAGS_client_random_pwd;
