@@ -102,6 +102,23 @@ namespace tc
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
 
+        {
+            auto title = new QLabel(this);
+            title->setFixedWidth(250);
+            title->setText(tr("Remote Devices"));
+            title->setAlignment(Qt::AlignLeft);
+            title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
+            root_layout->addSpacing(18);
+
+            auto layout = new QHBoxLayout();
+            WidgetHelper::ClearMargin(layout);
+            layout->addSpacing(25);
+            layout->addWidget(title);
+            layout->addStretch();
+
+            root_layout->addLayout(layout);
+        }
+
         auto stream_list = new AppStreamList(context_, this);
         stream_list_ = stream_list;
         root_layout->addWidget(stream_list);
