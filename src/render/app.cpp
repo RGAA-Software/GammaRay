@@ -585,6 +585,10 @@ namespace tc
         return plugin_manager_;
     }
 
+    tc::GrMonitorCapturePlugin* Application::GetWorkingMonitorCapturePlugin() {
+        return monitor_capture_plugin_;
+    }
+
     bool Application::GenerateD3DDevice(uint64_t adapter_uid) {
         LOGI("GenerateD3DDevice, adapter_uid = {}", adapter_uid);
         if (d3d11_device_context_) {

@@ -6,12 +6,19 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
 #include "ws_plugin.h"
+#include "tc_message.pb.h"
 
 namespace tc
 {
 
     void WsPluginRouter::OnOpen(std::shared_ptr<asio2::http_session> &sess_ptr) {
         WsRouter::OnOpen(sess_ptr);
+
+        // for testing
+        auto m = new tc::Message();
+        m->set_type(MessageType::kSyncPanelInfo);
+        auto info = m->SerializeAsString();
+
     }
 
     void WsPluginRouter::OnClose(std::shared_ptr<asio2::http_session> &sess_ptr) {

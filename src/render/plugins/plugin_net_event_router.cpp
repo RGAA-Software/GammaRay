@@ -253,20 +253,21 @@ namespace tc {
         app_->PostGlobalTask([=, this]() {
             auto sm = msg->switch_monitor();
             auto plugin = app_->GetWorkingMonitorCapturePlugin();
-            if (plugin) {
-                plugin->SetCaptureMonitor(sm.index(), sm.name());
-                //plugin->SendCapturingMonitorMessage();
-
-                auto cm_msg = CaptureMonitorInfoMessage {
-                    .monitors_ = plugin->GetCaptureMonitorInfo(),
-                    .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
-                };
-                //msg_notifier_->SendAppMessage(msg);
-                win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
-
-                auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
-                app_->PostNetMessage(proto_msg);
+            if (!plugin) {
+                return;
             }
+            plugin->SetCaptureMonitor(sm.index(), sm.name());
+            //plugin->SendCapturingMonitorMessage();
+
+            auto cm_msg = CaptureMonitorInfoMessage {
+                .monitors_ = plugin->GetCaptureMonitorInfo(),
+                .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+            };
+            //msg_notifier_->SendAppMessage(msg);
+            win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+
+            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
+            app_->PostNetMessage(proto_msg);
         });
     }
 
@@ -274,6 +275,10 @@ namespace tc {
         app_->PostGlobalTask([=, this]() {
             auto wm = msg->work_mode();
             auto plugin = app_->GetWorkingMonitorCapturePlugin();
+            if (!plugin) {
+                LOGE("Working monitor capture is empty!");
+                return;
+            }
             if (wm.mode() == SwitchWorkMode::kWork) {
                 plugin->SetCaptureFps(30);
             } else if (wm.mode() == SwitchWorkMode::kGame) {
