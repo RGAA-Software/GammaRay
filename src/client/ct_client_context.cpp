@@ -37,7 +37,10 @@ namespace tc
         auto base_dir = QApplication::applicationDirPath();
         auto log_path = base_dir + std::format("/gr_logs/app.{}.log", this->name_).c_str();
         std::cout << "log path: " << log_path.toStdString() << std::endl;
-        Logger::InitLog(log_path.toStdString(), true);
+        if (this->name_ != "ui.embed") {
+            Logger::InitLog(log_path.toStdString(), true);
+        }
+        LOGI("ClientContext in {}", this->name_);
 
         auto settings = Settings::Instance();
         settings->SetSharedPreference(sp_);

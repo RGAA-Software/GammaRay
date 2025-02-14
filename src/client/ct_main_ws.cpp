@@ -111,8 +111,6 @@ int main(int argc, char** argv) {
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
 
-    Logger::InitLog("GammaRayClientInner.log", true);
-
     QApplication app(argc, argv);
     ParseCommandLine(app);
     // font
