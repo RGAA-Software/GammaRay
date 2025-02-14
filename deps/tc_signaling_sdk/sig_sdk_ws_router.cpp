@@ -1,5 +1,5 @@
 //
-// Created by hy RGAA
+// Created by RGAA
 //
 #include "sig_sdk_ws_router.h"
 #include "tc_common_new/log.h"

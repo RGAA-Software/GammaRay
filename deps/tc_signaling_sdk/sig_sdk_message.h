@@ -1,5 +1,5 @@
 //
-// Created by hy RGAA
+// Created by RGAA
 //
 
 #ifndef TEST_WEBRTC_SIG_MESSAGE_H

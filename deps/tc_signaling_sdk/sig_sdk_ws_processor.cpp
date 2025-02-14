@@ -1,5 +1,5 @@
 //
-// Created by hy RGAA
+// Created by RGAA
 //
 #include "sig_sdk_ws_processor.h"
 

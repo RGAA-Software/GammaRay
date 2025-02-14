@@ -1,5 +1,5 @@
 //
-// Created by hy RGAA
+// Created by RGAA
 //
 #pragma once
 

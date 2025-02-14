@@ -4,6 +4,7 @@
 
 #include "rtc_plugin.h"
 #include "render/plugins/plugin_ids.h"
+#include "video_source_mock.h"
 
 namespace tc
 {
@@ -21,7 +22,14 @@ namespace tc
     }
 
     uint32_t RtcPlugin::GetVersionCode() {
+        // test //
+        auto mock = std::make_shared<VideoSourceMock>();
+        // test //
         return 102;
+    }
+
+    void RtcPlugin::OnProtoMessage(const std::string& msg) {
+
     }
 
 }
