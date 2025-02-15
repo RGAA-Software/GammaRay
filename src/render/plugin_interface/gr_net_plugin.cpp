@@ -20,6 +20,10 @@ namespace tc
 
     }
 
+    bool GrNetPlugin::OnTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
+        return false;
+    }
+
     void GrNetPlugin::CallbackClientEvent(bool is_proto, const std::string& msg) {
         auto event = std::make_shared<GrPluginNetClientEvent>();
         event->is_proto_ = is_proto;

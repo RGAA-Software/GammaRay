@@ -4,6 +4,7 @@
 
 #include "file_transfer_plugin.h"
 #include "render/plugins/plugin_ids.h"
+#include "render/plugin_interface/gr_net_plugin.h"
 #include "tc_message.pb.h"
 
 void* GetInstance() {
@@ -35,6 +36,13 @@ namespace tc
         auto m = new tc::Message();
         m->set_type(MessageType::kSyncPanelInfo);
         auto info = m->SerializeAsString();
+        PostTargetStreamMessage("", info);
+    }
+
+    void FileTransferPlugin::PostTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
+        for (const auto& [plugin_id, plugin] : net_plugins_) {
+            plugin->OnTargetStreamMessage(stream_id, msg);
+        }
     }
 
 }

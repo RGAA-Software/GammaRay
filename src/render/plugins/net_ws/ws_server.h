@@ -25,6 +25,7 @@ namespace tc
         void Exit();
 
         void PostNetMessage(const std::string& data);
+        bool PostTargetStreamMessage(const std::string& stream_id, const std::string& data);
         int GetConnectionPeerCount();
         bool IsOnlyAudioClients();
 

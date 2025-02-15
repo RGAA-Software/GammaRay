@@ -73,12 +73,23 @@ namespace tc
     }
 
     void WsPluginServer::PostNetMessage(const std::string& data) {
-        media_routers_.ApplyAll([=](const auto &k, const auto &v) {
-            if (!v->enable_video_) {
+        media_routers_.ApplyAll([=](const uint64_t& socket_fd, const std::shared_ptr<WsPluginRouter>& router) {
+            if (!router->enable_video_) {
                 return;
             }
-            v->PostBinaryMessage(data);
+            router->PostBinaryMessage(data);
         });
+    }
+
+    bool WsPluginServer::PostTargetStreamMessage(const std::string& stream_id, const std::string& data) {
+        bool found_target_stream = false;
+        media_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsPluginRouter>& router) {
+            if (stream_id == router->stream_id_) {
+                router->PostBinaryMessage(data);
+                found_target_stream = true;
+            }
+        });
+        return found_target_stream;
     }
 
     int WsPluginServer::GetConnectionPeerCount() {
@@ -130,12 +141,7 @@ namespace tc
                 if (params.contains("stream_id")) {
                     stream_id = params["stream_id"];
                 }
-                //auto& s = sess_ptr->socket();
-                //asio::error_code ec;
-                //s.set_option(asio::ip::tcp::no_delay(false), ec);
-                //s.set_option(asio::socket_base::send_buffer_size(1024*1024));
-                //s.set_option(asio::socket_base::receive_buffer_size(64));
-                //LOGI("NO DELAY EC: {}, msg: {}", ec.value(), ec.message());
+
                 sess_ptr->set_no_delay(true);
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 std::shared_ptr<WsPluginRouter> router = nullptr;

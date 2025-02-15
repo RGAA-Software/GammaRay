@@ -110,7 +110,7 @@ namespace tc
         void ShowRootWidget();
         void HideRootWidget();
 
-        void AttachNetPlugin(const std::string& id, const GrNetPlugin* plugin);
+        void AttachNetPlugin(const std::string& id, GrNetPlugin* plugin);
 
     protected:
 
@@ -148,7 +148,7 @@ namespace tc
         std::string capture_monitor_name_;
         std::string capture_audio_device_id_;
         // active net plugins...
-        std::map<std::string, const GrNetPlugin*> net_plugins_;
+        std::map<std::string, GrNetPlugin*> net_plugins_;
 
     public:
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;

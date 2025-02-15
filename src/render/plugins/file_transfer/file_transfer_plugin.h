@@ -17,6 +17,10 @@ namespace tc
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
         void OnProtoMessage(const std::string& msg) override;
+
+    private:
+        void PostTargetStreamMessage(const std::string& stream_id, const std::string& msg);
+
     };
 
 }

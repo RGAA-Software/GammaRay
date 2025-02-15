@@ -67,6 +67,13 @@ namespace tc
         }
     }
 
+    bool WsPlugin::OnTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
+        if (!IsWorking()) {
+            return false;
+        }
+        return ws_server_->PostTargetStreamMessage(stream_id, msg);
+    }
+
     bool WsPlugin::IsOnlyAudioClients() {
         if (IsWorking()) {
             return ws_server_->IsOnlyAudioClients();

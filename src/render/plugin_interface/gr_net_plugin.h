@@ -23,6 +23,9 @@ namespace tc
         //                       -> client 3
         virtual void OnProtoMessage(const std::string& msg);
 
+        // to a specific stream
+        virtual bool OnTargetStreamMessage(const std::string& stream_id, const std::string& msg);
+
         // messages from remote(client) -> this plugin -> process it
         // client 1 ->
         // client 2 ->  -> Renderer

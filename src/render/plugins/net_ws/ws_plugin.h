@@ -20,12 +20,14 @@ namespace tc
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
 
-        bool OnCreate(const tc::GrPluginParam &param) override;
+        bool OnCreate(const tc::GrPluginParam& param) override;
         bool OnDestroy() override;
         void On1Second() override;
         bool IsWorking() override;
 
-        void OnProtoMessage(const std::string &msg) override;
+        void OnProtoMessage(const std::string& msg) override;
+        bool OnTargetStreamMessage(const std::string& stream_id, const std::string& msg) override;
+
         bool IsOnlyAudioClients() override;
         int ConnectedClientSize() override;
 
