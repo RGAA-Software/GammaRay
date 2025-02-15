@@ -63,7 +63,6 @@ namespace tc
         std::shared_ptr<Application> app_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         std::map<std::string, GrPluginInterface*> plugins_;
-        std::map<std::string, QLibrary*> libs_;
         std::shared_ptr<PluginEventRouter> evt_router_ = nullptr;
     };
 

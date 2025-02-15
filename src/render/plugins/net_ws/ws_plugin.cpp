@@ -40,7 +40,11 @@ namespace tc
 
     bool WsPlugin::OnCreate(const tc::GrPluginParam& param) {
         GrPluginInterface::OnCreate(param);
-        auto listen_port = GetIntParam("listen-port");
+        auto listen_port = GetConfigIntParam("ws-listen-port");
+        auto config_listen_port = GetConfigIntParam("listen-port");
+        if (config_listen_port > 0) {
+            listen_port = config_listen_port;
+        }
         ws_server_ = std::make_shared<WsPluginServer>(this, (uint16_t)listen_port);
         ws_server_->Start();
         return true;

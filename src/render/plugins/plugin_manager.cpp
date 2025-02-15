@@ -44,111 +44,88 @@ namespace tc
         auto entryInfoList = plugin_dir.entryInfoList();
         for (const auto &info: entryInfoList) {
             auto target_plugin_path = base_path + R"(/gr_plugins/)" + info.fileName();
-            //auto lib = new QLibrary(base_path + R"(/gr_plugins/)" + info.fileName());
             LOGI("Will load: {}", target_plugin_path.toStdString());
-            //auto lib = new QLibrary(base_path + R"(/)" + info.fileName());
-            //lib->setLoadHints(QLibrary::ResolveAllSymbolsHint);
-//            if (lib->isLoaded()) {
-//                LOGI("{} is loaded.", info.fileName().toStdString().c_str());
-//                continue;
-//            }
 
             HMODULE module = LoadLibraryW(target_plugin_path.toStdWString().c_str());
             auto fn_get_instance = GetProcAddress(module, "GetInstance");
-            //if (lib->load()) {
-                //auto func = (FnGetInstance) lib->resolve("GetInstance");
-                auto func = (FnGetInstance) fn_get_instance;
-                if (func) {
-                    auto plugin = (GrPluginInterface*)func();
-                    if (plugin) {
-                        auto plugin_id = plugin->GetPluginId();
-                        if (plugins_.contains(plugin_id)) {
-                            LOGE("{} repeated loading.", plugin_id);
-//                            lib->unload();
-//                            lib->deleteLater();
-//                            lib = nullptr;
-                            continue;
-                        }
 
-                        // create it
-                        auto filename = info.fileName();
-                        auto param = GrPluginParam {
-                            .cluster_ = {
-                                {"name", filename.toStdString()},
-                                {"base_path", base_path.toStdString()},
-                                {"capture_monitor_name", settings_->capture_.capture_monitor_},
-                                {"capture_audio_device_id", settings_->capture_.capture_audio_device_},
-                            },
-                        };
-
-                        auto config_filepath = plugin_dir.path() + "/" + filename + ".toml";
-                        if (QFile::exists(config_filepath)) {
-                            try {
-                                auto cfg = toml::parse_file(config_filepath.toStdString());
-                                cfg.for_each([&](auto& k, auto& v) {
-                                    auto str_key = (std::string)k;
-                                    if constexpr (toml::is_string<decltype(v)>) {
-                                        auto str_value = toml::value<std::string>(v).get();
-                                        param.cluster_.insert({str_key, str_value});
-                                    }
-                                    else if constexpr (toml::is_boolean<decltype(v)>) {
-                                        auto bool_value = toml::value<bool>(v).get();
-                                        param.cluster_.insert({str_key, bool_value});
-                                    }
-                                    else if constexpr (toml::is_integer<decltype(v)>) {
-                                        auto int_value = toml::value<int64_t>(v).get();
-                                        param.cluster_.insert({str_key, int_value});
-                                    }
-                                    else if constexpr (toml::is_floating_point<decltype(v)>) {
-                                        auto float_value = toml::value<double>(v).get();
-                                        param.cluster_.insert({str_key, float_value});
-                                    }
-                                });
-                            } catch (const std::exception& e) {
-                                LOGE("Parse config: {} failed!", config_filepath.toStdString());
-                            }
-                        } else {
-                            LOGW("The config: {} is not exist!", config_filepath.toStdString());
-                            continue;
-                        }
-
-                        if (!plugin->OnCreate(param)) {
-                            LOGE("Plugin: {} OnCreate failed!", plugin->GetPluginName());
-                            continue;
-                        }
-
-                        if (!plugin->IsPluginEnabled()) {
-                            LOGW("Plugin: {} is disabled!", plugin->GetPluginName());
-                            continue;
-                        }
-
-                        plugins_.insert({plugin_id, plugin});
-                        //libs_.insert({plugin_id, lib});
-
-                        LOGI("{} loaded, version: {}", plugin->GetPluginName(), plugin->GetVersionName());
-                    } else {
-                        LOGE("{} object create failed.", info.fileName().toStdString().c_str());
-//                        lib->unload();
-//                        lib->deleteLater();
-//                        lib = nullptr;
+            auto func = (FnGetInstance) fn_get_instance;
+            if (func) {
+                auto plugin = (GrPluginInterface*)func();
+                if (plugin) {
+                    auto plugin_id = plugin->GetPluginId();
+                    if (plugins_.contains(plugin_id)) {
+                        LOGE("{} repeated loading.", plugin_id);
+                        continue;
                     }
+
+                    // create it
+                    auto filename = info.fileName();
+                    auto param = GrPluginParam {
+                        .cluster_ = {
+                            {"name", filename.toStdString()},
+                            {"base_path", base_path.toStdString()},
+                            {"capture_monitor_name", settings_->capture_.capture_monitor_},
+                            {"capture_audio_device_id", settings_->capture_.capture_audio_device_},
+                            {"ws-listen-port", (int64_t)settings_->transmission_.listening_port_},
+                            {"udp-listen-port", (int64_t)settings_->transmission_.udp_listen_port_},
+                        },
+                    };
+
+                    auto config_filepath = plugin_dir.path() + "/" + filename + ".toml";
+                    if (QFile::exists(config_filepath)) {
+                        try {
+                            auto cfg = toml::parse_file(config_filepath.toStdString());
+                            cfg.for_each([&](auto& k, auto& v) {
+                                auto str_key = (std::string)k;
+                                if constexpr (toml::is_string<decltype(v)>) {
+                                    auto str_value = toml::value<std::string>(v).get();
+                                    param.cluster_.insert({str_key, str_value});
+                                }
+                                else if constexpr (toml::is_boolean<decltype(v)>) {
+                                    auto bool_value = toml::value<bool>(v).get();
+                                    param.cluster_.insert({str_key, bool_value});
+                                }
+                                else if constexpr (toml::is_integer<decltype(v)>) {
+                                    auto int_value = toml::value<int64_t>(v).get();
+                                    param.cluster_.insert({str_key, int_value});
+                                }
+                                else if constexpr (toml::is_floating_point<decltype(v)>) {
+                                    auto float_value = toml::value<double>(v).get();
+                                    param.cluster_.insert({str_key, float_value});
+                                }
+                            });
+                        } catch (const std::exception& e) {
+                            LOGE("Parse config: {} failed!", config_filepath.toStdString());
+                        }
+                    } else {
+                        LOGW("The config: {} is not exist!", config_filepath.toStdString());
+                        continue;
+                    }
+
+                    if (!plugin->OnCreate(param)) {
+                        LOGE("Plugin: {} OnCreate failed!", plugin->GetPluginName());
+                        continue;
+                    }
+
+                    if (!plugin->IsPluginEnabled()) {
+                        LOGW("Plugin: {} is disabled!", plugin->GetPluginName());
+                        continue;
+                    }
+
+                    plugins_.insert({plugin_id, plugin});
+
+                    LOGI("{} loaded, version: {}", plugin->GetPluginName(), plugin->GetVersionName());
                 } else {
-                    LOGE("{} cannot find symbol.", info.fileName().toStdString().c_str());
-//                    lib->unload();
-//                    lib->deleteLater();
-//                    lib = nullptr;
+                    LOGE("{} object create failed.", info.fileName().toStdString().c_str());
                 }
-//            } else {
-//                LOGE("{} load failed. error message: {}", info.fileName().toStdString().c_str(), lib->errorString().toStdString().c_str());
-//                lib->deleteLater();
-//                lib = nullptr;
-//            }
+            } else {
+                LOGE("{} cannot find symbol.", info.fileName().toStdString().c_str());
+            }
         }
 
         // file transfer plugin
         auto ft_plugin = GetFileTransferPlugin();
-
-        // attach to
         VisitNetPlugins([=, this](GrNetPlugin* plugin) {
             if (ft_plugin) {
                 ft_plugin->AttachNetPlugin(plugin->GetPluginId(), plugin);
@@ -170,12 +147,7 @@ namespace tc
             plugin->OnStop();
             plugin->OnDestroy();
         }
-        for (auto &[k, lib]: libs_) {
-            lib->unload();
-            lib->deleteLater();
-        }
         plugins_.clear();
-        libs_.clear();
     }
 
     void PluginManager::ReleasePlugin(const std::string &name) {

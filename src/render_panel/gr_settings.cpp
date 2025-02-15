@@ -20,7 +20,6 @@ namespace tc
     void GrSettings::Load() {
         sp_ = SharedPreference::Instance();
         version_ = "V 1.1.9";
-        udp_server_port_ = 21034;
 
         log_file_ = sp_->Get(kStLogFile, "true");
         encoder_select_type_ = sp_->Get(kStEncoderSelectType, "auto");
@@ -44,6 +43,7 @@ namespace tc
         network_listening_ip_ = sp_->Get(kStListeningIp, "");
         websocket_enabled_ = sp_->Get(kStWebSocketEnabled, kStTrue);
         webrtc_enabled_ = sp_->Get(kStWebRTCEnabled, kStTrue);
+        udp_listen_port_ = sp_->GetInt(kStUdpListenPort, 20381);
 
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
@@ -117,6 +117,7 @@ namespace tc
         ss << "client_id_: " << client_id_ << std::endl;
         ss << "device_id_: " << device_id_ << std::endl;
         ss << "client_random_pwd_: " << client_random_pwd_ << std::endl;
+        ss << "udp_listen_port_:" << udp_listen_port_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -138,6 +139,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStWebSocketEnabled, websocket_enabled_));
         args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
         args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listening_port_));
+        args.push_back(std::format("--{}={}", kStUdpListenPort, udp_listen_port_));
         args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
         args.push_back(std::format("--{}={}", kStAppGamePath, "desktop"));

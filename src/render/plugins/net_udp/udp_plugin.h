@@ -7,6 +7,7 @@
 
 #include "plugin_interface/gr_net_plugin.h"
 #include <asio2/udp/udp_server.hpp>
+#include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
@@ -16,6 +17,12 @@ namespace tc
         uint32_t magic_ = 0;
         uint32_t length_ = 0;
         // data below...
+    };
+
+    class UdpSession {
+    public:
+        int64_t socket_fd_{0};
+        std::shared_ptr<asio2::udp_session> sess_ = nullptr;
     };
 
     class UdpPlugin : public GrNetPlugin {
@@ -39,7 +46,8 @@ namespace tc
 
     private:
         std::shared_ptr<asio2::udp_server> server_ = nullptr;
-        std::shared_ptr<asio2::udp_session> session_ = nullptr;
+        int udp_listen_port_{};
+        tc::ConcurrentHashMap<uint64_t, std::shared_ptr<UdpSession>> sessions_;
     };
 
 }

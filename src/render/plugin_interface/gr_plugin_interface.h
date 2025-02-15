@@ -119,16 +119,16 @@ namespace tc
         }
 
         template<typename T>
-        T GetParam(const std::string& k) {
+        T GetConfigParam(const std::string& k) {
             if (param_.cluster_.count(k) > 0) {
                 return std::any_cast<T>(param_.cluster_[k]);
             }
             return T{};
         }
-        std::string GetStringParam(const std::string& k) { return GetParam<std::string>(k); }
-        int64_t GetIntParam(const std::string& k) { return GetParam<int64_t>(k); }
-        bool GetBoolParam(const std::string& k) {return GetParam<bool>(k); }
-        double GetDoubleParam(const std::string& k) { return GetParam<double>(k); }
+        std::string GetConfigStringParam(const std::string& k) { return GetConfigParam<std::string>(k); }
+        int64_t GetConfigIntParam(const std::string& k) { return GetConfigParam<int64_t>(k); }
+        bool GetConfigBoolParam(const std::string& k) {return GetConfigParam<bool>(k); }
+        double GetConfigDoubleParam(const std::string& k) { return GetConfigParam<double>(k); }
 
     protected:
         std::shared_ptr<GrPluginContext> plugin_context_ = nullptr;

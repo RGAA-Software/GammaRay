@@ -26,6 +26,7 @@ namespace tc
     static const std::string kStWebSocketEnabled = "websocket_enabled";
     static const std::string kStWebRTCEnabled = "webrtc_enabled";
     static const std::string kStNetworkListenPort = "network_listen_port";
+    static const std::string kStUdpListenPort = "udp_listen_port";
     static const std::string kStAppGamePath = "app_game_path";
     static const std::string kStAppGameArgs = "app_game_args";
     static const std::string kStDebugBlock = "debug_block";
@@ -98,7 +99,7 @@ namespace tc
         std::string version_;
         int http_server_port_{0};
         int ws_server_port_{0};
-        int udp_server_port_{0};
+        int udp_listen_port_{0};
 
         std::string log_file_;
         std::string encoder_select_type_;

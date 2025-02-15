@@ -38,7 +38,7 @@ namespace tc
         GrPluginInterface::OnCreate(param);
         auto key_save_encoded_video = "save_encoded_video";
         if (HasParam(key_save_encoded_video)) {
-            save_encoded_video_ = GetParam<bool>(key_save_encoded_video);
+            save_encoded_video_ = GetConfigParam<bool>(key_save_encoded_video);
         }
         return true;
     }

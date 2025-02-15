@@ -102,7 +102,7 @@ namespace tc
         capture_.send_video_frame_by_shm_ = result["capture"]["send-video-msg-by-shm"].value_or(false);
 
         // transmission
-        transmission_.listening_port_ = result["transmission"]["listening-port"].value_or(8888);
+        transmission_.listening_port_ = result["transmission"]["listening-port"].value_or(20371);
 
         // TargetApplication
         app_.game_path_ = result["application"]["game-path"].value_or("");

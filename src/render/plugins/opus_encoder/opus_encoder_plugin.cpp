@@ -37,7 +37,7 @@ namespace tc
         GrAudioEncoderPlugin::OnCreate(param);
         auto key_save_debug_file = "save_debug_file";
         if (HasParam(key_save_debug_file)) {
-            debug_opus_decoder_ = GetParam<bool>(key_save_debug_file);
+            debug_opus_decoder_ = GetConfigParam<bool>(key_save_debug_file);
         }
 
         return true;

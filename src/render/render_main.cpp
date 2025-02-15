@@ -37,6 +37,7 @@ DEFINE_string(capture_video_type, "hook", "hook/global");
 DEFINE_bool(websocket_enabled, true, "");
 DEFINE_bool(webrtc_enabled, true, "");
 DEFINE_int32(network_listen_port, 20371, "");
+DEFINE_int32(udp_listen_port, 20381, "");
 
 DEFINE_string(sig_server_address, "", "");
 DEFINE_string(sig_server_port, "", "");
@@ -115,6 +116,7 @@ void UpdateSettings(Settings* settings) {
 
     // network !! only support websocket now
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
+    settings->transmission_.udp_listen_port_ = FLAGS_udp_listen_port;
     settings->transmission_.websocket_enabled_ = FLAGS_websocket_enabled;
     settings->transmission_.webrtc_enabled_ = FLAGS_webrtc_enabled;
 
@@ -155,6 +157,7 @@ void PrintInputArgs() {
     LOGI("websocket enabled: {}", FLAGS_websocket_enabled);
     LOGI("webrtc enabled: {}", FLAGS_webrtc_enabled);
     LOGI("network_listen_port: {}", FLAGS_network_listen_port);
+    LOGI("udp_listen_port: {}", FLAGS_udp_listen_port);
     LOGI("capture monitor: {}", Base64::Base64Decode(FLAGS_capture_monitor));
     LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));
     LOGI("app_game_path: {}", FLAGS_app_game_path);
@@ -169,6 +172,7 @@ void PrintInputArgs() {
     LOGI("client random pwd: {}", FLAGS_client_random_pwd);
     LOGI("panel server port: {}", FLAGS_panel_server_port);
     LOGI("device id: {}", FLAGS_device_id);
+    LOGI("udp listen port: {}", FLAGS_udp_listen_port);
     LOGI("--------------In args end----------------");
 }
 

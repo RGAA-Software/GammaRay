@@ -22,7 +22,7 @@ namespace tc
 
     void UdpBroadcaster::Broadcast(const std::string& msg) {
         QHostAddress broadcastAddress("255.255.255.255");
-        quint16 broadcastPort = GrSettings::Instance()->udp_server_port_;
+        quint16 broadcastPort = GrSettings::Instance()->udp_listen_port_;
         QByteArray data = msg.c_str();
         udp_socket_->writeDatagram(data, QHostAddress::Broadcast, broadcastPort);
         //LOGI("Udp broadcast: {}", msg);

@@ -29,6 +29,12 @@ namespace tc
 
     bool UdpPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrNetPlugin::OnCreate(param);
+        udp_listen_port_ = (int)GetConfigIntParam("udp-listen-port");
+        auto config_listen_port = (int)GetConfigIntParam("listen-port");
+        if (config_listen_port > 0) {
+            udp_listen_port_ = config_listen_port;
+        }
+        LOGI("Listen port: {}", udp_listen_port_);
         StartInternal();
         return true;
     }
@@ -38,39 +44,43 @@ namespace tc
     }
 
     void UdpPlugin::OnProtoMessage(const std::string& msg) {
-        if (session_ && session_->is_started()) {
-            //LOGI("send msg: {}bytes", msg.size());
-#if 0
-            UdpMessagePack pack;
-            pack.magic_ = 0x11223344;
-            pack.length_ = msg.size();
-            auto total_size = sizeof(UdpMessagePack) + msg.size();
-            std::string buffer;
-            buffer.resize(total_size);
-            memcpy(buffer.data(), (char*)&pack, sizeof(UdpMessagePack));
-            memcpy(buffer.data() + sizeof(UdpMessagePack), msg.data(), msg.size());
-#endif
-            session_->async_send(msg, [](std::size_t bytes_sent) {
+        sessions_.VisitAll([=, this](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
+            us->sess_->async_send(msg, [](std::size_t bytes_sent) {
                 //LOGI("===> sent msg: {}bytes", bytes_sent);
             });
-        }
+        });
     }
 
     void UdpPlugin::StartInternal() {
+        auto fn_get_socket_fd = [](std::shared_ptr<asio2::udp_session> &sess_ptr) -> uint64_t {
+            auto& s = sess_ptr->socket();
+            return (uint64_t)s.native_handle();
+        };
+
         server_ = std::make_shared<asio2::udp_server>();
-        server_->bind_recv([this](std::shared_ptr<asio2::udp_session> &session_ptr, std::string_view data) {
+        server_->bind_recv([=, this](std::shared_ptr<asio2::udp_session> &session_ptr, std::string_view data) {
             //LOGI("recv : {} {}", data.size(), (int) data.size(), data.data());
             auto msg = std::string(data.data(), data.size());
             this->CallbackClientEvent(true, msg);
 
-        }).bind_connect([this](auto &session_ptr) {
-            session_ = session_ptr;
+        }).bind_connect([=, this](auto &session_ptr) {
+            auto socket_fd = fn_get_socket_fd(session_ptr);
+            auto udp_sess = std::make_shared<UdpSession>();
+            udp_sess->socket_fd_ = socket_fd;
+            udp_sess->sess_ = session_ptr;
+            sessions_.Insert(socket_fd, udp_sess);
+
             NotifyMediaClientConnected();
             LOGI("client enter : {} {} ; {} {}",
                    session_ptr->remote_address().c_str(), session_ptr->remote_port(),
                    session_ptr->local_address().c_str(), session_ptr->local_port());
-        }).bind_disconnect([this](auto &session_ptr) {
-            session_ = nullptr;
+
+        }).bind_disconnect([=, this](auto &session_ptr) {
+            auto socket_fd = fn_get_socket_fd(session_ptr);
+            if (sessions_.HasKey(socket_fd)) {
+                sessions_.Remove(socket_fd);
+            }
+
             NotifyMediaClientDisConnected();
             LOGI("client leave : {} {} {}",
                    session_ptr->remote_address().c_str(), session_ptr->remote_port(),
@@ -103,7 +113,7 @@ namespace tc
         });
 
         // to use kcp, the last param must be : asio2::use_kcp
-        server_->start("0.0.0.0", 20400, asio2::use_kcp);
+        server_->start("0.0.0.0", udp_listen_port_, asio2::use_kcp);
     }
 
     void UdpPlugin::NotifyMediaClientConnected() {
@@ -117,7 +127,7 @@ namespace tc
     }
 
     int UdpPlugin::ConnectedClientSize() {
-        return (session_ && session_->is_started()) ? 1 : 0;
+        return (int)sessions_.Size();
     }
 
     bool UdpPlugin::IsOnlyAudioClients() {
