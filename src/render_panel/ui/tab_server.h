@@ -19,6 +19,7 @@ namespace tc
     class RnEmpty;
     class MessageListener;
     class QtCircle;
+    class GrSettings;
 
     // client
     class ClientContext;
@@ -33,6 +34,7 @@ namespace tc
         void RegisterMessageListener();
 
     private:
+        GrSettings* settings_ = nullptr;
         QPixmap qr_pixmap_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QLabel* lbl_machine_code_ = nullptr;

@@ -43,9 +43,10 @@ namespace tc
 
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto broadcast_msg = context_->MakeBroadcastMessage();
-
+        settings_ = GrSettings::Instance();
         // client
         client_ctx_ = std::make_shared<ClientContext>("ui.embed");
+        client_ctx_->SetDeviceId(settings_->device_id_);
         client_ctx_->Init(false);
 
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);

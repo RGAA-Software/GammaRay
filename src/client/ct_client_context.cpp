@@ -17,12 +17,17 @@
 namespace tc
 {
 
+    static std::string kClientDeviceId = "client_device_id";
+    static std::string kClientEmbedName = "ui.embed";
+
     ClientContext::ClientContext(const std::string& name, QObject* parent) : QObject(parent) {
         this->name_ = name;
         this->msg_notifier_ = std::make_shared<MessageNotifier>();
         this->capturing_info_ = CaptureMonitorInfo {
             .mon_idx_ = -1,
         };
+        sp_ = std::make_shared<SharedPreference>();
+        sp_->Init("", std::format("./gr_data/app.{}.dat", this->name_));
     }
 
     ClientContext::~ClientContext() {
@@ -31,14 +36,23 @@ namespace tc
 
     void ClientContext::Init(bool render) {
         render_ = render;
-        sp_ = std::make_shared<SharedPreference>();
-        sp_->Init("", std::format("./gr_data/app.{}.dat", this->name_));
 
         auto base_dir = QApplication::applicationDirPath();
         auto log_path = base_dir + std::format("/gr_logs/app.{}.log", this->name_).c_str();
         std::cout << "log path: " << log_path.toStdString() << std::endl;
-        if (this->name_ != "ui.embed") {
+
+        if (this->name_ == kClientEmbedName) {
+            // embed in main panel
+            // log to gammaray.log
+            // will set device id by SetDeviceId
+        }
+        else {
+            // single running
             Logger::InitLog(log_path.toStdString(), true);
+            // client panel
+            if (!render_) {
+                device_id_ = GetValueByKey(kClientDeviceId);
+            }
         }
         LOGI("ClientContext in {}", this->name_);
 
@@ -65,6 +79,9 @@ namespace tc
 
         task_thread_ = Thread::Make("context_thread", 128);
         task_thread_->Poll();
+
+        LOGI("Client params for: {}", this->name_);
+        settings->Dump();
     }
 
     void ClientContext::PostTask(std::function<void()>&& task) {
@@ -117,6 +134,15 @@ namespace tc
 
     int ClientContext::GetCapturingMonitorIndex() const {
         return capturing_info_.mon_idx_;
+    }
+
+    std::string ClientContext::GetDeviceId() {
+        return device_id_;
+    }
+
+    void ClientContext::SetDeviceId(const std::string& id) {
+        device_id_ = id;
+        SaveKeyValue(kClientDeviceId, id);
     }
 
 }

@@ -6,6 +6,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/md5.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -101,6 +102,11 @@ namespace tc
     void Settings::SetScaleMode(ScaleMode mode) {
         scale_mode_ = mode;
         sp_->Put(kKeyScaleMode, std::to_string((int)mode));
+    }
+
+    void Settings::Dump() {
+        LOGI("device id : {}", device_id_);
+
     }
 
 }

@@ -10,6 +10,7 @@
 #include "tc_common_new/uuid.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
+#include "tc_common_new/hardware.h"
 #include <sstream>
 #include <QApplication>
 
@@ -80,7 +81,9 @@ namespace tc
 
         device_id_ = sp_->Get(kStDeviceId, "");
         if (device_id_.empty()) {
-            device_id_ = MD5::Hex(GetUUID());
+            auto hardware = Hardware::Instance();
+            hardware->Detect(false, true, false);
+            device_id_ = MD5::Hex(hardware->GetHardwareDescription());
             sp_->Put(kStDeviceId, device_id_);
         }
     }

@@ -173,7 +173,10 @@ namespace tc
                   << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
                   << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
                   << std::format("--device_id={}", settings_->device_id_).c_str();
-        qDebug() << "args: " << arguments;
+        LOGI("Start client inner args:");
+        for (auto& arg : arguments) {
+            LOGI("{}", arg.toStdString());
+        }
         process->start("./GammaRayClientInner.exe", arguments);
     }
 

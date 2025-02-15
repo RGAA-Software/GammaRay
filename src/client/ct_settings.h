@@ -55,6 +55,7 @@ namespace tc
         void SetWorkMode(SwitchWorkMode::WorkMode mode);
         void SetScaleMode(ScaleMode mode);
 
+        void Dump();
     public:
         std::string version_;
         bool audio_on_ = false;
