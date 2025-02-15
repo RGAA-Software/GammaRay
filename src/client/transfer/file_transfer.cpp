@@ -19,6 +19,7 @@ namespace tc
         context_ = ctx;
         sender_thread_ = Thread::Make("file transfer", 64);
         sender_thread_->Poll();
+        settings_ = Settings::Instance();
     }
 
     void FileTransferChannel::Start() {
@@ -145,6 +146,8 @@ namespace tc
     void FileTransferChannel::RequestSendingFile(const std::shared_ptr<FsFile>& file) {
         tc::Message msg;
         msg.set_type(MessageType::kFileTransfer);
+        msg.set_device_id(settings_->device_id_);
+        msg.set_stream_id(settings_->stream_id_);
         auto fs = msg.mutable_file_transfer();
         fs->set_id(file->file_id_);
         fs->set_state(FileTransfer::kRequestFileTransfer);
@@ -163,6 +166,8 @@ namespace tc
     void FileTransferChannel::CompleteSending(const std::shared_ptr<FsFile>& file) {
         tc::Message msg;
         msg.set_type(MessageType::kFileTransfer);
+        msg.set_device_id(settings_->device_id_);
+        msg.set_stream_id(settings_->stream_id_);
         auto fs = msg.mutable_file_transfer();
         fs->set_id(file->file_id_);
         fs->set_state(FileTransfer::kTransferOver);

@@ -51,6 +51,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_device_id("device_id", "Device id", "value", "");
     parser.addOption(opt_device_id);
 
+    QCommandLineOption opt_stream_id("stream_id", "Stream id", "value", "");
+    parser.addOption(opt_stream_id);
+
 
     parser.process(app);
 
@@ -69,12 +72,15 @@ void ParseCommandLine(QApplication& app) {
 
     settings->device_id_ = parser.value(opt_device_id).toStdString();
 
+    settings->stream_id_ = parser.value(opt_stream_id).toStdString();
+
     LOGI("host: {}", g_host_);
     LOGI("port: {}", g_port_);
     LOGI("audio on: {}", settings->audio_on_);
     LOGI("clipboard on: {}", settings->clipboard_on_);
     LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
     LOGI("device id: {}", settings->device_id_);
+    LOGI("stream id: {}", settings->stream_id_);
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -133,9 +139,12 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    auto name = g_host_ + "_" + MD5::Hex(host).substr(0, 10);
+    auto settings = tc::Settings::Instance();
+    auto name = g_host_ + "_" + MD5::Hex(settings->stream_id_).substr(0, 10);
     auto ctx = std::make_shared<ClientContext>(name);
     ctx->Init(true);
+    auto req_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
+                                settings->device_id_, settings->stream_id_);
     static Workspace ws(ctx, ThunderSdkParams {
             .ssl_ = false,
             .enable_audio_ = true,
@@ -143,12 +152,14 @@ int main(int argc, char** argv) {
             .enable_controller_ = false,
             .ip_ = host,
             .port_ = port,
-            .req_path_ = "/media?only_audio=0",
+            .req_path_ = req_path,
 #if defined(WIN32)
             .client_type_ = ClientType::kWindows,
 #elif defined(ANDROID)
             .client_type_ = ClientType::kAndroid,
 #endif
+            .device_id_ = settings->device_id_,
+            .stream_id_ = settings->stream_id_
     });
     ws.setWindowTitle(QMainWindow::tr("GammaRay Game Streamer"));
     ws.resize(1280, 768);

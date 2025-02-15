@@ -13,6 +13,7 @@
 
 #include "stream_item.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
 
 using namespace sqlite_orm;
 
@@ -121,6 +122,7 @@ namespace tc
         if (stream.stream_id.empty()) {
             stream.stream_id = GenUUID();
         }
+        stream.stream_id = MD5::Hex(stream.stream_id);
         stream.bg_color = RandomColor();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);
@@ -165,10 +167,15 @@ namespace tc
     int StreamDBManager::RandomColor() {
         // Colors form [Claude Monet]'s arts
         static std::vector<int> colors = {
-                0xBFC8D7, 0xE2D2D2, 0xE3E2B4, 0xA2B59F,
-                0xF7EAE2, 0xEADB80, 0xAEDDEF, 0xE1B4D3,
-                0xE1F1E7, 0xB2D3C5, 0xCFDD8E, 0xE4BEB3,
-                0xF2EEE5, 0xE5C1C5, 0xC3E2DD, 0x6ECEDA,
+            0xBFC8D7, 0xE2D2D2, 0xE3E2B4, 0xA2B59F,
+            0xF7EAE2, 0xEADB80, 0xAEDDEF, 0xE1B4D3,
+            0xE1F1E7, 0xB2D3C5, 0xCFDD8E, 0xE4BEB3,
+            0xF2EEE5, 0xE5C1C5, 0xC3E2DD, 0x6ECEDA,
+            0xf6a288, 0x2d4a91, 0xf3dfcb, 0x112046,
+            0x63B38E, 0x9F7857, 0xFEA087, 0xF6DFC0,
+            0xE49A15, 0xffffd2, 0xfcbad3, 0xaa96da,
+            0x61c0bf, 0xbbded6, 0xfae3d9, 0xffb6b9
+
         };
         int random_idx = QRandomGenerator::global()->bounded(0, (int) colors.size());
         return colors.at(random_idx);

@@ -172,7 +172,9 @@ namespace tc
                   << std::format("--port={}", item.stream_port).c_str()
                   << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
                   << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
-                  << std::format("--device_id={}", settings_->device_id_).c_str();
+                  << std::format("--device_id={}", settings_->device_id_).c_str()
+                  << std::format("--stream_id={}", item.stream_id).c_str()
+                  ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {
             LOGI("{}", arg.toStdString());

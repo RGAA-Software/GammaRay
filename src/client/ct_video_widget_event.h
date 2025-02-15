@@ -14,6 +14,7 @@ namespace tc
     class NetMessage;
     class QtKeyConverter;
     class ThunderSdk;
+    class Settings;
 
     using OnMouseKeyboardEventCallback = std::function<void(int dup_idx, const std::shared_ptr<NetMessage>& msg)>;
 
@@ -51,6 +52,7 @@ namespace tc
         void SendMouseEvent(const MouseEventDesc& mouse_event);
 
     protected:
+        Settings* settings_ = nullptr;
 		std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<QtKeyConverter> key_converter_ = nullptr;
 		int width = 0;

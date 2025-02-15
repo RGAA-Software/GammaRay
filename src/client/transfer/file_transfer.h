@@ -23,6 +23,7 @@ namespace tc
     class Thread;
     class ClientContext;
     class FileSystemObject;
+    class Settings;
 
     class FileTransferChannel {
     public:
@@ -47,6 +48,7 @@ namespace tc
         std::mutex send_mtx_;
         std::condition_variable send_cv_;
         std::atomic_bool continue_sending_;
+        Settings* settings_ = nullptr;
     };
 
 }

@@ -399,6 +399,8 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
+        m.set_device_id(settings_->device_id_);
+        m.set_stream_id(settings_->stream_id_);
         m.mutable_clipboard_info()->set_msg(msg);
         sdk_->PostBinaryMessage(m.SerializeAsString());
     }
@@ -409,6 +411,8 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kSwitchMonitor);
+        m.set_device_id(settings_->device_id_);
+        m.set_stream_id(settings_->stream_id_);
         m.mutable_switch_monitor()->set_index(index);
         m.mutable_switch_monitor()->set_name(name);
         sdk_->PostBinaryMessage(m.SerializeAsString());
@@ -421,6 +425,8 @@ namespace tc
         settings_->SetWorkMode(mode);
         tc::Message m;
         m.set_type(tc::kSwitchWorkMode);
+        m.set_device_id(settings_->device_id_);
+        m.set_stream_id(settings_->stream_id_);
         auto wm = m.mutable_work_mode();
         wm->set_mode(mode);
         sdk_->PostBinaryMessage(m.SerializeAsString());
@@ -471,6 +477,8 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kChangeMonitorResolution);
+        m.set_device_id(settings_->device_id_);
+        m.set_stream_id(settings_->stream_id_);
         auto cmr = m.mutable_change_monitor_resolution();
         cmr->set_monitor_name(msg.monitor_name_);
         cmr->set_target_width(msg.width_);

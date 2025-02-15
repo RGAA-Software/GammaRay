@@ -34,7 +34,7 @@ set(PLUGIN_SRCS
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})
 #add_library(${PROJECT_NAME} ${PLUGIN_SRCS})
-target_link_libraries(${PROJECT_NAME} PUBLIC tc_common_new tc_plugin
+target_link_libraries(${PROJECT_NAME} PUBLIC tc_common_new tc_net_plugin
         webrtc.lib
         Winmm
         ws2_32

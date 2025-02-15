@@ -15,7 +15,6 @@ set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_stream_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_video_encoder_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_plugin_context.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gr_net_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_monitor_capture_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_frame_processor_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_data_provider_plugin.cpp
@@ -23,6 +22,13 @@ set(PLUGIN_SRCS
 )
 
 add_library(${PROJECT_NAME} ${PLUGIN_SRCS})
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
-        Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
-target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat
+        Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg tc_common_new)
+
+set(NET_PLUGIN_SRCS
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_net_plugin.cpp
+)
+add_library(tc_net_plugin ${NET_PLUGIN_SRCS})
+target_link_libraries(tc_net_plugin PRIVATE tc_plugin libprotobuf tc_message)
+target_link_libraries(tc_net_plugin PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat
+        Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg tc_common_new)

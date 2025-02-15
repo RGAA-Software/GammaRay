@@ -70,6 +70,8 @@ namespace tc
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;
         ScaleMode scale_mode_ = ScaleMode::kFullWindow;
         std::string device_id_;
+        // for client render process
+        std::string stream_id_;
 
     };
 

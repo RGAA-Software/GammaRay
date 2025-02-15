@@ -122,6 +122,14 @@ namespace tc
                 }
                 LOGI("App server {} open, query: {}", path, query);
                 bool only_audio = std::atoi(params["only_audio"].c_str()) == 1;
+                std::string device_id;
+                std::string stream_id;
+                if (params.contains("device_id")) {
+                    device_id = params["device_id"];
+                }
+                if (params.contains("stream_id")) {
+                    stream_id = params["stream_id"];
+                }
                 //auto& s = sess_ptr->socket();
                 //asio::error_code ec;
                 //s.set_option(asio::ip::tcp::no_delay(false), ec);
@@ -132,7 +140,7 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 std::shared_ptr<WsPluginRouter> router = nullptr;
                 if (path == kUrlMedia) {
-                    router = WsPluginRouter::Make(ws_data_, only_audio);
+                    router = WsPluginRouter::Make(ws_data_, only_audio, device_id, stream_id);
                     media_routers_.Insert(socket_fd, router);
                     NotifyMediaClientConnected();
                 }

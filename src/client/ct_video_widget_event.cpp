@@ -22,6 +22,7 @@ namespace tc
         this->dup_idx_ = dup_idx;
         this->key_converter_ = std::make_shared<QtKeyConverter>();
         this->sdk_ = sdk;
+        this->settings_ = Settings::Instance();
 	}
 
 	VideoWidgetEvent::~VideoWidgetEvent() = default;
@@ -157,6 +158,8 @@ namespace tc
         std::map<int, bool> sys_key_status = key_converter_->GetSysKeyStatus();
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kKeyEvent);
+        msg->set_device_id(settings_->device_id_);
+        msg->set_stream_id(settings_->stream_id_);
         auto key_event = new tc::KeyEvent();
         key_event->set_down(down);
         key_event->set_key_code(vk);
@@ -187,6 +190,8 @@ namespace tc
 
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kMouseEvent);
+        msg->set_device_id(settings_->device_id_);
+        msg->set_stream_id(settings_->stream_id_);
         auto mouse_event = new tc::MouseEvent();
         mouse_event->set_x_ratio(mouse_event_desc.x_ratio);
         mouse_event->set_y_ratio(mouse_event_desc.y_ratio);

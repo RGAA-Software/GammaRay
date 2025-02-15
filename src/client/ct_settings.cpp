@@ -105,8 +105,8 @@ namespace tc
     }
 
     void Settings::Dump() {
-        LOGI("device id : {}", device_id_);
-
+        LOGI("device id: {}", device_id_);
+        LOGI("stream id: {}", stream_id_);
     }
 
 }
