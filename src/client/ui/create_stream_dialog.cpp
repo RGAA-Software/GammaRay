@@ -191,7 +191,7 @@ namespace tc
 
         // sure or cancel
         {
-            auto btn_size = QSize(100, 35);
+            auto btn_size = QSize(125, 35);
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);

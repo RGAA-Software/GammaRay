@@ -17,6 +17,8 @@
 #include <QBrush>
 #include <QString>
 #include <QPaintEvent>
+#include <map>
+#include <QProcess>
 
 #include "db/stream_item.h"
 #include "round_rect_widget.h"
@@ -59,6 +61,7 @@ namespace tc
         std::vector<StreamItem> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;
+        std::map<std::string, std::shared_ptr<QProcess>> running_processes_;
 
         Application* application_ = nullptr;
         StreamContent* stream_content_ = nullptr;

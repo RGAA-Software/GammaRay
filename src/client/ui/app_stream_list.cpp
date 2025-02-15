@@ -22,6 +22,7 @@
 #include "create_stream_dialog.h"
 #include "stream_content.h"
 #include "client/ct_settings.h"
+#include "tc_qt_widget/sized_msg_box.h"
 
 namespace tc
 {
@@ -166,7 +167,7 @@ namespace tc
 
     void AppStreamList::StartStream(const StreamItem& item) {
         //context_->SendAppMessage(item);
-        auto process = new QProcess(this);
+        auto process = std::make_shared<QProcess>();
         QStringList arguments;
         arguments << std::format("--host={}", item.stream_host).c_str()
                   << std::format("--port={}", item.stream_port).c_str()
@@ -180,12 +181,25 @@ namespace tc
             LOGI("{}", arg.toStdString());
         }
         process->start("./GammaRayClientInner.exe", arguments);
+        running_processes_.erase(item.stream_id);
+        running_processes_.insert({item.stream_id, process});
     }
 
     void AppStreamList::StopStream(const StreamItem& item) {
         context_->SendAppMessage(ClearWorkspace {
             .item_ = item,
         });
+
+        if (running_processes_.contains(item.stream_id)) {
+            auto process = running_processes_[item.stream_id];
+            if (process) {
+                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop Stream"), tr("Do you want to stop the stream ?"));
+                if (msg_box->exec() == 0) {
+                    process->kill();
+                    running_processes_.erase(item.stream_id);
+                }
+            }
+        }
     }
 
     void AppStreamList::EditStream(const StreamItem& item) {
