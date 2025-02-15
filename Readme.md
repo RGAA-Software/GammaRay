@@ -108,7 +108,6 @@
     .\vcpkg.exe install gtest:x64-windows
     .\vcpkg.exe install libvpx:x64-windows
     .\vcpkg.exe install opus:x64-windows
-    .\vcpkg.exe install protobuf:x64-windows
     .\vcpkg.exe install fftw3:x64-windows
     .\vcpkg.exe install easyhook:x64-windows
     .\vcpkg.exe install glm:x64-windows

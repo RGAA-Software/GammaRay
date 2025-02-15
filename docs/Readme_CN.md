@@ -106,12 +106,10 @@
     .\vcpkg.exe install gtest:x64-windows
     .\vcpkg.exe install libvpx:x64-windows
     .\vcpkg.exe install opus:x64-windows
-    .\vcpkg.exe install protobuf:x64-windows
     .\vcpkg.exe install fftw3:x64-windows
-    .\vcpkg.exe install poco:x64-windows-static
     .\vcpkg.exe install easyhook:x64-windows
     .\vcpkg.exe install glm:x64-windows
-    .\vcpkg install boost:x64-windows
+
 ```
 
 - 2.4 使用Visual Studio 2022 or Clion打开, 解决依赖问题后，就可以编译项目了.
