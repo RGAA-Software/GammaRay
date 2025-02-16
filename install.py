@@ -38,7 +38,8 @@ def collceion_program_files(type, force_update, publish, in_target_path):
         "plugin_nvenc_encoder.dll",
         "plugin_obj_detector.dll",
         "plugin_opus_encoder.dll",
-        "plugin_was_audio_capture.dll"
+        "plugin_was_audio_capture.dll",
+        "plugin_vr_manager.dll"
     ]
 
     files_with_ref_path = []

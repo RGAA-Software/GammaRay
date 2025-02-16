@@ -13,3 +13,8 @@ add_subdirectory(mock_video_stream)
 add_subdirectory(was_audio_capture)
 add_subdirectory(opus_encoder)
 add_subdirectory(file_transfer)
+
+if(TC_USE_VR_MANAGER)
+    add_definitions(-DVR_MANAGER_ENABLED=1)
+    add_subdirectory(tc_vr_plugin)
+endif ()
