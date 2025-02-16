@@ -90,7 +90,7 @@ namespace tc
                 auto sub = m.sync_panel_info();
                 settings_->client_id_ = sub.client_id();
                 settings_->client_random_pwd_ = sub.client_random_pwd();
-                LOGI("SyncPanelInfo, client id: {}, random pwd: {}", sub.client_id(), sub.client_random_pwd());
+                //LOGI("SyncPanelInfo, client id: {}, random pwd: {}", sub.client_id(), sub.client_random_pwd());
             }
         } catch(std::exception& e) {
             LOGE("ParseNetMessage failed: {}", e.what());
