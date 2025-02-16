@@ -34,3 +34,6 @@
 [submodule "src/client/file_transmission_client"]
 	path = src/client/file_transmission_client
 	url = git@github.com:ChengduDreamer/file_transmission_client.git
+[submodule "src/render/plugins/tc_vr_plugin"]
+	path = src/render/plugins/tc_vr_plugin
+	url = git@github.com:RGAA-Software/tc_vr_plugin.git
