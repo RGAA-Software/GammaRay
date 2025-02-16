@@ -104,6 +104,15 @@ set(SRCS_WS
         transfer/fs_folder.cpp
 )
 
+if(TC_USE_FILE_TRANSMISSION)
+    message(STATUS "file transmission is enabled.")
+    add_subdirectory(./file_transmission_client/src)
+    include_directories(./file_transmission_client/src)
+    add_definitions(-DTC_ENABLE_FILE_TRANSMISSION)
+else()
+    message(STATUS "file transmission is disabled.")
+endif()
+
 add_library(lib_${PROJECT_NAME} ${SRCS})
 target_link_libraries(lib_${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
         tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm
@@ -138,6 +147,11 @@ target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::Op
         tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
 )
+
+if(TC_USE_FILE_TRANSMISSION) #file_transfer
+    target_link_libraries(GammaRayClientInner PRIVATE file_transfer
+    )
+endif()
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})

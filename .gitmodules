@@ -31,3 +31,6 @@
 [submodule "deps/tc_qt_widget"]
 	path = deps/tc_qt_widget
 	url = git@github.com:RGAA-Software/tc_qt_widget.git
+[submodule "src/client/file_transmission_client"]
+	path = src/client/file_transmission_client
+	url = git@github.com:ChengduDreamer/file_transmission_client.git

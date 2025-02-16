@@ -32,6 +32,11 @@
 #include "tc_common_new/process_util.h"
 #include "ui/float_button_state_indicator.h"
 
+#ifdef TC_ENABLE_FILE_TRANSMISSION
+#include "file_trans_widget.h"
+#endif // TC_ENABLE_FILE_TRANSMISSION
+
+
 namespace tc
 {
 
@@ -159,6 +164,11 @@ namespace tc
         msg_listener_->Listen<MsgChangeMonitorResolution>([=, this](const MsgChangeMonitorResolution& msg) {
             this->SendChangeMonitorResolutionMessage(msg);
         });
+
+#ifdef TC_ENABLE_FILE_TRANSMISSION
+        file_trans_widget_ = new FileTransWidget();
+        file_trans_widget_->showNormal();
+#endif // TC_ENABLE_FILE_TRANSMISSION
 
         QTimer::singleShot(100, [=, this](){
             file_transfer_ = std::make_shared<FileTransferChannel>(context_);
