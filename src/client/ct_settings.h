@@ -72,7 +72,8 @@ namespace tc
         std::string device_id_;
         // for client render process
         std::string stream_id_;
-
+        // network type
+        ClientConnType network_type_;
     };
 
 }

@@ -5,6 +5,8 @@
 #ifndef TC_APPLICATION_CONNECTION_H
 #define TC_APPLICATION_CONNECTION_H
 
+// DISABLED
+#if 0
 
 #include <memory>
 #include <string>
@@ -47,5 +49,6 @@ namespace tc
 
 }
 
+#endif
 
 #endif //TC_APPLICATION_CONNECTION_H

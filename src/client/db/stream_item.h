@@ -10,6 +10,9 @@
 namespace tc
 {
 
+    static std::string kStreamItemNtTypeWebSocket = "websocket";
+    static std::string kStreamItemNtTypeUdpKcp = "udp_kcp";
+
     // WARN: Ported from another project, some fields are deprecated.
     class StreamItem {
     public:
@@ -87,6 +90,10 @@ namespace tc
         int bg_color = 0;
 
         int encode_fps;
+
+        // network type
+        // websocket / udp_kcp
+        std::string network_type_;
 
     };
 

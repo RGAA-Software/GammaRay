@@ -3,12 +3,11 @@
 //
 
 #include "create_stream_dialog.h"
-
 #include "client/ct_app_message.h"
 #include "client/ct_client_context.h"
-
 #include <QValidator>
-
+#include <QButtonGroup>
+#include <QRadioButton>
 #include "message_dialog.h"
 
 namespace tc
@@ -34,7 +33,7 @@ namespace tc
     void CreateStreamDialog::CreateLayout() {
         auto root_layout = new QVBoxLayout();
         root_layout->setSpacing(0);
-        root_layout->setContentsMargins(60,0,60, 0);
+        root_layout->setContentsMargins(100,0,60, 0);
 
         auto label_size = QSize(100, 35);
         auto edit_size = QSize(200, 35);
@@ -44,7 +43,7 @@ namespace tc
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);
-            layout->addStretch();
+            //layout->addStretch();
 
             auto label = new QLabel(this);
             label->setFixedSize(label_size);
@@ -71,7 +70,7 @@ namespace tc
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);
-            layout->addStretch();
+            //layout->addStretch();
 
             auto label = new QLabel(this);
             label->setFixedSize(label_size);
@@ -97,7 +96,7 @@ namespace tc
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);
-            layout->addStretch();
+            //layout->addStretch();
 
             auto label = new QLabel(this);
             label->setFixedSize(label_size);
@@ -119,6 +118,57 @@ namespace tc
 
             root_layout->addSpacing(10);
             root_layout->addLayout(layout);
+        }
+
+        {
+            auto layout = new QHBoxLayout();
+            layout->setSpacing(0);
+            layout->setContentsMargins(0,0,0,0);
+            //layout->addStretch();
+
+            auto label = new QLabel(this);
+            label->setFixedSize(label_size);
+            label->setText(tr("Network *"));
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+
+            auto group = new QButtonGroup(this);
+            auto btn_ws = new QRadioButton(this);
+            btn_ws->setText(tr("WebSocket"));
+            rb_ws_ = btn_ws;
+            layout->addWidget(btn_ws);
+            group->addButton(btn_ws);
+
+            auto btn_udp_kcp = new QRadioButton(this);
+            btn_udp_kcp->setText(tr("UdpKcp"));
+            rb_udp_ = btn_udp_kcp;
+            layout->addSpacing(15);
+            layout->addWidget(btn_udp_kcp);
+            group->addButton(btn_udp_kcp);
+
+            layout->addStretch();
+
+            root_layout->addSpacing(10);
+            root_layout->addLayout(layout);
+
+            //
+            if (stream_item_.IsValid()) {
+                if (stream_item_.network_type_ == kStreamItemNtTypeWebSocket) {
+                    btn_ws->setChecked(true);
+                }
+                else if (stream_item_.network_type_ == kStreamItemNtTypeUdpKcp) {
+                    btn_udp_kcp->setChecked(true);
+                }
+            }
+            else {
+                btn_ws->setChecked(true);
+                connect(btn_ws, &QRadioButton::clicked, this, [=, this](bool checked) {
+                    ed_port_->setText("20371");
+                });
+                connect(btn_udp_kcp, &QRadioButton::clicked, this, [=, this](bool checked) {
+                    ed_port_->setText("20381");
+                });
+            }
         }
 
         // 3. bitrate
@@ -247,12 +297,15 @@ namespace tc
             item.stream_host = host;
             item.stream_port = port;
             item.encode_bps = bitrate;
-            item.encode_fps = [=, this]() -> int {
-                if (cb_fps_) {
-                    return std::atoi(cb_fps_->currentText().toStdString().c_str());
-                } else {
-                    return 0;
+            item.encode_fps = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
+            item.network_type_ = [=, this]() -> std::string {
+                if (rb_ws_->isChecked()) {
+                    return kStreamItemNtTypeWebSocket;
                 }
+                else if (rb_udp_->isChecked()) {
+                    return kStreamItemNtTypeUdpKcp;
+                }
+                return kStreamItemNtTypeWebSocket;
             }();
         };
 

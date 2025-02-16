@@ -2,6 +2,9 @@
 // Created by RGAA on 2024/3/1.
 //
 
+// DISABLED
+#if 0
+
 #include "app_server.h"
 
 #include <memory>
@@ -244,3 +247,5 @@ namespace tc
         });
     }
 }
+
+#endif

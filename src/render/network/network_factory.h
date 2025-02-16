@@ -5,6 +5,9 @@
 #ifndef TC_APPLICATION_NETWORK_FACTORY_H
 #define TC_APPLICATION_NETWORK_FACTORY_H
 
+// DISABLED
+#if 0
+
 #include <memory>
 #include "connection.h"
 #include "app_server.h"
@@ -24,5 +27,6 @@ namespace tc
     };
 
 }
+#endif
 
 #endif //TC_APPLICATION_NETWORK_FACTORY_H

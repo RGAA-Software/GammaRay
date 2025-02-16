@@ -2,6 +2,9 @@
 // Created by RGAA on 2024/1/25.
 //
 
+// DISABLED
+#if 0
+
 #include "connection.h"
 
 #include "app.h"
@@ -68,3 +71,5 @@ namespace tc
     }
 
 }
+
+#endif

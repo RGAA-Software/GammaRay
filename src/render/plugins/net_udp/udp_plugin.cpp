@@ -104,15 +104,9 @@ namespace tc
             LOGI("stop udp server kcp : {} {}",
                    asio2::last_error_val(), asio2::last_error_msg().c_str());
         }).bind_init([&]() {
-            //// Join the multicast group. you can set this option in the on_init(_fire_init) function.
-            //server.acceptor().set_option(
-            //	// for ipv6, the host must be a ipv6 address like 0::0
-            //	asio::ip::multicast::join_group(asio::ip::make_address("ff31::8000:1234")));
-            //	// for ipv4, the host must be a ipv4 address like 0.0.0.0
-            //	//asio::ip::multicast::join_group(asio::ip::make_address("239.255.0.1")));
+
         });
 
-        // to use kcp, the last param must be : asio2::use_kcp
         server_->start("0.0.0.0", udp_listen_port_, asio2::use_kcp);
     }
 

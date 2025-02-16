@@ -9,6 +9,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
 #include "db/stream_db_manager.h"
 #include "client/ct_app_message.h"
 #include <QTimer>
@@ -66,13 +67,14 @@ namespace tc
 
         db_mgr_ = std::make_shared<StreamDBManager>();
         auto stream_id = "steam_my_self";
-        if (!db_mgr_->HasStream(stream_id)) {
+        if (!db_mgr_->HasStream(MD5::Hex(stream_id))) {
             auto item = StreamItem {
                 .stream_id = stream_id,
                 .stream_name = "MY SELF",
                 .stream_host = "127.0.0.1",
                 .stream_port = 20371,
                 .bg_color = db_mgr_->RandomColor(),
+                .network_type_ = kStreamItemNtTypeWebSocket,
             };
             db_mgr_->AddStream(item);
         }

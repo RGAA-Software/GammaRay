@@ -29,6 +29,7 @@ namespace tc
         std::string GetCapturingMonitorName() override;
         void SetCaptureMonitor(int index, const std::string& name) override;
         void SetCaptureFps(int fps) override;
+        void OnNewClientIn() override;
 
     private:
         std::shared_ptr<tc::DesktopCapture> capture_ = nullptr;

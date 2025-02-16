@@ -5,6 +5,9 @@
 #ifndef TC_APPLICATION_APP_SERVER_H
 #define TC_APPLICATION_APP_SERVER_H
 
+// DISABLED
+#if 0
+
 #include <memory>
 #include "connection.h"
 #include "ws_router.h"
@@ -57,5 +60,7 @@ namespace tc
 
     };
 }
+
+#endif
 
 #endif //TC_APPLICATION_APP_SERVER_H

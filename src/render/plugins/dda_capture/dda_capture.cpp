@@ -200,7 +200,6 @@ namespace tc
     }
 
     DDACapture::CaptureResult DDACapture::CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex, int mon_idx) {
-        LOGI("CaptureNxtFrame: {}", mon_idx);
         DXGI_OUTDUPL_FRAME_INFO info;
         CComPtr<IDXGIResource> resource;
         CComPtr<ID3D11Texture2D> source;

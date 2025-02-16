@@ -25,7 +25,6 @@ namespace tc
 
     class CreateStreamDialog : public QDialog {
     public:
-
         explicit CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
         ~CreateStreamDialog() override;
@@ -37,7 +36,6 @@ namespace tc
         bool GenStream();
 
     private:
-
         std::shared_ptr<ClientContext> context_ = nullptr;
 
         QLineEdit* ed_name_ = nullptr;
@@ -45,7 +43,8 @@ namespace tc
         QLineEdit* ed_port_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
         QComboBox* cb_fps_ = nullptr;
-
+        QRadioButton* rb_ws_ = nullptr;
+        QRadioButton* rb_udp_ = nullptr;
         StreamItem stream_item_;
 
     };

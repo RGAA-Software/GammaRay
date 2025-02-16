@@ -104,6 +104,8 @@ namespace tc
 
         virtual void OnCommand(const std::string& command);
 
+        virtual void OnNewClientIn();
+
         // widget
         QWidget* GetRootWidget();
         bool eventFilter(QObject *watched, QEvent *event) override;

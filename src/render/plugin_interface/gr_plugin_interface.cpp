@@ -170,6 +170,10 @@ namespace tc
 
     }
 
+    void GrPluginInterface::OnNewClientIn() {
+
+    }
+
     QWidget* GrPluginInterface::GetRootWidget() {
         return root_widget_;
     }

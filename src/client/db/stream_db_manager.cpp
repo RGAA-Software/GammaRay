@@ -6,6 +6,7 @@
 
 #include <QUuid>
 #include <QRandomGenerator>
+#include <QApplication>
 #include <sqlite_orm/sqlite_orm.h>
 
 #include <vector>
@@ -55,7 +56,8 @@ namespace tc
             make_column("auto_exit_period", &StreamItem::auto_exit_period),
             make_column("enable_multi_players", &StreamItem::enable_multi_players),
             make_column("bg_color", &StreamItem::bg_color),
-            make_column("encode_fps", &StreamItem::encode_fps)
+            make_column("encode_fps", &StreamItem::encode_fps),
+            make_column("network_type", &StreamItem::network_type_)
         ));
         return st;
     }
@@ -65,9 +67,10 @@ namespace tc
     }
 
     void StreamDBManager::CreateTables() {
+        auto db_path = qApp->applicationDirPath() + "/gr_data/stream.db";
         // 1. create database if needed
         sqlite3 *db;
-        auto rc = sqlite3_open("stream.db", &db);
+        auto rc = sqlite3_open(db_path.toStdString().c_str(), &db);
         if (rc) {
             LOGE("Create stream.db failed !");
             return;
@@ -101,7 +104,8 @@ namespace tc
 				auto_exit_period       INTEGER,
 				enable_multi_players   INTEGER,
                 bg_color               INTEGER,
-                encode_fps             INTEGER
+                encode_fps             INTEGER,
+                network_type           TEXT
 			);
 		)";
 
@@ -115,7 +119,7 @@ namespace tc
         sqlite3_close(db);
 
         // 2. bind
-        db_storage = BindAppDatabase("stream.db");
+        db_storage = BindAppDatabase(db_path.toStdString());
     }
 
     void StreamDBManager::AddStream(StreamItem &stream) {

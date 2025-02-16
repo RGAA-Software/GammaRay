@@ -46,7 +46,11 @@ namespace tc {
         // has no effects in plugin mode
         context_->SendAppMessage(MsgInsertIDR {});
         context_->SendAppMessage(RefreshScreenMessage {});
+        LOGI("New connection established!");
         //
+        plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
+            plugin->OnNewClientIn();
+        });
         plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
             plugin->InsertIdr();
         });

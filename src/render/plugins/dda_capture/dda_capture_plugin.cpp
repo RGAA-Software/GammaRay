@@ -2,6 +2,7 @@
 // Created RGAA on 15/11/2024.
 //
 
+#include <ShlObj_core.h>
 #include "dda_capture_plugin.h"
 #include "render/plugins/plugin_ids.h"
 #include "dda_capture.h"
@@ -96,6 +97,19 @@ namespace tc
         if (IsWorking()) {
             capture_->SetCaptureFps(fps);
         }
+    }
+
+    void DDACapturePlugin::OnNewClientIn() {
+        GrPluginInterface::OnNewClientIn();
+#if WIN32
+        LOGI("OnNewClientIn will refresh desktop.");
+        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, nullptr, SPIF_SENDCHANGE);
+        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+        HWND desktop = GetDesktopWindow();
+        if (InvalidateRect(desktop, NULL, TRUE)) {
+            UpdateWindow(desktop);
+        }
+#endif
     }
 
 }

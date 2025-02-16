@@ -175,6 +175,7 @@ namespace tc
                   << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
                   << std::format("--device_id={}", settings_->device_id_).c_str()
                   << std::format("--stream_id={}", item.stream_id).c_str()
+                  << std::format("--network_type={}", item.network_type_).c_str()
                   ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

@@ -26,6 +26,7 @@ using namespace tc;
 
 std::string g_host_;
 int g_port_ = 0;
+std::string g_nt_type_;
 
 void ParseCommandLine(QApplication& app) {
     QCommandLineParser parser;
@@ -54,6 +55,8 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_stream_id("stream_id", "Stream id", "value", "");
     parser.addOption(opt_stream_id);
 
+    QCommandLineOption opt_network_type("network_type", "Network Type", "value", "");
+    parser.addOption(opt_network_type);
 
     parser.process(app);
 
@@ -69,18 +72,20 @@ void ParseCommandLine(QApplication& app) {
     auto clipboard_on = parser.value(opt_clipboard).toInt();
     settings->clipboard_on_ = (clipboard_on == 1);
     settings->ignore_mouse_event_ = parser.value(opt_ignore_mouse).toInt() == 1;
-
     settings->device_id_ = parser.value(opt_device_id).toStdString();
-
     settings->stream_id_ = parser.value(opt_stream_id).toStdString();
-
-    LOGI("host: {}", g_host_);
-    LOGI("port: {}", g_port_);
-    LOGI("audio on: {}", settings->audio_on_);
-    LOGI("clipboard on: {}", settings->clipboard_on_);
-    LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
-    LOGI("device id: {}", settings->device_id_);
-    LOGI("stream id: {}", settings->stream_id_);
+    g_nt_type_ = parser.value(opt_network_type).toStdString();
+    settings->network_type_ = [=]() -> ClientConnType {
+        if (g_nt_type_ == kStreamItemNtTypeWebSocket) {
+            return ClientConnType::kWebsocket;
+        }
+        else if (g_nt_type_ == kStreamItemNtTypeUdpKcp) {
+            return ClientConnType::kUdpKcp;
+        }
+        else {
+            return ClientConnType::kWebsocket;
+        }
+    }();
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -143,6 +148,16 @@ int main(int argc, char** argv) {
     auto name = g_host_ + "_" + MD5::Hex(settings->stream_id_).substr(0, 10);
     auto ctx = std::make_shared<ClientContext>(name);
     ctx->Init(true);
+
+    LOGI("host: {}", g_host_);
+    LOGI("port: {}", g_port_);
+    LOGI("audio on: {}", settings->audio_on_);
+    LOGI("clipboard on: {}", settings->clipboard_on_);
+    LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
+    LOGI("device id: {}", settings->device_id_);
+    LOGI("stream id: {}", settings->stream_id_);
+    LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
+
     auto req_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
                                 settings->device_id_, settings->stream_id_);
     static Workspace ws(ctx, ThunderSdkParams {
@@ -158,6 +173,7 @@ int main(int argc, char** argv) {
 #elif defined(ANDROID)
             .client_type_ = ClientType::kAndroid,
 #endif
+            .conn_type_ = settings->network_type_,
             .device_id_ = settings->device_id_,
             .stream_id_ = settings->stream_id_
     });
