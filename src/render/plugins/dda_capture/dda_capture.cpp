@@ -442,7 +442,6 @@ namespace tc
             cap_video_frame.right_ = mon_win_info.right_;
             cap_video_frame.bottom_ = mon_win_info.bottom_;
         }
-
         auto event = std::make_shared<GrPluginCapturedVideoFrameEvent>();
         event->frame_ = cap_video_frame;
         this->plugin_->CallbackEvent(event);

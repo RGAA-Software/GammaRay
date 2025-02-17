@@ -140,6 +140,8 @@ namespace tc
         std::string client_id_;
         std::string client_random_pwd_;
         std::string device_id_;
+        // capturing multiple monitors together
+        bool capturing_multiple_ = false;
     };
 
 }

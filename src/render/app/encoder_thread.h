@@ -5,8 +5,10 @@
 #ifndef TC_APPLICATION_ENCODER_THREAD_H
 #define TC_APPLICATION_ENCODER_THREAD_H
 
+#include <map>
 #include <memory>
 #include <functional>
+#include <optional>
 #include "tc_capture_new/capture_message.h"
 #include "settings/settings.h"
 
@@ -37,6 +39,7 @@ namespace tc
 
     private:
         void PostEncTask(std::function<void()>&& task);
+        std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(int8_t monitor_idx);
 
     private:
         Settings* settings_ = nullptr;
@@ -53,7 +56,8 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         GrVideoEncoderPlugin* working_encoder_plugin_ = nullptr;
-        std::shared_ptr<VideoFrameCarrier> frame_carrier_ = nullptr;
+        std::map<int8_t, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
+        std::map<int8_t, std::optional<CaptureVideoFrame>> last_video_frames_;
     };
 
 }

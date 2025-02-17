@@ -139,8 +139,21 @@ namespace tc
             CopyID3D11Texture2D(shared_texture);
         }
 #endif
-            if (frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
-                || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
+            auto monitor_index = cap_video_msg.monitor_index_;
+            bool frame_meta_info_changed = [&]() {
+                auto last_video_frame_exists = last_video_frames_.contains(monitor_index);
+                if (!last_video_frame_exists) {
+                    return true;
+                }
+                auto last_video_frame = last_video_frames_[monitor_index];
+                if (last_video_frame == std::nullopt) {
+                    return true;
+                }
+                return last_video_frame.value().frame_width_ != cap_video_msg.frame_width_
+                    || last_video_frame.value().frame_height_ != cap_video_msg.frame_height_;
+            }();
+            //frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
+            if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
                 if (working_encoder_plugin_) {
                     // todo : Test it!
                     working_encoder_plugin_->Exit();
@@ -193,18 +206,22 @@ namespace tc
                 });
 
                 // video frame carrier
-                if (frame_carrier_ != nullptr) {
-                    frame_carrier_->Exit();
-                    frame_carrier_.reset();
+                auto frame_carrier = GetFrameCarrier(cap_video_msg.monitor_index_);
+                if (frame_carrier != nullptr) {
+                    frame_carrier->Exit();
+                    frame_carriers_.erase(cap_video_msg.monitor_index_);
+                    frame_carrier = nullptr;
                 }
                 if (encoder_config.frame_resize) {
-                    frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(), cap_video_msg.adapter_uid_,
+                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(), cap_video_msg.adapter_uid_,
                                                                          true, encoder_config.encode_width, encoder_config.encode_height);
                 }
                 else {
-                    frame_carrier_ = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(),
+                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(),
                                                                          cap_video_msg.adapter_uid_,false, -1, -1);
                 }
+                frame_carriers_[cap_video_msg.monitor_index_] = frame_carrier;
+                LOGI("Create frame carrier for monitor: {}", cap_video_msg.monitor_index_);
 
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
@@ -247,20 +264,22 @@ namespace tc
                     });
                 });
 
-                frame_width_ = cap_video_msg.frame_width_;
-                frame_height_ = cap_video_msg.frame_height_;
+                //frame_width_ = cap_video_msg.frame_width_;
+                //frame_height_ = cap_video_msg.frame_height_;
                 encoder_format_ = settings->encoder_.encoder_format_;
+                last_video_frames_[cap_video_msg.monitor_index_] = cap_video_msg;
             }
 
+            auto frame_carrier = GetFrameCarrier(cap_video_msg.monitor_index_);
+            if (frame_carrier == nullptr) {
+                LOGI("Don't have frame carrier for monitor: {}", cap_video_msg.monitor_index_);
+                return;
+            }
             // from texture
-            if (cap_video_msg.handle_ > 0) {
+            if (cap_video_msg.handle_ > 0 && frame_carrier) {
                 // copy shared texture
-                if (frame_carrier_ == nullptr) {
-                    LOGI("Don't have frame carrier !");
-                    return;
-                }
                 auto beg = TimeExt::GetCurrentTimestamp();
-                auto target_texture = frame_carrier_->CopyTexture(cap_video_msg.handle_, frame_index);
+                auto target_texture = frame_carrier->CopyTexture(cap_video_msg.handle_, frame_index);
                 if (target_texture == nullptr) {
                     LOGI("Don't have target texture, frame carrier copies texture failed!");
                     return;
@@ -300,7 +319,7 @@ namespace tc
                         });
                     });
                 };
-                frame_carrier_->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+                frame_carrier->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
             }
             else {
                 context_->PostStreamPluginTask([=, this]() {
@@ -327,6 +346,13 @@ namespace tc
 
     void EncoderThread::PostEncTask(std::function<void()>&& task) {
         enc_thread_->Post(std::move(task));
+    }
+
+    std::shared_ptr<VideoFrameCarrier> EncoderThread::GetFrameCarrier(int8_t monitor_idx) {
+        if (frame_carriers_.contains(monitor_idx)) {
+            return frame_carriers_[monitor_idx];
+        }
+        return nullptr;
     }
 
 }

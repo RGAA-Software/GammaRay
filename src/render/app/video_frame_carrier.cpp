@@ -15,6 +15,7 @@
 #include "plugin_interface/gr_frame_processor_plugin.h"
 #include <libyuv/convert.h>
 #include <atlcomcli.h>
+#include "settings/settings.h"
 
 namespace tc
 {
@@ -26,6 +27,7 @@ namespace tc
                                          bool resize,
                                          int resize_width,
                                          int resize_height) {
+        settings_ = Settings::Instance();
         context_ = ctx;
         d3d11_device_ = d3d11_device;
         d3d11_device_context_ = d3d11_device_context;
@@ -147,7 +149,8 @@ namespace tc
             return nullptr;
         }
 
-        if (!frame_resize_plugin_) {
+        bool resize_frame = resize_ && !settings_->capturing_multiple_;
+        if (!frame_resize_plugin_ && resize_frame) {
             frame_resize_plugin_ = (GrFrameProcessorPlugin*)plugin_manager_->GetPluginById(kFrameResizerPluginId);
             if (!frame_resize_plugin_) {
                 LOGE("You want to resize, but there is not a resize plugin.");
@@ -157,7 +160,7 @@ namespace tc
 
         D3D11_TEXTURE2D_DESC desc;
         shared_texture->GetDesc(&desc);
-        if (resize_) {
+        if (resize_frame) {
             if (!D3D11Texture2DLockMutex(shared_texture)) {
                 LOGE("D3D11Texture2DLockMutex error\n");
                 return nullptr;

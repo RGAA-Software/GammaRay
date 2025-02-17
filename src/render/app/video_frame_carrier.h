@@ -25,6 +25,7 @@ namespace tc
     class FrameRender;
     class GrFrameProcessorPlugin;
     class PluginManager;
+    class Settings;
 
     // move video frames from provider / capture
     class VideoFrameCarrier {
@@ -54,6 +55,7 @@ namespace tc
         [[nodiscard]] int GetRawImageType() const;
 
     private:
+        Settings* settings_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
         ComPtr<ID3D11Device> d3d11_device_;
         ComPtr<ID3D11DeviceContext> d3d11_device_context_;
