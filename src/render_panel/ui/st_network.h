@@ -29,7 +29,11 @@ namespace tc
         QLineEdit* edt_coturn_server_address_ = nullptr;
         QLineEdit* edt_coturn_server_port_ = nullptr;
         QCheckBox* cb_websocket_ = nullptr;
+        QLineEdit* edt_websocket_ = nullptr;
+        QCheckBox* cb_udp_kcp_ = nullptr;
+        QLineEdit* edt_udp_kcp_ = nullptr;
         QCheckBox* cb_webrtc_ = nullptr;
+        QLineEdit* edt_panel_port_ = nullptr;
     };
 
 }

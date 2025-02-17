@@ -445,7 +445,7 @@ namespace tc
 
                 auto edit = new QLineEdit(this);
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->ws_server_port_).c_str());
+                edit->setText(std::to_string(settings_->panel_listen_port_).c_str());
                 edit->setEnabled(false);
                 layout->addWidget(edit);
                 layout->addStretch();

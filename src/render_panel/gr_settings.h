@@ -25,14 +25,14 @@ namespace tc
     static const std::string kStCaptureVideoType = "capture_video_type";
     static const std::string kStWebSocketEnabled = "websocket_enabled";
     static const std::string kStWebRTCEnabled = "webrtc_enabled";
+    static const std::string kStUdpKcpEnabled = "udp_kcp_enabled";
     static const std::string kStNetworkListenPort = "network_listen_port";
     static const std::string kStUdpListenPort = "udp_listen_port";
     static const std::string kStAppGamePath = "app_game_path";
     static const std::string kStAppGameArgs = "app_game_args";
     static const std::string kStDebugBlock = "debug_block";
     static const std::string kStMockVideo = "mock_video";
-    static const std::string kStHttpPort = "k_http_port";
-    static const std::string kStWsPort = "k_ws_port";
+    static const std::string kStPanelListeningPort = "panel_listen_port";
     static const std::string kStCaptureMonitor = "capture_monitor";
     static const std::string kStCaptureAudioDevice = "capture_audio_device";
     static const std::string kStFileTransferFolder = "file_transfer_folder";
@@ -85,21 +85,26 @@ namespace tc
         void SetListeningIp(const std::string& ip);
         void SetWebSocketEnabled(bool enabled);
         void SetWebRTCEnabled(bool enabled);
+        void SetUdpKcpEnabled(bool enabled);
         void SetSigServerAddress(const std::string& address);
         void SetSigServerPort(const std::string& port);
         void SetCoturnServerAddress(const std::string& address);
         void SetCoturnServerPort(const std::string& port);
         void SetClientId(const std::string& id);
         void SetClientRandomPwd(const std::string& pwd);
+        void SetPanelListeningPort(int port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
     public:
         SharedPreference* sp_ = nullptr;
         std::string version_;
+        // @deprecated
         int http_server_port_{0};
-        int ws_server_port_{0};
+        // @deprecated
         int udp_listen_port_{0};
+
+        int panel_listen_port_{0};
 
         std::string log_file_;
         std::string encoder_select_type_;
@@ -121,6 +126,7 @@ namespace tc
         std::string network_listening_ip_{};
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
+        std::string udp_kcp_enabled_ = kStTrue;
         std::string sig_server_address_;
         std::string sig_server_port_;
         std::string coturn_server_address_;

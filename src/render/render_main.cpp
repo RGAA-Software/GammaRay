@@ -34,9 +34,10 @@ DEFINE_bool(capture_video, true, "");
 DEFINE_string(capture_video_type, "hook", "hook/global");
 
 // network
-DEFINE_bool(websocket_enabled, true, "");
 DEFINE_bool(webrtc_enabled, true, "");
+DEFINE_bool(websocket_enabled, true, "");
 DEFINE_int32(network_listen_port, 20371, "");
+DEFINE_bool(udp_kcp_enabled, true, "");
 DEFINE_int32(udp_listen_port, 20381, "");
 
 DEFINE_string(sig_server_address, "", "");
@@ -114,8 +115,8 @@ void UpdateSettings(Settings* settings) {
     settings->capture_.capture_monitor_ = Base64::Base64Decode(FLAGS_capture_monitor);
     settings->capture_.capture_audio_device_ = Base64::Base64Decode(FLAGS_capture_audio_device);
 
-    // network !! only support websocket now
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
+    settings->transmission_.udp_enabled_ = FLAGS_udp_kcp_enabled;
     settings->transmission_.udp_listen_port_ = FLAGS_udp_listen_port;
     settings->transmission_.websocket_enabled_ = FLAGS_websocket_enabled;
     settings->transmission_.webrtc_enabled_ = FLAGS_webrtc_enabled;

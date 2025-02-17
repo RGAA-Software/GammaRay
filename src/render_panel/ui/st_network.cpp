@@ -79,7 +79,69 @@ namespace tc
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetWebSocketEnabled(enabled);
+                    edt_websocket_->setEnabled(enabled);
                 });
+            }
+            // Streaming WebSocket port
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Streaming WebSocket Port"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                edt_websocket_ = edit;
+                edit->setFixedSize(input_size);
+                edit->setText(std::to_string(settings_->network_listening_port_).c_str());
+                edit->setEnabled(settings_->websocket_enabled_ == kStTrue);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+            }
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("UdpKcp"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                cb_udp_kcp_ = edit;
+                edit->setFixedSize(input_size);
+                edit->setEnabled(true);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->udp_kcp_enabled_ == kStTrue);
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    settings_->SetUdpKcpEnabled(enabled);
+                    edt_udp_kcp_->setEnabled(enabled);
+                });
+            }
+            // UdpKcp port
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Streaming UdpKcp Port"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                edt_udp_kcp_ = edit;
+                edit->setFixedSize(input_size);
+                edit->setText(std::to_string(settings_->udp_listen_port_).c_str());
+                edit->setEnabled(settings_->udp_kcp_enabled_ == kStTrue);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
             }
             {
                 auto layout = new NoMarginHLayout();
@@ -141,7 +203,7 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
             }
-            // Websocket port
+            // Panel listening port
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
@@ -151,27 +213,10 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edt_panel_port_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->ws_server_port_).c_str());
-                edit->setEnabled(false);
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            // Streaming port
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Renderer Streaming Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->network_listening_port_).c_str());
-                edit->setEnabled(false);
+                edit->setText(std::to_string(settings_->panel_listen_port_).c_str());
+                edit->setEnabled(true);
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -287,7 +332,7 @@ namespace tc
                 settings_->SetSigServerPort(edt_sig_server_port_->text().toStdString());
                 settings_->SetCoturnServerAddress(edt_coturn_server_address_->text().toStdString());
                 settings_->SetCoturnServerPort(edt_coturn_server_port_->text().toStdString());
-
+                settings_->SetPanelListeningPort(edt_panel_port_->text().toInt());
                 // Load again
                 settings_->Load();
 

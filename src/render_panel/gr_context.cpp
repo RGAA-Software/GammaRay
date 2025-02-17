@@ -173,7 +173,7 @@ namespace tc
         obj["ips"] = ip_array;
         // ports
         obj["http_server_port"] = settings_->http_server_port_;
-        obj["ws_server_port"] = settings_->ws_server_port_;
+        obj["ws_server_port"] = settings_->panel_listen_port_;
         obj["udp_listen_port"] = settings_->udp_listen_port_;
         obj["stream_ws_port"] = settings_->network_listening_port_;
 

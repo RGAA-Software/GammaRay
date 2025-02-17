@@ -12,6 +12,7 @@ set(BUILD_TYPE_PATH "")
 
 message("==> CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message("==> BUILD_FROM: ${BUILD_FROM}")
+message("==> TC_USE_VR_MANAGER: ${TC_USE_VR_MANAGER}")
 
 if(${BUILD_FROM} STREQUAL "CMD")
     set(BUILD_TYPE_PATH "${CMAKE_BUILD_TYPE}/")
@@ -212,6 +213,7 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
 )
 
 if(TC_USE_VR_MANAGER)
+    message("===> tc_vr_plugin_builder")
     add_custom_target(tc_vr_plugin_builder)
     add_dependencies(tc_vr_plugin_builder plugin_vr_manager)
     add_custom_command(TARGET tc_vr_plugin_builder POST_BUILD

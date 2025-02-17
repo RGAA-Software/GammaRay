@@ -37,13 +37,14 @@ namespace tc
         capture_monitor_ = sp_->Get(kStCaptureMonitor, "");
         capture_audio_device_ = sp_->Get(kStCaptureAudioDevice, "");
 
-        ws_server_port_ = sp_->GetInt(kStWsPort, 20369);
-        http_server_port_ = ws_server_port_;
+        panel_listen_port_ = sp_->GetInt(kStPanelListeningPort, 20369);
+        http_server_port_ = panel_listen_port_;
         network_listening_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
         network_listening_ip_ = sp_->Get(kStListeningIp, "");
         websocket_enabled_ = sp_->Get(kStWebSocketEnabled, kStTrue);
         webrtc_enabled_ = sp_->Get(kStWebRTCEnabled, kStTrue);
         udp_listen_port_ = sp_->GetInt(kStUdpListenPort, 20381);
+        udp_kcp_enabled_ = sp_->Get(kStUdpKcpEnabled, kStTrue);
 
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
@@ -104,7 +105,7 @@ namespace tc
         ss << "capture_video_: " << capture_video_ << std::endl;
         ss << "capture_video_type: " << capture_video_type_ << std::endl;
         ss << "http_server_port_: " << http_server_port_ << std::endl;
-        ss << "ws_server_port_: " << ws_server_port_ << std::endl;
+        ss << "panel_listen_port_: " << panel_listen_port_ << std::endl;
         ss << "network_listening_port_: " << network_listening_port_ << std::endl;
         ss << "websocket_enabled_:" << websocket_enabled_ << std::endl;
         ss << "webrtc_enabled_:" << webrtc_enabled_ << std::endl;
@@ -137,8 +138,9 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
         args.push_back(std::format("--{}={}", kStWebSocketEnabled, websocket_enabled_));
-        args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
         args.push_back(std::format("--{}={}", kStNetworkListenPort, network_listening_port_));
+        args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
+        args.push_back(std::format("--{}={}", kStUdpKcpEnabled, udp_kcp_enabled_));
         args.push_back(std::format("--{}={}", kStUdpListenPort, udp_listen_port_));
         args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
@@ -238,6 +240,11 @@ namespace tc
         sp_->Put(kStWebRTCEnabled, webrtc_enabled_);
     }
 
+    void GrSettings::SetUdpKcpEnabled(bool enabled) {
+        udp_kcp_enabled_ = enabled ? kStTrue : kStFalse;
+        sp_->Put(kStUdpKcpEnabled, udp_kcp_enabled_);
+    }
+
     void GrSettings::SetSigServerAddress(const std::string& address) {
         sig_server_address_ = address;
         sp_->Put(kStSigServerAddress, address);
@@ -266,6 +273,11 @@ namespace tc
     void GrSettings::SetClientRandomPwd(const std::string& pwd) {
         client_random_pwd_ = pwd;
         sp_->Put(kStClientRandomPwd, pwd);
+    }
+
+    void GrSettings::SetPanelListeningPort(int port) {
+        panel_listen_port_ = port;
+        sp_->Put(kStPanelListeningPort, std::to_string(port));
     }
 
 }
