@@ -33,7 +33,7 @@
 #include "ui/float_button_state_indicator.h"
 
 #ifdef TC_ENABLE_FILE_TRANSMISSION
-#include "file_trans_widget.h"
+#include "file_trans_interface.h"
 #endif // TC_ENABLE_FILE_TRANSMISSION
 
 
@@ -166,8 +166,7 @@ namespace tc
         });
 
 #ifdef TC_ENABLE_FILE_TRANSMISSION
-        file_trans_widget_ = new FileTransWidget();
-        file_trans_widget_->showNormal();
+        file_trans_interface_ = new FileTransInterface();
 #endif // TC_ENABLE_FILE_TRANSMISSION
 
         QTimer::singleShot(100, [=, this](){

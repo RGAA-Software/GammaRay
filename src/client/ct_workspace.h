@@ -28,7 +28,7 @@ namespace tc
     class DebugPanel;
     class ClipboardManager;
     class FloatButtonStateIndicator;
-    class FileTransWidget;
+    class FileTransInterface;
 
     class Workspace : public QMainWindow {
     public:
@@ -83,7 +83,7 @@ namespace tc
         std::atomic_bool has_frame_arrived_ = false;
 
         //ÎÄ¼þ´«Êä:
-        FileTransWidget* file_trans_widget_ = nullptr;
+        FileTransInterface* file_trans_interface_ = nullptr;
     };
 
 }
