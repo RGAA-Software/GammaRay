@@ -32,7 +32,12 @@ namespace tc
         void OnNewClientIn() override;
 
     private:
+        void InitCaptures();
+
+    private:
+        // @Deprecated
         std::shared_ptr<tc::DesktopCapture> capture_ = nullptr;
+        std::map<std::string, std::shared_ptr<DesktopCapture>> captures_;
         bool init_success_ = false;
     };
 
