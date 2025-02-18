@@ -53,42 +53,66 @@ namespace tc
     void AmfEncoderPlugin::InsertIdr() {
         GrVideoEncoderPlugin::InsertIdr();
         if (IsWorking()) {
-            video_encoder_->InsertIdr();
+            for (const auto& [monitor_index, video_encoder] : video_encoders_) {
+                video_encoder->InsertIdr();
+            }
         }
+    }
+
+    bool AmfEncoderPlugin::HasEncoderForMonitor(int8_t monitor_index) {
+        return video_encoders_.find(monitor_index) == video_encoders_.end();
     }
 
     bool AmfEncoderPlugin::IsWorking() {
-        return init_success_ && plugin_enabled_ && video_encoder_;
+        return init_success_ && plugin_enabled_ && !video_encoders_.empty();
     }
 
-    bool AmfEncoderPlugin::Init(const EncoderConfig& config) {
-        GrVideoEncoderPlugin::Init(config);
-        video_encoder_ = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
-        init_success_ = video_encoder_->Initialize(config);
+    bool AmfEncoderPlugin::Init(const EncoderConfig& config, int8_t monitor_index) {
+        GrVideoEncoderPlugin::Init(config, monitor_index);
+        video_encoders_[monitor_index] = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
+        init_success_ = video_encoders_[monitor_index]->Initialize(config);
         if (!init_success_) {
             LOGE("AMF encoder init failed!");
+            return false;
         }
+        LOGI("Video encoder init success for monitor: {}", monitor_index);
         return init_success_;
     }
 
-    void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra) {
+    void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
+        auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
         if (IsWorking()) {
-            video_encoder_->Encode(tex2d, frame_index, extra);
+            if (video_encoders_.find(cap_video_msg.monitor_index_) == video_encoders_.end()) {
+                LOGE("Not found video encoder for monitor: {}", cap_video_msg.monitor_index_);
+                return;
+            }
+            auto video_encoder = video_encoders_[cap_video_msg.monitor_index_];
+            video_encoder->Encode(tex2d, frame_index, extra);
         }
         else {
             LOGI("Amf encoder is not working, ignore it.");
         }
     }
 
-    void AmfEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) {
+    void AmfEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
 
     }
 
-    void AmfEncoderPlugin::Exit() {
-        if (video_encoder_) {
-            video_encoder_->Exit();
-            LOGI("Amf encoder exit.");
+    void AmfEncoderPlugin::Exit(int8_t monitor_index) {
+        if (video_encoders_.find(monitor_index) != video_encoders_.end()) {
+            video_encoders_[monitor_index]->Exit();
+            video_encoders_.erase(monitor_index);
         }
+    }
+
+    void AmfEncoderPlugin::ExitAll() {
+        for (const auto& [monitor_index, video_encoder] : video_encoders_) {
+            if (video_encoder) {
+                video_encoder->Exit();
+            }
+        }
+        video_encoders_.clear();
+        LOGI("Amf encoders all exit.");
     }
 
 }

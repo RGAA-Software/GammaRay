@@ -263,6 +263,11 @@ namespace tc {
             plugin->SetCaptureMonitor(sm.index(), sm.name());
             //plugin->SendCapturingMonitorMessage();
 
+            auto encoder_plugin = app_->GetWorkingVideoEncoderPlugin();
+            if (encoder_plugin) {
+                encoder_plugin->InsertIdr();
+            }
+
             auto cm_msg = CaptureMonitorInfoMessage {
                 .monitors_ = plugin->GetCaptureMonitorInfo(),
                 .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),

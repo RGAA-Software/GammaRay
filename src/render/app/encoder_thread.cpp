@@ -156,7 +156,7 @@ namespace tc
             if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
                 if (working_encoder_plugin_) {
                     // todo : Test it!
-                    working_encoder_plugin_->Exit();
+                    working_encoder_plugin_->Exit(monitor_index);
                 }
                 tc::EncoderConfig encoder_config;
                 if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
@@ -225,19 +225,19 @@ namespace tc
 
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
-                bool is_mocking = settings_->capture_.mock_video_;
+                bool is_mocking = true;//settings_->capture_.mock_video_;
                 auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-                if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config)) {
+                if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_index)) {
                     working_encoder_plugin_ = nvenc_encoder;
                 } else {
                     LOGW("Init NVENC failed, will try AMF.");
                     auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                    if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config)) {
+                    if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_index)) {
                         working_encoder_plugin_ = amf_encoder;
                     } else {
                         LOGW("Init AMF failed, will try FFmpeg.");
                         auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config)) {
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_index)) {
                             working_encoder_plugin_ = ffmpeg_encoder;
                         } else {
                             LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
@@ -353,6 +353,10 @@ namespace tc
             return frame_carriers_[monitor_idx];
         }
         return nullptr;
+    }
+
+    GrVideoEncoderPlugin* EncoderThread::GetWorkingVideoEncoderPlugin() {
+        return working_encoder_plugin_;
     }
 
 }

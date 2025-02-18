@@ -9,6 +9,7 @@ link_directories(${FFMPEG_LIB_PATH})
 
 set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_encoder_plugin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_encoder.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})

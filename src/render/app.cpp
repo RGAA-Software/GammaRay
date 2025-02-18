@@ -589,6 +589,13 @@ namespace tc
         return monitor_capture_plugin_;
     }
 
+    tc::GrVideoEncoderPlugin* Application::GetWorkingVideoEncoderPlugin() {
+        if (encoder_thread_) {
+            return encoder_thread_->GetWorkingVideoEncoderPlugin();
+        }
+        return nullptr;
+    }
+
     bool Application::GenerateD3DDevice(uint64_t adapter_uid) {
         LOGI("GenerateD3DDevice, adapter_uid = {}", adapter_uid);
         if (d3d11_device_context_) {

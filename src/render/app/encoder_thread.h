@@ -36,6 +36,7 @@ namespace tc
         void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index);
         void Encode(const CaptureVideoFrame& msg);
         void Exit();
+        GrVideoEncoderPlugin* GetWorkingVideoEncoderPlugin();
 
     private:
         void PostEncTask(std::function<void()>&& task);

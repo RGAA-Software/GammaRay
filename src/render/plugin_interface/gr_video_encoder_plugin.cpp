@@ -29,11 +29,9 @@ namespace tc
         return false;
     }
 
-    bool GrVideoEncoderPlugin::Init(const EncoderConfig& config) {
+    bool GrVideoEncoderPlugin::Init(const EncoderConfig& config, int8_t monitor_index) {
         LOGI("GrVideoEncoderPlugin Init, {}x{}", config.encode_width, config.encode_height);
-        encoder_config_ = config;
-        input_frame_width_ = config.width;
-        input_frame_height_ = config.height;
+        encoder_configs_[monitor_index] = config;
         out_width_ = config.encode_width;
         out_height_ = config.encode_height;
         refresh_rate_ = config.fps;
@@ -42,11 +40,11 @@ namespace tc
         return true;
     }
 
-    void GrVideoEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra) {
+    void GrVideoEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
 
     }
 
-    void GrVideoEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) {
+    void GrVideoEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
 
     }
 
@@ -54,11 +52,18 @@ namespace tc
         insert_idr_ = true;
     }
 
-    EncoderConfig GrVideoEncoderPlugin::GetEncoderConfig() {
-        return encoder_config_;
+    EncoderConfig GrVideoEncoderPlugin::GetEncoderConfig(int8_t monitor_index) {
+        if (encoder_configs_.find(monitor_index) == encoder_configs_.end()) {
+            return encoder_configs_[monitor_index];
+        }
+        return EncoderConfig{};
     }
 
-    void GrVideoEncoderPlugin::Exit() {
+    void GrVideoEncoderPlugin::Exit(int8_t monitor_index) {
+
+    }
+
+    void GrVideoEncoderPlugin::ExitAll() {
 
     }
 

@@ -6,16 +6,13 @@
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
 #include "plugin_interface/gr_video_encoder_plugin.h"
-#include "ffmpeg_encoder_defs.h"
-extern "C" {
-    #include "libavcodec/avcodec.h"
-}
 
 namespace tc
 {
 
     class Data;
     class Image;
+    class FFmpegEncoder;
 
     class FFmpegEncoderPlugin : public GrVideoEncoderPlugin {
     public:
@@ -33,26 +30,20 @@ namespace tc
         void InsertIdr() override;
         bool IsWorking() override;
 
+        bool HasEncoderForMonitor(int8_t monitor_index) override;
         bool CanEncodeTexture() override;
-        bool Init(const EncoderConfig& config) override;
-        void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, std::any extra) override;
-        void Exit() override;
+        bool Init(const EncoderConfig& config, int8_t monitor_index) override;
+        void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) override;
+        void Exit(int8_t monitor_index) override;
+        void ExitAll() override;
 
     private:
-        AVCodecContext* context_ = nullptr;
-        AVFrame* frame_ = nullptr;
-        AVPacket* packet_ = nullptr;
-        std::shared_ptr<Data> capture_data_ = nullptr;
+        std::map<int8_t, std::shared_ptr<FFmpegEncoder>> video_encoders_;
     };
 
 }
 
 extern "C" __declspec(dllexport) void* GetInstance();
-
-void* GetInstance() {
-    static tc::FFmpegEncoderPlugin plugin;
-    return (void*)&plugin;
-}
 
 
 #endif //GAMMARAY_UDP_PLUGIN_H
