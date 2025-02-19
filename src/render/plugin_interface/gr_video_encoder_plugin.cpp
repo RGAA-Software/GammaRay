@@ -29,9 +29,9 @@ namespace tc
         return false;
     }
 
-    bool GrVideoEncoderPlugin::Init(const EncoderConfig& config, int8_t monitor_index) {
+    bool GrVideoEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
         LOGI("GrVideoEncoderPlugin Init, {}x{}", config.encode_width, config.encode_height);
-        encoder_configs_[monitor_index] = config;
+        encoder_configs_[monitor_name] = config;
         out_width_ = config.encode_width;
         out_height_ = config.encode_height;
         refresh_rate_ = config.fps;
@@ -52,14 +52,14 @@ namespace tc
         insert_idr_ = true;
     }
 
-    EncoderConfig GrVideoEncoderPlugin::GetEncoderConfig(int8_t monitor_index) {
-        if (encoder_configs_.find(monitor_index) == encoder_configs_.end()) {
-            return encoder_configs_[monitor_index];
+    EncoderConfig GrVideoEncoderPlugin::GetEncoderConfig(const std::string& monitor_name) {
+        if (encoder_configs_.find(monitor_name) == encoder_configs_.end()) {
+            return encoder_configs_[monitor_name];
         }
         return EncoderConfig{};
     }
 
-    void GrVideoEncoderPlugin::Exit(int8_t monitor_index) {
+    void GrVideoEncoderPlugin::Exit(const std::string& monitor_name) {
 
     }
 

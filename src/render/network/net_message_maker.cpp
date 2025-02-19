@@ -54,7 +54,7 @@ namespace tc
 
     std::string NetMessageMaker::MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
                                                    uint64_t frame_index, int frame_width, int frame_height, bool key,
-                                                   int mon_idx, const std::string& display_name, int mon_left,
+                                                   const std::string& display_name, int mon_left,
                                                    int mon_top, int mon_right, int mon_bottom) {
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kVideoFrame);
@@ -65,7 +65,6 @@ namespace tc
         frame->set_key(key);
         frame->set_frame_width(frame_width);
         frame->set_frame_height(frame_height);
-        frame->set_mon_idx(mon_idx);
         frame->set_mon_name(display_name);
         frame->set_mon_left(mon_left);
         frame->set_mon_top(mon_top);
@@ -121,10 +120,9 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-    std::string NetMessageMaker::MakeMonitorSwitched(int index, const std::string& name) {
+    std::string NetMessageMaker::MakeMonitorSwitched(const std::string& name) {
         tc::Message msg;
         msg.set_type(kMonitorSwitched);
-        msg.mutable_monitor_switched()->set_index(index);
         msg.mutable_monitor_switched()->set_name(name);
         return msg.SerializeAsString();
     }

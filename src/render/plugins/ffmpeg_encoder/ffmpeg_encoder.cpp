@@ -19,7 +19,7 @@ namespace tc
         plugin_ = plugin;
     }
 
-    bool FFmpegEncoder::Init(const EncoderConfig& config, int8_t monitor_index) {
+    bool FFmpegEncoder::Init(const EncoderConfig& config, const std::string& monitor_name) {
         encoder_config_ = config;
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
         const AVCodec* encoder = avcodec_find_encoder(encoder_id);

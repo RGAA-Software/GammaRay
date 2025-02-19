@@ -101,14 +101,17 @@ namespace tc
                 }
                 auto item_pos = this->mapTo((QWidget*)this->parent(), w->pos());
                 HideAllSubPanels();
-                int capturing_monitor_index = context_->GetCapturingMonitorIndex();
-                if (monitors_.monitors_.empty() || capturing_monitor_index < 0 || capturing_monitor_index >= monitors_.monitors_.size()) {
-                    LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_index, monitors_.monitors_.size());
+                auto capturing_monitor_name = context_->GetCapturingMonitorName();
+                if (monitors_.monitors_.empty() || capturing_monitor_name.empty()) {
+                    LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_name, monitors_.monitors_.size());
                     return;
                 }
-                ((ThirdResolutionPanel*)panel)->UpdateMonitor(monitors_.monitors_.at(capturing_monitor_index));
-                panel->setGeometry(this->pos().x() + this->width(), item_pos.y(), panel->width(), panel->height());
-                panel->Show();
+                auto capture_monitor = monitors_.GetCaptureMonitorByName(capturing_monitor_name);
+                if (capture_monitor.IsValid()) {
+                    ((ThirdResolutionPanel *) panel)->UpdateMonitor(capture_monitor);
+                    panel->setGeometry(this->pos().x() + this->width(), item_pos.y(), panel->width(), panel->height());
+                    panel->Show();
+                }
             });
 
         }

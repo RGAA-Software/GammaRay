@@ -45,8 +45,8 @@ namespace tc
         uint32_t frame_height = event->frame_height_;
 
         if (event->key_frame_) {
-            LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - {} - ({},{}, {},{})",
-                 event->data_->Size(), frame_index, key, frame_width, frame_height, last_capture_video_frame_.monitor_index_, last_capture_video_frame_.display_name_,
+            LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - ({},{}, {},{})",
+                 event->data_->Size(), frame_index, key, frame_width, frame_height, last_capture_video_frame_.display_name_,
                  last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);
         } else {
             //LOGI("Encoded frame: {}", frame_index);
@@ -59,7 +59,6 @@ namespace tc
             .frame_index_ = frame_index,
             .key_frame_ = key,
             .image_ = Image::Make(event->data_, frame_width, frame_height),
-            .monitor_index_ = last_capture_video_frame_.monitor_index_,
             .monitor_name_ = last_capture_video_frame_.display_name_,
             .monitor_left_ = last_capture_video_frame_.left_,
             .monitor_top_ = last_capture_video_frame_.top_,
@@ -72,7 +71,7 @@ namespace tc
             return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
         } ();
         auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
-                                                          msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
+                                                          msg.frame_height_, msg.key_frame_, msg.monitor_name_,
                                                           msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
         statistics_->fps_video_encode_->Tick();
 

@@ -63,14 +63,14 @@ namespace tc
         return true;
     }
 
-    bool NvencEncoderPlugin::HasEncoderForMonitor(int8_t monitor_index) {
-        return video_encoders_.find(monitor_index) == video_encoders_.end();
+    bool NvencEncoderPlugin::HasEncoderForMonitor(const std::string& monitor_name) {
+        return video_encoders_.find(monitor_name) == video_encoders_.end();
     }
 
-    bool NvencEncoderPlugin::Init(const EncoderConfig& config, int8_t monitor_index) {
-        video_encoders_[monitor_index] = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
+    bool NvencEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        video_encoders_[monitor_name] = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
         LOGI("config bitrate: {}", config.bitrate);
-        init_success_ = video_encoders_[monitor_index]->Initialize(config);
+        init_success_ = video_encoders_[monitor_name]->Initialize(config);
         if (!init_success_) {
             LOGE("Init NVENC encoder failed!");
         }
@@ -79,8 +79,9 @@ namespace tc
 
     void NvencEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
         auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
-        if (IsWorking() && HasEncoderForMonitor(cap_video_msg.monitor_index_)) {
-            video_encoders_[cap_video_msg.monitor_index_]->Encode(tex2d, frame_index, extra);
+        auto monitor_name = std::string(cap_video_msg.display_name_);
+        if (IsWorking() && HasEncoderForMonitor(monitor_name)) {
+            video_encoders_[monitor_name]->Encode(tex2d, frame_index, extra);
         }
     }
 
@@ -88,10 +89,10 @@ namespace tc
 
     }
 
-    void NvencEncoderPlugin::Exit(int8_t monitor_index) {
-        if (video_encoders_.find(monitor_index) != video_encoders_.end()) {
-            video_encoders_[monitor_index]->Exit();
-            video_encoders_.erase(monitor_index);
+    void NvencEncoderPlugin::Exit(const std::string& monitor_name) {
+        if (video_encoders_.find(monitor_name) != video_encoders_.end()) {
+            video_encoders_[monitor_name]->Exit();
+            video_encoders_.erase(monitor_name);
         }
     }
 

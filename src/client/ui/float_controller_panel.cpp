@@ -38,7 +38,7 @@ namespace tc
                 ci->UpdateSelectedState(true);
                 layout->addSpacing(3);
                 layout->addWidget(ci);
-                computer_icons_.insert({i, ci});
+                computer_icons_.push_back(ci);
 
                 ci->SetOnClickListener([=, this](auto w) {
                     HideAllSubPanels();
@@ -361,7 +361,7 @@ namespace tc
 
         msg_listener_->Listen<MonitorSwitchedMessage>([=, this](const MonitorSwitchedMessage& msg) {
             context_->PostUITask([=, this]() {
-                UpdateCapturingMonitor(msg.index_, msg.name_);
+                UpdateCapturingMonitor(msg.name_);
             });
         });
     }
@@ -397,54 +397,62 @@ namespace tc
     }
 
     void FloatControllerPanel::UpdateCaptureMonitorInfo() {
+        int index = 0;
+        for (const auto& mon : capture_monitor_.monitors_) {
+            if (index >= 4) {
+                break;
+            }
+            auto ci = computer_icons_[index];
+            ci->Show();
+            ci->SetMonitorName(mon.name_);
+            if (mon.name_ == capture_monitor_.capturing_monitor_name_) {
+                ci->UpdateSelectedState(true);
+            }
+            else {
+                ci->UpdateSelectedState(false);
+            }
+            index++;
+        }
+        for (auto i = capture_monitor_.monitors_.size(); i < computer_icons_.size(); i++) {
+            auto ci = computer_icons_[i];
+            ci->Hide();
+        }
+
         // hide extra icons
-        for (const auto& [idx, icon] : computer_icons_) {
-            bool find = false;
-            for (const auto& mon : capture_monitor_.monitors_) {
-                if (mon.index_ == idx) {
-                    find = true;
-                }
-            }
-            if (!find) {
-                icon->hide();
-            }
-        }
-        // update monitor info
-        for (const auto& item: capture_monitor_.monitors_) {
-            if (computer_icons_.count(item.index_) > 0) {
-                bool selected = false;
-                if (item.index_ == capture_monitor_.capturing_monitor_index_) {
-                    selected = true;
-                }
-                computer_icons_[item.index_]->SetMonitorName(item.name_);
-                computer_icons_[item.index_]->UpdateSelectedState(selected);
-            }
-        }
+//        for (const auto& icon : computer_icons_) {
+//            bool find = false;
+//            for (const auto& mon : capture_monitor_.monitors_) {
+//                if (mon.name_ == icon->GetMonitorName()) {
+//                    find = true;
+//                }
+//            }
+//        }
+//        // update monitor info
+//        for (const auto& item: capture_monitor_.monitors_) {
+//            if (computer_icons_.count(item.index_) > 0) {
+//                bool selected = false;
+//                if (item.index_ == capture_monitor_.capturing_monitor_index_) {
+//                    selected = true;
+//                }
+//                computer_icons_[item.index_]->SetMonitorName(item.name_);
+//                computer_icons_[item.index_]->UpdateSelectedState(selected);
+//            }
+//        }
     }
 
     void FloatControllerPanel::SwitchMonitor(ComputerIcon* w) {
         context_->SendAppMessage(SwitchMonitorMessage {
-            .index_ = w->GetMonitorIndex(),
             .name_ = w->GetMonitorName(),
         });
     }
 
-    void FloatControllerPanel::UpdateCapturingMonitor(int index, const std::string& name) {
-        for (const auto& [idx, w]: computer_icons_) {
-            if (idx == index) {
+    void FloatControllerPanel::UpdateCapturingMonitor(const std::string& name) {
+        for (const auto& w: computer_icons_) {
+            if (w->GetMonitorName() == name) {
                 w->UpdateSelectedState(true);
             } else {
                 w->UpdateSelectedState(false);
             }
         }
-    }
-
-    int FloatControllerPanel::GetCurrentMonitorIndex() {
-        for (const auto& [idx, w]: computer_icons_) {
-            if (w->IsSelected()) {
-                return idx;
-            }
-        }
-        return 0;
     }
 }

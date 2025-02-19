@@ -53,7 +53,7 @@ namespace tc
         void RegisterControllerPanelListeners();
         void UpdateDebugPanelPosition();
         void SendClipboardMessage(const std::string& msg);
-        void SendSwitchMonitorMessage(int index, const std::string& name);
+        void SendSwitchMonitorMessage(const std::string& name);
         void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
         void SwitchScaleMode(const ScaleMode& mode);
         void CalculateAspectRatio();

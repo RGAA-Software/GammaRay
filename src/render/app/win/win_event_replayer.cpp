@@ -190,22 +190,22 @@ namespace tc
     void WinEventReplayer::HandleMouseEvent(const tc::MouseEvent& event) {
         float x_ratio = event.x_ratio();
         float y_ratio = event.y_ratio();
-        int monitor_index = event.monitor_index();
+        std::string monitor_name = event.monitor_name();
         int button = event.button();
         int data = event.data();
         if(Settings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
-            ReplayMouseEvent(monitor_index, x_ratio, y_ratio, button, data);
+            ReplayMouseEvent(monitor_name, x_ratio, y_ratio, button, data);
         }
     }
 
-    void WinEventReplayer::ReplayMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data) {
+    void WinEventReplayer::ReplayMouseEvent(const std::string& monitor_name, float x_ratio, float y_ratio, int buttons, int data) {
         if (monitors_.empty()) {
             LOGE("Don't have capturing monitor info.");
             return;
         }
         auto func_find_monitor = [&]() -> CaptureMonitorInfo {
             for (auto& mon : monitors_) {
-                if (mon.index_ == monitor_index) {
+                if (std::string(mon.name_) == monitor_name) {
                     return mon;
                 }
             }
@@ -214,7 +214,7 @@ namespace tc
 
         auto target_monitor = func_find_monitor();
         if (!target_monitor.Valid()) {
-            LOGE("Invalid monitor for index: {}", monitor_index);
+            LOGE("Invalid monitor for name: {}", monitor_name);
             return;
         }
         // LOGI("monitor idx: {}, left: {}, bottom: {}, v-left: {}, v-bottom: {}",

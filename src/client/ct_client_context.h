@@ -33,7 +33,7 @@ namespace tc
         std::string GetValueByKey(const std::string& k);
         void UpdateCapturingMonitorInfo(const CaptureMonitorInfo& info);
         CaptureMonitorInfo GetCapturingMonitorInfo();
-        int GetCapturingMonitorIndex() const;
+        std::string GetCapturingMonitorName() const;
         std::string GetDeviceId();
         void SetDeviceId(const std::string& id);
         template<class T>

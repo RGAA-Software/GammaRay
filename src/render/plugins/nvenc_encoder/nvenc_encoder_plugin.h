@@ -24,16 +24,16 @@ namespace tc
         void InsertIdr() override;
         bool IsWorking() override;
 
-        bool HasEncoderForMonitor(int8_t monitor_index) override;
+        bool HasEncoderForMonitor(const std::string& monitor_name) override;
         bool CanEncodeTexture() override;
-        bool Init(const EncoderConfig& config, int8_t monitor_index) override;
+        bool Init(const EncoderConfig& config, const std::string& monitor_name) override;
         void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) override;
         void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) override;
-        void Exit(int8_t monitor_index) override;
+        void Exit(const std::string& monitor_name) override;
         void ExitAll() override;
 
     private:
-        std::map<int8_t, std::shared_ptr<NVENCVideoEncoder>> video_encoders_;
+        std::map<std::string, std::shared_ptr<NVENCVideoEncoder>> video_encoders_;
     };
 
 }

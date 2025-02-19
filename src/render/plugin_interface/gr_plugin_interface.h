@@ -147,7 +147,6 @@ namespace tc
         int64_t plugin_version_code_;
         bool plugin_enabled_ = true;
         std::string base_path_;
-        std::string capture_monitor_name_;
         std::string capture_audio_device_id_;
         // active net plugins...
         std::map<std::string, GrNetPlugin*> net_plugins_;

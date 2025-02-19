@@ -198,7 +198,7 @@ namespace tc
         mouse_event->set_button(mouse_event_desc.buttons);
         auto cur_time = GetCurrentTime();
         mouse_event->set_timestamp(cur_time);
-        mouse_event->set_monitor_index(context_->GetCapturingMonitorIndex());
+        mouse_event->set_monitor_name(context_->GetCapturingMonitorName());
         mouse_event->set_data(mouse_event_desc.data);
         mouse_event->set_delta_x(mouse_event_desc.dx);
         mouse_event->set_delta_y(mouse_event_desc.dy);

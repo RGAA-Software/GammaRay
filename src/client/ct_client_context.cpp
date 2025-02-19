@@ -25,7 +25,7 @@ namespace tc
         this->name_ = name;
         this->msg_notifier_ = std::make_shared<MessageNotifier>();
         this->capturing_info_ = CaptureMonitorInfo {
-            .mon_idx_ = -1,
+
         };
         sp_ = std::make_shared<SharedPreference>();
         sp_->Init("", std::format("./gr_data/app.{}.dat", this->name_));
@@ -123,7 +123,7 @@ namespace tc
     }
 
     void ClientContext::UpdateCapturingMonitorInfo(const CaptureMonitorInfo& info) {
-        bool new_monitor = info.mon_idx_ != capturing_info_.mon_idx_;
+        bool new_monitor = info.mon_name_ != capturing_info_.mon_name_;
         capturing_info_ = info;
         if (new_monitor) {
             SendAppMessage(MsgMonitorChanged{});
@@ -134,8 +134,8 @@ namespace tc
         return capturing_info_;
     }
 
-    int ClientContext::GetCapturingMonitorIndex() const {
-        return capturing_info_.mon_idx_;
+    std::string ClientContext::GetCapturingMonitorName() const {
+        return capturing_info_.mon_name_;
     }
 
     std::string ClientContext::GetDeviceId() {

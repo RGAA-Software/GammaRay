@@ -233,6 +233,13 @@ namespace tc
                 RequestRestartMe();
             });
         });
+
+        // CaptureMonitorInfoMessage
+        msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
+            this->PostGlobalTask([=, this]() {
+                SendConfigurationBack();
+            });
+        });
     }
 
     void Application::InitAudioCapture() {
@@ -353,7 +360,7 @@ namespace tc
         msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg([=]() -> tc::VideoType {
                 return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
-            } (), msg.image_->data, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.key_frame_, msg.monitor_index_, msg.monitor_name_,
+            } (), msg.image_->data, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.key_frame_, msg.monitor_name_,
             msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
 
             if (settings_->app_.debug_enabled_) {
@@ -434,6 +441,7 @@ namespace tc
 
         if (monitor_capture_plugin_) {
             monitor_capture_plugin_->StartCapturing();
+            monitor_capture_plugin_->SetCaptureMonitor(settings_->capture_.capture_monitor_);
         }
         if (data_provider_plugin) {
             data_provider_plugin->StartProviding();
@@ -534,12 +542,11 @@ namespace tc
         auto config = m.mutable_config();
         // screen info
         auto monitor_info = config->mutable_monitor_info();
-        auto capturing_idx = monitor_capture_plugin_->GetCapturingMonitorIndex();
+        auto capturing_name = monitor_capture_plugin_->GetCapturingMonitorName();
         auto monitors = monitor_capture_plugin_->GetCaptureMonitorInfo();
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
             MonitorInfo info;
-            info.set_index(monitor.index_);
             info.set_name(monitor.name_);
             for (const auto& res : monitor.supported_res_) {
                 MonitorResolution mr;
@@ -549,7 +556,7 @@ namespace tc
             }
             monitor_info->Add(std::move(info));
         }
-        config->set_current_capturing_index(capturing_idx);
+        config->set_capturing_monitor_name(capturing_name);
 
         //
         PostNetMessage(m.SerializeAsString());

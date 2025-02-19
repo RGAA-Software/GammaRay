@@ -33,7 +33,7 @@ namespace tc
 
         class DXGIOutputDuplication {
         public:
-            CComPtr<IDXGIOutputDuplication> duplication_ = nullptr;
+            CComPtr<IDXGIOutputDuplication> duplication_;
             DXGI_OUTPUT_DESC output_desc_{};
             CaptureMonitorInfo monitor_win_info_{};
 
@@ -48,39 +48,33 @@ namespace tc
             ComPtr<ID3D11Texture2D> texture2d_ = nullptr;
         };
 
-        explicit DDACapture(DDACapturePlugin* plugin, const std::string& monitor);
+        explicit DDACapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info);
         virtual ~DDACapture();
         bool Init() override;
         bool StartCapture() override;
+        bool PauseCapture() override;
+        void ResumeCapture() override;
         void StopCapture() override;
 
     private:
         void Start();
         bool Exit();
         void Capture();
-        CaptureResult CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex, int monitor_index);
-        void OnCaptureFrame(ID3D11Texture2D *texture, uint8_t monitor_index);
-        void SendTextureHandle(const HANDLE &shared_handle, MonitorIndex monitor_index, uint32_t width, uint32_t height, DXGI_FORMAT format);
-        int GetFrameIndex(MonitorIndex monitor_index);
-        bool IsTargetMonitor(int index);
-        void CalculateVirtualDeskInfo();
+        CaptureResult CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex);
+        void OnCaptureFrame(ID3D11Texture2D *texture);
+        void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
+        int GetFrameIndex();
         std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
 
     private:
         std::atomic<bool> stop_flag_ = false;
         std::thread capture_thread_;
-        uint8_t monitor_count_ = 0;
-        int64_t adapter_uid_ = -1;
-        std::map<MonitorIndex, int> monitor_frame_index_;
-        std::map<MonitorIndex, CaptureMonitorInfo> monitors_;
-        std::vector<MonitorWinInfo> win_monitors_;
+        int64_t monitor_frame_index_ = 0;
 
-        std::map<MonitorIndex, SharedD3d11Texture2D> last_list_texture_;
-        std::map<MonitorIndex, DXGIOutputDuplication> dxgi_output_duplication_;
-        std::map<MonitorIndex, CComPtr<ID3D11Texture2D>> cached_textures_;
-        CComPtr<IDXGIFactory1> factory1_ = nullptr;
-        CComPtr<IDXGIAdapter1> adapter1_ = nullptr;
-        CComPtr<IDXGIOutput> dxgi_output_ = nullptr;
+        SharedD3d11Texture2D last_list_texture_;
+        DXGIOutputDuplication dxgi_output_duplication_;
+        CComPtr<ID3D11Texture2D> cached_texture_ = nullptr;
+
         CComPtr<ID3D11Device> d3d11_device_ = nullptr;
         CComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
         CComPtr<ID3D11Texture2D> shared_texture_ = nullptr;

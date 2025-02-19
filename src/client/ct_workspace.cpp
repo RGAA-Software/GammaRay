@@ -142,7 +142,7 @@ namespace tc
         });
 
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
-            this->SendSwitchMonitorMessage(msg.index_, msg.name_);
+            this->SendSwitchMonitorMessage(msg.name_);
         });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
@@ -234,10 +234,10 @@ namespace tc
 
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
             CaptureMonitorMessage msg;
-            msg.capturing_monitor_index_ = config.current_capturing_index();
-            LOGI("capturing: {}", msg.capturing_monitor_index_);
+            msg.capturing_monitor_name_ = config.capturing_monitor_name();
+            LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
             for (const auto& item : config.monitor_info()) {
-                LOGI("idx: {}, name: {}", item.index(), item.name());
+                LOGI("monitor name: {}", item.name());
                 std::vector<CaptureMonitorMessage::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
                     resolutions.push_back(CaptureMonitorMessage::Resolution {
@@ -246,7 +246,6 @@ namespace tc
                     });
                 }
                 msg.monitors_.push_back(CaptureMonitorMessage::CaptureMonitor {
-                    .index_ = item.index(),
                     .name_ = item.name(),
                     .resolutions_ = resolutions,
                 });
@@ -256,7 +255,6 @@ namespace tc
 
         sdk_->SetOnMonitorSwitchedCallback([=, this](const MonitorSwitched& ms) {
             context_->SendAppMessage(MonitorSwitchedMessage {
-                .index_ = ms.index(),
                 .name_ = ms.name(),
             });
         });
@@ -414,7 +412,7 @@ namespace tc
         sdk_->PostBinaryMessage(m.SerializeAsString());
     }
 
-    void Workspace::SendSwitchMonitorMessage(int index, const std::string& name) {
+    void Workspace::SendSwitchMonitorMessage(const std::string& name) {
         if (!sdk_) {
             return;
         }
@@ -422,7 +420,6 @@ namespace tc
         m.set_type(tc::kSwitchMonitor);
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
-        m.mutable_switch_monitor()->set_index(index);
         m.mutable_switch_monitor()->set_name(name);
         sdk_->PostBinaryMessage(m.SerializeAsString());
     }

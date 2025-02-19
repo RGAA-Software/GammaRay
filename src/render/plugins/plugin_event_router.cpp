@@ -97,6 +97,12 @@ namespace tc
                                                              target_event->bits_,
                                                              target_event->frame_size_);
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginInsertIdrEvent) {
+            plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
+                LOGI("Insert IDR for plugin: {}", plugin->GetPluginName());
+                plugin->InsertIdr();
+            });
+        }
     }
 
 }

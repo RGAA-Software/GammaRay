@@ -225,10 +225,11 @@ namespace tc {
             auto sm = msg->switch_monitor();
             auto dc = app_->GetDesktopCapture();
             // !!! dc is null in plugin mode !!!
-            dc->SetCaptureMonitor(sm.index(), sm.name());
+            // todo: NOT WORK IN PLUGIN MODE
+            dc->SetCaptureMonitor(/*sm.index()*/0, sm.name());
             dc->SendCapturingMonitorMessage();
 
-            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
+            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.name());
             app_->PostNetMessage(proto_msg);
         });
     }

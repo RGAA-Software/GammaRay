@@ -25,14 +25,14 @@ namespace tc
         void InsertIdr() override;
 
         virtual bool CanEncodeTexture();
-        virtual bool HasEncoderForMonitor(int8_t monitor_index) = 0;
-        virtual bool Init(const EncoderConfig& config, int8_t monitor_index);
+        virtual bool HasEncoderForMonitor(const std::string& monitor_name) = 0;
+        virtual bool Init(const EncoderConfig& config, const std::string& monitor_name);
         virtual void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra);
         virtual void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
-        virtual void Exit(int8_t monitor_index);
+        virtual void Exit(const std::string& monitor_name);
         virtual void ExitAll();
 
-        EncoderConfig GetEncoderConfig(int8_t monitor_index);
+        EncoderConfig GetEncoderConfig(const std::string& monitor_name);
 
     public:
         int refresh_rate_ = 60;
@@ -42,7 +42,7 @@ namespace tc
         int bitrate_ = 10000000; // 10Mbps
         bool insert_idr_ = false;
         std::atomic_bool init_success_ = false;
-        std::map<int8_t, EncoderConfig> encoder_configs_;
+        std::map<std::string, EncoderConfig> encoder_configs_;
     };
 
 }

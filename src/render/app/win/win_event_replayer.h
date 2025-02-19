@@ -17,7 +17,7 @@ namespace tc
         void HandleMessage(const std::shared_ptr<Message>& message);
         void HandleKeyEvent(const tc::KeyEvent& event);
         void HandleMouseEvent(const tc::MouseEvent& event);
-        void ReplayMouseEvent(int monitor_index, float x_ratio, float y_ratio, int buttons, int data);
+        void ReplayMouseEvent(const std::string& monitor_name, float x_ratio, float y_ratio, int buttons, int data);
         void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg);
 
     private:

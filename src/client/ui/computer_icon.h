@@ -20,7 +20,6 @@ namespace tc
         void mouseReleaseEvent(QMouseEvent *event) override;
         void UpdateSelectedState(bool selected);
         void SetMonitorName(const std::string& name);
-        int GetMonitorIndex() const;
         std::string GetMonitorName();
         bool IsSelected();
 

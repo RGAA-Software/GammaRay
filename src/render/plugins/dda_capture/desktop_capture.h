@@ -17,28 +17,23 @@ namespace tc
 
     class DesktopCapture {
     public:
-        explicit DesktopCapture(DDACapturePlugin* plugin, const std::string& monitor);
+        explicit DesktopCapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info);
         virtual bool Init() = 0;
         virtual bool StartCapture() = 0;
+        virtual bool PauseCapture() = 0;
+        virtual void ResumeCapture() = 0;
         virtual void StopCapture() = 0;
-        void SetCaptureMonitor(int index, const std::string& name);
         void SetCaptureFps(int fps);
-        std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo();
-        void SendCapturingMonitorMessage();
-        [[nodiscard]] int GetCapturingMonitorIndex() const;
-        std::string GetCapturingMonitorName();
 
     private:
         void RefreshScreen();
 
     protected:
         DDACapturePlugin* plugin_ = nullptr;
-        std::mutex capturing_monitor_mtx_;
-        std::string capturing_monitor_name_;
-        int capturing_monitor_index_ = 0;
         int capture_fps_ = 60;
-        std::vector<CaptureMonitorInfo> sorted_monitors_;
         bool refresh_screen_ = false;
+        std::atomic_bool pausing_ = true;
+        CaptureMonitorInfo my_monitor_info_;
     };
 }
 

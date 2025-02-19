@@ -40,7 +40,7 @@ namespace tc
 
     private:
         void PostEncTask(std::function<void()>&& task);
-        std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(int8_t monitor_idx);
+        std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
 
     private:
         Settings* settings_ = nullptr;
@@ -57,8 +57,8 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         GrVideoEncoderPlugin* working_encoder_plugin_ = nullptr;
-        std::map<int8_t, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
-        std::map<int8_t, std::optional<CaptureVideoFrame>> last_video_frames_;
+        std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
+        std::map<std::string, std::optional<CaptureVideoFrame>> last_video_frames_;
     };
 
 }

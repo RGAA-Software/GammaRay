@@ -75,28 +75,29 @@ namespace tc
         return false;
     }
 
-    bool FFmpegEncoderPlugin::HasEncoderForMonitor(int8_t monitor_index) {
-        return video_encoders_.find(monitor_index) != video_encoders_.end();
+    bool FFmpegEncoderPlugin::HasEncoderForMonitor(const std::string& monitor_name) {
+        return video_encoders_.find(monitor_name) != video_encoders_.end();
     }
 
-    bool FFmpegEncoderPlugin::Init(const EncoderConfig& config, int8_t monitor_index) {
-        GrVideoEncoderPlugin::Init(config, monitor_index);
-        video_encoders_[monitor_index] = std::make_shared<FFmpegEncoder>(this);
-        return video_encoders_[monitor_index]->Init(config, monitor_index);
+    bool FFmpegEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        GrVideoEncoderPlugin::Init(config, monitor_name);
+        video_encoders_[monitor_name] = std::make_shared<FFmpegEncoder>(this);
+        return video_encoders_[monitor_name]->Init(config, monitor_name);
     }
 
     void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
-        if (!HasEncoderForMonitor(cap_video_frame.monitor_index_)) {
+        auto monitor_name = std::string(cap_video_frame.display_name_);
+        if (!HasEncoderForMonitor(monitor_name)) {
             return;
         }
-        video_encoders_[cap_video_frame.monitor_index_]->Encode(i420_image, frame_index, extra);
+        video_encoders_[monitor_name]->Encode(i420_image, frame_index, extra);
     }
 
-    void FFmpegEncoderPlugin::Exit(int8_t monitor_index) {
-        if (HasEncoderForMonitor(monitor_index)) {
-            video_encoders_[monitor_index]->Exit();
-            video_encoders_.erase(monitor_index);
+    void FFmpegEncoderPlugin::Exit(const std::string& monitor_name) {
+        if (HasEncoderForMonitor(monitor_name)) {
+            video_encoders_[monitor_name]->Exit();
+            video_encoders_.erase(monitor_name);
         }
     }
 

@@ -53,40 +53,42 @@ namespace tc
     void AmfEncoderPlugin::InsertIdr() {
         GrVideoEncoderPlugin::InsertIdr();
         if (IsWorking()) {
-            for (const auto& [monitor_index, video_encoder] : video_encoders_) {
+            for (const auto& [monitor_name, video_encoder] : video_encoders_) {
                 video_encoder->InsertIdr();
+                LOGI("Insert IDR for : {}", monitor_name);
             }
         }
     }
 
-    bool AmfEncoderPlugin::HasEncoderForMonitor(int8_t monitor_index) {
-        return video_encoders_.find(monitor_index) == video_encoders_.end();
+    bool AmfEncoderPlugin::HasEncoderForMonitor(const std::string& monitor_name) {
+        return video_encoders_.find(monitor_name) == video_encoders_.end();
     }
 
     bool AmfEncoderPlugin::IsWorking() {
         return init_success_ && plugin_enabled_ && !video_encoders_.empty();
     }
 
-    bool AmfEncoderPlugin::Init(const EncoderConfig& config, int8_t monitor_index) {
-        GrVideoEncoderPlugin::Init(config, monitor_index);
-        video_encoders_[monitor_index] = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
-        init_success_ = video_encoders_[monitor_index]->Initialize(config);
+    bool AmfEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        GrVideoEncoderPlugin::Init(config, monitor_name);
+        video_encoders_[monitor_name] = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
+        init_success_ = video_encoders_[monitor_name]->Initialize(config);
         if (!init_success_) {
             LOGE("AMF encoder init failed!");
             return false;
         }
-        LOGI("Video encoder init success for monitor: {}", monitor_index);
+        LOGI("Video encoder init success for monitor: {}", monitor_name);
         return init_success_;
     }
 
     void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
         auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
         if (IsWorking()) {
-            if (video_encoders_.find(cap_video_msg.monitor_index_) == video_encoders_.end()) {
-                LOGE("Not found video encoder for monitor: {}", cap_video_msg.monitor_index_);
+            auto monitor_name = std::string(cap_video_msg.display_name_);
+            if (video_encoders_.find(monitor_name) == video_encoders_.end()) {
+                LOGE("Not found video encoder for monitor: {}", monitor_name);
                 return;
             }
-            auto video_encoder = video_encoders_[cap_video_msg.monitor_index_];
+            auto video_encoder = video_encoders_[monitor_name];
             video_encoder->Encode(tex2d, frame_index, extra);
         }
         else {
@@ -98,10 +100,10 @@ namespace tc
 
     }
 
-    void AmfEncoderPlugin::Exit(int8_t monitor_index) {
-        if (video_encoders_.find(monitor_index) != video_encoders_.end()) {
-            video_encoders_[monitor_index]->Exit();
-            video_encoders_.erase(monitor_index);
+    void AmfEncoderPlugin::Exit(const std::string& monitor_name) {
+        if (video_encoders_.find(monitor_name) != video_encoders_.end()) {
+            video_encoders_[monitor_name]->Exit();
+            video_encoders_.erase(monitor_name);
         }
     }
 

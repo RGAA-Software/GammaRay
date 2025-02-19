@@ -20,25 +20,29 @@ namespace tc
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
         bool IsWorking() override;
-        bool OnCreate(const tc::GrPluginParam &param) override;
+        bool OnCreate(const tc::GrPluginParam& param) override;
         bool OnDestroy() override;
         bool StartCapturing() override;
         void StopCapturing() override;
         std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo() override;
-        int GetCapturingMonitorIndex() override;
         std::string GetCapturingMonitorName() override;
-        void SetCaptureMonitor(int index, const std::string& name) override;
+        void SetCaptureMonitor(const std::string& name) override;
         void SetCaptureFps(int fps) override;
         void OnNewClientIn() override;
+        void On1Second() override;
 
     private:
         void InitCaptures();
+        std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
+        void CalculateVirtualDeskInfo();
+        void NotifyCaptureMonitorInfo();
 
     private:
-        // @Deprecated
-        std::shared_ptr<tc::DesktopCapture> capture_ = nullptr;
+        std::map<std::string, CaptureMonitorInfo> monitors_;
         std::map<std::string, std::shared_ptr<DesktopCapture>> captures_;
         bool init_success_ = false;
+        std::string capturing_monitor_name_;
+        std::vector<CaptureMonitorInfo> sorted_monitors_;
     };
 
 }

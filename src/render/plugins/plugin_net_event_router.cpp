@@ -70,7 +70,11 @@ namespace tc {
             .monitors_ = plugin->GetCaptureMonitorInfo(),
             .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
         };
+        // to event replayer
         win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+
+        // to other listeners
+        msg_notifier_->SendAppMessage(cm_msg);
     }
 
     void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {
@@ -260,7 +264,7 @@ namespace tc {
             if (!plugin) {
                 return;
             }
-            plugin->SetCaptureMonitor(sm.index(), sm.name());
+            plugin->SetCaptureMonitor(sm.name());
             //plugin->SendCapturingMonitorMessage();
 
             auto encoder_plugin = app_->GetWorkingVideoEncoderPlugin();
@@ -275,7 +279,7 @@ namespace tc {
             //msg_notifier_->SendAppMessage(msg);
             win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
 
-            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.index(), sm.name());
+            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.name());
             app_->PostNetMessage(proto_msg);
         });
     }

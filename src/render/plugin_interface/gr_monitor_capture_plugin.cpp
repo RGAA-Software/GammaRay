@@ -36,20 +36,12 @@ namespace tc
         return {};
     }
 
-    int GrMonitorCapturePlugin::GetCapturingMonitorIndex() {
-        return 0;
-    }
-
-    void GrMonitorCapturePlugin::SetCaptureMonitor(int index, const std::string& name) {
+    void GrMonitorCapturePlugin::SetCaptureMonitor(const std::string& name) {
 
     }
 
     void GrMonitorCapturePlugin::SetCaptureFps(int fps) {
 
-    }
-
-    std::string GrMonitorCapturePlugin::GetCapturingMonitorName() {
-        return "";
     }
 
 }

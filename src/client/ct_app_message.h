@@ -97,27 +97,38 @@ namespace tc
             int width_ = 0;
             int height_ = 0;
         };
+
         class CaptureMonitor {
         public:
-            int index_;
+            bool IsValid() {
+                return !name_.empty();
+            }
+        public:
             std::string name_;
             std::vector<Resolution> resolutions_;
         };
 
+        CaptureMonitor GetCaptureMonitorByName(const std::string& name) {
+            for (auto& m : monitors_) {
+                if (m.name_ == name) {
+                    return m;
+                }
+            }
+            return {};
+        }
+
     public:
-        int capturing_monitor_index_;
+        std::string capturing_monitor_name_;
         std::vector<CaptureMonitor> monitors_;
     };
 
     class SwitchMonitorMessage : public AppMessage {
     public:
-        int index_;
         std::string name_;
     };
 
     class MonitorSwitchedMessage : public AppMessage {
     public:
-        int index_;
         std::string name_;
     };
 

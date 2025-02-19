@@ -139,13 +139,13 @@ namespace tc
             CopyID3D11Texture2D(shared_texture);
         }
 #endif
-            auto monitor_index = cap_video_msg.monitor_index_;
+            auto monitor_name = std::string(cap_video_msg.display_name_);
             bool frame_meta_info_changed = [&]() {
-                auto last_video_frame_exists = last_video_frames_.contains(monitor_index);
+                auto last_video_frame_exists = last_video_frames_.contains(monitor_name);
                 if (!last_video_frame_exists) {
                     return true;
                 }
-                auto last_video_frame = last_video_frames_[monitor_index];
+                auto last_video_frame = last_video_frames_[monitor_name];
                 if (last_video_frame == std::nullopt) {
                     return true;
                 }
@@ -156,7 +156,7 @@ namespace tc
             if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
                 if (working_encoder_plugin_) {
                     // todo : Test it!
-                    working_encoder_plugin_->Exit(monitor_index);
+                    working_encoder_plugin_->Exit(monitor_name);
                 }
                 tc::EncoderConfig encoder_config;
                 if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
@@ -206,10 +206,10 @@ namespace tc
                 });
 
                 // video frame carrier
-                auto frame_carrier = GetFrameCarrier(cap_video_msg.monitor_index_);
+                auto frame_carrier = GetFrameCarrier(monitor_name);
                 if (frame_carrier != nullptr) {
                     frame_carrier->Exit();
-                    frame_carriers_.erase(cap_video_msg.monitor_index_);
+                    frame_carriers_.erase(monitor_name);
                     frame_carrier = nullptr;
                 }
                 if (encoder_config.frame_resize) {
@@ -220,24 +220,24 @@ namespace tc
                     frame_carrier = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(), app_->GetD3DContext(),
                                                                          cap_video_msg.adapter_uid_,false, -1, -1);
                 }
-                frame_carriers_[cap_video_msg.monitor_index_] = frame_carrier;
-                LOGI("Create frame carrier for monitor: {}", cap_video_msg.monitor_index_);
+                frame_carriers_[monitor_name] = frame_carrier;
+                LOGI("Create frame carrier for monitor: {}", monitor_name);
 
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
-                bool is_mocking = true;//settings_->capture_.mock_video_;
+                bool is_mocking = settings_->capture_.mock_video_;
                 auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-                if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_index)) {
+                if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_name)) {
                     working_encoder_plugin_ = nvenc_encoder;
                 } else {
                     LOGW("Init NVENC failed, will try AMF.");
                     auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                    if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_index)) {
+                    if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_name)) {
                         working_encoder_plugin_ = amf_encoder;
                     } else {
                         LOGW("Init AMF failed, will try FFmpeg.");
                         auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_index)) {
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
                             working_encoder_plugin_ = ffmpeg_encoder;
                         } else {
                             LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
@@ -267,12 +267,12 @@ namespace tc
                 //frame_width_ = cap_video_msg.frame_width_;
                 //frame_height_ = cap_video_msg.frame_height_;
                 encoder_format_ = settings->encoder_.encoder_format_;
-                last_video_frames_[cap_video_msg.monitor_index_] = cap_video_msg;
+                last_video_frames_[monitor_name] = cap_video_msg;
             }
 
-            auto frame_carrier = GetFrameCarrier(cap_video_msg.monitor_index_);
+            auto frame_carrier = GetFrameCarrier(monitor_name);
             if (frame_carrier == nullptr) {
-                LOGI("Don't have frame carrier for monitor: {}", cap_video_msg.monitor_index_);
+                LOGI("Don't have frame carrier for monitor: {}", monitor_name);
                 return;
             }
             // from texture
@@ -348,9 +348,9 @@ namespace tc
         enc_thread_->Post(std::move(task));
     }
 
-    std::shared_ptr<VideoFrameCarrier> EncoderThread::GetFrameCarrier(int8_t monitor_idx) {
-        if (frame_carriers_.contains(monitor_idx)) {
-            return frame_carriers_[monitor_idx];
+    std::shared_ptr<VideoFrameCarrier> EncoderThread::GetFrameCarrier(const std::string& monitor_name) {
+        if (frame_carriers_.contains(monitor_name)) {
+            return frame_carriers_[monitor_name];
         }
         return nullptr;
     }

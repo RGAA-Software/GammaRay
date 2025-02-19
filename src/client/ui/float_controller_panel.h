@@ -28,19 +28,18 @@ namespace tc
 
         void SetOnDebugListener(OnClickListener&& l) { debug_listener_ = l; }
         void Hide() override;
-        int GetCurrentMonitorIndex();
 
     private:
         BaseWidget* GetSubPanel(const SubPanelType& type);
         void HideAllSubPanels();
         void UpdateCaptureMonitorInfo();
         void SwitchMonitor(ComputerIcon* w);
-        void UpdateCapturingMonitor(int index, const std::string& name);
+        void UpdateCapturingMonitor(const std::string& name);
 
     private:
         OnClickListener debug_listener_;
         std::map<SubPanelType, BaseWidget*> sub_panels_;
-        std::map<int, ComputerIcon*> computer_icons_;
+        std::vector<ComputerIcon*> computer_icons_;
         CaptureMonitorMessage capture_monitor_;
 
     };

@@ -93,10 +93,6 @@ namespace tc
         monitor_name_ = name;
     }
 
-    int ComputerIcon::GetMonitorIndex() const {
-        return monitor_index_;
-    }
-
     std::string ComputerIcon::GetMonitorName() {
         return monitor_name_;
     }

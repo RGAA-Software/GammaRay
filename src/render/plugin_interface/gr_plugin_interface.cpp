@@ -70,7 +70,6 @@ namespace tc
         Logger::InitLog(base_path_ + "/gr_logs/" + plugin_file_name_+".log", true);
         LOGI("{} OnCreate", GetPluginName());
 
-        capture_monitor_name_ = GetConfigParam<std::string>("capture_monitor_name");
         capture_audio_device_id_ = GetConfigParam<std::string>("capture_audio_device_id");
 
         // print params
