@@ -64,12 +64,12 @@ namespace tc
     }
 
     bool NvencEncoderPlugin::HasEncoderForMonitor(const std::string& monitor_name) {
-        return video_encoders_.find(monitor_name) == video_encoders_.end();
+        return video_encoders_.find(monitor_name) != video_encoders_.end();
     }
 
     bool NvencEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
         video_encoders_[monitor_name] = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
-        LOGI("config bitrate: {}", config.bitrate);
+        LOGI("config bitrate: {} for monitor: {}", config.bitrate, monitor_name);
         init_success_ = video_encoders_[monitor_name]->Initialize(config);
         if (!init_success_) {
             LOGE("Init NVENC encoder failed!");

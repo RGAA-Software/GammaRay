@@ -264,8 +264,6 @@ namespace tc
                     });
                 });
 
-                //frame_width_ = cap_video_msg.frame_width_;
-                //frame_height_ = cap_video_msg.frame_height_;
                 encoder_format_ = settings->encoder_.encoder_format_;
                 last_video_frames_[monitor_name] = cap_video_msg;
             }

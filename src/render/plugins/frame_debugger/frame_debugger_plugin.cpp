@@ -52,7 +52,7 @@ namespace tc
 
     void FrameDebuggerPlugin::OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {
         encoded_video_type_ = type;
-        std::string encoded_video_file_name = std::format("1_encoded_video.{}", (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
+        std::string encoded_video_file_name = std::format("gr_data/1_encoded_video.{}", (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
         if (File::Exists(encoded_video_file_name)) {
             File::Delete(encoded_video_file_name);
         }
