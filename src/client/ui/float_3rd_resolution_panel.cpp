@@ -92,10 +92,13 @@ namespace tc
 
     void ThirdResolutionPanel::SelectCapturingMonitorSize() {
         auto monitor_info = context_->GetCapturingMonitorInfo();
-        if (monitor_info.Width() <= 0 || monitor_info.Height() <= 0) {
+        if (monitor_info.frame_width_ <= 0 || monitor_info.frame_height_ <= 0) {
+            LOGE("Error, capturing monitor size is {}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
             return;
         }
-        listview_->SelectByName(std::format("{}x{}", monitor_info.Width(), monitor_info.Height()));
+        auto res_name = std::format("{}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
+        listview_->SelectByName(res_name);
+        LOGI("Capturing monitor size is {}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
     }
 
     void ThirdResolutionPanel::UpdateMonitor(const CaptureMonitorMessage::CaptureMonitor& m) {
@@ -105,6 +108,8 @@ namespace tc
             items.push_back(std::make_shared<SingleItem>(SingleItem { .name_ = std::format("{}x{}", res.width_, res.height_).c_str() }));
         }
         listview_->UpdateItems(items);
+
+        SelectCapturingMonitorSize();
     }
 
 }

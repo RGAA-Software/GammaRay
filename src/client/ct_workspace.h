@@ -1,4 +1,4 @@
-//
+ï»¿//
 // Created by RGAA on 2023-12-27.
 //
 
@@ -82,7 +82,7 @@ namespace tc
         FloatButtonStateIndicator* btn_indicator_ = nullptr;
         std::atomic_bool has_frame_arrived_ = false;
 
-        //ÎÄ¼þ´«Êä:
+        //æ–‡ä»¶ä¼ è¾“:
         FileTransInterface* file_trans_interface_ = nullptr;
     };
 

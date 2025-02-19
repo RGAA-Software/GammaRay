@@ -350,11 +350,11 @@ namespace tc
     }
 
     int OpenGLVideoWidget::GetCapturingMonitorWidth() {
-        return cap_mon_info_.Width();
+        return cap_mon_info_.frame_width_;
     }
 
     int OpenGLVideoWidget::GetCapturingMonitorHeight() {
-        return cap_mon_info_.Height();
+        return cap_mon_info_.frame_height_;
     }
 
 	void OpenGLVideoWidget::resizeGL(int width, int height) {

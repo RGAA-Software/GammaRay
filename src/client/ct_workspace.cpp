@@ -232,12 +232,13 @@ namespace tc
             }
         });
 
+        // todo: Send by Renderer every 1S
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
-            LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
+            //LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
             for (const auto& item : config.monitor_info()) {
-                LOGI("monitor name: {}", item.name());
+                //LOGI("monitor name: {}", item.name());
                 std::vector<CaptureMonitorMessage::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
                     resolutions.push_back(CaptureMonitorMessage::Resolution {
