@@ -10,7 +10,9 @@
 namespace tc
 {
 
+    class Thread;
     class DesktopCapture;
+    class CursorCapture;
 
     class DDACapturePlugin : public GrMonitorCapturePlugin {
     public:
@@ -32,7 +34,8 @@ namespace tc
         void On1Second() override;
 
     private:
-        void InitCaptures();
+        void InitVideoCaptures();
+        void InitCursorCapture();
         std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
         void CalculateVirtualDeskInfo();
         void NotifyCaptureMonitorInfo();
@@ -43,6 +46,8 @@ namespace tc
         bool init_success_ = false;
         std::string capturing_monitor_name_;
         std::vector<CaptureMonitorInfo> sorted_monitors_;
+        std::shared_ptr<CursorCapture> cursor_capture_ = nullptr;
+        std::shared_ptr<Thread> cursor_capture_thread_ = nullptr;
     };
 
 }

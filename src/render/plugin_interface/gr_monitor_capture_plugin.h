@@ -32,6 +32,7 @@ namespace tc
 
     protected:
         bool is_monitor_target_ = false;
+        int capture_fps_ = 60;
     };
 }
 

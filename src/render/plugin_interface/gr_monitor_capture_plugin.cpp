@@ -17,6 +17,7 @@ namespace tc
     }
 
     bool GrMonitorCapturePlugin::OnDestroy() {
+        GrPluginInterface::OnDestroy();
         return true;
     }
 
@@ -41,7 +42,7 @@ namespace tc
     }
 
     void GrMonitorCapturePlugin::SetCaptureFps(int fps) {
-
+        capture_fps_ = fps;
     }
 
 }

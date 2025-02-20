@@ -7,7 +7,9 @@
 #include "render/plugins/plugin_ids.h"
 #include "dda_capture.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/thread.h"
 #include "plugin_interface/gr_plugin_events.h"
+#include "cursor_capture.h"
 
 static void* GetInstance() {
     static tc::DDACapturePlugin plugin;
@@ -39,12 +41,13 @@ namespace tc
 
     bool DDACapturePlugin::OnCreate(const tc::GrPluginParam& param) {
         GrMonitorCapturePlugin::OnCreate(param);
-        InitCaptures();
+        InitVideoCaptures();
+        InitCursorCapture();
         LOGI("DDA Capture audio device: {}", capture_audio_device_id_);
         return true;
     }
 
-    void DDACapturePlugin::InitCaptures() {
+    void DDACapturePlugin::InitVideoCaptures() {
         HRESULT res = 0;
         int adapter_index = 0;
         CComPtr<IDXGIFactory1> factory1_ = nullptr;
@@ -138,8 +141,23 @@ namespace tc
         }
     }
 
+    void DDACapturePlugin::InitCursorCapture() {
+        cursor_capture_thread_ = std::make_shared<Thread>([=, this]() {
+            cursor_capture_ = std::make_shared<CursorCapture>(this);
+            while (!destroyed_) {
+                cursor_capture_->Capture();
+                auto target_duration = 1000 / capture_fps_;
+                std::this_thread::sleep_for(std::chrono::milliseconds(target_duration));
+            }
+        }, "", false);
+    }
+
     bool DDACapturePlugin::OnDestroy() {
-        return false;
+        GrMonitorCapturePlugin::OnDestroy();
+        if (cursor_capture_thread_ && cursor_capture_thread_->IsJoinable()) {
+            cursor_capture_thread_->Join();
+        }
+        return true;
     }
 
     bool DDACapturePlugin::IsWorking() {
@@ -200,6 +218,7 @@ namespace tc
     }
 
     void DDACapturePlugin::SetCaptureFps(int fps) {
+        GrMonitorCapturePlugin::SetCaptureFps(fps);
         if (IsWorking()) {
             for (const auto& [dev_name, capture] : captures_) {
                 capture->SetCaptureFps(fps);

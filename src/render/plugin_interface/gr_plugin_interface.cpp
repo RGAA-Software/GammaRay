@@ -128,6 +128,7 @@ namespace tc
 
     bool GrPluginInterface::OnDestroy() {
         plugin_context_->OnDestroy();
+        destroyed_ = true;
         return true;
     }
 

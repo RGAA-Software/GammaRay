@@ -8,7 +8,6 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
 #include "tc_capture_new/capture_message.h"
-#include "cursor_capture.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "dda_capture_plugin.h"
 
@@ -21,7 +20,6 @@ namespace tc
 
     DDACapture::DDACapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info)
         : DesktopCapture(plugin, my_monitor_info) {
-        cursor_capture_ = std::make_shared<CursorCapture>(plugin);
         LOGI("DDACapture my monitor info: {}", my_monitor_info.Dump());
     }
 
@@ -285,10 +283,6 @@ namespace tc
                 //std::string dds_name = "frame_index_" + std::to_string(index);
                 //DebugOutDDS(texture, dds_name);
                 OnCaptureFrame(texture);
-            }
-
-            if (cursor_capture_) {
-                cursor_capture_->Capture();
             }
         }
     }
