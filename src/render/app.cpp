@@ -52,6 +52,7 @@
 #include "plugin_interface/gr_data_provider_plugin.h"
 #include "plugin_interface/gr_audio_encoder_plugin.h"
 #include "tc_service_message.pb.h"
+#include "app/monitor_refresher.h"
 
 namespace tc
 {
@@ -151,6 +152,9 @@ namespace tc
         // connect to service
         service_client_ = std::make_shared<RenderServiceClient>(shared_from_this());
         service_client_->Start();
+
+        // monitor refresher
+        monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
 
         return qapp_->exec();
     }

@@ -11,13 +11,14 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/thread.h"
 #include "asio2/asio2.hpp"
+#include <QObject>
 
 namespace tc
 {
 
     class PluginManager;
 
-    class Context : public std::enable_shared_from_this<Context> {
+    class Context : public QObject, public std::enable_shared_from_this<Context> {
     public:
         static std::shared_ptr<Context> Make();
 
@@ -41,6 +42,7 @@ namespace tc
         }
 
         void PostTask(std::function<void()>&& task);
+        void PostUITask(std::function<void()>&& task);
         void PostStreamPluginTask(std::function<void()>&& task);
         std::shared_ptr<asio2::iopool> GetAsio2IoPool();
         static std::string GetCurrentExeFolder();

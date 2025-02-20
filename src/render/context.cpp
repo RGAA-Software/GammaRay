@@ -47,6 +47,12 @@ namespace tc
         asio2_pool_->post(std::move(task));
     }
 
+    void Context::PostUITask(std::function<void()>&& task) {
+        QMetaObject::invokeMethod(this, [=]() {
+            task();
+        });
+    }
+
     void Context::PostStreamPluginTask(std::function<void()>&& task) {
         stream_plugin_thread_->Post(std::move(task));
     }

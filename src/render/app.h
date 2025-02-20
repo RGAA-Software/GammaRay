@@ -56,6 +56,7 @@ namespace tc
     class GrAudioEncoderPlugin;
     class SharedPreference;
     class RenderServiceClient;
+    class MonitorRefresher;
 
     class Application : public std::enable_shared_from_this<Application>, public QObject {
     public:
@@ -155,6 +156,9 @@ namespace tc
         std::vector<double> fft_right_;
 
         std::shared_ptr<tc::RenderServiceClient> service_client_ = nullptr;
+
+        // monitor refresher
+        std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
     };
 
     // Windows
