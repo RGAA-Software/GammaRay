@@ -34,30 +34,17 @@ namespace tc
             make_column("id", &StreamItem::_id, primary_key()),
             make_column("stream_id", &StreamItem::stream_id),
             make_column("stream_name", &StreamItem::stream_name),
-            make_column("stream_target", &StreamItem::stream_target),
-            make_column("monitor_capture_method", &StreamItem::monitor_capture_method),
-            make_column("exe_path", &StreamItem::exe_path),
-            make_column("capture_mode", &StreamItem::capture_mode),
-            make_column("encoder_type", &StreamItem::encoder_type),
-            make_column("encoder_hw", &StreamItem::encoder_hw),
             make_column("encode_bps", &StreamItem::encode_bps),
             make_column("audio_enabled", &StreamItem::audio_enabled),
             make_column("audio_capture_mode", &StreamItem::audio_capture_mode),
-            make_column("gpu_router_enabled", &StreamItem::gpu_router_enabled),
-            make_column("gpu_router_policy", &StreamItem::gpu_router_policy),
-            make_column("frame_resize_enabled", &StreamItem::frame_resize_enabled),
-            make_column("frame_resize_width", &StreamItem::frame_resize_width),
-            make_column("frame_resize_height", &StreamItem::frame_resize_height),
-            make_column("replay_mode", &StreamItem::replay_mode),
             make_column("stream_host", &StreamItem::stream_host),
             make_column("stream_port", &StreamItem::stream_port),
-            make_column("app_args", &StreamItem::app_args),
-            make_column("auto_exit", &StreamItem::auto_exit),
-            make_column("auto_exit_period", &StreamItem::auto_exit_period),
-            make_column("enable_multi_players", &StreamItem::enable_multi_players),
             make_column("bg_color", &StreamItem::bg_color),
             make_column("encode_fps", &StreamItem::encode_fps),
-            make_column("network_type", &StreamItem::network_type_)
+            make_column("network_type", &StreamItem::network_type_),
+            make_column("client_id", &StreamItem::client_id_),
+            make_column("client_random_pwd", &StreamItem::client_random_pwd_),
+            make_column("client_safety_pwd", &StreamItem::client_safety_pwd_)
         ));
         return st;
     }
@@ -68,6 +55,7 @@ namespace tc
 
     void StreamDBManager::CreateTables() {
         auto db_path = qApp->applicationDirPath() + "/gr_data/stream.db";
+#if 0
         // 1. create database if needed
         sqlite3 *db;
         auto rc = sqlite3_open(db_path.toStdString().c_str(), &db);
@@ -117,9 +105,12 @@ namespace tc
         }
 
         sqlite3_close(db);
-
+#endif
         // 2. bind
         db_storage = BindAppDatabase(db_path.toStdString());
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage);
+        storage.sync_schema();
     }
 
     void StreamDBManager::AddStream(StreamItem &stream) {
