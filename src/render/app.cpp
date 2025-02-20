@@ -51,6 +51,7 @@
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_data_provider_plugin.h"
 #include "plugin_interface/gr_audio_encoder_plugin.h"
+#include "tc_service_message.pb.h"
 
 namespace tc
 {
@@ -662,6 +663,17 @@ namespace tc
 
     ComPtr<ID3D11DeviceContext> Application::GetD3DContext() {
         return d3d11_device_context_;
+    }
+
+    void Application::ReqCtrlAltDelete(const std::string& client_id, const std::string& device_id) {
+        if (!service_client_ || !service_client_->IsAlive()) {
+            return;
+        }
+        tc::ServiceMessage m;
+        m.set_type(ServiceMessageType::kSrvReqCtrlAltDelete);
+        m.mutable_req_ctrl_alt_delete()->set_req_client_id(client_id);
+        m.mutable_req_ctrl_alt_delete()->set_req_client_device_id(device_id);
+        service_client_->PostNetMessage(m.SerializeAsString());
     }
 
     void Application::Exit() {

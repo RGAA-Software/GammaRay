@@ -16,6 +16,8 @@ namespace tc
         explicit SubControlPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent *event) override;
 
+    private:
+        void RequestCtrlAltDelete();
     };
 
 }

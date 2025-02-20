@@ -165,6 +165,15 @@ namespace tc
             this->SendChangeMonitorResolutionMessage(msg);
         });
 
+        msg_listener_->Listen<MsgCtrlAltDelete>([=, this](const MsgCtrlAltDelete& msg) {
+            tc::Message m;
+            m.set_type(tc::kReqCtrlAltDelete);
+            m.set_device_id(settings_->device_id_);
+            m.set_stream_id(settings_->stream_id_);
+            auto _ = m.mutable_req_ctrl_alt_delete();
+            sdk_->PostBinaryMessage(m.SerializeAsString());
+        });
+
 #ifdef TC_ENABLE_FILE_TRANSMISSION
         file_trans_interface_ = FileTransInterface::GetInstance();
 #endif // TC_ENABLE_FILE_TRANSMISSION

@@ -34,7 +34,8 @@ namespace tc
 
             auto lbl = new QLabel();
             lbl->setText(tr("Work Mode"));
-            layout->addSpacing(border_spacing);
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing*2);
             layout->addWidget(lbl);
 
             layout->addStretch();
@@ -66,7 +67,8 @@ namespace tc
 
             auto lbl = new QLabel();
             lbl->setText(tr("Game Mode"));
-            layout->addSpacing(border_spacing);
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing*2);
             layout->addWidget(lbl);
 
             layout->addStretch();

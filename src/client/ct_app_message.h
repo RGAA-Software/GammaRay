@@ -155,6 +155,10 @@ namespace tc
     public:
     };
 
+    // request control + alt + delete
+    class MsgCtrlAltDelete : public AppMessage {
+    public:
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

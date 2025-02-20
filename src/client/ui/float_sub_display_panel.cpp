@@ -21,7 +21,7 @@ namespace tc
         this->setStyleSheet("background:#00000000;");
         setFixedSize(200, 130);
         auto item_height = 38;
-        int border_spacing = 5;
+        int border_spacing = 10;
         auto item_size = QSize(this->width(), item_height);
         auto root_layout = new NoMarginVLayout();
         auto icon_size = QSize(40, 40);

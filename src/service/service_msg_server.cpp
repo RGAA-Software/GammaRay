@@ -116,6 +116,11 @@ namespace tc
                 sw->from_ = sub.from();
                 ProcessHeartBeat(sub.index());
             }
+            else if (type == ServiceMessageType::kSrvReqCtrlAltDelete) {
+                auto sub = msg.req_ctrl_alt_delete();
+                ProcessCtrlAltDelete();
+                LOGI("client, id:{}, device id: {}, request control alt delete", sub.req_client_id(), sub.req_client_device_id());
+            }
         }
         catch(...) {
             LOGE("Parse message failed!");
@@ -144,6 +149,10 @@ namespace tc
         sub->set_index(index);
         sub->set_render_status(is_render_alive ? RenderStatus::kWorking : RenderStatus::kStopped);
         PostBinaryMessage(msg.SerializeAsString());
+    }
+
+    void ServiceMsgServer::ProcessCtrlAltDelete() {
+        service_->SimulateCtrlAltDelete();
     }
 
     void ServiceMsgServer::PostBinaryMessage(const std::string& msg) {

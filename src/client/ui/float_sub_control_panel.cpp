@@ -7,6 +7,8 @@
 #include "switch_button.h"
 #include "background_widget.h"
 #include "client/ct_settings.h"
+#include "client/ct_client_context.h"
+#include "client/ct_app_message.h"
 #include <QLabel>
 
 namespace tc
@@ -30,7 +32,8 @@ namespace tc
 
             auto lbl = new QLabel();
             lbl->setText(tr("Clipboard"));
-            layout->addSpacing(border_spacing);
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing*2);
             layout->addWidget(lbl);
 
             layout->addStretch();
@@ -48,7 +51,27 @@ namespace tc
             root_layout->addSpacing(5);
             root_layout->addWidget(widget);
         }
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
 
+            auto lbl = new QLabel();
+            lbl->setText(tr("Ctrl + Alt + Delete"));
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing*2);
+            layout->addWidget(lbl);
+            layout->addStretch();
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                RequestCtrlAltDelete();
+            });
+        }
         root_layout->addStretch();
         setLayout(root_layout);
     }
@@ -63,6 +86,10 @@ namespace tc
         int radius = 5;
         painter.drawRoundedRect(offset, offset, this->width()-offset*2, this->height()-offset*2, radius, radius);
         BaseWidget::paintEvent(event);
+    }
+
+    void SubControlPanel::RequestCtrlAltDelete() {
+        context_->SendAppMessage(MsgCtrlAltDelete{});
     }
 
 }

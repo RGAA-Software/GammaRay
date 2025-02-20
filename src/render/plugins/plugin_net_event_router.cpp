@@ -132,6 +132,10 @@ namespace tc {
                     ProcessInsertKeyFrame(std::move(msg));
                     break;
                 }
+                case kReqCtrlAltDelete: {
+                    ProcessCtrlAltDelete(std::move(msg));
+                    break;
+                }
             }
         } else {
 
@@ -317,5 +321,9 @@ namespace tc {
         auto net_msg = NetMessageMaker::MakeAudioFrameMsg(data, samples, channels, bits, frame_size);
         statistics_->AppendMediaBytes(net_msg.size());
         app_->PostNetMessage(net_msg);
+    }
+
+    void PluginNetEventRouter::ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg) {
+        app_->ReqCtrlAltDelete(msg->client_id(), msg->device_id());
     }
 }
