@@ -212,6 +212,9 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_mock_video_stream plugin_obj_detector
 )
 
+add_custom_target(tc_build_client ALL COMMENT "Build client")
+add_dependencies(tc_build_client GammaRayClient GammaRayClientInner)
+
 if(TC_USE_VR_MANAGER)
     message("===> tc_vr_plugin_builder")
     add_custom_target(tc_vr_plugin_builder)

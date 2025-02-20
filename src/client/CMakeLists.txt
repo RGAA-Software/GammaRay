@@ -67,6 +67,7 @@ set(SRCS_WS
         ct_qt_key_converter.cpp
         ct_audio_player.cpp
         ct_clipboard_manager.cpp
+        ct_main_progress.cpp
         icon.rc ${RES}
         ui/switch_button.cpp
         ui/float_button.cpp

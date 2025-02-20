@@ -29,6 +29,7 @@ namespace tc
     class ClipboardManager;
     class FloatButtonStateIndicator;
     class FileTransInterface;
+    class MainProgress;
 
     class Workspace : public QMainWindow {
     public:
@@ -84,6 +85,9 @@ namespace tc
 
         //文件传输:
         FileTransInterface* file_trans_interface_ = nullptr;
+
+        // progress
+        MainProgress* main_progress_ = nullptr;
     };
 
 }

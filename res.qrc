@@ -39,5 +39,6 @@
         <file>resources/image/ic_computer.svg</file>
         <file>resources/image/ic_check.svg</file>
         <file>resources/image/logo_text.png</file>
+        <file>resources/image/ic_loading_bg.svg</file>
     </qresource>
 </RCC>

@@ -31,6 +31,7 @@
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/process_util.h"
 #include "ui/float_button_state_indicator.h"
+#include "ct_main_progress.h"
 
 #ifdef TC_ENABLE_FILE_TRANSMISSION
 #include "core/file_trans_interface.h"
@@ -67,6 +68,9 @@ namespace tc
         //layout->addWidget(video_widget_);
 
         setCentralWidget(root_widget);
+
+        main_progress_ = new MainProgress(sdk_, this);
+        main_progress_->show();
 
         // button indicator
         int shadow_color = 0x999999;
@@ -335,6 +339,7 @@ namespace tc
     }
 
     void Workspace::resizeEvent(QResizeEvent *event) {
+        main_progress_->setGeometry(0, 0, event->size().width(), event->size().height());
         UpdateNotificationHandlePosition();
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
