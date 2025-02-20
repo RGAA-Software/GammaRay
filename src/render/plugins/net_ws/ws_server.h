@@ -30,12 +30,11 @@ namespace tc
         bool IsOnlyAudioClients();
 
     private:
-
         template<typename Server>
         void AddWebsocketRouter(const std::string& path, const Server& s);
 
-        template<typename Server>
-        void AddHttpRouter(const std::string& path, const Server& s);
+        void AddHttpRouter(const std::string& path,
+                           std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback);
 
         void NotifyMediaClientConnected();
         void NotifyMediaClientDisConnected();
@@ -48,7 +47,7 @@ namespace tc
         WsDataPtr ws_data_ = nullptr;
         tc::ConcurrentHashMap<uint64_t, std::shared_ptr<WsPluginRouter>> media_routers_;
 
-        //std::shared_ptr<HttpHandler> http_handler_ = nullptr;
+        std::shared_ptr<HttpHandler> http_handler_ = nullptr;
 
     };
 }

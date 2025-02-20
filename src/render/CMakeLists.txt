@@ -19,7 +19,6 @@ set(SRCS
         statistics.cpp
         network/app_server.cpp
         network/ws_media_router.cpp
-        network/http_handler.cpp
         network/ws_ipc_router.cpp
         network/connection.cpp
         network/message_processor.cpp

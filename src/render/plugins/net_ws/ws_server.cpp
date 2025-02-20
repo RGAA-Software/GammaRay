@@ -13,11 +13,10 @@
 #include "plugin_interface/gr_plugin_events.h"
 #include "ws_plugin.h"
 #include "tc_common_new/url_helper.h"
+#include "http_handler.h"
 
 static std::string kUrlMedia = "/media";
-
-static std::string kApiServerState = "/api/server/state";
-static std::string kApiSdpRequest = "/api/sdp/request";
+static std::string kApiPing = "/api/ping";
 
 namespace tc
 {
@@ -38,7 +37,7 @@ namespace tc
     WsPluginServer::WsPluginServer(tc::WsPlugin* plugin, uint16_t listen_port){
         this->plugin_ = plugin;
         this->listen_port_ = listen_port;
-        //http_handler_ = std::make_shared<HttpHandler>(this->app_);
+        http_handler_ = std::make_shared<HttpHandler>(plugin_);
     }
 
     void WsPluginServer::Start() {
@@ -59,8 +58,14 @@ namespace tc
                 {"plugin",  this->plugin_},
             }
         });
+        // media websocket
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlMedia, http_server_);
-        AddHttpRouter<std::shared_ptr<asio2::http_server>>("/", http_server_);
+
+        // ping
+        AddHttpRouter(kApiPing, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+            http_handler_->HandlePing(req, rep);
+        });
+
         if (listen_port_ <= 0) {
             LOGE("Listen port invalid: {}", listen_port_);
         }
@@ -172,19 +177,11 @@ namespace tc
         );
     }
 
-    template<typename Server>
-    void WsPluginServer::AddHttpRouter(const std::string &path, const Server &s) {
-        s->bind<http::verb::get, http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
-            if (path == "/") {
-                rep.fill_text("I'm working...");
-            }
-            else if (path == kApiServerState) {
-                //http_handler_->HandleServerState(req, rep);
-            }
-            else if (path == kApiSdpRequest) {
-                //http_handler_->HandleWebRtcSdpRequest(req, rep);
-            }
-
+    void WsPluginServer::AddHttpRouter(const std::string &path,
+       std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback) {
+        // bind it
+        http_server_->bind<http::verb::get, http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
+            callback(path, req, rep);
         }, aop_log{}, http::enable_cache);
     }
 

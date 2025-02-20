@@ -8,8 +8,8 @@
 namespace tc
 {
 
-    HttpHandler::HttpHandler(const std::shared_ptr<Application>& app) {
-        this->app_ = app;
+    HttpHandler::HttpHandler(WsPlugin* plugin) {
+        this->plugin_ = plugin;
     }
 
     void HttpHandler::HandlePing(http::web_request &req, http::web_response &rep) {
