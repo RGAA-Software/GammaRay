@@ -69,8 +69,8 @@ namespace tc
 
         setCentralWidget(root_widget);
 
-        main_progress_ = new MainProgress(sdk_, this);
-        main_progress_->hide();
+        main_progress_ = new MainProgress(sdk_, context_, this);
+        main_progress_->show();
 
         // button indicator
         int shadow_color = 0x999999;
@@ -157,12 +157,28 @@ namespace tc
             this->SwitchScaleMode(msg.mode_);
         });
 
-        msg_listener_->Listen<MsgWsConnected>([=, this](const MsgWsConnected& msg) {
+        // step 1
+        msg_listener_->Listen<MsgNetworkConnected>([=, this](const MsgNetworkConnected& msg) {
             this->SendSwitchWorkModeMessage(settings_->work_mode_);
+            main_progress_->ResetProgress();
+            main_progress_->StepForward();
+            LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
         });
 
-        msg_listener_->Listen<MsgWsDisconnected>([=, this](const MsgWsDisconnected& msg) {
+        msg_listener_->Listen<MsgNetworkDisConnected>([=, this](const MsgNetworkDisConnected& msg) {
 
+        });
+
+        // step 2
+        msg_listener_->Listen<MsgFirstConfigInfoCallback>([=, this](const MsgFirstConfigInfoCallback& msg) {
+            main_progress_->StepForward();
+            LOGI("Step: MsgFirstConfigInfoCallback, at: {}", main_progress_->GetCurrentProgress());
+        });
+
+        // step 3
+        msg_listener_->Listen<MsgFirstVideoFrameDecoded>([=, this](const MsgFirstVideoFrameDecoded& msg) {
+            main_progress_->CompleteProgress();
+            LOGI("Step: MsgFirstVideoFrameDecoded, at: {}", main_progress_->GetCurrentProgress());
         });
 
         msg_listener_->Listen<MsgChangeMonitorResolution>([=, this](const MsgChangeMonitorResolution& msg) {
