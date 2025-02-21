@@ -19,13 +19,9 @@ namespace tc
         pixmap_ = pixmap_.scaled(30, 30);
         setMouseTracking(true);
         this->setStyleSheet("background:#00000000;");
-        QTimer::singleShot(200, [=]() {
-            QRect parent_rect = parentWidget()->geometry();
-            float xpos = parent_rect.width() * std::atof(context_->GetValueByKey(kPosX).c_str());
-            float ypos = parent_rect.height() * std::atof(context_->GetValueByKey(kPosY).c_str());
-            move(xpos, ypos);
+        QTimer::singleShot(200, [=, this]() {
+            ReCalculatePosition();
         });
-
     }
 
     void FloatController::paintEvent(QPaintEvent *event) {
@@ -97,5 +93,12 @@ namespace tc
 
     bool FloatController::HasMoved() const {
         return has_moved_;
+    }
+
+    void FloatController::ReCalculatePosition() {
+        QRect parent_rect = parentWidget()->geometry();
+        float xpos = parent_rect.width() * std::atof(context_->GetValueByKey(kPosX).c_str());
+        float ypos = parent_rect.height() * std::atof(context_->GetValueByKey(kPosY).c_str());
+        move(xpos, ypos);
     }
 }

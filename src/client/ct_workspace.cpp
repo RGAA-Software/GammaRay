@@ -360,6 +360,7 @@ namespace tc
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
         UpdateFloatButtonIndicatorPosition();
+        float_controller_->ReCalculatePosition();
     }
 
     void Workspace::UpdateNotificationHandlePosition() {

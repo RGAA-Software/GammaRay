@@ -29,6 +29,7 @@ namespace tc
         }
 
         bool HasMoved() const;
+        void ReCalculatePosition();
 
     private:
         QPixmap pixmap_;
