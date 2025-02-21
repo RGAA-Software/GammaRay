@@ -23,6 +23,7 @@
 #include "stream_content.h"
 #include "client/ct_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
+#include "tc_common_new/base64.h"
 
 namespace tc
 {
@@ -85,7 +86,7 @@ namespace tc
             }
         )");
 
-        QObject::connect(stream_list_, &QListWidget::customContextMenuRequested, this, [=](const QPoint& pos) {
+        QObject::connect(stream_list_, &QListWidget::customContextMenuRequested, this, [=, this](const QPoint& pos) {
             QListWidgetItem* cur_item = stream_list_->itemAt(pos);
             if (cur_item == nullptr) { return; }
             int index = stream_list_->row(cur_item);
@@ -175,7 +176,12 @@ namespace tc
                   << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
                   << std::format("--device_id={}", settings_->device_id_).c_str()
                   << std::format("--stream_id={}", item.stream_id).c_str()
+                  << std::format("--conn_type={}", item.connect_type_).c_str()
                   << std::format("--network_type={}", item.network_type_).c_str()
+                  << std::format("--stream_name={}", Base64::Base64Encode(item.stream_name)).c_str()
+                  << std::format("--client_id={}", item.client_id_).c_str()
+                  << std::format("--client_rp={}", Base64::Base64Encode(item.client_random_pwd_)).c_str()
+                  << std::format("--client_sp={}", Base64::Base64Encode(item.client_safety_pwd_)).c_str()
                   ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

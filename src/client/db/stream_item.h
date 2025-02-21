@@ -15,6 +15,9 @@ namespace tc
     static std::string kStreamItemNtTypeWebRTCDirect = "webrtc_direct";
     static std::string kStreamItemNtTypeWebRTC = "webrtc";
 
+    static std::string kStreamItemConnTypeDirect = "direct";
+    static std::string kStreamItemConnTypeSignaling = "signaling";
+
     // WARN: Ported from another project, some fields are deprecated.
     class StreamItem {
     public:
@@ -48,6 +51,9 @@ namespace tc
         // network type
         // websocket / udp_kcp / webrtc_direct / webrtc
         std::string network_type_;
+
+        // direct / signaling
+        std::string connect_type_;
 
         // 9 numbers
         std::string client_id_;

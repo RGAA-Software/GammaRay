@@ -70,7 +70,7 @@ namespace tc
         setCentralWidget(root_widget);
 
         main_progress_ = new MainProgress(sdk_, this);
-        main_progress_->show();
+        main_progress_->hide();
 
         // button indicator
         int shadow_color = 0x999999;

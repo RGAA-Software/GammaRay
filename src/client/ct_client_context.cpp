@@ -75,6 +75,7 @@ namespace tc
                 .stream_port = 20371,
                 .bg_color = db_mgr_->RandomColor(),
                 .network_type_ = kStreamItemNtTypeWebSocket,
+                .connect_type_ = kStreamItemConnTypeDirect,
             };
             db_mgr_->AddStream(item);
         }

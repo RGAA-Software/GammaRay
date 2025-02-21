@@ -16,6 +16,7 @@
 #include "client/ct_application.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/base64.h"
 #include "client/ct_settings.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -27,6 +28,7 @@ using namespace tc;
 std::string g_host_;
 int g_port_ = 0;
 std::string g_nt_type_;
+std::string g_conn_type_;
 
 void ParseCommandLine(QApplication& app) {
     QCommandLineParser parser;
@@ -58,11 +60,25 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_network_type("network_type", "Network Type", "value", "");
     parser.addOption(opt_network_type);
 
+    QCommandLineOption opt_conn_type("conn_type", "Conn Type", "value", "");
+    parser.addOption(opt_conn_type);
+
+    QCommandLineOption opt_stream_name("stream_name", "Stream name", "value", "");
+    parser.addOption(opt_stream_name);
+
+    QCommandLineOption opt_client_id("client_id", "Client id", "value", "");
+    parser.addOption(opt_client_id);
+
+    QCommandLineOption opt_client_rp("client_rp", "Client rp", "value", "");
+    parser.addOption(opt_client_rp);
+
+    QCommandLineOption opt_client_sp("client_sp", "Client sp", "value", "");
+    parser.addOption(opt_client_sp);
+
     parser.process(app);
 
     g_host_ = parser.value(opt_host).toStdString();
     g_port_ = parser.value(opt_port).toInt();
-    //g_port_ = 9090;
 
     auto settings = tc::Settings::Instance();
     settings->remote_address_ = g_host_;
@@ -75,17 +91,44 @@ void ParseCommandLine(QApplication& app) {
     settings->device_id_ = parser.value(opt_device_id).toStdString();
     settings->stream_id_ = parser.value(opt_stream_id).toStdString();
     g_nt_type_ = parser.value(opt_network_type).toStdString();
-    settings->network_type_ = [=]() -> ClientConnType {
+    settings->network_type_ = [=]() -> ClientNetworkType {
         if (g_nt_type_ == kStreamItemNtTypeWebSocket) {
-            return ClientConnType::kWebsocket;
+            return ClientNetworkType::kWebsocket;
         }
         else if (g_nt_type_ == kStreamItemNtTypeUdpKcp) {
-            return ClientConnType::kUdpKcp;
+            return ClientNetworkType::kUdpKcp;
         }
         else {
-            return ClientConnType::kWebsocket;
+            return ClientNetworkType::kWebsocket;
         }
     }();
+
+    g_conn_type_ = parser.value(opt_conn_type).toStdString();
+    settings->conn_type_ = [=]() -> ClientConnectType {
+        if (g_conn_type_ == kStreamItemConnTypeDirect) {
+            return ClientConnectType::kDirect;
+        }
+        else if (g_conn_type_ == kStreamItemConnTypeSignaling) {
+            return ClientConnectType::kSignaling;
+        }
+        else {
+            return ClientConnectType::kSignaling;
+        }
+    }();
+
+    settings->stream_name_ = parser.value(opt_stream_name).toStdString();
+    if (!settings->stream_name_.empty()) {
+        settings->stream_name_ = Base64::Base64Decode(settings->stream_name_);
+    }
+    settings->client_id_ = parser.value(opt_client_id).toStdString();
+    settings->client_random_pwd_ = parser.value(opt_client_rp).toStdString();
+    if (!settings->client_random_pwd_.empty()) {
+        settings->client_random_pwd_ = Base64::Base64Decode(settings->client_random_pwd_);
+    }
+    settings->client_safety_pwd_ = parser.value(opt_client_sp).toStdString();
+    if (!settings->client_safety_pwd_.empty()) {
+        settings->client_safety_pwd_ = Base64::Base64Decode(settings->client_safety_pwd_);
+    }
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -173,11 +216,12 @@ int main(int argc, char** argv) {
 #elif defined(ANDROID)
             .client_type_ = ClientType::kAndroid,
 #endif
-            .conn_type_ = settings->network_type_,
+            .conn_type_ = settings->conn_type_,
+            .nt_type_ = settings->network_type_,
             .device_id_ = settings->device_id_,
             .stream_id_ = settings->stream_id_
     });
-    ws.setWindowTitle(QMainWindow::tr("GammaRay Game Streamer"));
+    ws.setWindowTitle(QMainWindow::tr("GammaRay Streamer") + "[" + settings->stream_name_.c_str() + "]");
     ws.resize(1280, 768);
     ws.show();
 

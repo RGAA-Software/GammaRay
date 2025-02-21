@@ -42,6 +42,7 @@ namespace tc
             make_column("bg_color", &StreamItem::bg_color),
             make_column("encode_fps", &StreamItem::encode_fps),
             make_column("network_type", &StreamItem::network_type_),
+            make_column("connect_type", &StreamItem::connect_type_),
             make_column("client_id", &StreamItem::client_id_),
             make_column("client_random_pwd", &StreamItem::client_random_pwd_),
             make_column("client_safety_pwd", &StreamItem::client_safety_pwd_)
@@ -55,57 +56,6 @@ namespace tc
 
     void StreamDBManager::CreateTables() {
         auto db_path = qApp->applicationDirPath() + "/gr_data/stream.db";
-#if 0
-        // 1. create database if needed
-        sqlite3 *db;
-        auto rc = sqlite3_open(db_path.toStdString().c_str(), &db);
-        if (rc) {
-            LOGE("Create stream.db failed !");
-            return;
-        }
-
-        char *msg = nullptr;
-        auto sql_stream_table = R"(
-			CREATE TABLE IF NOT EXISTS stream (
-				id                     INTEGER PRIMARY KEY AUTOINCREMENT,
-				stream_id			   TEXT,
-				stream_name            TEXT,
-				stream_target          TEXT,
-				monitor_capture_method TEXT,
-				exe_path               TEXT,
-				capture_mode           TEXT,
-				encoder_type           TEXT,
-				encoder_hw             TEXT,
-				encode_bps             INTEGER,
-				audio_enabled          INTEGER,
-				audio_capture_mode     TEXT,
-				gpu_router_enabled     INTEGER,
-				gpu_router_policy      TEXT,
-				frame_resize_enabled   INTEGER,
-				frame_resize_width     INTEGER,
-				frame_resize_height    INTEGER,
-				replay_mode            TEXT,
-                stream_host            TEXT,
-				stream_port            INTEGER,
-				app_args               TEXT,
-				auto_exit              INTEGER,
-				auto_exit_period       INTEGER,
-				enable_multi_players   INTEGER,
-                bg_color               INTEGER,
-                encode_fps             INTEGER,
-                network_type           TEXT
-			);
-		)";
-
-        rc = sqlite3_exec(db, sql_stream_table,
-                          [](void *NotUsed, int argc, char **argv, char **col_name) -> int { return 0; }, 0, &msg);
-        if (rc) {
-            LOGE("Create table failed : {}", msg);
-            return;
-        }
-
-        sqlite3_close(db);
-#endif
         // 2. bind
         db_storage = BindAppDatabase(db_path.toStdString());
         using Storage = decltype(GetStorageTypeValue());
