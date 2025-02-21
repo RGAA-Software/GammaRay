@@ -6,5 +6,5 @@
     <Publisher>RGAA</Publisher>
     <!-- Directory name is used in component.xml -->
     <StartMenuDir>GammaRay</StartMenuDir>
-    <TargetDir>@HomeDir@/RGAA/GammaRay</TargetDir>
+    <TargetDir>@ApplicationsDir@/RGAA/GammaRay</TargetDir>
 </Installer>

@@ -26,27 +26,89 @@
 **
 ****************************************************************************/
 
+
 function Component()
 {
-    // default constructor
+    //installer.setDefaultPageVisible(QInstaller.Introduction, false);
+
+    if (installer.isInstaller()) {
+
+
+        var result = installer.execute("sc",["query", "GammaRayService"]);
+        console.log("===>[sc query GammaRayService] result: ");
+
+        var running = false;
+        result.forEach(function(element) {
+            console.log("line: ", element);
+            if (typeof element !== 'string') {
+                return;
+            }
+
+            if (element.includes("RUNNING")) {
+                running = true;
+            }
+        });
+        console.log("Is GammaRayService running? ", running);
+
+        var targetDir = installer.value("TargetDir");
+        console.log("Installation dir: ", targetDir);
+
+        if (running) {
+            var answer = QMessageBox.question("diglog_remove_exists", "Uninstall Service", "Do you want to uninstall Service?", QMessageBox.Yes | QMessageBox.No);
+            if (answer === QMessageBox.Yes) {
+                console.log("User chose to continue installation.");
+                var result = installer.execute("sc",["stop", "GammaRayService"]);
+                console.log("===> [sc stop GammaRayService] result: ", result);
+
+                result = installer.execute("sc",["delete", "GammaRayService"]);
+                console.log("===> [sc delete GammaRayService] result: ", result);
+
+
+            } else {
+                console.log("User chose to cancel installation.");
+                answer = QMessageBox.question("diglog_quiting", "Exiting", "Installation will exit.", QMessageBox.Yes);
+                gui.clickButton(buttons.CancelButton);
+            }
+        }
+
+        console.log("===> folder exists, will delete it !", targetDir);
+        installer.performOperation("Delete",targetDir + "/maintenancetool.exe");
+        installer.performOperation("Delete",targetDir + "/maintenancetool.dat");
+        installer.performOperation("Delete",targetDir + "/maintenancetool.ini");
+        installer.performOperation("Delete", targetDir);
+
+    }
+    else if (installer.isUninstaller()) {
+
+    }
 }
+
+Component.prototype.componentLoaded = function() {
+    console.log("===> component laoded!!!");
+    var result = installer.execute("dir");
+    console.log("===> component laoded!!!", result);
+}
+
 
 Component.prototype.createOperations = function()
 {
+
+     console.log("===> Create Operations...");
+
     // call default implementation to actually install README.txt!
     component.createOperations();
 
-     component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@StartMenuDir@/GammaRay.lnk",
-            "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/gr_icon.ico",
-            "description=Open GammaRay");
+    component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@StartMenuDir@/GammaRay.lnk",
+        "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/gr_icon.ico",
+        "description=Open GammaRay");
 
-     component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@DesktopDir@/GammaRay.lnk", "iconPath=@TargetDir@/gr_icon.ico",
-        "workingDirectory=@TargetDir@");
+    component.addOperation("CreateShortcut", "@TargetDir@/GammaRay.exe", "@DesktopDir@/GammaRay.lnk", "iconPath=@TargetDir@/gr_icon.ico",
+    "workingDirectory=@TargetDir@");
 
-     component.addOperation("CreateShortcut", "@TargetDir@/GammaRayClient.exe", "@StartMenuDir@/GammaRayClient.lnk",
-            "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/gr_client_icon.ico",
-            "description=Open GammaRayClient");
+    component.addOperation("CreateShortcut", "@TargetDir@/GammaRayClient.exe", "@StartMenuDir@/GammaRayClient.lnk",
+        "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/gr_client_icon.ico",
+        "description=Open GammaRayClient");
 
-     component.addOperation("CreateShortcut", "@TargetDir@/GammaRayClient.exe", "@DesktopDir@/GammaRayClient.lnk", "iconPath=@TargetDir@/gr_client_icon.ico",
-        "workingDirectory=@TargetDir@");
+    component.addOperation("CreateShortcut", "@TargetDir@/GammaRayClient.exe", "@DesktopDir@/GammaRayClient.lnk", "iconPath=@TargetDir@/gr_client_icon.ico",
+    "workingDirectory=@TargetDir@");
 }
