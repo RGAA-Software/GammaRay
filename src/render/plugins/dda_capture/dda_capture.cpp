@@ -10,10 +10,13 @@
 #include "tc_capture_new/capture_message.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "dda_capture_plugin.h"
+#include "tc_common_new/win32/d3d_debug_helper.h"
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "Winmm.lib")
+
+#define S_NOT_CHANGED ((HRESULT)5L)
 
 namespace tc
 {
@@ -187,54 +190,43 @@ namespace tc
     bool DDACapture::Exit() {
         if (dxgi_output_duplication_.duplication_) {
             dxgi_output_duplication_.duplication_->ReleaseFrame();
+            dxgi_output_duplication_.duplication_.Release();
         }
-        dxgi_output_duplication_.duplication_.Release();
-
         d3d11_device_.Release();
         d3d11_device_context_.Release();
         return true;
     }
 
-    DDACapture::CaptureResult DDACapture::CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex) {
+    HRESULT DDACapture::CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex) {
         DXGI_OUTDUPL_FRAME_INFO info;
         CComPtr<IDXGIResource> resource;
         CComPtr<ID3D11Texture2D> source;
         HRESULT res;
-        CaptureResult ret = CaptureResult::kSuccess;
         if (!dxgi_output_duplication_.duplication_) {
             if (!Init()) {
-                // todo:
-                //msg_notifier_->SendAppMessage(CaptureInitFailedMessage{});
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-                return CaptureResult::kTryAgain;
+                LOGE("Capture dxgi init failed!");
+                return S_FALSE;
             }
-            ret = CaptureResult::kReInit;
+            if (!dxgi_output_duplication_.duplication_) {
+                return S_FALSE;
+            }
         }
         dxgi_output_duplication_.duplication_->ReleaseFrame();
 
         res = dxgi_output_duplication_.duplication_->AcquireNextFrame(wait_time, &info, &resource);
         if (res != S_OK) {
-            if (res == DXGI_ERROR_WAIT_TIMEOUT) {
-                return CaptureResult::kTryAgain;
-            } else if (res == DXGI_ERROR_ACCESS_LOST) {
-                LOGE("DXGI_ERROR_ACCESS_LOST");
-                return CaptureResult::kReInit;
-            } else if (res == DXGI_ERROR_INVALID_CALL) {
-                printf("DXGI_ERROR_INVALID_CALL");
-                return CaptureResult::kReInit;
-            }
-            return CaptureResult::kTryAgain;
+            return res;
         }
         res = resource->QueryInterface(__uuidof(ID3D11Texture2D), (void **) &source);
         if (res != S_OK) {
             LOGE("QueryInterface failed when capturing: {}", StringExt::GetErrorStr(res));
-            return CaptureResult::kFailed;
+            return res;
         }
         if (info.AccumulatedFrames == 0) {
-            return CaptureResult::kTryAgain;
+            return S_NOT_CHANGED;
         }
         out_tex = source;
-        return ret;
+        return res;
     }
 
     void DDACapture::Start() {
@@ -252,42 +244,53 @@ namespace tc
 
             auto target_duration = 1000 / capture_fps_;
             CComPtr<ID3D11Texture2D> texture = nullptr;
-            DDACapture::CaptureResult res = CaptureNextFrame(target_duration, texture);
-            if (res == DDACapture::CaptureResult::kFailed) {
-                LOGE("CaptureNextFrame failed: {}", my_monitor_info_.name_);
-                continue;
-            } else if (res == DDACapture::CaptureResult::kReInit) {
-                LOGE("CaptureNextFrame reinit, name = {}.", my_monitor_info_.name_);
+            auto res = CaptureNextFrame(target_duration, texture);
+
+            bool is_cached = false;
+            if (res == S_OK) {
+                // ok
+            }
+            else if (res == S_FALSE || res == DXGI_ERROR_ACCESS_LOST || res == DXGI_ERROR_INVALID_CALL) {
+                LOGE("CaptureNextFrame reinit, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringExt::GetErrorStr(res));
                 Exit();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 auto init_ok = Init();
                 if (!init_ok) {
-                    // todo:
-                    //msg_notifier_->SendAppMessage(CaptureInitFailedMessage{});
-                    LOGE("DDA re-init failed!");
+                    LOGE("ReInit failed!");
+                } else {
+                    used_cache_times_ = 0;
+                    refresh_screen_ = true;
+                    LOGE("ReInit successfully.");
                 }
                 continue;
-            } else if (res == DDACapture::CaptureResult::kTryAgain) {
+            } else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED) && true) {
                 if (refresh_screen_) {
-                    refresh_screen_ = false;
-                    if (cached_texture_ != nullptr) {
-                        texture = cached_texture_;
-                        LOGI("Use cached texture!");
+                    if (cached_texture_ == nullptr) {
+                        continue;
                     }
+                    if (used_cache_times_++ > 5) {
+                        refresh_screen_ = false;
+                    }
+                    texture = cached_texture_;
+                    is_cached = true;
+                    LOGI("Use cached texture!");
                 } else {
                     continue;
                 }
             }
+            else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                LOGE("Unknown error: {:x}", res, StringExt::GetErrorStr(res));
+                continue;
+            }
 
             if (texture) {
-                //std::string dds_name = "frame_index_" + std::to_string(index);
-                //DebugOutDDS(texture, dds_name);
-                OnCaptureFrame(texture);
+                OnCaptureFrame(texture, is_cached);
             }
         }
     }
 
-    void DDACapture::OnCaptureFrame(ID3D11Texture2D *texture) {
+    void DDACapture::OnCaptureFrame(ID3D11Texture2D *texture, bool is_cached) {
         HRESULT result;
         // input texture info
         D3D11_TEXTURE2D_DESC input_desc;
@@ -314,6 +317,8 @@ namespace tc
                 || (input_format != shared_format);
 
         if (texture_changed) {
+            LOGI("texture changed, origin: {}x{}, format: {}", shared_width, shared_height, (int)shared_format);
+            LOGI("texture changed, current: {}x{}, format: {}", input_width, input_height, (int)input_format);
             if (shared_texture) {
                 shared_texture->Release();
                 last_list_texture_.texture2d_ = nullptr;
@@ -352,6 +357,7 @@ namespace tc
 
             // cached textures
             if (cached_texture_ != nullptr) {
+                cached_texture_.Release();
                 cached_texture_ = nullptr;
             }
             CComPtr<ID3D11Texture2D> cached_texture;
@@ -377,7 +383,9 @@ namespace tc
         }
 
         d3d11_device_context_->CopyResource(last_list_texture_.texture2d_.Get(), texture);
-        d3d11_device_context_->CopyResource(cached_texture_, texture);
+        if (!is_cached) {
+            d3d11_device_context_->CopyResource(cached_texture_, texture);
+        }
 
         if (keyMutex) {
             keyMutex->ReleaseSync(0);
@@ -440,5 +448,9 @@ namespace tc
         this->Exit();
     }
 
+    void DDACapture::RefreshScreen() {
+        DesktopCapture::RefreshScreen();
+        used_cache_times_ = 0;
+    }
 
 } // tc

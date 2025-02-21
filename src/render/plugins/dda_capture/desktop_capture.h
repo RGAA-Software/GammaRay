@@ -23,10 +23,10 @@ namespace tc
         virtual bool PauseCapture() = 0;
         virtual void ResumeCapture() = 0;
         virtual void StopCapture() = 0;
-        void SetCaptureFps(int fps);
+        virtual void SetCaptureFps(int fps);
+        virtual void RefreshScreen();
 
     private:
-        void RefreshScreen();
 
     protected:
         DDACapturePlugin* plugin_ = nullptr;

@@ -23,12 +23,6 @@ namespace tc
 
     class DDACapture : public DesktopCapture  {
     public:
-        enum class CaptureResult {
-            kSuccess,
-            kFailed,
-            kReInit,
-            kTryAgain,
-        };
 
         class DXGIOutputDuplication {
         public:
@@ -54,13 +48,14 @@ namespace tc
         bool PauseCapture() override;
         void ResumeCapture() override;
         void StopCapture() override;
+        void RefreshScreen() override;
 
     private:
         void Start();
         bool Exit();
         void Capture();
-        CaptureResult CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex);
-        void OnCaptureFrame(ID3D11Texture2D *texture);
+        HRESULT CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex);
+        void OnCaptureFrame(ID3D11Texture2D *texture, bool is_cached);
         void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
         int GetFrameIndex();
         std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
@@ -69,6 +64,7 @@ namespace tc
         std::atomic<bool> stop_flag_ = false;
         std::thread capture_thread_;
         int64_t monitor_frame_index_ = 0;
+        int used_cache_times_ = 0;
 
         SharedD3d11Texture2D last_list_texture_;
         DXGIOutputDuplication dxgi_output_duplication_;

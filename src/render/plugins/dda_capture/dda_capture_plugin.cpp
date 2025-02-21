@@ -232,15 +232,10 @@ namespace tc
 
     void DDACapturePlugin::OnNewClientIn() {
         GrPluginInterface::OnNewClientIn();
-#if WIN32
-        LOGI("OnNewClientIn will refresh desktop.");
-        //SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, nullptr, SPIF_SENDCHANGE);
-        //SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-        HWND desktop = GetDesktopWindow();
-        if (InvalidateRect(desktop, NULL, TRUE)) {
-            UpdateWindow(desktop);
+        for (const auto& [k, capture] : captures_) {
+            capture->RefreshScreen();
         }
-#endif
+        LOGI("OnNewClientIn!");
     }
 
     std::vector<SupportedResolution> DDACapturePlugin::GetSupportedResolutions(const std::wstring& name) {
