@@ -77,16 +77,36 @@ function Component()
         installer.performOperation("Delete",targetDir + "/maintenancetool.ini");
         installer.performOperation("Delete", targetDir);
 
+        installer.installationFinished.connect(function() {
+            console.log("===> Install finished.");
+            //installer.performOperation("Execute", targetDir + "/GammaRay.exe");
+            installer.executeDetached(targetDir + "/GammaRay.exe");
+        });
+
     }
     else if (installer.isUninstaller()) {
 
     }
+
+    installer.uninstallationStarted.connect(function() {
+        console.log("===> UnInstallation started.");
+        console.log("User chose to continue installation.");
+        var result = installer.execute("sc",["stop", "GammaRayService"]);
+        console.log("===> [sc stop GammaRayService] result: ", result);
+
+        result = installer.execute("sc",["delete", "GammaRayService"]);
+        console.log("===> [sc delete GammaRayService] result: ", result);
+
+    });
 }
 
-Component.prototype.componentLoaded = function() {
-    console.log("===> component laoded!!!");
-    var result = installer.execute("dir");
-    console.log("===> component laoded!!!", result);
+Component.prototype.beginInstallation = function()
+{
+    // call default implementation
+    component.beginInstallation();
+
+    console.log("===> Installation Started ===");
+
 }
 
 
