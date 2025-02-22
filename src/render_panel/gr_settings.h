@@ -78,7 +78,6 @@ namespace tc
         void SetEncoderFormat(int idx);
         void SetCaptureVideo(bool enabled);
         void SetCaptureAudio(bool enabled);
-        void SetCaptureMonitor(const std::string& name);
         void SetCaptureAudioDeviceId(const std::string& name);
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
@@ -119,7 +118,6 @@ namespace tc
         std::string capture_audio_type_;
         std::string capture_video_;
         std::string capture_video_type_;
-        std::string capture_monitor_;
         std::string capture_audio_device_;
 
         int network_listening_port_{};

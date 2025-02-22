@@ -194,10 +194,16 @@ namespace tc
     }
 
     void DDACapturePlugin::SetCaptureMonitor(const std::string& name) {
+        bool use_default_monitor = false;
+        if (name.empty()) {
+            use_default_monitor = true;
+        }
+        LOGI("SetCaptureMonitor: {}, use_default_monitor: {}", name, use_default_monitor);
+
         // todo: capture all monitors at same time
         if (IsWorking()) {
-            capturing_monitor_name_ = name;
             if (name == "all") {
+                capturing_monitor_name_ = name;
                 // TODO
                 for (const auto& [monitor_name, capture]: captures_) {
                     capture->ResumeCapture();
@@ -205,15 +211,30 @@ namespace tc
             }
             else {
                 for (const auto &[monitor_name, capture]: captures_) {
-                    if (monitor_name == name) {
-                        capture->ResumeCapture();
-                    } else {
-                        capture->PauseCapture();
+                    if (!name.empty()) {
+                        if (monitor_name == name) {
+                            capturing_monitor_name_ = name;
+                            capture->ResumeCapture();
+                        }
+                        else {
+                            capture->PauseCapture();
+                        }
+                    }
+                    else {
+                        if (use_default_monitor && capture->IsPrimaryMonitor()) {
+                            LOGI("Use default monitor: {}", monitor_name);
+                            capturing_monitor_name_ = monitor_name;
+                            capture->ResumeCapture();
+                        }
+                        else {
+                            capture->PauseCapture();
+                        }
                     }
                 }
             }
         }
 
+        LOGI("Capturing monitor name: {}", capturing_monitor_name_);
         NotifyCaptureMonitorInfo();
     }
 

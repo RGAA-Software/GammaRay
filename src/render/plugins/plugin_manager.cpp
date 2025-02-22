@@ -65,7 +65,6 @@ namespace tc
                         .cluster_ = {
                             {"name", filename.toStdString()},
                             {"base_path", base_path.toStdString()},
-                            {"capture_monitor_name", settings_->capture_.capture_monitor_},
                             {"capture_audio_device_id", settings_->capture_.capture_audio_device_},
                             {"ws-listen-port", (int64_t)settings_->transmission_.listening_port_},
                             {"udp-listen-port", (int64_t)settings_->transmission_.udp_listen_port_},

@@ -73,6 +73,7 @@ namespace tc {
         // to event replayer
         win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
 
+        LOGI("==> GrPluginCapturingMonitorInfoEvent, captureing monitor: {}", plugin->GetCapturingMonitorName());
         // to other listeners
         msg_notifier_->SendAppMessage(cm_msg);
     }

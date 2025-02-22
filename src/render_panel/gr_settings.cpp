@@ -34,7 +34,6 @@ namespace tc
         capture_audio_type_ = sp_->Get(kStCaptureAudioType, "global");
         capture_video_ = sp_->Get(kStCaptureVideo, "true");
         capture_video_type_ = sp_->Get(kStCaptureVideoType, "global");
-        capture_monitor_ = sp_->Get(kStCaptureMonitor, "");
         capture_audio_device_ = sp_->Get(kStCaptureAudioDevice, "");
 
         panel_listen_port_ = sp_->GetInt(kStPanelListeningPort, 20369);
@@ -49,18 +48,6 @@ namespace tc
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
             file_transfer_folder_ = qApp->applicationDirPath().toStdString();
-        }
-
-        // default
-        LOGI("Load from db, capture monitor is: {}", capture_monitor_);
-        if (capture_monitor_.empty()) {
-            auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
-            for (const auto& adapter : adapters) {
-                if (adapter.primary) {
-                    LOGI("Use primary monitor: {}", adapter.display_name);
-                    SetCaptureMonitor(adapter.display_name);
-                }
-            }
         }
 
         if (capture_audio_device_.empty()) {
@@ -109,7 +96,6 @@ namespace tc
         ss << "network_listening_port_: " << network_listening_port_ << std::endl;
         ss << "websocket_enabled_:" << websocket_enabled_ << std::endl;
         ss << "webrtc_enabled_:" << webrtc_enabled_ << std::endl;
-        ss << "capture_monitor_: " << GetCaptureMonitor() << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
         ss << "sig_server_address_: " << sig_server_address_ << std::endl;
         ss << "sig_server_port_: " << sig_server_port_ << std::endl;
@@ -142,7 +128,6 @@ namespace tc
         args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
         args.push_back(std::format("--{}={}", kStUdpKcpEnabled, udp_kcp_enabled_));
         args.push_back(std::format("--{}={}", kStUdpListenPort, udp_listen_port_));
-        args.push_back(std::format("--{}={}", kStCaptureMonitor, Base64::Base64Encode(capture_monitor_)));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
         args.push_back(std::format("--{}={}", kStAppGamePath, "desktop"));
         args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
@@ -200,11 +185,6 @@ namespace tc
     void GrSettings::SetCaptureAudio(bool enabled) {
         capture_audio_ = enabled ? kStTrue : kStFalse;
         sp_->Put(kStCaptureAudio, capture_audio_);
-    }
-
-    void GrSettings::SetCaptureMonitor(const std::string& name) {
-        capture_monitor_ = name;
-        sp_->Put(kStCaptureMonitor, capture_monitor_);
     }
 
     void GrSettings::SetCaptureAudioDeviceId(const std::string& name) {

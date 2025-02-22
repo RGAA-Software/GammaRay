@@ -209,6 +209,7 @@ namespace tc
                 });
             }
             // Capture monitor
+#if 0
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
@@ -251,6 +252,7 @@ namespace tc
                 });
 
             }
+#endif
             // capture audio
             {
                 auto layout = new NoMarginHLayout();
@@ -512,6 +514,7 @@ namespace tc
                     settings_->SetResHeight(res_height);
                 }
 
+#if 0
                 auto monitor_name = cb_capture_monitor_->currentText();
                 auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
                 for (const auto& adapter : adapters) {
@@ -519,6 +522,7 @@ namespace tc
                         settings_->SetCaptureMonitor(adapter.display_name);
                     }
                 }
+#endif
 
                 auto audio_devices = AudioDeviceHelper::DetectAudioDevices();
                 auto audio_device_name = cb_capture_audio_device_name_->currentText().toStdString();

@@ -25,6 +25,7 @@ namespace tc
         virtual void StopCapture() = 0;
         virtual void SetCaptureFps(int fps);
         virtual void RefreshScreen();
+        virtual bool IsPrimaryMonitor();
 
     private:
 
@@ -34,6 +35,7 @@ namespace tc
         bool refresh_screen_ = false;
         std::atomic_bool pausing_ = true;
         CaptureMonitorInfo my_monitor_info_;
+        bool is_primary_monitor_ = false;
     };
 }
 

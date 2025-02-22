@@ -7,6 +7,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
+#include "tc_common_new/monitors.h"
 #include "tc_capture_new/capture_message.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "dda_capture_plugin.h"
@@ -183,6 +184,14 @@ namespace tc
             LOGI("Init DDA failed.");
             return false;
         }
+
+        std::vector<MonitorWinInfo> win_monitors = EnumerateAllMonitors();
+        for (const auto& info : win_monitors) {
+            if (info.name_ == my_monitor_info_.name_ && info.is_primary_) {
+                is_primary_monitor_ = true;
+            }
+        }
+
         LOGI("Init DDA successful");
         return true;
     }
@@ -451,6 +460,10 @@ namespace tc
     void DDACapture::RefreshScreen() {
         DesktopCapture::RefreshScreen();
         used_cache_times_ = 0;
+    }
+
+    bool DDACapture::IsPrimaryMonitor() {
+        return is_primary_monitor_;
     }
 
 } // tc
