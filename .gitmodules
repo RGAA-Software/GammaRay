@@ -37,3 +37,6 @@
 [submodule "src/render/plugins/tc_vr_plugin"]
 	path = src/render/plugins/tc_vr_plugin
 	url = git@github.com:RGAA-Software/tc_vr_plugin.git
+[submodule "src/render/plugins/file_transfer/file_transmission_server"]
+	path = src/render/plugins/file_transfer/file_transmission_server
+	url = git@github.com:ChengduDreamer/file_transmission_server.git
