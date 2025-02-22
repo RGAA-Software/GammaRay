@@ -22,6 +22,8 @@ namespace tc
     class UdpSession {
     public:
         int64_t socket_fd_{0};
+        std::string device_id_;
+        std::string stream_id_;
         std::shared_ptr<asio2::udp_session> sess_ = nullptr;
     };
 
@@ -34,10 +36,12 @@ namespace tc
 
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
-        void OnProtoMessage(const std::string &msg) override;
+        void PostProtoMessage(const std::string &msg) override;
+        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) override;
         int ConnectedClientSize() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
+        void SyncInfo(const tc::NetSyncInfo &info) override;
         void NotifyMediaClientConnected();
         void NotifyMediaClientDisConnected();
 
@@ -47,7 +51,7 @@ namespace tc
     private:
         std::shared_ptr<asio2::udp_server> server_ = nullptr;
         int udp_listen_port_{};
-        tc::ConcurrentHashMap<uint64_t, std::shared_ptr<UdpSession>> sessions_;
+        tc::ConcurrentHashMap<int64_t, std::shared_ptr<UdpSession>> sessions_;
     };
 
 }

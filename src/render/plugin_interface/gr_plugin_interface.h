@@ -113,6 +113,8 @@ namespace tc
         void HideRootWidget();
 
         void AttachNetPlugin(const std::string& id, GrNetPlugin* plugin);
+        void PostToAllStreamMessage(const std::string& msg);
+        void PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg);
 
     protected:
 

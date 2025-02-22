@@ -16,7 +16,7 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
-        void OnProtoMessage(const std::string& msg) override;
+        void PostProtoMessage(const std::string &msg) override;
     };
 
 }

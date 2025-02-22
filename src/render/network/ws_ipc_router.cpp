@@ -20,14 +20,16 @@ namespace tc
         WsRouter::OnClose(sess_ptr);
     }
 
-    void WsIpcRouter::OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
-        WsRouter::OnMessage(sess_ptr, data);
-        auto base_msg = (CaptureBaseMessage*)data.data();
+    void
+    WsIpcRouter::OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, int64_t socket_fd, std::string_view data) {
+        WsRouter::OnMessage(sess_ptr, socket_fd, data);
+        auto base_msg = (CaptureBaseMessage *) data.data();
         auto app = Get<std::shared_ptr<Application>>("app");
         if (base_msg->type_ == kCaptureVideoFrame) {
             auto msg = std::make_shared<CaptureVideoFrame>();
             if (data.size() != sizeof(CaptureVideoFrame)) {
-                LOGE("Error size of ipc video frame, data size: {}, CaptureVideoFrame size: {}", data.size(), sizeof(CaptureVideoFrame));
+                LOGE("Error size of ipc video frame, data size: {}, CaptureVideoFrame size: {}", data.size(),
+                     sizeof(CaptureVideoFrame));
                 return;
             }
             memcpy(msg.get(), data.data(), data.size());

@@ -43,29 +43,43 @@ namespace tc
         return true;
     }
 
-    void UdpPlugin::OnProtoMessage(const std::string& msg) {
+    void UdpPlugin::PostProtoMessage(const std::string& msg) {
         sessions_.VisitAll([=, this](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
             us->sess_->async_send(msg, [](std::size_t bytes_sent) {
-                //LOGI("===> sent msg: {}bytes", bytes_sent);
+
             });
         });
     }
 
+    bool UdpPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
+        bool found_target_stream = false;
+        sessions_.VisitAll([=, &found_target_stream](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
+            if (us->stream_id_ == stream_id) {
+                found_target_stream = true;
+                us->sess_->async_send(msg, [](std::size_t bytes_sent) {
+
+                });
+            }
+        });
+        return found_target_stream;
+    }
+
     void UdpPlugin::StartInternal() {
-        auto fn_get_socket_fd = [](std::shared_ptr<asio2::udp_session> &sess_ptr) -> uint64_t {
+        auto fn_get_socket_fd = [](std::shared_ptr<asio2::udp_session> &sess_ptr) -> int64_t {
             auto& s = sess_ptr->socket();
-            return (uint64_t)s.native_handle();
+            return (int64_t)s.native_handle();
         };
 
         server_ = std::make_shared<asio2::udp_server>();
-        server_->bind_recv([=, this](std::shared_ptr<asio2::udp_session> &session_ptr, std::string_view data) {
-            //LOGI("recv : {} {}", data.size(), (int) data.size(), data.data());
+        server_->bind_recv([=, this](std::shared_ptr<asio2::udp_session>& session_ptr, std::string_view data) {
             auto msg = std::string(data.data(), data.size());
-            this->CallbackClientEvent(true, msg);
+            auto socket_fd = fn_get_socket_fd(session_ptr);
+            this->OnClientEventCame(true, socket_fd, NetPluginType::kUdpKcp, msg);
 
-        }).bind_connect([=, this](auto &session_ptr) {
+        }).bind_connect([=, this](std::shared_ptr<asio2::udp_session>& session_ptr) {
             auto socket_fd = fn_get_socket_fd(session_ptr);
             auto udp_sess = std::make_shared<UdpSession>();
+
             udp_sess->socket_fd_ = socket_fd;
             udp_sess->sess_ = session_ptr;
             sessions_.Insert(socket_fd, udp_sess);
@@ -130,6 +144,16 @@ namespace tc
 
     bool UdpPlugin::IsWorking() {
         return ConnectedClientSize() > 0;
+    }
+
+    void UdpPlugin::SyncInfo(const NetSyncInfo& info) {
+        GrNetPlugin::SyncInfo(info);
+        sessions_.VisitAll([=, this](int64_t fd, std::shared_ptr<UdpSession>& sess) {
+            if (info.socket_fd_ == fd) {
+                sess->device_id_ = info.device_id_;
+                sess->stream_id_ = info.stream_id_;
+            }
+        });
     }
 
 }

@@ -202,4 +202,16 @@ namespace tc
         net_plugins_[id] = plugin;
     }
 
+    void GrPluginInterface::PostToAllStreamMessage(const std::string& msg) {
+        for (const auto& [plugin_id, plugin] : net_plugins_) {
+            plugin->PostProtoMessage(msg);
+        }
+    }
+
+    void GrPluginInterface::PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
+        for (const auto& [plugin_id, plugin] : net_plugins_) {
+            plugin->PostTargetStreamProtoMessage(stream_id, msg);
+        }
+    }
+
 }

@@ -25,11 +25,11 @@ namespace tc
         WsRouter::OnClose(sess_ptr);
     }
 
-    void WsPluginRouter::OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
-        WsRouter::OnMessage(sess_ptr, data);
+    void WsPluginRouter::OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
+        WsRouter::OnMessage(sess_ptr, socket_fd, data);
         auto plugin = Get<WsPlugin*>("plugin");
         auto msg = std::string(data.data(), data.size());
-        plugin->CallbackClientEvent(true, msg);
+        plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, msg);
     }
 
     void WsPluginRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {

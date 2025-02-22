@@ -125,7 +125,7 @@ namespace tc
                 if (path == kUrlMedia) {
                     media_routers_.VisitAll([=](auto k, auto &v) mutable {
                         if (socket_fd == k) {
-                            v->OnMessage(sess_ptr, data);
+                            v->OnMessage(sess_ptr, socket_fd, data);
                         }
                     });
                 }

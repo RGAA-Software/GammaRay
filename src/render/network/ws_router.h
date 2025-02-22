@@ -44,7 +44,7 @@ namespace tc
             session_ = nullptr;
         }
 
-        virtual void OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, std::string_view data) {
+        virtual void OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
 
         }
 
