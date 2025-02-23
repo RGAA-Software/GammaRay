@@ -45,6 +45,10 @@ namespace tc
         this->work_dir_ = sp->Get(kKeyWorkDir);
         this->app_path_ = sp->Get(kKeyAppPath);
         this->app_args_ = sp->Get(kKeyAppArgs);
+        LOGI("Load render info in storage:");
+        LOGI("Work dir: {}", work_dir_);
+        LOGI("App path: {}", app_path_);
+        LOGI("App args: {}", app_args_);
     }
 
     RenderManager::~RenderManager() {

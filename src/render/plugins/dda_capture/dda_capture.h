@@ -50,6 +50,7 @@ namespace tc
         void StopCapture() override;
         void RefreshScreen() override;
         bool IsPrimaryMonitor() override;
+        bool IsInitSuccess() override;
 
     private:
         void Start();

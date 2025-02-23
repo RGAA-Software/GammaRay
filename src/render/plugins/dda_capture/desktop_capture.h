@@ -22,10 +22,12 @@ namespace tc
         virtual bool StartCapture() = 0;
         virtual bool PauseCapture() = 0;
         virtual void ResumeCapture() = 0;
+        virtual bool IsPausing() { return pausing_; }
         virtual void StopCapture() = 0;
         virtual void SetCaptureFps(int fps);
         virtual void RefreshScreen();
         virtual bool IsPrimaryMonitor();
+        virtual bool IsInitSuccess() = 0;
 
     private:
 

@@ -167,10 +167,6 @@ namespace tc
     bool DDACapturePlugin::StartCapturing() {
         for(const auto&[dev_name, monitor_info] : monitors_) {
             auto capture = std::make_shared<DDACapture>(this, monitor_info);
-            if (!capture->Init()) {
-                LOGE("dda capture init failed for target: {}", dev_name);
-                continue;
-            }
             capture->StartCapture();
             captures_.insert({dev_name, capture});
         }
@@ -198,7 +194,7 @@ namespace tc
         if (name.empty()) {
             use_default_monitor = true;
         }
-        LOGI("SetCaptureMonitor: {}, use_default_monitor: {}", name, use_default_monitor);
+        //LOGI("SetCaptureMonitor: {}, use_default_monitor: {}", name, use_default_monitor);
 
         // todo: capture all monitors at same time
         if (IsWorking()) {
@@ -206,6 +202,10 @@ namespace tc
                 capturing_monitor_name_ = name;
                 // TODO
                 for (const auto& [monitor_name, capture]: captures_) {
+                    if (!capture->IsInitSuccess()) {
+                        LOGW("Capture for: {} is not valid now.", monitor_name);
+                        continue;
+                    }
                     capture->ResumeCapture();
                 }
             }
@@ -221,6 +221,10 @@ namespace tc
                         }
                     }
                     else {
+                        if (!capture->IsInitSuccess()) {
+                            LOGW("Capture for: {} is not valid now.", monitor_name);
+                            continue;
+                        }
                         if (use_default_monitor && capture->IsPrimaryMonitor()) {
                             LOGI("Use default monitor: {}", monitor_name);
                             capturing_monitor_name_ = monitor_name;
@@ -234,7 +238,16 @@ namespace tc
             }
         }
 
-        LOGI("Capturing monitor name: {}", capturing_monitor_name_);
+        bool has_resumed_capture = false;
+        for (const auto &[monitor_name, capture]: captures_) {
+            if (!capture->IsPausing()) {
+                has_resumed_capture = true;
+            }
+        }
+        if (!has_resumed_capture) {
+            LOGW("Don't has resumed capture for: {}", name);
+        }
+        //LOGI("Capturing monitor name: {}", capturing_monitor_name_);
         NotifyCaptureMonitorInfo();
     }
 
@@ -248,6 +261,7 @@ namespace tc
     }
 
     void DDACapturePlugin::On1Second() {
+        SetCaptureMonitor(capturing_monitor_name_);
         NotifyCaptureMonitorInfo();
     }
 

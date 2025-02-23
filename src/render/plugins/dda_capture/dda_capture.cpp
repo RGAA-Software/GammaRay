@@ -111,7 +111,9 @@ namespace tc
                         return rect.right > rect.left && rect.bottom > rect.top;
                     };
 
-                    if (output_desc.AttachedToDesktop && func_valid_rect(output_desc.DesktopCoordinates)) {
+                    bool is_valid_rect = func_valid_rect(output_desc.DesktopCoordinates);
+                    LOGI("AttachedToDesktop: {}, is valid rect: {}", output_desc.AttachedToDesktop, is_valid_rect);
+                    if (output_desc.AttachedToDesktop && is_valid_rect) {
                         CComPtr<IDXGIOutput1> output1;
                         res = output.QueryInterface(&output1);
                         if (res != S_OK || !output1) {
@@ -196,6 +198,10 @@ namespace tc
         return true;
     }
 
+    bool DDACapture::IsInitSuccess() {
+        return dxgi_output_duplication_.duplication_ != nullptr;
+    }
+
     bool DDACapture::Exit() {
         if (dxgi_output_duplication_.duplication_) {
             dxgi_output_duplication_.duplication_->ReleaseFrame();
@@ -240,6 +246,17 @@ namespace tc
 
     void DDACapture::Start() {
         capture_thread_ = std::thread([this] {
+            for (;;) {
+                if (!this->Init()) {
+                    LOGE("dda capture init failed for target: {}, will try again.", my_monitor_info_.name_);
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+            LOGI("DDA Init success, will start capturing.");
             Capture();
         });
     }
