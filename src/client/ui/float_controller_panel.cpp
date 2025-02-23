@@ -397,7 +397,7 @@ namespace tc
     }
 
     void FloatControllerPanel::UpdateCaptureMonitorInfo() {
-        LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}", capture_monitor_.capturing_monitor_name_);
+        //LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}", capture_monitor_.capturing_monitor_name_);
         int index = 0;
         for (const auto& mon : capture_monitor_.monitors_) {
             if (index >= 4) {

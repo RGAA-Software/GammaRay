@@ -45,8 +45,10 @@ namespace tc
 
     void UdpPlugin::PostProtoMessage(const std::string& msg) {
         sessions_.VisitAll([=, this](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
-            us->sess_->async_send(msg, [](std::size_t bytes_sent) {
-
+            us->sess_->async_send(msg, [=](std::size_t bytes_sent) {
+                if (bytes_sent != msg.size()) {
+                    LOGI("Sent UDP Message error, origin size: {}, but only {} sent.", msg.size(), bytes_sent);
+                }
             });
         });
     }
