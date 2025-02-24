@@ -16,17 +16,19 @@ namespace tc
 
     }
 
-    void GrNetPlugin::OnProtoMessage(const std::string& msg) {
+    void GrNetPlugin::PostProtoMessage(const std::string& msg) {
 
     }
 
-    bool GrNetPlugin::OnTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
+    bool GrNetPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
         return false;
     }
 
-    void GrNetPlugin::CallbackClientEvent(bool is_proto, const std::string& msg) {
+    void GrNetPlugin::OnClientEventCame(bool is_proto, int64_t socket_fd, const NetPluginType& nt_plugin_type, const std::string& msg) {
         auto event = std::make_shared<GrPluginNetClientEvent>();
         event->is_proto_ = is_proto;
+        event->socket_fd_ = socket_fd;
+        event->nt_plugin_type_ = nt_plugin_type;
         event->message_ = msg;
         CallbackEvent(event);
     }
@@ -37,6 +39,10 @@ namespace tc
 
     int GrNetPlugin::ConnectedClientSize() {
         return 0;
+    }
+
+    void GrNetPlugin::SyncInfo(const NetSyncInfo& info) {
+        sync_info_ = info;
     }
 
 }

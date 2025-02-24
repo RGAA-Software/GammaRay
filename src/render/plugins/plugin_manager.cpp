@@ -11,7 +11,8 @@
 #include "plugin_interface/gr_plugin_interface.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_stream_plugin.h"
-#include "file_transfer/file_transfer_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
+#include "plugin_interface/gr_data_consumer_plugin.h"
 #include "plugin_event_router.h"
 #include "plugin_ids.h"
 #include "context.h"
@@ -65,7 +66,6 @@ namespace tc
                         .cluster_ = {
                             {"name", filename.toStdString()},
                             {"base_path", base_path.toStdString()},
-                            {"capture_monitor_name", settings_->capture_.capture_monitor_},
                             {"capture_audio_device_id", settings_->capture_.capture_audio_device_},
                             {"ws-listen-port", (int64_t)settings_->transmission_.listening_port_},
                             {"udp-listen-port", (int64_t)settings_->transmission_.udp_listen_port_},
@@ -217,10 +217,18 @@ namespace tc
         return nullptr;
     }
 
-    FileTransferPlugin* PluginManager::GetFileTransferPlugin() {
+    GrDataConsumerPlugin* PluginManager::GetFileTransferPlugin() {
         auto plugin = GetPluginById(kNetFileTransferPluginId);
         if (plugin) {
-            return (FileTransferPlugin*)plugin;
+            return (GrDataConsumerPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
+    GrNetPlugin* PluginManager::GetUdpPlugin() {
+        auto plugin = GetPluginById(kNetUdpPluginId);
+        if (plugin) {
+            return (GrNetPlugin*)plugin;
         }
         return nullptr;
     }

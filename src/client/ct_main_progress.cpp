@@ -111,6 +111,8 @@ namespace tc
     void MainProgress::ResetProgress() {
         progress_steps_ = 0;
         context_->PostUITask([this]() {
+            auto parent = (QWidget*)this->parent();
+            this->resize(parent->size());
             this->show();
             progress_bar_->setValue(progress_steps_);
         });

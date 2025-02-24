@@ -248,7 +248,7 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Listening Address"));
+                label->setText(tr("Host Address"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
@@ -328,13 +328,37 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Renderer Streaming Port"));
+                label->setText(tr("Renderer WebSocket Port"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
                 value->setText(std::to_string(settings_->network_listening_port_).c_str());
+                value->setStyleSheet("font-size: 14px;");
+                item_layout->addWidget(value);
+                item_layout->addStretch();
+                layout->addLayout(item_layout);
+            }
+
+            // GammaRayRender port
+            {
+                auto item_layout = new NoMarginHLayout();
+                item_layout->addSpacing(margin_left);
+                auto icon = new QLabel(this);
+                icon->setFixedSize(38, 38);
+                icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
+                item_layout->addWidget(icon);
+
+                auto label = new QLabel(this);
+                label->setFixedSize(label_width, 40);
+                label->setText(tr("Renderer UDP Port"));
+                label->setStyleSheet("font-size: 14px;");
+                item_layout->addWidget(label);
+
+                auto value = new QLabel(this);
+                value->setFixedSize(120, 40);
+                value->setText(std::to_string(settings_->udp_listen_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();

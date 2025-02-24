@@ -31,18 +31,13 @@ namespace tc
         return 102;
     }
 
-    void FileTransferPlugin::OnProtoMessage(const std::string& msg) {
-        // for testing
-        auto m = new tc::Message();
-        m->set_type(MessageType::kSyncPanelInfo);
-        auto info = m->SerializeAsString();
-        PostTargetStreamMessage("", info);
+    void FileTransferPlugin::OnMessage(const std::string& msg) {
+
     }
 
-    void FileTransferPlugin::PostTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
-        for (const auto& [plugin_id, plugin] : net_plugins_) {
-            plugin->OnTargetStreamMessage(stream_id, msg);
-        }
+    void FileTransferPlugin::OnMessage(const std::shared_ptr<tc::Message>& msg) {
+        auto type = msg->type();
+        auto stream_id = msg->stream_id();
+        PostToTargetStreamMessage(stream_id, msg->SerializeAsString());
     }
-
 }

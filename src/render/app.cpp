@@ -357,7 +357,7 @@ namespace tc
 
     void Application::PostNetMessage(const std::string& msg) {
         plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
-            plugin->OnProtoMessage(msg);
+            plugin->PostProtoMessage(msg);
         });
     }
 
@@ -446,7 +446,7 @@ namespace tc
 
         if (monitor_capture_plugin_) {
             monitor_capture_plugin_->StartCapturing();
-            monitor_capture_plugin_->SetCaptureMonitor(settings_->capture_.capture_monitor_);
+            monitor_capture_plugin_->SetCaptureMonitor("");
         }
         if (data_provider_plugin) {
             data_provider_plugin->StartProviding();

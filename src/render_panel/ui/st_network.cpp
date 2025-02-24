@@ -104,7 +104,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("UdpKcp"));
+                label->setText(tr("UDP"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -128,7 +128,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Streaming UdpKcp Port"));
+                label->setText(tr("Streaming UDP Port"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);

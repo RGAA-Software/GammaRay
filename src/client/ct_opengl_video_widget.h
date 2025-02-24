@@ -41,7 +41,7 @@ namespace tc
         void RefreshI420Image(const std::shared_ptr<RawImage> &image);
         void RefreshI420Buffer(const char *y, int y_size, const char *u, int u_size, const char *v, int v_size, int width, int height);
         void RefreshCursor(int x, int y, int tex_left, int text_right, int hpx, int hpy, const std::shared_ptr<RawImage> &cursor);
-        void RefreshCapturedMonitorInfo(const CaptureMonitorInfo &mon_info);
+        void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo &mon_info);
         void Exit();
 
         int GetCapturingMonitorWidth();
@@ -104,6 +104,6 @@ namespace tc
         int tex_rect_left_ = 0;
         int tex_rect_right_ = 0;
 
-        CaptureMonitorInfo cap_mon_info_{};
+        SdkCaptureMonitorInfo cap_mon_info_{};
     };
 }

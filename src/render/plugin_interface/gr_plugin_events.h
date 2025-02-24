@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include "gr_plugin_interface.h"
+#include "gr_net_plugin.h"
 #include "tc_capture_new/capture_message.h"
 
 namespace tc
@@ -48,8 +49,10 @@ namespace tc
             event_type_ = GrPluginEventType::kPluginNetClientEvent;
         }
     public:
-        bool is_proto_;
+        bool is_proto_ = true;
         std::string message_;
+        int64_t socket_fd_ = 0;
+        NetPluginType nt_plugin_type_;
     };
 
     // GrClientConnectedEvent

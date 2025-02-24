@@ -47,6 +47,8 @@ namespace tc
         void ProcessInsertKeyFrame(std::shared_ptr<Message>&& msg);
         void ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg);
 
+        void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
+
     private:
         Settings* settings_ = nullptr;
         Statistics* statistics_ = nullptr;

@@ -25,8 +25,8 @@ namespace tc
         void On1Second() override;
         bool IsWorking() override;
 
-        void OnProtoMessage(const std::string& msg) override;
-        bool OnTargetStreamMessage(const std::string& stream_id, const std::string& msg) override;
+        void PostProtoMessage(const std::string& msg) override;
+        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) override;
 
         bool IsOnlyAudioClients() override;
         int ConnectedClientSize() override;

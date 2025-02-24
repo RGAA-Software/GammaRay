@@ -39,7 +39,8 @@ namespace tc
         [[nodiscard]] bool IsRenderAlive() const;
 
     private:
-        bool CheckRenderAlive();
+        bool CheckRenderAlive(const std::vector<std::shared_ptr<ProcessInfo>>& processes);
+        bool CheckPanelAlive(const std::vector<std::shared_ptr<ProcessInfo>>& processes);
         bool StartServerInternal(const std::string& work_dir, const std::string& app_path, const std::string& args);
 
     private:

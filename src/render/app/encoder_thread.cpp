@@ -176,7 +176,8 @@ namespace tc
                 encoder_config.enable_adaptive_quantization = true;
                 encoder_config.gop_size = -1;
                 encoder_config.quality_preset = 1;
-                encoder_config.fps = 60;
+                encoder_config.fps = -1;
+                //encoder_config.fps = 60;
                 encoder_config.multi_pass = tc::ENvdiaEncMultiPass::kMultiPassDisabled;
                 encoder_config.rate_control_mode = tc::ERateControlMode::kRateControlModeCbr;
                 encoder_config.sample_desc_count = 1;

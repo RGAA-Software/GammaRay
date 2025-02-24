@@ -45,7 +45,6 @@ DEFINE_string(sig_server_port, "", "");
 DEFINE_string(coturn_server_address, "", "");
 DEFINE_string(coturn_server_port, "", "");
 
-DEFINE_string(capture_monitor, "", "capture monitor");
 DEFINE_string(capture_audio_device, "", "capture audio device");
 
 // application
@@ -112,7 +111,6 @@ void UpdateSettings(Settings* settings) {
     } else {
         settings->capture_.capture_video_type_ = Capture::CaptureVideoType::kVideoHook;
     }
-    settings->capture_.capture_monitor_ = Base64::Base64Decode(FLAGS_capture_monitor);
     settings->capture_.capture_audio_device_ = Base64::Base64Decode(FLAGS_capture_audio_device);
 
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
@@ -159,7 +157,6 @@ void PrintInputArgs() {
     LOGI("webrtc enabled: {}", FLAGS_webrtc_enabled);
     LOGI("network_listen_port: {}", FLAGS_network_listen_port);
     LOGI("udp_listen_port: {}", FLAGS_udp_listen_port);
-    LOGI("capture monitor: {}", Base64::Base64Decode(FLAGS_capture_monitor));
     LOGI("capture audio device: {}", Base64::Base64Decode(FLAGS_capture_audio_device));
     LOGI("app_game_path: {}", FLAGS_app_game_path);
     LOGI("app_game_args: {}", FLAGS_app_game_args);

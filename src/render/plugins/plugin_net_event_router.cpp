@@ -6,6 +6,8 @@
 #include <memory>
 #include <iostream>
 #include "app.h"
+#include "context.h"
+#include "statistics.h"
 #include "settings/settings.h"
 #include "app/win/win_event_replayer.h"
 #include "tc_common_new/log.h"
@@ -15,16 +17,15 @@
 #include "app/app_manager.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "app/app_messages.h"
-#include "context.h"
-#include "statistics.h"
 #include "network/net_message_maker.h"
 #include "app/clipboard_manager.h"
 #include "tc_capture_new/desktop_capture.h"
-#include "tc_message.pb.h"
 #include "tc_encoder_new/encoder_messages.h"
+#include "tc_message.pb.h"
 #include "plugin_manager.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
+#include "plugin_interface/gr_data_consumer_plugin.h"
 
 namespace tc {
 
@@ -88,12 +89,18 @@ namespace tc {
             switch (msg->type()) {
                 case kHello: {
                     this->ProcessHelloEvent(std::move(msg));
+                    if (event->nt_plugin_type_ == NetPluginType::kUdpKcp) {
+                        this->SyncInfoToUdpPlugin(event->socket_fd_, msg->device_id(), msg->stream_id());
+                    }
                     break;
                 }
                 case kAck:
                     break;
                 case kHeartBeat: {
                     ProcessHeartBeat(std::move(msg));
+                    if (event->nt_plugin_type_ == NetPluginType::kUdpKcp) {
+                        this->SyncInfoToUdpPlugin(event->socket_fd_, msg->device_id(), msg->stream_id());
+                    }
                     break;
                 }
                 case MessageType::kKeyEvent: {
@@ -136,6 +143,12 @@ namespace tc {
                     ProcessCtrlAltDelete(std::move(msg));
                     break;
                 }
+                default: {
+                    auto file_trans_plugin = plugin_manager_->GetFileTransferPlugin();
+                    if (file_trans_plugin) {
+                        file_trans_plugin->OnMessage(msg);
+                    }
+                }
             }
         } else {
 
@@ -174,12 +187,12 @@ namespace tc {
             auto x = rect.left + app_width * mouse_event.x_ratio();
             auto y = rect.top + app_height * mouse_event.y_ratio();
 
-            LOGI("window rect:{},{},{}x{}, x:{}, y: {}", rect.left, rect.top, app_width, app_height, (int)x, (int)y);
-            auto msg = CaptureMessageMaker::MakeMouseEventMessage(hwnd_ptr, (int)x, (int)y,
+            //LOGI("window rect:{},{},{}x{}, x:{}, y: {}", rect.left, rect.top, app_width, app_height, (int)x, (int)y);
+            auto mouse_event_msg = CaptureMessageMaker::MakeMouseEventMessage(hwnd_ptr, (int)x, (int)y,
                                                                   mouse_event.button(), mouse_event.data(),
                                                                   mouse_event.delta_x(), mouse_event.delta_y(),
                                                                   mouse_event.pressed(), mouse_event.released());
-            auto msg_str = CaptureMessageMaker::ConvertMessageToString(msg);
+            auto msg_str = CaptureMessageMaker::ConvertMessageToString(mouse_event_msg);
 
             //2. post it
             PostIpcMessage(msg_str);
@@ -325,5 +338,17 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg) {
         app_->ReqCtrlAltDelete(msg->client_id(), msg->device_id());
+    }
+
+    void PluginNetEventRouter::SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id) {
+        auto udp_plugin = plugin_manager_->GetUdpPlugin();
+        if (!udp_plugin) {
+            return;
+        }
+        udp_plugin->SyncInfo(NetSyncInfo {
+            .socket_fd_ = socket_fd,
+            .device_id_ = device_id,
+            .stream_id_ = stream_id
+        });
     }
 }

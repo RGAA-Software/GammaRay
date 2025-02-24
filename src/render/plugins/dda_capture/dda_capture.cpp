@@ -7,6 +7,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
+#include "tc_common_new/monitors.h"
 #include "tc_capture_new/capture_message.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "dda_capture_plugin.h"
@@ -110,7 +111,9 @@ namespace tc
                         return rect.right > rect.left && rect.bottom > rect.top;
                     };
 
-                    if (output_desc.AttachedToDesktop && func_valid_rect(output_desc.DesktopCoordinates)) {
+                    bool is_valid_rect = func_valid_rect(output_desc.DesktopCoordinates);
+                    LOGI("AttachedToDesktop: {}, is valid rect: {}", output_desc.AttachedToDesktop, is_valid_rect);
+                    if (output_desc.AttachedToDesktop && is_valid_rect) {
                         CComPtr<IDXGIOutput1> output1;
                         res = output.QueryInterface(&output1);
                         if (res != S_OK || !output1) {
@@ -183,8 +186,20 @@ namespace tc
             LOGI("Init DDA failed.");
             return false;
         }
+
+        std::vector<MonitorWinInfo> win_monitors = EnumerateAllMonitors();
+        for (const auto& info : win_monitors) {
+            if (info.name_ == my_monitor_info_.name_ && info.is_primary_) {
+                is_primary_monitor_ = true;
+            }
+        }
+
         LOGI("Init DDA successful");
         return true;
+    }
+
+    bool DDACapture::IsInitSuccess() {
+        return dxgi_output_duplication_.duplication_ != nullptr;
     }
 
     bool DDACapture::Exit() {
@@ -231,6 +246,17 @@ namespace tc
 
     void DDACapture::Start() {
         capture_thread_ = std::thread([this] {
+            for (;;) {
+                if (!this->Init()) {
+                    LOGE("dda capture init failed for target: {}, will try again.", my_monitor_info_.name_);
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+            LOGI("DDA Init success, will start capturing.");
             Capture();
         });
     }
@@ -451,6 +477,10 @@ namespace tc
     void DDACapture::RefreshScreen() {
         DesktopCapture::RefreshScreen();
         used_cache_times_ = 0;
+    }
+
+    bool DDACapture::IsPrimaryMonitor() {
+        return is_primary_monitor_;
     }
 
 } // tc

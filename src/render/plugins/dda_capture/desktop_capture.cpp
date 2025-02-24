@@ -25,4 +25,8 @@ namespace tc
         refresh_screen_ = true;
     }
 
+    bool DesktopCapture::IsPrimaryMonitor() {
+        return false;
+    }
+
 }

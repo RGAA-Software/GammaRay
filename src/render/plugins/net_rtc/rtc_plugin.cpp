@@ -28,7 +28,7 @@ namespace tc
         return 102;
     }
 
-    void RtcPlugin::OnProtoMessage(const std::string& msg) {
+    void RtcPlugin::PostProtoMessage(const std::string& msg) {
 
     }
 

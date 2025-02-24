@@ -140,7 +140,7 @@ namespace tc
             group->addButton(btn_ws);
 
             auto btn_udp_kcp = new QRadioButton(this);
-            btn_udp_kcp->setText(tr("UdpKcp"));
+            btn_udp_kcp->setText(tr("UDP"));
             rb_udp_ = btn_udp_kcp;
             layout->addSpacing(15);
             layout->addWidget(btn_udp_kcp);
