@@ -78,6 +78,7 @@ namespace tc
         NotificationPanel* notification_panel_ = nullptr;
         std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         uint32_t cursor_type_ = 100000;
+        bool force_update_cursor_ = true;
         DebugPanel* debug_panel_ = nullptr;
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
         FloatButtonStateIndicator* btn_indicator_ = nullptr;

@@ -158,25 +158,25 @@ namespace tc
         });
 
         // step 1
-        msg_listener_->Listen<MsgNetworkConnected>([=, this](const MsgNetworkConnected& msg) {
+        msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
             this->SendSwitchWorkModeMessage(settings_->work_mode_);
             main_progress_->ResetProgress();
             main_progress_->StepForward();
             LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
         });
 
-        msg_listener_->Listen<MsgNetworkDisConnected>([=, this](const MsgNetworkDisConnected& msg) {
+        msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
 
         });
 
         // step 2
-        msg_listener_->Listen<MsgFirstConfigInfoCallback>([=, this](const MsgFirstConfigInfoCallback& msg) {
+        msg_listener_->Listen<SdkMsgFirstConfigInfoCallback>([=, this](const SdkMsgFirstConfigInfoCallback& msg) {
             main_progress_->StepForward();
             LOGI("Step: MsgFirstConfigInfoCallback, at: {}", main_progress_->GetCurrentProgress());
         });
 
         // step 3
-        msg_listener_->Listen<MsgFirstVideoFrameDecoded>([=, this](const MsgFirstVideoFrameDecoded& msg) {
+        msg_listener_->Listen<SdkMsgFirstVideoFrameDecoded>([=, this](const SdkMsgFirstVideoFrameDecoded& msg) {
             main_progress_->CompleteProgress();
             LOGI("Step: MsgFirstVideoFrameDecoded, at: {}", main_progress_->GetCurrentProgress());
         });
@@ -213,7 +213,7 @@ namespace tc
     }
 
     void Workspace::RegisterSdkMsgCallbacks() {
-        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const CaptureMonitorInfo& info) {
+        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
             if (!has_frame_arrived_) {
                 has_frame_arrived_ = true;
                 UpdateVideoWidgetSize();
@@ -289,7 +289,7 @@ namespace tc
             });
         });
 
-        msg_listener_->Listen<MsgChangeMonitorResolutionResult>([=, this](const MsgChangeMonitorResolutionResult& msg) {
+        msg_listener_->Listen<SdkMsgChangeMonitorResolutionResult>([=, this](const SdkMsgChangeMonitorResolutionResult& msg) {
             context_->PostUITask([=, this]() {
                 // to trigger re-layout
                 if (msg.result) {
@@ -302,6 +302,10 @@ namespace tc
                 }
             });
 
+        });
+
+        msg_listener_->Listen<SdkMsgTimer1000>([=, this](const SdkMsgTimer1000& msg) {
+            force_update_cursor_ = true;
         });
     }
 
@@ -380,9 +384,10 @@ namespace tc
     }
 
     void Workspace::UpdateLocalCursor(uint32_t type) {
-        if (cursor_type_ == type) {
+        if (cursor_type_ == type && !force_update_cursor_) {
             return;
         }
+        force_update_cursor_ = false;
         cursor_type_ = type;
         context_->PostUITask([=, this]() {
             if (cursor_type_ == CursorInfoSync::kIdcArrow) {

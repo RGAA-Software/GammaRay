@@ -345,7 +345,7 @@ namespace tc
         //LOGI("xp : {}, yp : {}, size: {}x{}", xp, yp, cursor->img_width, cursor->img_height);
     }
 
-    void OpenGLVideoWidget::RefreshCapturedMonitorInfo(const CaptureMonitorInfo& mon_info) {
+    void OpenGLVideoWidget::RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info) {
         cap_mon_info_ = mon_info;
     }
 

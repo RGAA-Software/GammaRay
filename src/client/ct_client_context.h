@@ -31,8 +31,8 @@ namespace tc
         std::shared_ptr<StreamDBManager> GetDBManager();
         void SaveKeyValue(const std::string& k, const std::string& v);
         std::string GetValueByKey(const std::string& k);
-        void UpdateCapturingMonitorInfo(const CaptureMonitorInfo& info);
-        CaptureMonitorInfo GetCapturingMonitorInfo();
+        void UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info);
+        SdkCaptureMonitorInfo GetCapturingMonitorInfo();
         std::string GetCapturingMonitorName() const;
         std::string GetDeviceId();
         void SetDeviceId(const std::string& id);
@@ -54,7 +54,7 @@ namespace tc
         std::string capturing_monitor_name_;
         int capturing_width_ = 0;
         int capturing_height_ = 0;
-        CaptureMonitorInfo capturing_info_;
+        SdkCaptureMonitorInfo capturing_info_;
         std::string device_id_;
     };
 
