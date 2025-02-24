@@ -7,9 +7,9 @@ if(${TC_USE_FILE_TRANSMISSION})
 
     set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/file_transfer_plugin.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_operate.cc
-        #${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_impl.cc
-        #${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_manager.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_operate.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_impl.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_manager.cc
     )
 
     add_compile_options("/bigobj")
