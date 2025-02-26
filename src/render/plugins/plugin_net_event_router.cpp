@@ -143,11 +143,19 @@ namespace tc {
                     ProcessCtrlAltDelete(std::move(msg));
                     break;
                 }
-                default: {
+                // file transmit start
+                case MessageType::kFileOperateionsEvent:
+                case MessageType::kFileTransDataPacket:
+                case MessageType::kFileTransSaveFileException: {
                     auto file_trans_plugin = plugin_manager_->GetFileTransferPlugin();
                     if (file_trans_plugin) {
                         file_trans_plugin->OnMessage(msg);
                     }
+                    break;
+                }
+                // file transmit end                         
+                default: {
+                   
                 }
             }
         } else {

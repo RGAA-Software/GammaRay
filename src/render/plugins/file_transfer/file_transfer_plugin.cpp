@@ -6,6 +6,7 @@
 #include "render/plugins/plugin_ids.h"
 #include "render/plugin_interface/gr_net_plugin.h"
 #include "tc_message.pb.h"
+#include "file_transmission_server/file_transmit_msg_interface.h"
 
 void* GetInstance() {
     static tc::FileTransferPlugin plugin;
@@ -36,8 +37,19 @@ namespace tc
     }
 
     void FileTransferPlugin::OnMessage(const std::shared_ptr<tc::Message>& msg) {
-        auto type = msg->type();
-        auto stream_id = msg->stream_id();
-        PostToTargetStreamMessage(stream_id, msg->SerializeAsString());
+        if (!file_trans_msg_interface_) {
+            return;
+        }
+        file_trans_msg_interface_->OnMessage(msg);
     }
+
+    bool FileTransferPlugin::OnCreate(const GrPluginParam& param) {
+        if (!GrDataConsumerPlugin::OnCreate(param)) {
+            return false;
+        }
+        file_trans_msg_interface_ = FileTransmitMsgInterface::Make(this);
+        file_trans_msg_interface_->RegisterFileTransmitCallback();
+        return true;
+    };
+
 }

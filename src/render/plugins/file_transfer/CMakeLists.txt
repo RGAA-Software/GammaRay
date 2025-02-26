@@ -5,11 +5,16 @@ if(${TC_USE_FILE_TRANSMISSION})
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+    include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
     set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/file_transfer_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_operate.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_impl.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_manager.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/file_transmission_server/file_transmit_msg_interface.cc
     )
 
     add_compile_options("/bigobj")
