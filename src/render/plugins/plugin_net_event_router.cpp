@@ -345,7 +345,7 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg) {
-        app_->ReqCtrlAltDelete(msg->client_id(), msg->device_id());
+        app_->ReqCtrlAltDelete(msg->device_id(), msg->stream_id());
     }
 
     void PluginNetEventRouter::SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id) {

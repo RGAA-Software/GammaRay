@@ -91,7 +91,7 @@ namespace tc
         ComPtr<ID3D11Device> GetD3DDevice();
         ComPtr<ID3D11DeviceContext> GetD3DContext();
         SharedPreference* GetSp() { return sp_; }
-        void ReqCtrlAltDelete(const std::string& client_id, const std::string& device_id);
+        void ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id);
 
         template<typename T>
         void SendAppMessage(const T& m) {

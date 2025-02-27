@@ -154,7 +154,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${CMAKE_
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}www)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
-        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib lib_GammaRayClient tc_signaling_sdk)
+        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib lib_GammaRayClient tc_signaling_sdk tc_manager_client)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins
@@ -201,7 +201,7 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter GammaRayClient GammaRayClientInner)
+        uninstall shadow_deleter GammaRayClient GammaRayClientInner tc_manager_client)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()

@@ -88,8 +88,8 @@ namespace tc
             m.ParseFromString(msg);
             if (m.type() == MessageType::kSyncPanelInfo) {
                 auto sub = m.sync_panel_info();
-                settings_->client_id_ = sub.client_id();
-                settings_->client_random_pwd_ = sub.client_random_pwd();
+                settings_->device_id_ = sub.device_id();
+                settings_->device_random_pwd_ = sub.device_random_pwd();
                 //LOGI("SyncPanelInfo, client id: {}, random pwd: {}", sub.client_id(), sub.client_random_pwd());
             }
         } catch(std::exception& e) {

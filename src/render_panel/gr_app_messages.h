@@ -78,10 +78,10 @@ namespace tc
     };
 
     // Client id requested
-    class MsgClientIdRequested {
+    class MsgRequestedNewDevice {
     public:
-        std::string id_;
-        std::string random_pwd_;
+        std::string device_id_;
+        std::string device_random_pwd_;
         bool force_update_{false};
     };
 

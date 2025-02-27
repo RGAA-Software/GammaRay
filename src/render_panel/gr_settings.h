@@ -41,9 +41,10 @@ namespace tc
     static const std::string kStSigServerPort = "sig_server_port";
     static const std::string kStCoturnAddress = "coturn_server_address";
     static const std::string kStCoturnPort = "coturn_server_port";
-    static const std::string kStClientId = "client_id";
-    static const std::string kStClientRandomPwd = "client_random_pwd";
     static const std::string kStDeviceId = "device_id";
+    static const std::string kStDeviceRandomPwd = "device_random_pwd";
+    static const std::string kStMgrAddress = "mgr_server_address";
+    static const std::string kStMgrPort = "mgr_server_port";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -89,8 +90,8 @@ namespace tc
         void SetSigServerPort(const std::string& port);
         void SetCoturnServerAddress(const std::string& address);
         void SetCoturnServerPort(const std::string& port);
-        void SetClientId(const std::string& id);
-        void SetClientRandomPwd(const std::string& pwd);
+        void SetDeviceId(const std::string& id);
+        void SetDeviceRandomPwd(const std::string& pwd);
         void SetPanelListeningPort(int port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
@@ -125,21 +126,22 @@ namespace tc
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
         std::string udp_kcp_enabled_ = kStTrue;
+        //
         std::string sig_server_address_;
         std::string sig_server_port_;
+        //
         std::string coturn_server_address_;
         std::string coturn_server_port_;
+        //
+        std::string mgr_server_address_;
+        std::string mgr_server_port_;
 
-        std::string client_id_;
-        std::string client_random_pwd_;
+        std::string device_id_;
+        std::string device_random_pwd_;
 
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
-
-        // represent for this device
-        // If the cache of the GammaRay was cleared, it may have changed.
-        std::string device_id_;
     };
 
 }

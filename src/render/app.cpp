@@ -669,14 +669,14 @@ namespace tc
         return d3d11_device_context_;
     }
 
-    void Application::ReqCtrlAltDelete(const std::string& client_id, const std::string& device_id) {
+    void Application::ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) {
         if (!service_client_ || !service_client_->IsAlive()) {
             return;
         }
         tc::ServiceMessage m;
         m.set_type(ServiceMessageType::kSrvReqCtrlAltDelete);
-        m.mutable_req_ctrl_alt_delete()->set_req_client_id(client_id);
-        m.mutable_req_ctrl_alt_delete()->set_req_client_device_id(device_id);
+        m.mutable_req_ctrl_alt_delete()->set_req_device_id(device_id);
+        m.mutable_req_ctrl_alt_delete()->set_req_stream_id(stream_id);
         service_client_->PostNetMessage(m.SerializeAsString());
     }
 

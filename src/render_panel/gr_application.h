@@ -20,7 +20,7 @@ namespace tc
     class GrSystemMonitor;
     class GrServiceClient;
     class WsSigClient;
-    class SigSdkContext;
+    class MgrClientSdk;
     class MessageListener;
 
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
@@ -51,7 +51,7 @@ namespace tc
         std::shared_ptr<WsSigClient> sig_client_ = nullptr;
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;
-        std::shared_ptr<SigSdkContext> sig_sdk_ctx_ = nullptr;
+        std::shared_ptr<MgrClientSdk> mgr_client_sdk_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 

@@ -284,8 +284,8 @@ namespace tc
         tc::Message m;
         m.set_type(MessageType::kSyncPanelInfo);
         auto sub = m.mutable_sync_panel_info();
-        sub->set_client_id(settings_->client_id_);
-        sub->set_client_random_pwd(settings_->client_random_pwd_);
+        sub->set_device_id(settings_->device_id_);
+        sub->set_device_random_pwd(settings_->device_random_pwd_);
         PostPanelBinaryMessage(m.SerializeAsString());
     }
 

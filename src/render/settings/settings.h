@@ -136,9 +136,8 @@ namespace tc
 
         bool block_debug_ = false;
         int panel_server_port_ = 0;
-        std::string client_id_;
-        std::string client_random_pwd_;
         std::string device_id_;
+        std::string device_random_pwd_;
         // capturing multiple monitors together
         bool capturing_multiple_ = false;
     };

@@ -232,9 +232,9 @@ namespace tc
         setLayout(root_layout);
 
         // set client id by settings
-        if (!settings_->client_id_.empty() && !settings_->client_random_pwd_.empty()) {
-            lbl_machine_code_->setText(tc::SpaceId(settings_->client_id_).c_str());
-            lbl_machine_random_pwd_->setText(settings_->client_random_pwd_.c_str());
+        if (!settings_->device_id_.empty() && !settings_->device_random_pwd_.empty()) {
+            lbl_machine_code_->setText(tc::SpaceId(settings_->device_id_).c_str());
+            lbl_machine_random_pwd_->setText(settings_->device_random_pwd_.c_str());
         }
 
         RegisterMessageListener();
@@ -252,10 +252,10 @@ namespace tc
 
     void TabServer::RegisterMessageListener() {
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-        msg_listener_->Listen<MsgClientIdRequested>([=, this](const MsgClientIdRequested& msg) {
+        msg_listener_->Listen<MsgRequestedNewDevice>([=, this](const MsgRequestedNewDevice& msg) {
             context_->PostUITask([=, this]() {
-                lbl_machine_code_->setText(tc::SpaceId(msg.id_).c_str());
-                lbl_machine_random_pwd_->setText(msg.random_pwd_.c_str());
+                lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
+                lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
             });
         });
     }

@@ -20,7 +20,9 @@
 #include "render_panel/network/ws_sig_client.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_steam_manager_new/steam_manager.h"
-#include "tc_signaling_sdk/sig_sdk_context.h"
+#include "tc_manager_client/mgr_client_sdk.h"
+#include "tc_manager_client/mgr_device_operator.h"
+#include "tc_manager_client/mgr_device.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -81,6 +83,8 @@ namespace tc
         st->SetContext(context_);
         st->RegisterEventListeners();
 
+        mgr_client_sdk_ = std::make_shared<MgrClientSdk>(context_->GetMessageNotifier());
+
         ws_panel_server_ = WsPanelServer::Make(shared_from_this());
         ws_panel_server_->Start();
 
@@ -102,10 +106,6 @@ namespace tc
         sig_client_ = std::make_shared<WsSigClient>(shared_from_this());
         sig_client_->Start();
 
-        sig_sdk_ctx_ = SigSdkContext::Make();
-        sig_sdk_ctx_->SetClientId(settings_->client_id_);
-        sig_sdk_ctx_->SetRandomPwd(settings_->client_random_pwd_);
-
         RefreshSigServerSettings();
         RegisterMessageListener();
     }
@@ -123,9 +123,10 @@ namespace tc
     }
 
     void GrApplication::RefreshSigServerSettings() {
-        sig_sdk_ctx_->Init(SigSdkContextParam {
-            .sig_host_ = settings_->sig_server_address_,
-            .sig_port_ = std::atoi(settings_->sig_server_port_.c_str()),
+        mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
+            .host_ = settings_->mgr_server_address_,
+            .port_ = std::atoi(settings_->mgr_server_port_.c_str()),
+            .ssl_ = false,
         });
     }
 
@@ -138,26 +139,23 @@ namespace tc
     }
 
     void GrApplication::RequestNewClientId(bool force_update) {
-        if (!force_update && !settings_->client_id_.empty() && !settings_->client_random_pwd_.empty()) {
+        if (!force_update && !settings_->device_id_.empty() && !settings_->device_random_pwd_.empty()) {
             return;
         }
 
         context_->PostTask([=, this]() {
-            auto client_id = sig_sdk_ctx_->RequestNewClientId();
-            if (!client_id.IsValid()) {
-                LOGE("Client id is invalid!");
+            auto device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
+            if (!device) {
+                LOGE("Can't create new device!");
                 return;
             }
 
-            settings_->SetClientId(client_id.id_);
-            settings_->SetClientRandomPwd(client_id.random_pwd_);
+            settings_->SetDeviceId(device->device_id_);
+            settings_->SetDeviceRandomPwd(device->random_pwd_);
 
-            sig_sdk_ctx_->SetClientId(client_id.id_);
-            sig_sdk_ctx_->SetRandomPwd(client_id.random_pwd_);
-
-            context_->SendAppMessage(MsgClientIdRequested {
-                .id_ = client_id.id_,
-                .random_pwd_ = client_id.random_pwd_,
+            context_->SendAppMessage(MsgRequestedNewDevice {
+                .device_id_ = device->device_id_,
+                .device_random_pwd_ = device->random_pwd_,
                 .force_update_ = force_update,
             });
 

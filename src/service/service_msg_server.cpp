@@ -119,7 +119,7 @@ namespace tc
             else if (type == ServiceMessageType::kSrvReqCtrlAltDelete) {
                 auto sub = msg.req_ctrl_alt_delete();
                 ProcessCtrlAltDelete();
-                LOGI("client, id:{}, device id: {}, request control alt delete", sub.req_client_id(), sub.req_client_device_id());
+                LOGI("client, id:{}, device id: {}, request control alt delete", sub.req_device_id(), sub.req_stream_id());
             }
         }
         catch(...) {
