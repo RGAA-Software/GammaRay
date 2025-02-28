@@ -28,6 +28,7 @@ namespace tc
     const std::string kOpusEncoderPluginId = "e25954da-205e-430f-af61-99e0e200d119";
     const std::string kNetFileTransferPluginId = "7170706f-fa8a-4615-8e1c-ba7acac04cb8";
     const std::string kVrManagerPluginId = "f4a43a64-52e8-4a51-b5a1-6e9b57333b59";
+    const std::string kRelayPluginId = "55b2a2fa-b4e9-4ff6-a0a4-522df80ebda2";
 
 }
 
