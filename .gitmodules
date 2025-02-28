@@ -43,3 +43,6 @@
 [submodule "deps/tc_manager_client"]
 	path = deps/tc_manager_client
 	url = git@github.com:RGAA-Software/tc_manager_client.git
+[submodule "deps/tc_relay_client"]
+	path = deps/tc_relay_client
+	url = git@github.com:RGAA-Software/tc_relay_client.git
