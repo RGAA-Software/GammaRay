@@ -85,7 +85,7 @@ namespace tc
         std::atomic_bool has_frame_arrived_ = false;
 
         //文件传输:
-        FileTransInterface* file_trans_interface_ = nullptr;
+        std::shared_ptr<FileTransInterface> file_trans_interface_ = nullptr;
 
         // progress
         MainProgress* main_progress_ = nullptr;

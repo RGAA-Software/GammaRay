@@ -195,7 +195,8 @@ namespace tc
         });
 
 #ifdef TC_ENABLE_FILE_TRANSMISSION
-        file_trans_interface_ = FileTransInterface::GetInstance();
+        std::string temp_stream_id = "test_id";
+        file_trans_interface_ = FileTransInterface::Make(temp_stream_id);
 #endif // TC_ENABLE_FILE_TRANSMISSION
 
         QTimer::singleShot(100, [=, this](){
