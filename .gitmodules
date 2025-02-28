@@ -40,3 +40,6 @@
 [submodule "src/render/plugins/file_transfer/file_transmission_server"]
 	path = src/render/plugins/file_transfer/file_transmission_server
 	url = git@github.com:ChengduDreamer/file_transmission_server.git
+[submodule "deps/tc_manager_client"]
+	path = deps/tc_manager_client
+	url = git@github.com:RGAA-Software/tc_manager_client.git
