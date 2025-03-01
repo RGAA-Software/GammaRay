@@ -153,6 +153,8 @@ namespace tc
         std::string capture_audio_device_id_;
         // active net plugins...
         std::map<std::string, GrNetPlugin*> net_plugins_;
+        // this device, device id
+        std::string device_id_;
 
     public:
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;

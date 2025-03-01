@@ -10,7 +10,7 @@
 namespace tc
 {
 
-    class RelayClientSdk;
+    class RelayServerSdk;
 
     class RelayPlugin : public GrNetPlugin {
     public:
@@ -26,10 +26,10 @@ namespace tc
         int ConnectedClientSize() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
-        void SyncInfo(const tc::NetSyncInfo &info) override;
+        void SyncInfo(const tc::NetSyncInfo& info) override;
 
     private:
-        std::shared_ptr<RelayClientSdk> relay_sdk_ = nullptr;
+        std::shared_ptr<RelayServerSdk> relay_sdk_ = nullptr;
     };
 
 }
