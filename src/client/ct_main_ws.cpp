@@ -202,6 +202,9 @@ int main(int argc, char** argv) {
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
     LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
 
+    // todo:
+    //settings->network_type_ = ClientNetworkType::kRelay;
+
     auto req_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
                                 settings->device_id_, settings->stream_id_);
     static Workspace ws(ctx, ThunderSdkParams {
