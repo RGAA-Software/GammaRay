@@ -291,7 +291,6 @@ namespace tc
 
         sdk_->SetOnRawMessageCallback([=, this](const std::shared_ptr<tc::Message>& msg) {
             if (file_trans_interface_) {
-                LOGI("Message in: {}", (int)msg->type());
                 file_trans_interface_->OnProtoMessage(msg);
             }
         });

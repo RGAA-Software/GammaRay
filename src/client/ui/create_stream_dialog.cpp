@@ -15,14 +15,14 @@ namespace tc
 
     CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : QDialog(parent) {
         context_ = ctx;
-        setFixedSize(500, 400);
+        setFixedSize(640, 480);
         CreateLayout();
     }
 
     CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent) : QDialog(parent) {
         context_ = ctx;
         stream_item_ = item;
-        setFixedSize(500, 400);
+        setFixedSize(640, 480);
         CreateLayout();
     }
 
@@ -35,8 +35,8 @@ namespace tc
         root_layout->setSpacing(0);
         root_layout->setContentsMargins(100,0,60, 0);
 
-        auto label_size = QSize(100, 35);
-        auto edit_size = QSize(200, 35);
+        auto label_size = QSize(150, 35);
+        auto edit_size = QSize(250, 35);
 
         // 0. name
         {
@@ -120,6 +120,33 @@ namespace tc
             root_layout->addLayout(layout);
         }
 
+        // Remote device id
+        {
+            auto layout = new QHBoxLayout();
+            layout->setSpacing(0);
+            layout->setContentsMargins(0,0,0,0);
+
+            auto label = new QLabel(this);
+            lbl_remote_device_id_ = label;
+            label->setFixedSize(label_size);
+            label->setText(tr("Remote Device ID *"));
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+
+            auto edit = new QLineEdit(this);
+            ed_remote_device_id_ = edit;
+            ed_remote_device_id_->setText("");
+            if (stream_item_.IsValid()) {
+                ed_remote_device_id_->setText(QString::fromStdString(stream_item_.remote_device_id_));
+            }
+            edit->setFixedSize(edit_size);
+            layout->addWidget(edit);
+            layout->addStretch();
+
+            root_layout->addSpacing(10);
+            root_layout->addLayout(layout);
+        }
+
         {
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
@@ -139,12 +166,19 @@ namespace tc
             layout->addWidget(btn_ws);
             group->addButton(btn_ws);
 
-            auto btn_udp_kcp = new QRadioButton(this);
-            btn_udp_kcp->setText(tr("UDP"));
-            rb_udp_ = btn_udp_kcp;
+//            auto btn_udp_kcp = new QRadioButton(this);
+//            btn_udp_kcp->setText(tr("UDP"));
+//            rb_udp_ = btn_udp_kcp;
+//            layout->addSpacing(15);
+//            layout->addWidget(btn_udp_kcp);
+//            group->addButton(btn_udp_kcp);
+
+            auto btn_relay = new QRadioButton(this);
+            btn_relay->setText(tr("Relay"));
+            rb_relay_ = btn_relay;
             layout->addSpacing(15);
-            layout->addWidget(btn_udp_kcp);
-            group->addButton(btn_udp_kcp);
+            layout->addWidget(btn_relay);
+            group->addButton(btn_relay);
 
             layout->addStretch();
 
@@ -156,17 +190,20 @@ namespace tc
                 if (stream_item_.network_type_ == kStreamItemNtTypeWebSocket) {
                     btn_ws->setChecked(true);
                 }
-                else if (stream_item_.network_type_ == kStreamItemNtTypeUdpKcp) {
-                    btn_udp_kcp->setChecked(true);
+                else if (stream_item_.network_type_ == kStreamItemNtTypeRelay) {
+                    btn_relay->setChecked(true);
                 }
+//                else if (stream_item_.network_type_ == kStreamItemNtTypeUdpKcp) {
+//                    btn_udp_kcp->setChecked(true);
+//                }
             }
             else {
                 btn_ws->setChecked(true);
                 connect(btn_ws, &QRadioButton::clicked, this, [=, this](bool checked) {
                     ed_port_->setText("20371");
                 });
-                connect(btn_udp_kcp, &QRadioButton::clicked, this, [=, this](bool checked) {
-                    ed_port_->setText("20381");
+                connect(btn_relay, &QRadioButton::clicked, this, [=, this](bool checked) {
+                    ed_port_->setText("20481");
                 });
             }
         }
@@ -285,6 +322,7 @@ namespace tc
                 return 0;
             }
         } ();
+        auto remote_device_id = ed_remote_device_id_->text().trimmed().replace(" ", "").toStdString();
 
         if (host.empty() || port == 0) {
             auto dialog = MessageDialog::Make(context_, tr("Please input necessary information !"));
@@ -298,12 +336,16 @@ namespace tc
             item.stream_port = port;
             item.encode_bps = bitrate;
             item.encode_fps = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
+            item.remote_device_id_ = remote_device_id;
             item.network_type_ = [=, this]() -> std::string {
                 if (rb_ws_->isChecked()) {
                     return kStreamItemNtTypeWebSocket;
                 }
-                else if (rb_udp_->isChecked()) {
-                    return kStreamItemNtTypeUdpKcp;
+//                else if (rb_udp_ && rb_udp_->isChecked()) {
+//                    return kStreamItemNtTypeUdpKcp;
+//                }
+                else if (rb_relay_ && rb_relay_->isChecked()) {
+                    return kStreamItemNtTypeRelay;
                 }
                 return kStreamItemNtTypeWebSocket;
             }();

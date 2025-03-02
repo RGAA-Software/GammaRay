@@ -43,8 +43,10 @@ namespace tc
     static const std::string kStCoturnPort = "coturn_server_port";
     static const std::string kStDeviceId = "device_id";
     static const std::string kStDeviceRandomPwd = "device_random_pwd";
-    static const std::string kStMgrAddress = "mgr_server_address";
-    static const std::string kStMgrPort = "mgr_server_port";
+    static const std::string kStIDServerHost = "id_server_host";
+    static const std::string kStIDServerPort = "id_server_port";
+    static const std::string kStRelayServerHost = "relay_server_host";
+    static const std::string kStRelayServerPort = "relay_server_port";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -93,6 +95,10 @@ namespace tc
         void SetDeviceId(const std::string& id);
         void SetDeviceRandomPwd(const std::string& pwd);
         void SetPanelListeningPort(int port);
+        void SetIdServerHost(const std::string& host);
+        void SetIdServerPort(const std::string& port);
+        void SetRelayServerHost(const std::string& host);
+        void SetRelayServerPort(const std::string& port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
@@ -126,15 +132,18 @@ namespace tc
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
         std::string udp_kcp_enabled_ = kStTrue;
-        //
+        // ID Server
+        std::string id_server_host_;
+        std::string id_server_port_;
+        // Relay Server
+        std::string relay_server_host_;
+        std::string relay_server_port_;
+        // Signaling Server
         std::string sig_server_address_;
         std::string sig_server_port_;
-        //
+        // Coturn Server
         std::string coturn_server_address_;
         std::string coturn_server_port_;
-        //
-        std::string mgr_server_address_;
-        std::string mgr_server_port_;
 
         std::string device_id_;
         std::string device_random_pwd_;

@@ -52,6 +52,16 @@ namespace tc
         kAv1
     };
 
+    class GrPluginSystemSettings {
+    public:
+        // this device, device id
+        std::string device_id_;
+        // relay host
+        std::string relay_host_;
+        // relay port
+        std::string relay_port_;
+    };
+
     // callback
     using GrPluginEventCallback = std::function<void(const std::shared_ptr<GrPluginBaseEvent>&)>;
 
@@ -116,6 +126,8 @@ namespace tc
         void PostToAllStreamMessage(const std::string& msg);
         void PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg);
 
+        virtual void OnSyncSystemSettings(const GrPluginSystemSettings& settings);
+
     protected:
 
         bool HasParam(const std::string& k) {
@@ -153,8 +165,8 @@ namespace tc
         std::string capture_audio_device_id_;
         // active net plugins...
         std::map<std::string, GrNetPlugin*> net_plugins_;
-        // this device, device id
-        std::string device_id_;
+        // settings
+        GrPluginSystemSettings sys_settings_{};
 
     public:
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;

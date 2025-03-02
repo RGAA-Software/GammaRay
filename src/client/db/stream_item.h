@@ -12,6 +12,7 @@ namespace tc
 
     static std::string kStreamItemNtTypeWebSocket = "websocket";
     static std::string kStreamItemNtTypeUdpKcp = "udp_kcp";
+    static std::string kStreamItemNtTypeRelay = "relay";
     static std::string kStreamItemNtTypeWebRTCDirect = "webrtc_direct";
     static std::string kStreamItemNtTypeWebRTC = "webrtc";
 
@@ -56,13 +57,22 @@ namespace tc
         std::string connect_type_;
 
         // 9 numbers
-        std::string client_id_;
+        std::string device_id_;
 
         // random password
-        std::string client_random_pwd_;
+        std::string device_random_pwd_;
 
         // safety password
-        std::string client_safety_pwd_;
+        std::string device_safety_pwd_;
+
+        // remote device id
+        std::string remote_device_id_;
+
+        // remote device random pwd
+        std::string remote_device_random_pwd_;
+
+        // remote device safety pwd
+        std::string remote_device_safety_pwd_;
 
     };
 

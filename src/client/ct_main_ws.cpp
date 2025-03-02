@@ -51,9 +51,6 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_ignore_mouse("ignore_mouse", "Ignore mouse event", "value", "0");
     parser.addOption(opt_ignore_mouse);
 
-    QCommandLineOption opt_device_id("device_id", "Device id", "value", "");
-    parser.addOption(opt_device_id);
-
     QCommandLineOption opt_stream_id("stream_id", "Stream id", "value", "");
     parser.addOption(opt_stream_id);
 
@@ -66,14 +63,23 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_stream_name("stream_name", "Stream name", "value", "");
     parser.addOption(opt_stream_name);
 
-    QCommandLineOption opt_client_id("client_id", "Client id", "value", "");
-    parser.addOption(opt_client_id);
+    QCommandLineOption opt_device_id("device_id", "device id", "value", "");
+    parser.addOption(opt_device_id);
 
-    QCommandLineOption opt_client_rp("client_rp", "Client rp", "value", "");
-    parser.addOption(opt_client_rp);
+    QCommandLineOption opt_device_rp("device_rp", "device rp", "value", "");
+    parser.addOption(opt_device_rp);
 
-    QCommandLineOption opt_client_sp("client_sp", "Client sp", "value", "");
-    parser.addOption(opt_client_sp);
+    QCommandLineOption opt_device_sp("device_sp", "device sp", "value", "");
+    parser.addOption(opt_device_sp);
+
+    QCommandLineOption opt_remote_device_id("remote_device_id", "remote_device id", "value", "");
+    parser.addOption(opt_remote_device_id);
+
+    QCommandLineOption opt_remote_device_rp("remote_device_rp", "remote_device rp", "value", "");
+    parser.addOption(opt_remote_device_rp);
+
+    QCommandLineOption opt_remote_device_sp("remote_device_sp", "remote_device sp", "value", "");
+    parser.addOption(opt_remote_device_sp);
 
     parser.process(app);
 
@@ -88,7 +94,6 @@ void ParseCommandLine(QApplication& app) {
     auto clipboard_on = parser.value(opt_clipboard).toInt();
     settings->clipboard_on_ = (clipboard_on == 1);
     settings->ignore_mouse_event_ = parser.value(opt_ignore_mouse).toInt() == 1;
-    settings->device_id_ = parser.value(opt_device_id).toStdString();
     settings->stream_id_ = parser.value(opt_stream_id).toStdString();
     g_nt_type_ = parser.value(opt_network_type).toStdString();
     settings->network_type_ = [=]() -> ClientNetworkType {
@@ -97,6 +102,9 @@ void ParseCommandLine(QApplication& app) {
         }
         else if (g_nt_type_ == kStreamItemNtTypeUdpKcp) {
             return ClientNetworkType::kUdpKcp;
+        }
+        else if (g_nt_type_ == kStreamItemNtTypeRelay) {
+            return ClientNetworkType::kRelay;
         }
         else {
             return ClientNetworkType::kWebsocket;
@@ -120,14 +128,24 @@ void ParseCommandLine(QApplication& app) {
     if (!settings->stream_name_.empty()) {
         settings->stream_name_ = Base64::Base64Decode(settings->stream_name_);
     }
-    settings->client_id_ = parser.value(opt_client_id).toStdString();
-    settings->client_random_pwd_ = parser.value(opt_client_rp).toStdString();
-    if (!settings->client_random_pwd_.empty()) {
-        settings->client_random_pwd_ = Base64::Base64Decode(settings->client_random_pwd_);
+    settings->device_id_ = parser.value(opt_device_id).toStdString();
+    settings->device_random_pwd_ = parser.value(opt_device_rp).toStdString();
+    if (!settings->device_random_pwd_.empty()) {
+        settings->device_random_pwd_ = Base64::Base64Decode(settings->device_random_pwd_);
     }
-    settings->client_safety_pwd_ = parser.value(opt_client_sp).toStdString();
-    if (!settings->client_safety_pwd_.empty()) {
-        settings->client_safety_pwd_ = Base64::Base64Decode(settings->client_safety_pwd_);
+    settings->device_safety_pwd_ = parser.value(opt_device_sp).toStdString();
+    if (!settings->device_safety_pwd_.empty()) {
+        settings->device_safety_pwd_ = Base64::Base64Decode(settings->device_safety_pwd_);
+    }
+
+    settings->remote_device_id_ = parser.value(opt_remote_device_id).toStdString();
+    settings->remote_device_random_pwd_ = parser.value(opt_remote_device_rp).toStdString();
+    if (!settings->remote_device_random_pwd_.empty()) {
+        settings->remote_device_random_pwd_ = Base64::Base64Decode(settings->remote_device_random_pwd_);
+    }
+    settings->remote_device_safety_pwd_ = parser.value(opt_remote_device_sp).toStdString();
+    if (!settings->remote_device_safety_pwd_.empty()) {
+        settings->remote_device_safety_pwd_ = Base64::Base64Decode(settings->remote_device_safety_pwd_);
     }
 }
 
@@ -198,13 +216,12 @@ int main(int argc, char** argv) {
     LOGI("clipboard on: {}", settings->clipboard_on_);
     LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
     LOGI("device id: {}", settings->device_id_);
+    LOGI("remote device id: {}", settings->remote_device_id_);
     LOGI("stream id: {}", settings->stream_id_);
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
     LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
 
-    // todo:
-    //settings->network_type_ = ClientNetworkType::kRelay;
-
+    // WebSocket only
     auto req_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
                                 settings->device_id_, settings->stream_id_);
     static Workspace ws(ctx, ThunderSdkParams {
@@ -222,7 +239,8 @@ int main(int argc, char** argv) {
 #endif
             .conn_type_ = settings->conn_type_,
             .nt_type_ = settings->network_type_,
-            .device_id_ = settings->device_id_,
+            .device_id_ = "client_" + settings->device_id_ + "_" + MD5::Hex(settings->remote_device_id_),
+            .remote_device_id_ = "server_" + settings->remote_device_id_,
             .stream_id_ = settings->stream_id_
     });
     ws.setWindowTitle(QMainWindow::tr("GammaRay Streamer") + "[" + settings->stream_name_.c_str() + "]");

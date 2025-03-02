@@ -124,8 +124,8 @@ namespace tc
 
     void GrApplication::RefreshSigServerSettings() {
         mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
-            .host_ = settings_->mgr_server_address_,
-            .port_ = std::atoi(settings_->mgr_server_port_.c_str()),
+            .host_ = settings_->id_server_host_,
+            .port_ = std::atoi(settings_->id_server_port_.c_str()),
             .ssl_ = false,
         });
     }

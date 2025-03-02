@@ -57,6 +57,9 @@ DEFINE_bool(mock_video, false, "use mocking video plugin");
 DEFINE_string(device_id, "", "device id");
 DEFINE_string(device_random_pwd, "", "device random pwd");
 
+DEFINE_string(relay_server_host, "", "relay host");
+DEFINE_string(relay_server_port, "", "relay port");
+
 DEFINE_int32(panel_server_port, 0, "");
 
 void UpdateSettings(Settings* settings) {
@@ -132,6 +135,9 @@ void UpdateSettings(Settings* settings) {
     settings->device_id_ = FLAGS_device_id;
     settings->device_random_pwd_ = FLAGS_device_random_pwd;
 
+    settings->relay_host_ = FLAGS_relay_server_host;
+    settings->relay_port_ = FLAGS_relay_server_port;
+
     settings->panel_server_port_ = FLAGS_panel_server_port;
 
 }
@@ -167,8 +173,9 @@ void PrintInputArgs() {
     LOGI("device id: {}", FLAGS_device_id);
     LOGI("device random pwd: {}", FLAGS_device_random_pwd);
     LOGI("panel server port: {}", FLAGS_panel_server_port);
-    LOGI("device id: {}", FLAGS_device_id);
     LOGI("udp listen port: {}", FLAGS_udp_listen_port);
+    LOGI("relay host: {}", FLAGS_relay_server_host);
+    LOGI("relay port: {}", FLAGS_relay_server_port);
     LOGI("--------------In args end----------------");
 }
 

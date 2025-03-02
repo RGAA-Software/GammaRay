@@ -29,6 +29,10 @@ namespace tc
         void SyncInfo(const tc::NetSyncInfo& info) override;
 
     private:
+        void NotifyMediaClientConnected();
+        void NotifyMediaClientDisConnected();
+
+    private:
         std::shared_ptr<RelayServerSdk> relay_sdk_ = nullptr;
     };
 

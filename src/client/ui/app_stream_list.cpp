@@ -174,14 +174,16 @@ namespace tc
                   << std::format("--port={}", item.stream_port).c_str()
                   << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
                   << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
-                  << std::format("--device_id={}", settings_->device_id_).c_str()
                   << std::format("--stream_id={}", item.stream_id).c_str()
                   << std::format("--conn_type={}", item.connect_type_).c_str()
                   << std::format("--network_type={}", item.network_type_).c_str()
                   << std::format("--stream_name={}", Base64::Base64Encode(item.stream_name)).c_str()
-                  << std::format("--client_id={}", item.client_id_).c_str()
-                  << std::format("--client_rp={}", Base64::Base64Encode(item.client_random_pwd_)).c_str()
-                  << std::format("--client_sp={}", Base64::Base64Encode(item.client_safety_pwd_)).c_str()
+                  << std::format("--device_id={}", context_->GetDeviceId()).c_str()
+                  << std::format("--device_rp={}", Base64::Base64Encode(item.device_random_pwd_)).c_str()
+                  << std::format("--device_sp={}", Base64::Base64Encode(item.device_safety_pwd_)).c_str()
+                  << std::format("--remote_device_id={}", item.remote_device_id_).c_str()
+                  << std::format("--remote_device_rp={}", Base64::Base64Encode(item.remote_device_random_pwd_)).c_str()
+                  << std::format("--remote_device_sp={}", Base64::Base64Encode(item.remote_device_safety_pwd_)).c_str()
                   ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {
@@ -306,7 +308,8 @@ namespace tc
                 auto item = stream_list_->takeItem(0);
                 delete item;
             }
-            for (const auto& stream : streams_) {
+            for (auto& stream : streams_) {
+                stream.device_id_ = settings_->device_id_;
                 AddItem(stream);
             }
 

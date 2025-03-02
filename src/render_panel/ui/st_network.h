@@ -24,9 +24,13 @@ namespace tc
 
     private:
         QLabel* license_ = nullptr;
-        QLineEdit* edt_sig_server_address_ = nullptr;
+        QLineEdit* edt_id_server_host_ = nullptr;
+        QLineEdit* edt_id_server_port_ = nullptr;
+        QLineEdit* edt_relay_server_host_ = nullptr;
+        QLineEdit* edt_relay_server_port_ = nullptr;
+        QLineEdit* edt_sig_server_host_ = nullptr;
         QLineEdit* edt_sig_server_port_ = nullptr;
-        QLineEdit* edt_coturn_server_address_ = nullptr;
+        QLineEdit* edt_coturn_server_host_ = nullptr;
         QLineEdit* edt_coturn_server_port_ = nullptr;
         QCheckBox* cb_websocket_ = nullptr;
         QLineEdit* edt_websocket_ = nullptr;

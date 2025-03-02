@@ -46,6 +46,7 @@ namespace tc
         settings_ = GrSettings::Instance();
         // client
         client_ctx_ = std::make_shared<ClientContext>("ui.embed");
+        // update when new device id requested
         client_ctx_->SetDeviceId(settings_->device_id_);
         client_ctx_->Init(false);
 
@@ -256,6 +257,7 @@ namespace tc
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
                 lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                client_ctx_->SetDeviceId(settings_->device_id_);
             });
         });
     }

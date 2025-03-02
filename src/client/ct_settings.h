@@ -13,7 +13,6 @@ namespace tc
 {
 
     enum class VideoRenderType {
-        kSDL,
         kOpenGL,
         kTestQPixmap,
     };
@@ -69,7 +68,6 @@ namespace tc
         bool ignore_mouse_event_ = false;
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;
         ScaleMode scale_mode_ = ScaleMode::kFullWindow;
-        std::string device_id_;
         // for client render process --- below
         std::string stream_id_;
         // conn type
@@ -78,12 +76,18 @@ namespace tc
         ClientNetworkType network_type_;
         // stream name
         std::string stream_name_;
-        // client id
-        std::string client_id_;
-        // client random pwd
-        std::string client_random_pwd_;
-        // client safety pwd
-        std::string client_safety_pwd_;
+        // device id
+        std::string device_id_;
+        // device random pwd
+        std::string device_random_pwd_;
+        // device safety pwd
+        std::string device_safety_pwd_;
+        // remote device
+        std::string remote_device_id_;
+        // remote device random pwd
+        std::string remote_device_random_pwd_;
+        // remote device safety pwd
+        std::string remote_device_safety_pwd_;
     };
 
 }

@@ -44,18 +44,28 @@ namespace tc
     bool RelayPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrNetPlugin::OnCreate(param);
 
-        // todo: debug
-        device_id_ = "did_1011";
+        auto device_id = "server_" + sys_settings_.device_id_;
+        auto relay_host = GetConfigParam<std::string>("relay_host");
+        auto relay_port = GetConfigParam<std::string>("relay_port");
+
+        LOGI("OnCreate, device id: {}, relay host: {}, relay port: {}", device_id, relay_host, relay_port);
+
         // todo: check device id, empty? try to retry
         relay_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam {
-            .host_ = "127.0.0.1",
-            .port_ = 20481,
+            .host_ = relay_host,
+            .port_ = std::atoi(relay_port.c_str()),
             .ssl_ = false,
-            .device_id_ = device_id_
+            .device_id_ = device_id
         });
 
         relay_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage>& msg) {
-
+            auto type = msg->type();
+            if (type == RelayMessageType::kRelayTargetMessage) {
+                auto sub = msg->relay();
+                const auto& payload = sub.payload();
+                auto msg = std::string(payload.data(), payload.size());
+                this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
+            }
         });
 
         relay_sdk_->Start();
@@ -93,4 +103,13 @@ namespace tc
 
     }
 
+    void RelayPlugin::NotifyMediaClientConnected() {
+        auto event = std::make_shared<GrPluginClientConnectedEvent>();
+        this->CallbackEvent(event);
+    }
+
+    void RelayPlugin::NotifyMediaClientDisConnected() {
+        auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
+        this->CallbackEvent(event);
+    }
 }

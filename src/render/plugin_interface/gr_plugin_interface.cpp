@@ -71,6 +71,7 @@ namespace tc
         LOGI("{} OnCreate", GetPluginName());
 
         capture_audio_device_id_ = GetConfigParam<std::string>("capture_audio_device_id");
+        sys_settings_.device_id_ = GetConfigParam<std::string>("device_id");
 
         // print params
         LOGI("Input params size : {}", param.cluster_.size());
@@ -211,6 +212,18 @@ namespace tc
     void GrPluginInterface::PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             plugin->PostTargetStreamProtoMessage(stream_id, msg);
+        }
+    }
+
+    void GrPluginInterface::OnSyncSystemSettings(const tc::GrPluginSystemSettings& settings) {
+        if (!settings.device_id_.empty()) {
+            sys_settings_.device_id_ = settings.device_id_;
+        }
+        if (!settings.relay_host_.empty()) {
+            sys_settings_.relay_host_ = settings.relay_host_;
+        }
+        if (!settings.relay_port_.empty()) {
+            sys_settings_.relay_port_ = settings.relay_port_;
         }
     }
 

@@ -65,9 +65,12 @@ namespace tc
         // coturn
         coturn_server_address_ = sp_->Get(kStCoturnAddress, "");
         coturn_server_port_ = sp_->Get(kStCoturnPort, "");
-        // manager
-        mgr_server_address_ = sp_->Get(kStMgrAddress, "127.0.0.1");
-        mgr_server_port_ = sp_->Get(kStMgrPort, "20581");
+        // id server
+        id_server_host_ = sp_->Get(kStIDServerHost, "");
+        id_server_port_ = sp_->Get(kStIDServerPort, "");
+        // relay server
+        relay_server_host_ = sp_->Get(kStRelayServerHost, "");
+        relay_server_port_ = sp_->Get(kStRelayServerPort, "");
 
         device_id_ = sp_->Get(kStDeviceId, "");
         device_random_pwd_ = sp_->Get(kStDeviceRandomPwd, "");
@@ -101,6 +104,8 @@ namespace tc
         ss << "device_id_: " << device_id_ << std::endl;
         ss << "device_random_pwd_: " << device_random_pwd_ << std::endl;
         ss << "udp_listen_port_:" << udp_listen_port_ << std::endl;
+        ss << "relay host: " << relay_server_host_ << std::endl;
+        ss << "relay port: " << relay_server_port_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -136,7 +141,8 @@ namespace tc
         args.push_back(std::format("--{}={}", kStDeviceId, device_id_));
         args.push_back(std::format("--{}={}", kStDeviceRandomPwd, device_random_pwd_));
         args.push_back(std::format("--panel_server_port={}", this->http_server_port_));
-        args.push_back(std::format("--{}={}", kStDeviceId, device_id_));
+        args.push_back(std::format("--{}={}", kStRelayServerHost, relay_server_host_));
+        args.push_back(std::format("--{}={}", kStRelayServerPort, relay_server_port_));
         return args;
     }
 
@@ -255,5 +261,26 @@ namespace tc
         panel_listen_port_ = port;
         sp_->Put(kStPanelListeningPort, std::to_string(port));
     }
+
+    void GrSettings::SetIdServerHost(const std::string& host) {
+        id_server_host_ = host;
+        sp_->Put(kStIDServerHost, host);
+    }
+
+    void GrSettings::SetIdServerPort(const std::string& port) {
+        id_server_port_ = port;
+        sp_->Put(kStIDServerPort, port);
+    }
+
+    void GrSettings::SetRelayServerHost(const std::string& host) {
+        relay_server_host_ = host;
+        sp_->Put(kStRelayServerHost, host);
+    }
+
+    void GrSettings::SetRelayServerPort(const std::string& port) {
+        relay_server_port_ = port;
+        sp_->Put(kStRelayServerPort, port);
+    }
+
 
 }

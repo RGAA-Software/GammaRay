@@ -43,9 +43,12 @@ namespace tc
             make_column("encode_fps", &StreamItem::encode_fps),
             make_column("network_type", &StreamItem::network_type_),
             make_column("connect_type", &StreamItem::connect_type_),
-            make_column("client_id", &StreamItem::client_id_),
-            make_column("client_random_pwd", &StreamItem::client_random_pwd_),
-            make_column("client_safety_pwd", &StreamItem::client_safety_pwd_)
+            make_column("device_id", &StreamItem::device_id_),
+            make_column("device_random_pwd", &StreamItem::device_random_pwd_),
+            make_column("device_safety_pwd", &StreamItem::device_safety_pwd_),
+            make_column("remote_device_id", &StreamItem::remote_device_id_),
+            make_column("remote_device_random_pwd", &StreamItem::remote_device_random_pwd_),
+            make_column("remote_device_safety_pwd", &StreamItem::remote_device_safety_pwd_)
         ));
         return st;
     }

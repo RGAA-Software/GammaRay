@@ -39,12 +39,6 @@ namespace tc
         }
 
         device_id_ = sp_->Get(kKeyDeviceId, "");
-        if (device_id_.empty()) {
-            auto hd = Hardware::Instance();
-            hd->Detect(false, true, false);
-            auto desc = MD5::Hex(hd->GetHardwareDescription());
-            device_id_ = desc;
-        }
     }
 
     void Settings::LoadRenderSettings() {
