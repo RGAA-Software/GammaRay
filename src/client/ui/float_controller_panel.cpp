@@ -275,13 +275,19 @@ namespace tc
             layout->addWidget(icon);
 
             auto text = new QLabel();
-            text->setText(tr("File Transfer ="));
+            text->setText(tr("File Transfer"));
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);
 
             layout->addStretch();
             root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                if (file_trans_listener_) {
+                    file_trans_listener_(widget);
+                }
+            });
         }
         // debug
         {

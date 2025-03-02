@@ -436,6 +436,16 @@ namespace tc
             controller_panel_->Hide();
             debug_panel_->setHidden(!debug_panel_->isHidden());
         });
+
+        controller_panel_->SetOnFileTransListener([=, this](QWidget* w) {
+            if (!file_trans_interface_) {
+                return;
+            }
+            context_->PostUITask([=, this]() {
+                controller_panel_->Hide();
+                file_trans_interface_->OnClickedFileTrans();
+            });
+        });
     }
 
     void Workspace::UpdateDebugPanelPosition() {
