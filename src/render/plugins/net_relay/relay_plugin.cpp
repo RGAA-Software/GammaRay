@@ -44,31 +44,59 @@ namespace tc
     bool RelayPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrNetPlugin::OnCreate(param);
 
-        auto device_id = "server_" + sys_settings_.device_id_;
-        auto relay_host = GetConfigParam<std::string>("relay_host");
-        auto relay_port = GetConfigParam<std::string>("relay_port");
+        std::thread([=, this]() {
+            int connect_count = 0;
+            for (;;) {
+                auto device_id = "server_" + sys_settings_.device_id_;
+                auto relay_host = GetConfigParam<std::string>("relay_host");
+                auto relay_port = std::atoi(GetConfigParam<std::string>("relay_port").c_str());
 
-        LOGI("OnCreate, device id: {}, relay host: {}, relay port: {}", device_id, relay_host, relay_port);
+                if (sys_settings_.device_id_.empty() || relay_host.empty() || relay_port <= 0) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    continue;
+                }
 
-        // todo: check device id, empty? try to retry
-        relay_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam {
-            .host_ = relay_host,
-            .port_ = std::atoi(relay_port.c_str()),
-            .ssl_ = false,
-            .device_id_ = device_id
-        });
+                LOGI("OnCreate, connect count: {}; device id: {}, relay host: {}, relay port: {}",
+                     connect_count++, device_id, relay_host, relay_port);
 
-        relay_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage>& msg) {
-            auto type = msg->type();
-            if (type == RelayMessageType::kRelayTargetMessage) {
-                auto sub = msg->relay();
-                const auto& payload = sub.payload();
-                auto msg = std::string(payload.data(), payload.size());
-                this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
+                // todo: check device id, empty? try to retry
+                relay_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
+                        .host_ = relay_host,
+                        .port_ = relay_port,
+                        .ssl_ = false,
+                        .device_id_ = device_id
+                });
+
+                relay_sdk_->SetOnConnectedCallback([=, this]() {
+                    this->sdk_init_ = true;
+                });
+
+                relay_sdk_->SetOnDisConnectedCallback([=, this]() {
+
+                });
+
+                relay_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
+                    auto type = msg->type();
+                    if (type == RelayMessageType::kRelayTargetMessage) {
+                        auto sub = msg->relay();
+                        const auto &payload = sub.payload();
+                        auto msg = std::string(payload.data(), payload.size());
+                        this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
+                    }
+                });
+
+                relay_sdk_->Start();
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                if (this->sdk_init_) {
+                    LOGI("SDK Connected to server!");
+                    break;
+                }
+                else {
+                    LOGI("Will retry to connect relay server.");
+                }
             }
-        });
-
-        relay_sdk_->Start();
+        }).detach();
 
         return true;
     }
@@ -78,12 +106,16 @@ namespace tc
     }
 
     void RelayPlugin::PostProtoMessage(const std::string& msg) {
-        relay_sdk_->RelayProtoMessage(msg);
+        if (IsWorking()) {
+            relay_sdk_->RelayProtoMessage(msg);
+        }
     }
 
     bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
         // todo: stream id --> device id
-        relay_sdk_->RelayProtoMessage(stream_id, msg);
+        if (IsWorking()) {
+            relay_sdk_->RelayProtoMessage(stream_id, msg);
+        }
         return true;
     }
 
@@ -96,7 +128,7 @@ namespace tc
     }
 
     bool RelayPlugin::IsWorking() {
-        return true;
+        return sdk_init_ && relay_sdk_;
     }
 
     void RelayPlugin::SyncInfo(const tc::NetSyncInfo &info) {

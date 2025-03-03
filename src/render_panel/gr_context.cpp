@@ -46,8 +46,10 @@ namespace tc
 
         srv_manager_ = std::make_shared<GrRenderController>(app);
 
-        task_runtime_ = std::make_shared<TaskRuntime>();
-        steam_mgr_ = SteamManager::Make(task_runtime_);
+        asio2_pool_ = std::make_shared<asio2::iopool>();
+        asio2_pool_->start();
+
+        steam_mgr_ = SteamManager::Make();
         steam_mgr_->ScanInstalledSteamPath();
 
         msg_notifier_ = std::make_shared<MessageNotifier>();
@@ -87,12 +89,8 @@ namespace tc
         return steam_mgr_;
     }
 
-    std::shared_ptr<TaskRuntime> GrContext::GetTaskRuntime() {
-        return task_runtime_;
-    }
-
     void GrContext::PostTask(std::function<void()>&& task) {
-        task_runtime_->Post(SimpleThreadTask::Make(std::move(task)));
+        asio2_pool_->post(task);
     }
 
     void GrContext::PostUITask(std::function<void()>&& task) {
@@ -200,6 +198,10 @@ namespace tc
 
         timer_->start_timer(2, 1000, [=, this]() {
             this->SendAppMessage(MsgGrTimer1S{});
+        });
+
+        timer_->start_timer(5, 5000, [=, this]() {
+            this->SendAppMessage(MsgGrTimer5S{});
         });
     }
 

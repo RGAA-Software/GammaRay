@@ -19,6 +19,7 @@
 #include <d3d11.h>
 #include <mutex>
 #include <wrl/client.h>
+#include "gr_plugin_settings_info.h"
 
 namespace tc
 {
@@ -50,16 +51,6 @@ namespace tc
         kVp8,
         kVp9,
         kAv1
-    };
-
-    class GrPluginSystemSettings {
-    public:
-        // this device, device id
-        std::string device_id_;
-        // relay host
-        std::string relay_host_;
-        // relay port
-        std::string relay_port_;
     };
 
     // callback
@@ -126,7 +117,7 @@ namespace tc
         void PostToAllStreamMessage(const std::string& msg);
         void PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg);
 
-        virtual void OnSyncSystemSettings(const GrPluginSystemSettings& settings);
+        virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
 
     protected:
 
@@ -166,7 +157,7 @@ namespace tc
         // active net plugins...
         std::map<std::string, GrNetPlugin*> net_plugins_;
         // settings
-        GrPluginSystemSettings sys_settings_{};
+        GrPluginSettingsInfo sys_settings_{};
 
     public:
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;

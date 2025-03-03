@@ -136,6 +136,12 @@ namespace tc
             RefreshSigServerSettings();
             RequestNewClientId(false);
         });
+
+        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
+            if (settings_->device_id_.empty()) {
+                RequestNewClientId(false);
+            }
+        });
     }
 
     void GrApplication::RequestNewClientId(bool force_update) {
@@ -158,6 +164,8 @@ namespace tc
                 .device_random_pwd_ = device->random_pwd_,
                 .force_update_ = force_update,
             });
+
+            context_->SendAppMessage(MsgSyncSettingsToRender{});
 
         });
     }

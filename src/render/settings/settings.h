@@ -138,6 +138,7 @@ namespace tc
         int panel_server_port_ = 0;
         std::string device_id_;
         std::string device_random_pwd_;
+        std::string device_safety_pwd_;
         std::string relay_host_;
         std::string relay_port_;
         // capturing multiple monitors together

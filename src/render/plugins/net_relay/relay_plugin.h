@@ -34,6 +34,7 @@ namespace tc
 
     private:
         std::shared_ptr<RelayServerSdk> relay_sdk_ = nullptr;
+        std::atomic_bool sdk_init_ = false;
     };
 
 }

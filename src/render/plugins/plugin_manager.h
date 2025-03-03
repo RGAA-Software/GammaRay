@@ -9,8 +9,9 @@
 #include <string>
 #include <map>
 #include <QLibrary>
-#include "tc_common_new/concurrent_hashmap.h"
 #include "plugin_ids.h"
+#include "tc_common_new/concurrent_hashmap.h"
+#include "plugin_interface/gr_plugin_settings_info.h"
 
 namespace tc
 {
@@ -58,6 +59,8 @@ namespace tc
         void DumpPluginInfo();
 
         void On1Second();
+
+        void SyncSystemInfo(const GrPluginSettingsInfo& info);
 
     private:
         Settings* settings_ = nullptr;

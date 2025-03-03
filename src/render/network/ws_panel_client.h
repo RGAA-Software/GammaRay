@@ -17,6 +17,7 @@ namespace tc
     class Statistics;
     class MessageListener;
     class Settings;
+    class PluginManager;
 
     class WsPanelClient {
     public:
@@ -36,6 +37,7 @@ namespace tc
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::atomic_int queued_msg_count_ = 0;
+        std::shared_ptr<PluginManager> plugin_mgr_ = nullptr;
     };
 
 }

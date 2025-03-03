@@ -296,4 +296,10 @@ namespace tc
         });
     }
 
+    void PluginManager::SyncSystemInfo(const GrPluginSettingsInfo& info) {
+        VisitAllPlugins([&](GrPluginInterface* plugin) {
+            plugin->OnSyncSystemSettings(info);
+        });
+    }
+
 }

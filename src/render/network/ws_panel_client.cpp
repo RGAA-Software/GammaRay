@@ -10,6 +10,8 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_message.pb.h"
+#include "plugins/plugin_manager.h"
+#include "plugin_interface/gr_plugin_interface.h"
 
 namespace tc
 {
@@ -20,6 +22,7 @@ namespace tc
         statistics_ = Statistics::Instance();
         settings_ = Settings::Instance();
         context_ = ctx;
+        plugin_mgr_ = context_->GetPluginManager();
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
             this->SendStatistics();
@@ -90,6 +93,16 @@ namespace tc
                 auto sub = m.sync_panel_info();
                 settings_->device_id_ = sub.device_id();
                 settings_->device_random_pwd_ = sub.device_random_pwd();
+                settings_->device_safety_pwd_ = sub.device_safety_pwd();
+                settings_->relay_host_ = sub.relay_host();
+                settings_->relay_port_ = sub.relay_port();
+
+                plugin_mgr_->SyncSystemInfo(GrPluginSettingsInfo {
+                    .device_id_ = settings_->device_id_,
+                    .relay_host_ = settings_->relay_host_,
+                    .relay_port_ = settings_->relay_port_,
+                });
+
                 //LOGI("SyncPanelInfo, client id: {}, random pwd: {}", sub.client_id(), sub.client_random_pwd());
             }
         } catch(std::exception& e) {

@@ -54,6 +54,10 @@ namespace tc
     public:
     };
 
+    class MsgGrTimer5S {
+    public:
+    };
+
     // running game ids
     class MsgRunningGameIds {
     public:
@@ -83,6 +87,11 @@ namespace tc
         std::string device_id_;
         std::string device_random_pwd_;
         bool force_update_{false};
+    };
+
+    // Sync Settings to Render
+    class MsgSyncSettingsToRender {
+    public:
     };
 
 }

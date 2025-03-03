@@ -215,7 +215,7 @@ namespace tc
         }
     }
 
-    void GrPluginInterface::OnSyncSystemSettings(const tc::GrPluginSystemSettings& settings) {
+    void GrPluginInterface::OnSyncSystemSettings(const tc::GrPluginSettingsInfo& settings) {
         if (!settings.device_id_.empty()) {
             sys_settings_.device_id_ = settings.device_id_;
         }
@@ -225,6 +225,8 @@ namespace tc
         if (!settings.relay_port_.empty()) {
             sys_settings_.relay_port_ = settings.relay_port_;
         }
+        LOGI("OnSyncSettings: device id: {}, relay host: {}, port: {}",
+             sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
     }
 
 }
