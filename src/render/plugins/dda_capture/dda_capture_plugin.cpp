@@ -261,6 +261,7 @@ namespace tc
     }
 
     void DDACapturePlugin::On1Second() {
+        // TODO: IGNORE THIS
         SetCaptureMonitor(capturing_monitor_name_);
         NotifyCaptureMonitorInfo();
     }

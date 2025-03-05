@@ -61,18 +61,27 @@ namespace tc
 
                 // todo: check device id, empty? try to retry
                 relay_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
-                        .host_ = relay_host,
-                        .port_ = relay_port,
-                        .ssl_ = false,
-                        .device_id_ = device_id
+                    .host_ = relay_host,
+                    .port_ = relay_port,
+                    .ssl_ = false,
+                    .device_id_ = device_id
                 });
 
                 relay_sdk_->SetOnConnectedCallback([=, this]() {
                     this->sdk_init_ = true;
+                    this->NotifyMediaClientConnected();
                 });
 
                 relay_sdk_->SetOnDisConnectedCallback([=, this]() {
+                    this->NotifyMediaClientDisConnected();
+                });
 
+                relay_sdk_->SetOnRoomPreparedCallback([this]() {
+                    this->NotifyMediaClientConnected();
+                });
+
+                relay_sdk_->SetOnRoomDestroyedCallback([this]() {
+                    this->NotifyMediaClientDisConnected();
                 });
 
                 relay_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {

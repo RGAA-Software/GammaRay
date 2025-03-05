@@ -41,6 +41,7 @@ namespace tc
     private:
         void PostEncTask(std::function<void()>&& task);
         std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
+        void PrintEncoderConfig(const tc::EncoderConfig& config);
 
     private:
         Settings* settings_ = nullptr;

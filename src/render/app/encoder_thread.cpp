@@ -186,6 +186,8 @@ namespace tc
                 encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
                 encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
 
+                PrintEncoderConfig(encoder_config);
+
                 // generate d3d device/context
                 if (!app_->GetD3DDevice() || !app_->GetD3DContext()) {
                     if (!app_->GenerateD3DDevice(cap_video_msg.adapter_uid_)) {
@@ -356,6 +358,15 @@ namespace tc
 
     GrVideoEncoderPlugin* EncoderThread::GetWorkingVideoEncoderPlugin() {
         return working_encoder_plugin_;
+    }
+
+    void EncoderThread::PrintEncoderConfig(const tc::EncoderConfig& config) {
+        LOGI("---------------------------------------------------");
+        LOGI("Encoder configs:");
+        LOGI("width x height:{}x{}", config.width, config.height);
+        LOGI("gop size: {}", config.gop_size);
+        LOGI("gop bitrate: {}", config.bitrate);
+        LOGI("***************************************************");
     }
 
 }
