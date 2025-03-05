@@ -14,9 +14,6 @@
 
 namespace tc
 {
-
-    constexpr int kMaxQueuedMessage = 4096;
-
     class Data;
 
     class WsData {
