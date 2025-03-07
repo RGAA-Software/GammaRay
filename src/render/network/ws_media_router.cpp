@@ -38,11 +38,26 @@ namespace tc
 
     void WsMediaRouter::PostBinaryMessage(const std::string &data) {
         if (session_ && session_->is_started()) {
-            queued_message_count_++;
-            //LOGI("current queued message count: {}", queued_message_count_);
-            session_->async_send(data, [=, this](size_t byte_sent) {
-                Statistics::Instance()->AppendMediaBytes(byte_sent);
-                queued_message_count_--;
+            session_->post_queued_event([=, this]() {
+                session_->ws_stream().binary(true);
+                queued_message_count_++;
+                session_->async_send(data, [=, this](size_t byte_sent) {
+                    Statistics::Instance()->AppendMediaBytes(byte_sent);
+                    queued_message_count_--;
+                });
+            });
+        }
+    }
+
+    void WsMediaRouter::PostTextMessage(const std::string& data) {
+        if (session_ && session_->is_started()) {
+            session_->post_queued_event([=, this]() {
+                session_->ws_stream().text(true);
+                queued_message_count_++;
+                session_->async_send(data, [=, this](size_t byte_sent) {
+                    Statistics::Instance()->AppendMediaBytes(byte_sent);
+                    queued_message_count_--;
+                });
             });
         }
     }

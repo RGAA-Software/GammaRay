@@ -30,6 +30,7 @@ namespace tc
         void OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) override;
         void PostBinaryMessage(const std::shared_ptr<Data> &data) override;
         void PostBinaryMessage(const std::string &data) override;
+        void PostTextMessage(const std::string& data) override;
 
         bool IsVideoEnabled();
 
@@ -37,6 +38,7 @@ namespace tc
         bool enable_video_ = true;
         std::string device_id_;
         std::string stream_id_;
+        unsigned int post_thread_id_ = 0;
     };
 
 }

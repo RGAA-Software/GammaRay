@@ -31,10 +31,6 @@ namespace tc
 
         virtual void OnOpen(std::shared_ptr<asio2::http_session>& sess_ptr) {
             session_ = sess_ptr;
-            session_->ws_stream().binary(true);
-            session_->post_queued_event([=]() {
-                //session_->async_send("eg: hello websocket");
-            });
         }
 
         virtual void OnClose(std::shared_ptr<asio2::http_session>& sess_ptr) {
@@ -55,6 +51,7 @@ namespace tc
 
         virtual void PostBinaryMessage(const std::shared_ptr<Data>& data) = 0;
         virtual void PostBinaryMessage(const std::string& data) = 0;
+        virtual void PostTextMessage(const std::string& data) = 0;
 
     protected:
 
