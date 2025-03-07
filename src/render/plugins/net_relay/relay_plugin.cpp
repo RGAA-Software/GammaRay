@@ -103,6 +103,7 @@ namespace tc
                 }
                 else {
                     LOGI("Will retry to connect relay server.");
+                    relay_sdk_->Stop();
                 }
             }
         }).detach();
