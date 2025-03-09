@@ -29,13 +29,18 @@ namespace tc
             LOGE("avcodec_alloc_context3 error!");
             return false;
         }
-        context_->width = config.encode_width;
-        context_->height = config.encode_height;
-        context_->time_base = { 1, config.fps };
-        context_->framerate = { config.fps, 1};
+
+        // test
+        if (encoder_config_.fps  <= 0) {
+            encoder_config_.fps = 60;
+        }
+
+        context_->width = encoder_config_.encode_width;
+        context_->height = encoder_config_.encode_height;
+        context_->time_base = { 1, encoder_config_.fps };
+        context_->framerate = { encoder_config_.fps, 1};
         context_->flags |= AV_CODEC_FLAG_LOW_DELAY;
         context_->pix_fmt = AV_PIX_FMT_YUV420P;
-        //context_->thread_count = std::min((int)std::thread::hardware_concurrency()/2, X265_MAX_FRAME_THREADS);
         context_->thread_count = std::min(16, (int)std::thread::hardware_concurrency());
         context_->thread_type = FF_THREAD_SLICE;
         context_->gop_size = gop_size_;
