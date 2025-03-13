@@ -569,6 +569,9 @@ namespace tc
         if (file_transfer_) {
             file_transfer_->Exit();
         }
+        if (file_trans_interface_) {
+            file_trans_interface_->Exit();
+        }
         ProcessUtil::KillProcess(QApplication::applicationPid());
         qApp->exit(0);
     }
