@@ -43,6 +43,7 @@ namespace tc
         SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
         settings_ = GrSettings::Instance();
         settings_->Load();
+        //settings_->RequestOnlineServers();
         settings_->Dump();
 
         auto exeDir = QApplication::applicationDirPath().toStdString();

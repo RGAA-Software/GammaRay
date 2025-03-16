@@ -11,8 +11,12 @@
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "tc_common_new/hardware.h"
+#include "tc_common_new/http_client.h"
+#include "tc_3rdparty/json/json.hpp"
 #include <sstream>
 #include <QApplication>
+
+using namespace nlohmann;
 
 namespace tc
 {
@@ -58,6 +62,9 @@ namespace tc
                 }
             }
         }
+        // spvr server
+        spvr_server_host_ = sp_->Get(kStSpvrServerHost, "");
+        spvr_server_port_ = sp_->Get(kStSpvrServerPort, "");
 
         // signaling
         sig_server_address_ = sp_->Get(kStSigServerAddress, "");
@@ -106,6 +113,8 @@ namespace tc
         ss << "udp_listen_port_:" << udp_listen_port_ << std::endl;
         ss << "relay host: " << relay_server_host_ << std::endl;
         ss << "relay port: " << relay_server_port_ << std::endl;
+        ss << "spvr server host: " << spvr_server_host_ << std::endl;
+        ss << "spvr server port: " << spvr_server_port_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -282,5 +291,60 @@ namespace tc
         sp_->Put(kStRelayServerPort, port);
     }
 
+    void GrSettings::SetSpvrServerHost(const std::string& host) {
+        spvr_server_host_ = host;
+        sp_->Put(kStSpvrServerHost, host);
+    }
+
+    void GrSettings::SetSpvrServerPort(const std::string& port) {
+        spvr_server_port_ = port;
+        sp_->Put(kStSpvrServerPort, port);
+    }
+
+    bool GrSettings::RequestOnlineServers() {
+        auto client =
+                HttpClient::Make(std::format("{}:{}", spvr_server_host_, spvr_server_port_), "/get/online/servers", 3);
+        auto resp = client->Request();
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Request new device failed.");
+            return false;
+        }
+
+        try {
+            auto obj = json::parse(resp.body);
+            if (obj["code"].get<int>() != 200) {
+                return false;
+            }
+
+            auto data = obj["data"];
+            if (!data.is_array()) {
+                return false;
+            }
+
+            for (const auto& item : data) {
+                auto srv_type = item["server_type"].get<std::string>();
+                if (srv_type == "0") {
+                    // relay server
+                }
+                else if (srv_type == "1") {
+                    // profile server
+                }
+
+                auto srv_name = item["server_name"].get<std::string>();
+                auto srv_id = item["server_id"].get<std::string>();
+                auto srv_w3c_ip = item["w3c_ip"].get<std::string>();
+                auto srv_local_ip = item["local_ip"].get<std::string>();
+                LOGI("--online server : {}, type: {}", srv_name, srv_type);
+                LOGI("----srv w3c ip: {}", srv_w3c_ip);
+                LOGI("----srv local ip: {}", srv_local_ip);
+                LOGI("----srv id: {}", srv_id);
+            }
+
+            return true;
+        } catch(std::exception& e) {
+            LOGE("RequestNewDevice failed: {}, message: {}", e.what(), resp.body);
+            return false;
+        }
+    }
 
 }

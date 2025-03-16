@@ -47,6 +47,8 @@ namespace tc
     static const std::string kStIDServerPort = "id_server_port";
     static const std::string kStRelayServerHost = "relay_server_host";
     static const std::string kStRelayServerPort = "relay_server_port";
+    static const std::string kStSpvrServerHost = "spvr_server_host";
+    static const std::string kStSpvrServerPort = "spvr_server_port";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -99,8 +101,13 @@ namespace tc
         void SetIdServerPort(const std::string& port);
         void SetRelayServerHost(const std::string& host);
         void SetRelayServerPort(const std::string& port);
+        void SetSpvrServerHost(const std::string& host);
+        void SetSpvrServerPort(const std::string& port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
+
+        // request server
+        bool RequestOnlineServers();
 
     public:
         SharedPreference* sp_ = nullptr;
@@ -132,6 +139,9 @@ namespace tc
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
         std::string udp_kcp_enabled_ = kStTrue;
+        // Spvr Server
+        std::string spvr_server_host_;
+        std::string spvr_server_port_;
         // ID Server
         std::string id_server_host_;
         std::string id_server_port_;

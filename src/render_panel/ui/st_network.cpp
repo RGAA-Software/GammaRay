@@ -227,7 +227,7 @@ namespace tc
             {
                 // title
                 auto label = new QLabel(this);
-                label->setText(tr("ID Server"));
+                label->setText(tr("GammaRay Server"));
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
@@ -241,9 +241,9 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
-                edt_id_server_host_ = edit;
+                edt_spvr_server_host_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(settings_->id_server_host_.c_str());
+                edit->setText(settings_->spvr_server_host_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -258,10 +258,10 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
-                edt_id_server_port_ = edit;
+                edt_spvr_server_port_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setValidator(new QIntValidator);
-                edit->setText(settings_->id_server_port_.c_str());
+                edit->setText(settings_->spvr_server_port_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -269,139 +269,139 @@ namespace tc
             }
 
             // Relay Server
-            {
-                // title
-                auto label = new QLabel(this);
-                label->setText(tr("Relay Server"));
-                label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
-                segment_layout->addWidget(label);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Host"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edt_relay_server_host_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setText(settings_->relay_server_host_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edt_relay_server_port_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setValidator(new QIntValidator);
-                edit->setText(settings_->relay_server_port_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-
-            // Signaling Server
-            {
-                // title
-                auto label = new QLabel(this);
-                label->setText(tr("RTC Signaling Server"));
-                label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
-                segment_layout->addWidget(label);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Host"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edt_sig_server_host_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setText(settings_->sig_server_address_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edt_sig_server_port_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setValidator(new QIntValidator);
-                edit->setText(settings_->sig_server_port_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-
-            // Coturn Address
-            {
-                // title
-                auto label = new QLabel(this);
-                label->setText(tr("RTC TURN"));
-                label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
-                segment_layout->addWidget(label);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Host"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edt_coturn_server_host_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setText(settings_->coturn_server_address_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edt_coturn_server_port_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setValidator(new QIntValidator);
-                edit->setText(settings_->coturn_server_port_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
+//            {
+//                // title
+//                auto label = new QLabel(this);
+//                label->setText(tr("Relay Server"));
+//                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+//                segment_layout->addSpacing(20);
+//                segment_layout->addWidget(label);
+//            }
+//            {
+//                auto layout = new NoMarginHLayout();
+//                auto label = new QLabel(this);
+//                label->setText(tr("Server Host"));
+//                label->setFixedSize(tips_label_size);
+//                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+//                layout->addWidget(label);
+//
+//                auto edit = new QLineEdit(this);
+//                edt_relay_server_host_ = edit;
+//                edit->setFixedSize(input_size);
+//                edit->setText(settings_->relay_server_host_.c_str());
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//            }
+//            {
+//                auto layout = new NoMarginHLayout();
+//                auto label = new QLabel(this);
+//                label->setText(tr("Server Port"));
+//                label->setFixedSize(tips_label_size);
+//                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+//                layout->addWidget(label);
+//
+//                auto edit = new QLineEdit(this);
+//                edt_relay_server_port_ = edit;
+//                edit->setFixedSize(input_size);
+//                edit->setValidator(new QIntValidator);
+//                edit->setText(settings_->relay_server_port_.c_str());
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//            }
+//
+//            // Signaling Server
+//            {
+//                // title
+//                auto label = new QLabel(this);
+//                label->setText(tr("RTC Signaling Server"));
+//                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+//                segment_layout->addSpacing(20);
+//                segment_layout->addWidget(label);
+//            }
+//            {
+//                auto layout = new NoMarginHLayout();
+//                auto label = new QLabel(this);
+//                label->setText(tr("Server Host"));
+//                label->setFixedSize(tips_label_size);
+//                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+//                layout->addWidget(label);
+//
+//                auto edit = new QLineEdit(this);
+//                edt_sig_server_host_ = edit;
+//                edit->setFixedSize(input_size);
+//                edit->setText(settings_->sig_server_address_.c_str());
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//            }
+//            {
+//                auto layout = new NoMarginHLayout();
+//                auto label = new QLabel(this);
+//                label->setText(tr("Server Port"));
+//                label->setFixedSize(tips_label_size);
+//                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+//                layout->addWidget(label);
+//
+//                auto edit = new QLineEdit(this);
+//                edt_sig_server_port_ = edit;
+//                edit->setFixedSize(input_size);
+//                edit->setValidator(new QIntValidator);
+//                edit->setText(settings_->sig_server_port_.c_str());
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//            }
+//
+//            // Coturn Address
+//            {
+//                // title
+//                auto label = new QLabel(this);
+//                label->setText(tr("RTC TURN"));
+//                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+//                segment_layout->addSpacing(20);
+//                segment_layout->addWidget(label);
+//            }
+//            {
+//                auto layout = new NoMarginHLayout();
+//                auto label = new QLabel(this);
+//                label->setText(tr("Server Host"));
+//                label->setFixedSize(tips_label_size);
+//                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+//                layout->addWidget(label);
+//
+//                auto edit = new QLineEdit(this);
+//                edt_coturn_server_host_ = edit;
+//                edit->setFixedSize(input_size);
+//                edit->setText(settings_->coturn_server_address_.c_str());
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//            }
+//            {
+//                auto layout = new NoMarginHLayout();
+//                auto label = new QLabel(this);
+//                label->setText(tr("Server Port"));
+//                label->setFixedSize(tips_label_size);
+//                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+//                layout->addWidget(label);
+//
+//                auto edit = new QLineEdit(this);
+//                edt_coturn_server_port_ = edit;
+//                edit->setFixedSize(input_size);
+//                edit->setValidator(new QIntValidator);
+//                edit->setText(settings_->coturn_server_port_.c_str());
+//                layout->addWidget(edit);
+//                layout->addStretch();
+//                segment_layout->addSpacing(5);
+//                segment_layout->addLayout(layout);
+//            }
             column1_layout->addLayout(segment_layout);
         }
 
@@ -418,14 +418,16 @@ namespace tc
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                settings_->SetIdServerHost(edt_id_server_host_->text().toStdString());
-                settings_->SetIdServerPort(edt_id_server_port_->text().toStdString());
-                settings_->SetRelayServerHost(edt_relay_server_host_->text().toStdString());
-                settings_->SetRelayServerPort(edt_relay_server_port_->text().toStdString());
-                settings_->SetSigServerAddress(edt_sig_server_host_->text().toStdString());
-                settings_->SetSigServerPort(edt_sig_server_port_->text().toStdString());
-                settings_->SetCoturnServerAddress(edt_coturn_server_host_->text().toStdString());
-                settings_->SetCoturnServerPort(edt_coturn_server_port_->text().toStdString());
+                //settings_->SetIdServerHost(edt_id_server_host_->text().toStdString());
+                //settings_->SetIdServerPort(edt_id_server_port_->text().toStdString());
+                //settings_->SetRelayServerHost(edt_relay_server_host_->text().toStdString());
+                //settings_->SetRelayServerPort(edt_relay_server_port_->text().toStdString());
+                //settings_->SetSigServerAddress(edt_sig_server_host_->text().toStdString());
+                //settings_->SetSigServerPort(edt_sig_server_port_->text().toStdString());
+                //settings_->SetCoturnServerAddress(edt_coturn_server_host_->text().toStdString());
+                //settings_->SetCoturnServerPort(edt_coturn_server_port_->text().toStdString());
+                settings_->SetSpvrServerHost(edt_spvr_server_host_->text().toStdString());
+                settings_->SetSpvrServerPort(edt_spvr_server_port_->text().toStdString());
                 settings_->SetPanelListeningPort(edt_panel_port_->text().toInt());
                 // Load again
                 settings_->Load();
