@@ -23,6 +23,7 @@
 #include "tc_manager_client/mgr_client_sdk.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_manager_client/mgr_device.h"
+#include "tc_common_new/time_ext.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -39,6 +40,8 @@ namespace tc
     GrApplication::~GrApplication() = default;
 
     void GrApplication::Init() {
+        TimeDuration td("GrApplication::Init");
+        auto begin_ctx_init_ts = TimeExt::GetCurrentTimestamp();
         auto sp_dir = qApp->applicationDirPath() + "/gr_data";
         SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
         settings_ = GrSettings::Instance();
@@ -52,34 +55,15 @@ namespace tc
 
         context_ = std::make_shared<GrContext>();
         context_->Init(shared_from_this());
+        auto ctx_init_diff = TimeExt::GetCurrentTimestamp() - begin_ctx_init_ts;
+        LOGI("** Context init used: {}ms", ctx_init_diff);
 
-        // register firewall
-        auto app_path = qApp->applicationDirPath() + "/" + kGammaRayName.c_str();
-        auto srv_path = qApp->applicationDirPath() + "/" + kGammaRayRenderName.c_str();
-        auto client_path = qApp->applicationDirPath() + "/" + kGammaRayClient.c_str();
-        auto client_inner_path = qApp->applicationDirPath() + "/" + kGammaRayClientInner.c_str();
-        auto fh = FirewallHelper::Instance();
-        fh->RemoveProgramFromFirewall("GammaRayIn");
-        fh->RemoveProgramFromFirewall("GammaRayOut");
-        fh->RemoveProgramFromFirewall("GammaRayServerIn");
-        fh->RemoveProgramFromFirewall("GammaRayServerOut");
-        fh->RemoveProgramFromFirewall("GammaRayClientIn");
-        fh->RemoveProgramFromFirewall("GammaRayClientOut");
-        fh->RemoveProgramFromFirewall("GammaRayClientInnerIn");
-        fh->RemoveProgramFromFirewall("GammaRayClientInnerOut");
+        // firewall
+        context_->PostTask([this]() {
+            this->RegisterFirewall();
+        });
 
-        fh->AddProgramToFirewall(RulesInfo("GammaRayIn", app_path.toStdString(), "", 1));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayOut", app_path.toStdString(), "", 2));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayServerIn", srv_path.toStdString(), "", 1));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayServerOut", srv_path.toStdString(), "", 2));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayClientIn", app_path.toStdString(), "", 1));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayClientOut", app_path.toStdString(), "", 2));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayClientInnerIn", app_path.toStdString(), "", 1));
-        fh->AddProgramToFirewall(RulesInfo("GammaRayClientInnerOut", app_path.toStdString(), "", 2));
-
-        LOGI("app path: {}", app_path.toStdString());
-        LOGI("srv path: {}", srv_path.toStdString());
-
+        auto begin_conn_ts = TimeExt::GetCurrentTimestamp();
         auto st = GrStatistics::Instance();
         st->SetContext(context_);
         st->RegisterEventListeners();
@@ -107,8 +91,12 @@ namespace tc
         sig_client_ = std::make_shared<WsSigClient>(shared_from_this());
         sig_client_->Start();
 
+        auto conn_diff = TimeExt::GetCurrentTimestamp() - begin_conn_ts;
+        LOGI("** Connection used: {}ms", conn_diff);
+
         RefreshSigServerSettings();
         RegisterMessageListener();
+
     }
 
     void GrApplication::Exit() {
@@ -169,6 +157,38 @@ namespace tc
             context_->SendAppMessage(MsgSyncSettingsToRender{});
 
         });
+    }
+
+    void GrApplication::RegisterFirewall() {
+        // register firewall
+        auto begin_fm_ts = TimeExt::GetCurrentTimestamp();
+        auto app_path = qApp->applicationDirPath() + "/" + kGammaRayName.c_str();
+        auto srv_path = qApp->applicationDirPath() + "/" + kGammaRayRenderName.c_str();
+        auto client_path = qApp->applicationDirPath() + "/" + kGammaRayClient.c_str();
+        auto client_inner_path = qApp->applicationDirPath() + "/" + kGammaRayClientInner.c_str();
+        auto fh = FirewallHelper::Instance();
+
+        fh->RemoveProgramFromFirewall("GammaRayIn");
+        fh->RemoveProgramFromFirewall("GammaRayOut");
+        fh->RemoveProgramFromFirewall("GammaRayServerIn");
+        fh->RemoveProgramFromFirewall("GammaRayServerOut");
+        fh->RemoveProgramFromFirewall("GammaRayClientIn");
+        fh->RemoveProgramFromFirewall("GammaRayClientOut");
+        fh->RemoveProgramFromFirewall("GammaRayClientInnerIn");
+        fh->RemoveProgramFromFirewall("GammaRayClientInnerOut");
+
+        fh->AddProgramToFirewall(RulesInfo("GammaRayIn", app_path.toStdString(), "", 1));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayOut", app_path.toStdString(), "", 2));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayServerIn", srv_path.toStdString(), "", 1));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayServerOut", srv_path.toStdString(), "", 2));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayClientIn", app_path.toStdString(), "", 1));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayClientOut", app_path.toStdString(), "", 2));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayClientInnerIn", app_path.toStdString(), "", 1));
+        fh->AddProgramToFirewall(RulesInfo("GammaRayClientInnerOut", app_path.toStdString(), "", 2));
+        auto fm_diff = TimeExt::GetCurrentTimestamp()-begin_fm_ts;
+        LOGI("** Firewall init used: {}ms", fm_diff);
+        LOGI("app path: {}", app_path.toStdString());
+        LOGI("srv path: {}", srv_path.toStdString());
     }
 
 }

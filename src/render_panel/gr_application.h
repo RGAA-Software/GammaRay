@@ -41,6 +41,7 @@ namespace tc
     private:
         void RefreshSigServerSettings();
         void RegisterMessageListener();
+        void RegisterFirewall();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
