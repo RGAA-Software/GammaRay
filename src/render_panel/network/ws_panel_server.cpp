@@ -124,7 +124,7 @@ namespace tc
         // file transfer
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlFileTransfer, http_server_);
 
-        http_server_->start_timer(10, 2000, [=, this]() {
+        http_server_->start_timer("id.sync.info", 1000, [=, this]() {
             this->SyncPanelInfo();
         });
 

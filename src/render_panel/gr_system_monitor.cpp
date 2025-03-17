@@ -53,6 +53,16 @@ namespace tc
                     this->CheckOnlineServers();
                 });
 
+                // verify device id / pwd
+                context_->PostTask([=, this]() {
+                    auto r = settings_->VerifyDeviceInfo();
+                    if (r == DeviceVerifyResult::kVfNotPair) {
+                        LOGE("device id and device random pwd are not pair, will request new pair!");
+                        // force update id
+                        context_->SendAppMessage(MsgForceRequestDeviceId{});
+                    }
+                });
+
                 // check vigem
                 context_->PostTask([=, this]() {
                     bool vigem_installed = CheckViGEmDriver();

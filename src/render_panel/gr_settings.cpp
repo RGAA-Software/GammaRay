@@ -14,6 +14,7 @@
 #include "tc_common_new/http_client.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_common_new/message_notifier.h"
+#include "tc_common_new/md5.h"
 #include "gr_app_messages.h"
 #include <sstream>
 #include <QApplication>
@@ -441,8 +442,12 @@ namespace tc
             return DeviceVerifyResult::kVfEmptyServerHost;
         }
         auto client =
-                HttpClient::Make(std::format("{}:{}", profile_server_port_, profile_server_port_), "/verify/device/info", 2);
-        auto resp = client->Request();
+                HttpClient::Make(std::format("{}:{}", profile_server_host_, profile_server_port_), "/verify/device/info", 2);
+        auto resp = client->Request({
+            {"device_id", device_id_},
+            {"random_pwd_md5", device_random_pwd_.empty() ? "" : MD5::Hex(device_random_pwd_)},
+            {"safety_pwd_md5", device_safety_pwd_.empty() ? "" : MD5::Hex(device_safety_pwd_)},
+        });
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request new device failed.");
             return DeviceVerifyResult::kVfNetworkFailed;
@@ -454,7 +459,13 @@ namespace tc
                 return DeviceVerifyResult::kVfResponseFailed;
             }
 
-            return DeviceVerifyResult::kVfSuccess;
+            auto r = obj["data"].get<std::string>();
+            LOGI("Verify result: {}", r);
+            if (r == "true") {
+                return DeviceVerifyResult::kVfSuccess;
+            } else {
+                return DeviceVerifyResult::kVfNotPair;
+            }
         } catch(...) {
             return DeviceVerifyResult::kVfParseJsonFailed;
         }

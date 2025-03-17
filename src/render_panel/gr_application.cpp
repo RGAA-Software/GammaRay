@@ -126,6 +126,10 @@ namespace tc
                 RequestNewClientId(false);
             }
         });
+
+        msg_listener_->Listen<MsgForceRequestDeviceId>([=, this](const MsgForceRequestDeviceId& msg) {
+            RequestNewClientId(true);
+        });
     }
 
     void GrApplication::RequestNewClientId(bool force_update) {
