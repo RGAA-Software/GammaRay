@@ -34,11 +34,15 @@ namespace tc
         void RegisterMessageListener();
 
     private:
+        void UpdateQRCode();
+
+    private:
         GrSettings* settings_ = nullptr;
         QPixmap qr_pixmap_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QLabel* lbl_machine_code_ = nullptr;
         QLabel* lbl_machine_random_pwd_ = nullptr;
+        QLabel* lbl_qr_code_ = nullptr;
 
         // client
         std::shared_ptr<ClientContext> client_ctx_ = nullptr;

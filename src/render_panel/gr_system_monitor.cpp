@@ -32,13 +32,14 @@ namespace tc
 
     GrSystemMonitor::GrSystemMonitor(const std::shared_ptr<GrApplication>& app) {
         this->app_ = app;
-        this->ctx_ = app->GetContext();
-        this->service_manager_ = ctx_->GetServiceManager();
+        this->context_ = app->GetContext();
+        this->service_manager_ = context_->GetServiceManager();
+        this->settings_ = GrSettings::Instance();
     }
 
     void GrSystemMonitor::Start() {
         vigem_driver_manager_ = VigemDriverManager::Make();
-        msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         RegisterMessageListener();
 
         if (!CheckViGEmDriver()) {
@@ -47,8 +48,13 @@ namespace tc
 
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
             while (!exit_) {
+                // check system servers
+                context_->PostTask([=, this]() {
+                    this->CheckOnlineServers();
+                });
+
                 // check vigem
-                {
+                context_->PostTask([=, this]() {
                     bool vigem_installed = CheckViGEmDriver();
                     if (vigem_installed) {
                         if (!TryConnectViGEmDriver()) {
@@ -59,7 +65,7 @@ namespace tc
                     } else {
                         NotifyViGEnState(false);
                     }
-                }
+                });
 
                 // check server alive or not
                 if (false) {
@@ -67,18 +73,18 @@ namespace tc
                     if (resp.ok_) {
                         if (resp.value_) {
                             //LOGI("server is already running...");
-                            ctx_->SendAppMessage(MsgServerAlive {
+                            context_->SendAppMessage(MsgServerAlive {
                                 .alive_ = true,
                             });
                         } else {
                             LOGI("server is not running, we'll start it.");
                             //this->StartServer();
                             // check again
-                            ctx_->PostUIDelayTask([=, this]() {
-                                ctx_->PostTask([=, this]() {
+                            context_->PostUIDelayTask([=, this]() {
+                                context_->PostTask([=, this]() {
                                     auto resp = this->CheckServerAlive();
                                     auto started = resp.ok_ && resp.value_;
-                                    ctx_->SendAppMessage(MsgServerAlive{
+                                    context_->SendAppMessage(MsgServerAlive{
                                         .alive_ = started,
                                     });
                                 });
@@ -91,33 +97,31 @@ namespace tc
                 }
 
                 // check running game
-                {
-                    auto rgm = ctx_->GetRunGameManager();
-                    ctx_->PostTask([=, this]() {
-                        rgm->CheckRunningGame();
-                        auto msg = rgm->GetRunningGamesAsProto();
-                        auto ws_server = app_->GetWsPanelServer();
-                        if (ws_server) {
-                            ws_server->PostPanelBinaryMessage(msg);
-                        }
+                context_->PostTask([=, this]() {
+                    auto rgm = context_->GetRunGameManager();
+                    rgm->CheckRunningGame();
+                    auto msg = rgm->GetRunningGamesAsProto();
+                    auto ws_server = app_->GetWsPanelServer();
+                    if (ws_server) {
+                        ws_server->PostPanelBinaryMessage(msg);
+                    }
 
-                        auto game_ids = rgm->GetRunningGameIds();
-                        ctx_->SendAppMessage(MsgRunningGameIds {
-                            .game_ids_ = game_ids,
-                        });
+                    auto game_ids = rgm->GetRunningGameIds();
+                    context_->SendAppMessage(MsgRunningGameIds {
+                        .game_ids_ = game_ids,
                     });
-                }
+                });
 
                 // check service status
-                {
+                context_->PostTask([=, this]() {
                     auto status = service_manager_->QueryStatus();
-                    ctx_->SendAppMessage(MsgServiceAlive {
+                    context_->SendAppMessage(MsgServiceAlive {
                         .alive_ = (status == ServiceStatus::kRunning),
                     });
                     //LOGI("Service Status: {}", (int)status);
-                }
+                });
 
-                std::this_thread::sleep_for(std::chrono::seconds(3));
+                std::this_thread::sleep_for(std::chrono::seconds(5));
             }
         }, "", false);
     }
@@ -200,14 +204,14 @@ namespace tc
     void GrSystemMonitor::NotifyViGEnState(bool ok) {
         static bool first_emit_state = true;
         auto task = [=, this]() {
-            ctx_->SendAppMessage(MsgViGEmState {
+            context_->SendAppMessage(MsgViGEmState {
                 .ok_ = ok,
             });
         };
 
         if (first_emit_state) {
             first_emit_state = false;
-            ctx_->PostUIDelayTask([=]() {
+            context_->PostUIDelayTask([=]() {
                 task();
             }, 250);
         } else {
@@ -216,9 +220,9 @@ namespace tc
     }
 
     void GrSystemMonitor::RegisterMessageListener() {
-        msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgInstallViGEm>([=, this](const MsgInstallViGEm& msg) {
-            ctx_->PostTask([this]() {
+            context_->PostTask([this]() {
                 tc::GrSystemMonitor::InstallViGem(false);
             });
         });
@@ -249,8 +253,14 @@ namespace tc
     }
 
     void GrSystemMonitor::StartServer() {
-        auto srv_mgr = ctx_->GetRenderController();
+        auto srv_mgr = context_->GetRenderController();
         srv_mgr->StartServer();
+    }
+
+    void GrSystemMonitor::CheckOnlineServers() {
+        if (!settings_->VerifyOnlineServers()) {
+            settings_->RequestOnlineServers();
+        }
     }
 
 }

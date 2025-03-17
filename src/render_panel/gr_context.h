@@ -38,7 +38,6 @@ namespace tc
         void PostUITask(std::function<void()>&& task);
         void PostUIDelayTask(std::function<void()>&& task, int ms);
 
-        std::string GetSysUniqueId();
         int GetIndexByUniqueId();
         std::vector<EthernetInfo> GetIps();
 
@@ -59,7 +58,6 @@ namespace tc
         static std::string GetCurrentExeFolder();
 
     private:
-        void LoadUniqueId();
         void GenUniqueId();
         void StartTimers();
 
@@ -69,7 +67,6 @@ namespace tc
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<asio2::iopool> asio2_pool_ = nullptr;
-        std::string unique_id_{};
         std::vector<EthernetInfo> ips_;
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::shared_ptr<GrResources> res_manager_ = nullptr;

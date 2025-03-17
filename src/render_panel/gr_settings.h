@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace tc
 {
@@ -63,6 +64,17 @@ namespace tc
     static const std::string kGammaRayClientInner = "GammaRayClientInner.exe";
 
     class SharedPreference;
+    class MessageNotifier;
+
+    enum class DeviceVerifyResult {
+        kVfEmptyDeviceId,
+        kVfEmptyServerHost,
+        kVfNetworkFailed,
+        kVfResponseFailed,
+        kVfParseJsonFailed,
+        kVfSuccess,
+        kVfNotPair,
+    };
 
     class GrSettings {
     public:
@@ -72,6 +84,7 @@ namespace tc
             return &st;
         }
 
+        void Init(const std::shared_ptr<MessageNotifier>& notifier);
         void Load();
         void Dump();
         [[nodiscard]] std::vector<std::string> GetArgs() const;
@@ -106,10 +119,16 @@ namespace tc
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
+        bool VerifyOnlineServers();
         // request server
         bool RequestOnlineServers();
 
+    private:
+        bool CanPingServer(const std::string& host, const std::string& port);
+        DeviceVerifyResult VerifyDeviceInfo();
+
     public:
+        std::shared_ptr<MessageNotifier> notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
         std::string version_;
         // @deprecated
@@ -143,8 +162,8 @@ namespace tc
         std::string spvr_server_host_;
         std::string spvr_server_port_;
         // ID Server
-        std::string id_server_host_;
-        std::string id_server_port_;
+        std::string profile_server_host_;
+        std::string profile_server_port_;
         // Relay Server
         std::string relay_server_host_;
         std::string relay_server_port_;

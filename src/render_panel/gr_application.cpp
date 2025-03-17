@@ -41,12 +41,14 @@ namespace tc
 
     void GrApplication::Init() {
         TimeDuration td("GrApplication::Init");
+        msg_notifier_ = std::make_shared<MessageNotifier>();
+
         auto begin_ctx_init_ts = TimeExt::GetCurrentTimestamp();
         auto sp_dir = qApp->applicationDirPath() + "/gr_data";
         SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
         settings_ = GrSettings::Instance();
+        settings_->Init(msg_notifier_);
         settings_->Load();
-        //settings_->RequestOnlineServers();
         settings_->Dump();
 
         auto exeDir = QApplication::applicationDirPath().toStdString();
@@ -76,14 +78,7 @@ namespace tc
         sys_monitor_ = GrSystemMonitor::Make(shared_from_this());
         sys_monitor_->Start();
 
-        udp_broadcaster_ = UdpBroadcaster::Make(context_);
-
-        auto broadcast_msg = context_->MakeBroadcastMessage();
-        timer_ = new QTimer(this);
-        connect(timer_, &QTimer::timeout, this, [=, this]() {
-            udp_broadcaster_->Broadcast(broadcast_msg);
-        });
-        timer_->start(1000);
+        //udp_broadcaster_ = UdpBroadcaster::Make(context_);
 
         service_client_ = std::make_shared<GrServiceClient>(shared_from_this());
         service_client_->Start();
@@ -113,8 +108,8 @@ namespace tc
 
     void GrApplication::RefreshSigServerSettings() {
         mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
-            .host_ = settings_->id_server_host_,
-            .port_ = std::atoi(settings_->id_server_port_.c_str()),
+            .host_ = settings_->profile_server_host_,
+            .port_ = std::atoi(settings_->profile_server_port_.c_str()),
             .ssl_ = false,
         });
     }
@@ -189,6 +184,10 @@ namespace tc
         LOGI("** Firewall init used: {}ms", fm_diff);
         LOGI("app path: {}", app_path.toStdString());
         LOGI("srv path: {}", srv_path.toStdString());
+    }
+
+    std::shared_ptr<MessageNotifier> GrApplication::GetMessageNotifier() {
+        return msg_notifier_;
     }
 
 }
