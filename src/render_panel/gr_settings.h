@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace tc
 {
@@ -47,6 +48,8 @@ namespace tc
     static const std::string kStIDServerPort = "id_server_port";
     static const std::string kStRelayServerHost = "relay_server_host";
     static const std::string kStRelayServerPort = "relay_server_port";
+    static const std::string kStSpvrServerHost = "spvr_server_host";
+    static const std::string kStSpvrServerPort = "spvr_server_port";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -61,6 +64,17 @@ namespace tc
     static const std::string kGammaRayClientInner = "GammaRayClientInner.exe";
 
     class SharedPreference;
+    class MessageNotifier;
+
+    enum class DeviceVerifyResult {
+        kVfEmptyDeviceId,
+        kVfEmptyServerHost,
+        kVfNetworkFailed,
+        kVfResponseFailed,
+        kVfParseJsonFailed,
+        kVfSuccess,
+        kVfNotPair,
+    };
 
     class GrSettings {
     public:
@@ -70,6 +84,7 @@ namespace tc
             return &st;
         }
 
+        void Init(const std::shared_ptr<MessageNotifier>& notifier);
         void Load();
         void Dump();
         [[nodiscard]] std::vector<std::string> GetArgs() const;
@@ -99,10 +114,23 @@ namespace tc
         void SetIdServerPort(const std::string& port);
         void SetRelayServerHost(const std::string& host);
         void SetRelayServerPort(const std::string& port);
+        void SetSpvrServerHost(const std::string& host);
+        void SetSpvrServerPort(const std::string& port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
+        // ping servers
+        bool VerifyOnlineServers();
+        // request server
+        bool RequestOnlineServers();
+        // verify device_id/random_pwd pair
+        DeviceVerifyResult VerifyDeviceInfo();
+
+    private:
+        bool CanPingServer(const std::string& host, const std::string& port);
+
     public:
+        std::shared_ptr<MessageNotifier> notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
         std::string version_;
         // @deprecated
@@ -132,9 +160,12 @@ namespace tc
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
         std::string udp_kcp_enabled_ = kStTrue;
+        // Spvr Server
+        std::string spvr_server_host_;
+        std::string spvr_server_port_;
         // ID Server
-        std::string id_server_host_;
-        std::string id_server_port_;
+        std::string profile_server_host_;
+        std::string profile_server_port_;
         // Relay Server
         std::string relay_server_host_;
         std::string relay_server_port_;

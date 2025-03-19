@@ -42,7 +42,6 @@ namespace tc
 {
 
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
-        auto broadcast_msg = context_->MakeBroadcastMessage();
         settings_ = GrSettings::Instance();
         // client
         client_ctx_ = std::make_shared<ClientContext>("ui.embed");
@@ -50,7 +49,8 @@ namespace tc
         client_ctx_->SetDeviceId(settings_->device_id_);
         client_ctx_->Init(false);
 
-        qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
+        UpdateQRCode();
+
         // root layout
         auto root_layout = new QVBoxLayout();
         LayoutHelper::ClearMargins(root_layout);
@@ -138,6 +138,7 @@ namespace tc
                 layout->addSpacing(10);
 
                 auto qr_info = new QLabel(this);
+                lbl_qr_code_ = qr_info;
                 qr_info->setPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
                 layout->addStretch();
@@ -258,7 +259,15 @@ namespace tc
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
                 lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
                 client_ctx_->SetDeviceId(settings_->device_id_);
+
+                this->UpdateQRCode();
+                this->lbl_qr_code_->setPixmap(qr_pixmap_);
             });
         });
+    }
+
+    void TabServer::UpdateQRCode() {
+        auto broadcast_msg = context_->MakeBroadcastMessage();
+        qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
     }
 }

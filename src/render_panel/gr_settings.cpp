@@ -11,11 +11,22 @@
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "tc_common_new/hardware.h"
+#include "tc_common_new/http_client.h"
+#include "tc_3rdparty/json/json.hpp"
+#include "tc_common_new/message_notifier.h"
+#include "tc_common_new/md5.h"
+#include "gr_app_messages.h"
 #include <sstream>
 #include <QApplication>
 
+using namespace nlohmann;
+
 namespace tc
 {
+
+    void GrSettings::Init(const std::shared_ptr<MessageNotifier>& notifier) {
+        notifier_ = notifier;
+    }
 
     void GrSettings::Load() {
         sp_ = SharedPreference::Instance();
@@ -58,6 +69,9 @@ namespace tc
                 }
             }
         }
+        // spvr server
+        spvr_server_host_ = sp_->Get(kStSpvrServerHost, "");
+        spvr_server_port_ = sp_->Get(kStSpvrServerPort, "");
 
         // signaling
         sig_server_address_ = sp_->Get(kStSigServerAddress, "");
@@ -66,8 +80,8 @@ namespace tc
         coturn_server_address_ = sp_->Get(kStCoturnAddress, "");
         coturn_server_port_ = sp_->Get(kStCoturnPort, "");
         // id server
-        id_server_host_ = sp_->Get(kStIDServerHost, "");
-        id_server_port_ = sp_->Get(kStIDServerPort, "");
+        profile_server_host_ = sp_->Get(kStIDServerHost, "");
+        profile_server_port_ = sp_->Get(kStIDServerPort, "");
         // relay server
         relay_server_host_ = sp_->Get(kStRelayServerHost, "");
         relay_server_port_ = sp_->Get(kStRelayServerPort, "");
@@ -106,6 +120,8 @@ namespace tc
         ss << "udp_listen_port_:" << udp_listen_port_ << std::endl;
         ss << "relay host: " << relay_server_host_ << std::endl;
         ss << "relay port: " << relay_server_port_ << std::endl;
+        ss << "spvr server host: " << spvr_server_host_ << std::endl;
+        ss << "spvr server port: " << spvr_server_port_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -263,12 +279,12 @@ namespace tc
     }
 
     void GrSettings::SetIdServerHost(const std::string& host) {
-        id_server_host_ = host;
+        profile_server_host_ = host;
         sp_->Put(kStIDServerHost, host);
     }
 
     void GrSettings::SetIdServerPort(const std::string& port) {
-        id_server_port_ = port;
+        profile_server_port_ = port;
         sp_->Put(kStIDServerPort, port);
     }
 
@@ -282,5 +298,176 @@ namespace tc
         sp_->Put(kStRelayServerPort, port);
     }
 
+    void GrSettings::SetSpvrServerHost(const std::string& host) {
+        spvr_server_host_ = host;
+        sp_->Put(kStSpvrServerHost, host);
+    }
 
+    void GrSettings::SetSpvrServerPort(const std::string& port) {
+        spvr_server_port_ = port;
+        sp_->Put(kStSpvrServerPort, port);
+    }
+
+    bool GrSettings::VerifyOnlineServers() {
+        if (spvr_server_host_.empty() || spvr_server_port_.empty()
+            || relay_server_host_.empty() || relay_server_port_.empty()
+            || profile_server_host_.empty() || profile_server_port_.empty()) {
+            return false;
+        }
+        // check spvr
+        bool ok = CanPingServer(spvr_server_host_, spvr_server_port_);
+        if (!ok) {
+            LOGE("Spvr is not online: {} {} ", spvr_server_host_, spvr_server_port_);
+            return false;
+        }
+
+        // check relay
+        ok = CanPingServer(relay_server_host_, relay_server_port_);
+        if (!ok) {
+            LOGE("Relay is not online: {} {} ", relay_server_host_, relay_server_port_);
+            return false;
+        }
+
+        // check profile
+        ok = CanPingServer(profile_server_host_, profile_server_port_);
+        if (!ok) {
+            LOGE("Profile is not online: {} {} ", profile_server_host_, profile_server_port_);
+            return false;
+        }
+
+        return true;
+    }
+
+    bool GrSettings::RequestOnlineServers() {
+        auto client =
+                HttpClient::Make(std::format("{}:{}", spvr_server_host_, spvr_server_port_), "/get/online/servers", 3);
+        auto resp = client->Request();
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Request new device failed.");
+            return false;
+        }
+
+        try {
+            auto obj = json::parse(resp.body);
+            if (obj["code"].get<int>() != 200) {
+                return false;
+            }
+
+            auto data = obj["data"];
+            if (!data.is_array()) {
+                return false;
+            }
+
+            bool settings_changed = false;
+            for (const auto& item : data) {
+                auto srv_type = item["server_type"].get<std::string>();
+                auto srv_name = item["server_name"].get<std::string>();
+                auto srv_id = item["server_id"].get<std::string>();
+                auto srv_w3c_ip = item["w3c_ip"].get<std::string>();
+                auto srv_local_ip = item["local_ip"].get<std::string>();
+                auto srv_working_port = item["working_port"].get<std::string>();
+                auto srv_grpc_port = item["grpc_port"].get<std::string>();
+                if (srv_type == "0") {
+                    // relay server
+                    bool ok = this->CanPingServer(srv_w3c_ip, srv_working_port);
+                    LOGI("Ping relay server result: {}", ok);
+                    // save to db
+                    if (ok) {
+                        this->SetRelayServerHost(srv_w3c_ip);
+                        this->SetRelayServerPort(srv_working_port);
+                        settings_changed = true;
+                    }
+                }
+                else if (srv_type == "1") {
+                    // profile server ; check it
+                    bool ok = this->CanPingServer(srv_w3c_ip, srv_working_port);
+                    LOGI("Ping profile server result: {}", ok);
+                    // save to db
+                    if (ok) {
+                        this->SetIdServerHost(srv_w3c_ip);
+                        this->SetIdServerPort(srv_working_port);
+                        settings_changed = true;
+                    }
+                }
+
+                LOGI("--online server : {}, type: {}", srv_name, srv_type);
+                LOGI("----srv w3c ip: {}", srv_w3c_ip);
+                LOGI("----srv local ip: {}", srv_local_ip);
+                LOGI("----srv id: {}", srv_id);
+                LOGI("----srv working port: {}", srv_working_port);
+                LOGI("----srv grpc port: {}", srv_grpc_port);
+            }
+
+            if (settings_changed) {
+                notifier_->SendAppMessage(MsgSettingsChanged {});
+            }
+
+            return true;
+        } catch(std::exception& e) {
+            LOGE("RequestNewDevice failed: {}, message: {}", e.what(), resp.body);
+            return false;
+        }
+    }
+
+    bool GrSettings::CanPingServer(const std::string& host, const std::string& port) {
+        auto client =
+                HttpClient::Make(std::format("{}:{}", spvr_server_host_, spvr_server_port_), "/ping", 2);
+        auto resp = client->Request();
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Request new device failed.");
+            return false;
+        }
+
+        try {
+            auto obj = json::parse(resp.body);
+            if (obj["code"].get<int>() != 200) {
+                return false;
+            }
+
+//            auto data = obj["data"].get<std::string>();
+//            return data == "Pong";
+// !! payload info !!
+            return true;
+        } catch (...) {
+            return false;
+        }
+    }
+
+    ///verify/device/info
+    DeviceVerifyResult GrSettings::VerifyDeviceInfo() {
+        if (device_id_.empty() || device_random_pwd_.empty()) {
+            return DeviceVerifyResult::kVfEmptyDeviceId;
+        }
+        if (profile_server_host_.empty() || profile_server_port_.empty()) {
+            return DeviceVerifyResult::kVfEmptyServerHost;
+        }
+        auto client =
+                HttpClient::Make(std::format("{}:{}", profile_server_host_, profile_server_port_), "/verify/device/info", 2);
+        auto resp = client->Request({
+            {"device_id", device_id_},
+            {"random_pwd_md5", device_random_pwd_.empty() ? "" : MD5::Hex(device_random_pwd_)},
+            {"safety_pwd_md5", device_safety_pwd_.empty() ? "" : MD5::Hex(device_safety_pwd_)},
+        });
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Request new device failed.");
+            return DeviceVerifyResult::kVfNetworkFailed;
+        }
+
+        try {
+            auto obj = json::parse(resp.body);
+            if (obj["code"].get<int>() != 200) {
+                return DeviceVerifyResult::kVfResponseFailed;
+            }
+
+            auto r = obj["data"].get<std::string>();
+            LOGI("Verify result: {}", r);
+            if (r == "true") {
+                return DeviceVerifyResult::kVfSuccess;
+            } else {
+                return DeviceVerifyResult::kVfNotPair;
+            }
+        } catch(...) {
+            return DeviceVerifyResult::kVfParseJsonFailed;
+        }
+    }
 }

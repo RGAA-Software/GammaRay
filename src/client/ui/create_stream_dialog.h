@@ -42,7 +42,6 @@ namespace tc
         QLineEdit* ed_host_ = nullptr;
         QLineEdit* ed_port_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
-        QLabel* lbl_remote_device_id_ = nullptr;
         QLineEdit* ed_remote_device_id_ = nullptr;
         QComboBox* cb_fps_ = nullptr;
         QRadioButton* rb_ws_ = nullptr;

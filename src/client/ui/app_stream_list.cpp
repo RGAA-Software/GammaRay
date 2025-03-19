@@ -69,7 +69,7 @@ namespace tc
         stream_list_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         stream_list_->setResizeMode(QListWidget::Adjust);
         stream_list_->setContextMenuPolicy(Qt::CustomContextMenu);
-        stream_list_->setSpacing(10);
+        stream_list_->setSpacing(20);
         stream_list_->setStyleSheet(R"(
             QListWidget::item {
                 color: #000000;
@@ -78,11 +78,12 @@ namespace tc
             }
 
             QListWidget::item:hover {
-                background-color: #DEF0FE;
+                background-color: none;
             }
 
             QListWidget::item:selected {
                 border-left: 0px solid #777777;
+                background-color: none;
             }
         )");
 
@@ -230,8 +231,9 @@ namespace tc
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
         auto item = new QListWidgetItem(stream_list_);
-        item->setSizeHint(QSize(230, 128 + 15));
+        item->setSizeHint(QSize(300, 195));
         auto widget = new StreamItemWidget(stream, stream.bg_color, stream_list_);
+        WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
 
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(root_layout);

@@ -19,14 +19,14 @@
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/md5.h"
 #include "service/service_manager.h"
+#include "gr_settings.h"
+#include "gr_application.h"
 #include <QApplication>
 
 using namespace nlohmann;
 
 namespace tc
 {
-
-    constexpr auto kKeySysUniqueId = "sys_unique_id";
 
     GrContext::GrContext() : QObject(nullptr) {
 
@@ -41,23 +41,19 @@ namespace tc
         hardware->Detect(false, true, false);
         hardware->Dump();
 
-        // unique id
-        LoadUniqueId();
-
         srv_manager_ = std::make_shared<GrRenderController>(app);
 
-        asio2_pool_ = std::make_shared<asio2::iopool>();
+        asio2_pool_ = std::make_shared<asio2::iopool>(8);
         asio2_pool_->start();
 
         steam_mgr_ = SteamManager::Make();
         steam_mgr_->ScanInstalledSteamPath();
 
-        msg_notifier_ = std::make_shared<MessageNotifier>();
+        msg_notifier_ = app_->GetMessageNotifier();
 
         // ips
         ips_ = IPUtil::ScanIPs();
 
-        LOGI("Unique Id: {}", unique_id_);
         LOGI("Scan IP size: {}", ips_.size());
         for (auto& item : ips_) {
             LOGI("IP: {} -> {}", item.ip_addr_, item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
@@ -107,47 +103,8 @@ namespace tc
         });
     }
 
-    void GrContext::LoadUniqueId() {
-        unique_id_ = sp_->Get(kKeySysUniqueId);
-        if (unique_id_.empty()) {
-            GenUniqueId();
-            sp_->Put(kKeySysUniqueId, unique_id_);
-        }
-    }
-
-    void GrContext::GenUniqueId() {
-        auto hardware = Hardware::Instance();
-        auto disks = hardware->hw_disks_;
-        std::string seed;
-        if (!disks.empty()) {
-            for (const auto& disk : disks) {
-                seed = seed.append(disk.serial_number_);
-            }
-        } else {
-            seed = GetUUID();
-        }
-        LOGI("Seed: {}, disks size: {}", seed, disks.size());
-        auto md5_str = MD5::Hex(seed);
-        std::stringstream ss;
-        ss
-        << md5_str[0]%10
-        << md5_str[7]%10
-        << md5_str[11]%10
-        << md5_str[16]%10
-        << md5_str[18]%10
-        << md5_str[23]%10
-        << md5_str[26]%10
-        << md5_str[28]%10
-        << md5_str[30]%10;
-        unique_id_ = ss.str();
-    }
-
-    std::string GrContext::GetSysUniqueId() {
-        return unique_id_;
-    }
-
     int GrContext::GetIndexByUniqueId() {
-        return std::atoi(GetSysUniqueId().c_str())%30+1;
+        return std::atoi(settings_->device_id_.c_str())%30+1;
     }
 
     std::vector<EthernetInfo> GrContext::GetIps() {
@@ -157,7 +114,7 @@ namespace tc
     std::string GrContext::MakeBroadcastMessage() {
         json obj;
         // sys id
-        obj["sys_unique_id"] = this->GetSysUniqueId();
+        obj["sys_unique_id"] = settings_->device_id_;
         obj["icon_idx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();

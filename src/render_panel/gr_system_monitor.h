@@ -19,6 +19,7 @@ namespace tc
     class VigemDriverManager;
     class MessageListener;
     class ServiceManager;
+    class GrSettings;
 
     class GrSystemMonitor {
     public:
@@ -38,11 +39,12 @@ namespace tc
         void RegisterMessageListener();
         Response<bool, bool> CheckServerAlive();
         void StartServer();
+        void CheckOnlineServers();
 
     private:
-
+        GrSettings* settings_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
-        std::shared_ptr<GrContext> ctx_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         bool exit_ = false;
 

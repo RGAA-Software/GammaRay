@@ -94,6 +94,13 @@ namespace tc
     public:
     };
 
+    // Verify failed!
+    // Request new device id - pair
+    class MsgForceRequestDeviceId {
+    public:
+
+    };
+
 }
 
 #endif // APP_MESSAGES_H

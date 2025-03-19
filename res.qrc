@@ -40,5 +40,8 @@
         <file>resources/image/ic_check.svg</file>
         <file>resources/image/logo_text.png</file>
         <file>resources/image/ic_loading_bg.svg</file>
+        <file>resources/image/ic_vert_dots.svg</file>
+        <file>resources/image/ic_vert_dots_hover.svg</file>
+        <file>resources/image/ic_vert_dots_pressed.svg</file>
     </qresource>
 </RCC>

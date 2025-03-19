@@ -8,6 +8,7 @@
 #include <memory>
 #include <QTimer>
 #include <QObject>
+#include "tc_common_new/message_notifier.h"
 
 namespace tc
 {
@@ -37,15 +38,17 @@ namespace tc
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
         bool PostMessage2Service(const std::string& msg);
         void RequestNewClientId(bool force_update);
+        std::shared_ptr<MessageNotifier> GetMessageNotifier();
 
     private:
         void RefreshSigServerSettings();
         void RegisterMessageListener();
+        void RegisterFirewall();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<WsPanelServer> ws_panel_server_ = nullptr;
-        std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
+        //std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
         std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;
         std::shared_ptr<GrServiceClient> service_client_ = nullptr;
         std::shared_ptr<WsSigClient> sig_client_ = nullptr;
@@ -53,6 +56,7 @@ namespace tc
         GrSettings* settings_ = nullptr;
         std::shared_ptr<MgrClientSdk> mgr_client_sdk_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
     };
 
 }

@@ -15,22 +15,21 @@ namespace tc
 
     CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : QDialog(parent) {
         context_ = ctx;
-        setFixedSize(640, 480);
+        setFixedSize(640, 350);
         CreateLayout();
     }
 
     CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent) : QDialog(parent) {
         context_ = ctx;
         stream_item_ = item;
-        setFixedSize(640, 480);
+        setFixedSize(640, 350);
         CreateLayout();
     }
 
-    CreateStreamDialog::~CreateStreamDialog() {
-
-    }
+    CreateStreamDialog::~CreateStreamDialog() = default;
 
     void CreateStreamDialog::CreateLayout() {
+        setWindowTitle(tr("Device Connection Information"));
         auto root_layout = new QVBoxLayout();
         root_layout->setSpacing(0);
         root_layout->setContentsMargins(100,0,60, 0);
@@ -121,13 +120,12 @@ namespace tc
         }
 
         // Remote device id
-        {
+        if (false) {
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);
 
             auto label = new QLabel(this);
-            lbl_remote_device_id_ = label;
             label->setFixedSize(label_size);
             label->setText(tr("Remote Device ID *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
@@ -147,7 +145,7 @@ namespace tc
             root_layout->addLayout(layout);
         }
 
-        {
+        if (false) {
             auto layout = new QHBoxLayout();
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);
@@ -283,15 +281,16 @@ namespace tc
             layout->setSpacing(0);
             layout->setContentsMargins(0,0,0,0);
             auto btn_cancel = new QPushButton(tr("Cancel"));
+            btn_cancel->setProperty("class", "danger");
             connect(btn_cancel, &QPushButton::clicked, this, [=, this]() {
                 done(0);
             });
             btn_cancel->setFixedSize(btn_size);
             layout->addStretch();
             layout->addWidget(btn_cancel);
-            layout->addStretch();
+            layout->addSpacing(20);
 
-            auto btn_sure = new QPushButton(tr("Sure"));
+            auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 if (!GenStream()) {
                     return;
@@ -322,7 +321,7 @@ namespace tc
                 return 0;
             }
         } ();
-        auto remote_device_id = ed_remote_device_id_->text().trimmed().replace(" ", "").toStdString();
+        //auto remote_device_id = ed_remote_device_id_ ? ed_remote_device_id_->text().trimmed().replace(" ", "").toStdString() : "";
 
         if (host.empty() || port == 0) {
             auto dialog = MessageDialog::Make(context_, tr("Please input necessary information !"));
@@ -336,17 +335,17 @@ namespace tc
             item.stream_port = port;
             item.encode_bps = bitrate;
             item.encode_fps = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
-            item.remote_device_id_ = remote_device_id;
+//            item.remote_device_id_ = remote_device_id;
             item.network_type_ = [=, this]() -> std::string {
-                if (rb_ws_->isChecked()) {
-                    return kStreamItemNtTypeWebSocket;
-                }
+//                if (rb_ws_->isChecked()) {
+//                    return kStreamItemNtTypeWebSocket;
+//                }
 //                else if (rb_udp_ && rb_udp_->isChecked()) {
 //                    return kStreamItemNtTypeUdpKcp;
 //                }
-                else if (rb_relay_ && rb_relay_->isChecked()) {
-                    return kStreamItemNtTypeRelay;
-                }
+//                else if (rb_relay_ && rb_relay_->isChecked()) {
+//                    return kStreamItemNtTypeRelay;
+//                }
                 return kStreamItemNtTypeWebSocket;
             }();
         };
