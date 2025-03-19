@@ -11,6 +11,8 @@
 #include <QBrush>
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QPushButton>
+#include <QLabel>
 #include "db/stream_item.h"
 
 namespace tc
@@ -25,6 +27,7 @@ namespace tc
         void paintEvent(QPaintEvent *event) override;
         void enterEvent(QEnterEvent *event) override;
         void leaveEvent(QEvent *event) override;
+        void resizeEvent(QResizeEvent *event) override;
 
     private:
         StreamItem item_;
@@ -34,6 +37,8 @@ namespace tc
         bool enter_ = false;
         QBitmap mask_;
         int radius_ = 10;
+        QPushButton* btn_conn_ = nullptr;
+        QWidget* btn_option_ = nullptr;
     };
 
 }

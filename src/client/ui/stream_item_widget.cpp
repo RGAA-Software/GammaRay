@@ -6,8 +6,10 @@
 
 #include <QPainter>
 #include <QPainterPath>
+#include <QPushButton>
 #include "app_color_theme.h"
 #include "tc_common_new/uid_spacer.h"
+#include "tc_qt_widget/tc_image_button.h"
 
 namespace tc
 {
@@ -18,12 +20,34 @@ namespace tc
         this->setStyleSheet("background:#00000000;");
         if (icon_.isNull()) {
             icon_ = QPixmap::fromImage(QImage(":/resources/image/windows.svg"));
-            icon_ = icon_.scaled(icon_.width() / 3.8, icon_.height() / 3.8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            icon_ = icon_.scaled(icon_.width() / 4.4, icon_.height() / 4.4, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
 
         if (bg_pixmap_.isNull()) {
             bg_pixmap_ = QPixmap::fromImage(QImage(":/resources/image/test_cover.jpg"));
         }
+
+        // connect button
+        auto btn_conn = new QPushButton(this);
+        btn_conn->setStyleSheet(R"(
+            QPushButton {
+                background-color:#2979ff;
+                color: white;
+            }
+            QPushButton:hover{
+                background-color:#2059ee;
+            }
+            QPushButton:pressed{
+                background-color:#1549dd;
+            }
+        )");
+        btn_conn_ = btn_conn;
+        btn_conn->setFixedSize(120, 30);
+        btn_conn->setText(tr("Connect"));
+
+        auto btn_option = new TcImageButton(":/resources/image/ic_vert_dots.svg", QSize(22, 22), this);
+        btn_option->setFixedSize(30, 30);
+        btn_option_ = btn_option;
     }
 
     StreamItemWidget::~StreamItemWidget() {
@@ -85,7 +109,7 @@ namespace tc
         painter.drawRoundedRect(border_width/2, border_width/2, width() - border_width, height() - border_width, radius_-2, radius_-2);
 
         int margin = 20;
-        painter.drawPixmap(QWidget::width() - icon_.width() - margin, 85, icon_);
+        painter.drawPixmap(QWidget::width() - icon_.width() - margin, 92, icon_);
     }
 
     void StreamItemWidget::enterEvent(QEnterEvent *event) {
@@ -96,6 +120,14 @@ namespace tc
     void StreamItemWidget::leaveEvent(QEvent *event) {
         enter_ = false;
         update();
+    }
+
+    void StreamItemWidget::resizeEvent(QResizeEvent *event) {
+        QWidget::resizeEvent(event);
+        auto y = this->height() - 35;
+        btn_conn_->setGeometry(20, y, btn_conn_->width(), btn_conn_->height());
+
+        btn_option_->setGeometry(this->width() - btn_option_->width() - 5, y, btn_option_->width(), btn_option_->height());
     }
 
 }
