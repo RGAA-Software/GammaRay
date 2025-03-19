@@ -21,7 +21,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <QDir>
-#include "client/ui/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 
 using namespace tc;
 

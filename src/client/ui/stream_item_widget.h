@@ -29,12 +29,11 @@ namespace tc
     private:
         StreamItem item_;
         int bg_color_ = 0;
-        bool enter_ = false;
-
         QPixmap icon_;
+        QPixmap bg_pixmap_;
+        bool enter_ = false;
         QBitmap mask_;
-        int radius_ = 13;
-
+        int radius_ = 10;
     };
 
 }

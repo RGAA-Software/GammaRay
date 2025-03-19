@@ -24,7 +24,7 @@
 #include "ui/about_content.h"
 #include "ui/no_margin_layout.h"
 #include "client/ct_settings.h"
-#include "ui/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 
 namespace tc
 {

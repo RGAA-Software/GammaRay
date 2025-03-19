@@ -10,7 +10,7 @@
 #include "client/ct_settings.h"
 #include "fs_object.h"
 #include "tc_message.pb.h"
-#include "ui/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 #include "file_transfer_events.h"
 
 namespace tc

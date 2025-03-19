@@ -24,7 +24,7 @@
 #include "ui/float_notification_handle.h"
 #include "ui/notification_panel.h"
 #include "transfer/file_transfer.h"
-#include "ui/sized_msg_box.h"
+#include "tc_qt_widget/sized_msg_box.h"
 #include "ui/debug_panel.h"
 #include "client/ct_clipboard_manager.h"
 #include "ui/no_margin_layout.h"

@@ -42,7 +42,6 @@ set(SRCS
         ui/stream_content.cpp
         ui/settings_content.cpp
         ui/about_content.cpp
-        ui/sized_msg_box.cpp
         ui/background_widget.cpp
         ui/base_widget.cpp
         ui/multi_display_mode_widget.cpp
@@ -77,7 +76,6 @@ set(SRCS_WS
         ui/app_menu.cpp
         ui/app_color_theme.cpp
         ui/app_content.cpp
-        ui/sized_msg_box.cpp
         ui/background_widget.cpp
         db/stream_db_manager.cpp
         db/stream_item.cpp
