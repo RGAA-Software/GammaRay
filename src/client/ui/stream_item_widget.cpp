@@ -75,7 +75,7 @@ namespace tc
             path.addRoundedRect(info_rect, radius_, radius_);
             QRect temp_rect(info_rect.left(), info_rect.top()+info_rect.height()/2, info_rect.width(), info_rect.height()/2);
             path.addRect(temp_rect);
-            painter.fillPath(path,  QBrush(QColor(93, 201, 87)));
+            painter.fillPath(path,  QBrush(QColor(0xff, 0xff, 0xff)));
             path.closeSubpath();
 
             painter.setClipPath(path);
