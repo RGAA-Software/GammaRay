@@ -24,6 +24,9 @@
 #include "service/service_manager.h"
 #include "app_colors.h"
 #include "render_panel/ui/tab_server_status.h"
+#include "widgets/widgetwindowagent.h"
+#include "theme/widgetframe/windowbar.h"
+#include "theme/widgetframe/windowbutton.h"
 
 namespace tc
 {
@@ -31,6 +34,65 @@ namespace tc
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
+
+        setAttribute(Qt::WA_DontCreateNativeAncestors);
+        auto windowAgent = new QWK::WidgetWindowAgent(this);
+        windowAgent->setup(this);
+
+        auto titleLabel = new QLabel();
+        titleLabel->setAlignment(Qt::AlignCenter);
+        titleLabel->setObjectName(QStringLiteral("win-title-label"));
+
+#ifndef Q_OS_MAC
+        auto iconButton = new QWK::WindowButton();
+        iconButton->setObjectName(QStringLiteral("icon-button"));
+        iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto pinButton = new QWK::WindowButton();
+        pinButton->setCheckable(true);
+        pinButton->setObjectName(QStringLiteral("pin-button"));
+        pinButton->setProperty("system-button", true);
+        pinButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto minButton = new QWK::WindowButton();
+        minButton->setObjectName(QStringLiteral("min-button"));
+        minButton->setProperty("system-button", true);
+        minButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto maxButton = new QWK::WindowButton();
+        maxButton->setCheckable(true);
+        maxButton->setObjectName(QStringLiteral("max-button"));
+        maxButton->setProperty("system-button", true);
+        maxButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto closeButton = new QWK::WindowButton();
+        closeButton->setObjectName(QStringLiteral("close-button"));
+        closeButton->setProperty("system-button", true);
+        closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+#endif
+
+        auto windowBar = new QWK::WindowBar();
+#ifndef Q_OS_MAC
+        windowBar->setIconButton(iconButton);
+        windowBar->setPinButton(pinButton);
+        windowBar->setMinButton(minButton);
+        windowBar->setMaxButton(maxButton);
+        windowBar->setCloseButton(closeButton);
+#endif
+        //windowBar->setMenuBar(menuBar);
+        windowBar->setTitleLabel(titleLabel);
+        windowBar->setHostWidget(this);
+
+        windowAgent->setTitleBar(windowBar);
+#ifndef Q_OS_MAC
+        windowAgent->setHitTestVisible(pinButton, true);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::WindowIcon, iconButton);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, minButton);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, maxButton);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::Close, closeButton);
+#endif
+        //windowAgent->setHitTestVisible(menuBar, true);
+        setMenuWidget(windowBar);
 
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);

@@ -25,15 +25,76 @@
 #include "ui/no_margin_layout.h"
 #include "client/ct_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
+#include "widgets/widgetwindowagent.h"
+#include "theme/widgetframe/windowbar.h"
+#include "theme/widgetframe/windowbutton.h"
 
 namespace tc
 {
 
-    Application::Application(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) {
+    Application::Application(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : QMainWindow(parent) {
         context_ = ctx;
         settings_ = Settings::Instance();
         resize(1515, 768);
         setWindowTitle(tr("GammaRay Client"));
+        setAttribute(Qt::WA_DontCreateNativeAncestors);
+        auto windowAgent = new QWK::WidgetWindowAgent(this);
+        windowAgent->setup(this);
+
+        auto titleLabel = new QLabel();
+        titleLabel->setAlignment(Qt::AlignCenter);
+        titleLabel->setObjectName(QStringLiteral("win-title-label"));
+
+#ifndef Q_OS_MAC
+        auto iconButton = new QWK::WindowButton();
+        iconButton->setObjectName(QStringLiteral("icon-button"));
+        iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto pinButton = new QWK::WindowButton();
+        pinButton->setCheckable(true);
+        pinButton->setObjectName(QStringLiteral("pin-button"));
+        pinButton->setProperty("system-button", true);
+        pinButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto minButton = new QWK::WindowButton();
+        minButton->setObjectName(QStringLiteral("min-button"));
+        minButton->setProperty("system-button", true);
+        minButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto maxButton = new QWK::WindowButton();
+        maxButton->setCheckable(true);
+        maxButton->setObjectName(QStringLiteral("max-button"));
+        maxButton->setProperty("system-button", true);
+        maxButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto closeButton = new QWK::WindowButton();
+        closeButton->setObjectName(QStringLiteral("close-button"));
+        closeButton->setProperty("system-button", true);
+        closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+#endif
+
+        auto windowBar = new QWK::WindowBar();
+#ifndef Q_OS_MAC
+        windowBar->setIconButton(iconButton);
+        windowBar->setPinButton(pinButton);
+        windowBar->setMinButton(minButton);
+        windowBar->setMaxButton(maxButton);
+        windowBar->setCloseButton(closeButton);
+#endif
+        //windowBar->setMenuBar(menuBar);
+        windowBar->setTitleLabel(titleLabel);
+        windowBar->setHostWidget(this);
+
+        windowAgent->setTitleBar(windowBar);
+#ifndef Q_OS_MAC
+        windowAgent->setHitTestVisible(pinButton, true);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::WindowIcon, iconButton);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, minButton);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, maxButton);
+        windowAgent->setSystemButton(QWK::WindowAgentBase::Close, closeButton);
+#endif
+        //windowAgent->setHitTestVisible(menuBar, true);
+        setMenuWidget(windowBar);
 
         theme_ = new MainWindowPrivate(this);
         QString app_dir = qApp->applicationDirPath();

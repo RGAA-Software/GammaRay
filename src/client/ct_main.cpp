@@ -50,6 +50,8 @@ int main(int argc, char** argv) {
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
 
+    QGuiApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+
     QApplication app(argc, argv);
 
     // font

@@ -43,5 +43,15 @@
         <file>resources/image/ic_vert_dots.svg</file>
         <file>resources/image/ic_vert_dots_hover.svg</file>
         <file>resources/image/ic_vert_dots_pressed.svg</file>
+
+        <file>resources/window-bar/close.svg</file>
+        <file>resources/window-bar/fullscreen.svg</file>
+        <file>resources/window-bar/maximize.svg</file>
+        <file>resources/window-bar/minimize.svg</file>
+        <file>resources/window-bar/restore.svg</file>
+        <file>resources/window-bar/more-line.svg</file>
+        <file>resources/window-bar/pin.svg</file>
+        <file>resources/window-bar/pin-fill.svg</file>
+
     </qresource>
 </RCC>

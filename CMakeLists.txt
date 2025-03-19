@@ -31,8 +31,8 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 #find_package(OpenSSL REQUIRED)
 #find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Charts Svg)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Charts Svg)
 find_package(SDL2 CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
@@ -44,6 +44,7 @@ include_directories(${CMAKE_SOURCE_DIR}/deps)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/eventbus/src)
 include_directories(${CMAKE_BINARY_DIR}/deps/tc_message_new)
+include_directories(${CMAKE_BINARY_DIR}/deps/tc_3rdparty/qwindowkit/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)
@@ -53,6 +54,8 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/sqlite_orm/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/include/third_party/libyuv/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/leveldb/include)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/qwindowkit)
+include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/qwindowkit/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/render)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_qt_widget)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_client_sdk_new)
@@ -106,6 +109,7 @@ include_directories(${OpenCV_ROOT}/include)
 
 add_subdirectory(deps)
 add_subdirectory(src)
+add_subdirectory(src/theme/widgetframe)
 add_subdirectory(src/tests)
 add_subdirectory(src/service)
 add_subdirectory(src/uninstall)
@@ -155,7 +159,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
         tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib lib_GammaRayClient tc_signaling_sdk
-        tc_relay_client tc_manager_client)
+        tc_relay_client tc_manager_client QWindowKit::Widgets TC_WidgetFrame)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins
@@ -210,7 +214,7 @@ endif ()
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder  plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
         plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer lib_GammaRayClient tc_signaling_sdk
-        plugin_mock_video_stream plugin_obj_detector plugin_net_relay
+        plugin_mock_video_stream plugin_obj_detector plugin_net_relay QWindowKit::Widgets TC_WidgetFrame
 )
 
 add_custom_target(tc_build_client ALL COMMENT "Build client")
