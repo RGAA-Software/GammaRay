@@ -14,7 +14,7 @@ namespace tc
 {
     class WinEventReplayer;
     class RdApplication;
-    class Settings;
+    class RdSettings;
     class Data;
     class RdStatistics;
     class WsMediaRouter;
@@ -43,7 +43,7 @@ namespace tc
         void ProcessInsertKeyFrame(std::shared_ptr<Message>&& msg);
 
     private:
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         RdStatistics* statistics_ = nullptr;
         std::shared_ptr<RdApplication> app_ = nullptr;
         std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;

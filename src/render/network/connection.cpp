@@ -10,7 +10,7 @@
 #include "rd_app.h"
 #include "rd_context.h"
 #include "tc_encoder_new/encoder_messages.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "network/message_processor.h"
 #include "tc_capture_new/capture_message.h"
 
@@ -21,7 +21,7 @@ namespace tc
         this->app_ = app;
         this->context_ = app->GetContext();
         this->ip_ = "0.0.0.0";
-        this->port_ = Settings::Instance()->transmission_.listening_port_;
+        this->port_ = RdSettings::Instance()->transmission_.listening_port_;
         this->msg_processor_ = std::make_shared<MessageProcessor>(this->app_);;
     }
 

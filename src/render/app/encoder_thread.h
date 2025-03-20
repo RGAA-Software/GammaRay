@@ -10,7 +10,7 @@
 #include <functional>
 #include <optional>
 #include "tc_capture_new/capture_message.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 
 namespace tc
 {
@@ -44,7 +44,7 @@ namespace tc
         void PrintEncoderConfig(const tc::EncoderConfig& config);
 
     private:
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         std::shared_ptr<Thread> enc_thread_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<RdApplication> app_ = nullptr;

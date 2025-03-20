@@ -16,7 +16,7 @@ namespace tc
     class RdContext;
     class RdStatistics;
     class MessageListener;
-    class Settings;
+    class RdSettings;
     class PluginManager;
 
     class WsPanelClient {
@@ -32,7 +32,7 @@ namespace tc
 
     private:
         RdStatistics* statistics_ = nullptr;
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;

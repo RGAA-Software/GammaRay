@@ -13,7 +13,7 @@
 namespace tc
 {
 
-    class Settings;
+    class RdSettings;
     class SteamGame;
 
     class AppManagerWinImpl : public AppManager {
@@ -39,7 +39,7 @@ namespace tc
         static WindowInfo GetTargetWindowInfo(const WindowInfos& infos);
 
     private:
-        Settings* settings_;
+        RdSettings* settings_;
         unsigned long target_pid_ = 0;
         WindowInfo target_window_info_;
         std::atomic<bool> injected_ = false;

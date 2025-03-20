@@ -10,7 +10,7 @@
 #include "rd_app.h"
 #include "app/app_messages.h"
 #include "tc_service_message.pb.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 
 namespace tc
 {
@@ -97,7 +97,7 @@ namespace tc
         msg.set_type(ServiceMessageType::kSrvHeartBeat);
         auto sub = msg.mutable_heart_beat();
         sub->set_index(hb_idx++);
-        sub->set_from(std::format("render_{}", Settings::Instance()->transmission_.listening_port_));
+        sub->set_from(std::format("render_{}", RdSettings::Instance()->transmission_.listening_port_));
         PostNetMessage(msg.SerializeAsString());
     }
 

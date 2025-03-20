@@ -23,7 +23,7 @@
 #include "app/app_manager.h"
 #include "app/app_manager_factory.h"
 #include "app/app_messages.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "render_panel/network/ws_panel_server.h"
 #include "ipc/host_ipc_manager.h"
 #include "app/encoder_thread.h"
@@ -65,7 +65,7 @@ namespace tc
     }
 
     RdApplication::RdApplication(const AppParams& args) {
-        auto settings = Settings::Instance();
+        auto settings = RdSettings::Instance();
         settings_ = settings;
     }
 

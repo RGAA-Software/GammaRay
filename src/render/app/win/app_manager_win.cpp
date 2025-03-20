@@ -10,7 +10,7 @@
 #include "tc_common_new/file_ext.h"
 #include "tc_common_new/log.h"
 #include "rd_context.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "app/steam_game.h"
 #include "app/app_messages.h"
 #include "tc_common_new/win32/process_helper.h"
@@ -30,7 +30,7 @@ namespace tc
     constexpr auto kX64DllName = "tc_graphics.dll";
 
     AppManagerWinImpl::AppManagerWinImpl(const std::shared_ptr<RdContext>& ctx) : AppManager(ctx) {
-        settings_ = Settings::Instance();
+        settings_ = RdSettings::Instance();
     }
 
     AppManagerWinImpl::~AppManagerWinImpl() {

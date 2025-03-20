@@ -8,7 +8,7 @@
 #include "rd_app.h"
 #include "rd_context.h"
 #include "rd_statistics.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "app/win/win_event_replayer.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
@@ -33,7 +33,7 @@ namespace tc {
         this->app_ = app;
         this->context_ = app->GetContext();
         this->plugin_manager_ = app->GetPluginManager();
-        this->settings_ = Settings::Instance();
+        this->settings_ = RdSettings::Instance();
         this->statistics_ = RdStatistics::Instance();
         win_event_replayer_ = std::make_shared<WinEventReplayer>();
         msg_notifier_ = this->app_->GetContext()->GetMessageNotifier();

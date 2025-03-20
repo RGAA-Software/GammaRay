@@ -115,11 +115,11 @@ namespace tc
         }
     };
 
-    class Settings {
+    class RdSettings {
     public:
 
-        static Settings* Instance() {
-            static Settings inst;
+        static RdSettings* Instance() {
+            static RdSettings inst;
             return &inst;
         }
 

@@ -33,7 +33,7 @@ namespace tc
     class DesktopCapture;
     class Thread;
     class AppTimer;
-    class Settings;
+    class RdSettings;
     class File;
     class AppSharedMessage;
     class IAudioCapture;
@@ -115,7 +115,7 @@ namespace tc
         void RequestRestartMe();
 
     protected:
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         std::shared_ptr<WsPanelClient> ws_panel_client_ = nullptr;
         std::shared_ptr<AppManager> app_manager_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;

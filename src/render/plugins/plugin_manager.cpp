@@ -17,7 +17,7 @@
 #include "plugin_ids.h"
 #include "rd_context.h"
 #include "rd_app.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 
 typedef void *(*FnGetInstance)();
 
@@ -31,7 +31,7 @@ namespace tc
     PluginManager::PluginManager(const std::shared_ptr<RdApplication>& app) {
         this->app_ = app;
         this->context_ = app->GetContext();
-        settings_ = Settings::Instance();
+        settings_ = RdSettings::Instance();
     }
 
     void PluginManager::LoadAllPlugins() {

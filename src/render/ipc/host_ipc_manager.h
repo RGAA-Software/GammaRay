@@ -23,7 +23,7 @@ namespace tc
     constexpr auto kHostToClientShmSize = 2 * 1024 * 1024;
 
     class Data;
-    class Settings;
+    class RdSettings;
 
     struct FixHeader {
         uint32_t buffer_length = 0;
@@ -59,7 +59,7 @@ namespace tc
 
     private:
         uint32_t pid_;
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         bool exit_ = false;
         bool init_ = false;
         uint32_t buffer_index_ = 0;

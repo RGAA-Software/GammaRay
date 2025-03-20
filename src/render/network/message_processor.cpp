@@ -6,7 +6,7 @@
 #include <memory>
 #include <iostream>
 #include "rd_app.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "app/win/win_event_replayer.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
@@ -26,7 +26,7 @@ namespace tc {
 
     MessageProcessor::MessageProcessor(const std::shared_ptr<RdApplication>& app) {
         this->app_ = app;
-        this->settings_ = Settings::Instance();
+        this->settings_ = RdSettings::Instance();
         this->statistics_ = RdStatistics::Instance();
         win_event_replayer_ = std::make_shared<WinEventReplayer>();
 

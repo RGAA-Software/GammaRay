@@ -27,7 +27,7 @@ namespace tc
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
     class GrDataConsumerPlugin;
-    class Settings;
+    class RdSettings;
 
     class PluginManager {
     public:
@@ -63,7 +63,7 @@ namespace tc
         void SyncSystemInfo(const GrPluginSettingsInfo& info);
 
     private:
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         std::shared_ptr<RdApplication> app_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;
         std::map<std::string, GrPluginInterface*> plugins_;

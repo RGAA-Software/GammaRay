@@ -13,7 +13,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "network/net_message_maker.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "rd_statistics.h"
 #include "rd_app.h"
 

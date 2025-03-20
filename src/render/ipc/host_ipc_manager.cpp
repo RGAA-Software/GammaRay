@@ -4,7 +4,7 @@
 
 #include "host_ipc_manager.h"
 
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "tc_common_new/ipc_shm.h"
 #include "tc_common_new/ipc_msg_queue.h"
 #include "tc_common_new/log.h"
@@ -20,7 +20,7 @@ namespace tc
 
     HostIpcManager::HostIpcManager(uint32_t pid) {
         pid_ = pid;
-        settings_ = Settings::Instance();
+        settings_ = RdSettings::Instance();
         auto id = pid;
         auto ipc_shm_host_to_client_name = "ipc_shm_host_to_client_" + std::to_string(id);
 

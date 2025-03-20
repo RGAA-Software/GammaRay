@@ -6,7 +6,7 @@
 #include "rd_context.h"
 #include "render/app/app_messages.h"
 #include "render/rd_statistics.h"
-#include "render/settings/settings.h"
+#include "render/settings/rd_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_message.pb.h"
@@ -20,7 +20,7 @@ namespace tc
 
     WsPanelClient::WsPanelClient(const std::shared_ptr<RdContext>& ctx) {
         statistics_ = RdStatistics::Instance();
-        settings_ = Settings::Instance();
+        settings_ = RdSettings::Instance();
         context_ = ctx;
         plugin_mgr_ = context_->GetPluginManager();
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();

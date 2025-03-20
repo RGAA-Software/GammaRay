@@ -16,9 +16,9 @@
 #include "tc_encoder_new/video_encoder.h"
 #include "tc_encoder_new/ffmpeg_video_encoder.h"
 #include "tc_encoder_new/nvenc_video_encoder.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "app/app_messages.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "render/rd_statistics.h"
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -45,7 +45,7 @@ namespace tc
     EncoderThread::EncoderThread(const std::shared_ptr<RdApplication>& app) {
         app_ = app;
         context_ = app->GetContext();
-        settings_ = Settings::Instance();
+        settings_ = RdSettings::Instance();
         plugin_manager_ = context_->GetPluginManager();
         enc_thread_ = Thread::Make("encoder_thread", 5);
         enc_thread_->Poll();
@@ -61,7 +61,7 @@ namespace tc
 
     void EncoderThread::Encode(const std::shared_ptr<Image>& image, uint64_t frame_index) {
 //        if (frame_width_ != image->width || frame_height_ != image->height || !video_encoder_) {
-//            auto settings = Settings::Instance();
+//            auto settings = RdSettings::Instance();
 //            if (video_encoder_) {
 //                video_encoder_->Exit();
 //                video_encoder_.reset();
@@ -120,7 +120,7 @@ namespace tc
 
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
         PostEncTask([=, this]() {
-            auto settings = Settings::Instance();
+            auto settings = RdSettings::Instance();
             auto frame_index = cap_video_msg.frame_index_;
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
             Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;

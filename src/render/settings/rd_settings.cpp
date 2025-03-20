@@ -2,7 +2,7 @@
 // Created by RGAA on 2023-12-17.
 //
 
-#include "settings.h"
+#include "rd_settings.h"
 
 #include <sstream>
 
@@ -14,7 +14,7 @@
 namespace tc
 {
 
-    bool Settings::LoadSettings(const std::string& path) {
+    bool RdSettings::LoadSettings(const std::string& path) {
         toml::parse_result result;
         try {
             result = toml::parse_file(path);
@@ -129,14 +129,14 @@ namespace tc
         return true;
     }
 
-    uint32_t Settings::GetShmBufferSize() const {
+    uint32_t RdSettings::GetShmBufferSize() const {
         auto frame_buffer_size = 1920 * 1080 * 4 ;
         auto default_buffer_size = kHostToClientShmSize;//2 * 1024 * 1024;
         auto shm_size = (this->encoder_.encoder_select_type_ == ECreateEncoderPolicy::kSpecify && this->encoder_.encoder_name_ == ECreateEncoderName::kFFmpeg) ? frame_buffer_size : default_buffer_size;
         return shm_size;
     }
 
-    std::string Settings::Dump() {
+    std::string RdSettings::Dump() {
         std::stringstream ss;
         ss << "Description: \n";
         ss << "  - author: " << desc_.author_ << std::endl;

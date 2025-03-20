@@ -4,7 +4,7 @@
 
 #include "win_event_replayer.h"
 #include <Windows.h>
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
 
@@ -117,7 +117,7 @@ namespace tc
             win_pressed_ = down;
         }
 
-        if(Settings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
+        if(RdSettings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
             if(control_pressed_ && menu_pressed_ && delete_pressed_ && !shift_pressed_ && !win_pressed_) {
                 return;
             }
@@ -193,7 +193,7 @@ namespace tc
         std::string monitor_name = event.monitor_name();
         int button = event.button();
         int data = event.data();
-        if(Settings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
+        if(RdSettings::Instance()->capture_.capture_video_type_ == Capture::kCaptureScreen) {
             ReplayMouseEvent(monitor_name, x_ratio, y_ratio, button, data);
         }
     }

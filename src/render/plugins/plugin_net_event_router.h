@@ -14,7 +14,7 @@ namespace tc
 {
     class WinEventReplayer;
     class RdApplication;
-    class Settings;
+    class RdSettings;
     class Data;
     class RdStatistics;
     class MessageListener;
@@ -50,7 +50,7 @@ namespace tc
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
 
     private:
-        Settings* settings_ = nullptr;
+        RdSettings* settings_ = nullptr;
         RdStatistics* statistics_ = nullptr;
         std::shared_ptr<RdApplication> app_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;

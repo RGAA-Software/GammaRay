@@ -15,7 +15,7 @@
 #include "plugin_interface/gr_frame_processor_plugin.h"
 #include <libyuv/convert.h>
 #include <atlcomcli.h>
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 
 namespace tc
 {
@@ -27,7 +27,7 @@ namespace tc
                                          bool resize,
                                          int resize_width,
                                          int resize_height) {
-        settings_ = Settings::Instance();
+        settings_ = RdSettings::Instance();
         context_ = ctx;
         d3d11_device_ = d3d11_device;
         d3d11_device_context_ = d3d11_device_context;

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "rd_app.h"
-#include "settings/settings.h"
+#include "settings/rd_settings.h"
 #include "rd_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/dump_helper.h"
@@ -62,7 +62,7 @@ DEFINE_string(relay_server_port, "", "relay port");
 
 DEFINE_int32(panel_server_port, 0, "");
 
-void UpdateSettings(Settings* settings) {
+void UpdateSettings(RdSettings* settings) {
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
         settings->app_.steam_app_.steam_url_ = std::format("steam://rungameid/{}", FLAGS_steam_app_id);
@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
     CaptureDump();
 
     // 1. load from config.toml
-    auto settings = Settings::Instance();
+    auto settings = RdSettings::Instance();
     settings->LoadSettings("settings.toml");
     if (!FLAGS_isolate) {
         UpdateSettings(settings);
