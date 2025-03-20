@@ -90,6 +90,7 @@ namespace tc
         context_ = std::make_shared<RdContext>();
         context_->Init();
         statistics_->SetContext(context_);
+        statistics_->StartMonitor();
 
         plugin_manager_ = PluginManager::Make(shared_from_this());
         context_->SetPluginManager(plugin_manager_);

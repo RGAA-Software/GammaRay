@@ -48,6 +48,10 @@ namespace tc
     public:
     };
 
+    class MsgTimer5000 {
+    public:
+    };
+
     class MsgTimer100 {
     public:
     };

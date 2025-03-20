@@ -18,6 +18,8 @@ namespace tc
     constexpr auto kMaxStatCounts = 180;
 
     class RdContext;
+    class Thread;
+    class MessageListener;
 
     class RdStatistics {
     public:
@@ -29,6 +31,8 @@ namespace tc
 
         RdStatistics();
         void SetContext(const std::shared_ptr<RdContext>& ctx);
+        void StartMonitor();
+        void Exit();
         void IncreaseRunningTime();
         void AppendMediaBytes(int bytes);
         void AppendEncodeDuration(uint32_t time);
@@ -39,8 +43,13 @@ namespace tc
         void TickFps();
         std::string AsProtoMessage();
 
+    private:
+        void OnChecking();
+
     public:
         std::shared_ptr<RdContext> context_ = nullptr;
+        std::shared_ptr<Thread> monitor_thread_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         // unit: S
         int64_t running_time_{};
         int64_t send_media_bytes_{};

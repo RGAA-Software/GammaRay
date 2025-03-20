@@ -8,6 +8,10 @@
 #include "tc_common_new/fps_stat.h"
 #include "app/app_messages.h"
 #include "rd_context.h"
+#include "tc_common_new/thread.h"
+#include "tc_common_new/message_notifier.h"
+#include "tc_common_new/process_util.h"
+#include "tc_common_new/time_ext.h"
 
 namespace tc
 {
@@ -18,6 +22,22 @@ namespace tc
 
     void RdStatistics::SetContext(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
+    }
+
+    void RdStatistics::StartMonitor() {
+        monitor_thread_ = Thread::Make("render_monitor", 128);
+        monitor_thread_->Poll();
+
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgTimer5000>([this](const MsgTimer5000& m) {
+            this->OnChecking();
+        });
+    }
+
+    void RdStatistics::Exit() {
+        if (monitor_thread_) {
+            monitor_thread_->Exit();
+        }
     }
 
     void RdStatistics::IncreaseRunningTime() {
@@ -82,6 +102,14 @@ namespace tc
 
     void RdStatistics::IncreaseDDAFailedCount() {
         dda_failed_count_++;
+    }
+
+    void RdStatistics::OnChecking() {
+        monitor_thread_->Post([=, this]() {
+            TimeDuration td("ProcessUtil::GetThreadCount");
+            auto thread_count = ProcessUtil::GetThreadCount();
+            LOGI("Thread count: {}", thread_count);
+        });
     }
 
 }
