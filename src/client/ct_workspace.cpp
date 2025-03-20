@@ -32,7 +32,7 @@
 #include "tc_common_new/process_util.h"
 #include "ui/float_button_state_indicator.h"
 #include "ct_main_progress.h"
-
+#include "theme/widgetframe/mainwindow_wrapper.h"
 #ifdef TC_ENABLE_FILE_TRANSMISSION
 #include "core/file_trans_interface.h"
 #endif // TC_ENABLE_FILE_TRANSMISSION
@@ -44,6 +44,10 @@ namespace tc
     Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const ThunderSdkParams& params, QWidget* parent) {
         this->context_ = ctx;
         this->settings_ = Settings::Instance();
+
+        auto title_name = QMainWindow::tr("GammaRay Streamer") + "[" + settings_->stream_name_.c_str() + "]";
+        (new MainWindowWrapper(this))->Setup(title_name);
+
         setAcceptDrops(true);
         QString app_dir = qApp->applicationDirPath();
         QString style_dir = app_dir + "/resources/";
@@ -509,8 +513,10 @@ namespace tc
             video_widget_->setGeometry(0, 0, this->width(), this->height());
             return;
         }
+        int available_height = this->height() - 40;
         float h_ratio = vw * 1.0f / this->width();
-        float v_ratio = vh * 1.0f / this->height();
+        //float v_ratio = vh * 1.0f / this->height();
+        float v_ratio = vh * 1.0f / available_height;
         int target_width = 0;
         int target_height = 0;
         if (h_ratio > v_ratio) {
@@ -519,15 +525,18 @@ namespace tc
             target_height = vh * (this->width()*1.0f/vw);
         } else {
             // use height
-            target_height = this->height();
-            target_width = vw * (this->height()*1.0f/vh);
+            //target_height = this->height();
+            //target_width = vw * (this->height()*1.0f/vh);
+            target_height = available_height;
+            target_width = vw * (available_height*1.0f/vh);
         }
 
-        video_widget_->setGeometry((this->width()-target_width)/2, (this->height()-target_height)/2, target_width, target_height);
+        //video_widget_->setGeometry((this->width()-target_width)/2, (this->height()-target_height)/2, target_width, target_height);
+        video_widget_->setGeometry((this->width()-target_width)/2, (available_height-target_height)/2 + 40, target_width, target_height);
     }
 
     void Workspace::SwitchToFullWindow() {
-        video_widget_->setGeometry(0, 0, this->width(), this->height());
+        video_widget_->setGeometry(0, 40, this->width(), this->height());
     }
 
     void Workspace::SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg) {

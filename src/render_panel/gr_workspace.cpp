@@ -24,136 +24,16 @@
 #include "service/service_manager.h"
 #include "app_colors.h"
 #include "render_panel/ui/tab_server_status.h"
-#include "widgets/widgetwindowagent.h"
-#include "theme/widgetframe/windowbar.h"
-#include "theme/widgetframe/windowbutton.h"
+#include "theme/widgetframe/mainwindow_wrapper.h"
 
 namespace tc
 {
-
-    static inline void emulateLeaveEvent(QWidget *widget) {
-        Q_ASSERT(widget);
-        if (!widget) {
-            return;
-        }
-        QTimer::singleShot(0, widget, [widget]() {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-            const QScreen *screen = widget->screen();
-#else
-            const QScreen *screen = widget->windowHandle()->screen();
-#endif
-            const QPoint globalPos = QCursor::pos(screen);
-            if (!QRect(widget->mapToGlobal(QPoint{0, 0}), widget->size()).contains(globalPos)) {
-                QCoreApplication::postEvent(widget, new QEvent(QEvent::Leave));
-                if (widget->testAttribute(Qt::WA_Hover)) {
-                    const QPoint localPos = widget->mapFromGlobal(globalPos);
-                    const QPoint scenePos = widget->window()->mapFromGlobal(globalPos);
-                    static constexpr const auto oldPos = QPoint{};
-                    const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 4, 0))
-                    const auto event =
-                            new QHoverEvent(QEvent::HoverLeave, scenePos, globalPos, oldPos, modifiers);
-                    Q_UNUSED(localPos);
-#elif (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-                    const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, globalPos, oldPos, modifiers);
-                Q_UNUSED(scenePos);
-#else
-                const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, oldPos, modifiers);
-                Q_UNUSED(scenePos);
-#endif
-                    QCoreApplication::postEvent(widget, event);
-                }
-            }
-        });
-    }
 
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
 
-        setAttribute(Qt::WA_DontCreateNativeAncestors);
-        auto windowAgent = new QWK::WidgetWindowAgent(this);
-        windowAgent->setup(this);
-
-        auto titleLabel = new QLabel();
-        titleLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-        titleLabel->setObjectName(QStringLiteral("win-title-label"));
-        titleLabel->setText(tr("GammaRay"));
-#ifndef Q_OS_MAC
-        auto iconButton = new QWK::WindowButton();
-        iconButton->setObjectName(QStringLiteral("icon-button"));
-        iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-        auto pinButton = new QWK::WindowButton();
-        pinButton->setCheckable(true);
-        pinButton->setObjectName(QStringLiteral("pin-button"));
-        pinButton->setProperty("system-button", true);
-        pinButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-        auto minButton = new QWK::WindowButton();
-        minButton->setObjectName(QStringLiteral("min-button"));
-        minButton->setProperty("system-button", true);
-        minButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-        auto maxButton = new QWK::WindowButton();
-        maxButton->setCheckable(true);
-        maxButton->setObjectName(QStringLiteral("max-button"));
-        maxButton->setProperty("system-button", true);
-        maxButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-        auto closeButton = new QWK::WindowButton();
-        closeButton->setObjectName(QStringLiteral("close-button"));
-        closeButton->setProperty("system-button", true);
-        closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-#endif
-
-        auto windowBar = new QWK::WindowBar();
-#ifndef Q_OS_MAC
-        windowBar->setIconButton(iconButton);
-        windowBar->setPinButton(pinButton);
-        windowBar->setMinButton(minButton);
-        windowBar->setMaxButton(maxButton);
-        windowBar->setCloseButton(closeButton);
-#endif
-        //windowBar->setMenuBar(menuBar);
-        windowBar->setTitleLabel(titleLabel);
-        windowBar->setHostWidget(this);
-
-        windowAgent->setTitleBar(windowBar);
-#ifndef Q_OS_MAC
-        windowAgent->setHitTestVisible(pinButton, true);
-        windowAgent->setSystemButton(QWK::WindowAgentBase::WindowIcon, iconButton);
-        windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, minButton);
-        windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, maxButton);
-        windowAgent->setSystemButton(QWK::WindowAgentBase::Close, closeButton);
-#endif
-        //windowAgent->setHitTestVisible(menuBar, true);
-        setMenuWidget(windowBar);
-
-#ifndef Q_OS_MAC
-        connect(windowBar, &QWK::WindowBar::pinRequested, this, [this, pinButton](bool pin){
-            if (isHidden() || isMinimized() || isMaximized() || isFullScreen()) {
-                return;
-            }
-            setWindowFlag(Qt::WindowStaysOnTopHint, pin);
-            show();
-            pinButton->setChecked(pin);
-        });
-        connect(windowBar, &QWK::WindowBar::minimizeRequested, this, &QWidget::showMinimized);
-        connect(windowBar, &QWK::WindowBar::maximizeRequested, this, [this, maxButton](bool max) {
-            if (max) {
-                showMaximized();
-            } else {
-                showNormal();
-            }
-
-            // It's a Qt issue that if a QAbstractButton::clicked triggers a window's maximization,
-            // the button remains to be hovered until the mouse move. As a result, we need to
-            // manually send leave events to the button.
-            emulateLeaveEvent(maxButton);
-        });
-        connect(windowBar, &QWK::WindowBar::closeRequested, this, &QWidget::close);
-#endif
+        (new MainWindowWrapper(this))->Setup(tr("GammaRay"));
 
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);
