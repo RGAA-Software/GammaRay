@@ -20,6 +20,7 @@ namespace tc
     class MessageListener;
     class QtCircle;
     class GrSettings;
+    class TcQRWidget;
 
     // client
     class ClientContext;
@@ -42,7 +43,7 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QLabel* lbl_machine_code_ = nullptr;
         QLabel* lbl_machine_random_pwd_ = nullptr;
-        QLabel* lbl_qr_code_ = nullptr;
+        TcQRWidget* lbl_qr_code_ = nullptr;
 
         // client
         std::shared_ptr<ClientContext> client_ctx_ = nullptr;

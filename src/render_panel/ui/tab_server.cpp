@@ -37,6 +37,7 @@
 #include "tc_common_new/uid_spacer.h"
 #include "client/ct_client_context.h"
 #include "client/ui/stream_content.h"
+#include "tc_qt_widget/tc_qr_widget.h"
 
 namespace tc
 {
@@ -137,18 +138,19 @@ namespace tc
                 auto layout = new NoMarginVLayout();
                 layout->addSpacing(10);
 
-                auto qr_info = new QLabel(this);
+                auto qr_info = new TcQRWidget(this);
+                qr_info->setFixedSize(171, 171);
                 lbl_qr_code_ = qr_info;
-                qr_info->setPixmap(qr_pixmap_);
+                qr_info->SetQRPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
                 layout->addStretch();
                 machine_code_qr_layout->addLayout(layout);
 
-                int size = 40;
+                int size = 30;
                 auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
                 auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
                 avatar->setParent(qr_info);
-                avatar->setGeometry((qr_pixmap_.width()-size)/2, (qr_pixmap_.height()-size)/2, size, size);
+                avatar->setGeometry((qr_info->width()-size)/2, (qr_info->height()-size)/2, size, size);
 
             }
 
@@ -261,13 +263,15 @@ namespace tc
                 client_ctx_->SetDeviceId(settings_->device_id_);
 
                 this->UpdateQRCode();
-                this->lbl_qr_code_->setPixmap(qr_pixmap_);
             });
         });
     }
 
     void TabServer::UpdateQRCode() {
         auto broadcast_msg = context_->MakeBroadcastMessage();
-        qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), 200);
+        qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), -1);
+        if (lbl_qr_code_) {
+            lbl_qr_code_->SetQRPixmap(qr_pixmap_);
+        }
     }
 }
