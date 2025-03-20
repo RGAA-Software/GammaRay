@@ -10,6 +10,7 @@
 #include "gr_plugin_interface.h"
 #include "gr_net_plugin.h"
 #include "tc_capture_new/capture_message.h"
+#include "tc_common_new/time_ext.h"
 
 namespace tc
 {
@@ -35,17 +36,21 @@ namespace tc
 
     class GrPluginBaseEvent {
     public:
+        GrPluginBaseEvent() {
+            created_timestamp_ = TimeExt::GetCurrentTimestamp();
+        }
         virtual ~GrPluginBaseEvent() = default;
     public:
         std::string plugin_name_;
         GrPluginEventType event_type_{GrPluginEventType::kPluginUnknownType};
         std::any extra_;
+        uint64_t created_timestamp_ = 0;
     };
 
     // kPluginNetClientEvent
     class GrPluginNetClientEvent : public GrPluginBaseEvent {
     public:
-        GrPluginNetClientEvent() {
+        GrPluginNetClientEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginNetClientEvent;
         }
     public:
@@ -58,7 +63,7 @@ namespace tc
     // GrClientConnectedEvent
     class GrPluginClientConnectedEvent : public GrPluginBaseEvent {
     public:
-        GrPluginClientConnectedEvent() {
+        GrPluginClientConnectedEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginClientConnectedEvent;
         }
 
@@ -67,7 +72,7 @@ namespace tc
     // GrClientDisConnectedEvent
     class GrPluginClientDisConnectedEvent : public GrPluginBaseEvent {
     public:
-        GrPluginClientDisConnectedEvent() {
+        GrPluginClientDisConnectedEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginClientDisConnectedEvent;
         }
 
@@ -76,7 +81,7 @@ namespace tc
     // GrPluginInsertIdrEvent
     class GrPluginInsertIdrEvent : public GrPluginBaseEvent {
     public:
-        GrPluginInsertIdrEvent() {
+        GrPluginInsertIdrEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginInsertIdrEvent;
         }
     };
@@ -84,7 +89,7 @@ namespace tc
     // GrPluginEncodedVideoFrameEvent
     class GrPluginEncodedVideoFrameEvent : public GrPluginBaseEvent {
     public:
-        GrPluginEncodedVideoFrameEvent() {
+        GrPluginEncodedVideoFrameEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginEncodedVideoFrameEvent;
         }
     public:
@@ -99,7 +104,7 @@ namespace tc
     //
     class GrPluginCapturedVideoFrameEvent : public GrPluginBaseEvent {
     public:
-        GrPluginCapturedVideoFrameEvent() {
+        GrPluginCapturedVideoFrameEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginCapturedVideoFrameEvent;
         }
     public:
@@ -109,7 +114,7 @@ namespace tc
     //
     class GrPluginCapturingMonitorInfoEvent : public GrPluginBaseEvent {
     public:
-        GrPluginCapturingMonitorInfoEvent() {
+        GrPluginCapturingMonitorInfoEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginCapturingMonitorInfoEvent;
         }
     public:
@@ -119,7 +124,7 @@ namespace tc
     //
     class GrPluginCursorEvent : public GrPluginBaseEvent {
     public:
-        GrPluginCursorEvent() {
+        GrPluginCursorEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginCursorEvent;
         }
     public:
@@ -129,7 +134,7 @@ namespace tc
     // Raw video frame from plugins
     class GrPluginRawVideoFrameEvent : public GrPluginBaseEvent {
     public:
-        GrPluginRawVideoFrameEvent() {
+        GrPluginRawVideoFrameEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginRawVideoFrameEvent;
         }
     public:
@@ -141,7 +146,7 @@ namespace tc
     // Raw audio frame from plugins
     class GrPluginRawAudioFrameEvent : public GrPluginBaseEvent {
     public:
-        GrPluginRawAudioFrameEvent() {
+        GrPluginRawAudioFrameEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginRawAudioFrameEvent;
         }
     public:
@@ -156,7 +161,7 @@ namespace tc
     // Raw audio frame
     class GrPluginSplitRawAudioFrameEvent : public GrPluginBaseEvent {
     public:
-        GrPluginSplitRawAudioFrameEvent() {
+        GrPluginSplitRawAudioFrameEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginSplitRawAudioFrameEvent;
         }
     public:
@@ -173,7 +178,7 @@ namespace tc
     // Encode audio frame
     class GrPluginEncodedAudioFrameEvent : public GrPluginBaseEvent {
     public:
-        GrPluginEncodedAudioFrameEvent() {
+        GrPluginEncodedAudioFrameEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginEncodedAudioFrameEvent;
         }
     public:
