@@ -31,6 +31,42 @@
 namespace tc
 {
 
+    static inline void emulateLeaveEvent(QWidget *widget) {
+        Q_ASSERT(widget);
+        if (!widget) {
+            return;
+        }
+        QTimer::singleShot(0, widget, [widget]() {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+            const QScreen *screen = widget->screen();
+#else
+            const QScreen *screen = widget->windowHandle()->screen();
+#endif
+            const QPoint globalPos = QCursor::pos(screen);
+            if (!QRect(widget->mapToGlobal(QPoint{0, 0}), widget->size()).contains(globalPos)) {
+                QCoreApplication::postEvent(widget, new QEvent(QEvent::Leave));
+                if (widget->testAttribute(Qt::WA_Hover)) {
+                    const QPoint localPos = widget->mapFromGlobal(globalPos);
+                    const QPoint scenePos = widget->window()->mapFromGlobal(globalPos);
+                    static constexpr const auto oldPos = QPoint{};
+                    const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 4, 0))
+                    const auto event =
+                            new QHoverEvent(QEvent::HoverLeave, scenePos, globalPos, oldPos, modifiers);
+                    Q_UNUSED(localPos);
+#elif (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
+                    const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, globalPos, oldPos, modifiers);
+                Q_UNUSED(scenePos);
+#else
+                const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, oldPos, modifiers);
+                Q_UNUSED(scenePos);
+#endif
+                    QCoreApplication::postEvent(widget, event);
+                }
+            }
+        });
+    }
+
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
@@ -40,9 +76,9 @@ namespace tc
         windowAgent->setup(this);
 
         auto titleLabel = new QLabel();
-        titleLabel->setAlignment(Qt::AlignCenter);
+        titleLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         titleLabel->setObjectName(QStringLiteral("win-title-label"));
-
+        titleLabel->setText(tr("GammaRay"));
 #ifndef Q_OS_MAC
         auto iconButton = new QWK::WindowButton();
         iconButton->setObjectName(QStringLiteral("icon-button"));
@@ -93,6 +129,31 @@ namespace tc
 #endif
         //windowAgent->setHitTestVisible(menuBar, true);
         setMenuWidget(windowBar);
+
+#ifndef Q_OS_MAC
+        connect(windowBar, &QWK::WindowBar::pinRequested, this, [this, pinButton](bool pin){
+            if (isHidden() || isMinimized() || isMaximized() || isFullScreen()) {
+                return;
+            }
+            setWindowFlag(Qt::WindowStaysOnTopHint, pin);
+            show();
+            pinButton->setChecked(pin);
+        });
+        connect(windowBar, &QWK::WindowBar::minimizeRequested, this, &QWidget::showMinimized);
+        connect(windowBar, &QWK::WindowBar::maximizeRequested, this, [this, maxButton](bool max) {
+            if (max) {
+                showMaximized();
+            } else {
+                showNormal();
+            }
+
+            // It's a Qt issue that if a QAbstractButton::clicked triggers a window's maximization,
+            // the button remains to be hovered until the mouse move. As a result, we need to
+            // manually send leave events to the button.
+            emulateLeaveEvent(maxButton);
+        });
+        connect(windowBar, &QWK::WindowBar::closeRequested, this, &QWidget::close);
+#endif
 
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);
@@ -177,7 +238,7 @@ namespace tc
 
             // buttons
             auto btn_font_color = "#ffffff";
-            auto btn_size = QSize(left_area_width - 30, 36);
+            auto btn_size = QSize(left_area_width - 30, 40);
             // remote control
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);

@@ -5,6 +5,7 @@
 	<style type="text/css">
 		.st0 {
 			fill: white;
+			stroke: #333333;
 		}
 	</style>
 	<rect y="4.5" class="st0" width="10" height="1" />

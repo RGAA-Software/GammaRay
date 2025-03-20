@@ -7,7 +7,7 @@
 namespace tc
 {
 
-    QColor AppColors::kTabBtnInActiveColor = QColor(0xeeeeee);
+    QColor AppColors::kTabBtnInActiveColor = QColor(0xf7f7f7);
 
     QColor AppColors::kNormalColor = QColor(0x7350ce);
     QColor AppColors::kTabBtnNormalColor = QColor(0x486487);

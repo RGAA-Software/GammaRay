@@ -1212,14 +1212,18 @@ QSizeGrip {
 
 /************************************************************************/
 /* Window bar */
+QWK--WindowBar {
+  border: 0px solid {{secondaryColor}};
+  min-height: 38px;
+}
 
 QWK--WindowBar[bar-active=true] {
-    background-color: #195ABE;
+    background-color: #ffffff;
     /* background-color: transparent; */
 }
 
 QWK--WindowBar[bar-active=false] {
-    background-color: #195ABE;
+    background-color: #ffffff;
     /* background-color: transparent; */
 }
 
@@ -1229,9 +1233,11 @@ QWK--WindowBar[bar-active=false] {
 QWK--WindowBar>QLabel#win-title-label {
     padding: 0;
     border: none;
-    color: #ECECEC;
+    color: #333333;
     background-color: transparent;
     min-height: 28px;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 
@@ -1284,7 +1290,6 @@ QWK--WindowBar>QAbstractButton#close-button:pressed {
     background-color: #e81123;
 }
 
-
 /* Icon button */
 
 QWK--WindowBar>QAbstractButton#icon-button {
@@ -1293,89 +1298,5 @@ QWK--WindowBar>QAbstractButton#icon-button {
     min-width: 40px;
     border: none;
     padding: 0;
-    background-color: transparent;
-}
-
-
-/* Menu Bar */
-
-QMenuBar {
-    background-color: transparent;
-    border: none;
-}
-
-QMenuBar>QToolButton#qt_menubar_ext_button {
-    qproperty-icon: url(":/resources/window-bar/more-line.svg");
-}
-
-QMenuBar>QToolButton#qt_menubar_ext_button:hover,
-QMenuBar>QToolButton#qt_menubar_ext_button:pressed {
-    background-color: rgba(255, 255, 255, 10%);
-}
-
-QMenuBar::item {
-    color: #EEEEEE;
-    border: none;
-    padding: 8px 12px;
-}
-
-QMenuBar::item:selected {
-    background-color: rgba(255, 255, 255, 10%);
-}
-
-
-/* Menu */
-
-QMenu {
-    padding: 4px;
-    background: white;
-    border: 1px solid #E0E0E0;
-}
-
-QMenu::indicator {
-    left: 6px;
-    width: 20px;
-    height: 20px;
-}
-
-QMenu::icon {
-    left: 6px;
-}
-
-QMenu::item {
-    background: transparent;
-    color: #333333;
-    padding: 6px 24px;
-}
-
-QMenu::item:selected {
-    background-color: rgba(0, 0, 0, 10%);
-}
-
-QMenu::item:disabled {
-    color: #CCCCCC;
-}
-
-QMenu::separator {
-    height: 2px;
-    background-color: #CCCCCC;
-    margin: 6px 0;
-}
-
-
-/* Window */
-
-MainWindow {
-    background-color: #F3F3F3;
-}
-
-MainWindow[custom-style=true] {
-    background-color: transparent;
-}
-
-QWidget#clock-widget {
-    font-size: 75px;
-    color: #333333;
-    font-weight: bold;
     background-color: transparent;
 }
