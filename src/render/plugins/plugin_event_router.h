@@ -10,8 +10,8 @@
 namespace tc
 {
 
-    class Context;
-    class Application;
+    class RdContext;
+    class RdApplication;
     class GrPluginBaseEvent;
     class PluginManager;
     class PluginStreamEventRouter;
@@ -20,13 +20,13 @@ namespace tc
 
     class PluginEventRouter {
     public:
-        explicit PluginEventRouter(const std::shared_ptr<Application>& app);
+        explicit PluginEventRouter(const std::shared_ptr<RdApplication>& app);
 
         void ProcessPluginEvent(const std::shared_ptr<GrPluginBaseEvent>& event);
 
     private:
-        std::shared_ptr<Application> app_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         std::shared_ptr<PluginStreamEventRouter> stream_event_router_ = nullptr;
         std::shared_ptr<PluginNetEventRouter> net_event_router_ = nullptr;

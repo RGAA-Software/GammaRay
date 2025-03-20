@@ -10,13 +10,13 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
     class AppManager;
 
     class AppManagerFactory {
     public:
 
-        static std::shared_ptr<AppManager> Make(const std::shared_ptr<Context>& ctx);
+        static std::shared_ptr<AppManager> Make(const std::shared_ptr<RdContext>& ctx);
 
     };
 

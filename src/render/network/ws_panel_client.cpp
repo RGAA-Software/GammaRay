@@ -3,9 +3,9 @@
 //
 
 #include "ws_panel_client.h"
-#include "context.h"
+#include "rd_context.h"
 #include "render/app/app_messages.h"
-#include "render/statistics.h"
+#include "render/rd_statistics.h"
 #include "render/settings/settings.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
@@ -18,8 +18,8 @@ namespace tc
 
     const int kMaxClientQueuedMessage = 1024;
 
-    WsPanelClient::WsPanelClient(const std::shared_ptr<Context>& ctx) {
-        statistics_ = Statistics::Instance();
+    WsPanelClient::WsPanelClient(const std::shared_ptr<RdContext>& ctx) {
+        statistics_ = RdStatistics::Instance();
         settings_ = Settings::Instance();
         context_ = ctx;
         plugin_mgr_ = context_->GetPluginManager();

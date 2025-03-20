@@ -3,14 +3,14 @@
 //
 
 #include "app_manager.h"
-#include "context.h"
+#include "rd_context.h"
 #include "tc_common_new/log.h"
 #include "tc_steam_manager_new/steam_manager.h"
 
 namespace tc
 {
 
-    AppManager::AppManager(const std::shared_ptr<Context>& ctx) {
+    AppManager::AppManager(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
     }
 

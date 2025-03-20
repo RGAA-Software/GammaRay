@@ -4,7 +4,7 @@
 
 #include "encoder_thread.h"
 
-#include "context.h"
+#include "rd_context.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/thread.h"
@@ -19,7 +19,7 @@
 #include "settings/settings.h"
 #include "app/app_messages.h"
 #include "settings/settings.h"
-#include "render/statistics.h"
+#include "render/rd_statistics.h"
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "tc_common_new/win32/d3d_render.h"
@@ -28,7 +28,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "video_frame_carrier.h"
-#include "app.h"
+#include "rd_app.h"
 
 #define DEBUG_FILE 0
 #define DEBUG_SAVE_D3D11TEXTURE_TO_FILE 0
@@ -38,11 +38,11 @@ namespace tc
 #if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
     std::shared_ptr<D3DRender> g_render;
 #endif
-    std::shared_ptr<EncoderThread> EncoderThread::Make(const std::shared_ptr<Application>& app) {
+    std::shared_ptr<EncoderThread> EncoderThread::Make(const std::shared_ptr<RdApplication>& app) {
         return std::make_shared<EncoderThread>(app);
     }
 
-    EncoderThread::EncoderThread(const std::shared_ptr<Application>& app) {
+    EncoderThread::EncoderThread(const std::shared_ptr<RdApplication>& app) {
         app_ = app;
         context_ = app->GetContext();
         settings_ = Settings::Instance();
@@ -114,7 +114,7 @@ namespace tc
 //            video_encoder_->Encode(image, frame_index);
 //            auto end = TimeExt::GetCurrentTimestamp();
 //            auto diff = end - beg;
-//            Statistics::Instance()->AppendEncodeDuration(diff);
+//            RdStatistics::Instance()->AppendEncodeDuration(diff);
 //        }));
     }
 
@@ -294,7 +294,7 @@ namespace tc
                 }
                 auto end = TimeExt::GetCurrentTimestamp();
                 auto diff = end - beg;
-                Statistics::Instance()->AppendEncodeDuration(diff);
+                RdStatistics::Instance()->AppendEncodeDuration(diff);
 
                 // TODO: May make latency !!!
                 D3D11_TEXTURE2D_DESC desc;

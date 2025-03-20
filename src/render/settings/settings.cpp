@@ -155,7 +155,7 @@ namespace tc
         ss << "  - capture video type: " << capture_.capture_video_type_ << " (0 => Hook 1 => Primary Screen) " << std::endl;
         ss << "Transmission: \n";
         ss << "  - listening port: " << transmission_.listening_port_ << std::endl;
-        ss << "Application: \n";
+        ss << "RdApplication: \n";
         ss << "  - game path: " << app_.game_path_ << std::endl;
         ss << "  - game arguments: " << app_.game_arguments_ << std::endl;
         ss << "  - steam app:" << std::endl;

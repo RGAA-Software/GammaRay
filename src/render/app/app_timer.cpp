@@ -3,7 +3,7 @@
 //
 
 #include "app_timer.h"
-#include "context.h"
+#include "rd_context.h"
 #include "app/app_messages.h"
 #include "tc_common_new/log.h"
 
@@ -13,7 +13,7 @@
 namespace tc
 {
 
-    AppTimer::AppTimer(const std::shared_ptr<Context>& ctx) {
+    AppTimer::AppTimer(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
         timer_ = std::make_shared<asio2::timer>();
     }

@@ -13,7 +13,7 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
 
     enum AppTimerDuration {
         kTimerDuration1000 = 1000,
@@ -25,14 +25,14 @@ namespace tc
     class AppTimer {
     public:
 
-        explicit AppTimer(const std::shared_ptr<Context>& ctx);
+        explicit AppTimer(const std::shared_ptr<RdContext>& ctx);
         void StartTimers();
 
     private:
         void NotifyTimeout(AppTimerDuration duration);
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<asio2::timer> timer_ = nullptr;
     };
 

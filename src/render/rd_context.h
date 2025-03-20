@@ -18,12 +18,12 @@ namespace tc
 
     class PluginManager;
 
-    class Context : public QObject, public std::enable_shared_from_this<Context> {
+    class RdContext : public QObject, public std::enable_shared_from_this<RdContext> {
     public:
-        static std::shared_ptr<Context> Make();
+        static std::shared_ptr<RdContext> Make();
 
-        Context();
-        ~Context() = default;
+        RdContext();
+        ~RdContext() = default;
 
         bool Init();
         void SetPluginManager(const std::shared_ptr<PluginManager>& pm);

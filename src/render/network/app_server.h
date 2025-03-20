@@ -16,13 +16,13 @@
 
 namespace tc
 {
-    class Application;
+    class RdApplication;
     class HttpHandler;
 
     class AppServer : public Connection {
     public:
 
-        explicit AppServer(const std::shared_ptr<Application>& app);
+        explicit AppServer(const std::shared_ptr<RdApplication>& app);
 
         void Start() override;
         void Exit() override;

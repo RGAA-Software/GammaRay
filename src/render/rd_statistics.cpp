@@ -2,58 +2,58 @@
 // Created by RGAA on 2024/3/6.
 //
 
-#include "statistics.h"
+#include "rd_statistics.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/fps_stat.h"
 #include "app/app_messages.h"
-#include "context.h"
+#include "rd_context.h"
 
 namespace tc
 {
 
-    Statistics::Statistics() {
+    RdStatistics::RdStatistics() {
         fps_video_encode_ = std::make_shared<FpsStat>();
     }
 
-    void Statistics::SetContext(const std::shared_ptr<Context>& ctx) {
+    void RdStatistics::SetContext(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
     }
 
-    void Statistics::IncreaseRunningTime() {
+    void RdStatistics::IncreaseRunningTime() {
         running_time_++;
     }
 
-    void Statistics::AppendMediaBytes(int bytes) {
+    void RdStatistics::AppendMediaBytes(int bytes) {
         send_media_bytes_ += bytes;
     }
 
-    void Statistics::AppendEncodeDuration(uint32_t time) {
+    void RdStatistics::AppendEncodeDuration(uint32_t time) {
         if (encode_durations_.size() >= kMaxStatCounts) {
             encode_durations_.erase(encode_durations_.begin());
         }
         encode_durations_.push_back(time);
     }
 
-    void Statistics::AppendFrameGap(uint32_t time) {
+    void RdStatistics::AppendFrameGap(uint32_t time) {
         if (video_frame_gaps_.size() >= kMaxStatCounts) {
             video_frame_gaps_.erase(video_frame_gaps_.begin());
         }
         video_frame_gaps_.push_back(time);
     }
 
-    void Statistics::AppendAudioFrameGap(uint32_t time) {
+    void RdStatistics::AppendAudioFrameGap(uint32_t time) {
         if (audio_frame_gaps_.size() >= kMaxStatCounts) {
             audio_frame_gaps_.erase(audio_frame_gaps_.begin());
         }
         audio_frame_gaps_.push_back(time);
     }
 
-    void Statistics::TickFps() {
+    void RdStatistics::TickFps() {
         fps_video_encode_value_ = fps_video_encode_->value();
     }
 
-    std::string Statistics::AsProtoMessage() {
+    std::string RdStatistics::AsProtoMessage() {
         tc::Message msg;
         msg.set_type(tc::MessageType::kCaptureStatistics);
 
@@ -80,7 +80,7 @@ namespace tc
         return msg.SerializeAsString();
     }
 
-    void Statistics::IncreaseDDAFailedCount() {
+    void RdStatistics::IncreaseDDAFailedCount() {
         dda_failed_count_++;
     }
 

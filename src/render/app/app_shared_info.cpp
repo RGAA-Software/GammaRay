@@ -10,11 +10,11 @@ constexpr auto kAppSharedInfoBuffSize = 1024 * 4;
 namespace tc
 {
 
-    std::shared_ptr<AppSharedInfo> AppSharedInfo::Make(const std::shared_ptr<Context>& ctx) {
+    std::shared_ptr<AppSharedInfo> AppSharedInfo::Make(const std::shared_ptr<RdContext>& ctx) {
         return std::make_shared<AppSharedInfo>(ctx);
     }
 
-    AppSharedInfo::AppSharedInfo(const std::shared_ptr<Context>& ctx) {
+    AppSharedInfo::AppSharedInfo(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
     }
 

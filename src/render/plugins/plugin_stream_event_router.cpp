@@ -3,7 +3,7 @@
 //
 
 #include "plugin_stream_event_router.h"
-#include "context.h"
+#include "rd_context.h"
 #include "plugin_manager.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_common_new/log.h"
@@ -14,16 +14,16 @@
 #include "plugin_interface/gr_net_plugin.h"
 #include "network/net_message_maker.h"
 #include "settings/settings.h"
-#include "statistics.h"
-#include "app.h"
+#include "rd_statistics.h"
+#include "rd_app.h"
 
 namespace tc
 {
-    PluginStreamEventRouter::PluginStreamEventRouter(const std::shared_ptr<Application>& app) {
+    PluginStreamEventRouter::PluginStreamEventRouter(const std::shared_ptr<RdApplication>& app) {
         app_ = app;
         context_ = app->GetContext();
         plugin_manager_ = context_->GetPluginManager();
-        statistics_ = Statistics::Instance();
+        statistics_ = RdStatistics::Instance();
     }
 
     void PluginStreamEventRouter::ProcessEncodedVideoFrameEvent(const std::shared_ptr<GrPluginEncodedVideoFrameEvent>& event) {
@@ -76,7 +76,7 @@ namespace tc
         statistics_->fps_video_encode_->Tick();
 
         // statistics
-        Statistics::Instance()->AppendMediaBytes(net_msg.size());
+        RdStatistics::Instance()->AppendMediaBytes(net_msg.size());
 
         // plugins: Frame encoded
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {

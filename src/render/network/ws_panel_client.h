@@ -13,15 +13,15 @@
 namespace tc
 {
 
-    class Context;
-    class Statistics;
+    class RdContext;
+    class RdStatistics;
     class MessageListener;
     class Settings;
     class PluginManager;
 
     class WsPanelClient {
     public:
-        explicit WsPanelClient(const std::shared_ptr<Context>& ctx);
+        explicit WsPanelClient(const std::shared_ptr<RdContext>& ctx);
         void Start();
         void Exit();
         void PostNetMessage(const std::string& msg);
@@ -31,9 +31,9 @@ namespace tc
         void ParseNetMessage(std::string_view msg);
 
     private:
-        Statistics* statistics_ = nullptr;
+        RdStatistics* statistics_ = nullptr;
         Settings* settings_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::atomic_int queued_msg_count_ = 0;

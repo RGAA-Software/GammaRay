@@ -2,10 +2,10 @@
 // Created by RGAA on 2023-12-16.
 //
 
-#include "app.h"
+#include "rd_app.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "context.h"
+#include "rd_context.h"
 #include "tc_capture_new/desktop_capture.h"
 #include "tc_capture_new/desktop_capture_factory.h"
 #include "tc_common_new/log.h"
@@ -42,7 +42,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
-#include "statistics.h"
+#include "rd_statistics.h"
 #include "app/clipboard_manager.h"
 #include "network/render_service_client.h"
 #include "plugins/plugin_manager.h"
@@ -57,23 +57,23 @@
 namespace tc
 {
 
-    std::shared_ptr<Application> Application::Make(const AppParams& args) {
+    std::shared_ptr<RdApplication> RdApplication::Make(const AppParams& args) {
         // By OS
         // Windows
         return std::make_shared<WinApplication>(args);
         // Linux
     }
 
-    Application::Application(const AppParams& args) {
+    RdApplication::RdApplication(const AppParams& args) {
         auto settings = Settings::Instance();
         settings_ = settings;
     }
 
-    Application::~Application() {
-        LOGI("Application dtor");
+    RdApplication::~RdApplication() {
+        LOGI("RdApplication dtor");
     }
 
-    void Application::Init(int argc, char** argv) {
+    void RdApplication::Init(int argc, char** argv) {
         qapp_ = std::make_shared<QApplication>(argc, argv);
 
         // sp
@@ -83,11 +83,11 @@ namespace tc
         sp_->Init(path.toStdString(), sp_name);
     }
 
-    int Application::Run() {
-        statistics_ = Statistics::Instance();
+    int RdApplication::Run() {
+        statistics_ = RdStatistics::Instance();
 
         // context
-        context_ = std::make_shared<Context>();
+        context_ = std::make_shared<RdContext>();
         context_->Init();
         statistics_->SetContext(context_);
 
@@ -159,12 +159,12 @@ namespace tc
         return qapp_->exec();
     }
 
-    void Application::InitAppTimer() {
+    void RdApplication::InitAppTimer() {
         app_timer_ = std::make_shared<AppTimer>(context_);
         app_timer_->StartTimers();
     }
 
-    void Application::InitMessages() {
+    void RdApplication::InitMessages() {
         msg_listener_->Listen<MsgBeforeInject>([=, this](const MsgBeforeInject& msg) {
             if (settings_->capture_.IsVideoHook()) {
                 this->WriteBoostUpInfoForPid(msg.pid_);
@@ -247,7 +247,7 @@ namespace tc
         });
     }
 
-    void Application::InitAudioCapture() {
+    void RdApplication::InitAudioCapture() {
         if (settings_->capture_.capture_audio_type_ != Capture::CaptureAudioType::kAudioGlobal) {
             return;
         }
@@ -270,7 +270,7 @@ namespace tc
             if (frame.full_data_) {
                 audio_encoder_plugin_->Encode(frame.full_data_, samples, channels, bits);
 
-                auto stat = Statistics::Instance();
+                auto stat = RdStatistics::Instance();
                 stat->audio_samples_ = samples;
                 stat->audio_channels_ = channels;
                 stat->audio_bits_ = bits;
@@ -333,7 +333,7 @@ namespace tc
         }, "global audio capture", false);
     }
 
-    void Application::PostGlobalAppMessage(std::shared_ptr<AppMessage>&& msg) {
+    void RdApplication::PostGlobalAppMessage(std::shared_ptr<AppMessage>&& msg) {
         QMetaObject::invokeMethod(this, [m = std::move(msg)]() {
             if (m->task_) {
                 m->task_();
@@ -341,27 +341,27 @@ namespace tc
         });
     }
 
-    void Application::PostGlobalTask(std::function<void()>&& task) {
+    void RdApplication::PostGlobalTask(std::function<void()>&& task) {
         PostGlobalAppMessage(AppMessageMaker::MakeTaskMessage(std::move(task)));
     }
 
-    void Application::PostIpcMessage(std::shared_ptr<Data>&& msg) {
+    void RdApplication::PostIpcMessage(std::shared_ptr<Data>&& msg) {
 
     }
 
-    void Application::PostIpcMessage(const std::string& msg) {
+    void RdApplication::PostIpcMessage(const std::string& msg) {
         if (settings_->capture_.IsVideoHook()) {
             PostNetMessage(msg);
         }
     }
 
-    void Application::PostNetMessage(const std::string& msg) {
+    void RdApplication::PostNetMessage(const std::string& msg) {
         plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
             plugin->PostProtoMessage(msg);
         });
     }
 
-    void Application::StartProcessWithHook() {
+    void RdApplication::StartProcessWithHook() {
         msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg([=]() -> tc::VideoType {
                 return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
@@ -395,7 +395,7 @@ namespace tc
         fn_start_process();
     }
 
-    void Application::StartProcessWithScreenCapture() {
+    void RdApplication::StartProcessWithScreenCapture() {
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
             if (!HasConnectedPeer()) {
                 return;
@@ -454,7 +454,7 @@ namespace tc
         app_manager_->StartProcess();
     }
 
-    void Application::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) {
+    void RdApplication::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) {
         if (!HasConnectedPeer()) {
             //LOGI("Not have client, return...");
             return;
@@ -465,7 +465,7 @@ namespace tc
         encoder_thread_->Encode(*msg);
     }
 
-    bool Application::HasConnectedPeer() {
+    bool RdApplication::HasConnectedPeer() {
         bool has_working_net_plugin = false;
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
             if (plugin->IsWorking() && plugin->ConnectedClientSize() > 0) {
@@ -475,7 +475,7 @@ namespace tc
         return has_working_net_plugin;
     }
 
-    void Application::WriteBoostUpInfoForPid(uint32_t pid) {
+    void RdApplication::WriteBoostUpInfoForPid(uint32_t pid) {
         if (!app_shared_message_) {
             LOGE("Don't have app_shared_message_");
             return;
@@ -487,7 +487,7 @@ namespace tc
         app_shared_info_->WriteData(shm_name, shm_buffer);
     }
 
-    void Application::InitVigemController() {
+    void RdApplication::InitVigemController() {
         vigem_controller_ = VigemController::Make();
         if (!vigem_controller_->Connect()) {
             return;
@@ -495,14 +495,14 @@ namespace tc
         vigem_controller_->AllocController();
     }
 
-    void Application::ReleaseVigemController() {
+    void RdApplication::ReleaseVigemController() {
         if (vigem_controller_) {
             vigem_controller_->Exit();
             vigem_controller_.reset();
         }
     }
 
-    void Application::ProcessGamepadState(const tc::MsgGamepadState &state) {
+    void RdApplication::ProcessGamepadState(const tc::MsgGamepadState &state) {
         if (!vigem_controller_) {
             return;
         }
@@ -511,8 +511,8 @@ namespace tc
         }));
     }
 
-    void Application::ReportAudioSpectrum() {
-        auto st = Statistics::Instance();
+    void RdApplication::ReportAudioSpectrum() {
+        auto st = RdStatistics::Instance();
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kServerAudioSpectrum);
         auto sas = msg->mutable_server_audio_spectrum();
@@ -530,14 +530,14 @@ namespace tc
         PostNetMessage(net_msg);
     }
 
-    void Application::SendClipboardMessage(const std::string& msg) {
+    void RdApplication::SendClipboardMessage(const std::string& msg) {
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
         m.mutable_clipboard_info()->set_msg(msg);
         PostNetMessage(m.SerializeAsString());
     }
 
-    void Application::SendConfigurationBack() {
+    void RdApplication::SendConfigurationBack() {
         if (!monitor_capture_plugin_) {
             LOGE("SendConfigurationBack failed, working monitor capture plugin is null.");
             return;
@@ -567,14 +567,14 @@ namespace tc
         PostNetMessage(m.SerializeAsString());
     }
 
-    void Application::RequestRestartMe() {
+    void RdApplication::RequestRestartMe() {
         tc::Message m;
         m.set_type(tc::kRestartServer);
         m.mutable_restart_server()->set_reason("restart");
         ws_panel_client_->PostNetMessage(m.SerializeAsString());
     }
 
-    void Application::ResetMonitorResolution(const std::string& name, int w, int h) {
+    void RdApplication::ResetMonitorResolution(const std::string& name, int w, int h) {
         DEVMODE dm;
         dm.dmSize = sizeof(dm);
         dm.dmPelsWidth = w;
@@ -593,22 +593,22 @@ namespace tc
         PostNetMessage(m.SerializeAsString());
     }
 
-    std::shared_ptr<PluginManager> Application::GetPluginManager() {
+    std::shared_ptr<PluginManager> RdApplication::GetPluginManager() {
         return plugin_manager_;
     }
 
-    tc::GrMonitorCapturePlugin* Application::GetWorkingMonitorCapturePlugin() {
+    tc::GrMonitorCapturePlugin* RdApplication::GetWorkingMonitorCapturePlugin() {
         return monitor_capture_plugin_;
     }
 
-    tc::GrVideoEncoderPlugin* Application::GetWorkingVideoEncoderPlugin() {
+    tc::GrVideoEncoderPlugin* RdApplication::GetWorkingVideoEncoderPlugin() {
         if (encoder_thread_) {
             return encoder_thread_->GetWorkingVideoEncoderPlugin();
         }
         return nullptr;
     }
 
-    bool Application::GenerateD3DDevice(uint64_t adapter_uid) {
+    bool RdApplication::GenerateD3DDevice(uint64_t adapter_uid) {
         LOGI("GenerateD3DDevice, adapter_uid = {}", adapter_uid);
         if (d3d11_device_context_) {
             d3d11_device_context_->ClearState();
@@ -661,15 +661,15 @@ namespace tc
         }
     }
 
-    ComPtr<ID3D11Device> Application::GetD3DDevice() {
+    ComPtr<ID3D11Device> RdApplication::GetD3DDevice() {
         return d3d11_device_;
     }
 
-    ComPtr<ID3D11DeviceContext> Application::GetD3DContext() {
+    ComPtr<ID3D11DeviceContext> RdApplication::GetD3DContext() {
         return d3d11_device_context_;
     }
 
-    void Application::ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) {
+    void RdApplication::ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) {
         if (!service_client_ || !service_client_->IsAlive()) {
             return;
         }
@@ -680,7 +680,7 @@ namespace tc
         service_client_->PostNetMessage(m.SerializeAsString());
     }
 
-    void Application::Exit() {
+    void RdApplication::Exit() {
         if (app_shared_info_) {
             app_shared_info_->Exit();
         }
@@ -700,22 +700,22 @@ namespace tc
     // ------------------------------------------------------ //
     // Windows
     WinApplication::WinApplication(const AppParams& args)
-        : Application(args) {
+        : RdApplication(args) {
 
     }
 
     WinApplication::~WinApplication() {
-        Application::~Application();
+        RdApplication::~RdApplication();
     }
 
     int WinApplication::Run() {
         LoadDxAddress();
-        Application::Run();
+        RdApplication::Run();
         return 0;
     }
 
     void WinApplication::Exit() {
-        Application::Exit();
+        RdApplication::Exit();
     }
 
     static std::function<BOOL(DWORD)> s_ctrl_handler;

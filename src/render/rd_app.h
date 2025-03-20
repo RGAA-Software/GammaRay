@@ -14,7 +14,7 @@
 #include "app_global_messages.h"
 #include "app/app_messages.h"
 #include "tc_capture_new/capture_message.h"
-#include "context.h"
+#include "rd_context.h"
 #include <QApplication>
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -46,7 +46,7 @@ namespace tc
     class CaptureVideoFrame;
     class VigemController;
     class VigemDriverManager;
-    class Statistics;
+    class RdStatistics;
     class WsPanelClient;
     class ClipboardManager;
     class PluginManager;
@@ -58,13 +58,13 @@ namespace tc
     class RenderServiceClient;
     class MonitorRefresher;
 
-    class Application : public std::enable_shared_from_this<Application>, public QObject {
+    class RdApplication : public std::enable_shared_from_this<RdApplication>, public QObject {
     public:
 
-        static std::shared_ptr<Application> Make(const AppParams& args);
+        static std::shared_ptr<RdApplication> Make(const AppParams& args);
 
-        explicit Application(const AppParams& args);
-        ~Application() override;
+        explicit RdApplication(const AppParams& args);
+        ~RdApplication() override;
 
         virtual void Init(int argc, char** argv);
         virtual int Run();
@@ -76,7 +76,7 @@ namespace tc
         void PostIpcMessage(std::shared_ptr<Data>&& msg);
         void PostIpcMessage(const std::string& msg);
         void PostNetMessage(const std::string& msg);
-        std::shared_ptr<Context> GetContext() { return context_; }
+        std::shared_ptr<RdContext> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
         std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
         // DesktopCapture is null in plugin mode
@@ -118,7 +118,7 @@ namespace tc
         Settings* settings_ = nullptr;
         std::shared_ptr<WsPanelClient> ws_panel_client_ = nullptr;
         std::shared_ptr<AppManager> app_manager_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<EncoderThread> encoder_thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<AppTimer> app_timer_ = nullptr;
@@ -136,7 +136,7 @@ namespace tc
         uint64_t last_capture_screen_time_ = 0;
         uint64_t last_post_video_time_ = 0;
         uint64_t last_post_audio_time_ = 0;
-        Statistics* statistics_ = nullptr;
+        RdStatistics* statistics_ = nullptr;
         SharedPreference* sp_ = nullptr;
 
         std::shared_ptr<QApplication> qapp_ = nullptr;
@@ -162,7 +162,7 @@ namespace tc
     };
 
     // Windows
-    class WinApplication : public Application {
+    class WinApplication : public RdApplication {
     public:
         explicit WinApplication(const AppParams& args);
         ~WinApplication() override;

@@ -12,14 +12,14 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
     class MessageListener;
     class SteamManager;
 
     class AppManager {
     public:
 
-        explicit AppManager(const std::shared_ptr<Context>& ctx);
+        explicit AppManager(const std::shared_ptr<RdContext>& ctx);
         virtual ~AppManager();
 
         virtual void Init();
@@ -30,7 +30,7 @@ namespace tc
         virtual void CloseCurrentApp();
 
     protected:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 

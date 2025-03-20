@@ -15,8 +15,8 @@
 #include "plugin_interface/gr_data_consumer_plugin.h"
 #include "plugin_event_router.h"
 #include "plugin_ids.h"
-#include "context.h"
-#include "app.h"
+#include "rd_context.h"
+#include "rd_app.h"
 #include "settings/settings.h"
 
 typedef void *(*FnGetInstance)();
@@ -24,11 +24,11 @@ typedef void *(*FnGetInstance)();
 namespace tc
 {
 
-    std::shared_ptr<PluginManager> PluginManager::Make(const std::shared_ptr<Application>& app) {
+    std::shared_ptr<PluginManager> PluginManager::Make(const std::shared_ptr<RdApplication>& app) {
         return std::make_shared<PluginManager>(app);
     }
 
-    PluginManager::PluginManager(const std::shared_ptr<Application>& app) {
+    PluginManager::PluginManager(const std::shared_ptr<RdApplication>& app) {
         this->app_ = app;
         this->context_ = app->GetContext();
         settings_ = Settings::Instance();

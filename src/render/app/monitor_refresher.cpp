@@ -3,7 +3,7 @@
 //
 
 #include "monitor_refresher.h"
-#include "context.h"
+#include "rd_context.h"
 #include "tc_common_new/message_notifier.h"
 #include "app/app_messages.h"
 #include "tc_common_new/log.h"
@@ -17,7 +17,7 @@ namespace tc
 {
 
     // Widget
-    MonitorRefreshWidget::MonitorRefreshWidget(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+    MonitorRefreshWidget::MonitorRefreshWidget(const std::shared_ptr<RdContext>& ctx, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
         setAttribute(Qt::WA_TransparentForMouseEvents, true);
         setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
@@ -32,7 +32,7 @@ namespace tc
     }
 
     // Refresher
-    MonitorRefresher::MonitorRefresher(const std::shared_ptr<Context>& ctx, QWidget* parent) {
+    MonitorRefresher::MonitorRefresher(const std::shared_ptr<RdContext>& ctx, QWidget* parent) {
         context_ = ctx;
 
         QList<QWidget*> widgets;

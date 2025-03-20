@@ -16,8 +16,8 @@
 namespace tc
 {
 
-    class Context;
-    class Application;
+    class RdContext;
+    class RdApplication;
     class PluginEventRouter;
     class GrPluginInterface;
     class GrStreamPlugin;
@@ -31,9 +31,9 @@ namespace tc
 
     class PluginManager {
     public:
-        static std::shared_ptr<PluginManager> Make(const std::shared_ptr<Application>& app);
+        static std::shared_ptr<PluginManager> Make(const std::shared_ptr<RdApplication>& app);
 
-        explicit PluginManager(const std::shared_ptr<Application>& app);
+        explicit PluginManager(const std::shared_ptr<RdApplication>& app);
 
         void LoadAllPlugins();
         void RegisterPluginEventsCallback();
@@ -64,8 +64,8 @@ namespace tc
 
     private:
         Settings* settings_ = nullptr;
-        std::shared_ptr<Application> app_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::map<std::string, GrPluginInterface*> plugins_;
         std::shared_ptr<PluginEventRouter> evt_router_ = nullptr;
     };

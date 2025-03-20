@@ -11,26 +11,26 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
     class MessageListener;
 
     // Widget
     class MonitorRefreshWidget : public QWidget {
     public:
-        explicit MonitorRefreshWidget(const std::shared_ptr<Context>& ctx, QWidget* parent);
+        explicit MonitorRefreshWidget(const std::shared_ptr<RdContext>& ctx, QWidget* parent);
         void paintEvent(QPaintEvent *event) override;
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
     };
 
     // Refresher
     class MonitorRefresher  {
     public:
-        explicit MonitorRefresher(const std::shared_ptr<Context>& ctx, QWidget* parent);
+        explicit MonitorRefresher(const std::shared_ptr<RdContext>& ctx, QWidget* parent);
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 

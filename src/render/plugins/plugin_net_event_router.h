@@ -13,19 +13,19 @@
 namespace tc
 {
     class WinEventReplayer;
-    class Application;
+    class RdApplication;
     class Settings;
     class Data;
-    class Statistics;
+    class RdStatistics;
     class MessageListener;
     class MessageNotifier;
     class Message;
-    class Context;
+    class RdContext;
     class PluginManager;
 
     class PluginNetEventRouter {
     public :
-        explicit PluginNetEventRouter(const std::shared_ptr<Application>& app);
+        explicit PluginNetEventRouter(const std::shared_ptr<RdApplication>& app);
         void ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event);
         void ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
         void ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
@@ -51,9 +51,9 @@ namespace tc
 
     private:
         Settings* settings_ = nullptr;
-        Statistics* statistics_ = nullptr;
-        std::shared_ptr<Application> app_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        RdStatistics* statistics_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;

@@ -14,9 +14,9 @@ include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)
 
 set(SRCS
-        app.cpp
-        context.cpp
-        statistics.cpp
+        rd_app.cpp
+        rd_context.cpp
+        rd_statistics.cpp
         network/app_server.cpp
         network/ws_media_router.cpp
         network/ws_ipc_router.cpp
@@ -51,7 +51,7 @@ target_link_libraries(main app_manager libprotobuf tc_message Dexode::EventBus)
 target_link_libraries(main Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network)
 
-add_executable(${PROJECT_NAME} WIN32 render_main.cpp)
+add_executable(${PROJECT_NAME} WIN32 rd_main.cpp)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_plugin) # tc_rtc
 target_link_libraries(${PROJECT_NAME} sqlite_orm EasyHook64 gflags::gflags leveldb)

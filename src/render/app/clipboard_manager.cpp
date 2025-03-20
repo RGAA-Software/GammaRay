@@ -3,7 +3,7 @@
 //
 
 #include "clipboard_manager.h"
-#include "context.h"
+#include "rd_context.h"
 #include <QGuiApplication>
 #include <QClipboard>
 #include "tc_common_new/log.h"
@@ -12,7 +12,7 @@
 namespace tc
 {
 
-    ClipboardManager::ClipboardManager(const std::shared_ptr<Context> &ctx) : QObject(nullptr) {
+    ClipboardManager::ClipboardManager(const std::shared_ptr<RdContext> &ctx) : QObject(nullptr) {
         context_ = ctx;
     }
 

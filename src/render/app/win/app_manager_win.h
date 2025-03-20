@@ -19,7 +19,7 @@ namespace tc
     class AppManagerWinImpl : public AppManager {
     public:
 
-        explicit AppManagerWinImpl(const std::shared_ptr<Context>& ctx);
+        explicit AppManagerWinImpl(const std::shared_ptr<RdContext>& ctx);
         ~AppManagerWinImpl() override;
 
         void Init() override;

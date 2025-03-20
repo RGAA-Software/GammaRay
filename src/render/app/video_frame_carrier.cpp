@@ -10,7 +10,7 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
-#include "context.h"
+#include "rd_context.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_frame_processor_plugin.h"
 #include <libyuv/convert.h>
@@ -20,7 +20,7 @@
 namespace tc
 {
 
-    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<Context>& ctx,
+    VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<RdContext>& ctx,
                                          const ComPtr<ID3D11Device>& d3d11_device,
                                          const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
                                          uint64_t adapter_id,

@@ -3,11 +3,11 @@
 //
 
 #include "render_service_client.h"
-#include "context.h"
-#include "statistics.h"
+#include "rd_context.h"
+#include "rd_statistics.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
-#include "app.h"
+#include "rd_app.h"
 #include "app/app_messages.h"
 #include "tc_service_message.pb.h"
 #include "settings/settings.h"
@@ -17,8 +17,8 @@ namespace tc
 
     const int kMaxClientQueuedMessage = 4096;
 
-    RenderServiceClient::RenderServiceClient(const std::shared_ptr<Application>& app) {
-        statistics_ = Statistics::Instance();
+    RenderServiceClient::RenderServiceClient(const std::shared_ptr<RdApplication>& app) {
+        statistics_ = RdStatistics::Instance();
         app_ = app;
         context_ = app_->GetContext();
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();

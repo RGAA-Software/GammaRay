@@ -82,7 +82,7 @@ namespace tc
         int udp_listen_port_ = 0;
     };
 
-    // Application
+    // RdApplication
     struct TargetApplication {
 
         enum InjectMethod {

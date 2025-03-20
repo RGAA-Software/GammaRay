@@ -5,9 +5,9 @@
 #include "plugin_net_event_router.h"
 #include <memory>
 #include <iostream>
-#include "app.h"
-#include "context.h"
-#include "statistics.h"
+#include "rd_app.h"
+#include "rd_context.h"
+#include "rd_statistics.h"
 #include "settings/settings.h"
 #include "app/win/win_event_replayer.h"
 #include "tc_common_new/log.h"
@@ -29,12 +29,12 @@
 
 namespace tc {
 
-    PluginNetEventRouter::PluginNetEventRouter(const std::shared_ptr<Application>& app) {
+    PluginNetEventRouter::PluginNetEventRouter(const std::shared_ptr<RdApplication>& app) {
         this->app_ = app;
         this->context_ = app->GetContext();
         this->plugin_manager_ = app->GetPluginManager();
         this->settings_ = Settings::Instance();
-        this->statistics_ = Statistics::Instance();
+        this->statistics_ = RdStatistics::Instance();
         win_event_replayer_ = std::make_shared<WinEventReplayer>();
         msg_notifier_ = this->app_->GetContext()->GetMessageNotifier();
         msg_listener_ = this->app_->GetContext()->GetMessageNotifier()->CreateListener();

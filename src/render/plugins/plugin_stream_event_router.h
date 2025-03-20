@@ -11,21 +11,21 @@
 namespace tc
 {
 
-    class Context;
-    class Application;
+    class RdContext;
+    class RdApplication;
     class PluginManager;
-    class Statistics;
+    class RdStatistics;
 
     class PluginStreamEventRouter {
     public:
-        explicit PluginStreamEventRouter(const std::shared_ptr<Application>& app);
+        explicit PluginStreamEventRouter(const std::shared_ptr<RdApplication>& app);
 
         void ProcessEncodedVideoFrameEvent(const std::shared_ptr<GrPluginEncodedVideoFrameEvent>& event);
 
     private:
-        Statistics* statistics_ = nullptr;
-        std::shared_ptr<Application> app_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        RdStatistics* statistics_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
     };
 

@@ -17,18 +17,18 @@ namespace tc
 
     constexpr auto kMaxStatCounts = 180;
 
-    class Context;
+    class RdContext;
 
-    class Statistics {
+    class RdStatistics {
     public:
 
-        static Statistics* Instance() {
-            static Statistics st;
+        static RdStatistics* Instance() {
+            static RdStatistics st;
             return &st;
         }
 
-        Statistics();
-        void SetContext(const std::shared_ptr<Context>& ctx);
+        RdStatistics();
+        void SetContext(const std::shared_ptr<RdContext>& ctx);
         void IncreaseRunningTime();
         void AppendMediaBytes(int bytes);
         void AppendEncodeDuration(uint32_t time);
@@ -40,7 +40,7 @@ namespace tc
         std::string AsProtoMessage();
 
     public:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         // unit: S
         int64_t running_time_{};
         int64_t send_media_bytes_{};

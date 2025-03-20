@@ -13,7 +13,7 @@
 namespace tc
 {
 
-    std::shared_ptr<AppManager> AppManagerFactory::Make(const std::shared_ptr<Context>& ctx) {
+    std::shared_ptr<AppManager> AppManagerFactory::Make(const std::shared_ptr<RdContext>& ctx) {
 #ifdef WIN32
         auto mgr = std::make_shared<AppManagerWinImpl>(ctx);
         mgr->Init();

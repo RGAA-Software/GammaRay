@@ -11,16 +11,16 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
 
     class ClipboardManager : public QObject {
     public:
-        explicit ClipboardManager(const std::shared_ptr<Context>& ctx);
+        explicit ClipboardManager(const std::shared_ptr<RdContext>& ctx);
         void Monitor();
         void UpdateRemoteInfo(const QString& info);
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         QString remote_info_;
     };
 

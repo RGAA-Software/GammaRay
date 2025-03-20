@@ -7,7 +7,7 @@
 #include "tc_common_new/log.h"
 #include "message_processor.h"
 #include "tc_capture_new/capture_message.h"
-#include "app.h"
+#include "rd_app.h"
 
 namespace tc
 {
@@ -24,7 +24,7 @@ namespace tc
     WsIpcRouter::OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, int64_t socket_fd, std::string_view data) {
         WsRouter::OnMessage(sess_ptr, socket_fd, data);
         auto base_msg = (CaptureBaseMessage *) data.data();
-        auto app = Get<std::shared_ptr<Application>>("app");
+        auto app = Get<std::shared_ptr<RdApplication>>("app");
         if (base_msg->type_ == kCaptureVideoFrame) {
             auto msg = std::make_shared<CaptureVideoFrame>();
             if (data.size() != sizeof(CaptureVideoFrame)) {

@@ -21,7 +21,7 @@ namespace tc
 
     class Image;
     class Thread;
-    class Context;
+    class RdContext;
     class FrameRender;
     class GrFrameProcessorPlugin;
     class PluginManager;
@@ -30,7 +30,7 @@ namespace tc
     // move video frames from provider / capture
     class VideoFrameCarrier {
     public:
-        explicit VideoFrameCarrier(const std::shared_ptr<Context>& ctx,
+        explicit VideoFrameCarrier(const std::shared_ptr<RdContext>& ctx,
                                    const ComPtr<ID3D11Device>& d3d11_device,
                                    const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
                                    uint64_t adapter_id,
@@ -56,7 +56,7 @@ namespace tc
 
     private:
         Settings* settings_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         ComPtr<ID3D11Device> d3d11_device_;
         ComPtr<ID3D11DeviceContext> d3d11_device_context_;
         ComPtr<ID3D11Texture2D> texture2d_;

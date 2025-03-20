@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "app.h"
+#include "rd_app.h"
 #include "settings/settings.h"
-#include "context.h"
+#include "rd_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/base64.h"
@@ -233,7 +233,7 @@ int main(int argc, char** argv) {
 
     // start application
     tc::AppParams params = {};
-    auto app = tc::Application::Make(params);
+    auto app = tc::RdApplication::Make(params);
     app->Init(argc, argv);
     app->CaptureControlC();
     return app->Run();

@@ -6,7 +6,7 @@
 
 #include "tc_common_new/data.h"
 #include "tc_message.pb.h"
-//#include "statistics.h"
+//#include "rd_statistics.h"
 #include "tc_common_new/key_helper.h"
 
 namespace tc
@@ -89,7 +89,7 @@ namespace tc
     }
 
 //    std::string NetMessageMaker::MakeServerAudioSpectrumMsg() {
-//        auto st = Statistics::Instance();
+//        auto st = RdStatistics::Instance();
 //        auto msg = std::make_shared<Message>();
 //        msg->set_type(tc::kServerAudioSpectrum);
 //        auto sas = msg->mutable_server_audio_spectrum();

@@ -13,7 +13,7 @@ using namespace nlohmann;
 namespace tc
 {
 
-    SteamGame::SteamGame(const std::shared_ptr<Context>& ctx) {
+    SteamGame::SteamGame(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
     }
 

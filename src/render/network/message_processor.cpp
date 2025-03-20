@@ -5,7 +5,7 @@
 #include "message_processor.h"
 #include <memory>
 #include <iostream>
-#include "app.h"
+#include "rd_app.h"
 #include "settings/settings.h"
 #include "app/win/win_event_replayer.h"
 #include "tc_common_new/log.h"
@@ -15,8 +15,8 @@
 #include "app/app_manager.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "app/app_messages.h"
-#include "context.h"
-#include "statistics.h"
+#include "rd_context.h"
+#include "rd_statistics.h"
 #include "ws_media_router.h"
 #include "net_message_maker.h"
 #include "app/clipboard_manager.h"
@@ -24,10 +24,10 @@
 
 namespace tc {
 
-    MessageProcessor::MessageProcessor(const std::shared_ptr<Application>& app) {
+    MessageProcessor::MessageProcessor(const std::shared_ptr<RdApplication>& app) {
         this->app_ = app;
         this->settings_ = Settings::Instance();
-        this->statistics_ = Statistics::Instance();
+        this->statistics_ = RdStatistics::Instance();
         win_event_replayer_ = std::make_shared<WinEventReplayer>();
 
         msg_listener_ = this->app_->GetContext()->GetMessageNotifier()->CreateListener();

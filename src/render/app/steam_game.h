@@ -12,14 +12,14 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
     class SteamApp;
 
     // deprecated
     class SteamGame {
     public:
 
-        explicit SteamGame(const std::shared_ptr<Context>& ctx);
+        explicit SteamGame(const std::shared_ptr<RdContext>& ctx);
         std::string GetSteamInstalledPath();
         std::string GetSteamExePath();
         std::string GetSteamCachePath();
@@ -28,7 +28,7 @@ namespace tc
         void RequestSteamGames();
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::string steam_installed_path_;
         std::string steam_exe_path_;
         std::string steam_cache_dir_;

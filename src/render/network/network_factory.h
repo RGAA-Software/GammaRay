@@ -15,12 +15,12 @@
 namespace tc
 {
 
-    class Application;
+    class RdApplication;
 
     class NetworkFactory {
     public:
 
-        static std::shared_ptr<Connection> MakeConnection(const std::shared_ptr<Application>& app) {
+        static std::shared_ptr<Connection> MakeConnection(const std::shared_ptr<RdApplication>& app) {
             return std::make_shared<AppServer>(app);
         }
 

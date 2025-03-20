@@ -7,8 +7,8 @@
 
 #include "connection.h"
 
-#include "app.h"
-#include "context.h"
+#include "rd_app.h"
+#include "rd_context.h"
 #include "tc_encoder_new/encoder_messages.h"
 #include "settings/settings.h"
 #include "network/message_processor.h"
@@ -17,7 +17,7 @@
 namespace tc
 {
 
-    Connection::Connection(const std::shared_ptr<Application>& app) {
+    Connection::Connection(const std::shared_ptr<RdApplication>& app) {
         this->app_ = app;
         this->context_ = app->GetContext();
         this->ip_ = "0.0.0.0";

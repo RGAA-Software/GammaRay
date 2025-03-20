@@ -10,19 +10,19 @@
 namespace tc
 {
 
-    class Context;
+    class RdContext;
 
     class ServerCast {
     public:
 
-        static std::shared_ptr<ServerCast> Make(std::shared_ptr<Context>& ctx);
+        static std::shared_ptr<ServerCast> Make(std::shared_ptr<RdContext>& ctx);
 
-        explicit ServerCast(const std::shared_ptr<Context>& ctx);
+        explicit ServerCast(const std::shared_ptr<RdContext>& ctx);
         void Start();
         void Stop();
 
     private:
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
 
     };
 

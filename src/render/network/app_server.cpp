@@ -8,8 +8,8 @@
 #include "app_server.h"
 
 #include <memory>
-#include "app.h"
-#include "context.h"
+#include "rd_app.h"
+#include "rd_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_ext.h"
 #include "ws_media_router.h"
@@ -41,7 +41,7 @@ namespace tc
         }
     };
 
-    AppServer::AppServer(const std::shared_ptr<Application> &app) : Connection(app) {
+    AppServer::AppServer(const std::shared_ptr<RdApplication> &app) : Connection(app) {
         this->app_ = app;
         this->context_ = app->GetContext();
         http_handler_ = std::make_shared<HttpHandler>(this->app_);

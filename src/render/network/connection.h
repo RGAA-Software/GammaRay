@@ -15,14 +15,14 @@ namespace tc
 {
 
     class Data;
-    class Context;
-    class Application;
+    class RdContext;
+    class RdApplication;
     class MessageProcessor;
 
     class Connection {
     public:
 
-        explicit Connection(const std::shared_ptr<Application>& app);
+        explicit Connection(const std::shared_ptr<RdApplication>& app);
         virtual ~Connection();
 
         virtual void Start();
@@ -39,8 +39,8 @@ namespace tc
 
     protected:
 
-        std::shared_ptr<Application> app_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::string ip_{};
         int port_ = 0;
         std::shared_ptr<MessageProcessor> msg_processor_ = nullptr;

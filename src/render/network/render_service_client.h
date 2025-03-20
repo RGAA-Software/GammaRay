@@ -13,15 +13,15 @@
 namespace tc
 {
 
-    class Context;
-    class Application;
-    class Statistics;
+    class RdContext;
+    class RdApplication;
+    class RdStatistics;
     class MessageListener;
 
     class RenderServiceClient {
     public:
 
-        explicit RenderServiceClient(const std::shared_ptr<Application>& app);
+        explicit RenderServiceClient(const std::shared_ptr<RdApplication>& app);
         void Start();
         void Exit();
         bool IsAlive();
@@ -32,9 +32,9 @@ namespace tc
         void ParseMessage(const std::string& msg);
 
     private:
-        Statistics* statistics_ = nullptr;
-        std::shared_ptr<Application> app_ = nullptr;
-        std::shared_ptr<Context> context_ = nullptr;
+        RdStatistics* statistics_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
+        std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::atomic_int queued_msg_count_ = 0;

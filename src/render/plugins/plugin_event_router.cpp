@@ -13,14 +13,14 @@
 #include "plugin_stream_event_router.h"
 #include "plugin_net_event_router.h"
 #include "tc_capture_new/capture_message.h"
-#include "context.h"
+#include "rd_context.h"
 #include <fstream>
-#include "app.h"
+#include "rd_app.h"
 
 namespace tc
 {
 
-    PluginEventRouter::PluginEventRouter(const std::shared_ptr<Application>& app) {
+    PluginEventRouter::PluginEventRouter(const std::shared_ptr<RdApplication>& app) {
         app_ = app;
         context_ = app->GetContext();
         plugin_manager_ = context_->GetPluginManager();

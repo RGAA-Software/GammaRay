@@ -88,14 +88,14 @@ class NvEncoder
 public:
     /**
     *  @brief This function is used to initialize the encoder session.
-    *  Application must call this function to initialize the encoder, before
+    *  RdApplication must call this function to initialize the encoder, before
     *  starting to encode any frames.
     */
     virtual void CreateEncoder(const NV_ENC_INITIALIZE_PARAMS* pEncodeParams);
 
     /**
     *  @brief  This function is used to destroy the encoder session.
-    *  Application must call this function to destroy the encoder session and
+    *  RdApplication must call this function to destroy the encoder session and
     *  clean up any allocated resources. The application must call EndEncode()
     *  function to get any queued encoded frames before calling DestroyEncoder().
     */
@@ -103,7 +103,7 @@ public:
 
     /**
     *  @brief  This function is used to reconfigure an existing encoder session.
-    *  Application can use this function to dynamically change the bitrate,
+    *  RdApplication can use this function to dynamically change the bitrate,
     *  resolution and other QOS parameters. If the application changes the
     *  resolution, it must set NV_ENC_RECONFIGURE_PARAMS::forceIDR.
     */
@@ -199,14 +199,14 @@ public:
 
     /**
     *  @brief This function is used to get an available reference frame.
-    *  Application must call this function to get a pointer to reference buffer,
+    *  RdApplication must call this function to get a pointer to reference buffer,
     *  to be used in the subsequent RunMotionEstimation() function.
     */
     const NvEncInputFrame* GetNextReferenceFrame();
 
     /**
     *  @brief This function is used to get sequence and picture parameter headers.
-    *  Application can call this function after encoder is initialized to get SPS and PPS
+    *  RdApplication can call this function after encoder is initialized to get SPS and PPS
     *  nalus for the current encoder instance. The sequence header data might change when
     *  application calls Reconfigure() function.
     */

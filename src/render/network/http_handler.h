@@ -13,12 +13,12 @@ using namespace nlohmann;
 namespace tc
 {
 
-    class Application;
-    class Context;
+    class RdApplication;
+    class RdContext;
 
     class HttpHandler {
     public:
-        explicit HttpHandler(const std::shared_ptr<Application>& app);
+        explicit HttpHandler(const std::shared_ptr<RdApplication>& app);
         void HandlePing(http::web_request &req, http::web_response &rep);
 
     private:
@@ -26,7 +26,7 @@ namespace tc
         std::string WrapBasicInfo(int code, const std::string& msg, const json& data);
 
     private:
-        std::shared_ptr<Application> app_ = nullptr;
+        std::shared_ptr<RdApplication> app_ = nullptr;
 
     };
 
