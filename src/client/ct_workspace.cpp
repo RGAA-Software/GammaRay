@@ -89,7 +89,7 @@ namespace tc
 
         // float controller
         float_controller_ = new FloatController(ctx, this);
-        float_controller_->setFixedSize(55, 55);
+        float_controller_->setFixedSize(50, 50);
         WidgetHelper::AddShadow(float_controller_, shadow_color);
         controller_panel_ = new FloatControllerPanel(ctx, this);
         WidgetHelper::AddShadow(controller_panel_, shadow_color);
@@ -369,7 +369,7 @@ namespace tc
     }
 
     void Workspace::resizeEvent(QResizeEvent *event) {
-        main_progress_->setGeometry(0, 0, event->size().width(), event->size().height());
+        main_progress_->setGeometry(0, title_bar_height_, event->size().width(), event->size().height());
         UpdateNotificationHandlePosition();
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
@@ -513,30 +513,52 @@ namespace tc
             video_widget_->setGeometry(0, 0, this->width(), this->height());
             return;
         }
-        int available_height = this->height() - 40;
+
+        auto target_title_bar_height = this->isFullScreen() ? 0 : title_bar_height_;
+
+        int available_height = this->height() - target_title_bar_height;
         float h_ratio = vw * 1.0f / this->width();
-        //float v_ratio = vh * 1.0f / this->height();
-        float v_ratio = vh * 1.0f / available_height;
+        float v_ratio = vh * 1.0f / available_height;//this->height();
         int target_width = 0;
         int target_height = 0;
-        if (h_ratio > v_ratio) {
-            // use width
-            target_width = this->width();
-            target_height = vh * (this->width()*1.0f/vw);
-        } else {
-            // use height
-            //target_height = this->height();
-            //target_width = vw * (this->height()*1.0f/vh);
+
+        float widget_ratio = this->width() * 1.0f / available_height;
+        float frame_ratio = vw * 1.0f / vh;
+        if (widget_ratio > frame_ratio) {
+            // along to height
             target_height = available_height;
             target_width = vw * (available_height*1.0f/vh);
         }
+        else {
+            // along to width
+            target_width = this->width();
+            target_height = vh * (this->width()*1.0f/vw);
+        }
+
+//        if (h_ratio > v_ratio) {
+//            // use width
+//            target_width = this->width();
+//            target_height = vh * (this->width()*1.0f/vw);
+//            LOGI("H > V");
+//        } else {
+//            LOGI("H < V");
+//            // use height
+//            //target_height = this->height();
+//            //target_width = vw * (this->height()*1.0f/vh);
+//            target_height = available_height;
+//            target_width = vw * (available_height*1.0f/vh);
+//        }
+
+//        target_height = available_height;
+//        target_width = vw * (available_height*1.0f/vh);
 
         //video_widget_->setGeometry((this->width()-target_width)/2, (this->height()-target_height)/2, target_width, target_height);
-        video_widget_->setGeometry((this->width()-target_width)/2, (available_height-target_height)/2 + 40, target_width, target_height);
+        video_widget_->setGeometry((this->width()-target_width)/2, (available_height-target_height)/2 + target_title_bar_height, target_width, target_height);
     }
 
     void Workspace::SwitchToFullWindow() {
-        video_widget_->setGeometry(0, 40, this->width(), this->height());
+        auto target_title_bar_height = this->isFullScreen() ? 0 : title_bar_height_;
+        video_widget_->setGeometry(0, target_title_bar_height, this->width(), this->height() - target_title_bar_height);
     }
 
     void Workspace::SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg) {

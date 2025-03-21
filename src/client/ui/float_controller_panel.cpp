@@ -16,6 +16,7 @@
 #include "computer_icon.h"
 #include "float_sub_mode_panel.h"
 #include "float_sub_display_panel.h"
+#include "ct_app_message.h"
 
 namespace tc
 {
@@ -91,9 +92,12 @@ namespace tc
                     if (parent->isFullScreen()) {
                         parent->showNormal();
                         btn->SwitchToNormalState();
+                        context_->SendAppMessage(ExitFullscreenMessage{});
                     } else {
                         parent->showFullScreen();
                         btn->SwitchToSelectedState();
+                        context_->SendAppMessage(FullscreenMessage{});
+                        HideAllSubPanels();
                     }
                     this->hide();
                 });

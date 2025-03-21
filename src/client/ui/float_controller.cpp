@@ -99,6 +99,6 @@ namespace tc
         QRect parent_rect = parentWidget()->geometry();
         float xpos = parent_rect.width() * std::atof(context_->GetValueByKey(kPosX).c_str());
         float ypos = parent_rect.height() * std::atof(context_->GetValueByKey(kPosY).c_str());
-        move(xpos, ypos);
+        move(xpos, ypos + 35);
     }
 }

@@ -117,6 +117,11 @@ namespace tc
         }
         root_layout->addStretch();
         setLayout(root_layout);
+
+        msg_listener_ = context_->ObtainMessageListener();
+        msg_listener_->Listen<FullscreenMessage>([=, this](const FullscreenMessage& msg) {
+            HideAllSubPanels();
+        });
     }
 
     void SubDisplayPanel::paintEvent(QPaintEvent *event) {

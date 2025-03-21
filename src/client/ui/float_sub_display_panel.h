@@ -17,6 +17,8 @@ namespace tc
         kResolution,
     };
 
+    class MessageListener;
+
     class SubDisplayPanel : BaseWidget {
     public:
         explicit SubDisplayPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
@@ -32,6 +34,7 @@ namespace tc
     private:
         std::map<SubDisplayType, BaseWidget*> sub_panels_;
         CaptureMonitorMessage monitors_;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

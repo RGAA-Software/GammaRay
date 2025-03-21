@@ -89,6 +89,8 @@ namespace tc
 
         // progress
         MainProgress* main_progress_ = nullptr;
+
+        int title_bar_height_ = 35;
     };
 
 }
