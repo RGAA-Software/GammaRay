@@ -31,7 +31,6 @@ set(SRCS
         icon.rc ${RES}
         ui/switch_button.cpp
         ui/float_button.cpp
-        ui/message_dialog.cpp
         ui/round_rect_widget.cpp
         ui/app_menu.cpp
         ui/app_stream_list.cpp
@@ -71,7 +70,6 @@ set(SRCS_WS
         ui/switch_button.cpp
         ui/float_button.cpp
         ui/float_icon.cpp
-        ui/message_dialog.cpp
         ui/round_rect_widget.cpp
         ui/app_menu.cpp
         ui/app_color_theme.cpp
@@ -114,21 +112,21 @@ endif()
 
 add_library(lib_${PROJECT_NAME} ${SRCS})
 target_link_libraries(lib_${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
-        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm
+        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
 )
 
-qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS} ${SRCS_MAIN})
-qt_add_executable(GammaRayClientInner  MANUAL_FINALIZATION ${SRCS_WS}) #WIN32
+#qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS_MAIN}) #${SRCS}
+qt_add_executable(GammaRayClientInner MANUAL_FINALIZATION ${SRCS_WS}) #WIN32
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 if (APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-            MACOSX_BUNDLE_GUI_IDENTIFIER com.tc.client.client
-            MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-            MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-            MACOSX_BUNDLE TRUE
-            WIN32_EXECUTABLE TRUE
-    )
+#    set_target_properties(${PROJECT_NAME} PROPERTIES
+#            MACOSX_BUNDLE_GUI_IDENTIFIER com.tc.client.client
+#            MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+#            MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+#            MACOSX_BUNDLE TRUE
+#            WIN32_EXECUTABLE TRUE
+#    )
     set_target_properties(GammaRayClientInner PROPERTIES
             MACOSX_BUNDLE_GUI_IDENTIFIER com.tc.client.client
             MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -138,9 +136,11 @@ if (APPLE)
     )
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
-        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
-)
+#target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+#        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
+#)
+#target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+#        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame lib_${PROJECT_NAME})
 
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
         tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
@@ -153,7 +153,7 @@ if(TC_USE_FILE_TRANSMISSION) #file_transfer
 endif()
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(${PROJECT_NAME})
+#    qt_finalize_executable(${PROJECT_NAME})
     qt_finalize_executable(${PROJECT_NAME}Inner)
 endif()
 

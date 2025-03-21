@@ -204,7 +204,7 @@ namespace tc
             layout->addSpacing(margin_left);
             auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
             stat_chart_ = chart;
-            chart->setFixedSize(900, 360);
+            chart->setFixedSize(680, 360);
             layout->addWidget(chart);
             layout->addStretch();
             root_layout->addSpacing(20);

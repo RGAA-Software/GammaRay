@@ -10,6 +10,7 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
 #include "render_panel/gr_running_pipe.h"
+#include "render_panel/gr_settings.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 
 using namespace tc;
@@ -61,16 +62,18 @@ int main(int argc, char *argv[]) {
     mon_detector->DetectAdapters();
     mon_detector->PrintAdapters();
 
-    int id = QFontDatabase::addApplicationFont(":/resources/font/matrix.ttf");
+    int id = QFontDatabase::addApplicationFont(":/src/client/resources/font/SourceHanSansCN-Regular.otf");
     auto families = QFontDatabase::applicationFontFamilies(id);
     for (auto& f : families) {
         LOGI("font family : {}", f.toStdString());
+        GrSettings::Instance()->def_font_name_ = f.toStdString();
+        break;
     }
 
     PrepareDirs(base_dir);
 
     g_workspace = std::make_shared<GrWorkspace>();
-    g_workspace->setFixedSize(1720, 900);
+    g_workspace->setFixedSize(1450, 800);
     g_workspace->show();
 
     return app.exec();

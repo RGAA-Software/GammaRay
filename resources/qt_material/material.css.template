@@ -1214,7 +1214,7 @@ QSizeGrip {
 /* Window bar */
 QWK--WindowBar {
   border: 0px solid {{secondaryColor}};
-  min-height: 38px;
+  min-height: 32px;
 }
 
 QWK--WindowBar[bar-active=true] {

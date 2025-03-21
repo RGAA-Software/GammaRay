@@ -72,8 +72,8 @@ namespace tc
                 title->setFixedWidth(item_width);
                 title->setText(tr("This Device"));
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
-                left_root->addSpacing(18);
+                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                left_root->addSpacing(10);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 
@@ -104,7 +104,7 @@ namespace tc
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
                     msg->setText(tc::SpaceId("---------").c_str());
-                    msg->setStyleSheet(R"(font-size: 25px; font-weight: 700; color: #2979ff;)");
+                    msg->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
                     layout->addSpacing(5);
                     layout->addWidget(msg, 0, Qt::AlignLeft);
                     machine_code_qr_layout->addLayout(layout);
@@ -126,7 +126,7 @@ namespace tc
                     lbl_machine_random_pwd_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     msg->setText("********");
-                    msg->setStyleSheet(R"(font-size: 25px; font-weight: 700; color: #2979ff;)");
+                    msg->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
                     layout->addSpacing(5);
                     layout->addWidget(msg, 0, Qt::AlignLeft);
                     layout->addStretch();
@@ -160,7 +160,7 @@ namespace tc
                 title->setFixedWidth(item_width);
                 title->setText(tr("Remote Device"));
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                 left_root->addSpacing(50);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }

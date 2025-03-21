@@ -8,7 +8,7 @@
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>
-#include "message_dialog.h"
+#include "tc_qt_widget/sized_msg_box.h"
 
 namespace tc
 {
@@ -324,7 +324,7 @@ namespace tc
         //auto remote_device_id = ed_remote_device_id_ ? ed_remote_device_id_->text().trimmed().replace(" ", "").toStdString() : "";
 
         if (host.empty() || port == 0) {
-            auto dialog = MessageDialog::Make(context_, tr("Please input necessary information !"));
+            auto dialog = SizedMessageBox::MakeOkBox(tr("Tips"), tr("Please input necessary information !"));
             dialog->exec();
             return false;
         }

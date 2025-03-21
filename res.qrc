@@ -1,9 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/tc_icon.png</file>
-        <file>resources/font/matrix.ttf</file>
-        <file>resources/font/blade.ttf</file>
-        <file>resources/font/LOVE-Queen-2.ttf</file>
+        <file>src/client/resources/font/SourceHanSansCN-Regular.otf</file>
         <file>resources/image/bc_icon.png</file>
         <file>resources/image/bc_icon_raw.png</file>
         <file>resources/image/empty.svg</file>
@@ -19,7 +17,14 @@
         <file>resources/image/ic_fullscreen_exit.svg</file>
         <file>resources/image/ic_fullscreen.svg</file>
         <file>resources/image/ic_settings.svg</file>
-        <file>resources/image/ic_stream.svg</file>
+        <file>resources/image/ic_settings_normal.svg</file>
+        <file>resources/image/ic_settings_selected.svg</file>
+        <file>resources/image/ic_stream_selected.svg</file>
+        <file>resources/image/ic_stream_normal.svg</file>
+        <file>resources/image/ic_game_normal.svg</file>
+        <file>resources/image/ic_game_selected.svg</file>
+        <file>resources/image/ic_statistics_normal.svg</file>
+        <file>resources/image/ic_statistics_selected.svg</file>
         <file>resources/image/ic_minimize.svg</file>
         <file>resources/image/ic_volume_on.svg</file>
         <file>resources/image/ic_volume_off.svg</file>
@@ -30,7 +35,7 @@
         <file>resources/image/ic_open_notification.svg</file>
         <file>resources/image/ic_close_notification.svg</file>
         <file>resources/image/ic_mail.svg</file>
-        <file>resources/image/test_cover.jpg</file>
+        <file>resources/image/test_cover.png</file>
         <file>resources/image/tc_icon.png</file>
         <file>resources/image/tc_icon_raw.png</file>
         <file>resources/image/ic_transfer.svg</file>

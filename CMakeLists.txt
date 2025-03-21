@@ -48,6 +48,8 @@ include_directories(${CMAKE_BINARY_DIR}/deps/tc_3rdparty/qwindowkit/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)
+#include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/protobuf/src)
+#include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/abseil-cpp)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/sqlite_orm/include)
 #include_directories(${VCPKG_ROOT}/installed/x64-windows-static/include)
@@ -206,7 +208,7 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter GammaRayClient GammaRayClientInner tc_manager_client tc_relay_client)
+        uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client) #GammaRayClient
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()
@@ -218,7 +220,7 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
 )
 
 add_custom_target(tc_build_client ALL COMMENT "Build client")
-add_dependencies(tc_build_client GammaRayClient GammaRayClientInner)
+add_dependencies(tc_build_client GammaRayClientInner)#GammaRayClient
 
 if(TC_USE_VR_MANAGER)
     message("===> tc_vr_plugin_builder")

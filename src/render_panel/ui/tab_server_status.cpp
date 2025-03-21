@@ -63,11 +63,11 @@ namespace tc
                 auto title = new QLabel(this);
                 title->setText(tr("Server Status"));
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                 item_layout->addSpacing(margin_left + 9);
                 item_layout->addWidget(title);
                 item_layout->addStretch();
-                layout->addSpacing(18);
+                layout->addSpacing(10);
                 layout->addLayout(item_layout);
                 layout->addSpacing(8);
             }
@@ -262,7 +262,7 @@ namespace tc
                 nt_type->setFixedSize(80, 40);
                 nt_type->setText(et_info.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
                 nt_type->setStyleSheet("font-size: 14px;");
-                item_layout->addSpacing(18);
+                item_layout->addSpacing(10);
                 item_layout->addWidget(nt_type);
 
                 item_layout->addStretch();
@@ -406,7 +406,7 @@ namespace tc
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("Running Apps");
-                    label->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
+                    label->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                     running_layout->addWidget(label);
                 }
                 {
@@ -440,11 +440,11 @@ namespace tc
             auto title = new QLabel(this);
             title->setText(tr("Statistics"));
             title->setAlignment(Qt::AlignLeft);
-            title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
+            title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
             item_layout->addSpacing(40);
             item_layout->addWidget(title);
             item_layout->addStretch();
-            layout->addSpacing(18);
+            layout->addSpacing(10);
             layout->addLayout(item_layout);
             layout->addSpacing(8);
 

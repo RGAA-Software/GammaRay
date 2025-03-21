@@ -15,14 +15,13 @@
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "widget_helper.h"
-#include "message_dialog.h"
+#include "tc_qt_widget/sized_msg_box.h"
 #include "stream_item_widget.h"
 #include "client/ct_application.h"
 #include "client/ct_app_message.h"
 #include "create_stream_dialog.h"
 #include "stream_content.h"
 #include "client/ct_settings.h"
-#include "tc_qt_widget/sized_msg_box.h"
 #include "tc_common_new/base64.h"
 
 namespace tc
@@ -69,7 +68,7 @@ namespace tc
         stream_list_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         stream_list_->setResizeMode(QListWidget::Adjust);
         stream_list_->setContextMenuPolicy(Qt::CustomContextMenu);
-        stream_list_->setSpacing(20);
+        stream_list_->setSpacing(15);
         stream_list_->setStyleSheet(R"(
             QListWidget::item {
                 color: #000000;
@@ -218,8 +217,8 @@ namespace tc
     }
 
     void AppStreamList::DeleteStream(const StreamItem& item) {
-        auto alert = MessageDialog::Make(context_, tr("Do you want to *DELETE* the stream ?"));
-        if (alert->exec() == DialogButton::kCancel) {
+        auto alert = SizedMessageBox::MakeOkCancelBox(tr("WARNING"), tr("Do you want to *DELETE* the stream ?"));
+        if (alert->exec() == 1) {
             return;
         }
 
@@ -231,7 +230,7 @@ namespace tc
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
         auto item = new QListWidgetItem(stream_list_);
-        item->setSizeHint(QSize(300, 195));
+        item->setSizeHint(QSize(230, 150));
         auto widget = new StreamItemWidget(stream, stream.bg_color, stream_list_);
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
 

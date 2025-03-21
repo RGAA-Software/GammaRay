@@ -122,6 +122,7 @@ namespace tc
             // remote control
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_stream_selected.svg", ":/resources/image/ic_stream_normal.svg", 20, 20);
                 btn_tab_server_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Remote Control"));
@@ -137,6 +138,7 @@ namespace tc
             // server status
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_statistics_selected.svg", ":/resources/image/ic_statistics_normal.svg", 20, 20);
                 btn_tab_server_status_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Server Status"));
@@ -151,6 +153,7 @@ namespace tc
 
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_game_selected.svg", ":/resources/image/ic_game_normal.svg", 20, 20);
                 btn_tab_games_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Games"));
@@ -165,6 +168,7 @@ namespace tc
 
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_settings_selected.svg", ":/resources/image/ic_settings_normal.svg", 20, 20);
                 btn_tab_settings_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Settings"));

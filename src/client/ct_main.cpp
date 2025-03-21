@@ -55,14 +55,12 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
 
     // font
-#if 0
-    auto id = QFontDatabase::addApplicationFont(":/resources/font/quixotic-1.otf");
-    qDebug() << "font family : " << QFontDatabase::applicationFontFamilies(id) ;
-
-    QFont font;
-    font.setPointSize(10);
-    qApp->setFont(font);
-#endif
+    int id = QFontDatabase::addApplicationFont(":/resources/font/SourceHanSansCN-Regular.otf");
+    auto families = QFontDatabase::applicationFontFamilies(id);
+    for (auto& f : families) {
+        LOGI("font family : {}", f.toStdString());
+        break;
+    }
 
     PrepareDirs(app.applicationDirPath());
 

@@ -107,8 +107,8 @@ namespace tc
             title->setFixedWidth(250);
             title->setText(tr("Remote Devices"));
             title->setAlignment(Qt::AlignLeft);
-            title->setStyleSheet(R"(font-size: 25px; font-weight:700;)");
-            root_layout->addSpacing(18);
+            title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+            root_layout->addSpacing(10);
 
             auto layout = new QHBoxLayout();
             WidgetHelper::ClearMargin(layout);
