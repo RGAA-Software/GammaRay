@@ -510,7 +510,7 @@ namespace tc
         auto vh = video_widget_->GetCapturingMonitorHeight();
         // no frame, fill the window
         if (vw <= 0 || vh <= 0) {
-            video_widget_->setGeometry(0, 0, this->width(), this->height());
+            video_widget_->setGeometry(0, title_bar_height_, this->width(), this->height());
             return;
         }
 
