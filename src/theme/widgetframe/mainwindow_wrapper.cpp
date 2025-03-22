@@ -6,7 +6,8 @@
 #include "widgets/widgetwindowagent.h"
 #include "theme/widgetframe/windowbar.h"
 #include "theme/widgetframe/windowbutton.h"
-
+#include "titlebar_messages.h"
+#include "tc_common_new/message_notifier.h"
 #include <QTimer>
 
 namespace tc
@@ -48,7 +49,8 @@ namespace tc
         });
     }
 
-    MainWindowWrapper::MainWindowWrapper(QMainWindow* window) {
+    MainWindowWrapper::MainWindowWrapper(const std::shared_ptr<MessageNotifier>& notifier, QMainWindow* window) {
+        notifier_ = notifier;
         window_ = window;
     }
 
@@ -65,6 +67,18 @@ namespace tc
         auto iconButton = new QWK::WindowButton();
         iconButton->setObjectName(QStringLiteral("icon-button"));
         iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto btn_avatar = new QWK::WindowButton();
+        btn_avatar->setCheckable(true);
+        btn_avatar->setObjectName(QStringLiteral("avatar-button"));
+        btn_avatar->setProperty("system-button", true);
+        btn_avatar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        auto btn_settings = new QWK::WindowButton();
+        btn_settings->setCheckable(true);
+        btn_settings->setObjectName(QStringLiteral("settings-button"));
+        btn_settings->setProperty("system-button", true);
+        btn_settings->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
         auto pinButton = new QWK::WindowButton();
         pinButton->setCheckable(true);
@@ -92,6 +106,8 @@ namespace tc
         auto windowBar = new QWK::WindowBar();
 #ifndef Q_OS_MAC
         windowBar->setIconButton(iconButton);
+        windowBar->setAvatarButton(btn_avatar);
+        windowBar->setSettingsButton(btn_settings);
         windowBar->setPinButton(pinButton);
         windowBar->setMinButton(minButton);
         windowBar->setMaxButton(maxButton);
@@ -104,6 +120,8 @@ namespace tc
         windowAgent->setTitleBar(windowBar);
 #ifndef Q_OS_MAC
         windowAgent->setHitTestVisible(pinButton, true);
+        windowAgent->setHitTestVisible(btn_avatar, true);
+        windowAgent->setHitTestVisible(btn_settings, true);
         windowAgent->setSystemButton(QWK::WindowAgentBase::WindowIcon, iconButton);
         windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, minButton);
         windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, maxButton);
@@ -135,6 +153,15 @@ namespace tc
             emulateLeaveEvent(maxButton);
         });
         QObject::connect(windowBar, &QWK::WindowBar::closeRequested, window_, &QWidget::close);
+
+        QObject::connect(windowBar, &QWK::WindowBar::settingsRequested, window_, [=, this]() {
+            notifier_->SendAppMessage(MsgTitleBarSettingsClicked{});
+        });
+
+        QObject::connect(windowBar, &QWK::WindowBar::avatarRequested, window_, [=, this]() {
+            notifier_->SendAppMessage(MsgTitleBarAvatarClicked{});
+        });
+
 #endif
     }
 

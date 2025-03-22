@@ -33,6 +33,8 @@ namespace QWK {
         void setMenuBar(QMenuBar *menuBar);
         void setTitleLabel(QLabel *label);
         void setIconButton(QAbstractButton *btn);
+        void setAvatarButton(QAbstractButton *btn);
+        void setSettingsButton(QAbstractButton *btn);
         void setPinButton(QAbstractButton *btn);
         void setMinButton(QAbstractButton *btn);
         void setMaxButton(QAbstractButton *btn);
@@ -60,6 +62,8 @@ namespace QWK {
         void minimizeRequested();
         void maximizeRequested(bool max = false);
         void closeRequested();
+        void settingsRequested();
+        void avatarRequested();
 
     protected:
         bool eventFilter(QObject *obj, QEvent *event) override;

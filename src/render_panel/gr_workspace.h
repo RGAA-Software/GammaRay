@@ -28,11 +28,13 @@ namespace tc
         kTabServerStatus,
         kTabGames,
         kTabSettings,
+        kTabProfile,
     };
 
     class TabBase;
     class GrApplication;
     class GrSettings;
+    class MessageListener;
 
     class GrWorkspace : public QMainWindow {
     public:
@@ -42,6 +44,7 @@ namespace tc
 
     private:
         void ChangeTab(const TabName& tn);
+        void InitListeners();
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;
@@ -51,9 +54,11 @@ namespace tc
         QPushButton* btn_tab_server_status_ = nullptr;
         QPushButton* btn_tab_games_ = nullptr;
         QPushButton* btn_tab_settings_ = nullptr;
+        QPushButton* btn_tab_profile_ = nullptr;
         QStackedWidget* stacked_widget_ = nullptr;
         MainWindowPrivate* theme_ = nullptr;
         QSystemTrayIcon* sys_tray_icon_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

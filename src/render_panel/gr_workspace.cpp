@@ -17,6 +17,7 @@
 #include "render_panel/ui/tab_game.h"
 #include "render_panel/ui/tab_server.h"
 #include "render_panel/ui/tab_settings.h"
+#include "render_panel/ui/tab_profile.h"
 #include "gr_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "gr_context.h"
@@ -25,6 +26,7 @@
 #include "app_colors.h"
 #include "render_panel/ui/tab_server_status.h"
 #include "theme/widgetframe/mainwindow_wrapper.h"
+#include "theme/widgetframe/titlebar_messages.h"
 
 namespace tc
 {
@@ -32,8 +34,6 @@ namespace tc
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
-
-        (new MainWindowWrapper(this))->Setup(tr("GammaRay"));
 
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);
@@ -83,6 +83,10 @@ namespace tc
 
         app_ = std::make_shared<GrApplication>();
         app_->Init();
+
+        // window
+        auto notifier = app_->GetMessageNotifier();
+        (new MainWindowWrapper(notifier, this))->Setup(tr("GammaRay"));
 
         // background
         setStyleSheet(R"(QMainWindow {background-color:#FFFFFF;})");
@@ -168,7 +172,7 @@ namespace tc
 
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
-                btn->AddIcon(":/resources/image/ic_settings_selected.svg", ":/resources/image/ic_settings_normal.svg", 20, 20);
+                btn->AddIcon(":/resources/image/ic_settings_outline_selected.svg", ":/resources/image/ic_settings_outline_normal.svg", 20, 20);
                 btn_tab_settings_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
                 btn->SetText(tr("Settings"));
@@ -176,6 +180,21 @@ namespace tc
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabSettings);
+                });
+                layout->addSpacing(10);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
+            {
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_avatar_selected.svg", ":/resources/image/ic_avatar_normal.svg", 20, 20);
+                btn_tab_profile_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetText(tr("Profile"));
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabProfile);
                 });
                 layout->addSpacing(10);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
@@ -215,11 +234,13 @@ namespace tc
             tabs_.insert({TabName::kTabServerStatus, new TabServerStatus(app_, this)});
             tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
+            tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
             tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
+            tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
 
             auto layout = new QVBoxLayout();
             LayoutHelper::ClearMargins(root_layout);
@@ -228,6 +249,7 @@ namespace tc
             stack_widget->addWidget(tabs_[TabName::kTabServerStatus]);
             stack_widget->addWidget(tabs_[TabName::kTabGames]);
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
+            stack_widget->addWidget(tabs_[TabName::kTabProfile]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);
             root_layout->addLayout(layout);
@@ -252,6 +274,8 @@ namespace tc
 
         // last works
         app_->RequestNewClientId(false);
+
+        InitListeners();
     }
 
     void GrWorkspace::ChangeTab(const TabName& tn) {
@@ -279,6 +303,21 @@ namespace tc
 
     void GrWorkspace::resizeEvent(QResizeEvent *event) {
         QMainWindow::resizeEvent(event);
+    }
+
+    void GrWorkspace::InitListeners() {
+        msg_listener_ = app_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgTitleBarSettingsClicked>([=, this](const MsgTitleBarSettingsClicked& msg) {
+            app_->GetContext()->PostUITask([=, this]() {
+                ChangeTab(TabName::kTabSettings);
+            });
+        });
+
+        msg_listener_->Listen<MsgTitleBarAvatarClicked>([=, this](const MsgTitleBarAvatarClicked& msg) {
+            app_->GetContext()->PostUITask([=, this]() {
+
+            });
+        });
     }
 
 }

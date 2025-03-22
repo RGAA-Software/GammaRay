@@ -1254,11 +1254,33 @@ QWK--WindowBar>QAbstractButton[system-button=true] {
 QWK--WindowBar>QAbstractButton#pin-button {
     qproperty-iconNormal: url(":/resources/window-bar/pin.svg");
     qproperty-iconChecked: url(":/resources/window-bar/pin-fill.svg");
-    qproperty-iconSize: 15px 15px;
+    qproperty-iconSize: 17px 17px;
 }
 
 QWK--WindowBar>QAbstractButton#pin-button:hover,
 QWK--WindowBar>QAbstractButton#pin-button:pressed {
+    background-color: rgba(0, 0, 0, 15%);
+}
+
+/**settings*/
+QWK--WindowBar>QAbstractButton#settings-button {
+    qproperty-iconNormal: url(":/resources/image/ic_settings_normal.svg");
+    qproperty-iconSize: 17px 17px;
+}
+
+QWK--WindowBar>QAbstractButton#settings-button:hover,
+QWK--WindowBar>QAbstractButton#settings-button:pressed {
+    background-color: rgba(0, 0, 0, 15%);
+}
+
+/**avatar*/
+QWK--WindowBar>QAbstractButton#avatar-button {
+    qproperty-iconNormal: url(":/resources/image/ic_icon_normal.svg");
+    qproperty-iconSize: 17px 17px;
+}
+
+QWK--WindowBar>QAbstractButton#avatar-button:hover,
+QWK--WindowBar>QAbstractButton#avatar-button:pressed {
     background-color: rgba(0, 0, 0, 15%);
 }
 

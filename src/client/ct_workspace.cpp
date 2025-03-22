@@ -46,7 +46,8 @@ namespace tc
         this->settings_ = Settings::Instance();
 
         auto title_name = QMainWindow::tr("GammaRay Streamer") + "[" + settings_->stream_name_.c_str() + "]";
-        (new MainWindowWrapper(this))->Setup(title_name);
+        auto notifier = this->context_->GetMessageNotifier();
+        (new MainWindowWrapper(notifier, this))->Setup(title_name);
 
         setAcceptDrops(true);
         QString app_dir = qApp->applicationDirPath();
