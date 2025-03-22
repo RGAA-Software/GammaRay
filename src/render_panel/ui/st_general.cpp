@@ -14,6 +14,7 @@
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/ip_util.h"
+#include "tc_qt_widget/tc_label.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -47,6 +48,62 @@ namespace tc
         auto tips_label_height = 35;
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
         auto input_size = QSize(240, tips_label_height);
+
+        {
+            auto segment_layout = new NoMarginVLayout();
+            {
+                // title
+                auto label = new TcLabel(this);
+                label->SetTextId("id_appearance");
+                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+                segment_layout->addSpacing(20);
+                segment_layout->addWidget(label);
+            }
+            // language
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_language");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QComboBox(this);
+                edit->addItem(QStringLiteral("English"));
+                edit->addItem(QStringLiteral("简体中文"));
+                edit->addItem(QStringLiteral("繁体中文"));
+
+                auto kind = tcTrMgr()->GetSelectedLanguage();
+                if (kind == LanguageKind::kSimpleCN) {
+                    edit->setCurrentIndex(1);
+                }
+                else if (kind == LanguageKind::kTraditionalCN) {
+                    edit->setCurrentIndex(2);
+                }
+
+                cb_language_ = edit;
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=](int index) {
+                    if (index == 0) {
+                        tcTrMgr()->LoadLanguage(LanguageKind::kEnglish);
+                    }
+                    else if (index == 1) {
+                        tcTrMgr()->LoadLanguage(LanguageKind::kSimpleCN);
+                    }
+                    else if (index == 2) {
+                        tcTrMgr()->LoadLanguage(LanguageKind::kTraditionalCN);
+                    }
+                    tcTrMgr()->Translate();
+                });
+            }
+
+            column1_layout->addLayout(segment_layout);
+        }
 
         {
             auto segment_layout = new NoMarginVLayout();

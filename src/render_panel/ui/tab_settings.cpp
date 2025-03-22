@@ -29,7 +29,7 @@ namespace tc
             auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
             btn_input_ = btn;
             btn->SetBorderRadius(border_radius);
-            btn->SetText(tr("General"));
+            btn->SetTextId("id_settings_general");
 
             btn->SetSelectedFontColor(btn_font_color);
             btn->setFixedSize(btn_size);
@@ -45,7 +45,7 @@ namespace tc
             auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
             btn_client_ = btn;
             btn->SetBorderRadius(border_radius);
-            btn->SetText(tr("Network"));
+            btn->SetTextId("id_settings_network");
 
             btn->SetSelectedFontColor(btn_font_color);
             btn->setFixedSize(btn_size);
@@ -61,7 +61,7 @@ namespace tc
             auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
             btn_about_me_ = btn;
             btn->SetBorderRadius(border_radius);
-            btn->SetText(tr("AboutMe"));
+            btn->SetTextId("id_settings_aboutme");
 
             btn->SetSelectedFontColor(btn_font_color);
             btn->setFixedSize(btn_size);

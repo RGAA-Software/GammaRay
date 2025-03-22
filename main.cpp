@@ -12,6 +12,9 @@
 #include "render_panel/gr_running_pipe.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
+#include "tc_qt_widget/translator/tc_translator.h"
+#include "tc_qt_widget/tc_font_manager.h"
+#include "tc_common_new/shared_preference.h"
 
 using namespace tc;
 
@@ -38,9 +41,6 @@ bool PrepareDirs(const QString& base_path) {
 std::shared_ptr<GrWorkspace> g_workspace = nullptr;
 
 int main(int argc, char *argv[]) {
-//    AllocConsole();
-//    freopen("CONOUT$", "w", stdout);
-
     QApplication app(argc, argv);
 
     auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());
@@ -62,15 +62,15 @@ int main(int argc, char *argv[]) {
     mon_detector->DetectAdapters();
     mon_detector->PrintAdapters();
 
-    int id = QFontDatabase::addApplicationFont(":/src/client/resources/font/SourceHanSansCN-Regular.otf");
-    auto families = QFontDatabase::applicationFontFamilies(id);
-    for (auto& f : families) {
-        LOGI("font family : {}", f.toStdString());
-        GrSettings::Instance()->def_font_name_ = f.toStdString();
-        break;
-    }
-
+    tcFontMgr()->InitFont(":/src/client/resources/font/ms_yahei.ttf");
     PrepareDirs(base_dir);
+
+    // init sp
+    auto sp_dir = qApp->applicationDirPath() + "/gr_data";
+    SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
+
+    // init language
+    tcTrMgr()->InitLanguage();
 
     g_workspace = std::make_shared<GrWorkspace>();
     g_workspace->setFixedSize(1450, 800);

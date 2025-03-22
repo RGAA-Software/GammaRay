@@ -38,6 +38,9 @@
 #include "client/ct_client_context.h"
 #include "client/ui/stream_content.h"
 #include "tc_qt_widget/tc_qr_widget.h"
+#include "tc_qt_widget/tc_font_manager.h"
+#include "tc_qt_widget/tc_label.h"
+#include "tc_qt_widget/tc_pushbutton.h"
 
 namespace tc
 {
@@ -68,9 +71,9 @@ namespace tc
 
             // This Device
             {
-                auto title = new QLabel(this);
+                auto title = new TcLabel(this);
                 title->setFixedWidth(item_width);
-                title->setText(tr("This Device"));
+                title->SetTextId("id_this_device");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                 left_root->addSpacing(10);
@@ -91,9 +94,9 @@ namespace tc
 
                 // Machine Code //
                 {
-                    auto title = new QLabel(this);
+                    auto title = new TcLabel(this);
                     title->setFixedWidth(item_width);
-                    title->setText(tr("Machine Code"));
+                    title->SetTextId("id_device_id");
                     title->setAlignment(Qt::AlignLeft);
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
                     //layout->addSpacing(2);
@@ -114,9 +117,9 @@ namespace tc
                 {
                     layout->addSpacing(18);
 
-                    auto title = new QLabel(this);
+                    auto title = new TcLabel(this);
                     title->setFixedWidth(230);
-                    title->setText(tr("Temporary Password"));
+                    title->SetTextId("id_temporary_password");
                     title->setAlignment(Qt::AlignLeft);
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
                     //layout->addSpacing(2);
@@ -156,9 +159,9 @@ namespace tc
 
             // Remote Device
             {
-                auto title = new QLabel(this);
+                auto title = new TcLabel(this);
                 title->setFixedWidth(item_width);
-                title->setText(tr("Remote Device"));
+                title->SetTextId("id_remote_device");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                 left_root->addSpacing(50);
@@ -174,9 +177,9 @@ namespace tc
 
                 // Machine Code //
                 {
-                    auto title = new QLabel(this);
+                    auto title = new TcLabel(this);
                     title->setFixedWidth(item_width);
-                    title->setText(tr("Remote Machine Code"));
+                    title->SetTextId("id_remote_device_id");
                     title->setAlignment(Qt::AlignLeft);
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
                     layout->addWidget(title, 0, Qt::AlignLeft);
@@ -194,9 +197,9 @@ namespace tc
                 {
                     layout->addSpacing(18);
 
-                    auto title = new QLabel(this);
+                    auto title = new TcLabel(this);
                     title->setFixedWidth(item_width);
-                    title->setText(tr("Remote Machine Password"));
+                    title->SetTextId("id_remote_device_password");
                     title->setAlignment(Qt::AlignLeft);
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
                     layout->addWidget(title, 0, Qt::AlignLeft);
@@ -214,10 +217,10 @@ namespace tc
 
                 // connect
                 {
-                    auto btn_conn = new QPushButton();
+                    auto btn_conn = new TcPushButton();
                     btn_conn->setFixedWidth(item_width);
-                    btn_conn->setFixedHeight(40);
-                    btn_conn->setText(tr("Connect"));
+                    btn_conn->setFixedHeight(35);
+                    btn_conn->SetTextId("id_connect");
                     left_root->addSpacing(30);
                     left_root->addWidget(btn_conn);
                 }

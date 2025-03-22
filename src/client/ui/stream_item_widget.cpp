@@ -10,6 +10,8 @@
 #include "app_color_theme.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_qt_widget/tc_image_button.h"
+#include "tc_qt_widget/tc_font_manager.h"
+#include "tc_qt_widget/tc_pushbutton.h"
 
 namespace tc
 {
@@ -29,7 +31,7 @@ namespace tc
         }
 
         // connect button
-        auto btn_conn = new QPushButton(this);
+        auto btn_conn = new TcPushButton(this);
         btn_conn->setStyleSheet(R"(
             QPushButton {
                 background-color:#2979ff;
@@ -44,7 +46,7 @@ namespace tc
         )");
         btn_conn_ = btn_conn;
         btn_conn->setFixedSize(70, 25);
-        btn_conn->setText(tr("Connect"));
+        btn_conn->SetTextId("id_connect");
 
         auto btn_option = new TcImageButton(":/resources/image/ic_vert_dots.svg", QSize(22, 22), this);
         btn_option->SetColor(0, 0xf6f6f6, 0xeeeeee);
@@ -91,8 +93,9 @@ namespace tc
 
         int border_width = 2;
         {
-            QFont font("Source Han Sans CN");
+            QFont font(tcFontMgr()->font_name_);
             font.setBold(true);
+            font.setStyleStrategy(QFont::PreferAntialias);
             font.setPointSize(13);
             painter.setFont(font);
             painter.setPen(QPen(QColor(0x555555)));

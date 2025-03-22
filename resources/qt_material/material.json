@@ -5,7 +5,7 @@
     "default_theme" : "dark_teal",
 
     "variables" : {
-        "font_family" : "Roboto",
+        "font_family" : "Microsoft YaHei",
         "font_size" : "12px",
         "line_height" : "12px",
         "danger" :  "#dc3545",

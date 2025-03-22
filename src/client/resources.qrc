@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/tc_icon.png</file>
+        <file>resources/font/ms_yahei.ttf</file>
         <file>resources/image/bc_icon_raw.png</file>
         <file>resources/image/empty.svg</file>
         <file>resources/image/windows.svg</file>

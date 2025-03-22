@@ -44,8 +44,6 @@ namespace tc
         msg_notifier_ = std::make_shared<MessageNotifier>();
 
         auto begin_ctx_init_ts = TimeExt::GetCurrentTimestamp();
-        auto sp_dir = qApp->applicationDirPath() + "/gr_data";
-        SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
         settings_ = GrSettings::Instance();
         settings_->Init(msg_notifier_);
         settings_->Load();

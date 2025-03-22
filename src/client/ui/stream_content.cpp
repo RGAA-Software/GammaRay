@@ -10,6 +10,7 @@
 #include "app_stream_list.h"
 #include "widget_helper.h"
 #include "create_stream_dialog.h"
+#include "tc_qt_widget/tc_label.h"
 
 #include <QPainter>
 #include <QPen>
@@ -103,16 +104,16 @@ namespace tc
         WidgetHelper::ClearMargin(root_layout);
 
         {
-            auto title = new QLabel(this);
+            auto title = new TcLabel(this);
             title->setFixedWidth(250);
-            title->setText(tr("Remote Devices"));
+            title->SetTextId("id_remote_devices");
             title->setAlignment(Qt::AlignLeft);
             title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
             root_layout->addSpacing(10);
 
             auto layout = new QHBoxLayout();
             WidgetHelper::ClearMargin(layout);
-            layout->addSpacing(25);
+            layout->addSpacing(30);
             layout->addWidget(title);
             layout->addStretch();
 

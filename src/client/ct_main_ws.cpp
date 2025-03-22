@@ -22,6 +22,7 @@
 #include <windows.h>
 #include <QDir>
 #include "tc_qt_widget/sized_msg_box.h"
+#include "tc_qt_widget/tc_font_manager.h"
 
 using namespace tc;
 
@@ -194,6 +195,8 @@ int main(int argc, char** argv) {
     font.setPointSize(10);
     qApp->setFont(font);
 #endif
+
+    tcFontMgr()->InitFont(":/resources/font/ms_yahei.ttf");
 
     PrepareDirs(app.applicationDirPath());
 

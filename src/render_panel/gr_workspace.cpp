@@ -129,7 +129,7 @@ namespace tc
                 btn->AddIcon(":/resources/image/ic_stream_selected.svg", ":/resources/image/ic_stream_normal.svg", 20, 20);
                 btn_tab_server_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("Remote Control"));
+                btn->SetTextId("id_tab_remote_control");
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
@@ -145,7 +145,7 @@ namespace tc
                 btn->AddIcon(":/resources/image/ic_statistics_selected.svg", ":/resources/image/ic_statistics_normal.svg", 20, 20);
                 btn_tab_server_status_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("Server Status"));
+                btn->SetTextId("id_tab_server_status");
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
@@ -160,7 +160,7 @@ namespace tc
                 btn->AddIcon(":/resources/image/ic_game_selected.svg", ":/resources/image/ic_game_normal.svg", 20, 20);
                 btn_tab_games_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("Games"));
+                btn->SetTextId("id_tab_games");
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
@@ -175,7 +175,7 @@ namespace tc
                 btn->AddIcon(":/resources/image/ic_settings_outline_selected.svg", ":/resources/image/ic_settings_outline_normal.svg", 20, 20);
                 btn_tab_settings_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("Settings"));
+                btn->SetTextId("id_settings");
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
@@ -190,7 +190,7 @@ namespace tc
                 btn->AddIcon(":/resources/image/ic_avatar_selected.svg", ":/resources/image/ic_avatar_normal.svg", 20, 20);
                 btn_tab_profile_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetText(tr("Profile"));
+                btn->SetTextId("id_tab_profile");
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {

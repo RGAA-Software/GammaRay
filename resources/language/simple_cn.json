@@ -1,0 +1,26 @@
+{
+  "app_name": "GammaRay",
+  "id_settings": "设置",
+  "id_refresh": "刷新",
+
+  "id_appearance": "外观",
+  "id_language": "语言",
+
+  "id_settings_general": "通用",
+  "id_settings_network": "网络",
+  "id_settings_aboutme": "关于",
+
+  "id_tab_remote_control": "远程控制",
+  "id_tab_server_status": "服务状态",
+  "id_tab_games": "游戏",
+  "id_tab_profile": "用户",
+
+  "id_this_device": "此设备",
+  "id_remote_devices": "设备列表",
+  "id_device_id": "设备ID",
+  "id_temporary_password": "临时密码",
+  "id_remote_device": "远程设备",
+  "id_remote_device_id": "远程设备ID",
+  "id_remote_device_password": "远程设备密码",
+  "id_connect": "连接"
+}

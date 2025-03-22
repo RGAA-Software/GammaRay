@@ -22,6 +22,7 @@ namespace tc
         void OnTabHide() override;
     private:
         QLineEdit* et_bitrate_;
+        QComboBox* cb_language_;
         QLineEdit* et_res_width_;
         QLineEdit* et_res_height_;
         QCheckBox* cb_resize_res_;

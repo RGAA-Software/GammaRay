@@ -183,8 +183,6 @@ namespace tc
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
-
-        std::string def_font_name_;
     };
 
 }

@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/tc_icon.png</file>
-        <file>src/client/resources/font/SourceHanSansCN-Regular.otf</file>
+        <file>src/client/resources/font/ms_yahei.ttf</file>
         <file>resources/image/bc_icon.png</file>
         <file>resources/image/bc_icon_raw.png</file>
         <file>resources/image/empty.svg</file>
