@@ -32,6 +32,8 @@ namespace tc
 
         // connect button
         auto btn_conn = new TcPushButton(this);
+        btn_conn_ = btn_conn;
+        // 在ListView中，单独设置一下
         btn_conn->setStyleSheet(R"(
             QPushButton {
                 background-color:#2979ff;
@@ -44,9 +46,8 @@ namespace tc
                 background-color:#1549dd;
             }
         )");
-        btn_conn_ = btn_conn;
-        btn_conn->setFixedSize(70, 25);
-        btn_conn->SetTextId("id_connect");
+        btn_conn_->setFixedSize(70, 25);
+        btn_conn_->SetTextId("id_connect");
 
         auto btn_option = new TcImageButton(":/resources/image/ic_vert_dots.svg", QSize(22, 22), this);
         btn_option->SetColor(0, 0xf6f6f6, 0xeeeeee);

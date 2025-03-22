@@ -22,5 +22,18 @@
   "id_remote_device": "远程设备",
   "id_remote_device_id": "远程设备ID",
   "id_remote_device_password": "远程设备密码",
-  "id_connect": "连接"
+  "id_connect": "连接",
+  "id_encoder_settings": "编码设置",
+  "id_bitrate": "比特率(Mbps)",
+  "id_format": "格式",
+  "id_resize_resolution": "分辨率缩放",
+  "id_resize_width": "缩放宽度",
+  "id_resize_height": "缩放高度",
+  "id_capture_settings": "采集设置",
+  "id_capture_video": "采集视频",
+  "id_capture_audio": "采集音频",
+  "id_capture_audio_device": "采集音频设备",
+
+  "id_cancel": "取消",
+  "id_ok": "确定"
 }

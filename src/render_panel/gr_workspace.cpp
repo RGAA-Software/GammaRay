@@ -207,7 +207,7 @@ namespace tc
                 auto btn = new QPushButton(this);
                 btn->setText(tr("Exit All Programs"));
                 btn->setProperty("class", "danger");
-                btn->setProperty("flat", true);
+                //btn->setProperty("flat", true);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     fun_stop_all();

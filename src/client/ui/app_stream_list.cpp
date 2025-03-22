@@ -10,8 +10,8 @@
 #include <QWidget>
 #include <QProcess>
 
-#include "db/stream_item.h"
-#include "db/stream_db_manager.h"
+#include "client/db/stream_item.h"
+#include "client/db/stream_db_manager.h"
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "widget_helper.h"

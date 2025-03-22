@@ -20,7 +20,7 @@
 #include <map>
 #include <QProcess>
 
-#include "db/stream_item.h"
+#include "client/db/stream_item.h"
 #include "round_rect_widget.h"
 
 namespace tc

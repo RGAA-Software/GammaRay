@@ -21,5 +21,18 @@
   "id_remote_device": "Remote Device",
   "id_remote_device_id": "Remote Device ID",
   "id_remote_device_password": "Remote Device Password",
-  "id_connect": "Connect"
+  "id_connect": "Connect",
+  "id_encoder_settings": "Encoder Settings",
+  "id_bitrate": "Bitrate(Mbps)",
+  "id_format": "Format",
+  "id_resize_resolution": "Resize Resolution",
+  "id_resize_width": "Resize Width",
+  "id_resize_height": "Resize Height",
+  "id_capture_settings": "Capture Settings",
+  "id_capture_video": "Capture Video",
+  "id_capture_audio": "Capture Audio",
+  "id_capture_audio_device": "Capture Audio Device",
+
+  "id_cancel": "Cancel",
+  "id_ok": "Ok"
 }

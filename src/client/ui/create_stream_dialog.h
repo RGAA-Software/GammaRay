@@ -16,7 +16,7 @@
 #include <QComboBox>
 #include <QPainter>
 
-#include "db/stream_item.h"
+#include "client/db/stream_item.h"
 
 namespace tc
 {

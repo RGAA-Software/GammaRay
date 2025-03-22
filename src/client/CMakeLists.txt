@@ -26,29 +26,32 @@ add_compile_options(/bigobj)
 
 set(SRCS_MAIN ct_main.cpp)
 
-set(SRCS
-        ct_client_context.cpp
-        icon.rc ${RES}
-        ui/switch_button.cpp
-        ui/float_button.cpp
-        ui/round_rect_widget.cpp
-        ui/app_menu.cpp
-        ui/app_stream_list.cpp
-        ui/create_stream_dialog.cpp
-        ui/app_color_theme.cpp
-        ui/app_content.cpp
-        ui/stream_item_widget.cpp
-        ui/stream_content.cpp
-        ui/settings_content.cpp
-        ui/about_content.cpp
-        ui/background_widget.cpp
-        ui/base_widget.cpp
-        ui/multi_display_mode_widget.cpp
-        db/stream_db_manager.cpp
-        db/stream_item.cpp
-        ct_application.cpp
-        ct_settings.cpp
-        ../theme/QtAdvancedStylesheet.cpp
+set(CLIENT_SRCS
+        ${CMAKE_CURRENT_SOURCE_DIR}/ct_client_context.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
+        #${RES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/switch_button.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/float_button.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/round_rect_widget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_menu.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_stream_list.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/create_stream_dialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_color_theme.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_content.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/stream_item_widget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/stream_content.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/settings_content.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/about_content.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/background_widget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/base_widget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/multi_display_mode_widget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/stream_db_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/stream_item.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ct_application.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ct_settings.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../theme/QtAdvancedStylesheet.cpp
+
+        PARENT_SCOPE
 )
 
 set(SRCS_WS
@@ -110,10 +113,10 @@ else()
     message(STATUS "file transmission is disabled.")
 endif()
 
-add_library(lib_${PROJECT_NAME} ${SRCS})
-target_link_libraries(lib_${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
-        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
-)
+#add_library(lib_${PROJECT_NAME} ${SRCS})
+#target_link_libraries(lib_${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+#        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
+#)
 
 #qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS_MAIN}) #${SRCS}
 qt_add_executable(GammaRayClientInner MANUAL_FINALIZATION ${SRCS_WS}) #WIN32

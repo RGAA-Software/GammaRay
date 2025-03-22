@@ -149,6 +149,7 @@ add_executable(${PROJECT_NAME} WIN32
         icon.rc
         ${TS_FILES}
         ${SERVICE_MGR_SRCS}
+        ${CLIENT_SRCS}
 )
 
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
@@ -160,7 +161,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${CMAKE_
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}www)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
-        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib lib_GammaRayClient tc_signaling_sdk
+        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib tc_signaling_sdk #lib_GammaRayClient
         tc_relay_client tc_manager_client QWindowKit::Widgets TC_WidgetFrame tc_translator)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
@@ -215,7 +216,7 @@ endif ()
 #
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder  plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
-        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer lib_GammaRayClient tc_signaling_sdk
+        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer tc_signaling_sdk #lib_GammaRayClient
         plugin_mock_video_stream plugin_obj_detector plugin_net_relay QWindowKit::Widgets TC_WidgetFrame tc_translator
 )
 

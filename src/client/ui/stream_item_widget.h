@@ -13,10 +13,12 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QLabel>
-#include "db/stream_item.h"
+#include "client/db/stream_item.h"
 
 namespace tc
 {
+
+    class TcPushButton;
 
     class StreamItemWidget : public QWidget {
     public:
@@ -37,7 +39,7 @@ namespace tc
         bool enter_ = false;
         QBitmap mask_;
         int radius_ = 10;
-        QPushButton* btn_conn_ = nullptr;
+        TcPushButton* btn_conn_ = nullptr;
         QWidget* btn_option_ = nullptr;
     };
 

@@ -77,8 +77,8 @@ QTextEdit,
 QLineEdit,
 QPushButton {
   color: {{primaryColor}};
-  background-color: {{secondaryDarkColor}};
-  border: 2px solid {{primaryColor}};
+  background-color: {{primaryColor}};
+  border: 0px solid {{primaryColor}};
   border-radius: 4px;
   height: 18px;
 }
@@ -234,16 +234,20 @@ QSpinBox::down-button:disabled {
 /* text-transform: uppercase; */
 
 QPushButton {
+  color: #ffffff;
   margin: 0px;
   padding: 0px 0px;
   height: 34px;
   font-weight: bold;
 }
 
+QPushButton:hover {
+  background-color: #2059ee;
+}
+
 QPushButton:checked,
 QPushButton:pressed {
-  color: {{secondaryDarkColor}};
-  background-color: {{primaryColor}};
+  background-color: #1549dd;
 }
 
 QPushButton:flat {
@@ -1029,13 +1033,18 @@ QTreeView QHeaderView::section {
 
 QPushButton.danger {
   border-color: {{danger}};
-  color: {{danger}};
+  color: #ffffff;
+  background-color: {{danger}};
+}
+
+QPushButton.danger:hover {
+	background-color: #cb2535;
 }
 
 QPushButton.danger:checked,
 QPushButton.danger:pressed {
   color: {{secondaryDarkColor}};
-  background-color: {{danger}};
+  background-color: #ba2025;
 }
 
 QPushButton.warning{

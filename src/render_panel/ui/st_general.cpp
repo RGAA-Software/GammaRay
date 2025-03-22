@@ -109,8 +109,8 @@ namespace tc
             auto segment_layout = new NoMarginVLayout();
             {
                 // title
-                auto label = new QLabel(this);
-                label->setText(tr("Encoder Settings"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_encoder_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
@@ -118,8 +118,8 @@ namespace tc
             // Bitrate
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Bitrate(Mbps)"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_bitrate");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -137,8 +137,8 @@ namespace tc
             // Format
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Format"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_format");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -171,8 +171,8 @@ namespace tc
             };
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Resize Resolution"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_resize_resolution");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -193,8 +193,8 @@ namespace tc
             }
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Resize Width"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_resize_width");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -211,8 +211,8 @@ namespace tc
             }
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Resize Height"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_resize_height");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -236,8 +236,8 @@ namespace tc
             auto segment_layout = new NoMarginVLayout();
             {
                 // title
-                auto label = new QLabel(this);
-                label->setText(tr("Capture Settings"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_capture_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
@@ -245,8 +245,8 @@ namespace tc
             // capture video
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Capture Video"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_capture_video");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -313,8 +313,8 @@ namespace tc
             // capture audio
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Capture Audio"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_capture_audio");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -336,8 +336,8 @@ namespace tc
             // Capture Audio
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Capture Audio Device"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_capture_audio_device");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
