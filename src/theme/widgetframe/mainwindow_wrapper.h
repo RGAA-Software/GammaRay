@@ -10,13 +10,16 @@
 namespace tc
 {
 
+    class MessageNotifier;
+
     class MainWindowWrapper {
     public:
-        explicit MainWindowWrapper(QMainWindow* window);
+        explicit MainWindowWrapper(const std::shared_ptr<MessageNotifier>& notifier, QMainWindow* window);
         void Setup(const QString& title);
 
     private:
         QMainWindow* window_ = nullptr;
+        std::shared_ptr<MessageNotifier> notifier_ = nullptr;
     };
 
 }

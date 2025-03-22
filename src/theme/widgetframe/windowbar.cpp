@@ -136,6 +136,28 @@ namespace QWK {
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     }
 
+    void WindowBar::setAvatarButton(QAbstractButton *btn) {
+        Q_D(WindowBar);
+        auto org = takePinButton();
+        if (org)
+            org->deleteLater();
+        if (!btn)
+            return;
+        d->setWidgetAt(WindowBarPrivate::AvatarButton, btn);
+        connect(btn, &QAbstractButton::clicked, this, &WindowBar::avatarRequested);
+    }
+
+    void WindowBar::setSettingsButton(QAbstractButton *btn) {
+        Q_D(WindowBar);
+        auto org = takePinButton();
+        if (org)
+            org->deleteLater();
+        if (!btn)
+            return;
+        d->setWidgetAt(WindowBarPrivate::SettingsButton, btn);
+        connect(btn, &QAbstractButton::clicked, this, &WindowBar::settingsRequested);
+    }
+
     void WindowBar::setPinButton(QAbstractButton *btn) {
         Q_D(WindowBar);
         auto org = takePinButton();

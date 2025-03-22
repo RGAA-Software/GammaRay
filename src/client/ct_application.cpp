@@ -34,7 +34,8 @@ namespace tc
         context_ = ctx;
         settings_ = Settings::Instance();
         resize(1515, 768);
-        (new MainWindowWrapper(this))->Setup(tr("GammaRay Client"));
+        auto notifier = this->context_->GetMessageNotifier();
+        (new MainWindowWrapper(notifier, this))->Setup(tr("GammaRay Client"));
 
         theme_ = new MainWindowPrivate(this);
         QString app_dir = qApp->applicationDirPath();
