@@ -41,6 +41,7 @@ bool PrepareDirs(const QString& base_path) {
 std::shared_ptr<GrWorkspace> g_workspace = nullptr;
 
 int main(int argc, char *argv[]) {
+    QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
     QApplication app(argc, argv);
 
     auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());

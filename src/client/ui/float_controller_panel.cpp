@@ -356,16 +356,16 @@ namespace tc
             root_layout->addWidget(widget);
 
             widget->SetOnClickListener([=, this](QWidget* w) {
-//                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"));
-//                if (msg_box->exec() == 0) {
-//                    context_->SendAppMessage(ExitAppMessage {});
-//                }
-
-                auto dlg = TcDialog::Make(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
-                dlg->SetOnDialogSureClicked([=, this]() {
+                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"));
+                if (msg_box->exec() == 0) {
                     context_->SendAppMessage(ExitAppMessage {});
-                });
-                dlg->show();
+                }
+
+//                auto dlg = TcDialog::Make(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
+//                dlg->SetOnDialogSureClicked([=, this]() {
+//                    context_->SendAppMessage(ExitAppMessage {});
+//                });
+//                dlg->show();
             });
         }
         root_layout->addStretch();

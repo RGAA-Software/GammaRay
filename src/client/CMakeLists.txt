@@ -119,7 +119,7 @@ endif()
 #)
 
 #qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS_MAIN}) #${SRCS}
-qt_add_executable(GammaRayClientInner MANUAL_FINALIZATION ${SRCS_WS}) #WIN32
+add_executable(GammaRayClientInner ${SRCS_WS}) #WIN32 MANUAL_FINALIZATION
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 if (APPLE)
@@ -157,7 +157,7 @@ endif()
 
 if(QT_VERSION_MAJOR EQUAL 6)
 #    qt_finalize_executable(${PROJECT_NAME})
-    qt_finalize_executable(${PROJECT_NAME}Inner)
+#    qt_finalize_executable(${PROJECT_NAME}Inner)
 endif()
 
 if (WIN32)

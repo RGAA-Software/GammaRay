@@ -23,6 +23,7 @@
 #include <QDir>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/tc_font_manager.h"
+#include "translator/tc_translator.h"
 
 using namespace tc;
 
@@ -183,22 +184,16 @@ int main(int argc, char** argv) {
     QSurfaceFormat::setDefaultFormat(fmt);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
-
+    QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
     QApplication app(argc, argv);
     ParseCommandLine(app);
-    // font
-#if 0
-    auto id = QFontDatabase::addApplicationFont(":/resources/font/quixotic-1.otf");
-    qDebug() << "font family : " << QFontDatabase::applicationFontFamilies(id) ;
-
-    QFont font;
-    font.setPointSize(10);
-    qApp->setFont(font);
-#endif
 
     tcFontMgr()->InitFont(":/resources/font/ms_yahei.ttf");
 
     PrepareDirs(app.applicationDirPath());
+
+    // init language
+    tcTrMgr()->InitLanguage(LanguageKind::kEnglish);
 
     auto host = g_host_;
     auto port = g_port_;

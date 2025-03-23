@@ -346,20 +346,19 @@ namespace tc
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {
-//        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to STOP the control of remote PC ?"));
-//        if (msg_box->exec() == 0) {
-//            Exit();
-//        } else {
-//            event->ignore();
-//        }
+        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"));
+        if (msg_box->exec() == 0) {
+            Exit();
+        } else {
+            event->ignore();
+        }
 
-        event->ignore();
-
-        auto dlg = TcDialog::Make(tr("Stop"), tr("Do you want to stop the control of remote PC?"), nullptr);
-        dlg->SetOnDialogSureClicked([=, this]() {
-            this->Exit();
-        });
-        dlg->show();
+//        event->ignore();
+//        auto dlg = TcDialog::Make(tr("Stop"), tr("Do you want to stop the control of remote PC?"), nullptr);
+//        dlg->SetOnDialogSureClicked([=]() {
+//            this->Exit();
+//        });
+//        dlg->Show();
     }
 
     void Workspace::dragEnterEvent(QDragEnterEvent *event) {
