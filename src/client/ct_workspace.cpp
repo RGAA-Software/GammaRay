@@ -35,6 +35,8 @@
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 #ifdef TC_ENABLE_FILE_TRANSMISSION
 #include "core/file_trans_interface.h"
+#include "tc_dialog.h"
+
 #endif // TC_ENABLE_FILE_TRANSMISSION
 
 
@@ -305,11 +307,25 @@ namespace tc
                 // to trigger re-layout
                 if (msg.result) {
                     this->move(pos().x()+1, pos().y());
-                    auto box = SizedMessageBox::MakeInfoOkBox(tr("Info"), tr("Changing resolution success."));
-                    box->exec();
+//                    auto box = SizedMessageBox::MakeInfoOkBox(tr("Info"), tr("Changing resolution success."));
+//                    box->exec();
+
+                    auto dlg = TcDialog::Make(tr("Tips"), tr("Changing resolution success."), nullptr);
+                    dlg->SetOnDialogSureClicked([=, this]() {
+
+                    });
+                    dlg->show();
+
+
                 } else {
-                    auto box = SizedMessageBox::MakeErrorOkBox(tr("Error"), tr("Changing resolution failed, please check your server's monitor."));
-                    box->exec();
+//                    auto box = SizedMessageBox::MakeErrorOkBox(tr("Error"), tr("Changing resolution failed, please check your server's monitor."));
+//                    box->exec();
+
+                    auto dlg = TcDialog::Make(tr("Error"), tr("Changing resolution failed, please check your server's monitor."), nullptr);
+                    dlg->SetOnDialogSureClicked([=, this]() {
+
+                    });
+                    dlg->show();
                 }
             });
 
@@ -330,12 +346,20 @@ namespace tc
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {
-        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to STOP the control of remote PC ?"));
-        if (msg_box->exec() == 0) {
-            Exit();
-        } else {
-            event->ignore();
-        }
+//        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to STOP the control of remote PC ?"));
+//        if (msg_box->exec() == 0) {
+//            Exit();
+//        } else {
+//            event->ignore();
+//        }
+
+        event->ignore();
+
+        auto dlg = TcDialog::Make(tr("Stop"), tr("Do you want to stop the control of remote PC?"), nullptr);
+        dlg->SetOnDialogSureClicked([=, this]() {
+            this->Exit();
+        });
+        dlg->show();
     }
 
     void Workspace::dragEnterEvent(QDragEnterEvent *event) {

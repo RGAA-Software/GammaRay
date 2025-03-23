@@ -27,6 +27,7 @@
 #include "render_panel/ui/tab_server_status.h"
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 #include "tc_qt_widget/widgetframe/titlebar_messages.h"
+#include "tc_qt_widget/tc_dialog.h"
 
 namespace tc
 {
@@ -48,11 +49,18 @@ namespace tc
         });
 
         auto fun_stop_all = [=, this]() {
-            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit all programs?"));
-            if (msg_box->exec() == 0) {
+            auto dlg = TcDialog::Make(tr("Exit"), tr("Do you want to exit all programs?"), this);
+            dlg->SetOnDialogSureClicked([=, this]() {
                 auto srv_mgr = this->app_->GetContext()->GetServiceManager();
                 srv_mgr->Remove();
-            }
+            });
+            dlg->show();
+
+//            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit all programs?"));
+//            if (msg_box->exec() == 0) {
+//                auto srv_mgr = this->app_->GetContext()->GetServiceManager();
+//                srv_mgr->Remove();
+//            }
         };
 
         connect(ac_exit, &QAction::triggered, this, [=, this](bool) {
@@ -292,13 +300,21 @@ namespace tc
     }
 
     void GrWorkspace::closeEvent(QCloseEvent *event) {
-        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Hide"), tr("Do you want to hide GammaRay?"));
-        if (dlg->exec() == 0) {
+        event->ignore();
+        auto dlg = TcDialog::Make(tr("Hide"), tr("Do you want to hide GammaRay?"), nullptr);
+        dlg->SetOnDialogSureClicked([=, this]() {
             this->hide();
-            event->ignore();
-        } else {
-            event->ignore();
-        }
+        });
+        dlg->show();
+        //
+
+//        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Hide"), tr("Do you want to hide GammaRay?"));
+//        if (dlg->exec() == 0) {
+//            this->hide();
+//            event->ignore();
+//        } else {
+//            event->ignore();
+//        }
     }
 
     void GrWorkspace::resizeEvent(QResizeEvent *event) {

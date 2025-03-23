@@ -15,7 +15,6 @@
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "widget_helper.h"
-#include "tc_qt_widget/sized_msg_box.h"
 #include "stream_item_widget.h"
 #include "client/ct_application.h"
 #include "client/ct_app_message.h"
@@ -23,6 +22,7 @@
 #include "stream_content.h"
 #include "client/ct_settings.h"
 #include "tc_common_new/base64.h"
+#include "tc_dialog.h"
 
 namespace tc
 {
@@ -202,11 +202,18 @@ namespace tc
         if (running_processes_.contains(item.stream_id)) {
             auto process = running_processes_[item.stream_id];
             if (process) {
-                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop Stream"), tr("Do you want to stop the stream ?"));
-                if (msg_box->exec() == 0) {
+//                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop Stream"), tr("Do you want to stop the stream ?"));
+//                if (msg_box->exec() == 0) {
+//                    process->kill();
+//                    running_processes_.erase(item.stream_id);
+//                }
+
+                auto dlg = TcDialog::Make(tr("Stop Stream"), tr("Do you want to stop the stream ?"), nullptr);
+                dlg->SetOnDialogSureClicked([=, this]() {
                     process->kill();
                     running_processes_.erase(item.stream_id);
-                }
+                });
+                dlg->show();
             }
         }
     }
@@ -218,15 +225,18 @@ namespace tc
     }
 
     void AppStreamList::DeleteStream(const StreamItem& item) {
-        auto alert = SizedMessageBox::MakeOkCancelBox(tr("Warning"), tr("Do you want to delete the remote control?"));
-        if (alert->exec() == 1) {
-            return;
-        }
+//        auto alert = SizedMessageBox::MakeOkCancelBox(tr("Warning"), tr("Do you want to delete the remote control?"));
+//        if (alert->exec() == 1) {
+//            return;
+//        }
 
-        auto mgr = context_->GetDBManager();
-        mgr->DeleteStream(item._id);
-
-        LoadStreamItems();
+        auto dlg = TcDialog::Make(tr("Warning"), tr("Do you want to delete the remote control?"), nullptr);
+        dlg->SetOnDialogSureClicked([=, this]() {
+            auto mgr = context_->GetDBManager();
+            mgr->DeleteStream(item._id);
+            LoadStreamItems();
+        });
+        dlg->show();
     }
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {

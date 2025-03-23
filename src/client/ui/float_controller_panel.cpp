@@ -17,6 +17,7 @@
 #include "float_sub_mode_panel.h"
 #include "float_sub_display_panel.h"
 #include "ct_app_message.h"
+#include "tc_dialog.h"
 
 namespace tc
 {
@@ -109,10 +110,17 @@ namespace tc
                 layout->addSpacing(border_spacing);
                 layout->addWidget(btn);
                 btn->SetOnClickListener([=, this](QWidget* w) {
-                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to STOP the control of remote PC ?"));
-                    if (msg_box->exec() == 0) {
+//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to STOP the control of remote PC ?"));
+//                    if (msg_box->exec() == 0) {
+//                        context_->SendAppMessage(ExitAppMessage {});
+//                    }
+
+                    auto dlg = TcDialog::Make(tr("Warning"), tr("Do you want to stop the control of remote PC?"), nullptr);
+                    dlg->SetOnDialogSureClicked([=, this]() {
                         context_->SendAppMessage(ExitAppMessage {});
-                    }
+                    });
+                    dlg->show();
+
                 });
             }
             layout->addSpacing(border_spacing);
@@ -348,10 +356,16 @@ namespace tc
             root_layout->addWidget(widget);
 
             widget->SetOnClickListener([=, this](QWidget* w) {
-                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"));
-                if (msg_box->exec() == 0) {
+//                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"));
+//                if (msg_box->exec() == 0) {
+//                    context_->SendAppMessage(ExitAppMessage {});
+//                }
+
+                auto dlg = TcDialog::Make(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
+                dlg->SetOnDialogSureClicked([=, this]() {
                     context_->SendAppMessage(ExitAppMessage {});
-                }
+                });
+                dlg->show();
             });
         }
         root_layout->addStretch();

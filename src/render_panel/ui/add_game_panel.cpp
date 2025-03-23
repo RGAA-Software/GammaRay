@@ -10,6 +10,7 @@
 #include "render_panel/db/db_game.h"
 #include "render_panel/db/db_game_manager.h"
 #include "render_panel/gr_context.h"
+#include "tc_dialog.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
@@ -201,7 +202,11 @@ namespace tc
         if (lbl_game_name_->text().isEmpty()
             || lbl_game_exe_name_->text().isEmpty()
             || lbl_game_installed_dir_->text().isEmpty()) {
-            SizedMessageBox::MakeErrorOkBox(tr("Error Info"), tr("Please input valid info"))->exec();
+
+            auto dlg = TcDialog::Make(tr("Error"), tr("Please input necessary information !"), nullptr);
+            dlg->SetOnDialogSureClicked([=, this]() {});
+            dlg->show();
+
             return;
         }
 
@@ -224,6 +229,10 @@ namespace tc
         auto game_mgr = context_->GetDBGameManager();
         game_mgr->SaveOrUpdateGame(game);
         done(0);
-        SizedMessageBox::MakeOkBox(tr("Success"), tr("Save game success !"))->exec();
+
+        auto dlg = TcDialog::Make(tr("Tips"), tr("Save game success !"), nullptr);
+        dlg->SetOnDialogSureClicked([=, this]() {
+        });
+        dlg->show();
     }
 }

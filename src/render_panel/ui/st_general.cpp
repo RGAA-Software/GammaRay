@@ -15,6 +15,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_qt_widget/tc_label.h"
+#include "tc_dialog.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -534,8 +535,12 @@ namespace tc
 
         {
             auto func_show_err = [=](const QString& msg) {
-                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
-                msg_box->exec();
+//                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
+//                msg_box->exec();
+
+                auto dlg = TcDialog::Make(tr("Error"), msg, nullptr);
+                dlg->SetOnDialogSureClicked([=, this]() {});
+                dlg->show();
             };
 
             auto layout = new NoMarginHLayout();
@@ -593,12 +598,18 @@ namespace tc
                 settings_->Load();
 
                 // Save success dialog
-                auto msg_box = SizedMessageBox::Make2BtnsBox(tr("Save Success"),
-                    tr("Save settings success! Do you want to restart Renderer?"), tr("Later"), tr("Restart"));
-                if (msg_box->exec() == 0) {
-                    // restart server now
+//                auto msg_box = SizedMessageBox::Make2BtnsBox(tr("Save Success"),
+//                    tr("Save settings success! Do you want to restart Renderer?"), tr("Later"), tr("Restart"));
+//                if (msg_box->exec() == 0) {
+//                    // restart server now
+//                    this->context_->SendAppMessage(AppMsgRestartServer{});
+//                }
+
+                auto dlg = TcDialog::Make(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
+                dlg->SetOnDialogSureClicked([=, this]() {
                     this->context_->SendAppMessage(AppMsgRestartServer{});
-                }
+                });
+                dlg->show();
 
             });
 

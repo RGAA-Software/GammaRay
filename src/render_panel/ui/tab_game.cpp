@@ -35,6 +35,7 @@
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/file_ext.h"
+#include "tc_dialog.h"
 
 namespace tc
 {
@@ -143,8 +144,12 @@ namespace tc
                         if (!game->steam_url_.empty()) {
                             ShellExecuteA(nullptr, nullptr, game->steam_url_.c_str(), nullptr, nullptr, SW_SHOW);
                         } else {
-                            auto func_start_error = [](const std::string& msg) {
-                                SizedMessageBox::MakeErrorOkBox(tr("Error"), std::format("Start process failed: {}", msg).c_str())->exec();
+                            auto func_start_error = [this](const std::string& msg) {
+                                //SizedMessageBox::MakeErrorOkBox(tr("Error"), std::format("Start process failed: {}", msg).c_str())->exec();
+
+                                auto dlg = TcDialog::Make(tr("Error"), std::format("Start process failed: {}", msg).c_str(), nullptr);
+                                dlg->SetOnDialogSureClicked([=, this]() {});
+                                dlg->show();
                             };
 
                             if (game->exes_.empty()) {

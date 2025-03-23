@@ -26,6 +26,7 @@
 #include "client/ct_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
+#include "tc_dialog.h"
 
 namespace tc
 {
@@ -125,12 +126,21 @@ namespace tc
     }
 
     void Application::closeEvent(QCloseEvent* event) {
-        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to exit GammaRayClient ?"));
-        if (msg_box->exec() == 0) {
-            event->accept();
-        } else {
-            event->ignore();
-        }
+//        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to exit GammaRayClient ?"));
+//        if (msg_box->exec() == 0) {
+//            event->accept();
+//        } else {
+//            event->ignore();
+//        }
+
+        event->ignore();
+
+        auto dlg = TcDialog::Make(tr("Stop"), tr("Do you want to exit GammaRayClient ?"), nullptr);
+        dlg->SetOnDialogSureClicked([=, this]() {
+            this->close();
+        });
+        dlg->show();
+
     }
 
 }

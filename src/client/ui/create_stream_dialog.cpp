@@ -10,6 +10,7 @@
 #include <QRadioButton>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
+#include "tc_dialog.h"
 
 namespace tc
 {
@@ -325,8 +326,14 @@ namespace tc
         //auto remote_device_id = ed_remote_device_id_ ? ed_remote_device_id_->text().trimmed().replace(" ", "").toStdString() : "";
 
         if (host.empty() || port == 0) {
-            auto dialog = SizedMessageBox::MakeOkBox(tr("Tips"), tr("Please input necessary information !"));
-            dialog->exec();
+//            auto dialog = SizedMessageBox::MakeOkBox(tr("Tips"), tr("Please input necessary information !"));
+//            dialog->exec();
+
+            auto dlg = TcDialog::Make(tr("Tips"), tr("Please input necessary information !"), nullptr);
+            dlg->SetOnDialogSureClicked([=, this]() {
+            });
+            dlg->show();
+
             return false;
         }
 

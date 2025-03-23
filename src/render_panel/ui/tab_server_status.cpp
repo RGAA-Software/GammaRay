@@ -36,6 +36,7 @@
 #include "tc_common_new/uid_spacer.h"
 #include "render_panel/gr_run_game_manager.h"
 #include "render_panel/db/db_game.h"
+#include "tc_qt_widget/tc_dialog.h"
 
 namespace tc
 {
@@ -109,10 +110,16 @@ namespace tc
                 item_layout->addStretch();
 
                 connect(btn_install, &QPushButton::clicked, this, [=, this]() {
-                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install ViGEm"), tr("Do you want to install ViGEm?"));
-                    if (msg_box->exec() == 0) {
+//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install ViGEm"), tr("Do you want to install ViGEm?"));
+//                    if (msg_box->exec() == 0) {
+//                        context_->SendAppMessage(MsgInstallViGEm{});
+//                    }
+
+                    auto dlg = TcDialog::Make(tr("Install ViGEm"), tr("Do you want to install ViGEm?"), this);
+                    dlg->SetOnDialogSureClicked([=, this]() {
                         context_->SendAppMessage(MsgInstallViGEm{});
-                    }
+                    });
+                    dlg->show();
                 });
 
                 layout->addLayout(item_layout);
@@ -156,12 +163,20 @@ namespace tc
 
                 connect(btn_restart, &QPushButton::clicked, this, [=, this]() {
                    // restart
-                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Renderer"), tr("Do you want to restart Renderer?"));
-                    if (msg_box->exec() == 0) {
+//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Renderer"), tr("Do you want to restart Renderer?"));
+//                    if (msg_box->exec() == 0) {
+//                        this->context_->PostTask([=, this]() {
+//                            RestartServer();
+//                        });
+//                    }
+
+                    auto dlg = TcDialog::Make(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), nullptr);
+                    dlg->SetOnDialogSureClicked([=, this]() {
                         this->context_->PostTask([=, this]() {
                             RestartServer();
                         });
-                    }
+                    });
+                    dlg->show();
                 });
 
                 layout->addLayout(item_layout);
@@ -204,24 +219,32 @@ namespace tc
                     item_layout->addWidget(btn_remove);
 
                     connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
-                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"),
-                                                                        tr("Do you want to STOP ALL?"));
-                        if (msg_box->exec() == 0) {
-                            this->context_->PostTask([=, this]() {
-                                this->context_->GetServiceManager()->Remove();
-                            });
-                        }
+//                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"),
+//                                                                        tr("Do you want to STOP ALL?"));
+//                        if (msg_box->exec() == 0) {
+//                            this->context_->PostTask([=, this]() {
+//                                this->context_->GetServiceManager()->Remove();
+//                            });
+//                        }
                     });
                 }
                 item_layout->addStretch();
 
                 connect(btn_install, &QPushButton::clicked, this, [=, this]() {
-                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install Service"), tr("Do you want to install Service?"));
-                    if (msg_box->exec() == 0) {
+//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install Service"), tr("Do you want to install Service?"));
+//                    if (msg_box->exec() == 0) {
+//                        this->context_->PostTask([=, this]() {
+//                            this->context_->GetServiceManager()->Install();
+//                        });
+//                    }
+
+                    auto dlg = TcDialog::Make(tr("Install Service"), tr("Do you want to install Service?"), nullptr);
+                    dlg->SetOnDialogSureClicked([=, this]() {
                         this->context_->PostTask([=, this]() {
                             this->context_->GetServiceManager()->Install();
                         });
-                    }
+                    });
+                    dlg->show();
                 });
 
                 layout->addLayout(item_layout);

@@ -38,7 +38,6 @@ int main(int argc, char** argv) {
         btn_stop->setFixedSize(btn_size);
         QObject::connect(btn_stop, &QPushButton::clicked, &widget, [=]() {
             auto mbox = SizedMessageBox::MakeOkCancelBox("STOP All Processes", "Do you want to stop all relative processes?");
-
             if (mbox->exec() == 0) {
                 service_manager->Remove();
             }
