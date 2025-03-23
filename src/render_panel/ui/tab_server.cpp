@@ -20,7 +20,7 @@
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/qrcode/qr_generator.h"
-#include "tc_qt_widget/layout_helper.h"
+#include "tc_qt_widget/widget_helper.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/round_img_display.h"
 #include "rn_app.h"
@@ -57,11 +57,11 @@ namespace tc
 
         // root layout
         auto root_layout = new QVBoxLayout();
-        LayoutHelper::ClearMargins(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
 
         // content layout
         auto content_layout = new QHBoxLayout();
-        LayoutHelper::ClearMargins(content_layout);
+        WidgetHelper::ClearMargins(content_layout);
 
         auto item_width = 230;
 

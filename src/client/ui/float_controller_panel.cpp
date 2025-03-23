@@ -26,7 +26,7 @@ namespace tc
         this->setFixedSize(230, 285);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
-        WidgetHelper::ClearMargin(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
         int border_spacing = 5;
         QSize btn_size = QSize(30, 30);
         root_layout->addSpacing(border_spacing);
@@ -48,7 +48,7 @@ namespace tc
             }
 
             layout->addStretch();
-            WidgetHelper::ClearMargin(layout);
+            WidgetHelper::ClearMargins(layout);
             {
                 auto btn = new FloatIcon(ctx, this);
                 btn->setFixedSize(btn_size);

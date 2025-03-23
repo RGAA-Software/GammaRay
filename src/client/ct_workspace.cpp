@@ -32,7 +32,7 @@
 #include "tc_common_new/process_util.h"
 #include "ui/float_button_state_indicator.h"
 #include "ct_main_progress.h"
-#include "theme/widgetframe/mainwindow_wrapper.h"
+#include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 #ifdef TC_ENABLE_FILE_TRANSMISSION
 #include "core/file_trans_interface.h"
 #endif // TC_ENABLE_FILE_TRANSMISSION

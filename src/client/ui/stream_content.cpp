@@ -101,7 +101,7 @@ namespace tc
 
     StreamContent::StreamContent(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : AppContent(ctx, parent) {
         auto root_layout = new QVBoxLayout();
-        WidgetHelper::ClearMargin(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
 
         {
             auto title = new TcLabel(this);
@@ -112,7 +112,7 @@ namespace tc
             root_layout->addSpacing(10);
 
             auto layout = new QHBoxLayout();
-            WidgetHelper::ClearMargin(layout);
+            WidgetHelper::ClearMargins(layout);
             layout->addSpacing(30);
             layout->addWidget(title);
             layout->addStretch();
@@ -128,8 +128,8 @@ namespace tc
 
         add_btn_ = new AddButton(this);
         add_btn_->SetOnClickCallback([=, this]() {
-            CreateStreamDialog dialog(context_);
-            dialog.exec();
+            auto dialog = new CreateStreamDialog(context_);
+            dialog->show();
         });
 
         empty_tip_ = new QLabel(this);

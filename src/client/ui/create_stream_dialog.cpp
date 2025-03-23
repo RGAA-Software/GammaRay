@@ -9,33 +9,33 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include "tc_qt_widget/sized_msg_box.h"
+#include "tc_qt_widget/no_margin_layout.h"
 
 namespace tc
 {
 
-    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : QDialog(parent) {
+    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
-        setFixedSize(640, 350);
+        setFixedSize(600, 350);
         CreateLayout();
     }
 
-    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent) : QDialog(parent) {
+    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
-        setFixedSize(640, 350);
+        setFixedSize(600, 350);
         CreateLayout();
     }
 
     CreateStreamDialog::~CreateStreamDialog() = default;
 
     void CreateStreamDialog::CreateLayout() {
-        setWindowTitle(tr("Device Connection Information"));
-        auto root_layout = new QVBoxLayout();
-        root_layout->setSpacing(0);
-        root_layout->setContentsMargins(100,0,60, 0);
-
+        setWindowTitle(tr("Remote Device Information"));
+        
         auto label_size = QSize(150, 35);
         auto edit_size = QSize(250, 35);
+
+        root_layout_->setContentsMargins(90,0,60, 0);
 
         // 0. name
         {
@@ -59,8 +59,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout->addSpacing(40);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(40);
+            root_layout_->addLayout(layout);
 
         }
 
@@ -86,8 +86,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout->addSpacing(10);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(10);
+            root_layout_->addLayout(layout);
         }
 
         // 2. port
@@ -115,8 +115,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout->addSpacing(10);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(10);
+            root_layout_->addLayout(layout);
         }
 
         // Remote device id
@@ -141,8 +141,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout->addSpacing(10);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(10);
+            root_layout_->addLayout(layout);
         }
 
         if (false) {
@@ -180,8 +180,8 @@ namespace tc
 
             layout->addStretch();
 
-            root_layout->addSpacing(10);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(10);
+            root_layout_->addLayout(layout);
 
             //
             if (stream_item_.IsValid()) {
@@ -233,8 +233,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout->addSpacing(10);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(10);
+            root_layout_->addLayout(layout);
         }
 
         if (0) {
@@ -270,8 +270,8 @@ namespace tc
                 }
             }
 
-            root_layout->addSpacing(10);
-            root_layout->addLayout(layout);
+            root_layout_->addSpacing(10);
+            root_layout_->addLayout(layout);
         }
 
         // sure or cancel
@@ -283,31 +283,32 @@ namespace tc
             auto btn_cancel = new QPushButton(tr("Cancel"));
             btn_cancel->setProperty("class", "danger");
             connect(btn_cancel, &QPushButton::clicked, this, [=, this]() {
-                done(0);
+                //done(0);
+                this->close();
             });
             btn_cancel->setFixedSize(btn_size);
             layout->addStretch();
             layout->addWidget(btn_cancel);
-            layout->addSpacing(20);
+            layout->addSpacing(30);
 
             auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 if (!GenStream()) {
                     return;
                 }
-                done(0);
+                this->close();
             });
 
             layout->addWidget(btn_sure);
             btn_sure->setFixedSize(btn_size);
             layout->addStretch();
 
-            root_layout->addStretch();
-            root_layout->addLayout(layout);
+            root_layout_->addStretch();
+            root_layout_->addLayout(layout);
         }
-        root_layout->addSpacing(30);
+        root_layout_->addSpacing(30);
 
-        setLayout(root_layout);
+        //root_layout_->addLayout(root_layout_);
     }
 
     bool CreateStreamDialog::GenStream() {
@@ -367,10 +368,11 @@ namespace tc
     }
 
     void CreateStreamDialog::paintEvent(QPaintEvent *event) {
-        QPainter painter(this);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(QColor(0xffffff)));
-        painter.drawRect(0, 0, this->width(), this->height());
+        TcCustomTitleBarDialog::paintEvent(event);
+//        QPainter painter(this);
+//        painter.setPen(Qt::NoPen);
+//        painter.setBrush(QBrush(QColor(0xffffff)));
+//        painter.drawRect(0, 0, this->width(), this->height());
     }
 
 }

@@ -19,7 +19,7 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/qrcode/qr_generator.h"
-#include "tc_qt_widget/layout_helper.h"
+#include "tc_qt_widget/widget_helper.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/round_img_display.h"
 #include "rn_app.h"

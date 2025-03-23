@@ -20,7 +20,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_qt_widget/round_img_display.h"
 #include "tc_qt_widget/cover_widget.h"
-#include "tc_qt_widget/layout_helper.h"
+#include "tc_qt_widget/widget_helper.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
@@ -52,7 +52,7 @@ namespace tc
     TabGame::TabGame(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent) {
         steam_mgr_ = context_->GetSteamManager();
         auto root_layout = new QVBoxLayout();
-        LayoutHelper::ClearMargins(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
 
         // operators
         auto op_layout = new NoMarginHLayout();
@@ -280,7 +280,7 @@ namespace tc
         widget->setObjectName(std::to_string(game->game_id_).c_str());
 
         auto layout = new QVBoxLayout();
-        LayoutHelper::ClearMargins(layout);
+        WidgetHelper::ClearMargins(layout);
         auto cover = new RoundImageDisplay("", item_width, item_height, 9, widget);
         cover->setObjectName("cover");
         layout->addWidget(cover);

@@ -94,7 +94,7 @@ namespace tc
         if (0) {
             root_layout->addSpacing(7);
             auto layout = new QHBoxLayout();
-            WidgetHelper::ClearMargin(layout);
+            WidgetHelper::ClearMargins(layout);
             layout->addSpacing(item_margin_left);
 
             // separated

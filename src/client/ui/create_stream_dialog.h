@@ -17,13 +17,14 @@
 #include <QPainter>
 
 #include "client/db/stream_item.h"
+#include "tc_qt_widget/tc_custom_titlebar_dialog.h"
 
 namespace tc
 {
 
     class ClientContext;
 
-    class CreateStreamDialog : public QDialog {
+    class CreateStreamDialog : public TcCustomTitleBarDialog {
     public:
         explicit CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);

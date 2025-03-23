@@ -18,14 +18,14 @@
 #include "tc_common_new/thread.h"
 #include "ui/create_stream_dialog.h"
 #include "client/ct_client_context.h"
-#include "ui/widget_helper.h"
+#include "tc_qt_widget/widget_helper.h"
 #include "ui/stream_content.h"
 #include "ui/settings_content.h"
 #include "ui/about_content.h"
 #include "ui/no_margin_layout.h"
 #include "client/ct_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
-#include "theme/widgetframe/mainwindow_wrapper.h"
+#include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 
 namespace tc
 {
@@ -61,7 +61,7 @@ namespace tc
     void Application::CreateLayout() {
         auto root_widget = new RoundRectWidget(0xffffff, 0, this);
         auto root_layout = new QHBoxLayout();
-        WidgetHelper::ClearMargin(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
         int margin = 20;
         root_layout->setContentsMargins(0, margin, margin, margin);
 

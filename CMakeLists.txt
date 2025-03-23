@@ -111,7 +111,6 @@ include_directories(${OpenCV_ROOT}/include)
 
 add_subdirectory(deps)
 add_subdirectory(src)
-add_subdirectory(src/theme/widgetframe)
 add_subdirectory(src/tests)
 add_subdirectory(src/service)
 add_subdirectory(src/uninstall)

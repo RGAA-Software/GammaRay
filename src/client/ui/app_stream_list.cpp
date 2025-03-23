@@ -56,7 +56,7 @@ namespace tc
 
     void AppStreamList::CreateLayout() {
         auto root_layout = new QHBoxLayout();
-        WidgetHelper::ClearMargin(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
 
         auto delegate = new MainItemDelegate(this);
         stream_list_ = new QListWidget(this);
@@ -212,12 +212,13 @@ namespace tc
     }
 
     void AppStreamList::EditStream(const StreamItem& item) {
-        CreateStreamDialog dialog(context_, item);
-        dialog.exec();
+        auto dialog = new CreateStreamDialog(context_, item);
+        dialog->show();
+       // dialog.exec();
     }
 
     void AppStreamList::DeleteStream(const StreamItem& item) {
-        auto alert = SizedMessageBox::MakeOkCancelBox(tr("WARNING"), tr("Do you want to *DELETE* the stream ?"));
+        auto alert = SizedMessageBox::MakeOkCancelBox(tr("Warning"), tr("Do you want to delete the remote control?"));
         if (alert->exec() == 1) {
             return;
         }
@@ -235,12 +236,12 @@ namespace tc
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
 
         auto root_layout = new QVBoxLayout();
-        WidgetHelper::ClearMargin(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
         root_layout->setContentsMargins(2, 0, 2, 0);
 
         auto layout = new QVBoxLayout();
         layout->addStretch();
-        WidgetHelper::ClearMargin(layout);
+        WidgetHelper::ClearMargins(layout);
         root_layout->addLayout(layout);
 
         auto gap = 0;//5;

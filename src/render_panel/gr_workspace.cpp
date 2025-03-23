@@ -13,7 +13,7 @@
 #include <QMenu>
 
 #include "tc_qt_widget/custom_tab_btn.h"
-#include "tc_qt_widget/layout_helper.h"
+#include "tc_qt_widget/widget_helper.h"
 #include "render_panel/ui/tab_game.h"
 #include "render_panel/ui/tab_server.h"
 #include "render_panel/ui/tab_settings.h"
@@ -25,8 +25,8 @@
 #include "service/service_manager.h"
 #include "app_colors.h"
 #include "render_panel/ui/tab_server_status.h"
-#include "theme/widgetframe/mainwindow_wrapper.h"
-#include "theme/widgetframe/titlebar_messages.h"
+#include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
+#include "tc_qt_widget/widgetframe/titlebar_messages.h"
 
 namespace tc
 {
@@ -48,7 +48,7 @@ namespace tc
         });
 
         auto fun_stop_all = [=, this]() {
-            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit program?"));
+            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit all programs?"));
             if (msg_box->exec() == 0) {
                 auto srv_mgr = this->app_->GetContext()->GetServiceManager();
                 srv_mgr->Remove();
@@ -93,12 +93,12 @@ namespace tc
 
         // root
         auto root_layout = new QHBoxLayout();
-        LayoutHelper::ClearMargins(root_layout);
+        WidgetHelper::ClearMargins(root_layout);
 
         // left buttons
         {
             auto layout = new QVBoxLayout();
-            LayoutHelper::ClearMargins(layout);
+            WidgetHelper::ClearMargins(layout);
 
             // placeholder to extend the width of left area
             int left_area_width = 220;
@@ -243,7 +243,7 @@ namespace tc
             tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
 
             auto layout = new QVBoxLayout();
-            LayoutHelper::ClearMargins(root_layout);
+            WidgetHelper::ClearMargins(root_layout);
             auto stack_widget = new QStackedWidget(this);
             stack_widget->addWidget(tabs_[TabName::kTabServer]);
             stack_widget->addWidget(tabs_[TabName::kTabServerStatus]);
