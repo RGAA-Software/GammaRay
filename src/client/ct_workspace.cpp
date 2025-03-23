@@ -43,7 +43,7 @@
 namespace tc
 {
 
-    Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const ThunderSdkParams& params, QWidget* parent) {
+    Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const ThunderSdkParams& params, QWidget* parent) : QMainWindow(parent) {
         this->context_ = ctx;
         this->settings_ = Settings::Instance();
 
@@ -352,13 +352,6 @@ namespace tc
         } else {
             event->ignore();
         }
-
-//        event->ignore();
-//        auto dlg = TcDialog::Make(tr("Stop"), tr("Do you want to stop the control of remote PC?"), nullptr);
-//        dlg->SetOnDialogSureClicked([=]() {
-//            this->Exit();
-//        });
-//        dlg->Show();
     }
 
     void Workspace::dragEnterEvent(QDragEnterEvent *event) {
