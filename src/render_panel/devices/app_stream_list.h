@@ -21,23 +21,21 @@
 #include <QProcess>
 
 #include "client/db/stream_item.h"
-#include "round_rect_widget.h"
 
 namespace tc
 {
 
-    class ClientContext;
+    class GrContext;
+    class GrSettings;
     class StreamDBManager;
-    class Application;
     class StreamContent;
     class MessageListener;
-    class Settings;
 
     using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
     class AppStreamList : public QWidget {
     public:
-        explicit AppStreamList(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
+        explicit AppStreamList(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~AppStreamList() override;
 
         void LoadStreamItems();
@@ -56,16 +54,14 @@ namespace tc
         void EditStream(const StreamItem& item);
 
     private:
-        std::shared_ptr<ClientContext> context_ = nullptr;
+        GrSettings* settings_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
         std::vector<StreamItem> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;
         std::map<std::string, std::shared_ptr<QProcess>> running_processes_;
-
-        Application* application_ = nullptr;
         StreamContent* stream_content_ = nullptr;
-        Settings* settings_ = nullptr;
     };
 
 }

@@ -26,6 +26,8 @@ namespace tc
     class GrRunGameManager;
     class ServiceManager;
     class GrApplication;
+    // Device list
+    class StreamDBManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -56,9 +58,9 @@ namespace tc
         std::shared_ptr<GrRenderController> GetRenderController();
         std::shared_ptr<GrRunGameManager> GetRunGameManager();
         static std::string GetCurrentExeFolder();
+        std::shared_ptr<StreamDBManager> GetStreamDBManager();
 
     private:
-        void GenUniqueId();
         void StartTimers();
 
     private:
@@ -75,6 +77,7 @@ namespace tc
         std::shared_ptr<asio2::timer> timer_ = nullptr;
         std::shared_ptr<GrRunGameManager> run_game_manager_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ =  nullptr;
+        std::shared_ptr<StreamDBManager> stream_db_mgr_ = nullptr;
     };
 
 }

@@ -39,5 +39,10 @@ set(PANEL_SRCS
 
         ${CMAKE_CURRENT_SOURCE_DIR}/transfer/file_transfer.cpp
 
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/app_stream_list.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/create_stream_dialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_item_widget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_content.cpp
+
         PARENT_SCOPE
 )

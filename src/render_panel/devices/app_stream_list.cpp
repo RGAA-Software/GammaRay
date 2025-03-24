@@ -23,6 +23,8 @@
 #include "client/ct_settings.h"
 #include "tc_common_new/base64.h"
 #include "tc_dialog.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/gr_settings.h"
 
 namespace tc
 {
@@ -39,12 +41,11 @@ namespace tc
 
     // - - -- - - -- - - - -- -
 
-    AppStreamList::AppStreamList(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : QWidget(parent) {
+    AppStreamList::AppStreamList(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
-        settings_ = Settings::Instance();
-        db_mgr_ = context_->GetDBManager();
+        settings_ = GrSettings::Instance();
+        db_mgr_ = context_->GetStreamDBManager();
         stream_content_ = (StreamContent*)parent;
-        application_ = (Application*)parent->parent();
 
         CreateLayout();
         Init();
@@ -107,7 +108,7 @@ namespace tc
     }
 
     void AppStreamList::Init() {
-        msg_listener_ = context_->ObtainMessageListener();
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
             db_mgr_->AddStream(item);
@@ -172,13 +173,13 @@ namespace tc
         QStringList arguments;
         arguments << std::format("--host={}", item.stream_host).c_str()
                   << std::format("--port={}", item.stream_port).c_str()
-                  << std::format("--audio={}", settings_->IsAudioEnabled() ? 1 : 0).c_str()
-                  << std::format("--clipboard={}", settings_->IsClipboardEnabled() ? 1 : 0).c_str()
+                  << std::format("--audio={}", 1).c_str()
+                  << std::format("--clipboard={}", 1).c_str()
                   << std::format("--stream_id={}", item.stream_id).c_str()
                   << std::format("--conn_type={}", item.connect_type_).c_str()
                   << std::format("--network_type={}", item.network_type_).c_str()
                   << std::format("--stream_name={}", Base64::Base64Encode(item.stream_name)).c_str()
-                  << std::format("--device_id={}", context_->GetDeviceId()).c_str()
+                  << std::format("--device_id={}", "**TODO").c_str()
                   << std::format("--device_rp={}", Base64::Base64Encode(item.device_random_pwd_)).c_str()
                   << std::format("--device_sp={}", Base64::Base64Encode(item.device_safety_pwd_)).c_str()
                   << std::format("--remote_device_id={}", item.remote_device_id_).c_str()
@@ -232,7 +233,7 @@ namespace tc
 
         auto dlg = TcDialog::Make(tr("Warning"), tr("Do you want to delete the remote control?"), nullptr);
         dlg->SetOnDialogSureClicked([=, this]() {
-            auto mgr = context_->GetDBManager();
+            auto mgr = context_->GetStreamDBManager();
             mgr->DeleteStream(item._id);
             LoadStreamItems();
         });
@@ -311,7 +312,7 @@ namespace tc
     }
 
     void AppStreamList::LoadStreamItems() {
-        auto db_mgr = context_->GetDBManager();
+        auto db_mgr = context_->GetStreamDBManager();
         streams_ = db_mgr->GetAllStreams();
 
         context_->PostUITask([=, this]() {

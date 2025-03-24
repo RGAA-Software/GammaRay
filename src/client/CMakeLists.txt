@@ -27,29 +27,29 @@ add_compile_options(/bigobj)
 set(SRCS_MAIN ct_main.cpp)
 
 set(CLIENT_SRCS
-        ${CMAKE_CURRENT_SOURCE_DIR}/ct_client_context.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ct_client_context.cpp
         #${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
         #${RES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/switch_button.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/float_button.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/round_rect_widget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_menu.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_stream_list.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/create_stream_dialog.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_color_theme.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/app_content.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/stream_item_widget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/stream_content.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/settings_content.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/about_content.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/background_widget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/base_widget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/multi_display_mode_widget.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/switch_button.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/float_button.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/round_rect_widget.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/app_menu.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/app_stream_list.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/create_stream_dialog.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/app_color_theme.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/app_content.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/stream_item_widget.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/stream_content.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/settings_content.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/about_content.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/background_widget.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/base_widget.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ui/multi_display_mode_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/db/stream_db_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/db/stream_item.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ct_application.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ct_settings.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../theme/QtAdvancedStylesheet.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ct_application.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/ct_settings.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/../theme/QtAdvancedStylesheet.cpp
 
         PARENT_SCOPE
 )
@@ -71,7 +71,7 @@ set(SRCS_WS
         ct_main_progress.cpp
         icon.rc ${RES}
         ui/switch_button.cpp
-        ui/float_button.cpp
+        #ui/float_button.cpp
         ui/float_icon.cpp
         ui/round_rect_widget.cpp
         ui/app_menu.cpp

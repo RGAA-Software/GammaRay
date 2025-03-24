@@ -21,9 +21,6 @@ namespace tc
     class QtCircle;
     class GrSettings;
     class TcQRWidget;
-
-    // client
-    class ClientContext;
     class StreamContent;
 
     class TabServer : public TabBase {
@@ -46,7 +43,6 @@ namespace tc
         TcQRWidget* lbl_qr_code_ = nullptr;
 
         // client
-        std::shared_ptr<ClientContext> client_ctx_ = nullptr;
         StreamContent* stream_content_ = nullptr;
 
     };

@@ -35,8 +35,7 @@
 #include "render_panel/gr_render_controller.h"
 #include "service/service_manager.h"
 #include "tc_common_new/uid_spacer.h"
-#include "client/ct_client_context.h"
-#include "client/ui/stream_content.h"
+#include "render_panel/devices/stream_content.h"
 #include "tc_qt_widget/tc_qr_widget.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_qt_widget/tc_label.h"
@@ -47,11 +46,6 @@ namespace tc
 
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         settings_ = GrSettings::Instance();
-        // client
-        client_ctx_ = std::make_shared<ClientContext>("ui.embed");
-        // update when new device id requested
-        client_ctx_->SetDeviceId(settings_->device_id_);
-        client_ctx_->Init(false);
 
         UpdateQRCode();
 
@@ -231,7 +225,7 @@ namespace tc
 
         // clients
         {
-            stream_content_ = new StreamContent(client_ctx_, this);
+            stream_content_ = new StreamContent(context_, this);
             content_layout->addWidget(stream_content_);
         }
 
@@ -263,8 +257,6 @@ namespace tc
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
                 lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
-                client_ctx_->SetDeviceId(settings_->device_id_);
-
                 this->UpdateQRCode();
             });
         });

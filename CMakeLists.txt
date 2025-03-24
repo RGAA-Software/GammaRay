@@ -149,6 +149,7 @@ add_executable(${PROJECT_NAME} WIN32
         ${TS_FILES}
         ${SERVICE_MGR_SRCS}
         ${CLIENT_SRCS}
+        ${DEVICE_LIST_SRCS}
 )
 
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")

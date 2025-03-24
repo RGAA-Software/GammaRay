@@ -22,12 +22,12 @@
 namespace tc
 {
 
-    class ClientContext;
+    class GrContext;
 
     class CreateStreamDialog : public TcCustomTitleBarDialog {
     public:
-        explicit CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
-        CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
+        explicit CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
+        CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
         ~CreateStreamDialog() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -37,7 +37,7 @@ namespace tc
         bool GenStream();
 
     private:
-        std::shared_ptr<ClientContext> context_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
 
         QLineEdit* ed_name_ = nullptr;
         QLineEdit* ed_host_ = nullptr;

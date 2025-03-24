@@ -21,6 +21,7 @@
 #include "service/service_manager.h"
 #include "gr_settings.h"
 #include "gr_application.h"
+#include "client/db/stream_db_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -50,6 +51,8 @@ namespace tc
         steam_mgr_->ScanInstalledSteamPath();
 
         msg_notifier_ = app_->GetMessageNotifier();
+
+        stream_db_mgr_ = std::make_shared<StreamDBManager>();
 
         // ips
         ips_ = IPUtil::ScanIPs();
@@ -172,6 +175,10 @@ namespace tc
 
     std::shared_ptr<ServiceManager> GrContext::GetServiceManager() {
         return service_manager_;
+    }
+
+    std::shared_ptr<StreamDBManager> GrContext::GetStreamDBManager() {
+        return stream_db_mgr_;
     }
 
 }

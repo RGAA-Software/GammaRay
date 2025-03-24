@@ -6,11 +6,11 @@
 
 #include "client/ct_settings.h"
 #include "tc_common_new/log.h"
-#include "client/ct_client_context.h"
 #include "app_stream_list.h"
 #include "widget_helper.h"
 #include "create_stream_dialog.h"
 #include "tc_qt_widget/tc_label.h"
+#include "render_panel/gr_context.h"
 
 #include <QPainter>
 #include <QPen>
@@ -99,7 +99,7 @@ namespace tc
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-    StreamContent::StreamContent(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : AppContent(ctx, parent) {
+    StreamContent::StreamContent(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent) {
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
 
@@ -120,7 +120,7 @@ namespace tc
             root_layout->addLayout(layout);
         }
 
-        auto stream_list = new AppStreamList(context_, this);
+        auto stream_list = new AppStreamList(ctx, this);
         stream_list_ = stream_list;
         root_layout->addWidget(stream_list);
 
@@ -128,7 +128,7 @@ namespace tc
 
         add_btn_ = new AddButton(this);
         add_btn_->SetOnClickCallback([=, this]() {
-            auto dialog = new CreateStreamDialog(context_);
+            auto dialog = new CreateStreamDialog(ctx);
             dialog->show();
         });
 
@@ -144,14 +144,6 @@ namespace tc
     }
 
     StreamContent::~StreamContent() = default;
-
-    void StreamContent::OnContentShow() {
-        AppContent::OnContentShow();
-    }
-
-    void StreamContent::OnContentHide() {
-        AppContent::OnContentHide();
-    }
 
     void StreamContent::resizeEvent(QResizeEvent *event) {
         int width = event->size().width();

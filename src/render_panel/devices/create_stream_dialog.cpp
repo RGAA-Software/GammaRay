@@ -4,24 +4,24 @@
 
 #include "create_stream_dialog.h"
 #include "client/ct_app_message.h"
-#include "client/ct_client_context.h"
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_dialog.h"
+#include "render_panel/gr_context.h"
 
 namespace tc
 {
 
-    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         setFixedSize(600, 350);
         CreateLayout();
     }
 
-    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<ClientContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
         setFixedSize(600, 350);

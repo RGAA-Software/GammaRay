@@ -4,14 +4,16 @@
 
 #ifndef SAILFISH_SERVER_INFORMATIONCONTENT_H
 #define SAILFISH_SERVER_INFORMATIONCONTENT_H
-
-#include "app_content.h"
+#include <QLabel>
+#include <QWidget>
+#include <memory>
+#include <functional>
 #include "client/db/stream_item.h"
 
 namespace tc
 {
 
-    class ClientContext;
+    class GrContext;
     class AppStreamList;
 
     using OnStartingStreamCallback = std::function<void(const StreamItem&)>;
@@ -41,12 +43,10 @@ namespace tc
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-    class StreamContent : public AppContent {
+    class StreamContent : public QWidget {
     public:
-        explicit StreamContent(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
+        explicit StreamContent(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~StreamContent() override;
-        void OnContentShow() override;
-        void OnContentHide() override;
         void resizeEvent(QResizeEvent *event) override;
 
         void ShowEmptyTip();

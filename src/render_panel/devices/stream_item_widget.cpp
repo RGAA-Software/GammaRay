@@ -7,7 +7,6 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
-#include "app_color_theme.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_font_manager.h"
@@ -106,7 +105,7 @@ namespace tc
 
         QPen pen;
         if (enter_) {
-            pen.setColor(QColor(AppColorTheme::kAppMenuItemBgHoverColor));
+            pen.setColor(QColor(0x2979ff));
         } else {
             pen.setColor(QColor(0xffffff));
         }
