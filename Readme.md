@@ -1,6 +1,7 @@
 ![](docs/images/GammaRay.png)
 
 #### [简体中文](docs/Readme_CN.md)
+#### [技术文档](docs/Dev_CN.md)
 #### Showcase【演示地址 B站】
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)
 
