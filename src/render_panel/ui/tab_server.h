@@ -22,6 +22,7 @@ namespace tc
     class GrSettings;
     class TcQRWidget;
     class StreamContent;
+    class TcImageButton;
 
     class TabServer : public TabBase {
     public:
@@ -30,6 +31,7 @@ namespace tc
         void OnTabShow() override;
         void OnTabHide() override;
         void RegisterMessageListener();
+        void resizeEvent(QResizeEvent *event) override;
 
     private:
         void UpdateQRCode();
@@ -41,10 +43,9 @@ namespace tc
         QLabel* lbl_machine_code_ = nullptr;
         QLabel* lbl_machine_random_pwd_ = nullptr;
         TcQRWidget* lbl_qr_code_ = nullptr;
-
-        // client
         StreamContent* stream_content_ = nullptr;
-
+        TcImageButton* btn_password_echo_change_ = nullptr;
+        QLineEdit* remote_password_ = nullptr;
     };
 }
 

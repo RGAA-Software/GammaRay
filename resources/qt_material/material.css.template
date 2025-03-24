@@ -91,7 +91,7 @@ QTreeView,
 QListView,
 QLineEdit,
 QComboBox {
-  padding-left: 15px;
+  padding-left: 5px;
   border-radius: 0px;
   background-color: {{secondaryColor}};
   border-width: 0 0 2px 0;

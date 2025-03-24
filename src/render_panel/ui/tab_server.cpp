@@ -16,6 +16,7 @@
 #include <utility>
 #include <QPushButton>
 #include <QComboBox>
+#include <QRegExp>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
@@ -40,6 +41,7 @@
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_qt_widget/tc_label.h"
 #include "tc_qt_widget/tc_pushbutton.h"
+#include "tc_qt_widget/tc_image_button.h"
 
 namespace tc
 {
@@ -79,7 +81,7 @@ namespace tc
             left_root->addLayout(machine_code_qr_layout);
             content_layout->addSpacing(15);
             content_layout->addLayout(left_root);
-            content_layout->addSpacing(20);
+            content_layout->addSpacing(15);
 
             // machine code
             {
@@ -166,66 +168,98 @@ namespace tc
 
             // remote machine code
             {
-                auto layout = new NoMarginVLayout();
-                layout->addSpacing(10);
+                auto remote_input_width = 160;
+                auto remote_input_layout = new NoMarginHLayout();
 
                 // Machine Code //
                 {
+                    auto input_layout = new NoMarginVLayout();
                     auto title = new TcLabel(this);
-                    title->setFixedWidth(item_width);
+                    title->setFixedWidth(remote_input_width);
                     title->SetTextId("id_remote_device_id");
                     title->setAlignment(Qt::AlignLeft);
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
-                    layout->addWidget(title, 0, Qt::AlignLeft);
+                    input_layout->addWidget(title, 0, Qt::AlignLeft);
 
-                    auto remote_codes = new QLineEdit(this);
-                    remote_codes->setFixedWidth(item_width);
-                    remote_codes->setFixedHeight(40);
-                    remote_codes->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
-                    layout->addSpacing(5);
-                    layout->addWidget(remote_codes, 0, Qt::AlignLeft);
-                    left_root->addLayout(layout);
+                    auto remote_codes = new QComboBox(this);
+                    remote_codes->setValidator(new QIntValidator(this));
+                    remote_codes->setFixedWidth(remote_input_width);
+                    remote_codes->setFixedHeight(35);
+                    remote_codes->setStyleSheet(R"(font-size: 16px; font-weight: 700; color: #2979ff;)");
+                    remote_codes->setEditable(true);
+                    remote_codes->addItems({"1", "2", "3"});
+                    input_layout->addSpacing(5);
+                    input_layout->addWidget(remote_codes, 0, Qt::AlignLeft);
+                    remote_input_layout->addLayout(input_layout);
                 }
 
                 // Temporary Password
                 {
-                    layout->addSpacing(18);
+                    remote_input_layout->addSpacing(8);
+                    auto input_layout = new NoMarginVLayout();
 
                     auto title = new TcLabel(this);
-                    title->setFixedWidth(item_width);
+                    title->setFixedWidth(remote_input_width);
                     title->SetTextId("id_remote_device_password");
                     title->setAlignment(Qt::AlignLeft);
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
-                    layout->addWidget(title, 0, Qt::AlignLeft);
+                    input_layout->addWidget(title, 0, Qt::AlignLeft);
 
                     auto remote_pwd = new QLineEdit(this);
-                    remote_pwd->setFixedWidth(item_width);
-                    remote_pwd->setFixedHeight(40);
+                    remote_password_ = remote_pwd;
+                    remote_pwd->setEchoMode(QLineEdit::Password);
+                    remote_pwd->setFixedWidth(remote_input_width);
+                    remote_pwd->setFixedHeight(35);
                     remote_pwd->setText("");
-                    remote_pwd->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
-                    layout->addSpacing(5);
-                    layout->addWidget(remote_pwd, 0, Qt::AlignLeft);
-                    layout->addStretch();
-                    left_root->addLayout(layout);
+                    remote_pwd->setStyleSheet(R"(font-size: 16px; font-weight: 700; color: #2979ff;)");
+                    input_layout->addSpacing(5);
+                    input_layout->addWidget(remote_pwd, 0, Qt::AlignLeft);
+                    remote_input_layout->addLayout(input_layout);
+
+                    auto show_password = new TcImageButton(":/resources/image/ic_key.svg", QSize(16, 16), this);
+                    btn_password_echo_change_ = show_password;
+                    show_password->SetColor(0xf5f5f5, 0xe9e9e9, 0xd8d8d8);
+                    show_password->SetRoundRadius(15);
+                    show_password->setFixedSize(22, 22);
+                    show_password->SetOnImageButtonClicked([=, this]() {
+                        if (remote_pwd->echoMode() == QLineEdit::Password) {
+                            remote_pwd->setEchoMode(QLineEdit::Normal);
+                        }
+                        else {
+                            remote_pwd->setEchoMode(QLineEdit::Password);
+                        }
+                    });
                 }
 
                 // connect
                 {
+                    auto input_layout = new NoMarginVLayout();
+
+                    auto title = new TcLabel(this);
+                    title->setFixedWidth(1);
+                    title->setAlignment(Qt::AlignLeft);
+                    title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
+                    input_layout->addWidget(title, 0, Qt::AlignLeft);
+
                     auto btn_conn = new TcPushButton();
-                    btn_conn->setFixedWidth(item_width);
+                    btn_conn->setFixedWidth(80);
                     btn_conn->setFixedHeight(35);
                     btn_conn->SetTextId("id_connect");
-                    left_root->addSpacing(30);
-                    left_root->addWidget(btn_conn);
-                }
-            }
+                    input_layout->addWidget(btn_conn);
+                    remote_input_layout->addSpacing(8);
+                    remote_input_layout->addLayout(input_layout);
 
+                }
+
+                left_root->addLayout(remote_input_layout);
+            }
             left_root->addStretch(120);
         }
 
         // clients
         {
             stream_content_ = new StreamContent(context_, this);
+            stream_content_->setMinimumWidth(780);
             content_layout->addWidget(stream_content_);
         }
 
@@ -268,5 +302,14 @@ namespace tc
         if (lbl_qr_code_) {
             lbl_qr_code_->SetQRPixmap(qr_pixmap_);
         }
+    }
+
+    void TabServer::resizeEvent(QResizeEvent *event) {
+        auto r_pos = remote_password_->pos();
+        auto r_width = remote_password_->width();
+        auto r_height = remote_password_->height();
+        auto btn_width = btn_password_echo_change_->width();
+        auto btn_height = btn_password_echo_change_->height();
+        btn_password_echo_change_->setGeometry(r_pos.x() + r_width - 5 - btn_width, r_pos.y() + (r_height-btn_height)/2, btn_width, btn_height);
     }
 }
