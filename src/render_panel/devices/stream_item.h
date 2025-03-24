@@ -6,18 +6,10 @@
 #define SAILFISH_CLIENT_PC_STREAMITEM_H
 
 #include <string>
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
-
-    static std::string kStreamItemNtTypeWebSocket = "websocket";
-    static std::string kStreamItemNtTypeUdpKcp = "udp_kcp";
-    static std::string kStreamItemNtTypeRelay = "relay";
-    static std::string kStreamItemNtTypeWebRTCDirect = "webrtc_direct";
-    static std::string kStreamItemNtTypeWebRTC = "webrtc";
-
-    static std::string kStreamItemConnTypeDirect = "direct";
-    static std::string kStreamItemConnTypeSignaling = "signaling";
 
     // WARN: Ported from another project, some fields are deprecated.
     class StreamItem {

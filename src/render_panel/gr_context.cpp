@@ -21,7 +21,7 @@
 #include "service/service_manager.h"
 #include "gr_settings.h"
 #include "gr_application.h"
-#include "client/db/stream_db_manager.h"
+#include "devices/stream_db_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;

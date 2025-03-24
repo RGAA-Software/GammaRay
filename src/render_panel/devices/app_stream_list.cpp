@@ -10,21 +10,17 @@
 #include <QWidget>
 #include <QProcess>
 
-#include "client/db/stream_item.h"
-#include "client/db/stream_db_manager.h"
-#include "client/ct_client_context.h"
+#include "stream_db_manager.h"
 #include "tc_common_new/log.h"
 #include "widget_helper.h"
 #include "stream_item_widget.h"
-#include "client/ct_application.h"
-#include "client/ct_app_message.h"
 #include "create_stream_dialog.h"
 #include "stream_content.h"
-#include "client/ct_settings.h"
 #include "tc_common_new/base64.h"
 #include "tc_dialog.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
+#include "render_panel/gr_app_messages.h"
 
 namespace tc
 {

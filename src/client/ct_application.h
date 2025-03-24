@@ -9,8 +9,6 @@
 #include <QStackedWidget>
 #include "theme/QtAdvancedStylesheet.h"
 
-#include "db/stream_item.h"
-
 namespace tc
 {
 

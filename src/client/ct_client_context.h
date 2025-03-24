@@ -28,7 +28,6 @@ namespace tc
         void PostUITask(std::function<void()>&& task);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
         std::shared_ptr<MessageListener> ObtainMessageListener();
-        std::shared_ptr<StreamDBManager> GetDBManager();
         void SaveKeyValue(const std::string& k, const std::string& v);
         std::string GetValueByKey(const std::string& k);
         void UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info);
@@ -45,7 +44,6 @@ namespace tc
 
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
-        std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
         std::shared_ptr<SharedPreference> sp_ = nullptr;
         std::shared_ptr<Thread> task_thread_ = nullptr;
         std::string name_;

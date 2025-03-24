@@ -1,6 +1,8 @@
 #ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
+#include "devices/stream_item.h"
+
 namespace tc
 {
     class Message;
@@ -99,6 +101,22 @@ namespace tc
     class MsgForceRequestDeviceId {
     public:
 
+    };
+
+    class StreamItemAdded {
+    public:
+        StreamItem item_;
+    };
+
+    class StreamItemUpdated {
+    public:
+        StreamItem item_;
+    };
+
+    // Close workspace
+    class ClearWorkspace {
+    public:
+        StreamItem item_;
     };
 
 }

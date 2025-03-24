@@ -8,7 +8,6 @@
 #include <utility>
 #include <memory>
 
-#include "db/stream_item.h"
 #include "tc_message.pb.h"
 #include "client/ct_settings.h"
 
@@ -33,22 +32,6 @@ namespace tc
     class AppMessage {
     public:
 
-    };
-
-    class StreamItemAdded : public AppMessage {
-    public:
-        StreamItem item_;
-    };
-
-    class StreamItemUpdated : public AppMessage {
-    public:
-        StreamItem item_;
-    };
-
-    // Close workspace
-    class ClearWorkspace : public AppMessage {
-    public:
-        StreamItem item_;
     };
 
     // Clipboard

@@ -10,7 +10,6 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
-#include "db/stream_db_manager.h"
 #include "client/ct_app_message.h"
 #include <QTimer>
 #include <QApplication>
@@ -65,7 +64,6 @@ namespace tc
             settings->LoadRenderSettings();
         }
 
-        db_mgr_ = std::make_shared<StreamDBManager>();
         task_thread_ = Thread::Make("context_thread", 128);
         task_thread_->Poll();
 
@@ -89,10 +87,6 @@ namespace tc
 
     std::shared_ptr<MessageListener> ClientContext::ObtainMessageListener() {
         return msg_notifier_->CreateListener();
-    }
-
-    std::shared_ptr<StreamDBManager> ClientContext::GetDBManager() {
-        return db_mgr_;
     }
 
     void ClientContext::Exit() {

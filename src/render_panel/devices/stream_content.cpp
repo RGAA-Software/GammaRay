@@ -4,7 +4,6 @@
 
 #include "stream_content.h"
 
-#include "client/ct_settings.h"
 #include "tc_common_new/log.h"
 #include "app_stream_list.h"
 #include "widget_helper.h"

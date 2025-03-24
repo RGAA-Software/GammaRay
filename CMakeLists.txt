@@ -148,7 +148,6 @@ add_executable(${PROJECT_NAME} WIN32
         icon.rc
         ${TS_FILES}
         ${SERVICE_MGR_SRCS}
-        ${CLIENT_SRCS}
         ${DEVICE_LIST_SRCS}
 )
 

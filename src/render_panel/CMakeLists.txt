@@ -43,6 +43,8 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/create_stream_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_item_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_content.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_item.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_db_manager.cpp
 
         PARENT_SCOPE
 )

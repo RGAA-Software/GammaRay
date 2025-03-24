@@ -11,6 +11,7 @@
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_dialog.h"
 #include "render_panel/gr_context.h"
+#include "render_panel/gr_app_messages.h"
 
 namespace tc
 {

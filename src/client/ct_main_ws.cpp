@@ -24,6 +24,7 @@
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "translator/tc_translator.h"
+#include "ct_stream_item_net_type.h"
 
 using namespace tc;
 

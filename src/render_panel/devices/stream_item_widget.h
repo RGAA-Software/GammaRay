@@ -13,7 +13,7 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QLabel>
-#include "client/db/stream_item.h"
+#include "stream_item.h"
 
 namespace tc
 {

@@ -20,7 +20,7 @@
 #include <map>
 #include <QProcess>
 
-#include "client/db/stream_item.h"
+#include "stream_item.h"
 
 namespace tc
 {

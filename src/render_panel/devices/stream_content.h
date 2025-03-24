@@ -8,7 +8,7 @@
 #include <QWidget>
 #include <memory>
 #include <functional>
-#include "client/db/stream_item.h"
+#include "stream_item.h"
 
 namespace tc
 {
