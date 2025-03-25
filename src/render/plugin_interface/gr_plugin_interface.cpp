@@ -225,8 +225,8 @@ namespace tc
         if (!settings.relay_port_.empty()) {
             sys_settings_.relay_port_ = settings.relay_port_;
         }
-        LOGI("OnSyncSettings: device id: {}, relay host: {}, port: {}",
-             sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
+        //LOGI("OnSyncSettings: device id: {}, relay host: {}, port: {}",
+        //     sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
     }
 
 }

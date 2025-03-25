@@ -16,8 +16,7 @@ namespace tc
 
     RdContext::RdContext() {
         msg_notifier_ = std::make_shared<MessageNotifier>();
-        asio2_pool_ = std::make_shared<asio2::iopool>();
-        asio2_pool_->start();
+        task_rt_ = std::make_shared<TaskRuntime>(8);
 
         stream_plugin_thread_ = Thread::Make("stream plugin thread", 128);
         stream_plugin_thread_->Poll();
@@ -44,7 +43,7 @@ namespace tc
     }
 
     void RdContext::PostTask(std::function<void()>&& task) {
-        asio2_pool_->post(std::move(task));
+        task_rt_->Post(SimpleThreadTask::Make(std::move(task)));
     }
 
     void RdContext::PostUITask(std::function<void()>&& task) {
@@ -55,10 +54,6 @@ namespace tc
 
     void RdContext::PostStreamPluginTask(std::function<void()>&& task) {
         stream_plugin_thread_->Post(std::move(task));
-    }
-
-    std::shared_ptr<asio2::iopool> RdContext::GetAsio2IoPool() {
-        return asio2_pool_;
     }
 
     std::string RdContext::GetCurrentExeFolder() {

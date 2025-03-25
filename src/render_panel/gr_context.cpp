@@ -44,8 +44,7 @@ namespace tc
 
         srv_manager_ = std::make_shared<GrRenderController>(app);
 
-        asio2_pool_ = std::make_shared<asio2::iopool>(8);
-        asio2_pool_->start();
+        task_rt_ = std::make_shared<TaskRuntime>(8);
 
         steam_mgr_ = SteamManager::Make();
         steam_mgr_->ScanInstalledSteamPath();
@@ -89,7 +88,7 @@ namespace tc
     }
 
     void GrContext::PostTask(std::function<void()>&& task) {
-        asio2_pool_->post(task);
+        task_rt_->Post(SimpleThreadTask::Make(std::move(task)));
     }
 
     void GrContext::PostUITask(std::function<void()>&& task) {

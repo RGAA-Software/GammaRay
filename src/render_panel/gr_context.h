@@ -28,6 +28,7 @@ namespace tc
     class GrApplication;
     // Device list
     class StreamDBManager;
+    class TaskRuntime;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -68,7 +69,7 @@ namespace tc
         SharedPreference* sp_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
-        std::shared_ptr<asio2::iopool> asio2_pool_ = nullptr;
+        std::shared_ptr<TaskRuntime> task_rt_ = nullptr;
         std::vector<EthernetInfo> ips_;
         std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
         std::shared_ptr<GrResources> res_manager_ = nullptr;
