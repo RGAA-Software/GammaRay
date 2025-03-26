@@ -69,10 +69,10 @@ namespace tc
                 }
             }
         }
+
         // spvr server
         spvr_server_host_ = sp_->Get(kStSpvrServerHost, "");
         spvr_server_port_ = sp_->Get(kStSpvrServerPort, "");
-
         // signaling
         sig_server_address_ = sp_->Get(kStSigServerAddress, "");
         sig_server_port_ = sp_->Get(kStSigServerPort, "");
@@ -320,6 +320,7 @@ namespace tc
             LOGE("Spvr is not online: {} {} ", spvr_server_host_, spvr_server_port_);
             return false;
         }
+        LOGI("Verify Spvr ok, address: {}:{}", spvr_server_host_, spvr_server_port_);
 
         // check relay
         ok = CanPingServer(relay_server_host_, relay_server_port_);
@@ -327,6 +328,7 @@ namespace tc
             LOGE("Relay is not online: {} {} ", relay_server_host_, relay_server_port_);
             return false;
         }
+        LOGI("Verify Relay ok, address: {}:{}", relay_server_host_, relay_server_port_);
 
         // check profile
         ok = CanPingServer(profile_server_host_, profile_server_port_);
@@ -334,6 +336,7 @@ namespace tc
             LOGE("Profile is not online: {} {} ", profile_server_host_, profile_server_port_);
             return false;
         }
+        LOGI("Verify Profile ok, address: {}:{}", profile_server_host_, profile_server_port_);
 
         return true;
     }
@@ -411,7 +414,7 @@ namespace tc
 
     bool GrSettings::CanPingServer(const std::string& host, const std::string& port) {
         auto client =
-                HttpClient::Make(std::format("{}:{}", spvr_server_host_, spvr_server_port_), "/ping", 2);
+                HttpClient::Make(std::format("{}:{}", host, port), "/ping", 2);
         auto resp = client->Request();
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request new device failed.");
@@ -460,7 +463,7 @@ namespace tc
             }
 
             auto r = obj["data"].get<std::string>();
-            LOGI("Verify result: {}", r);
+            LOGI("Verify device info result: {}, {}==>{}", r, device_id_, device_random_pwd_);
             if (r == "true") {
                 return DeviceVerifyResult::kVfSuccess;
             } else {

@@ -27,6 +27,7 @@ namespace tc
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
         void SyncInfo(const tc::NetSyncInfo& info) override;
+        void OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) override;
 
     private:
         void NotifyMediaClientConnected();

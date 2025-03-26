@@ -7,6 +7,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
+#include "tc_common_new/ip_util.h"
 #include "render/plugins/plugin_ids.h"
 #include "tc_relay_client/relay_server_sdk.h"
 #include "tc_relay_client/relay_server_sdk_param.h"
@@ -48,25 +49,43 @@ namespace tc
 
         std::thread([=, this]() {
             int connect_count = 0;
+            auto ips = IPUtil::ScanIPs();
+            std::vector<RelayDeviceNetInfo> net_info_;
+            for (const auto& info : ips) {
+                net_info_.push_back(RelayDeviceNetInfo {
+                    .ip_ = info.ip_addr_,
+                    .mac_ = info.mac_address_,
+                });
+            }
+
             for (;;) {
                 auto device_id = "server_" + sys_settings_.device_id_;
                 auto relay_host = GetConfigParam<std::string>("relay_host");
                 auto relay_port = std::atoi(GetConfigParam<std::string>("relay_port").c_str());
+
+                if (relay_host != sys_settings_.relay_host_ && !sys_settings_.relay_host_.empty()) {
+                    relay_host = sys_settings_.relay_host_;
+                }
+
+                auto sys_relay_port = std::atoi(sys_settings_.relay_port_.c_str());
+                if (relay_port != sys_relay_port && sys_relay_port > 0) {
+                    relay_port = sys_relay_port;
+                }
+                LOGI("OnCreate try to connect, connect count: {}; device id: {}, relay host: {}, relay port: {}",
+                     connect_count++, device_id, relay_host, relay_port);
 
                 if (sys_settings_.device_id_.empty() || relay_host.empty() || relay_port <= 0) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                     continue;
                 }
 
-                LOGI("OnCreate, connect count: {}; device id: {}, relay host: {}, relay port: {}",
-                     connect_count++, device_id, relay_host, relay_port);
-
                 // todo: check device id, empty? try to retry
                 relay_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
                     .host_ = relay_host,
                     .port_ = relay_port,
                     .ssl_ = false,
-                    .device_id_ = device_id
+                    .device_id_ = device_id,
+                    .net_info_ = net_info_,
                 });
 
                 relay_sdk_->SetOnConnectedCallback([=, this]() {
@@ -144,7 +163,7 @@ namespace tc
     }
 
     void RelayPlugin::SyncInfo(const tc::NetSyncInfo &info) {
-
+        GrNetPlugin::SyncInfo(info);
     }
 
     void RelayPlugin::NotifyMediaClientConnected() {
@@ -155,5 +174,9 @@ namespace tc
     void RelayPlugin::NotifyMediaClientDisConnected() {
         auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
         this->CallbackEvent(event);
+    }
+
+    void RelayPlugin::OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) {
+        GrPluginInterface::OnSyncSystemSettings(settings);
     }
 }
