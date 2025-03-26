@@ -49,3 +49,6 @@
 [submodule "deps/tc_server_protocol"]
 	path = deps/tc_server_protocol
 	url = git@github.com:RGAA-Software/tc_protocol.git
+[submodule "deps/tc_spvr_client"]
+	path = deps/tc_spvr_client
+	url = git@github.com:RGAA-Software/tc_spvr_client.git
