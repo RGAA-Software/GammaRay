@@ -30,6 +30,7 @@ namespace tc
     class FloatButtonStateIndicator;
     class FileTransInterface;
     class MainProgress;
+    class GameView;
 
     class Workspace : public QMainWindow {
     public:
@@ -91,6 +92,8 @@ namespace tc
         MainProgress* main_progress_ = nullptr;
 
         int title_bar_height_ = 35;
+    private:
+        GameView* game_view_ = nullptr;
     };
 
 }

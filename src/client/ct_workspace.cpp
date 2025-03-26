@@ -35,9 +35,10 @@
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 #ifdef TC_ENABLE_FILE_TRANSMISSION
 #include "core/file_trans_interface.h"
-#include "tc_dialog.h"
-
 #endif // TC_ENABLE_FILE_TRANSMISSION
+#include "tc_dialog.h"
+#include "ct_game_view.h"
+
 
 
 namespace tc
@@ -73,6 +74,14 @@ namespace tc
 
         video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kI420, this);
         //layout->addWidget(video_widget_);
+
+
+        //dev test
+        game_view_ = new GameView(ctx, sdk_, params, nullptr);
+        game_view_->resize(800, 600);
+        game_view_->showNormal();
+        game_view_->hide();
+
 
         setCentralWidget(root_widget);
 
@@ -228,6 +237,9 @@ namespace tc
             video_widget_->RefreshCapturedMonitorInfo(info);
             video_widget_->RefreshI420Image(image);
             context_->UpdateCapturingMonitorInfo(info);
+
+            game_view_->RefreshCapturedMonitorInfo(info);
+            game_view_->RefreshI420Image(image);
         });
 
         sdk_->SetOnAudioFrameDecodedCallback([=, this](const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
