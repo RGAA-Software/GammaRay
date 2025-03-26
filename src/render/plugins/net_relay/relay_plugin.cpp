@@ -12,6 +12,8 @@
 #include "tc_relay_client/relay_server_sdk_param.h"
 #include "relay_message.pb.h"
 
+using namespace relay;
+
 void* GetInstance() {
     static tc::RelayPlugin plugin;
     return (void*)&plugin;
