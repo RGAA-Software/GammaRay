@@ -145,11 +145,11 @@ namespace tc
                 layout->addStretch();
                 machine_code_qr_layout->addLayout(layout);
 
-                int size = 30;
+                int size = 22;
                 auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
-                auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, size/2);
+                auto avatar = new RoundImageDisplay(img_path.c_str(), size, size, 4);
                 avatar->setParent(qr_info);
-                avatar->setGeometry((qr_info->width()-size)/2, (qr_info->height()-size)/2, size, size);
+                avatar->setGeometry((qr_info->width()-size)/2+1, (qr_info->height()-size)/2+1, size, size);
 
             }
 
