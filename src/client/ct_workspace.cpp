@@ -49,7 +49,7 @@ namespace tc
 
         auto title_name = QMainWindow::tr("GammaRay Streamer") + "[" + settings_->stream_name_.c_str() + "]";
         auto notifier = this->context_->GetMessageNotifier();
-        (new MainWindowWrapper(notifier, this))->Setup(title_name);
+        //(new MainWindowWrapper(notifier, this))->Setup(title_name);
 
         setAcceptDrops(true);
         QString app_dir = qApp->applicationDirPath();
@@ -346,12 +346,19 @@ namespace tc
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {
-        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"));
-        if (msg_box->exec() == 0) {
+//        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"));
+//        if (msg_box->exec() == 0) {
+//            Exit();
+//        } else {
+//            event->ignore();
+//        }
+
+        event->ignore();
+        auto dg = TcDialog::Make(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
+        dg->SetOnDialogSureClicked([=, this]() {
             Exit();
-        } else {
-            event->ignore();
-        }
+        });
+        dg->Show();
     }
 
     void Workspace::dragEnterEvent(QDragEnterEvent *event) {
