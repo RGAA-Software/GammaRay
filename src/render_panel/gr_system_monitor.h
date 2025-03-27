@@ -20,6 +20,7 @@ namespace tc
     class MessageListener;
     class ServiceManager;
     class GrSettings;
+    class SpvrManager;
 
     class GrSystemMonitor {
     public:
@@ -39,6 +40,7 @@ namespace tc
         void RegisterMessageListener();
         Response<bool, bool> CheckServerAlive();
         void StartServer();
+        bool VerifyOnlineServers();
         void CheckOnlineServers();
 
     private:
@@ -53,6 +55,7 @@ namespace tc
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ = nullptr;
+        std::shared_ptr<SpvrManager> spvr_mgr_ = nullptr;
     };
 
 }

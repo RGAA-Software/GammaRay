@@ -119,15 +119,10 @@ namespace tc
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
-        // ping servers
-        bool VerifyOnlineServers();
-        // request server
-        bool RequestOnlineServers();
         // verify device_id/random_pwd pair
         DeviceVerifyResult VerifyDeviceInfo();
 
     private:
-        bool CanPingServer(const std::string& host, const std::string& port);
 
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;

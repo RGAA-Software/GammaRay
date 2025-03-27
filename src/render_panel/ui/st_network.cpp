@@ -15,6 +15,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_dialog.h"
+#include "tc_spvr_client/spvr_manager.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -22,12 +23,6 @@
 #include <QCheckBox>
 #include <QDebug>
 #include <QFileDialog>
-#include <Windows.h>
-#include <Mmsystem.h>
-#include <SetupAPI.h>
-#include <devguid.h>
-#include <RegStr.h>
-#include <initguid.h>
 
 namespace tc
 {
@@ -431,9 +426,12 @@ namespace tc
                 //settings_->SetSigServerPort(edt_sig_server_port_->text().toStdString());
                 //settings_->SetCoturnServerAddress(edt_coturn_server_host_->text().toStdString());
                 //settings_->SetCoturnServerPort(edt_coturn_server_port_->text().toStdString());
-                settings_->SetSpvrServerHost(edt_spvr_server_host_->text().toStdString());
-                settings_->SetSpvrServerPort(edt_spvr_server_port_->text().toStdString());
+                auto spvr_host = edt_spvr_server_host_->text().toStdString();
+                auto spvr_port = edt_spvr_server_port_->text().toStdString();
+                settings_->SetSpvrServerHost(spvr_host);
+                settings_->SetSpvrServerPort(spvr_port);
                 settings_->SetPanelListeningPort(edt_panel_port_->text().toInt());
+                context_->GetSpvrManager()->SetHostPort(spvr_host, std::atoi(spvr_port.c_str()));
                 // Load again
                 settings_->Load();
 

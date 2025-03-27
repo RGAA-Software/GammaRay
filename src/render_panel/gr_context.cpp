@@ -22,6 +22,7 @@
 #include "gr_settings.h"
 #include "gr_application.h"
 #include "devices/stream_db_manager.h"
+#include "tc_spvr_client/spvr_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -75,6 +76,9 @@ namespace tc
         LOGI("Service path: {}", bin_path);
         service_manager_->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
         service_manager_->Install();
+
+        spvr_mgr_ = std::make_shared<SpvrManager>();
+        spvr_mgr_->SetHostPort(settings_->spvr_server_host_, std::atoi(settings_->spvr_server_port_.c_str()));
 
         StartTimers();
     }
@@ -178,6 +182,10 @@ namespace tc
 
     std::shared_ptr<StreamDBManager> GrContext::GetStreamDBManager() {
         return stream_db_mgr_;
+    }
+
+    std::shared_ptr<SpvrManager> GrContext::GetSpvrManager() {
+        return spvr_mgr_;
     }
 
 }

@@ -12,6 +12,7 @@
 #include <QPixmap>
 #include <QStackedWidget>
 #include <QLabel>
+#include <QComboBox>
 
 namespace tc
 {
@@ -46,6 +47,7 @@ namespace tc
         StreamContent* stream_content_ = nullptr;
         TcImageButton* btn_password_echo_change_ = nullptr;
         QLineEdit* remote_password_ = nullptr;
+        QComboBox* remote_devices_ = nullptr;
     };
 }
 

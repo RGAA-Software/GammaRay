@@ -42,6 +42,7 @@
 #include "tc_qt_widget/tc_label.h"
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
+#include "tc_spvr_client/spvr_manager.h"
 
 namespace tc
 {
@@ -182,6 +183,7 @@ namespace tc
                     input_layout->addWidget(title, 0, Qt::AlignLeft);
 
                     auto remote_codes = new QComboBox(this);
+                    remote_devices_ = remote_codes;
                     remote_codes->setValidator(new QIntValidator(this));
                     remote_codes->setFixedWidth(remote_input_width);
                     remote_codes->setFixedHeight(35);
@@ -248,6 +250,19 @@ namespace tc
                     input_layout->addWidget(btn_conn);
                     remote_input_layout->addSpacing(8);
                     remote_input_layout->addLayout(input_layout);
+
+                    connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
+                        auto remote_device_id = "server_" + remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
+                        auto spvr_mgr = context_->GetSpvrManager();
+                        auto r = spvr_mgr->GetDeviceInfo(remote_device_id);
+                        if (!r) {
+                            LOGE("Get device info for: {} failed: {}", remote_device_id, SpvrError2String(r.error()));
+                            return;
+                        }
+                        auto remote_device_info = r.value();
+                        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
+                             remote_device_id, remote_device_info.relay_server_ip_, remote_device_info.relay_server_port_);
+                    });
 
                 }
 

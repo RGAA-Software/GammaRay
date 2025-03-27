@@ -18,6 +18,8 @@
 #include "render_panel/network/ws_panel_server.h"
 #include "gr_settings.h"
 #include "service/service_manager.h"
+#include "tc_spvr_client/spvr_manager.h"
+#include "tc_common_new/http_base_op.h"
 #include <QApplication>
 
 #pragma comment(lib, "version.lib")
@@ -35,6 +37,7 @@ namespace tc
         this->context_ = app->GetContext();
         this->service_manager_ = context_->GetServiceManager();
         this->settings_ = GrSettings::Instance();
+        this->spvr_mgr_ = this->context_->GetSpvrManager();
     }
 
     void GrSystemMonitor::Start() {
@@ -268,9 +271,64 @@ namespace tc
     }
 
     void GrSystemMonitor::CheckOnlineServers() {
-        if (!settings_->VerifyOnlineServers()) {
-            settings_->RequestOnlineServers();
+        if (!this->VerifyOnlineServers()) {
+            auto online_servers = spvr_mgr_->GetOnlineServers();
+            if (!online_servers) {
+                SpvrError err = online_servers.error();
+                LOGE("Can't request online servers: {}:{}, err: {}",
+                     settings_->spvr_server_host_, settings_->spvr_server_port_, SpvrError2String(err));
+                return;
+            }
+            bool settings_changed = false;
+            if (!online_servers->relay_servers_.empty()) {
+                auto srv = online_servers->relay_servers_.at(0);
+                settings_->SetRelayServerHost(srv.srv_w3c_ip_);
+                settings_->SetRelayServerPort(srv.srv_working_port_);
+                settings_changed = true;
+            }
+            if (!online_servers->pr_servers_.empty()) {
+                auto srv = online_servers->pr_servers_.at(0);
+                settings_->SetIdServerHost(srv.srv_w3c_ip_);
+                settings_->SetIdServerPort(srv.srv_working_port_);
+                settings_changed = true;
+            }
+            if (settings_changed) {
+                context_->SendAppMessage(MsgSettingsChanged{});
+            }
         }
+    }
+
+    bool GrSystemMonitor::VerifyOnlineServers() {
+        if (settings_->spvr_server_host_.empty() || settings_->spvr_server_port_.empty()
+            || settings_->relay_server_host_.empty() || settings_->relay_server_port_.empty()
+            || settings_->profile_server_host_.empty() || settings_->profile_server_port_.empty()) {
+            return false;
+        }
+        // check spvr
+        auto ok = HttpBaseOp::CanPingServer(settings_->spvr_server_host_, settings_->spvr_server_port_);
+        if (!ok) {
+            LOGE("Spvr is not online: {} {} ", settings_->spvr_server_host_, settings_->spvr_server_port_);
+            return false;
+        }
+        LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
+
+        // check relay
+        ok = HttpBaseOp::CanPingServer(settings_->relay_server_host_, settings_->relay_server_port_);
+        if (!ok) {
+            LOGE("Relay is not online: {} {} ", settings_->relay_server_host_, settings_->relay_server_port_);
+            return false;
+        }
+        LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
+
+        // check profile
+        ok = HttpBaseOp::CanPingServer(settings_->profile_server_host_, settings_->profile_server_port_);
+        if (!ok) {
+            LOGE("Profile is not online: {} {} ", settings_->profile_server_host_, settings_->profile_server_port_);
+            return false;
+        }
+        LOGI("Verify Profile ok, address: {}:{}", settings_->profile_server_host_, settings_->profile_server_port_);
+
+        return true;
     }
 
 }
