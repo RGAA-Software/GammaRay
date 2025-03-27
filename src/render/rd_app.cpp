@@ -602,11 +602,11 @@ namespace tc
         return monitor_capture_plugin_;
     }
 
-    tc::GrVideoEncoderPlugin* RdApplication::GetWorkingVideoEncoderPlugin() {
+    std::map<std::string, GrVideoEncoderPlugin*> RdApplication::GetWorkingVideoEncoderPlugins() {
         if (encoder_thread_) {
-            return encoder_thread_->GetWorkingVideoEncoderPlugin();
+            return encoder_thread_->GetWorkingVideoEncoderPlugins();
         }
-        return nullptr;
+        return {};
     }
 
     bool RdApplication::GenerateD3DDevice(uint64_t adapter_uid) {

@@ -68,7 +68,7 @@ namespace tc
     }
 
     bool FFmpegEncoderPlugin::IsWorking() {
-        return init_success_ && plugin_enabled_;
+        return !video_encoders_.empty() && plugin_enabled_;
     }
 
     bool FFmpegEncoderPlugin::CanEncodeTexture() {
@@ -81,8 +81,15 @@ namespace tc
 
     bool FFmpegEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
         GrVideoEncoderPlugin::Init(config, monitor_name);
-        video_encoders_[monitor_name] = std::make_shared<FFmpegEncoder>(this);
-        return video_encoders_[monitor_name]->Init(config, monitor_name);
+        auto encoder = std::make_shared<FFmpegEncoder>(this);
+        auto ok = encoder->Init(config, monitor_name);
+        if (!ok) {
+            LOGE("Init ffmpeg encoder for: {} failed.", monitor_name);
+            return false;
+        }
+        LOGI("FFmpeg encoder init success for: {}", monitor_name);
+        video_encoders_[monitor_name] = encoder;
+        return true;
     }
 
     void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {

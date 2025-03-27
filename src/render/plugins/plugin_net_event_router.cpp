@@ -285,21 +285,23 @@ namespace tc {
     void PluginNetEventRouter::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {
         app_->PostGlobalTask([=, this]() {
             auto sm = msg->switch_monitor();
-            auto plugin = app_->GetWorkingMonitorCapturePlugin();
-            if (!plugin) {
+            auto capture_plugin = app_->GetWorkingMonitorCapturePlugin();
+            if (!capture_plugin) {
                 return;
             }
-            plugin->SetCaptureMonitor(sm.name());
+            capture_plugin->SetCaptureMonitor(sm.name());
             //plugin->SendCapturingMonitorMessage();
 
-            auto encoder_plugin = app_->GetWorkingVideoEncoderPlugin();
-            if (encoder_plugin) {
-                encoder_plugin->InsertIdr();
+            auto encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
+            for (const auto& [k, encoder_plugin] : encoder_plugins) {
+                if (encoder_plugin) {
+                    encoder_plugin->InsertIdr();
+                }
             }
 
             auto cm_msg = CaptureMonitorInfoMessage {
-                .monitors_ = plugin->GetCaptureMonitorInfo(),
-                .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+                .monitors_ = capture_plugin->GetCaptureMonitorInfo(),
+                .capturing_monitor_name_ = capture_plugin->GetCapturingMonitorName(),
             };
             //msg_notifier_->SendAppMessage(msg);
             win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);

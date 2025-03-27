@@ -36,12 +36,14 @@ namespace tc
         void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index);
         void Encode(const CaptureVideoFrame& msg);
         void Exit();
-        GrVideoEncoderPlugin* GetWorkingVideoEncoderPlugin();
+        std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
 
     private:
         void PostEncTask(std::function<void()>&& task);
         std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
         void PrintEncoderConfig(const tc::EncoderConfig& config);
+        bool HasEncoderForMonitor(const std::string& monitor_name);
+        GrVideoEncoderPlugin* GetEncoderForMonitor(const std::string& monitor_name);
 
     private:
         RdSettings* settings_ = nullptr;
@@ -57,7 +59,7 @@ namespace tc
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
-        GrVideoEncoderPlugin* working_encoder_plugin_ = nullptr;
+        std::map<std::string, GrVideoEncoderPlugin*> encoder_plugins_;
         std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
         std::map<std::string, std::optional<CaptureVideoFrame>> last_video_frames_;
     };

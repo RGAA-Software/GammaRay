@@ -65,19 +65,20 @@ namespace tc
     }
 
     bool AmfEncoderPlugin::IsWorking() {
-        return init_success_ && plugin_enabled_ && !video_encoders_.empty();
+        return plugin_enabled_ && !video_encoders_.empty();
     }
 
     bool AmfEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
         GrVideoEncoderPlugin::Init(config, monitor_name);
-        video_encoders_[monitor_name] = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
-        init_success_ = video_encoders_[monitor_name]->Initialize(config);
-        if (!init_success_) {
-            LOGE("AMF encoder init failed!");
+        auto encoder = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
+        auto ok = encoder->Initialize(config);
+        if (!ok) {
+            LOGE("AMF encoder init failed for: {}", monitor_name);
             return false;
         }
+        video_encoders_[monitor_name] = encoder;
         LOGI("Video encoder init success for monitor: {}", monitor_name);
-        return init_success_;
+        return true;
     }
 
     void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {

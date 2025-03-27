@@ -86,7 +86,7 @@ namespace tc
         void ResetMonitorResolution(const std::string& name, int w, int h);
         std::shared_ptr<PluginManager> GetPluginManager();
         tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin();
-        tc::GrVideoEncoderPlugin* GetWorkingVideoEncoderPlugin();
+        std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
         bool GenerateD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11Device> GetD3DDevice();
         ComPtr<ID3D11DeviceContext> GetD3DContext();

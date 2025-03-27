@@ -153,10 +153,12 @@ namespace tc
                     || last_video_frame.value().frame_height_ != cap_video_msg.frame_height_;
             }();
             //frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
-            if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !working_encoder_plugin_) {
-                if (working_encoder_plugin_) {
+
+            auto target_encoder_plugin = GetEncoderForMonitor(monitor_name);
+            if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !target_encoder_plugin) {
+                if (target_encoder_plugin) {
                     // todo : Test it!
-                    working_encoder_plugin_->Exit(monitor_name);
+                    target_encoder_plugin->Exit(monitor_name);
                 }
                 tc::EncoderConfig encoder_config;
                 if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
@@ -231,24 +233,27 @@ namespace tc
                 bool is_mocking = settings_->capture_.mock_video_;
                 auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
                 if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_name)) {
-                    working_encoder_plugin_ = nvenc_encoder;
+                    target_encoder_plugin = nvenc_encoder;
                 } else {
                     LOGW("Init NVENC failed, will try AMF.");
                     auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
                     if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_name)) {
-                        working_encoder_plugin_ = amf_encoder;
+                        target_encoder_plugin = amf_encoder;
                     } else {
                         LOGW("Init AMF failed, will try FFmpeg.");
                         auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
                         if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                            working_encoder_plugin_ = ffmpeg_encoder;
+                            target_encoder_plugin = ffmpeg_encoder;
                         } else {
                             LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
                             return;
                         }
                     }
                 }
-                LOGI("Finally, we use encoder plugin: {}, version: {}", working_encoder_plugin_->GetPluginName(), working_encoder_plugin_->GetVersionName());
+
+                encoder_plugins_[monitor_name] = target_encoder_plugin;
+                LOGI("Finally, we use encoder plugin: {}, version: {} for monitor: {}",
+                     target_encoder_plugin->GetPluginName(), target_encoder_plugin->GetVersionName(), monitor_name);
 
                 auto video_type = [=]() -> GrPluginEncodedVideoType {
                     if (settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264) {
@@ -288,39 +293,42 @@ namespace tc
 
                 //video_encoder_->Encode(target_texture, frame_index);
                 bool can_encode_texture = false;
-                if (working_encoder_plugin_ && working_encoder_plugin_->CanEncodeTexture()) {
+                if (target_encoder_plugin && target_encoder_plugin->CanEncodeTexture()) {
                     can_encode_texture = true;
-                    working_encoder_plugin_->Encode(target_texture, frame_index, cap_video_msg);
+                    target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
                 }
                 auto end = TimeExt::GetCurrentTimestamp();
                 auto diff = end - beg;
                 RdStatistics::Instance()->AppendEncodeDuration(diff);
 
-                // TODO: May make latency !!!
-                D3D11_TEXTURE2D_DESC desc;
-                target_texture->GetDesc(&desc);
-                auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
-                    // callback in Enc thread
-                    context_->PostStreamPluginTask([=, this]() {
-                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                            plugin->OnRawVideoFrameRgba(image);
+                //Todo: TEST
+                context_->PostTask([=, this]() {
+                    //TimeDuration td("Measure Map Raw Texture");
+                    D3D11_TEXTURE2D_DESC desc;
+                    target_texture->GetDesc(&desc);
+                    auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                        // callback in Enc thread
+                        context_->PostStreamPluginTask([=, this]() {
+                            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                                plugin->OnRawVideoFrameRgba(image);
+                            });
                         });
-                    });
-                };
-                auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
-                    // callback in YUV converter thread
-                    if (working_encoder_plugin_ && !can_encode_texture) {
-                        PostEncTask([=, this]() {
-                            working_encoder_plugin_->Encode(image, frame_index, cap_video_msg);
+                    };
+                    auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                        // callback in YUV converter thread
+                        if (target_encoder_plugin && !can_encode_texture) {
+                            PostEncTask([=, this]() {
+                                target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                            });
+                        }
+                        context_->PostStreamPluginTask([=, this]() {
+                            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                                plugin->OnRawVideoFrameYuv(image);
+                            });
                         });
-                    }
-                    context_->PostStreamPluginTask([=, this]() {
-                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                            plugin->OnRawVideoFrameYuv(image);
-                        });
-                    });
-                };
-                frame_carrier->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+                    };
+                    frame_carrier->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+                });
             }
             else {
                 context_->PostStreamPluginTask([=, this]() {
@@ -332,8 +340,8 @@ namespace tc
                 // todo: convert to YUV
 
                 // raw video frame
-                if (working_encoder_plugin_) {
-                    working_encoder_plugin_->Encode(cap_video_msg.raw_image_, frame_index, cap_video_msg);
+                if (target_encoder_plugin) {
+                    target_encoder_plugin->Encode(cap_video_msg.raw_image_, frame_index, cap_video_msg);
                 }
             }
         });
@@ -356,8 +364,21 @@ namespace tc
         return nullptr;
     }
 
-    GrVideoEncoderPlugin* EncoderThread::GetWorkingVideoEncoderPlugin() {
-        return working_encoder_plugin_;
+    std::map<std::string, GrVideoEncoderPlugin*> EncoderThread::GetWorkingVideoEncoderPlugins() {
+        return encoder_plugins_;
+    }
+
+    bool EncoderThread::HasEncoderForMonitor(const std::string& monitor_name) {
+        return GetEncoderForMonitor(monitor_name) != nullptr;
+    }
+
+    GrVideoEncoderPlugin* EncoderThread::GetEncoderForMonitor(const std::string& monitor_name) {
+        for (const auto& [name, plugin] : encoder_plugins_) {
+            if (name == monitor_name) {
+                return plugin;
+            }
+        }
+        return nullptr;
     }
 
     void EncoderThread::PrintEncoderConfig(const tc::EncoderConfig& config) {

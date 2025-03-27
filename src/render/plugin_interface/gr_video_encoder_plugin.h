@@ -41,7 +41,6 @@ namespace tc
         int gop_size_ = 60;
         int bitrate_ = 10000000; // 10Mbps
         bool insert_idr_ = false;
-        std::atomic_bool init_success_ = false;
         std::map<std::string, EncoderConfig> encoder_configs_;
     };
 

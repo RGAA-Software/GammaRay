@@ -56,7 +56,7 @@ namespace tc
     }
 
     bool NvencEncoderPlugin::IsWorking() {
-        return init_success_ && plugin_enabled_ && !video_encoders_.empty();
+        return plugin_enabled_ && !video_encoders_.empty();
     }
 
     bool NvencEncoderPlugin::CanEncodeTexture() {
@@ -68,19 +68,21 @@ namespace tc
     }
 
     bool NvencEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
-        video_encoders_[monitor_name] = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
+        auto encoder = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
         LOGI("config bitrate: {} for monitor: {}", config.bitrate, monitor_name);
-        init_success_ = video_encoders_[monitor_name]->Initialize(config);
-        if (!init_success_) {
-            LOGE("Init NVENC encoder failed!");
+        auto ok = encoder->Initialize(config);
+        if (!ok) {
+            LOGE("Init NVENC encoder failed for monitor: {}", monitor_name);
+            return false;
         }
-        return init_success_;
+        video_encoders_[monitor_name] = encoder;
+        return ok;
     }
 
     void NvencEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
         auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
         auto monitor_name = std::string(cap_video_msg.display_name_);
-        if (IsWorking() && HasEncoderForMonitor(monitor_name)) {
+        if (HasEncoderForMonitor(monitor_name)) {
             video_encoders_[monitor_name]->Encode(tex2d, frame_index, extra);
         }
     }
