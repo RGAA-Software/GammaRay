@@ -91,7 +91,7 @@ namespace tc
         // progress
         MainProgress* main_progress_ = nullptr;
 
-        int title_bar_height_ = 35;
+        int title_bar_height_ = 0; //35;
     private:
         GameView* game_view_ = nullptr;
     };
