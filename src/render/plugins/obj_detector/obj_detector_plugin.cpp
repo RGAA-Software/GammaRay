@@ -40,20 +40,12 @@ namespace tc
         if (!IsPluginEnabled()) {
             return true;
         }
-
-        root_widget_->show();
-        {
-            auto root_layout = new QVBoxLayout();
-            label_ = new QLabel(root_widget_);
-            label_->setFixedSize(root_widget_->size());
-            root_layout->addWidget(label_);
-            root_widget_->setLayout(root_layout);
-        }
-
+        root_widget_->hide();
+        //root_widget_->show();
         return true;
     }
 
-    void ObjDetectorPlugin::OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) {
+    void ObjDetectorPlugin::OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image) {
         if (!IsPluginEnabled()) {
             return;
         }
@@ -61,12 +53,18 @@ namespace tc
             QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
             QPixmap pixmap = QPixmap::fromImage(img);
             pixmap = pixmap.scaled(root_widget_->size().width(), root_widget_->size().height());
-            label_->setPixmap(pixmap);
-            label_->repaint();
+            if (!previewers_.contains(name)) {
+                previewers_[name] = new QLabel();
+                previewers_[name]->setWindowTitle(name.c_str());
+                previewers_[name]->resize(960, 540);
+                previewers_[name]->show();
+            }
+            previewers_[name]->setPixmap(pixmap);
+            previewers_[name]->repaint();
         });
     }
 
-    void ObjDetectorPlugin::OnRawVideoFrameYuv(const std::shared_ptr<Image>& image) {
+    void ObjDetectorPlugin::OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image) {
 
     }
 

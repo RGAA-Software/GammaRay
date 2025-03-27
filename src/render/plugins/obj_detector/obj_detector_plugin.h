@@ -6,6 +6,7 @@
 #define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
 
 #include "plugin_interface/gr_stream_plugin.h"
+#include <map>
 
 namespace tc
 {
@@ -19,11 +20,11 @@ namespace tc
 
         bool OnCreate(const tc::GrPluginParam& param) override;
         void On1Second() override;
-        void OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) override;
-        void OnRawVideoFrameYuv(const std::shared_ptr<Image>& image) override;
+        void OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image) override;
+        void OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image) override;
 
     private:
-        QLabel* label_ = nullptr;
+        std::map<std::string, QLabel*> previewers_;
 
     };
 

@@ -29,10 +29,10 @@ namespace tc
         virtual void OnRawVideoFrameSharedTexture(uint64_t handle);
         // raw video frame in rgba format
         // image: Raw image
-        virtual void OnRawVideoFrameRgba(const std::shared_ptr<Image>& image);
+        virtual void OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image);
         // raw video frame in yuv(I420) format
         // image: Raw image
-        virtual void OnRawVideoFrameYuv(const std::shared_ptr<Image>& image);
+        virtual void OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image);
 
         // audio
         virtual void OnRawAudioData(const std::shared_ptr<Data>& data, int samples, int channels, int bits);

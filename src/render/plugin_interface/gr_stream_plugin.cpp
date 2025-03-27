@@ -32,11 +32,11 @@ namespace tc
 
     }
 
-    void GrStreamPlugin::OnRawVideoFrameRgba(const std::shared_ptr<Image>& image) {
+    void GrStreamPlugin::OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image) {
 
     }
 
-    void GrStreamPlugin::OnRawVideoFrameYuv(const std::shared_ptr<Image>& image) {
+    void GrStreamPlugin::OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image) {
 
     }
 

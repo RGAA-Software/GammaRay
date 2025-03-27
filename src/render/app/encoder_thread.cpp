@@ -310,7 +310,7 @@ namespace tc
                         // callback in Enc thread
                         context_->PostStreamPluginTask([=, this]() {
                             plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                                plugin->OnRawVideoFrameRgba(image);
+                                plugin->OnRawVideoFrameRgba(monitor_name, image);
                             });
                         });
                     };
@@ -323,7 +323,7 @@ namespace tc
                         }
                         context_->PostStreamPluginTask([=, this]() {
                             plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                                plugin->OnRawVideoFrameYuv(image);
+                                plugin->OnRawVideoFrameYuv(monitor_name, image);
                             });
                         });
                     };
@@ -333,7 +333,7 @@ namespace tc
             else {
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        plugin->OnRawVideoFrameRgba(cap_video_msg.raw_image_);
+                        plugin->OnRawVideoFrameRgba(monitor_name, cap_video_msg.raw_image_);
                     });
                 });
 
