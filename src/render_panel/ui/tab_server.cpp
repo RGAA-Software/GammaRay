@@ -43,6 +43,7 @@
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_spvr_client/spvr_manager.h"
+#include "tc_common_new/base64.h"
 
 namespace tc
 {
@@ -252,16 +253,41 @@ namespace tc
                     remote_input_layout->addLayout(input_layout);
 
                     connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
-                        auto remote_device_id = "server_" + remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
+                        auto remote_device_id = remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
+                        auto remote_password = remote_password_->text().toStdString();
+                        auto srv_remote_device_id = "server_" + remote_device_id;
                         auto spvr_mgr = context_->GetSpvrManager();
-                        auto r = spvr_mgr->GetDeviceInfo(remote_device_id);
+                        auto r = spvr_mgr->GetDeviceInfo(srv_remote_device_id);
                         if (!r) {
-                            LOGE("Get device info for: {} failed: {}", remote_device_id, SpvrError2String(r.error()));
+                            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(r.error()));
                             return;
                         }
                         auto remote_device_info = r.value();
                         LOGI("Remote device info: id: {}, relay host: {}, port: {}",
-                             remote_device_id, remote_device_info.relay_server_ip_, remote_device_info.relay_server_port_);
+                             srv_remote_device_id, remote_device_info.relay_server_ip_, remote_device_info.relay_server_port_);
+
+                        process_ = new QProcess();
+                        QStringList arguments;
+                        arguments << std::format("--host={}", remote_device_info.relay_server_ip_).c_str()
+                                  << std::format("--port={}", remote_device_info.relay_server_port_).c_str()
+                                  << std::format("--audio={}", 0).c_str()
+                                  << std::format("--clipboard={}", 0).c_str()
+                                  << std::format("--stream_id={}", remote_device_id).c_str()
+                                  << std::format("--conn_type={}", "signaling").c_str()
+                                  << std::format("--network_type={}", "relay").c_str()
+                                  << std::format("--stream_name={}", Base64::Base64Encode("test stream")).c_str()
+                                  << std::format("--device_id={}", settings_->device_id_).c_str()
+                                  << std::format("--device_rp={}", Base64::Base64Encode(settings_->device_random_pwd_)).c_str()
+                                  << std::format("--device_sp={}", Base64::Base64Encode(settings_->device_safety_pwd_)).c_str()
+                                  << std::format("--remote_device_id={}", remote_device_id).c_str()
+                                  << std::format("--remote_device_rp={}", Base64::Base64Encode(remote_password)).c_str()
+                                  << std::format("--remote_device_sp={}", Base64::Base64Encode("")).c_str()
+                                ;
+                        LOGI("==>Connect remote Start client inner args:");
+                        for (auto& arg : arguments) {
+                            LOGI("{}", arg.toStdString());
+                        }
+                        process_->start("./GammaRayClientInner.exe", arguments);
                     });
 
                 }

@@ -13,6 +13,7 @@
 #include <QStackedWidget>
 #include <QLabel>
 #include <QComboBox>
+#include <QProcess>
 
 namespace tc
 {
@@ -48,6 +49,9 @@ namespace tc
         TcImageButton* btn_password_echo_change_ = nullptr;
         QLineEdit* remote_password_ = nullptr;
         QComboBox* remote_devices_ = nullptr;
+
+        // test
+        QProcess* process_ = nullptr;
     };
 }
 
