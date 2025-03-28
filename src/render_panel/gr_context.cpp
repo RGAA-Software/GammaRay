@@ -23,6 +23,7 @@
 #include "gr_application.h"
 #include "devices/stream_db_manager.h"
 #include "tc_spvr_client/spvr_manager.h"
+#include "devices/running_stream_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -79,6 +80,8 @@ namespace tc
 
         spvr_mgr_ = std::make_shared<SpvrManager>();
         spvr_mgr_->SetHostPort(settings_->spvr_server_host_, std::atoi(settings_->spvr_server_port_.c_str()));
+
+        running_stream_mgr_ = std::make_shared<RunningStreamManager>(shared_from_this());
 
         StartTimers();
     }
@@ -186,6 +189,10 @@ namespace tc
 
     std::shared_ptr<SpvrManager> GrContext::GetSpvrManager() {
         return spvr_mgr_;
+    }
+
+    std::shared_ptr<RunningStreamManager> GrContext::GetRunningStreamManager() {
+        return running_stream_mgr_;
     }
 
 }

@@ -30,6 +30,7 @@ namespace tc
     class StreamDBManager;
     class StreamContent;
     class MessageListener;
+    class RunningStreamManager;
 
     using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
@@ -60,8 +61,8 @@ namespace tc
         std::vector<StreamItem> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;
-        std::map<std::string, std::shared_ptr<QProcess>> running_processes_;
         StreamContent* stream_content_ = nullptr;
+        std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
     };
 
 }

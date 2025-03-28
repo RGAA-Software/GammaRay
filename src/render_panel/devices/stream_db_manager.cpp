@@ -70,7 +70,7 @@ namespace tc
         if (stream.stream_id.empty()) {
             stream.stream_id = GenUUID();
         }
-        stream.stream_id = MD5::Hex(stream.stream_id);
+        //stream.stream_id = MD5::Hex(stream.stream_id);
         stream.bg_color = RandomColor();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);

@@ -25,6 +25,7 @@ namespace tc
     class TcQRWidget;
     class StreamContent;
     class TcImageButton;
+    class RunningStreamManager;
 
     class TabServer : public TabBase {
     public:
@@ -49,9 +50,7 @@ namespace tc
         TcImageButton* btn_password_echo_change_ = nullptr;
         QLineEdit* remote_password_ = nullptr;
         QComboBox* remote_devices_ = nullptr;
-
-        // test
-        QProcess* process_ = nullptr;
+        std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
     };
 }
 

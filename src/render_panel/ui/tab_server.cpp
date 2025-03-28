@@ -3,7 +3,6 @@
 //
 
 #include "tab_server.h"
-
 #include <QScrollBar>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -44,12 +43,15 @@
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "tc_common_new/base64.h"
+#include "tc_dialog.h"
+#include "render_panel/devices/running_stream_manager.h"
 
 namespace tc
 {
 
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         settings_ = GrSettings::Instance();
+        running_stream_mgr_ = context_->GetRunningStreamManager();
 
         UpdateQRCode();
 
@@ -61,7 +63,7 @@ namespace tc
         auto content_layout = new QHBoxLayout();
         WidgetHelper::ClearMargins(content_layout);
 
-        auto item_width = 230;
+        auto item_width = 210;
 
         // left part
         {
@@ -83,7 +85,7 @@ namespace tc
             left_root->addLayout(machine_code_qr_layout);
             content_layout->addSpacing(15);
             content_layout->addLayout(left_root);
-            content_layout->addSpacing(15);
+            content_layout->addSpacing(5);
 
             // machine code
             {
@@ -260,36 +262,31 @@ namespace tc
                         auto r = spvr_mgr->GetDeviceInfo(srv_remote_device_id);
                         if (!r) {
                             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(r.error()));
+                            auto dg = TcDialog::Make(tr("Error"), tr("Can't get remote device information."), nullptr);
+                            dg->Show();
                             return;
                         }
                         auto remote_device_info = r.value();
                         LOGI("Remote device info: id: {}, relay host: {}, port: {}",
                              srv_remote_device_id, remote_device_info.relay_server_ip_, remote_device_info.relay_server_port_);
 
-                        process_ = new QProcess();
-                        QStringList arguments;
-                        arguments << std::format("--host={}", remote_device_info.relay_server_ip_).c_str()
-                                  << std::format("--port={}", remote_device_info.relay_server_port_).c_str()
-                                  << std::format("--audio={}", 0).c_str()
-                                  << std::format("--clipboard={}", 0).c_str()
-                                  << std::format("--stream_id={}", remote_device_id).c_str()
-                                  << std::format("--conn_type={}", "signaling").c_str()
-                                  << std::format("--network_type={}", "relay").c_str()
-                                  << std::format("--stream_name={}", Base64::Base64Encode("test stream")).c_str()
-                                  << std::format("--device_id={}", settings_->device_id_).c_str()
-                                  << std::format("--device_rp={}", Base64::Base64Encode(settings_->device_random_pwd_)).c_str()
-                                  << std::format("--device_sp={}", Base64::Base64Encode(settings_->device_safety_pwd_)).c_str()
-                                  << std::format("--remote_device_id={}", remote_device_id).c_str()
-                                  << std::format("--remote_device_rp={}", Base64::Base64Encode(remote_password)).c_str()
-                                  << std::format("--remote_device_sp={}", Base64::Base64Encode("")).c_str()
-                                ;
-                        LOGI("==>Connect remote Start client inner args:");
-                        for (auto& arg : arguments) {
-                            LOGI("{}", arg.toStdString());
-                        }
-                        process_->start("./GammaRayClientInner.exe", arguments);
-                    });
+                        StreamItem item;
+                        item.stream_id = "id_" + remote_device_id;
+                        item.stream_name = remote_device_id;
+                        item.stream_host = remote_device_info.relay_server_ip_;
+                        item.stream_port = remote_device_info.relay_server_port_;
+                        item.encode_bps = 0;
+                        item.encode_fps = 0;
+                        item.network_type_ = kStreamItemNtTypeRelay;
+                        item.remote_device_id_ = remote_device_id;
+                        item.remote_device_random_pwd_ = remote_password;
+                        item.remote_device_safety_pwd_ = remote_password;
+                        context_->SendAppMessage(StreamItemAdded {
+                            .item_ = item,
+                        });
 
+                        running_stream_mgr_->StartStream(item);
+                    });
                 }
 
                 left_root->addLayout(remote_input_layout);
@@ -300,7 +297,7 @@ namespace tc
         // clients
         {
             stream_content_ = new StreamContent(context_, this);
-            stream_content_->setMinimumWidth(780);
+            stream_content_->setMinimumWidth(800);
             content_layout->addWidget(stream_content_);
         }
 

@@ -21,6 +21,7 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
+#include "running_stream_manager.h"
 
 namespace tc
 {
@@ -42,7 +43,7 @@ namespace tc
         settings_ = GrSettings::Instance();
         db_mgr_ = context_->GetStreamDBManager();
         stream_content_ = (StreamContent*)parent;
-
+        running_stream_mgr_ = context_->GetRunningStreamManager();
         CreateLayout();
         Init();
 
@@ -107,7 +108,13 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            db_mgr_->AddStream(item);
+            if (!db_mgr_->HasStream(item.stream_id)) {
+                db_mgr_->AddStream(item);
+            }
+            else {
+                //TODO: update...
+
+            }
             LoadStreamItems();
         });
 
@@ -164,69 +171,19 @@ namespace tc
     }
 
     void AppStreamList::StartStream(const StreamItem& item) {
-        //context_->SendAppMessage(item);
-        auto process = std::make_shared<QProcess>();
-        QStringList arguments;
-        arguments << std::format("--host={}", item.stream_host).c_str()
-                  << std::format("--port={}", item.stream_port).c_str()
-                  << std::format("--audio={}", 0).c_str()
-                  << std::format("--clipboard={}", 0).c_str()
-                  << std::format("--stream_id={}", item.stream_id).c_str()
-                  << std::format("--conn_type={}", item.connect_type_).c_str()
-                  << std::format("--network_type={}", item.network_type_).c_str()
-                  << std::format("--stream_name={}", Base64::Base64Encode(item.stream_name)).c_str()
-                  << std::format("--device_id={}", settings_->device_id_).c_str()
-                  << std::format("--device_rp={}", Base64::Base64Encode(item.device_random_pwd_)).c_str()
-                  << std::format("--device_sp={}", Base64::Base64Encode(item.device_safety_pwd_)).c_str()
-                  << std::format("--remote_device_id={}", item.remote_device_id_).c_str()
-                  << std::format("--remote_device_rp={}", Base64::Base64Encode(item.remote_device_random_pwd_)).c_str()
-                  << std::format("--remote_device_sp={}", Base64::Base64Encode(item.remote_device_safety_pwd_)).c_str()
-                  ;
-        LOGI("Start client inner args:");
-        for (auto& arg : arguments) {
-            LOGI("{}", arg.toStdString());
-        }
-        process->start("./GammaRayClientInner.exe", arguments);
-        running_processes_.erase(item.stream_id);
-        running_processes_.insert({item.stream_id, process});
+        running_stream_mgr_->StartStream(item);
     }
 
     void AppStreamList::StopStream(const StreamItem& item) {
-        context_->SendAppMessage(ClearWorkspace {
-            .item_ = item,
-        });
-
-        if (running_processes_.contains(item.stream_id)) {
-            auto process = running_processes_[item.stream_id];
-            if (process) {
-//                auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop Stream"), tr("Do you want to stop the stream ?"));
-//                if (msg_box->exec() == 0) {
-//                    process->kill();
-//                    running_processes_.erase(item.stream_id);
-//                }
-
-                auto dlg = TcDialog::Make(tr("Stop Stream"), tr("Do you want to stop the stream ?"), nullptr);
-                dlg->SetOnDialogSureClicked([=, this]() {
-                    process->kill();
-                    running_processes_.erase(item.stream_id);
-                });
-                dlg->show();
-            }
-        }
+        running_stream_mgr_->StopStream(item);
     }
 
     void AppStreamList::EditStream(const StreamItem& item) {
         auto dialog = new CreateStreamDialog(context_, item);
         dialog->show();
-       // dialog.exec();
     }
 
     void AppStreamList::DeleteStream(const StreamItem& item) {
-//        auto alert = SizedMessageBox::MakeOkCancelBox(tr("Warning"), tr("Do you want to delete the remote control?"));
-//        if (alert->exec() == 1) {
-//            return;
-//        }
-
         auto dlg = TcDialog::Make(tr("Warning"), tr("Do you want to delete the remote control?"), nullptr);
         dlg->SetOnDialogSureClicked([=, this]() {
             auto mgr = context_->GetStreamDBManager();

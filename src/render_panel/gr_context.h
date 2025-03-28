@@ -30,6 +30,7 @@ namespace tc
     class StreamDBManager;
     class TaskRuntime;
     class SpvrManager;
+    class RunningStreamManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
@@ -62,6 +63,7 @@ namespace tc
         static std::string GetCurrentExeFolder();
         std::shared_ptr<StreamDBManager> GetStreamDBManager();
         std::shared_ptr<SpvrManager> GetSpvrManager();
+        std::shared_ptr<RunningStreamManager> GetRunningStreamManager();
 
     private:
         void StartTimers();
@@ -82,6 +84,7 @@ namespace tc
         std::shared_ptr<ServiceManager> service_manager_ =  nullptr;
         std::shared_ptr<StreamDBManager> stream_db_mgr_ = nullptr;
         std::shared_ptr<SpvrManager> spvr_mgr_ = nullptr;
+        std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
     };
 
 }

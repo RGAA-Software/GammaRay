@@ -344,19 +344,7 @@ namespace tc
             item.stream_port = port;
             item.encode_bps = bitrate;
             item.encode_fps = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
-//            item.remote_device_id_ = remote_device_id;
-            item.network_type_ = [=, this]() -> std::string {
-//                if (rb_ws_->isChecked()) {
-//                    return kStreamItemNtTypeWebSocket;
-//                }
-//                else if (rb_udp_ && rb_udp_->isChecked()) {
-//                    return kStreamItemNtTypeUdpKcp;
-//                }
-//                else if (rb_relay_ && rb_relay_->isChecked()) {
-//                    return kStreamItemNtTypeRelay;
-//                }
-                return kStreamItemNtTypeWebSocket;
-            }();
+            item.network_type_ = kStreamItemNtTypeWebSocket;
         };
 
         if (stream_item_.IsValid()) {
