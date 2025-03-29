@@ -23,6 +23,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "running_stream_manager.h"
 #include "tc_common_new/uid_spacer.h"
+#include "edit_relay_stream_dialog.h"
 
 namespace tc
 {
@@ -180,8 +181,14 @@ namespace tc
     }
 
     void AppStreamList::EditStream(const StreamItem& item) {
-        auto dialog = new CreateStreamDialog(context_, item);
-        dialog->show();
+        if (item.IsRelay()) {
+            auto dialog = new EditRelayStreamDialog(context_, item);
+            dialog->show();
+        }
+        else {
+            auto dialog = new CreateStreamDialog(context_, item);
+            dialog->show();
+        }
     }
 
     void AppStreamList::DeleteStream(const StreamItem& item) {

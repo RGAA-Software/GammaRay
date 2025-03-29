@@ -46,6 +46,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_item.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_db_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/running_stream_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/edit_relay_stream_dialog.cpp
 
         PARENT_SCOPE
 )

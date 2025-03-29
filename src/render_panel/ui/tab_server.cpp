@@ -41,6 +41,7 @@
 #include "tc_qt_widget/tc_label.h"
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
+#include "tc_qt_widget/tc_password_input.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "tc_common_new/base64.h"
 #include "tc_dialog.h"
@@ -195,8 +196,8 @@ namespace tc
                     remote_codes->setStyleSheet(R"(font-size: 16px; font-weight: 700; color: #2979ff;)");
                     remote_codes->setEditable(true);
 
-                    auto streams = stream_db_mgr_->GetStreamsSortByCreatedTime(1, 5, false);
-                    for (auto& stream : streams) {
+                    recent_streams_ = stream_db_mgr_->GetStreamsSortByCreatedTime(1, 5, false);
+                    for (auto& stream : recent_streams_) {
                         remote_codes->addItem(stream.remote_device_id_.c_str());
                     }
 
@@ -217,30 +218,16 @@ namespace tc
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
                     input_layout->addWidget(title, 0, Qt::AlignLeft);
 
-                    auto remote_pwd = new QLineEdit(this);
-                    remote_password_ = remote_pwd;
-                    remote_pwd->setEchoMode(QLineEdit::Password);
-                    remote_pwd->setFixedWidth(remote_input_width);
-                    remote_pwd->setFixedHeight(35);
-                    remote_pwd->setText("");
-                    remote_pwd->setStyleSheet(R"(font-size: 16px; font-weight: 700; color: #2979ff;)");
+                    password_input_ = new TcPasswordInput(this);
+                    password_input_->setFixedSize(remote_input_width, 35);
+                    if (!recent_streams_.empty()) {
+                        auto first_item = recent_streams_.at(0);
+                        auto item_pwd = first_item.remote_device_random_pwd_;
+                        password_input_->SetPassword(item_pwd.c_str());
+                    }
                     input_layout->addSpacing(5);
-                    input_layout->addWidget(remote_pwd, 0, Qt::AlignLeft);
+                    input_layout->addWidget(password_input_, 0, Qt::AlignLeft);
                     remote_input_layout->addLayout(input_layout);
-
-                    auto show_password = new TcImageButton(":/resources/image/ic_key.svg", QSize(16, 16), this);
-                    btn_password_echo_change_ = show_password;
-                    show_password->SetColor(0xf5f5f5, 0xe9e9e9, 0xd8d8d8);
-                    show_password->SetRoundRadius(15);
-                    show_password->setFixedSize(22, 22);
-                    show_password->SetOnImageButtonClicked([=, this]() {
-                        if (remote_pwd->echoMode() == QLineEdit::Password) {
-                            remote_pwd->setEchoMode(QLineEdit::Normal);
-                        }
-                        else {
-                            remote_pwd->setEchoMode(QLineEdit::Password);
-                        }
-                    });
                 }
 
                 // connect
@@ -263,7 +250,7 @@ namespace tc
 
                     connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
                         auto remote_device_id = remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
-                        auto remote_password = remote_password_->text().toStdString();
+                        auto remote_password = password_input_->GetPassword().toStdString();
                         auto srv_remote_device_id = "server_" + remote_device_id;
                         auto spvr_mgr = context_->GetSpvrManager();
                         auto r = spvr_mgr->GetDeviceInfo(srv_remote_device_id);
@@ -350,11 +337,6 @@ namespace tc
     }
 
     void TabServer::resizeEvent(QResizeEvent *event) {
-        auto r_pos = remote_password_->pos();
-        auto r_width = remote_password_->width();
-        auto r_height = remote_password_->height();
-        auto btn_width = btn_password_echo_change_->width();
-        auto btn_height = btn_password_echo_change_->height();
-        btn_password_echo_change_->setGeometry(r_pos.x() + r_width - 5 - btn_width, r_pos.y() + (r_height-btn_height)/2, btn_width, btn_height);
+        TabBase::resizeEvent(event);
     }
 }
