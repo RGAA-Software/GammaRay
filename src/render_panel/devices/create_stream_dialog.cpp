@@ -39,7 +39,6 @@ namespace tc
         }
 
         auto item_width = 320;
-        auto label_size = QSize(item_width, 35);
         auto edit_size = QSize(item_width, 35);
 
         auto root_layout = new NoMarginHLayout();
@@ -49,7 +48,7 @@ namespace tc
         root_layout->addStretch();
         root_layout_->addLayout(root_layout);
 
-        content_layout->addSpacing(15);
+        content_layout->addSpacing(25);
 
         // 0. name
         {
@@ -58,8 +57,10 @@ namespace tc
             auto label = new QLabel(this);
             label->setFixedWidth(item_width);
             label->setText("Device Name");
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
+            layout->addSpacing(10);
 
             auto edit = new QLineEdit(this);
             ed_name_ = edit;
@@ -70,19 +71,22 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            content_layout->addSpacing(40);
             content_layout->addLayout(layout);
 
         }
+
+        content_layout->addSpacing(25);
 
         // 1. host
         {
             auto layout = new NoMarginVLayout();
             auto label = new QLabel(this);
             label->setFixedWidth(item_width);
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setText(tr("Host *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
+            layout->addSpacing(10);
 
             auto edit = new QLineEdit(this);
             ed_host_ = edit;
@@ -92,19 +96,21 @@ namespace tc
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
-
-            content_layout->addSpacing(10);
             content_layout->addLayout(layout);
         }
+
+        content_layout->addSpacing(25);
 
         // 2. port
         {
             auto layout = new NoMarginVLayout();
             auto label = new QLabel(this);
             label->setFixedWidth(item_width);
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setText(tr("Port *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
+            layout->addSpacing(10);
 
             auto edit = new QLineEdit(this);
             auto validator = new QIntValidator(this);
@@ -117,8 +123,6 @@ namespace tc
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
-
-            content_layout->addSpacing(10);
             content_layout->addLayout(layout);
         }
 
@@ -129,7 +133,7 @@ namespace tc
             layout->setContentsMargins(0,0,0,0);
 
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
+            //label->setFixedSize(label_size);
             label->setText(tr("Remote Device ID *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -155,7 +159,7 @@ namespace tc
             //layout->addStretch();
 
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
+            //label->setFixedSize(label_size);
             label->setText(tr("Network *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -217,7 +221,7 @@ namespace tc
             layout->addStretch();
 
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
+            //label->setFixedSize(label_size);
             label->setText(tr("Bitrate(M)"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -247,7 +251,7 @@ namespace tc
             layout->addStretch();
 
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
+            //label->setFixedSize(label_size);
             label->setText(tr("FPS"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -280,17 +284,6 @@ namespace tc
         // sure button
         {
             auto layout = new NoMarginVLayout();
-//            auto btn_cancel = new QPushButton(tr("Cancel"));
-//            btn_cancel->setProperty("class", "danger");
-//            connect(btn_cancel, &QPushButton::clicked, this, [=, this]() {
-//                //done(0);
-//                this->close();
-//            });
-//            btn_cancel->setFixedSize(btn_size);
-//            layout->addStretch();
-//            layout->addWidget(btn_cancel);
-//            layout->addSpacing(30);
-
             auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 if (!GenStream()) {
@@ -301,14 +294,13 @@ namespace tc
 
             layout->addWidget(btn_sure);
             btn_sure->setFixedSize(QSize(item_width, 35));
-            layout->addStretch();
 
-            content_layout->addStretch();
+            content_layout->addSpacing(105);
             content_layout->addLayout(layout);
         }
-        content_layout->addSpacing(30);
 
-        //content_layout->addLayout(content_layout);
+        content_layout->addSpacing(30);
+        root_layout_->addStretch();
     }
 
     bool CreateStreamDialog::GenStream() {
@@ -322,12 +314,8 @@ namespace tc
                 return 0;
             }
         } ();
-        //auto remote_device_id = ed_remote_device_id_ ? ed_remote_device_id_->text().trimmed().replace(" ", "").toStdString() : "";
 
         if (host.empty() || port == 0) {
-//            auto dialog = SizedMessageBox::MakeOkBox(tr("Tips"), tr("Please input necessary information !"));
-//            dialog->exec();
-
             auto dlg = TcDialog::Make(tr("Tips"), tr("Please input necessary information !"), nullptr);
             dlg->SetOnDialogSureClicked([=, this]() {
             });
