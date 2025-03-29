@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <sqlite3.h>
+#include <algorithm>
 
 #include "stream_item.h"
 #include "tc_common_new/log.h"
@@ -69,7 +70,7 @@ namespace tc
     void StreamDBManager::CreateTables() {
         auto db_path = qApp->applicationDirPath() + "/gr_data/stream.db";
         // 2. bind
-        db_storage = BindAppDatabase(db_path.toStdString());
+        db_storage_ = BindAppDatabase(db_path.toStdString());
 //        using Storage = decltype(GetStorageTypeValue());
 //        auto storage = std::any_cast<Storage>(db_storage);
 //        storage.sync_schema(true);
@@ -84,13 +85,13 @@ namespace tc
         stream.created_timestamp_ = TimeExt::GetCurrentTimestamp();
         stream.updated_timestamp_ = stream.created_timestamp_;
         using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage);
+        auto storage = std::any_cast<Storage>(db_storage_);
         storage.insert(stream);
     }
 
     bool StreamDBManager::HasStream(const std::string& stream_id) {
         using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage);
+        auto storage = std::any_cast<Storage>(db_storage_);
         auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
         return !streams.empty();
     }
@@ -99,7 +100,7 @@ namespace tc
         auto ts = stream;
         ts.updated_timestamp_ = TimeExt::GetCurrentTimestamp();
         using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage);
+        auto storage = std::any_cast<Storage>(db_storage_);
         auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == ts.stream_id_));
         if (streams.size() == 1) {
             storage.update(ts);
@@ -108,13 +109,36 @@ namespace tc
 
     std::vector<StreamItem> StreamDBManager::GetAllStreams() {
         using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage);
+        auto storage = std::any_cast<Storage>(db_storage_);
         return storage.get_all<StreamItem>();
+    }
+
+    std::vector<StreamItem> StreamDBManager::GetAllStreamsSortByCreatedTime(bool increase) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        return storage.get_all<StreamItem>([=]() -> auto {
+            if (increase) {
+                return order_by(&StreamItem::created_timestamp_);
+            } else {
+                return order_by(&StreamItem::created_timestamp_).desc();
+            }
+        }());
+    }
+
+    std::vector<StreamItem> StreamDBManager::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        int offset_size = (page - 1) * page_size;
+        return storage.get_all<StreamItem>(
+            where(c(&StreamItem::network_type_) == "relay"),
+            order_by(&StreamItem::created_timestamp_).desc(),
+            limit(page_size, offset(offset_size))
+        );
     }
 
     void StreamDBManager::DeleteStream(int id) {
         using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage);
+        auto storage = std::any_cast<Storage>(db_storage_);
         storage.remove<StreamItem>(id);
     }
 

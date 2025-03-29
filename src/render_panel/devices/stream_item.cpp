@@ -11,4 +11,8 @@ namespace tc
         return !stream_id_.empty();
     }
 
+    bool StreamItem::IsRelay() const {
+        return network_type_ == "relay";
+    }
+
 }

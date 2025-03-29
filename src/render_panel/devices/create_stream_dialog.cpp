@@ -18,37 +18,46 @@ namespace tc
 
     CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
-        setFixedSize(600, 350);
+        setFixedSize(375, 475);
         CreateLayout();
     }
 
     CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
-        setFixedSize(600, 350);
+        setFixedSize(375, 475);
         CreateLayout();
     }
 
     CreateStreamDialog::~CreateStreamDialog() = default;
 
     void CreateStreamDialog::CreateLayout() {
-        setWindowTitle(tr("Remote Device Information"));
-        
-        auto label_size = QSize(150, 35);
-        auto edit_size = QSize(250, 35);
+        if (stream_item_.IsValid()) {
+            setWindowTitle(tr("Edit Device"));
+        } else {
+            setWindowTitle(tr("Add Device"));
+        }
 
-        root_layout_->setContentsMargins(90,0,60, 0);
+        auto item_width = 320;
+        auto label_size = QSize(item_width, 35);
+        auto edit_size = QSize(item_width, 35);
+
+        auto root_layout = new NoMarginHLayout();
+        auto content_layout = new NoMarginVLayout();
+        root_layout->addStretch();
+        root_layout->addLayout(content_layout);
+        root_layout->addStretch();
+        root_layout_->addLayout(root_layout);
+
+        content_layout->addSpacing(15);
 
         // 0. name
         {
-            auto layout = new QHBoxLayout();
-            layout->setSpacing(0);
-            layout->setContentsMargins(0,0,0,0);
-            //layout->addStretch();
+            auto layout = new NoMarginVLayout();
 
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
-            label->setText(tr("Name"));
+            label->setFixedWidth(item_width);
+            label->setText("Device Name");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
 
@@ -61,20 +70,16 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout_->addSpacing(40);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(40);
+            content_layout->addLayout(layout);
 
         }
 
         // 1. host
         {
-            auto layout = new QHBoxLayout();
-            layout->setSpacing(0);
-            layout->setContentsMargins(0,0,0,0);
-            //layout->addStretch();
-
+            auto layout = new NoMarginVLayout();
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
+            label->setFixedWidth(item_width);
             label->setText(tr("Host *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -88,19 +93,15 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout_->addSpacing(10);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
         }
 
         // 2. port
         {
-            auto layout = new QHBoxLayout();
-            layout->setSpacing(0);
-            layout->setContentsMargins(0,0,0,0);
-            //layout->addStretch();
-
+            auto layout = new NoMarginVLayout();
             auto label = new QLabel(this);
-            label->setFixedSize(label_size);
+            label->setFixedWidth(item_width);
             label->setText(tr("Port *"));
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -117,8 +118,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout_->addSpacing(10);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
         }
 
         // Remote device id
@@ -143,8 +144,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout_->addSpacing(10);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
         }
 
         if (false) {
@@ -182,8 +183,8 @@ namespace tc
 
             layout->addStretch();
 
-            root_layout_->addSpacing(10);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
 
             //
             if (stream_item_.IsValid()) {
@@ -235,8 +236,8 @@ namespace tc
             layout->addWidget(edit);
             layout->addStretch();
 
-            root_layout_->addSpacing(10);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
         }
 
         if (0) {
@@ -272,26 +273,23 @@ namespace tc
                 }
             }
 
-            root_layout_->addSpacing(10);
-            root_layout_->addLayout(layout);
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
         }
 
-        // sure or cancel
+        // sure button
         {
-            auto btn_size = QSize(125, 35);
-            auto layout = new QHBoxLayout();
-            layout->setSpacing(0);
-            layout->setContentsMargins(0,0,0,0);
-            auto btn_cancel = new QPushButton(tr("Cancel"));
-            btn_cancel->setProperty("class", "danger");
-            connect(btn_cancel, &QPushButton::clicked, this, [=, this]() {
-                //done(0);
-                this->close();
-            });
-            btn_cancel->setFixedSize(btn_size);
-            layout->addStretch();
-            layout->addWidget(btn_cancel);
-            layout->addSpacing(30);
+            auto layout = new NoMarginVLayout();
+//            auto btn_cancel = new QPushButton(tr("Cancel"));
+//            btn_cancel->setProperty("class", "danger");
+//            connect(btn_cancel, &QPushButton::clicked, this, [=, this]() {
+//                //done(0);
+//                this->close();
+//            });
+//            btn_cancel->setFixedSize(btn_size);
+//            layout->addStretch();
+//            layout->addWidget(btn_cancel);
+//            layout->addSpacing(30);
 
             auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
@@ -302,15 +300,15 @@ namespace tc
             });
 
             layout->addWidget(btn_sure);
-            btn_sure->setFixedSize(btn_size);
+            btn_sure->setFixedSize(QSize(item_width, 35));
             layout->addStretch();
 
-            root_layout_->addStretch();
-            root_layout_->addLayout(layout);
+            content_layout->addStretch();
+            content_layout->addLayout(layout);
         }
-        root_layout_->addSpacing(30);
+        content_layout->addSpacing(30);
 
-        //root_layout_->addLayout(root_layout_);
+        //content_layout->addLayout(content_layout);
     }
 
     bool CreateStreamDialog::GenStream() {

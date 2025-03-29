@@ -26,6 +26,7 @@ namespace tc
     class StreamContent;
     class TcImageButton;
     class RunningStreamManager;
+    class StreamDBManager;
 
     class TabServer : public TabBase {
     public:
@@ -51,6 +52,7 @@ namespace tc
         QLineEdit* remote_password_ = nullptr;
         QComboBox* remote_devices_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
+        std::shared_ptr<StreamDBManager> stream_db_mgr_ = nullptr;
     };
 }
 

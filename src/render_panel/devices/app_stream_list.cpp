@@ -22,6 +22,7 @@
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
 #include "running_stream_manager.h"
+#include "tc_common_new/uid_spacer.h"
 
 namespace tc
 {
@@ -214,7 +215,11 @@ namespace tc
         auto name = new QLabel(stream_list_);
         name->hide();
         name->setObjectName("st_name");
-        name->setText(stream.stream_name_.c_str());
+        auto stream_name = stream.stream_name_;
+        if (stream.IsRelay()) {
+            stream_name = tc::SpaceId(stream_name);
+        }
+        name->setText(stream_name.c_str());
         name->setStyleSheet(R"(color:#386487; font-size:14px; font-weight:bold; background-color:#909099;)");
         layout->addWidget(name);
 
@@ -266,7 +271,7 @@ namespace tc
 
     void AppStreamList::LoadStreamItems() {
         auto db_mgr = context_->GetStreamDBManager();
-        streams_ = db_mgr->GetAllStreams();
+        streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
 
         context_->PostUITask([=, this]() {
             int count = stream_list_->count();

@@ -15,6 +15,7 @@ namespace tc
     class StreamItem {
     public:
         [[nodiscard]] bool IsValid() const;
+        [[nodiscard]] bool IsRelay() const;
 
     public:
 
@@ -71,8 +72,6 @@ namespace tc
 
         // update timestamp
         int64_t updated_timestamp_ {0};
-
-        int test_;
     };
 
 }

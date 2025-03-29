@@ -20,7 +20,11 @@ namespace tc
         this->bg_color_ = bg_color;
         this->setStyleSheet("background:#00000000;");
         if (icon_.isNull()) {
-            icon_ = QPixmap::fromImage(QImage(":/resources/image/windows.svg"));
+            if (item.IsRelay()) {
+                icon_ = QPixmap::fromImage(QImage(":/resources/image/ic_windows_relay.svg"));
+            } else {
+                icon_ = QPixmap::fromImage(QImage(":/resources/image/ic_windows_direct.svg"));
+            }
             icon_ = icon_.scaled(icon_.width() / 6.2, icon_.height() / 6.2, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
 
@@ -99,7 +103,10 @@ namespace tc
             font.setPointSize(13);
             painter.setFont(font);
             painter.setPen(QPen(QColor(0x555555)));
-            std::string stream_name = item_.stream_name_;
+            auto stream_name = item_.stream_name_;
+            if (item_.IsRelay()) {
+                stream_name = tc::SpaceId(stream_name);
+            }
             painter.drawText(QRect(15, 0, this->width(), 40), Qt::AlignVCenter, stream_name.c_str());
         }
 

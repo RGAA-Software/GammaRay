@@ -5,7 +5,8 @@
         <file>resources/image/bc_icon.png</file>
         <file>resources/image/bc_icon_raw.png</file>
         <file>resources/image/empty.svg</file>
-        <file>resources/image/windows.svg</file>
+        <file>resources/image/ic_windows_direct.svg</file>
+        <file>resources/image/ic_windows_relay.svg</file>
         <file>resources/image/ic_expand.svg</file>
         <file>resources/image/ic_audio_off.svg</file>
         <file>resources/image/ic_audio_on.svg</file>

@@ -45,6 +45,7 @@
 #include "tc_common_new/base64.h"
 #include "tc_dialog.h"
 #include "render_panel/devices/running_stream_manager.h"
+#include "render_panel/devices/stream_db_manager.h"
 
 namespace tc
 {
@@ -52,6 +53,7 @@ namespace tc
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         settings_ = GrSettings::Instance();
         running_stream_mgr_ = context_->GetRunningStreamManager();
+        stream_db_mgr_ = context_->GetStreamDBManager();
 
         UpdateQRCode();
 
@@ -192,7 +194,12 @@ namespace tc
                     remote_codes->setFixedHeight(35);
                     remote_codes->setStyleSheet(R"(font-size: 16px; font-weight: 700; color: #2979ff;)");
                     remote_codes->setEditable(true);
-                    remote_codes->addItems({"1", "2", "3"});
+
+                    auto streams = stream_db_mgr_->GetStreamsSortByCreatedTime(1, 5, false);
+                    for (auto& stream : streams) {
+                        remote_codes->addItem(stream.remote_device_id_.c_str());
+                    }
+
                     input_layout->addSpacing(5);
                     input_layout->addWidget(remote_codes, 0, Qt::AlignLeft);
                     remote_input_layout->addLayout(input_layout);

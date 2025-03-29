@@ -24,6 +24,8 @@ namespace tc
         void AddStream(StreamItem &stream);
         void UpdateStream(const StreamItem &stream);
         std::vector<StreamItem> GetAllStreams();
+        std::vector<StreamItem> GetAllStreamsSortByCreatedTime(bool increase = false);
+        std::vector<StreamItem> GetStreamsSortByCreatedTime(int page, int page_size, bool increase = false);
         void DeleteStream(int id);
         int RandomColor();
         bool HasStream(const std::string& stream_id);
@@ -34,7 +36,7 @@ namespace tc
 
     private:
 
-        std::any db_storage;
+        std::any db_storage_;
 
     };
 
