@@ -15,6 +15,7 @@
 #include "stream_item.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
+#include "tc_common_new/time_ext.h"
 
 using namespace sqlite_orm;
 
@@ -32,15 +33,15 @@ namespace tc
     static auto BindAppDatabase(const std::string &name) {
         auto st = make_storage(name, make_table("stream",
             make_column("id", &StreamItem::_id, primary_key()),
-            make_column("stream_id", &StreamItem::stream_id),
-            make_column("stream_name", &StreamItem::stream_name),
-            make_column("encode_bps", &StreamItem::encode_bps),
-            make_column("audio_enabled", &StreamItem::audio_enabled),
-            make_column("audio_capture_mode", &StreamItem::audio_capture_mode),
-            make_column("stream_host", &StreamItem::stream_host),
-            make_column("stream_port", &StreamItem::stream_port),
-            make_column("bg_color", &StreamItem::bg_color),
-            make_column("encode_fps", &StreamItem::encode_fps),
+            make_column("stream_id", &StreamItem::stream_id_),
+            make_column("stream_name", &StreamItem::stream_name_),
+            make_column("encode_bps", &StreamItem::encode_bps_),
+            make_column("audio_enabled", &StreamItem::audio_enabled_),
+            make_column("audio_capture_mode", &StreamItem::audio_capture_mode_),
+            make_column("stream_host", &StreamItem::stream_host_),
+            make_column("stream_port", &StreamItem::stream_port_),
+            make_column("bg_color", &StreamItem::bg_color_),
+            make_column("encode_fps", &StreamItem::encode_fps_),
             make_column("network_type", &StreamItem::network_type_),
             make_column("connect_type", &StreamItem::connect_type_),
             make_column("device_id", &StreamItem::device_id_),
@@ -48,8 +49,16 @@ namespace tc
             make_column("device_safety_pwd", &StreamItem::device_safety_pwd_),
             make_column("remote_device_id", &StreamItem::remote_device_id_),
             make_column("remote_device_random_pwd", &StreamItem::remote_device_random_pwd_),
-            make_column("remote_device_safety_pwd", &StreamItem::remote_device_safety_pwd_)
+            make_column("remote_device_safety_pwd", &StreamItem::remote_device_safety_pwd_),
+            make_column("created_timestamp", &StreamItem::created_timestamp_, default_value(0)),
+            make_column("updated_timestamp", &StreamItem::updated_timestamp_, default_value(0))
         ));
+        if (!name.empty()) {
+            auto r = st.sync_schema(true);
+            for (const auto& [key, value] : r) {
+                LOGI("SYNC db {} schema: {} => {}", name, key, (int)value);
+            }
+        }
         return st;
     }
 
@@ -61,17 +70,19 @@ namespace tc
         auto db_path = qApp->applicationDirPath() + "/gr_data/stream.db";
         // 2. bind
         db_storage = BindAppDatabase(db_path.toStdString());
-        using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage);
-        storage.sync_schema();
+//        using Storage = decltype(GetStorageTypeValue());
+//        auto storage = std::any_cast<Storage>(db_storage);
+//        storage.sync_schema(true);
     }
 
     void StreamDBManager::AddStream(StreamItem &stream) {
-        if (stream.stream_id.empty()) {
-            stream.stream_id = GenUUID();
+        if (stream.stream_id_.empty()) {
+            stream.stream_id_ = GenUUID();
         }
         //stream.stream_id = MD5::Hex(stream.stream_id);
-        stream.bg_color = RandomColor();
+        stream.bg_color_ = RandomColor();
+        stream.created_timestamp_ = TimeExt::GetCurrentTimestamp();
+        stream.updated_timestamp_ = stream.created_timestamp_;
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);
         storage.insert(stream);
@@ -80,16 +91,18 @@ namespace tc
     bool StreamDBManager::HasStream(const std::string& stream_id) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id) == stream_id));
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
         return !streams.empty();
     }
 
     void StreamDBManager::UpdateStream(const StreamItem &stream) {
+        auto ts = stream;
+        ts.updated_timestamp_ = TimeExt::GetCurrentTimestamp();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id) == stream.stream_id));
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == ts.stream_id_));
         if (streams.size() == 1) {
-            storage.update(stream);
+            storage.update(ts);
         }
     }
 

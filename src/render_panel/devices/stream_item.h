@@ -21,25 +21,25 @@ namespace tc
         int _id = 0;
 
         // stream id
-        std::string stream_id;
+        std::string stream_id_;
 
         // stream name
-        std::string stream_name;
+        std::string stream_name_;
 
         // encode bitrate, for example : 5, that means 5Mbps
-        int encode_bps = 5;
+        int encode_bps_ = 5;
 
         // audio capture status
-        int audio_enabled = true;
+        int audio_enabled_ = true;
 
         // audio source, global / app_only
-        std::string audio_capture_mode;;
+        std::string audio_capture_mode_;;
 
-        std::string stream_host;
-        int stream_port = 9002;
-        int bg_color = 0;
+        std::string stream_host_;
+        int stream_port_ = 9002;
+        int bg_color_ = 0;
 
-        int encode_fps;
+        int encode_fps_;
 
         // network type
         // websocket / udp_kcp / webrtc_direct / webrtc
@@ -66,6 +66,13 @@ namespace tc
         // remote device safety pwd
         std::string remote_device_safety_pwd_;
 
+        // created timestamp
+        int64_t created_timestamp_ {0};
+
+        // update timestamp
+        int64_t updated_timestamp_ {0};
+
+        int test_;
     };
 
 }

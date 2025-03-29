@@ -55,7 +55,7 @@ namespace tc
             auto edit = new QLineEdit(this);
             ed_name_ = edit;
             if (stream_item_.IsValid()) {
-                ed_name_->setText(stream_item_.stream_name.c_str());
+                ed_name_->setText(stream_item_.stream_name_.c_str());
             }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -82,7 +82,7 @@ namespace tc
             auto edit = new QLineEdit(this);
             ed_host_ = edit;
             if (stream_item_.IsValid()) {
-                ed_host_->setText(stream_item_.stream_host.c_str());
+                ed_host_->setText(stream_item_.stream_host_.c_str());
             }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -111,7 +111,7 @@ namespace tc
             ed_port_ = edit;
             ed_port_->setText("20371");
             if (stream_item_.IsValid()) {
-                ed_port_->setText(QString::number(stream_item_.stream_port));
+                ed_port_->setText(QString::number(stream_item_.stream_port_));
             }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -226,7 +226,7 @@ namespace tc
             edit->setValidator(validator);
             ed_bitrate_ = edit;
             if (stream_item_.IsValid()) {
-                ed_bitrate_->setText(QString::number(stream_item_.encode_bps));
+                ed_bitrate_->setText(QString::number(stream_item_.encode_bps_));
             }
             else {
                 ed_bitrate_->setText("5");
@@ -261,13 +261,13 @@ namespace tc
             layout->addStretch();
 
             if (stream_item_.IsValid()) {
-                if (stream_item_.encode_fps == 15) {
+                if (stream_item_.encode_fps_ == 15) {
                     cb_fps_->setCurrentIndex(0);
                 }
-                else if (stream_item_.encode_fps == 30) {
+                else if (stream_item_.encode_fps_ == 30) {
                     cb_fps_->setCurrentIndex(1);
                 }
-                else if (stream_item_.encode_fps == 60) {
+                else if (stream_item_.encode_fps_ == 60) {
                     cb_fps_->setCurrentIndex(2);
                 }
             }
@@ -339,11 +339,11 @@ namespace tc
         }
 
         auto func_update_stream = [&](StreamItem& item) {
-            item.stream_name = name;
-            item.stream_host = host;
-            item.stream_port = port;
-            item.encode_bps = bitrate;
-            item.encode_fps = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
+            item.stream_name_ = name;
+            item.stream_host_ = host;
+            item.stream_port_ = port;
+            item.encode_bps_ = bitrate;
+            item.encode_fps_ = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
             item.network_type_ = kStreamItemNtTypeWebSocket;
         };
 

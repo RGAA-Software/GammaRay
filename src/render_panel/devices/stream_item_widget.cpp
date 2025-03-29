@@ -99,7 +99,7 @@ namespace tc
             font.setPointSize(13);
             painter.setFont(font);
             painter.setPen(QPen(QColor(0x555555)));
-            std::string stream_name = item_.stream_name;
+            std::string stream_name = item_.stream_name_;
             painter.drawText(QRect(15, 0, this->width(), 40), Qt::AlignVCenter, stream_name.c_str());
         }
 

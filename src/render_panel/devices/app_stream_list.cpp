@@ -108,7 +108,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            if (!db_mgr_->HasStream(item.stream_id)) {
+            if (!db_mgr_->HasStream(item.stream_id_)) {
                 db_mgr_->AddStream(item);
             }
             else {
@@ -121,7 +121,7 @@ namespace tc
         msg_listener_->Listen<StreamItemUpdated>([=, this](const StreamItemUpdated& msg) {
             db_mgr_->UpdateStream(msg.item_);
             LoadStreamItems();
-            LOGI("Update stream : {}", msg.item_.stream_id);
+            LOGI("Update stream : {}", msg.item_.stream_id_);
         });
     }
 
@@ -196,7 +196,7 @@ namespace tc
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
         auto item = new QListWidgetItem(stream_list_);
         item->setSizeHint(QSize(230, 150));
-        auto widget = new StreamItemWidget(stream, stream.bg_color, stream_list_);
+        auto widget = new StreamItemWidget(stream, stream.bg_color_, stream_list_);
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
 
         auto root_layout = new QVBoxLayout();
@@ -214,7 +214,7 @@ namespace tc
         auto name = new QLabel(stream_list_);
         name->hide();
         name->setObjectName("st_name");
-        name->setText(stream.stream_name.c_str());
+        name->setText(stream.stream_name_.c_str());
         name->setStyleSheet(R"(color:#386487; font-size:14px; font-weight:bold; background-color:#909099;)");
         layout->addWidget(name);
 
@@ -222,7 +222,7 @@ namespace tc
         auto host = new QLabel(stream_list_);
         host->hide();
         host->setObjectName("st_host");
-        host->setText(stream.stream_host.c_str());
+        host->setText(stream.stream_host_.c_str());
         host->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
         layout->addWidget(host);
@@ -231,7 +231,7 @@ namespace tc
         auto port = new QLabel(stream_list_);
         port->hide();
         port->setObjectName("st_port");
-        port->setText(std::to_string(stream.stream_port).c_str());
+        port->setText(std::to_string(stream.stream_port_).c_str());
         port->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
         layout->addWidget(port);
@@ -240,7 +240,7 @@ namespace tc
         auto bitrate = new QLabel(stream_list_);
         bitrate->hide();
         bitrate->setObjectName("st_bitrate");
-        std::string bt_str = std::to_string(stream.encode_bps) + " Mbps";
+        std::string bt_str = std::to_string(stream.encode_bps_) + " Mbps";
         bitrate->setText(bt_str.c_str());
         bitrate->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
@@ -249,7 +249,7 @@ namespace tc
         auto fps = new QLabel(stream_list_);
         fps->hide();
         fps->setObjectName("st_fps");
-        std::string fps_str = std::to_string(stream.encode_fps) + " FPS";
+        std::string fps_str = std::to_string(stream.encode_fps_) + " FPS";
         fps->setText(fps_str.c_str());
         fps->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);

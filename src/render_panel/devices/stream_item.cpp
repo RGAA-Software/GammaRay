@@ -8,7 +8,7 @@ namespace tc
 {
 
     bool StreamItem::IsValid() const {
-        return !stream_id.empty();
+        return !stream_id_.empty();
     }
 
 }

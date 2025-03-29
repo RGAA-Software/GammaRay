@@ -271,12 +271,12 @@ namespace tc
                              srv_remote_device_id, remote_device_info.relay_server_ip_, remote_device_info.relay_server_port_);
 
                         StreamItem item;
-                        item.stream_id = "id_" + remote_device_id;
-                        item.stream_name = remote_device_id;
-                        item.stream_host = remote_device_info.relay_server_ip_;
-                        item.stream_port = remote_device_info.relay_server_port_;
-                        item.encode_bps = 0;
-                        item.encode_fps = 0;
+                        item.stream_id_ = "id_" + remote_device_id;
+                        item.stream_name_ = remote_device_id;
+                        item.stream_host_ = remote_device_info.relay_server_ip_;
+                        item.stream_port_ = remote_device_info.relay_server_port_;
+                        item.encode_bps_ = 0;
+                        item.encode_fps_ = 0;
                         item.network_type_ = kStreamItemNtTypeRelay;
                         item.remote_device_id_ = remote_device_id;
                         item.remote_device_random_pwd_ = remote_password;
