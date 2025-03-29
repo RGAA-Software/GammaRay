@@ -6,7 +6,7 @@
 #include <QResizeEvent>
 #include <memory>
 #include <map>
-
+#include "sdk_messages.h"
 namespace tc
 {
 
@@ -64,6 +64,7 @@ namespace tc
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
         int dup_idx_ = 0;
         int screen_size_ = 0;
+        SdkCaptureMonitorInfo cap_mon_info_{};
 	};
 
 }

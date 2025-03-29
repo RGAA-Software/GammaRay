@@ -547,7 +547,7 @@ namespace tc
         m.set_type(tc::kServerConfiguration);
         auto config = m.mutable_config();
         // screen info
-        auto monitor_info = config->mutable_monitor_info();
+        auto monitors_info = config->mutable_monitors_info();
         auto capturing_name = monitor_capture_plugin_->GetCapturingMonitorName();
         auto monitors = monitor_capture_plugin_->GetCaptureMonitorInfo();
         for (int i = 0; i < monitors.size(); i++) {
@@ -560,7 +560,7 @@ namespace tc
                 mr.set_height(res.height_);
                 info.mutable_resolutions()->Add(std::move(mr));
             }
-            monitor_info->Add(std::move(info));
+            monitors_info->Add(std::move(info));
         }
         config->set_capturing_monitor_name(capturing_name);
 

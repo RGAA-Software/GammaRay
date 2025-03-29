@@ -431,6 +431,13 @@ namespace tc
         cap_video_frame.handle_ = reinterpret_cast<uint64_t>(shared_handle);
         cap_video_frame.frame_format_ = format;
         cap_video_frame.adapter_uid_ = my_monitor_info_.adapter_uid_;
+        auto mon_index_res = plugin_->GetMonIndexByName(my_monitor_info_.name_);
+        if (mon_index_res.has_value()) {
+            cap_video_frame.monitor_index_ = mon_index_res.value();
+        }
+        else {
+            LOGE("desktop capture get mon index by name failed!");
+        }
         auto mon_win_info = dxgi_output_duplication_.monitor_win_info_;
         if (mon_win_info.Valid()) {
             memset(cap_video_frame.display_name_, 0, sizeof(cap_video_frame.display_name_));

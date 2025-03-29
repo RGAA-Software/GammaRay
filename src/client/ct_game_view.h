@@ -16,6 +16,18 @@ public:
 
 	void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info);
 	void RefreshI420Image(const std::shared_ptr<RawImage>& image);
+
+	void SetActiveStatus(bool active) {
+		active_ = active;
+	}
+
+	bool GetActiveStatus() {
+		return active_;
+	}
+
+	int monitor_index_ = 0;
+	std::string monitor_name_ = "";
+	bool active_ = false;
 private:
 	OpenGLVideoWidget* video_widget_ = nullptr;
 

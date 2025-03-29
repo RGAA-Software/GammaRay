@@ -19,6 +19,7 @@
         <file>resources/image/ic_stream.svg</file>
         <file>resources/image/ic_minimize.svg</file>
         <file>resources/image/ic_volume_on.svg</file>
+		<file>resources/image/separate_monitor.svg</file>
         <file>resources/image/ic_volume_off.svg</file>
         <file>resources/image/ic_control.svg</file>
         <file>resources/image/ic_desktop.svg</file>

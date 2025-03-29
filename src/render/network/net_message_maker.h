@@ -25,7 +25,7 @@ namespace tc
         static std::string MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
                                              uint64_t frame_index, int frame_width, int frame_height, bool key,
                                              const std::string& display_name, int mon_left,
-                                             int mon_top, int mon_right, int mon_bottom);
+                                             int mon_top, int mon_right, int mon_bottom, int mon_index = 0);
         static std::string MakeAudioFrameMsg(const std::shared_ptr<Data>& data,
                                              int samples, int channels, int bits, int frame_size);
         //static std::string MakeServerAudioSpectrumMsg();

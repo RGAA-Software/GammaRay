@@ -7,6 +7,7 @@
 
 #include <utility>
 #include <memory>
+#include <string>
 
 #include "tc_message.pb.h"
 #include "client/ct_settings.h"
@@ -28,6 +29,14 @@ namespace tc
 
     /////
     constexpr int kCodeExit = -1;
+
+    const std::string kCaptureAllMonitorsSign = "all";
+
+    // 多显示器展示方式
+    enum class EMultiMonDisplayMode {
+        kTab,        //标签页
+        kSeparate,   //分屏展示
+    };
 
     class AppMessage {
     public:
@@ -141,6 +150,12 @@ namespace tc
     // request control + alt + delete
     class MsgCtrlAltDelete : public AppMessage {
     public:
+    };
+
+    // MultiMonDisplayMode
+    class MultiMonDisplayModeMessage : public AppMessage {
+    public:
+        EMultiMonDisplayMode mode_;
     };
 }
 

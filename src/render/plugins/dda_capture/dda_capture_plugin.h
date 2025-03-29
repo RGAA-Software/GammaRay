@@ -4,7 +4,7 @@
 
 #ifndef GAMMARAY_DDA_CAPTURE_PLUGIN_H
 #define GAMMARAY_DDA_CAPTURE_PLUGIN_H
-
+#include <optional>
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc
@@ -33,6 +33,8 @@ namespace tc
         void OnNewClientIn() override;
         void On1Second() override;
 
+        //根据显示器名字获取排序位置
+        std::optional<int> GetMonIndexByName(const std::string& name);
     private:
         void InitVideoCaptures();
         void InitCursorCapture();
