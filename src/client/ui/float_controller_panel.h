@@ -4,7 +4,7 @@
 
 #ifndef GAMMARAYPC_FLOAT_CONTROLLER_PANEL_H
 #define GAMMARAYPC_FLOAT_CONTROLLER_PANEL_H
-
+#include <string>
 #include "base_widget.h"
 #include "client/ct_app_message.h"
 
@@ -35,6 +35,7 @@ namespace tc
         void HideAllSubPanels();
         void UpdateCaptureMonitorInfo();
         void SwitchMonitor(ComputerIcon* w);
+        void CaptureAllMonitor();
         void UpdateCapturingMonitor(const std::string& name);
 
     private:

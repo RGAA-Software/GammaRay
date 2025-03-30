@@ -17,7 +17,6 @@
 #include "tc_client_sdk_new/gl/raw_image.h"
 #include "tc_message.pb.h"
 #include "ct_video_widget_event.h"
-#include "sdk_messages.h"
 
 namespace tc
 {
@@ -104,6 +103,6 @@ namespace tc
         int tex_rect_left_ = 0;
         int tex_rect_right_ = 0;
 
-        SdkCaptureMonitorInfo cap_mon_info_{};
+        
     };
 }

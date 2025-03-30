@@ -77,12 +77,15 @@ namespace tc
 
 
         //dev test
-        game_view_ = new GameView(ctx, sdk_, params, nullptr);
-        game_view_->resize(800, 600);
-        game_view_->showNormal();
-        game_view_->hide();
+        // init extend game view
+        for (int index = 0; index < kMaxExtendGameViewCount; ++index) {
+            auto game_view = new GameView(ctx, sdk_, params, nullptr);
+            game_view->resize(800, 600);
 
-
+            game_view->hide();
+            game_view->monitor_index_ = index + 1; // beacuse extend game view index start from 1
+            extend_game_views_.push_back(game_view);
+        }
         setCentralWidget(root_widget);
 
         main_progress_ = new MainProgress(sdk_, context_, this);
@@ -210,6 +213,10 @@ namespace tc
             sdk_->PostBinaryMessage(m.SerializeAsString());
         });
 
+        msg_listener_->Listen<MultiMonDisplayModeMessage>([=, this](const MultiMonDisplayModeMessage& msg) {
+            multi_display_mode_ = msg.mode_;
+        });
+
 #ifdef TC_ENABLE_FILE_TRANSMISSION
         file_trans_interface_ = FileTransInterface::Make(sdk_);
 #endif // TC_ENABLE_FILE_TRANSMISSION
@@ -234,12 +241,30 @@ namespace tc
                 has_frame_arrived_ = true;
                 UpdateVideoWidgetSize();
             }
-            video_widget_->RefreshCapturedMonitorInfo(info);
-            video_widget_->RefreshI420Image(image);
+            LOGI("SdkCaptureMonitorInfo mon_index_: {}", info.mon_index_);
+            if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
+                video_widget_->RefreshCapturedMonitorInfo(info);
+                video_widget_->RefreshI420Image(image);
+            }
+            else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
+                if (0 == info.mon_index_) {
+                    video_widget_->RefreshCapturedMonitorInfo(info);
+                    video_widget_->RefreshI420Image(image);
+                }
+                else {
+                    if (extend_game_views_.size() >= info.mon_index_) {
+                        if (extend_game_views_[info.mon_index_ - 1]) {
+                            extend_game_views_[info.mon_index_ - 1]->RefreshCapturedMonitorInfo(info);
+                            extend_game_views_[info.mon_index_ - 1]->RefreshI420Image(image);
+                            if (!extend_game_views_[info.mon_index_ - 1]->GetActiveStatus()) {
+                                extend_game_views_[info.mon_index_ - 1]->SetActiveStatus(true);
+                                UpdateGameViewsStatus();
+                            }
+                        }
+                    }
+                }
+            }
             context_->UpdateCapturingMonitorInfo(info);
-
-            game_view_->RefreshCapturedMonitorInfo(info);
-            game_view_->RefreshI420Image(image);
         });
 
         sdk_->SetOnAudioFrameDecodedCallback([=, this](const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
@@ -284,9 +309,12 @@ namespace tc
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
-            //LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
-            for (const auto& item : config.monitor_info()) {
+            LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
+            int monitor_index = 0;
+            for (const auto& item : config.monitors_info()) {
+                std::string monitor_name = item.name();
                 //LOGI("monitor name: {}", item.name());
+                monitor_name_map_index_[monitor_name] = monitor_index;
                 std::vector<CaptureMonitorMessage::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
                     resolutions.push_back(CaptureMonitorMessage::Resolution {
@@ -298,8 +326,16 @@ namespace tc
                     .name_ = item.name(),
                     .resolutions_ = resolutions,
                 });
+                ++monitor_index;
             }
             context_->SendAppMessage(msg);
+
+            int monitors_count = config.monitors_info().size();
+            context_->PostUITask([=]() {
+                OnGetCaptureMonitorsCount(monitors_count);
+                OnGetCaptureMonitorName(config.capturing_monitor_name());
+            });
+            
         });
 
         sdk_->SetOnMonitorSwitchedCallback([=, this](const MonitorSwitched& ms) {
@@ -643,4 +679,42 @@ namespace tc
         qApp->exit(0);
     }
 
+    void Workspace::UpdateGameViewsStatus() {
+        if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
+            for (auto game_view : extend_game_views_) {
+                game_view->hide();
+            }
+        }
+        else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
+            for (auto game_view : extend_game_views_) {
+                if (game_view->active_) {
+                    game_view->show();
+                }
+                else {
+                    game_view->hide();
+                }
+            }
+        }
+    }
+
+    void Workspace::OnGetCaptureMonitorsCount(int monitors_count) {
+        int min_temp = std::min(monitors_count - 1, static_cast<int>(extend_game_views_.size()));
+        for (int index = 1; index <= min_temp; ++index) {
+            extend_game_views_[index - 1]->SetActiveStatus(true);
+        }
+
+        for (; min_temp < extend_game_views_.size(); ++min_temp) {
+            extend_game_views_[min_temp]->SetActiveStatus(false);
+        }
+        UpdateGameViewsStatus();
+    }
+
+    void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {
+        if (kCaptureAllMonitorsSign == monitor_name) {
+            multi_display_mode_ = EMultiMonDisplayMode::kSeparate;
+        }
+        else {
+            multi_display_mode_ = EMultiMonDisplayMode::kTab;
+        }
+    }
 }

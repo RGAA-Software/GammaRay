@@ -72,7 +72,7 @@ namespace tc
         } ();
         auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
                                                           msg.frame_height_, msg.key_frame_, msg.monitor_name_,
-                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
+                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_, last_capture_video_frame_.monitor_index_);
         statistics_->fps_video_encode_->Tick();
 
         // statistics

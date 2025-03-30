@@ -339,4 +339,15 @@ namespace tc
         auto event = std::make_shared<GrPluginCapturingMonitorInfoEvent>();
         this->CallbackEvent(event);
     }
+
+    std::optional<int> DDACapturePlugin::GetMonIndexByName(const std::string& name) {
+        int mon_index = 0;
+        for (auto monitor : sorted_monitors_) {
+            if (name == monitor.name_) {
+                return { mon_index };
+            }
+            ++mon_index;
+        }
+        return { std::nullopt };
+    }
 }

@@ -47,6 +47,16 @@ namespace tc
                     SwitchMonitor(ci);
                 });
             }
+            {
+                auto split_screen_btn = new FloatIcon(ctx, this);
+                split_screen_btn->setFixedSize(btn_size);
+                split_screen_btn->SetIcons(":resources/image/separate_monitor.svg", ":resources/image/separate_monitor.svg");
+                layout->addWidget(split_screen_btn);
+
+                split_screen_btn->SetOnClickListener([=, this](QWidget* w) {
+                    CaptureAllMonitor();
+                });
+            }
 
             layout->addStretch();
             WidgetHelper::ClearMargins(layout);
@@ -472,6 +482,20 @@ namespace tc
     }
 
     void FloatControllerPanel::UpdateCapturingMonitor(const std::string& name) {
+        if (kCaptureAllMonitorsSign == name) {
+            context_->SendAppMessage(MultiMonDisplayModeMessage{
+                .mode_ = EMultiMonDisplayMode::kSeparate,
+            });
+            for (const auto& w : computer_icons_) {
+                w->UpdateSelectedState(false);
+            }
+            return;
+        }
+
+        context_->SendAppMessage(MultiMonDisplayModeMessage{
+            .mode_ = EMultiMonDisplayMode::kTab,
+        });
+
         for (const auto& w: computer_icons_) {
             if (w->GetMonitorName() == name) {
                 w->UpdateSelectedState(true);
@@ -479,5 +503,11 @@ namespace tc
                 w->UpdateSelectedState(false);
             }
         }
+    }
+
+    void FloatControllerPanel::CaptureAllMonitor() {
+        context_->SendAppMessage(SwitchMonitorMessage{
+           .name_ = kCaptureAllMonitorsSign,
+        });
     }
 }
