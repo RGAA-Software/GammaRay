@@ -67,27 +67,23 @@ namespace tc
         sdk_ = ThunderSdk::Make(ctx->GetMessageNotifier());
         sdk_->Init(params, nullptr, DecoderRenderType::kFFmpegI420);
 
-        // ui
-        auto root_layout = new NoMarginVLayout();
-        auto root_widget = new QWidget(this);
-        root_widget->setLayout(root_layout);
-
-        video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kI420, this);
-        //layout->addWidget(video_widget_);
-
-
-        //dev test
-        // init extend game view
-        for (int index = 0; index < kMaxExtendGameViewCount; ++index) {
-            auto game_view = new GameView(ctx, sdk_, params, nullptr);
-            game_view->resize(800, 600);
-
-            game_view->hide();
-            game_view->monitor_index_ = index + 1; // beacuse extend game view index start from 1
-            extend_game_views_.push_back(game_view);
+        // init game views
+        for (int index = 0; index < kMaxGameViewCount; ++index) {
+            GameView* game_view = nullptr;
+            if (0 == index) {
+                game_view = new GameView(ctx, sdk_, params, this);    // main view
+                game_view->show();
+                setCentralWidget(game_view);
+            }
+            else {
+                game_view = new GameView(ctx, sdk_, params, nullptr); // extend view
+                game_view->resize(800, 600);
+                game_view->hide();
+            }
+            game_view->SetMonitorIndex(index);
+            game_views_.push_back(game_view);
         }
-        setCentralWidget(root_widget);
-
+        
         main_progress_ = new MainProgress(sdk_, context_, this);
         main_progress_->show();
 
@@ -243,23 +239,21 @@ namespace tc
             }
             //LOGI("SdkCaptureMonitorInfo mon_index_: {}", info.mon_index_);
             if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
-                video_widget_->RefreshCapturedMonitorInfo(info);
-                video_widget_->RefreshI420Image(image);
+                if (game_views_.size() > 0) {
+                    if (game_views_[0]) {
+                        game_views_[0]->RefreshCapturedMonitorInfo(info);
+                        game_views_[0]->RefreshI420Image(image);
+                    }
+                }
             }
             else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
-                if (0 == info.mon_index_) {
-                    video_widget_->RefreshCapturedMonitorInfo(info);
-                    video_widget_->RefreshI420Image(image);
-                }
-                else {
-                    if (extend_game_views_.size() >= info.mon_index_) {
-                        if (extend_game_views_[info.mon_index_ - 1]) {
-                            extend_game_views_[info.mon_index_ - 1]->RefreshCapturedMonitorInfo(info);
-                            extend_game_views_[info.mon_index_ - 1]->RefreshI420Image(image);
-                            if (!extend_game_views_[info.mon_index_ - 1]->GetActiveStatus()) {
-                                extend_game_views_[info.mon_index_ - 1]->SetActiveStatus(true);
-                                UpdateGameViewsStatus();
-                            }
+                if (game_views_.size() > info.mon_index_) {
+                    if (game_views_[info.mon_index_]) {
+                        game_views_[info.mon_index_]->RefreshCapturedMonitorInfo(info);
+                        game_views_[info.mon_index_]->RefreshI420Image(image);
+                        if (!game_views_[info.mon_index_]->GetActiveStatus()) {
+                            game_views_[info.mon_index_]->SetActiveStatus(true);
+                            UpdateGameViewsStatus();
                         }
                     }
                 }
@@ -435,8 +429,10 @@ namespace tc
     }
 
     void Workspace::SendWindowsKey(unsigned long vk, bool down) {
-        if (video_widget_) {
-           video_widget_->SendKeyEvent(vk, down);
+        if (game_views_.size() > 0) {
+            if (game_views_[0]) {
+                game_views_[0]->SendKeyEvent(vk, down);
+            }
         }
     }
 
@@ -569,68 +565,28 @@ namespace tc
 
     void Workspace::SwitchScaleMode(const tc::ScaleMode& mode) {
         settings_->SetScaleMode(mode);
-        if (!video_widget_) {return;}
         if (mode == ScaleMode::kFullWindow) {
             SwitchToFullWindow();
-        } else if (mode == ScaleMode::kKeepAspectRatio) {
+        }
+        else if (mode == ScaleMode::kKeepAspectRatio) {
             CalculateAspectRatio();
         }
     }
 
     void Workspace::CalculateAspectRatio() {
-        auto vw = video_widget_->GetCapturingMonitorWidth();
-        auto vh = video_widget_->GetCapturingMonitorHeight();
-        // no frame, fill the window
-        if (vw <= 0 || vh <= 0) {
-            video_widget_->setGeometry(0, title_bar_height_, this->width(), this->height());
-            return;
+        for (auto game_view : game_views_) {
+            if (game_view) {
+                game_view->CalculateAspectRatio();
+            }
         }
-
-        auto target_title_bar_height = this->isFullScreen() ? 0 : title_bar_height_;
-
-        int available_height = this->height() - target_title_bar_height;
-        float h_ratio = vw * 1.0f / this->width();
-        float v_ratio = vh * 1.0f / available_height;//this->height();
-        int target_width = 0;
-        int target_height = 0;
-
-        float widget_ratio = this->width() * 1.0f / available_height;
-        float frame_ratio = vw * 1.0f / vh;
-        if (widget_ratio > frame_ratio) {
-            // along to height
-            target_height = available_height;
-            target_width = vw * (available_height*1.0f/vh);
-        }
-        else {
-            // along to width
-            target_width = this->width();
-            target_height = vh * (this->width()*1.0f/vw);
-        }
-
-//        if (h_ratio > v_ratio) {
-//            // use width
-//            target_width = this->width();
-//            target_height = vh * (this->width()*1.0f/vw);
-//            LOGI("H > V");
-//        } else {
-//            LOGI("H < V");
-//            // use height
-//            //target_height = this->height();
-//            //target_width = vw * (this->height()*1.0f/vh);
-//            target_height = available_height;
-//            target_width = vw * (available_height*1.0f/vh);
-//        }
-
-//        target_height = available_height;
-//        target_width = vw * (available_height*1.0f/vh);
-
-        //video_widget_->setGeometry((this->width()-target_width)/2, (this->height()-target_height)/2, target_width, target_height);
-        video_widget_->setGeometry((this->width()-target_width)/2, (available_height-target_height)/2 + target_title_bar_height, target_width, target_height);
     }
 
     void Workspace::SwitchToFullWindow() {
-        auto target_title_bar_height = this->isFullScreen() ? 0 : title_bar_height_;
-        video_widget_->setGeometry(0, target_title_bar_height, this->width(), this->height() - target_title_bar_height);
+        for (auto game_view : game_views_) {
+            if (game_view) {
+                game_view->SwitchToFullWindow();
+            }
+        }
     }
 
     void Workspace::SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg) {
@@ -681,13 +637,18 @@ namespace tc
 
     void Workspace::UpdateGameViewsStatus() {
         if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
-            for (auto game_view : extend_game_views_) {
-                game_view->hide();
+            for (auto game_view : game_views_) {
+                if (0 == game_view->GetMonitorIndex()) {
+                    game_view->show();
+                }
+                else {
+                    game_view->hide();
+                }
             }
         }
         else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
-            for (auto game_view : extend_game_views_) {
-                if (game_view->active_) {
+            for (auto game_view : game_views_) {
+                if (game_view->GetActiveStatus()) {
                     game_view->show();
                 }
                 else {
@@ -698,13 +659,13 @@ namespace tc
     }
 
     void Workspace::OnGetCaptureMonitorsCount(int monitors_count) {
-        int min_temp = std::min(monitors_count - 1, static_cast<int>(extend_game_views_.size()));
-        for (int index = 1; index <= min_temp; ++index) {
-            extend_game_views_[index - 1]->SetActiveStatus(true);
+        int min_temp = std::min(monitors_count, static_cast<int>(game_views_.size()));
+        for (int index = 0; index < min_temp; ++index) {
+            game_views_[index]->SetActiveStatus(true);
         }
 
-        for (; min_temp < extend_game_views_.size(); ++min_temp) {
-            extend_game_views_[min_temp]->SetActiveStatus(false);
+        for (; min_temp < game_views_.size(); ++min_temp) {
+            game_views_[min_temp]->SetActiveStatus(false);
         }
         UpdateGameViewsStatus();
     }
