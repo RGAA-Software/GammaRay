@@ -73,7 +73,6 @@ namespace tc
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
         std::shared_ptr<AudioPlayer> audio_player_ = nullptr;
-        OpenGLVideoWidget* video_widget_ = nullptr;
         FloatController* float_controller_ = nullptr;
         FloatControllerPanel* controller_panel_ = nullptr;
         bool is_window_active_ = false;
@@ -106,9 +105,9 @@ namespace tc
         // 4.game_view 产生的位置要错开
         // 5.现在是每秒同步一次显示器信息,导致关闭掉的扩展屏 会再次显示，要改为监听win消息的方式，有变化再通知
         // 6.屏幕切换的图标数量
-        std::vector<GameView*> extend_game_views_;  
+        std::vector<GameView*> game_views_;  
         std::map<std::string, int> monitor_name_map_index_;
-        const int kMaxExtendGameViewCount = 7;
+        const int kMaxGameViewCount = 8;
 
         EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;
 
