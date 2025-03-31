@@ -16,7 +16,7 @@
 #include "stream_item.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 
 using namespace sqlite_orm;
 
@@ -82,7 +82,7 @@ namespace tc
         }
         //stream.stream_id = MD5::Hex(stream.stream_id);
         stream.bg_color_ = RandomColor();
-        stream.created_timestamp_ = TimeExt::GetCurrentTimestamp();
+        stream.created_timestamp_ = TimeUtil::GetCurrentTimestamp();
         stream.updated_timestamp_ = stream.created_timestamp_;
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
@@ -98,7 +98,7 @@ namespace tc
 
     void StreamDBManager::UpdateStream(const StreamItem &stream) {
         auto ts = stream;
-        ts.updated_timestamp_ = TimeExt::GetCurrentTimestamp();
+        ts.updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
         auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == ts.stream_id_));

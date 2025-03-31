@@ -6,7 +6,7 @@
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "client/ct_settings.h"
 #include "fs_object.h"
 #include "tc_message.pb.h"
@@ -250,7 +250,7 @@ namespace tc
                         .progress_ = rft.progress(),
                         .total_size_ = rft.filesize(),
                         .transferred_size_ = rft.transferred_size(),
-                        .timestamp_ = TimeExt::GetCurrentTimestamp(),
+                        .timestamp_ = TimeUtil::GetCurrentTimestamp(),
                 });
             }
         }

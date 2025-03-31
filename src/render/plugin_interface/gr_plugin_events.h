@@ -10,7 +10,7 @@
 #include "gr_plugin_interface.h"
 #include "gr_net_plugin.h"
 #include "tc_capture_new/capture_message.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc
 {
@@ -37,7 +37,7 @@ namespace tc
     class GrPluginBaseEvent {
     public:
         GrPluginBaseEvent() {
-            created_timestamp_ = TimeExt::GetCurrentTimestamp();
+            created_timestamp_ = TimeUtil::GetCurrentTimestamp();
         }
         virtual ~GrPluginBaseEvent() = default;
     public:

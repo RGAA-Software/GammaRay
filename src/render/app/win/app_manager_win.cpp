@@ -7,7 +7,7 @@
 #include <ws2tcpip.h>
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
-#include "tc_common_new/file_ext.h"
+#include "tc_common_new/file_util.h"
 #include "tc_common_new/log.h"
 #include "rd_context.h"
 #include "settings/rd_settings.h"
@@ -228,7 +228,7 @@ namespace tc
         for (const std::string& exe_name : target_app->exe_names_) {
             auto processes = ProcessHelper::GetProcessList(false);
             for (auto& process : processes) {
-                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
+                auto process_exe_name = FileUtil::GetFileNameFromPath(process->exe_full_path_);
                 if (process_exe_name == exe_name) {
                     //LOGI("find target process exe: {}", exe_name);
                     auto ret = WinHelper::FindHwndByPid(process->pid_);
@@ -254,7 +254,7 @@ namespace tc
         if (settings_->capture_.IsVideoHook()) {
             for (const auto &process: processes_info) {
                 auto result = WinHelper::IsDllInjected(process->pid_, kX86DllName, kX64DllName);
-                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
+                auto process_exe_name = FileUtil::GetFileNameFromPath(process->exe_full_path_);
                 if (result.ok_ && result.value_) {
                     continue;
                 }
@@ -295,7 +295,7 @@ namespace tc
         for (const auto& process : processes) {
             if (process->pid_ == target_pid_) {
                 target_process_info = process;
-                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
+                auto process_exe_name = FileUtil::GetFileNameFromPath(process->exe_full_path_);
                 //LOGI("Find the pid: {}, exe : {}", process->pid_, process_exe_name);
                 break;
             }
@@ -306,11 +306,11 @@ namespace tc
         }
 
         if (!target_process_info->Valid()) {
-            auto target_exe_name = FileExt::GetFileNameFromPath(settings_->app_.game_path_);
+            auto target_exe_name = FileUtil::GetFileNameFromPath(settings_->app_.game_path_);
             LOGE("Can't find app to inject, pid: {}, search for by exe: {}", target_pid_, target_exe_name);
             uint32_t pid_by_exe = 0;
             for (const auto& process : processes) {
-                auto process_exe_name = FileExt::GetFileNameFromPath(process->exe_full_path_);
+                auto process_exe_name = FileUtil::GetFileNameFromPath(process->exe_full_path_);
                 if (process_exe_name == target_exe_name) {
                     LOGI("find target process exe: {}, pid: {}", target_exe_name, pid_by_exe);
                     pid_by_exe = process->pid_;
@@ -330,7 +330,7 @@ namespace tc
         if (settings_->capture_.IsVideoHook()){
             // 单独采集的时候才尝试hook
             auto result = WinHelper::IsDllInjected(target_process_info->pid_, kX86DllName, kX64DllName);
-            auto process_exe_name = FileExt::GetFileNameFromPath(target_process_info->exe_full_path_);
+            auto process_exe_name = FileUtil::GetFileNameFromPath(target_process_info->exe_full_path_);
             if (result.ok_ && result.value_) {
                 LOGI("Pid: {} for: {} is already injected....", target_process_info->pid_, process_exe_name);
                 return;

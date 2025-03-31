@@ -6,7 +6,7 @@
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 
 #include <QTime>
 #include <QTimer>
@@ -58,7 +58,7 @@ namespace tc
 
     void StatChart::UpdateLines(const std::map<QString, std::vector<uint32_t>>& value) {
         ctx_->PostUITask([=, this]() {
-            auto beg = TimeExt::GetCurrentTimestamp();
+            auto beg = TimeUtil::GetCurrentTimestamp();
             for (auto& [in_n, in_v] : value) {
                 for (auto& [n, s] : series_) {
                     if (in_n == n) {
@@ -73,7 +73,7 @@ namespace tc
                 }
             }
             chart_view_->update();
-            auto end = TimeExt::GetCurrentTimestamp();
+            auto end = TimeUtil::GetCurrentTimestamp();
             //LOGI("UpdateLines UI, {}ms", (end-beg));
         });
     }

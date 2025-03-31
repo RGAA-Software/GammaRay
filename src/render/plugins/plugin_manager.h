@@ -50,6 +50,7 @@ namespace tc
         GrAudioEncoderPlugin* GetAudioEncoderPlugin();
         GrDataConsumerPlugin* GetFileTransferPlugin();
         GrNetPlugin* GetUdpPlugin();
+        int64_t GetQueuingMsgCountInNetPlugins();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);

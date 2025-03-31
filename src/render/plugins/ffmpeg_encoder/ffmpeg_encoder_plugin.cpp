@@ -12,7 +12,7 @@
 #include "tc_common_new/image.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
 #include "tc_common_new/file.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/defer.h"
 #include "render/plugins/plugin_ids.h"
 #include "ffmpeg_encoder.h"

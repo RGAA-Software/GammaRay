@@ -20,7 +20,7 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/folder_util.h"
-#include "tc_common_new/file_ext.h"
+#include "tc_common_new/file_util.h"
 #include <QString>
 
 using namespace nlohmann;
@@ -189,7 +189,7 @@ namespace tc
         FolderUtil::CreateDir(steam_cover_folder_path);
         std::string target_cover_name = std::format("{}_library_600x900.jpg", steam_id);
         std::string target_cover_path = std::format("{}/{}", steam_cover_folder_path, target_cover_name);
-        FileExt::CopyFileExt(from_cover_path, target_cover_path, false);
+        FileUtil::CopyFileExt(from_cover_path, target_cover_path, false);
         rep.fill_file(std::format("/resources/steam_covers/{}", target_cover_name));
     }
 

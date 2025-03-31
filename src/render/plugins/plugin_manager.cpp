@@ -13,6 +13,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_data_consumer_plugin.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_event_router.h"
 #include "plugin_ids.h"
 #include "rd_context.h"
@@ -129,9 +130,13 @@ namespace tc
 
         // file transfer plugin
         auto ft_plugin = GetFileTransferPlugin();
+        auto dda_plugin = GetDDACapturePlugin();
         VisitNetPlugins([=, this](GrNetPlugin* plugin) {
             if (ft_plugin) {
                 ft_plugin->AttachNetPlugin(plugin->GetPluginId(), plugin);
+            }
+            if (dda_plugin) {
+                dda_plugin->AttachNetPlugin(plugin->GetPluginId(), plugin);
             }
         });
     }
@@ -300,6 +305,16 @@ namespace tc
         VisitAllPlugins([&](GrPluginInterface* plugin) {
             plugin->OnSyncSystemSettings(info);
         });
+    }
+
+    int64_t PluginManager::GetQueuingMsgCountInNetPlugins() {
+        int64_t queuing_msg_count = 0;
+        VisitNetPlugins([&](GrNetPlugin* plugin) {
+            if (plugin->ConnectedClientSize() > 0) {
+                queuing_msg_count += plugin->GetQueuingMsgCount();
+            }
+        });
+        return queuing_msg_count;
     }
 
 }

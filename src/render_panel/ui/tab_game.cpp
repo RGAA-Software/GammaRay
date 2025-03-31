@@ -34,7 +34,7 @@
 #include "add_game_panel.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_common_new/folder_util.h"
-#include "tc_common_new/file_ext.h"
+#include "tc_common_new/file_util.h"
 #include "tc_dialog.h"
 
 namespace tc
@@ -352,7 +352,7 @@ namespace tc
         FolderUtil::CreateDir(steam_cover_folder_path);
         std::string target_cover_name = std::format("{}_library_600x900.jpg", game->game_id_);
         std::string target_cover_path = std::format("{}/{}", steam_cover_folder_path, target_cover_name);
-        FileExt::CopyFileExt(from_cover_path, target_cover_path, false);
+        FileUtil::CopyFileExt(from_cover_path, target_cover_path, false);
 
         QImage image;
         if (!image.load(QString::fromStdString(target_cover_path))) {

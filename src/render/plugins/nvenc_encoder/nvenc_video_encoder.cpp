@@ -3,7 +3,7 @@
 #include "tc_common_new/image.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
 #include "tc_common_new/string_ext.h"

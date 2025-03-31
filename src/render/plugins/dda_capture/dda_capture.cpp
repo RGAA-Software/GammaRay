@@ -6,7 +6,7 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/monitors.h"
 #include "tc_capture_new/capture_message.h"
 #include "plugin_interface/gr_plugin_events.h"
@@ -267,6 +267,15 @@ namespace tc
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
             }
+
+            // test beg
+            auto queuing_msg_count = plugin_->GetQueuingMsgCountInNetPlugins();
+            if (queuing_msg_count >= 10) {
+                TimeUtil::DelayBySleep(1);
+                LOGW("too many queuing messages, ignore this capturing loop, count: {}", queuing_msg_count);
+                continue;
+            }
+            // test end
 
             auto target_duration = 1000 / capture_fps_;
             CComPtr<ID3D11Texture2D> texture = nullptr;

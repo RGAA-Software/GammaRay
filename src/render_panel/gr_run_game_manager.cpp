@@ -11,7 +11,7 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/win32/process_helper.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_3rdparty/json/json.hpp"
@@ -181,7 +181,7 @@ namespace tc
     }
 
     void GrRunGameManager::CheckRunningGame() {
-        auto beg = TimeExt::GetCurrentTimestamp();
+        auto beg = TimeUtil::GetCurrentTimestamp();
         running_processes_ = ProcessHelper::GetProcessList(true);
         auto db_games = this->db_game_manager_->GetAllGames();
         //LOGI("running process: {}", running_processes_.size());
@@ -227,7 +227,7 @@ namespace tc
                 running_games_.push_back(rg);
             }
         }
-        auto end = TimeExt::GetCurrentTimestamp();
+        auto end = TimeUtil::GetCurrentTimestamp();
         //LOGI("check game alive used : {}ms", end - beg);
     }
 

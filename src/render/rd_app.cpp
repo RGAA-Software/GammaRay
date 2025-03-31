@@ -15,7 +15,7 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_capture_new/capture_message_maker.h"
@@ -287,7 +287,7 @@ namespace tc
                 }
                 // statistics
                 {
-                    auto current_time = TimeExt::GetCurrentTimestamp();
+                    auto current_time = TimeUtil::GetCurrentTimestamp();
                     if (last_post_audio_time_ == 0) {
                         last_post_audio_time_ = current_time;
                     }
@@ -423,7 +423,7 @@ namespace tc
 
             // calculate gaps between 2 captured frames.
             {
-                auto current_time = TimeExt::GetCurrentTimestamp();
+                auto current_time = TimeUtil::GetCurrentTimestamp();
                 if (last_capture_screen_time_ == 0) {
                     last_capture_screen_time_ = current_time;
                 }

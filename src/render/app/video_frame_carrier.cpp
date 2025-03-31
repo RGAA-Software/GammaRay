@@ -5,7 +5,7 @@
 #include "video_frame_carrier.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
@@ -234,7 +234,7 @@ namespace tc
 
     void VideoFrameCarrier::ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
         auto task = [=, this]() {
-            auto beg = TimeExt::GetCurrentTimestamp();
+            auto beg = TimeUtil::GetCurrentTimestamp();
             if (!raw_image_rgba_ || !raw_image_rgba_->GetData()) {
                 return;
             }

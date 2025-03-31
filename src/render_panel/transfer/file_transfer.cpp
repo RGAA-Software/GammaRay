@@ -9,7 +9,7 @@
 #include "tc_message.pb.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/file.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc
 {
@@ -95,7 +95,7 @@ namespace tc
                 }
                 resp_file_transfer->set_filename(fs.filename());
                 resp_file_transfer->set_local_filepath(fs.local_filepath());
-                resp_file_transfer->set_timestamp(TimeExt::GetCurrentTimestamp());
+                resp_file_transfer->set_timestamp(TimeUtil::GetCurrentTimestamp());
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);
 
@@ -131,7 +131,7 @@ namespace tc
                 resp_file_transfer->set_filesize(fs.filesize());
                 resp_file_transfer->set_transferred_size(fs.transferred_size());
                 resp_file_transfer->set_progress(progress);
-                resp_file_transfer->set_timestamp(TimeExt::GetCurrentTimestamp());
+                resp_file_transfer->set_timestamp(TimeUtil::GetCurrentTimestamp());
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);
 
@@ -147,7 +147,7 @@ namespace tc
                 auto resp_file_transfer = resp_msg.mutable_resp_file_transfer();
                 resp_file_transfer->set_id(fs.id());
                 resp_file_transfer->set_state(RespFileTransfer::kTransferSuccess);
-                resp_file_transfer->set_timestamp(TimeExt::GetCurrentTimestamp());
+                resp_file_transfer->set_timestamp(TimeUtil::GetCurrentTimestamp());
                 resp_file_transfer->set_filesize(fs.filesize());
                 auto proto_msg = resp_msg.SerializeAsString();
                 PostBinaryMessage(proto_msg);

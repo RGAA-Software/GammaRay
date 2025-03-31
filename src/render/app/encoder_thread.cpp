@@ -10,7 +10,7 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_encoder_new/video_encoder.h"
@@ -110,9 +110,9 @@ namespace tc
 //        }
 //
 //        enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
-//            auto beg = TimeExt::GetCurrentTimestamp();
+//            auto beg = TimeUtil::GetCurrentTimestamp();
 //            video_encoder_->Encode(image, frame_index);
-//            auto end = TimeExt::GetCurrentTimestamp();
+//            auto end = TimeUtil::GetCurrentTimestamp();
 //            auto diff = end - beg;
 //            RdStatistics::Instance()->AppendEncodeDuration(diff);
 //        }));
@@ -284,7 +284,7 @@ namespace tc
             // from texture
             if (cap_video_msg.handle_ > 0 && frame_carrier) {
                 // copy shared texture
-                auto beg = TimeExt::GetCurrentTimestamp();
+                auto beg = TimeUtil::GetCurrentTimestamp();
                 auto target_texture = frame_carrier->CopyTexture(cap_video_msg.handle_, frame_index);
                 if (target_texture == nullptr) {
                     LOGI("Don't have target texture, frame carrier copies texture failed!");
@@ -297,7 +297,7 @@ namespace tc
                     can_encode_texture = true;
                     target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
                 }
-                auto end = TimeExt::GetCurrentTimestamp();
+                auto end = TimeUtil::GetCurrentTimestamp();
                 auto diff = end - beg;
                 RdStatistics::Instance()->AppendEncodeDuration(diff);
 

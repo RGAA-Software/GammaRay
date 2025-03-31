@@ -19,7 +19,7 @@
 #include "ct_shader_program.h"
 #include "ct_opengl_video_widget.h"
 #include "ct_video_widget_shaders.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "client/ct_director.h"
@@ -275,7 +275,7 @@ namespace tc
             logo_->Render(0);
         }
 		render_fps_ += 1;
-		auto current_time = TimeExt::GetCurrentTimestamp();
+		auto current_time = TimeUtil::GetCurrentTimestamp();
 		if (current_time - last_update_fps_time_ > 1000) {
 			//statistics->render_fps = render_fps;
 			render_fps_ = 0;

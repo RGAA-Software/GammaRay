@@ -8,7 +8,7 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc
 {
@@ -80,7 +80,7 @@ namespace tc
         }
 
         callback_fps_++;
-        auto timestamp_curr = TimeExt::GetCurrentTimestamp();
+        auto timestamp_curr = TimeUtil::GetCurrentTimestamp();
         if (timestamp_curr - last_capture_callback_time_ > 1000) {
             LOGI("FPS: {}", callback_fps_);
             callback_fps_ = 0;
@@ -160,9 +160,9 @@ namespace tc
         capture_thread_ = std::make_unique<std::thread>([this]() {
             rtc_desktop_capture_->Start(this);
             while (start_flag_) {
-                auto beg = TimeExt::GetCurrentTimestamp();
+                auto beg = TimeUtil::GetCurrentTimestamp();
                 rtc_desktop_capture_->CaptureFrame();
-                auto end = TimeExt::GetCurrentTimestamp();
+                auto end = TimeUtil::GetCurrentTimestamp();
                 std::this_thread::sleep_for(std::chrono::milliseconds((1000 / fps_) - (end-beg)));
             }
         });

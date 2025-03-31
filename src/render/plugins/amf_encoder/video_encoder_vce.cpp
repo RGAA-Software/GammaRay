@@ -1,7 +1,7 @@
 #include "video_encoder_vce.h"
 
 #include "tc_common_new/log.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include "tc_common_new/data.h"
 #include "tc_encoder_new/encoder_config.h"
 #include "tc_common_new/image.h"
@@ -28,7 +28,7 @@ const wchar_t* FRAME_INDEX_PROPERTY = L"FrameIndexProperty";
 const wchar_t* WIDTH_INDEX_PROPERTY = L"FrameWidthIndexProperty";
 const wchar_t* HEIGHT_INDEX_PROPERTY = L"FrameHeightIndexProperty";
 const wchar_t* IS_KEY_FRAME = L"IsKeyFrame";
-static uint64_t last_time = tc::TimeExt::GetCurrentTimestamp();
+static uint64_t last_time = tc::TimeUtil::GetCurrentTimestamp();
 static int fps = 0;
 
 namespace tc
@@ -356,7 +356,7 @@ namespace tc
         this->plugin_->CallbackEvent(event);
 
         fps++;
-        uint64_t ct = tc::TimeExt::GetCurrentTimestamp();
+        uint64_t ct = tc::TimeUtil::GetCurrentTimestamp();
         if (ct - last_time > 1000) {
             //LOGI("Amf encoder FPS : {}", fps);
             last_time = ct;

@@ -7,7 +7,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/folder_util.h"
-#include "tc_common_new/file_ext.h"
+#include "tc_common_new/file_util.h"
 
 namespace tc
 {
@@ -23,7 +23,7 @@ namespace tc
         // shared preference
         sp_ = SharedPreference::Instance();
         auto exe_path = QString::fromStdWString(FolderUtil::GetCurrentFilePath()).toStdString();
-        auto folder_path = FileExt::GetFileFolder(exe_path) + "/gr_data";
+        auto folder_path = FileUtil::GetFileFolder(exe_path) + "/gr_data";
         LOGI("Folder path: {}", folder_path);
         if (!sp_->Init(folder_path, "gammaray_service.dat")) {
             LOGE("Init gammaray_service.data failed!");

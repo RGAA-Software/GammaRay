@@ -9,7 +9,7 @@
 #include "tc_common_new/ipc_msg_queue.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc
 {
@@ -65,7 +65,7 @@ namespace tc
 //        auto header = FixHeader {
 //            .buffer_length = static_cast<uint32_t>(size),
 //            .buffer_index = buffer_index_++,
-//            .buffer_timestamp = TimeExt::GetCurrentTimestamp(),
+//            .buffer_timestamp = TimeUtil::GetCurrentTimestamp(),
 //        };
 //        auto begin = host_to_client_shm_->begin();
 //        memcpy(begin, (char*)&header, sizeof(FixHeader));
@@ -83,14 +83,14 @@ namespace tc
         this->Send(data.c_str(), data.size());
     }
 
-    static uint64_t last_recv_timestamp_ = TimeExt::GetCurrentTimestamp();
+    static uint64_t last_recv_timestamp_ = TimeUtil::GetCurrentTimestamp();
 
     void HostIpcManager::WaitForMessage() {
 //        auto wait_task = [=, this]() {
 //            while (!exit_) {
 //                client_to_host_event_->wait();
 //
-//                auto current_timestamp = TimeExt::GetCurrentTimestamp();
+//                auto current_timestamp = TimeUtil::GetCurrentTimestamp();
 //                auto diff = current_timestamp - last_recv_timestamp_;
 //                last_recv_timestamp_ = current_timestamp;
 //
@@ -112,7 +112,7 @@ namespace tc
 //                auto buffer = std::get<1>(msg_tuple);
 //                this->CallbackMessage(msg, buffer);
 //
-//                //LOGI("Recv msg: {}, buffer index: {}, gap diff: {}, time diff: {}", msg->type, header->buffer_index, diff, (TimeExt::GetCurrentTimePointUS() - header->buffer_timestamp));
+//                //LOGI("Recv msg: {}, buffer index: {}, gap diff: {}, time diff: {}", msg->type, header->buffer_index, diff, (TimeUtil::GetCurrentTimePointUS() - header->buffer_timestamp));
 //                if (buffer) {
 //                    LOGI("Recv buffer size: {}", buffer->Size());
 //                }

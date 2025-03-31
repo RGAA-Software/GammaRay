@@ -7,7 +7,7 @@
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/num_formatter.h"
-#include "tc_common_new/time_ext.h"
+#include "tc_common_new/time_util.h"
 #include <QLabel>
 #include <QGraphicsDropShadowEffect>
 
@@ -89,7 +89,7 @@ namespace tc
                 auto lbl = new QLabel();
                 layout->addWidget(lbl);
                 layout->addSpacing(0);
-                lbl->setText(TimeExt::FormatTimestamp(TimeExt::GetCurrentTimestamp()).c_str());
+                lbl->setText(TimeUtil::FormatTimestamp(TimeUtil::GetCurrentTimestamp()).c_str());
             }
 
             info_layout->addStretch();
