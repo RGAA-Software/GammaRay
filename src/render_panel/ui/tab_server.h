@@ -6,6 +6,7 @@
 #define TC_SERVER_STEAM_TAB_SERVER_H
 
 #include "tab_base.h"
+#include "render_panel/devices/stream_item.h"
 
 #include <QListWidget>
 #include <QListWidgetItem>
@@ -27,6 +28,7 @@ namespace tc
     class TcImageButton;
     class RunningStreamManager;
     class StreamDBManager;
+    class TcPasswordInput;
 
     class TabServer : public TabBase {
     public:
@@ -48,11 +50,11 @@ namespace tc
         QLabel* lbl_machine_random_pwd_ = nullptr;
         TcQRWidget* lbl_qr_code_ = nullptr;
         StreamContent* stream_content_ = nullptr;
-        TcImageButton* btn_password_echo_change_ = nullptr;
-        QLineEdit* remote_password_ = nullptr;
+        TcPasswordInput* password_input_ = nullptr;
         QComboBox* remote_devices_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<StreamDBManager> stream_db_mgr_ = nullptr;
+        std::vector<StreamItem> recent_streams_;
     };
 }
 
