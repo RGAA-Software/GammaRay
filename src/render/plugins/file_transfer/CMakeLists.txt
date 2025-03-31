@@ -23,6 +23,6 @@ if(${TC_USE_FILE_TRANSMISSION})
     endif()
 
     add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core tc_common_new tc_net_plugin libprotobuf tc_message)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core tc_common_new tc_net_plugin libprotobuf tc_message Winmm.lib)
 endif()
 

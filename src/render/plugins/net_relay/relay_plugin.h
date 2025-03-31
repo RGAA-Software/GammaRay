@@ -23,6 +23,7 @@ namespace tc
         bool OnDestroy() override;
         void PostProtoMessage(const std::string &msg) override;
         bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) override;
+        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg) override;
         int ConnectedClientSize() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
@@ -35,7 +36,8 @@ namespace tc
         void NotifyMediaClientDisConnected();
 
     private:
-        std::shared_ptr<RelayServerSdk> relay_sdk_ = nullptr;
+        std::shared_ptr<RelayServerSdk> relay_media_sdk_ = nullptr;
+        std::shared_ptr<RelayServerSdk> relay_ft_sdk_ = nullptr;
         std::atomic_bool sdk_init_ = false;
     };
 

@@ -25,6 +25,7 @@
 #include "tc_qt_widget/tc_font_manager.h"
 #include "translator/tc_translator.h"
 #include "ct_stream_item_net_type.h"
+#include "tc_common_new/dump_helper.h"
 
 using namespace tc;
 
@@ -174,7 +175,7 @@ bool PrepareDirs(const QString& base_path) {
 
 int main(int argc, char** argv) {
 #ifdef WIN32
-    //CaptureDump();
+    CaptureDump();
 #endif
 
 #ifdef __APPLE__
@@ -225,6 +226,10 @@ int main(int argc, char** argv) {
                                 settings->device_id_, settings->stream_id_);
     auto ft_path = std::format("/file/transfer?device_id={}&stream_id={}",
                                   settings->device_id_, settings->stream_id_);
+    auto device_id = "client_" + settings->device_id_ + "_" + MD5::Hex(settings->remote_device_id_);
+    auto remote_device_id = "server_" + settings->remote_device_id_;
+    auto ft_device_id = "ft_" + device_id;
+    auto ft_remote_device_id = "ft_" + remote_device_id;
     static Workspace ws(ctx, ThunderSdkParams {
             .ssl_ = false,
             .enable_audio_ = true,
@@ -241,8 +246,10 @@ int main(int argc, char** argv) {
 #endif
             .conn_type_ = settings->conn_type_,
             .nt_type_ = settings->network_type_,
-            .device_id_ = "client_" + settings->device_id_ + "_" + MD5::Hex(settings->remote_device_id_),
-            .remote_device_id_ = "server_" + settings->remote_device_id_,
+            .device_id_ = device_id,
+            .remote_device_id_ = remote_device_id,
+            .ft_device_id_ = ft_device_id,
+            .ft_remote_device_id_ = ft_remote_device_id,
             .stream_id_ = settings->stream_id_
     });
     ws.setWindowTitle(QMainWindow::tr("GammaRay Streamer") + "[" + settings->stream_name_.c_str() + "]");

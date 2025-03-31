@@ -59,7 +59,7 @@ namespace tc
             }
 
             for (;;) {
-                auto device_id = "server_" + sys_settings_.device_id_;
+                auto srv_device_id = "server_" + sys_settings_.device_id_;
                 auto relay_host = GetConfigParam<std::string>("relay_host");
                 auto relay_port = std::atoi(GetConfigParam<std::string>("relay_port").c_str());
 
@@ -72,7 +72,7 @@ namespace tc
                     relay_port = sys_relay_port;
                 }
                 LOGI("OnCreate try to connect, connect count: {}; device id: {}, relay host: {}, relay port: {}",
-                     connect_count++, device_id, relay_host, relay_port);
+                     connect_count++, srv_device_id, relay_host, relay_port);
 
                 if (sys_settings_.device_id_.empty() || relay_host.empty() || relay_port <= 0) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -80,32 +80,32 @@ namespace tc
                 }
 
                 // todo: check device id, empty? try to retry
-                relay_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
+                relay_media_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
                     .host_ = relay_host,
                     .port_ = relay_port,
                     .ssl_ = false,
-                    .device_id_ = device_id,
+                    .device_id_ = srv_device_id,
                     .net_info_ = net_info_,
                 });
 
-                relay_sdk_->SetOnConnectedCallback([=, this]() {
+                relay_media_sdk_->SetOnConnectedCallback([=, this]() {
                     this->sdk_init_ = true;
                     this->NotifyMediaClientConnected();
                 });
 
-                relay_sdk_->SetOnDisConnectedCallback([=, this]() {
+                relay_media_sdk_->SetOnDisConnectedCallback([=, this]() {
                     this->NotifyMediaClientDisConnected();
                 });
 
-                relay_sdk_->SetOnRoomPreparedCallback([this]() {
+                relay_media_sdk_->SetOnRoomPreparedCallback([this]() {
                     this->NotifyMediaClientConnected();
                 });
 
-                relay_sdk_->SetOnRoomDestroyedCallback([this]() {
+                relay_media_sdk_->SetOnRoomDestroyedCallback([this]() {
                     this->NotifyMediaClientDisConnected();
                 });
 
-                relay_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
+                relay_media_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
                     auto type = msg->type();
                     if (type == RelayMessageType::kRelayTargetMessage) {
                         auto sub = msg->relay();
@@ -115,16 +115,41 @@ namespace tc
                     }
                 });
 
-                relay_sdk_->Start();
+                relay_media_sdk_->Start();
 
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 if (this->sdk_init_) {
-                    LOGI("SDK Connected to server!");
+                    LOGI("SDK Connected to server, connect file transfer channel");
+
+                    auto ft_device_id = "ft_server_" + sys_settings_.device_id_;
+                    relay_ft_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
+                            .host_ = relay_host,
+                            .port_ = relay_port,
+                            .ssl_ = false,
+                            .device_id_ = ft_device_id,
+                            .net_info_ = net_info_,
+                    });
+
+                    relay_ft_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
+                        auto type = msg->type();
+                        if (type == RelayMessageType::kRelayTargetMessage) {
+                            auto sub = msg->relay();
+                            const auto &payload = sub.payload();
+                            auto msg = std::string(payload.data(), payload.size());
+                            this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
+                        }
+                    });
+
+                    relay_ft_sdk_->Start();
+
                     break;
                 }
                 else {
                     LOGI("Will retry to connect relay server.");
-                    relay_sdk_->Stop();
+                    relay_media_sdk_->Stop();
+                    if (relay_media_sdk_) {
+                        relay_media_sdk_->Stop();
+                    }
                 }
             }
         }).detach();
@@ -138,14 +163,21 @@ namespace tc
 
     void RelayPlugin::PostProtoMessage(const std::string& msg) {
         if (IsWorking()) {
-            relay_sdk_->RelayProtoMessage(msg);
+            relay_media_sdk_->RelayProtoMessage(msg);
         }
     }
 
     bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
         // todo: stream id --> device id
         if (IsWorking()) {
-            relay_sdk_->RelayProtoMessage(stream_id, msg);
+            relay_media_sdk_->RelayProtoMessage(stream_id, msg);
+        }
+        return true;
+    }
+
+    bool RelayPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg) {
+        if (IsWorking() && relay_ft_sdk_) {
+            relay_ft_sdk_->RelayProtoMessage(stream_id, msg);
         }
         return true;
     }
@@ -159,7 +191,7 @@ namespace tc
     }
 
     bool RelayPlugin::IsWorking() {
-        return sdk_init_ && relay_sdk_;
+        return sdk_init_ && relay_media_sdk_;
     }
 
     void RelayPlugin::SyncInfo(const tc::NetSyncInfo &info) {
@@ -181,6 +213,6 @@ namespace tc
     }
 
     int64_t RelayPlugin::GetQueuingMsgCount() {
-        return relay_sdk_ && sdk_init_ ? relay_sdk_->GetQueuingMsgCount() : 0;
+        return relay_media_sdk_ && sdk_init_ ? relay_media_sdk_->GetQueuingMsgCount() : 0;
     }
 }
