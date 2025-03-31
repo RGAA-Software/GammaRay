@@ -40,10 +40,10 @@ namespace tc
         if (session_ && session_->is_started()) {
             session_->post_queued_event([=, this]() {
                 session_->ws_stream().binary(true);
-                queued_message_count_++;
+                queuing_message_count_++;
                 session_->async_send(data, [=, this](size_t byte_sent) {
                     RdStatistics::Instance()->AppendMediaBytes(byte_sent);
-                    queued_message_count_--;
+                    queuing_message_count_--;
                 });
             });
         }
@@ -53,10 +53,10 @@ namespace tc
         if (session_ && session_->is_started()) {
             session_->post_queued_event([=, this]() {
                 session_->ws_stream().text(true);
-                queued_message_count_++;
+                queuing_message_count_++;
                 session_->async_send(data, [=, this](size_t byte_sent) {
                     RdStatistics::Instance()->AppendMediaBytes(byte_sent);
-                    queued_message_count_--;
+                    queuing_message_count_--;
                 });
             });
         }

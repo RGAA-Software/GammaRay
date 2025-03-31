@@ -103,13 +103,13 @@ namespace tc
 
     void RenderServiceClient::PostNetMessage(const std::string& msg) {
         if (client_ && client_->is_started()) {
-            if (queued_msg_count_ > kMaxClientQueuedMessage) {
+            if (queuing_message_count_ > kMaxClientQueuedMessage) {
                 LOGW("too many message in queue, discard the message in RenderServiceClient");
                 return;
             }
-            queued_msg_count_++;
+            queuing_message_count_++;
             client_->async_send(msg, [=, this]() {
-                queued_msg_count_--;
+                queuing_message_count_--;
             });
         }
     }

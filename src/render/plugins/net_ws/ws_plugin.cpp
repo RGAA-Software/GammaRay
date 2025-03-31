@@ -94,4 +94,11 @@ namespace tc
         }
     }
 
+    int64_t WsPlugin::GetQueuingMsgCount() {
+        if (IsWorking()) {
+            return ws_server_->GetQueuingMsgCount();
+        } else {
+            return 0;
+        }
+    }
 }

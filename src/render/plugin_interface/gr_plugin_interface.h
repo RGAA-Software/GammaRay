@@ -116,6 +116,8 @@ namespace tc
         void AttachNetPlugin(const std::string& id, GrNetPlugin* plugin);
         void PostToAllStreamMessage(const std::string& msg);
         void PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg);
+        std::map<std::string, GrNetPlugin*> GetNetPlugins();
+        int64_t GetQueuingMsgCountInNetPlugins();
 
         virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
 

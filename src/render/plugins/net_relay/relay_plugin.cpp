@@ -151,7 +151,7 @@ namespace tc
     }
 
     int RelayPlugin::ConnectedClientSize() {
-        return 1;
+        return IsWorking() ? 1 : 0;
     }
 
     bool RelayPlugin::IsOnlyAudioClients() {
@@ -178,5 +178,9 @@ namespace tc
 
     void RelayPlugin::OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) {
         GrPluginInterface::OnSyncSystemSettings(settings);
+    }
+
+    int64_t RelayPlugin::GetQueuingMsgCount() {
+        return relay_sdk_ && sdk_init_ ? relay_sdk_->GetQueuingMsgCount() : 0;
     }
 }

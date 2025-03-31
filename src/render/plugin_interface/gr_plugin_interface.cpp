@@ -215,6 +215,20 @@ namespace tc
         }
     }
 
+    std::map<std::string, GrNetPlugin*> GrPluginInterface::GetNetPlugins() {
+        return net_plugins_;
+    }
+
+    int64_t GrPluginInterface::GetQueuingMsgCountInNetPlugins() {
+        int64_t queuing_msg_count = 0;
+        for (const auto& [plugin_id, plugin] : net_plugins_) {
+            if (plugin->ConnectedClientSize() > 0) {
+                queuing_msg_count += plugin->GetQueuingMsgCount();
+            }
+        }
+        return queuing_msg_count;
+    }
+
     void GrPluginInterface::OnSyncSystemSettings(const tc::GrPluginSettingsInfo& settings) {
         if (!settings.device_id_.empty()) {
             sys_settings_.device_id_ = settings.device_id_;

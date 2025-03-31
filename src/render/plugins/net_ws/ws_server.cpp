@@ -194,4 +194,12 @@ namespace tc
         auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
         this->plugin_->CallbackEvent(event);
     }
+
+    int64_t WsPluginServer::GetQueuingMsgCount() {
+        int count;
+        media_routers_.ApplyAll([&](const auto&, const auto& r) {
+            count += r->GetQueuingMsgCount();
+        });
+        return count;
+    }
 }

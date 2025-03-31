@@ -28,6 +28,7 @@ namespace tc
         bool PostTargetStreamMessage(const std::string& stream_id, const std::string& data);
         int GetConnectionPeerCount();
         bool IsOnlyAudioClients();
+        int64_t GetQueuingMsgCount();
 
     private:
         template<typename Server>

@@ -36,7 +36,7 @@ namespace tc
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        std::atomic_int queued_msg_count_ = 0;
+        std::atomic_int queuing_message_count_ = 0;
     };
 
 }

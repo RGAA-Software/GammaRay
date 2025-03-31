@@ -53,6 +53,10 @@ namespace tc
         virtual void PostBinaryMessage(const std::string& data) = 0;
         virtual void PostTextMessage(const std::string& data) = 0;
 
+        virtual int64_t GetQueuingMsgCount() {
+            return queuing_message_count_;
+        }
+
     protected:
 
         template<typename T>
@@ -64,7 +68,7 @@ namespace tc
     protected:
         std::shared_ptr<WsData> ws_data_ = nullptr;
         std::shared_ptr<asio2::http_session> session_ = nullptr;
-        std::atomic_int queued_message_count_ = 0;
+        std::atomic_int64_t queuing_message_count_ = 0;
 
     public:
         bool enable_audio_ = false;

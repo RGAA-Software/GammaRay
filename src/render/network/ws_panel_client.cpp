@@ -74,12 +74,12 @@ namespace tc
 
     void WsPanelClient::PostNetMessage(const std::string& msg) {
         if (client_ && client_->is_started()) {
-            if (queued_msg_count_ > kMaxClientQueuedMessage) {
+            if (queuing_message_count_ > kMaxClientQueuedMessage) {
                 return;
             }
-            queued_msg_count_++;
+            queuing_message_count_++;
             client_->async_send(msg, [=, this]() {
-                queued_msg_count_--;
+                queuing_message_count_--;
             });
         }
     }

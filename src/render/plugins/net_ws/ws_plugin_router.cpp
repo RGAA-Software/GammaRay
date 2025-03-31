@@ -59,9 +59,9 @@ namespace tc
             }
 
             session_->ws_stream().binary(true);
-            queued_message_count_++;
+            queuing_message_count_++;
             session_->async_send(data, [=, this](size_t byte_sent) {
-                queued_message_count_--;
+                queuing_message_count_--;
             });
         });
     }
@@ -84,9 +84,9 @@ namespace tc
             }
 
             session_->ws_stream().text(true);
-            queued_message_count_++;
+            queuing_message_count_++;
             session_->async_send(data, [=, this](size_t byte_sent) {
-                queued_message_count_--;
+                queuing_message_count_--;
             });
         });
     }

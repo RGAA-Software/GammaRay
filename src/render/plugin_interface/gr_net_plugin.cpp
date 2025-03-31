@@ -45,4 +45,8 @@ namespace tc
         sync_info_ = info;
     }
 
+    int64_t GrNetPlugin::GetQueuingMsgCount() {
+        return 0;
+    }
+
 }

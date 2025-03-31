@@ -51,9 +51,9 @@ namespace tc
 
     void WsIpcRouter::PostBinaryMessage(const std::string &data) {
         if (session_ && session_->is_started()) {
-            queued_message_count_++;
+            queuing_message_count_++;
             session_->async_send(data, [=, this](size_t byte_sent) {
-                queued_message_count_--;
+                queuing_message_count_--;
             });
         }
     }
