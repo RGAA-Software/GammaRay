@@ -9,13 +9,15 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/data.h"
 #include "render/network/ws_media_router.h"
-#include "ws_plugin_router.h"
+#include "ws_stream_router.h"
+#include "ws_filetransfer_router.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "ws_plugin.h"
 #include "tc_common_new/url_helper.h"
 #include "http_handler.h"
 
 static std::string kUrlMedia = "/media";
+static std::string kUrlFileTransfer = "/file/transfer";
 static std::string kApiPing = "/api/ping";
 
 namespace tc
@@ -45,10 +47,14 @@ namespace tc
         http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             LOGI("client disconnected: {}", socket_fd);
-            if (media_routers_.HasKey(socket_fd)) {
-                media_routers_.Remove(socket_fd);
+            if (stream_routers_.HasKey(socket_fd)) {
+                stream_routers_.Remove(socket_fd);
                 NotifyMediaClientDisConnected();
-                LOGI("App server media close, media router size: {}", media_routers_.Size());
+                LOGI("App server media close, media router size: {}", stream_routers_.Size());
+            }
+            else if (ft_routers_.HasKey(socket_fd)) {
+                ft_routers_.Remove(socket_fd);
+                NotifyMediaClientDisConnected();
             }
         });
 
@@ -60,6 +66,7 @@ namespace tc
         });
         // media websocket
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlMedia, http_server_);
+        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlFileTransfer, http_server_);
 
         // ping
         AddHttpRouter(kApiPing, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
@@ -78,7 +85,7 @@ namespace tc
     }
 
     void WsPluginServer::PostNetMessage(const std::string& data) {
-        media_routers_.ApplyAll([=](const uint64_t& socket_fd, const std::shared_ptr<WsPluginRouter>& router) {
+        stream_routers_.ApplyAll([=](const uint64_t& socket_fd, const std::shared_ptr<WsStreamRouter>& router) {
             if (!router->enable_video_) {
                 return;
             }
@@ -88,7 +95,18 @@ namespace tc
 
     bool WsPluginServer::PostTargetStreamMessage(const std::string& stream_id, const std::string& data) {
         bool found_target_stream = false;
-        media_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsPluginRouter>& router) {
+        stream_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsStreamRouter>& router) {
+            if (stream_id == router->stream_id_) {
+                router->PostBinaryMessage(data);
+                found_target_stream = true;
+            }
+        });
+        return found_target_stream;
+    }
+
+    bool WsPluginServer::PostTargetFileTransferMessage(const std::string& stream_id, const std::string& data) {
+        bool found_target_stream = false;
+        ft_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsFileTransferRouter>& router) {
             if (stream_id == router->stream_id_) {
                 router->PostBinaryMessage(data);
                 found_target_stream = true;
@@ -98,12 +116,12 @@ namespace tc
     }
 
     int WsPluginServer::GetConnectionPeerCount() {
-        return (int)media_routers_.Size();
+        return (int)stream_routers_.Size();
     }
 
     bool WsPluginServer::IsOnlyAudioClients() {
         bool only_audio_client = true;
-        media_routers_.VisitAllCond([&](auto k, auto& v) -> bool {
+        stream_routers_.VisitAllCond([&](auto k, auto& v) -> bool {
             if (v->enable_video_) {
                 only_audio_client = false;
                 return true;
@@ -123,7 +141,14 @@ namespace tc
             .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlMedia) {
-                    media_routers_.VisitAll([=](auto k, auto &v) mutable {
+                    stream_routers_.VisitAll([=](auto k, auto &v) mutable {
+                        if (socket_fd == k) {
+                            v->OnMessage(sess_ptr, socket_fd, data);
+                        }
+                    });
+                }
+                else if (path == kUrlFileTransfer) {
+                    ft_routers_.VisitAll([=](auto k, auto &v) mutable {
                         if (socket_fd == k) {
                             v->OnMessage(sess_ptr, socket_fd, data);
                         }
@@ -149,22 +174,30 @@ namespace tc
 
                 sess_ptr->set_no_delay(true);
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
-                std::shared_ptr<WsPluginRouter> router = nullptr;
-                if (path == kUrlMedia) {
-                    router = WsPluginRouter::Make(ws_data_, only_audio, device_id, stream_id);
-                    media_routers_.Insert(socket_fd, router);
-                    NotifyMediaClientConnected();
-                }
 
-                if (router) {
+                if (path == kUrlMedia) {
+                    auto router = WsStreamRouter::Make(ws_data_, only_audio, device_id, stream_id);
+                    stream_routers_.Insert(socket_fd, router);
+                    NotifyMediaClientConnected();
                     router->OnOpen(sess_ptr);
                 }
+                else if (path == kUrlFileTransfer) {
+                    auto router = WsFileTransferRouter::Make(ws_data_, only_audio, device_id, stream_id);
+                    ft_routers_.Insert(socket_fd, router);
+                    NotifyMediaClientConnected();
+                    router->OnOpen(sess_ptr);
+                }
+
             })
             .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 LOGI("client closed: {}", socket_fd);
                 if (path == kUrlMedia) {
-                    media_routers_.Remove(socket_fd);
+                    stream_routers_.Remove(socket_fd);
+                    NotifyMediaClientDisConnected();
+                }
+                else if (path == kUrlFileTransfer) {
+                    ft_routers_.Remove(socket_fd);
                     NotifyMediaClientDisConnected();
                 }
             })
@@ -197,7 +230,7 @@ namespace tc
 
     int64_t WsPluginServer::GetQueuingMsgCount() {
         int count;
-        media_routers_.ApplyAll([&](const auto&, const auto& r) {
+        stream_routers_.ApplyAll([&](const auto&, const auto& r) {
             count += r->GetQueuingMsgCount();
         });
         return count;

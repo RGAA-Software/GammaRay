@@ -177,7 +177,7 @@ namespace tc
         msg->set_allocated_key_event(key_event);
 
         if(this->sdk_) {
-            this->sdk_->PostBinaryMessage(msg->SerializeAsString());
+            this->sdk_->PostMediaMessage(msg->SerializeAsString());
         }
     }
 
@@ -206,7 +206,7 @@ namespace tc
         mouse_event->set_released(mouse_event_desc.released);
         msg->set_allocated_mouse_event(mouse_event);
         if(this->sdk_) {
-            this->sdk_->PostBinaryMessage(msg->SerializeAsString());
+            this->sdk_->PostMediaMessage(msg->SerializeAsString());
         }
     }
 }

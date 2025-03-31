@@ -210,7 +210,7 @@ namespace tc
             m.set_device_id(settings_->device_id_);
             m.set_stream_id(settings_->stream_id_);
             auto _ = m.mutable_req_ctrl_alt_delete();
-            sdk_->PostBinaryMessage(m.SerializeAsString());
+            sdk_->PostMediaMessage(m.SerializeAsString());
         });
 
         msg_listener_->Listen<MultiMonDisplayModeMessage>([=, this](const MultiMonDisplayModeMessage& msg) {
@@ -241,7 +241,7 @@ namespace tc
                 has_frame_arrived_ = true;
                 UpdateVideoWidgetSize();
             }
-            LOGI("SdkCaptureMonitorInfo mon_index_: {}", info.mon_index_);
+            //LOGI("SdkCaptureMonitorInfo mon_index_: {}", info.mon_index_);
             if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
                 video_widget_->RefreshCapturedMonitorInfo(info);
                 video_widget_->RefreshI420Image(image);
@@ -538,7 +538,7 @@ namespace tc
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
         m.mutable_clipboard_info()->set_msg(msg);
-        sdk_->PostBinaryMessage(m.SerializeAsString());
+        sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
     void Workspace::SendSwitchMonitorMessage(const std::string& name) {
@@ -550,7 +550,7 @@ namespace tc
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
         m.mutable_switch_monitor()->set_name(name);
-        sdk_->PostBinaryMessage(m.SerializeAsString());
+        sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
     void Workspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
@@ -564,7 +564,7 @@ namespace tc
         m.set_stream_id(settings_->stream_id_);
         auto wm = m.mutable_work_mode();
         wm->set_mode(mode);
-        sdk_->PostBinaryMessage(m.SerializeAsString());
+        sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
     void Workspace::SwitchScaleMode(const tc::ScaleMode& mode) {
@@ -645,7 +645,7 @@ namespace tc
         cmr->set_monitor_name(msg.monitor_name_);
         cmr->set_target_width(msg.width_);
         cmr->set_target_height(msg.height_);
-        sdk_->PostBinaryMessage(m.SerializeAsString());
+        sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
     void Workspace::UpdateVideoWidgetSize() {

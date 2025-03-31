@@ -49,9 +49,17 @@ namespace tc
 
         }
 
-        virtual void PostBinaryMessage(const std::shared_ptr<Data>& data) = 0;
-        virtual void PostBinaryMessage(const std::string& data) = 0;
-        virtual void PostTextMessage(const std::string& data) = 0;
+        virtual void PostBinaryMessage(const std::shared_ptr<Data>& data) {
+
+        }
+
+        virtual void PostBinaryMessage(const std::string& data) {
+
+        }
+
+        virtual void PostTextMessage(const std::string& data) {
+
+        }
 
         virtual int64_t GetQueuingMsgCount() {
             return queuing_message_count_;

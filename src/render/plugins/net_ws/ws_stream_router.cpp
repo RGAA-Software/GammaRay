@@ -2,7 +2,7 @@
 // Created by RGAA on 2024/3/5.
 //
 
-#include "ws_plugin_router.h"
+#include "ws_stream_router.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread_util.h"
@@ -12,40 +12,34 @@
 namespace tc
 {
 
-    void WsPluginRouter::OnOpen(std::shared_ptr<asio2::http_session> &sess_ptr) {
+    void WsStreamRouter::OnOpen(std::shared_ptr<asio2::http_session> &sess_ptr) {
         WsRouter::OnOpen(sess_ptr);
-
-        // for testing
-        auto m = new tc::Message();
-        m->set_type(MessageType::kSyncPanelInfo);
-        auto info = m->SerializeAsString();
-
     }
 
-    void WsPluginRouter::OnClose(std::shared_ptr<asio2::http_session> &sess_ptr) {
+    void WsStreamRouter::OnClose(std::shared_ptr<asio2::http_session> &sess_ptr) {
         WsRouter::OnClose(sess_ptr);
     }
 
-    void WsPluginRouter::OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
+    void WsStreamRouter::OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
         WsRouter::OnMessage(sess_ptr, socket_fd, data);
         auto plugin = Get<WsPlugin*>("plugin");
         auto msg = std::string(data.data(), data.size());
         plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, msg);
     }
 
-    void WsPluginRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {
+    void WsStreamRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {
         WsRouter::OnPing(sess_ptr);
     }
 
-    void WsPluginRouter::OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) {
+    void WsStreamRouter::OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) {
         WsRouter::OnPong(sess_ptr);
     }
 
-    void WsPluginRouter::PostBinaryMessage(const std::shared_ptr<Data> &data) {
+    void WsStreamRouter::PostBinaryMessage(const std::shared_ptr<Data> &data) {
         this->PostBinaryMessage(data->AsString());
     }
 
-    void WsPluginRouter::PostBinaryMessage(const std::string &data) {
+    void WsStreamRouter::PostBinaryMessage(const std::string &data) {
         if (!session_ || !session_->is_started()) {
             return;
         }
@@ -66,11 +60,11 @@ namespace tc
         });
     }
 
-    bool WsPluginRouter::IsVideoEnabled() {
+    bool WsStreamRouter::IsVideoEnabled() {
         return enable_video_;
     }
 
-    void WsPluginRouter::PostTextMessage(const std::string &data) {
+    void WsStreamRouter::PostTextMessage(const std::string &data) {
         if (!session_ || !session_->is_started()) {
             return;
         }

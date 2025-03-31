@@ -114,15 +114,21 @@ namespace tc
         void HideRootWidget();
 
         void AttachNetPlugin(const std::string& id, GrNetPlugin* plugin);
+        //
+        bool HasAttachedNetPlugins();
+        // via media stream
         void PostToAllStreamMessage(const std::string& msg);
+        // via media stream
         void PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg);
+        // via file transfer stream
+        void PostToTargetFileTransferMessage(const std::string& stream_id, const std::string& msg);
+
         std::map<std::string, GrNetPlugin*> GetNetPlugins();
         int64_t GetQueuingMsgCountInNetPlugins();
 
         virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
 
     protected:
-
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;
         }

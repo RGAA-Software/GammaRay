@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ws_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ws_server.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ws_plugin_router.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ws_stream_router.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ws_filetransfer_router.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/http_handler.cpp
 )
 

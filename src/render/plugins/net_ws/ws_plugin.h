@@ -27,6 +27,7 @@ namespace tc
 
         void PostProtoMessage(const std::string& msg) override;
         bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) override;
+        bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg) override;
 
         bool IsOnlyAudioClients() override;
         int ConnectedClientSize() override;

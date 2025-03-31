@@ -42,6 +42,10 @@ namespace tc
         // to a specific stream
         virtual bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg);
 
+        // Serialized proto message from Renderer
+        // to file transfer
+        virtual bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg);
+
         // messages from remote(client) -> this plugin -> process it
         // client 1 ->
         // client 2 ->  -> Renderer

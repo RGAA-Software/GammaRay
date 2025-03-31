@@ -24,6 +24,10 @@ namespace tc
         return false;
     }
 
+    bool GrNetPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg) {
+        return false;
+    }
+
     void GrNetPlugin::OnClientEventCame(bool is_proto, int64_t socket_fd, const NetPluginType& nt_plugin_type, const std::string& msg) {
         auto event = std::make_shared<GrPluginNetClientEvent>();
         event->is_proto_ = is_proto;

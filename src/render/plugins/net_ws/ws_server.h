@@ -12,7 +12,8 @@
 
 namespace tc
 {
-    class WsPluginRouter;
+    class WsStreamRouter;
+    class WsFileTransferRouter;
     class HttpHandler;
     class WsPlugin;
 
@@ -26,6 +27,7 @@ namespace tc
 
         void PostNetMessage(const std::string& data);
         bool PostTargetStreamMessage(const std::string& stream_id, const std::string& data);
+        bool PostTargetFileTransferMessage(const std::string& stream_id, const std::string& data);
         int GetConnectionPeerCount();
         bool IsOnlyAudioClients();
         int64_t GetQueuingMsgCount();
@@ -46,7 +48,8 @@ namespace tc
         std::shared_ptr<asio2::http_server> http_server_ = nullptr;
 
         WsDataPtr ws_data_ = nullptr;
-        tc::ConcurrentHashMap<uint64_t, std::shared_ptr<WsPluginRouter>> media_routers_;
+        tc::ConcurrentHashMap<uint64_t, std::shared_ptr<WsStreamRouter>> stream_routers_;
+        tc::ConcurrentHashMap<uint64_t, std::shared_ptr<WsFileTransferRouter>> ft_routers_;
 
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
 

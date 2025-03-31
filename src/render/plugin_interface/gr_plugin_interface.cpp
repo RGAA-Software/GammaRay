@@ -203,6 +203,10 @@ namespace tc
         net_plugins_[id] = plugin;
     }
 
+    bool GrPluginInterface::HasAttachedNetPlugins() {
+        return !net_plugins_.empty();
+    }
+
     void GrPluginInterface::PostToAllStreamMessage(const std::string& msg) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             plugin->PostProtoMessage(msg);
@@ -212,6 +216,12 @@ namespace tc
     void GrPluginInterface::PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             plugin->PostTargetStreamProtoMessage(stream_id, msg);
+        }
+    }
+
+    void GrPluginInterface::PostToTargetFileTransferMessage(const std::string& stream_id, const std::string& msg) {
+        for (const auto& [plugin_id, plugin] : net_plugins_) {
+            plugin->PostTargetFileTransferProtoMessage(stream_id, msg);
         }
     }
 

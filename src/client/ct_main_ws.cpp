@@ -221,8 +221,10 @@ int main(int argc, char** argv) {
     LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
 
     // WebSocket only
-    auto req_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
+    auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
                                 settings->device_id_, settings->stream_id_);
+    auto ft_path = std::format("/file/transfer?device_id={}&stream_id={}",
+                                  settings->device_id_, settings->stream_id_);
     static Workspace ws(ctx, ThunderSdkParams {
             .ssl_ = false,
             .enable_audio_ = true,
@@ -230,7 +232,8 @@ int main(int argc, char** argv) {
             .enable_controller_ = false,
             .ip_ = host,
             .port_ = port,
-            .req_path_ = req_path,
+            .media_path_ = media_path,
+            .ft_path_ = ft_path,
 #if defined(WIN32)
             .client_type_ = ClientType::kWindows,
 #elif defined(ANDROID)
