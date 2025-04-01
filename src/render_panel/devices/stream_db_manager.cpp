@@ -40,6 +40,7 @@ namespace tc
             make_column("audio_enabled", &StreamItem::audio_enabled_, default_value(0)),
             make_column("clipboard_enabled", &StreamItem::clipboard_enabled_, default_value(0)),
             make_column("only_viewing", &StreamItem::only_viewing_, default_value(0)),
+            make_column("show_max_window", &StreamItem::show_max_window_, default_value(0)),
             make_column("audio_capture_mode", &StreamItem::audio_capture_mode_),
             make_column("stream_host", &StreamItem::stream_host_),
             make_column("stream_port", &StreamItem::stream_port_),

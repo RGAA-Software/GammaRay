@@ -108,6 +108,30 @@ namespace tc
             content_layout->addLayout(layout);
 
         }
+
+        content_layout->addSpacing(5);
+
+        // show max window
+        {
+            auto layout = new NoMarginHLayout();
+
+            auto label = new QLabel(this);
+            label->setFixedWidth(item_width);
+            label->setText("Show Max Window");
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+            layout->addSpacing(10);
+
+            auto cb = new QCheckBox(this);
+            cb->setChecked(stream_item_.show_max_window_);
+            cb_show_max_ = cb;
+            layout->addWidget(cb);
+            layout->addStretch();
+            content_layout->addLayout(layout);
+
+        }
+
         // Remote device id
         if (false) {
             auto layout = new QHBoxLayout();
@@ -265,6 +289,7 @@ namespace tc
                 stream_item_.audio_enabled_ = cb_audio_->isChecked();
                 stream_item_.clipboard_enabled_ = cb_clipboard_->isChecked();
                 stream_item_.only_viewing_ = cb_only_viewing_->isChecked();
+                stream_item_.show_max_window_ = cb_show_max_->isChecked();
                 db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });

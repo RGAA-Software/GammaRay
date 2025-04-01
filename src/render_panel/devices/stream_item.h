@@ -39,6 +39,9 @@ namespace tc
         // only viewing
         int only_viewing_ = 0;
 
+        // show max window
+        int show_max_window_ = 0;
+
         // audio source, global / app_only
         std::string audio_capture_mode_;;
 

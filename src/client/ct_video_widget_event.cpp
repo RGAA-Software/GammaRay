@@ -4,6 +4,7 @@
 #include "ct_qt_key_converter.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/thread.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
@@ -23,6 +24,8 @@ namespace tc
         this->key_converter_ = std::make_shared<QtKeyConverter>();
         this->sdk_ = sdk;
         this->settings_ = Settings::Instance();
+        this->evt_cache_thread_ = Thread::Make("evt_cache_thread", 64);
+        this->evt_cache_thread_->Poll();
 	}
 
 	VideoWidgetEvent::~VideoWidgetEvent() = default;
@@ -182,7 +185,9 @@ namespace tc
     }
 
     void VideoWidgetEvent::SendMouseEvent(const MouseEventDesc& mouse_event_desc) {
-
+        if (!sdk_) {
+            return;
+        }
         // test to ignore events
         if (Settings::Instance()->ignore_mouse_event_) {
             return;
@@ -205,8 +210,15 @@ namespace tc
         mouse_event->set_pressed(mouse_event_desc.pressed);
         mouse_event->set_released(mouse_event_desc.released);
         msg->set_allocated_mouse_event(mouse_event);
-        if(this->sdk_) {
-            this->sdk_->PostMediaMessage(msg->SerializeAsString());
-        }
+
+        this->evt_cache_thread_->Post([=, this]() {
+            auto queuing_count = this->sdk_->GetQueuingMediaMsgCount();
+            while (queuing_count > 16) {
+                LOGI("queuing too many mouse event: {}, cache thread tasks: {}", queuing_count, evt_cache_thread_->TaskSize());
+                TimeUtil::DelayBySleep(1);
+                queuing_count = this->sdk_->GetQueuingMediaMsgCount();
+            }
+            sdk_->PostMediaMessage(msg->SerializeAsString());
+        });
     }
 }

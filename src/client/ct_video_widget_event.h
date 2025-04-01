@@ -15,6 +15,7 @@ namespace tc
     class QtKeyConverter;
     class ThunderSdk;
     class Settings;
+    class Thread;
 
     using OnMouseKeyboardEventCallback = std::function<void(int dup_idx, const std::shared_ptr<NetMessage>& msg)>;
 
@@ -65,6 +66,7 @@ namespace tc
         int dup_idx_ = 0;
         int screen_size_ = 0;
         SdkCaptureMonitorInfo cap_mon_info_{};
+        std::shared_ptr<Thread> evt_cache_thread_ = nullptr;
 	};
 
 }
