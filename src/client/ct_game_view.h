@@ -38,9 +38,16 @@ public:
 	void SwitchToFullWindow();
 
 	void CalculateAspectRatio();
+
+	void SetMainView(bool main_view) {
+		main_view_ = main_view;
+	}
+
+	bool IsMainView() {
+		return main_view_;
+	}
 private:
 	OpenGLVideoWidget* video_widget_ = nullptr;
-
 	std::shared_ptr<ClientContext> ctx_ = nullptr;
 	std::shared_ptr<ThunderSdk> sdk_ = nullptr;
 	ThunderSdkParams params_;
@@ -48,6 +55,7 @@ private:
 	int monitor_index_ = 0;
 	std::string monitor_name_ = "";
 	bool active_ = false;
+	bool main_view_ = false;
 };
 
 }

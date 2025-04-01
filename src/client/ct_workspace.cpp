@@ -68,21 +68,7 @@ namespace tc
         sdk_->Init(params, nullptr, DecoderRenderType::kFFmpegI420);
 
         // init game views
-        for (int index = 0; index < kMaxGameViewCount; ++index) {
-            GameView* game_view = nullptr;
-            if (0 == index) {
-                game_view = new GameView(ctx, sdk_, params, this);    // main view
-                game_view->show();
-                setCentralWidget(game_view);
-            }
-            else {
-                game_view = new GameView(ctx, sdk_, params, nullptr); // extend view
-                game_view->resize(800, 600);
-                game_view->hide();
-            }
-            game_view->SetMonitorIndex(index);
-            game_views_.push_back(game_view);
-        }
+        InitGameViews(params);
         
         main_progress_ = new MainProgress(sdk_, context_, this);
         main_progress_->show();
@@ -638,7 +624,7 @@ namespace tc
     void Workspace::UpdateGameViewsStatus() {
         if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
             for (auto game_view : game_views_) {
-                if (0 == game_view->GetMonitorIndex()) {
+                if (game_view->IsMainView()) {
                     game_view->show();
                 }
                 else {
@@ -677,5 +663,67 @@ namespace tc
         else {
             multi_display_mode_ = EMultiMonDisplayMode::kTab;
         }
+    }
+
+    void Workspace::InitGameViews(const ThunderSdkParams& params) {
+        
+        for (int index = 0; index < kMaxGameViewCount; ++index) {
+            GameView* game_view = nullptr;
+            if (0 == index) {
+                game_view = new GameView(context_, sdk_, params, this);    // main view
+                game_view->show();
+                game_view->SetMainView(true);
+                setCentralWidget(game_view);
+            }
+            else {
+                game_view = new GameView(context_, sdk_, params, nullptr); // extend view
+                game_view->resize(1280, 800);
+                game_view->hide();
+                game_view->SetMainView(false);
+                game_view->installEventFilter(this);
+            }
+            game_view->SetMonitorIndex(index);
+            game_views_.push_back(game_view);
+        }
+        QTimer::singleShot(200, this, [=, this]() {
+            QPoint ws_pos = this->pos();
+            const int x_offset = 100;
+            const int y_offset = 50;
+            const int start_x = ws_pos.x();
+            const int start_y = ws_pos.y();
+            int index = 0;
+            for (auto game_view : game_views_) {
+                if (!game_view) {
+                    ++index;
+                    continue;
+                }
+                if (game_view->IsMainView()) {
+                    ++index;
+                    continue;
+                }
+                game_view->move(start_x + x_offset * index, start_y + y_offset * index);
+                ++index;
+            }
+        });
+    }
+
+    bool Workspace::eventFilter(QObject* watched, QEvent* event) {
+        for (const auto game_view : game_views_) {
+            if (!game_view) {
+                continue;
+            }
+            
+            if (game_view == watched) {
+                switch (event->type())
+                {
+                    case QEvent::Close: {
+                        event->ignore();
+                        this->close();
+                        return true;
+                    }
+                }
+            }
+        }
+        return QMainWindow::eventFilter(watched, event);
     }
 }
