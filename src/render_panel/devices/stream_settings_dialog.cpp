@@ -13,18 +13,14 @@
 #include "tc_dialog.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
+#include "stream_db_manager.h"
 
 namespace tc
 {
 
-    StreamSettingsDialog::StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
-        context_ = ctx;
-        setFixedSize(375, 475);
-        CreateLayout();
-    }
-
     StreamSettingsDialog::StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
+        db_mgr_ = context_->GetStreamDBManager();
         stream_item_ = item;
         setFixedSize(375, 475);
         CreateLayout();
@@ -48,7 +44,7 @@ namespace tc
 
         content_layout->addSpacing(10);
 
-        // 0. name
+        // audio
         {
             auto layout = new NoMarginHLayout();
 
@@ -61,6 +57,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
+            cb->setChecked(stream_item_.audio_enabled_);
             cb_audio_ = cb;
             layout->addWidget(cb);
             layout->addStretch();
@@ -68,6 +65,8 @@ namespace tc
 
         }
         content_layout->addSpacing(5);
+
+        // clipboard
         {
             auto layout = new NoMarginHLayout();
 
@@ -80,13 +79,16 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb_audio_ = cb;
+            cb->setChecked(stream_item_.clipboard_enabled_);
+            cb_clipboard_ = cb;
             layout->addWidget(cb);
             layout->addStretch();
             content_layout->addLayout(layout);
 
         }
         content_layout->addSpacing(5);
+
+        // only viewing
         {
             auto layout = new NoMarginHLayout();
 
@@ -99,7 +101,8 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb_audio_ = cb;
+            cb->setChecked(stream_item_.only_viewing_);
+            cb_only_viewing_ = cb;
             layout->addWidget(cb);
             layout->addStretch();
             content_layout->addLayout(layout);
@@ -259,7 +262,10 @@ namespace tc
             auto layout = new NoMarginVLayout();
             auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-
+                stream_item_.audio_enabled_ = cb_audio_->isChecked();
+                stream_item_.clipboard_enabled_ = cb_clipboard_->isChecked();
+                stream_item_.only_viewing_ = cb_only_viewing_->isChecked();
+                db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });
 

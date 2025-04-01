@@ -37,7 +37,9 @@ namespace tc
             make_column("stream_id", &StreamItem::stream_id_),
             make_column("stream_name", &StreamItem::stream_name_),
             make_column("encode_bps", &StreamItem::encode_bps_),
-            make_column("audio_enabled", &StreamItem::audio_enabled_),
+            make_column("audio_enabled", &StreamItem::audio_enabled_, default_value(0)),
+            make_column("clipboard_enabled", &StreamItem::clipboard_enabled_, default_value(0)),
+            make_column("only_viewing", &StreamItem::only_viewing_, default_value(0)),
             make_column("audio_capture_mode", &StreamItem::audio_capture_mode_),
             make_column("stream_host", &StreamItem::stream_host_),
             make_column("stream_port", &StreamItem::stream_port_),
@@ -105,6 +107,16 @@ namespace tc
         if (streams.size() == 1) {
             storage.update(ts);
         }
+    }
+
+    std::optional<StreamItem> StreamDBManager::GetStream(const std::string& stream_id) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        if (streams.empty()) {
+            return std::nullopt;
+        }
+        return streams[0];
     }
 
     std::vector<StreamItem> StreamDBManager::GetAllStreams() {

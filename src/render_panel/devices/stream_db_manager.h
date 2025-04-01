@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace tc
 {
@@ -26,6 +27,7 @@ namespace tc
         std::vector<StreamItem> GetAllStreams();
         std::vector<StreamItem> GetAllStreamsSortByCreatedTime(bool increase = false);
         std::vector<StreamItem> GetStreamsSortByCreatedTime(int page, int page_size, bool increase = false);
+        std::optional<StreamItem> GetStream(const std::string& stream_id);
         void DeleteStream(int id);
         int RandomColor();
         bool HasStream(const std::string& stream_id);

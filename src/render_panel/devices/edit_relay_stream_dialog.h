@@ -27,7 +27,6 @@ namespace tc
 
     class EditRelayStreamDialog : public TcCustomTitleBarDialog {
     public:
-        explicit EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
         ~EditRelayStreamDialog() override;
 

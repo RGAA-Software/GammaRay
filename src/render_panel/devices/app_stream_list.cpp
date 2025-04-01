@@ -181,20 +181,35 @@ namespace tc
     }
 
     void AppStreamList::StartStream(const StreamItem& item) {
-        running_stream_mgr_->StartStream(item);
+        auto si = db_mgr_->GetStream(item.stream_id_);
+        if (!si.has_value()) {
+            LOGE("read stream item from db failed: {}", item.stream_id_);
+            return;
+        }
+        running_stream_mgr_->StartStream(si.value());
     }
 
     void AppStreamList::StopStream(const StreamItem& item) {
-        running_stream_mgr_->StopStream(item);
+        auto si = db_mgr_->GetStream(item.stream_id_);
+        if (!si.has_value()) {
+            LOGE("read stream item from db failed: {}", item.stream_id_);
+            return;
+        }
+        running_stream_mgr_->StopStream(si.value());
     }
 
     void AppStreamList::EditStream(const StreamItem& item) {
+        auto si = db_mgr_->GetStream(item.stream_id_);
+        if (!si.has_value()) {
+            LOGE("read stream item from db failed: {}", item.stream_id_);
+            return;
+        }
         if (item.IsRelay()) {
-            auto dialog = new EditRelayStreamDialog(context_, item);
+            auto dialog = new EditRelayStreamDialog(context_, si.value());
             dialog->show();
         }
         else {
-            auto dialog = new CreateStreamDialog(context_, item);
+            auto dialog = new CreateStreamDialog(context_, si.value());
             dialog->show();
         }
     }
@@ -210,7 +225,12 @@ namespace tc
     }
 
     void AppStreamList::ShowSettings(const StreamItem& item) {
-        auto dialog = new StreamSettingsDialog(context_, item);
+        auto si = db_mgr_->GetStream(item.stream_id_);
+        if (!si.has_value()) {
+            LOGE("read stream item from db failed: {}", item.stream_id_);
+            return;
+        }
+        auto dialog = new StreamSettingsDialog(context_, si.value());
         dialog->show();
     }
 

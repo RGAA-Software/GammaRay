@@ -31,7 +31,13 @@ namespace tc
         int encode_bps_ = 5;
 
         // audio capture status
-        int audio_enabled_ = true;
+        int audio_enabled_ = 0;
+
+        // clipboard
+        int clipboard_enabled_ = 0;
+
+        // only viewing
+        int only_viewing_ = 0;
 
         // audio source, global / app_only
         std::string audio_capture_mode_;;

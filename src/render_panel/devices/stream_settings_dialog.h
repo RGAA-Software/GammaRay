@@ -24,10 +24,10 @@ namespace tc
 {
 
     class GrContext;
+    class StreamDBManager;
 
     class StreamSettingsDialog : public TcCustomTitleBarDialog {
     public:
-        explicit StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
         ~StreamSettingsDialog() override;
 
@@ -38,8 +38,10 @@ namespace tc
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
+        std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
         QCheckBox* cb_audio_ = nullptr;
         QCheckBox* cb_clipboard_ = nullptr;
+        QCheckBox* cb_only_viewing_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
         QLineEdit* ed_remote_device_id_ = nullptr;
         QComboBox* cb_fps_ = nullptr;

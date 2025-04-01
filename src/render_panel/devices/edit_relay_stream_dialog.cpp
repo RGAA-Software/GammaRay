@@ -17,12 +17,6 @@
 namespace tc
 {
 
-    EditRelayStreamDialog::EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
-        context_ = ctx;
-        setFixedSize(375, 475);
-        CreateLayout();
-    }
-
     EditRelayStreamDialog::EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
