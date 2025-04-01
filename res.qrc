@@ -58,6 +58,7 @@
         <file>resources/image/ic_info.svg</file>
         <file>resources/image/ic_warning.svg</file>
         <file>resources/image/ic_key.svg</file>
+        <file>resources/image/ic_question.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

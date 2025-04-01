@@ -42,6 +42,9 @@ namespace tc
         // show max window
         int show_max_window_ = 0;
 
+        // split windows
+        int split_windows_ = 0;
+
         // audio source, global / app_only
         std::string audio_capture_mode_;;
 

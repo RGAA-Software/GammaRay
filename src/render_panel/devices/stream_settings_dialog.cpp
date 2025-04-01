@@ -14,6 +14,7 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "stream_db_manager.h"
+#include "tc_qt_widget/tc_image_button.h"
 
 namespace tc
 {
@@ -31,19 +32,20 @@ namespace tc
     void StreamSettingsDialog::CreateLayout() {
         setWindowTitle(tr("Device Settings"));
 
-        auto item_width = 150;
+        auto item_width = 170;
         auto edit_size = QSize(item_width, 35);
 
         auto root_layout = new NoMarginHLayout();
         auto content_layout = new NoMarginVLayout();
-        //root_layout->addStretch();
-        root_layout->addSpacing(40);
+        root_layout->addStretch();
+        //root_layout->addSpacing(40);
         root_layout->addLayout(content_layout);
         root_layout->addStretch();
         root_layout_->addLayout(root_layout);
 
-        content_layout->addSpacing(10);
-
+        content_layout->addSpacing(15);
+        auto item_gap = 8;
+        auto question_gap = 45;
         // audio
         {
             auto layout = new NoMarginHLayout();
@@ -60,11 +62,19 @@ namespace tc
             cb->setChecked(stream_item_.audio_enabled_);
             cb_audio_ = cb;
             layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
             layout->addStretch();
             content_layout->addLayout(layout);
 
         }
-        content_layout->addSpacing(5);
+        content_layout->addSpacing(item_gap);
 
         // clipboard
         {
@@ -82,11 +92,19 @@ namespace tc
             cb->setChecked(stream_item_.clipboard_enabled_);
             cb_clipboard_ = cb;
             layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
             layout->addStretch();
             content_layout->addLayout(layout);
 
         }
-        content_layout->addSpacing(5);
+        content_layout->addSpacing(item_gap);
 
         // only viewing
         {
@@ -104,12 +122,20 @@ namespace tc
             cb->setChecked(stream_item_.only_viewing_);
             cb_only_viewing_ = cb;
             layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
             layout->addStretch();
             content_layout->addLayout(layout);
 
         }
 
-        content_layout->addSpacing(5);
+        content_layout->addSpacing(item_gap);
 
         // show max window
         {
@@ -127,6 +153,43 @@ namespace tc
             cb->setChecked(stream_item_.show_max_window_);
             cb_show_max_ = cb;
             layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
+            layout->addStretch();
+            content_layout->addLayout(layout);
+
+        }
+        content_layout->addSpacing(item_gap);
+        // Split windows
+        {
+            auto layout = new NoMarginHLayout();
+
+            auto label = new QLabel(this);
+            label->setFixedWidth(item_width);
+            label->setText("Split Windows");
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+            layout->addSpacing(10);
+
+            auto cb = new QCheckBox(this);
+            cb->setChecked(stream_item_.split_windows_);
+            cb_split_windows_ = cb;
+            layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
             layout->addStretch();
             content_layout->addLayout(layout);
 
@@ -290,12 +353,13 @@ namespace tc
                 stream_item_.clipboard_enabled_ = cb_clipboard_->isChecked();
                 stream_item_.only_viewing_ = cb_only_viewing_->isChecked();
                 stream_item_.show_max_window_ = cb_show_max_->isChecked();
+                stream_item_.split_windows_ = cb_split_windows_->isChecked();
                 db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });
 
             layout->addWidget(btn_sure);
-            btn_sure->setFixedSize(QSize(320, 35));
+            btn_sure->setFixedSize(QSize(290, 35));
 
             content_layout->addSpacing(105);
             content_layout->addStretch();

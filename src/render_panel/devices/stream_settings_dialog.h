@@ -43,6 +43,7 @@ namespace tc
         QCheckBox* cb_clipboard_ = nullptr;
         QCheckBox* cb_only_viewing_ = nullptr;
         QCheckBox* cb_show_max_ = nullptr;
+        QCheckBox* cb_split_windows_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
         QLineEdit* ed_remote_device_id_ = nullptr;
         QComboBox* cb_fps_ = nullptr;
