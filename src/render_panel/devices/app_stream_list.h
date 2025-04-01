@@ -53,6 +53,7 @@ namespace tc
         void StartStream(const StreamItem& item);
         void StopStream(const StreamItem& item);
         void EditStream(const StreamItem& item);
+        void ShowSettings(const StreamItem& item);
 
     private:
         GrSettings* settings_ = nullptr;

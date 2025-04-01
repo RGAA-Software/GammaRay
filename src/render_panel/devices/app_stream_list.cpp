@@ -24,6 +24,7 @@
 #include "running_stream_manager.h"
 #include "tc_common_new/uid_spacer.h"
 #include "edit_relay_stream_dialog.h"
+#include "stream_settings_dialog.h"
 
 namespace tc
 {
@@ -134,6 +135,8 @@ namespace tc
             "",
             tr("Edit"),
             tr("Delete"),
+            "",
+            tr("Settings"),
         };
         QMenu* menu = new QMenu();
         for (int i = 0; i < actions.size(); i++) {
@@ -162,6 +165,7 @@ namespace tc
             // stop
             StopStream(item);
         }
+        // "" 2
         else if (index == 3) {
             // edit
             EditStream(item);
@@ -169,6 +173,10 @@ namespace tc
         else if (index == 4) {
             // delete
             DeleteStream(item);
+        }
+        // "" 5
+        else if (index == 6) {
+            ShowSettings(item);
         }
     }
 
@@ -199,6 +207,11 @@ namespace tc
             LoadStreamItems();
         });
         dlg->show();
+    }
+
+    void AppStreamList::ShowSettings(const StreamItem& item) {
+        auto dialog = new StreamSettingsDialog(context_, item);
+        dialog->show();
     }
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
