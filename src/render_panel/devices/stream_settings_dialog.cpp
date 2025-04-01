@@ -15,6 +15,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "stream_db_manager.h"
 #include "tc_qt_widget/tc_image_button.h"
+#include "tc_qt_widget/tc_tooltip.h"
 
 namespace tc
 {
@@ -67,6 +68,22 @@ namespace tc
             btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
             btn_tips->SetRoundRadius(11);
             btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(200, 60);
+            tooltip->hide();
+            tooltip->SetText("fjasdljoiguqijlksjdfljsadljflkdsjaflkjsdalkfjl;jasdf");
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->pos();
+                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
+
             layout->addSpacing(question_gap);
             layout->addWidget(btn_tips);
 
@@ -97,6 +114,21 @@ namespace tc
             btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
             btn_tips->SetRoundRadius(11);
             btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(200, 60);
+            tooltip->SetText("fjasdljoiguqijlksjdfljsadljflkdsjaflkjsdalkfjl;jasdf");
+            tooltip->hide();
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->pos();
+                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
             layout->addSpacing(question_gap);
             layout->addWidget(btn_tips);
 
