@@ -41,20 +41,18 @@ namespace tc
         if (!session_ || !session_->is_started()) {
             return;
         }
-        session_->post_queued_event([=, this]() {
-            auto tid = tc::GetCurrentThreadID();
-            if (post_thread_id_ == 0) {
-                post_thread_id_ = tid;
-            }
-            if (tid != post_thread_id_) {
-                LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
-            }
+        auto tid = tc::GetCurrentThreadID();
+        if (post_thread_id_ == 0) {
+            post_thread_id_ = tid;
+        }
+        if (tid != post_thread_id_) {
+            LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
+        }
 
-            session_->ws_stream().binary(true);
-            queuing_message_count_++;
-            session_->async_send(data, [=, this](size_t byte_sent) {
-                queuing_message_count_--;
-            });
+        session_->ws_stream().binary(true);
+        queuing_message_count_++;
+        session_->async_send(data, [=, this](size_t byte_sent) {
+            queuing_message_count_--;
         });
     }
 

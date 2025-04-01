@@ -40,11 +40,11 @@ namespace tc
 		setFocusPolicy(Qt::StrongFocus);
 		setMouseTracking(true);
 
-        auto timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this]() {
-            this->update();
-        });
-        timer->start(17);
+//        auto timer = new QTimer(this);
+//        connect(timer, &QTimer::timeout, this, [this]() {
+//            this->update();
+//        });
+//        timer->start(17);
 	}
 
 	OpenGLVideoWidget::~OpenGLVideoWidget() {
@@ -146,6 +146,8 @@ namespace tc
 		tex_width_ = width;
 		tex_height_ = height;
 		tex_channel_ = channel;
+
+        this->Update();
 	}
 
 	void OpenGLVideoWidget::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
@@ -185,6 +187,8 @@ namespace tc
 		
 		tex_width_ = width;
 		tex_height_ = height;
+
+        this->Update();
 	}
 
 	void OpenGLVideoWidget::resizeEvent(QResizeEvent* event) {
@@ -310,6 +314,12 @@ namespace tc
 
         LOGI("Init I420 texture : {} x {} ", tex_width_, tex_height_);
 	}
+
+    void OpenGLVideoWidget::Update() {
+        QMetaObject::invokeMethod(this, [this]() {
+            this->repaint();
+        });
+    }
 
     void OpenGLVideoWidget::RefreshCursor(int x, int y, int tex_left, int tex_right, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor) {
         if (!cursor_ || tex_width_ == 0 || tex_height_ == 0) {

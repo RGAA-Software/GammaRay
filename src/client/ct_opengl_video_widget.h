@@ -62,6 +62,7 @@ namespace tc
     private:
         void InitRGBATexture();
         void InitI420Texture();
+        void Update();
 
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;

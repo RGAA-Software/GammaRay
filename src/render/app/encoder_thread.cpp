@@ -302,10 +302,6 @@ namespace tc
                 RdStatistics::Instance()->AppendEncodeDuration(diff);
 
                 //Todo: TEST
-                context_->PostTask([=, this]() {
-
-                });
-
                 //TimeDuration td("Measure Map Raw Texture");
                 D3D11_TEXTURE2D_DESC desc;
                 target_texture->GetDesc(&desc);
