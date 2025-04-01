@@ -297,36 +297,39 @@ namespace tc
                     can_encode_texture = true;
                     target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
                 }
+
+                if (!can_encode_texture /*|| other configs*/) {
+                    //Todo: TEST
+                    //TimeDuration td("Measure Map Raw Texture");
+                    D3D11_TEXTURE2D_DESC desc;
+                    target_texture->GetDesc(&desc);
+                    auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                        // callback in Enc thread
+                        context_->PostStreamPluginTask([=, this]() {
+                            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                                plugin->OnRawVideoFrameRgba(monitor_name, image);
+                            });
+                        });
+                    };
+                    auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                        // callback in YUV converter thread
+                        if (target_encoder_plugin && !can_encode_texture) {
+                            PostEncTask([=, this]() {
+                                target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                            });
+                        }
+                        context_->PostStreamPluginTask([=, this]() {
+                            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
+                                plugin->OnRawVideoFrameYuv(monitor_name, image);
+                            });
+                        });
+                    };
+                    frame_carrier->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+                }
+
                 auto end = TimeUtil::GetCurrentTimestamp();
                 auto diff = end - beg;
                 RdStatistics::Instance()->AppendEncodeDuration(diff);
-
-                //Todo: TEST
-                //TimeDuration td("Measure Map Raw Texture");
-                D3D11_TEXTURE2D_DESC desc;
-                target_texture->GetDesc(&desc);
-                auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
-                    // callback in Enc thread
-                    context_->PostStreamPluginTask([=, this]() {
-                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                            plugin->OnRawVideoFrameRgba(monitor_name, image);
-                        });
-                    });
-                };
-                auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
-                    // callback in YUV converter thread
-                    if (target_encoder_plugin && !can_encode_texture) {
-                        PostEncTask([=, this]() {
-                            target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
-                        });
-                    }
-                    context_->PostStreamPluginTask([=, this]() {
-                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                            plugin->OnRawVideoFrameYuv(monitor_name, image);
-                        });
-                    });
-                };
-                frame_carrier->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
             }
             else {
                 context_->PostStreamPluginTask([=, this]() {
