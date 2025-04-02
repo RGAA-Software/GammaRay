@@ -24,8 +24,8 @@ namespace tc
         arguments
             << std::format("--host={}", item.stream_host_).c_str()
             << std::format("--port={}", item.stream_port_).c_str()
-            << std::format("--audio={}", 0).c_str()
-            << std::format("--clipboard={}", 0).c_str()
+            << std::format("--audio={}", item.audio_enabled_).c_str()
+            << std::format("--clipboard={}", item.clipboard_enabled_).c_str()
             << std::format("--stream_id={}", item.stream_id_).c_str()
             << std::format("--conn_type={}", item.connect_type_).c_str()
             << std::format("--network_type={}", item.network_type_).c_str()

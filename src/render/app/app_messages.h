@@ -102,6 +102,7 @@ namespace tc
 
     class ClipboardMessage {
     public:
+        int type_ = 0;
         std::string msg_;
     };
 

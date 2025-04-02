@@ -12,12 +12,13 @@ namespace tc
 {
 
     class RdContext;
+    class Message;
 
     class ClipboardManager : public QObject {
     public:
         explicit ClipboardManager(const std::shared_ptr<RdContext>& ctx);
         void Monitor();
-        void UpdateRemoteInfo(const QString& info);
+        void UpdateRemoteInfo(std::shared_ptr<Message>&& msg);
 
     private:
         std::shared_ptr<RdContext> context_ = nullptr;

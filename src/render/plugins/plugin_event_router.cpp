@@ -99,7 +99,8 @@ namespace tc
         }
         else if (event->event_type_ == GrPluginEventType::kPluginInsertIdrEvent) {
             plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
-                LOGI("Insert IDR for plugin: {}", plugin->GetPluginName());
+                // TODO:
+                //LOGI("Insert IDR for plugin: {}", plugin->GetPluginName());
                 plugin->InsertIdr();
             });
         }

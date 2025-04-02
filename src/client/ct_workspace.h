@@ -57,7 +57,7 @@ namespace tc
         void UpdateLocalCursor(uint32_t type);
         void RegisterControllerPanelListeners();
         void UpdateDebugPanelPosition();
-        void SendClipboardMessage(const std::string& msg);
+        void SendClipboardMessage(int type, const std::string& msg);
         void SendSwitchMonitorMessage(const std::string& name);
         void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
         void SwitchScaleMode(const ScaleMode& mode);

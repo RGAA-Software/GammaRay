@@ -145,7 +145,7 @@ namespace tc
         });
 
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
-            this->SendClipboardMessage(msg.msg_);
+            this->SendClipboardMessage(msg.type_, msg.msg_);
         });
 
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
@@ -291,7 +291,7 @@ namespace tc
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
-            LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
+            //LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
             int monitor_index = 0;
             for (const auto& item : config.monitors_info()) {
                 std::string monitor_name = item.name();
@@ -513,7 +513,7 @@ namespace tc
         debug_panel_->move(offset/2, offset/2);
     }
 
-    void Workspace::SendClipboardMessage(const std::string& msg) {
+    void Workspace::SendClipboardMessage(int type, const std::string& msg) {
         if (!sdk_) {
             return;
         }
@@ -521,7 +521,9 @@ namespace tc
         m.set_type(tc::kClipboardInfo);
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
-        m.mutable_clipboard_info()->set_msg(msg);
+        auto sub = m.mutable_clipboard_info();
+        sub->set_type((ClipboardType)type);
+        sub->set_msg(msg);
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 

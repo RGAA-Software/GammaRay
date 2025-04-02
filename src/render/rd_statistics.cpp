@@ -106,9 +106,10 @@ namespace tc
 
     void RdStatistics::OnChecking() {
         monitor_thread_->Post([=, this]() {
-            TimeDuration td("ProcessUtil::GetThreadCount");
+            //TimeDuration td("ProcessUtil::GetThreadCount");
             auto thread_count = ProcessUtil::GetThreadCount();
-            LOGI("Thread count: {}", thread_count);
+            //TODO:
+            //LOGI("Thread count: {}", thread_count);
         });
     }
 

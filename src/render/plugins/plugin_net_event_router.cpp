@@ -277,9 +277,8 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessClipboardInfo(std::shared_ptr<Message>&& msg) {
-        auto info = msg->clipboard_info();
         auto clipboard_mgr = app_->GetClipboardManager();
-        clipboard_mgr->UpdateRemoteInfo(QString::fromStdString(info.msg()));
+        clipboard_mgr->UpdateRemoteInfo(std::move(msg));
     }
 
     void PluginNetEventRouter::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {

@@ -44,7 +44,8 @@ namespace tc
         uint32_t frame_width = event->frame_width_;
         uint32_t frame_height = event->frame_height_;
 
-        if (event->key_frame_) {
+        // TODO:
+        if (event->key_frame_ && 0) {
             LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}, size: {}x{}, monitor: {} - ({},{}, {},{})",
                  event->data_->Size(), frame_index, key, frame_width, frame_height, last_capture_video_frame_.display_name_,
                  last_capture_video_frame_.left_, last_capture_video_frame_.top_, last_capture_video_frame_.right_, last_capture_video_frame_.bottom_);

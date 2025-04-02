@@ -46,6 +46,7 @@ namespace tc
     // Clipboard
     class ClipboardMessage : public AppMessage {
     public:
+        int type_;
         std::string msg_;
     };
 
