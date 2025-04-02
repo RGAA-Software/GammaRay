@@ -71,12 +71,12 @@ namespace tc
 
             //tooltip
             auto tooltip = new TcToolTip(this);
-            tooltip->setFixedSize(200, 60);
+            tooltip->setFixedSize(275, 50);
             tooltip->hide();
-            tooltip->SetText("fjasdljoiguqijlksjdfljsadljflkdsjaflkjsdalkfjl;jasdf");
+            tooltip->SetText("Will play audio from remote device if selected");
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
                 auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y()+btn_tips->height());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
@@ -117,8 +117,8 @@ namespace tc
 
             //tooltip
             auto tooltip = new TcToolTip(this);
-            tooltip->setFixedSize(200, 60);
-            tooltip->SetText("fjasdljoiguqijlksjdfljsadljflkdsjaflkjsdalkfjl;jasdf");
+            tooltip->setFixedSize(275, 50);
+            tooltip->SetText("Copy & Paste text between devices");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
                 auto w_pos = w->pos();
@@ -159,6 +159,21 @@ namespace tc
             btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
             btn_tips->SetRoundRadius(11);
             btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(275, 70);
+            tooltip->SetText("You can only view frames from remote device, but can't operate it by Mouse or Keyboard.");
+            tooltip->hide();
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->pos();
+                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
             layout->addSpacing(question_gap);
             layout->addWidget(btn_tips);
 
@@ -190,6 +205,21 @@ namespace tc
             btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
             btn_tips->SetRoundRadius(11);
             btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(275, 50);
+            tooltip->SetText("Maximize the window when the stream was started.");
+            tooltip->hide();
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->pos();
+                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
             layout->addSpacing(question_gap);
             layout->addWidget(btn_tips);
 
@@ -219,6 +249,21 @@ namespace tc
             btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
             btn_tips->SetRoundRadius(11);
             btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(275, 70);
+            tooltip->SetText("Split the windows when the stream was started, if your remote device have more than one monitors.");
+            tooltip->hide();
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->pos();
+                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
             layout->addSpacing(question_gap);
             layout->addWidget(btn_tips);
 
