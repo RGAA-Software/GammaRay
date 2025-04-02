@@ -48,7 +48,8 @@ namespace tc
         this->context_ = ctx;
         this->settings_ = Settings::Instance();
 
-        auto title_name = QMainWindow::tr("GammaRay Streamer") + "[" + settings_->stream_name_.c_str() + "]";
+        origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params.stream_name_.c_str() + "]";
+        setWindowTitle(origin_title_name_);
         auto notifier = this->context_->GetMessageNotifier();
         //(new MainWindowWrapper(notifier, this))->Setup(title_name);
 
@@ -645,6 +646,12 @@ namespace tc
     }
 
     void Workspace::OnGetCaptureMonitorsCount(int monitors_count) {
+        if (monitors_count > 1) {
+            setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
+        }
+        else {
+            setWindowTitle(origin_title_name_);
+        }
         int min_temp = std::min(monitors_count, static_cast<int>(game_views_.size()));
         for (int index = 0; index < min_temp; ++index) {
             game_views_[index]->SetActiveStatus(true);
@@ -677,10 +684,11 @@ namespace tc
             }
             else {
                 game_view = new GameView(context_, sdk_, params, nullptr); // extend view
-                game_view->resize(1280, 800);
+                game_view->resize(1280, 768);
                 game_view->hide();
                 game_view->SetMainView(false);
                 game_view->installEventFilter(this);
+                game_view->setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(index + 1)));
             }
             game_view->SetMonitorIndex(index);
             game_views_.push_back(game_view);

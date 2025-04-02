@@ -250,9 +250,9 @@ int main(int argc, char** argv) {
             .remote_device_id_ = remote_device_id,
             .ft_device_id_ = ft_device_id,
             .ft_remote_device_id_ = ft_remote_device_id,
-            .stream_id_ = settings->stream_id_
+            .stream_id_ = settings->stream_id_,
+            .stream_name_ = settings->stream_name_
     });
-    ws.setWindowTitle(QMainWindow::tr("GammaRay Streamer") + "[" + settings->stream_name_.c_str() + "]");
     ws.resize(1280, 768);
     ws.show();
 
