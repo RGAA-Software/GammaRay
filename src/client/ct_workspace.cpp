@@ -38,6 +38,7 @@
 #endif // TC_ENABLE_FILE_TRANSMISSION
 #include "tc_dialog.h"
 #include "ct_game_view.h"
+#include "ct_const_def.h"
 
 
 
