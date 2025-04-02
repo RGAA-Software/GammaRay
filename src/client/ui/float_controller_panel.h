@@ -45,6 +45,7 @@ namespace tc
         std::vector<ComputerIcon*> computer_icons_;
         CaptureMonitorMessage capture_monitor_;
 
+        const int kInitialWidth = 240;
     };
 
 }

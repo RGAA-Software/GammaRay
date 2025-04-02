@@ -18,13 +18,14 @@
 #include "float_sub_display_panel.h"
 #include "ct_app_message.h"
 #include "tc_dialog.h"
+#include "ct_const_def.h"
 
 namespace tc
 {
 
     FloatControllerPanel::FloatControllerPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
-        this->setFixedSize(230, 285);
+        this->setFixedSize(kInitialWidth, 285);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
@@ -34,7 +35,8 @@ namespace tc
         {
             auto layout = new QHBoxLayout();
 
-            for (int i = 0; i < 4; i++) {
+            //ÆÁÄ»Ë÷ÒýÇÐ»»°´Å¥
+            for (int i = 0; i < kMaxGameViewCount; i++) {
                 auto ci = new ComputerIcon(ctx, i, this);
                 ci->setFixedSize(QSize(26, 26));
                 ci->UpdateSelectedState(true);
@@ -47,6 +49,8 @@ namespace tc
                     SwitchMonitor(ci);
                 });
             }
+
+            //·ÖÆÁ°´Å¥
             {
                 auto split_screen_btn = new FloatIcon(ctx, this);
                 split_screen_btn->setFixedSize(btn_size);
@@ -432,9 +436,16 @@ namespace tc
 
     void FloatControllerPanel::UpdateCaptureMonitorInfo() {
         //LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}", capture_monitor_.capturing_monitor_name_);
+        int default_appropriate_icons_count = 3;
+        if (capture_monitor_.monitors_.size() <= default_appropriate_icons_count) {
+            setFixedWidth(kInitialWidth);
+        }
+        else {
+            setFixedWidth(kInitialWidth + (capture_monitor_.monitors_.size() - default_appropriate_icons_count) * 32);
+        }
         int index = 0;
         for (const auto& mon : capture_monitor_.monitors_) {
-            if (index >= 4) {
+            if (index >= kMaxGameViewCount) {
                 break;
             }
             auto ci = computer_icons_[index];
