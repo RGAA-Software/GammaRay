@@ -109,6 +109,7 @@ namespace tc
                     auto type = msg->type();
                     if (type == RelayMessageType::kRelayTargetMessage) {
                         auto sub = msg->relay();
+                        auto relay_msg_index = sub.relay_msg_index();
                         const auto &payload = sub.payload();
                         auto msg = std::string(payload.data(), payload.size());
                         this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
