@@ -100,18 +100,19 @@ namespace tc
     private:
         // 扩展屏
         // to do:
-        // 1.将将gameview这个类抽象的比较完善, 后面都可以使用 game_views_ 来表示，主屏 与 扩展屏 放在一个vector里 逻辑清晰
+        // 1.将gameview这个类抽象的比较完善, 后面都可以使用 game_views_ 来表示，主屏 与 扩展屏 放在一个vector里 逻辑清晰
         // 2.可能连上对端后，对端设置的显示器采集模式 就是 all，那么客户端默认 kTab 就不合理了 (已完成)
         // 3.70这台电脑,如果dda采集失败了，切换到GDI采集，研究下，GDI采集是否能单独采集某个屏幕
         // 4.game_view 产生的位置要错开(已完成)
         // 5.现在是每秒同步一次显示器信息,导致关闭掉的扩展屏 会再次显示，要改为监听win消息的方式，有变化再通知
-        // 6.屏幕切换的图标数量
+        // 6.屏幕切换的图标数量 (已完成, 待测)
         // 7.获取任一game_view的关闭事件(已完成)
-        // 8. 每个game_view的标题名字(已完成)
+        // 8.每个game_view的标题名字(已完成)
+        // 9.切换屏幕按钮，以及分屏合并操作，要刷新桌面 
         QString origin_title_name_;
         std::vector<GameView*> game_views_;  
         std::map<std::string, int> monitor_name_map_index_;
-        const int kMaxGameViewCount = 8;
+        
 
         EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;
 
