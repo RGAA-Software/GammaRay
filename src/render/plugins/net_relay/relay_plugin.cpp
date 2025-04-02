@@ -212,7 +212,11 @@ namespace tc
         GrPluginInterface::OnSyncSystemSettings(settings);
     }
 
-    int64_t RelayPlugin::GetQueuingMsgCount() {
+    int64_t RelayPlugin::GetQueuingMediaMsgCount() {
         return relay_media_sdk_ && sdk_init_ ? relay_media_sdk_->GetQueuingMsgCount() : 0;
+    }
+
+    int64_t RelayPlugin::GetQueuingFtMsgCount() {
+        return relay_ft_sdk_ && sdk_init_ ? relay_ft_sdk_->GetQueuingMsgCount() : 0;
     }
 }

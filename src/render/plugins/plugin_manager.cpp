@@ -307,11 +307,21 @@ namespace tc
         });
     }
 
-    int64_t PluginManager::GetQueuingMsgCountInNetPlugins() {
+    int64_t PluginManager::GetQueuingMediaMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         VisitNetPlugins([&](GrNetPlugin* plugin) {
             if (plugin->ConnectedClientSize() > 0) {
-                queuing_msg_count += plugin->GetQueuingMsgCount();
+                queuing_msg_count += plugin->GetQueuingMediaMsgCount();
+            }
+        });
+        return queuing_msg_count;
+    }
+
+    int64_t PluginManager::GetQueuingFtMsgCountInNetPlugins() {
+        int64_t queuing_msg_count = 0;
+        VisitNetPlugins([&](GrNetPlugin* plugin) {
+            if (plugin->ConnectedClientSize() > 0) {
+                queuing_msg_count += plugin->GetQueuingFtMsgCount();
             }
         });
         return queuing_msg_count;

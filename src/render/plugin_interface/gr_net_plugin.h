@@ -59,7 +59,10 @@ namespace tc
         virtual void SyncInfo(const NetSyncInfo& info);
 
         // how many messages in queue but not be sent now
-        virtual int64_t GetQueuingMsgCount();
+        virtual int64_t GetQueuingMediaMsgCount();
+
+        // how many message in ft queue but not be sent now
+        virtual int64_t GetQueuingFtMsgCount();
 
     protected:
         NetSyncInfo sync_info_{};

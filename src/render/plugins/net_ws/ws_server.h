@@ -30,7 +30,8 @@ namespace tc
         bool PostTargetFileTransferMessage(const std::string& stream_id, const std::string& data);
         int GetConnectionPeerCount();
         bool IsOnlyAudioClients();
-        int64_t GetQueuingMsgCount();
+        int64_t GetQueuingMediaMsgCount();
+        int64_t GetQueuingFtMsgCount();
 
     private:
         template<typename Server>

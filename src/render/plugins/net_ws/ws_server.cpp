@@ -228,9 +228,17 @@ namespace tc
         this->plugin_->CallbackEvent(event);
     }
 
-    int64_t WsPluginServer::GetQueuingMsgCount() {
+    int64_t WsPluginServer::GetQueuingMediaMsgCount() {
         int count;
         stream_routers_.ApplyAll([&](const auto&, const auto& r) {
+            count += r->GetQueuingMsgCount();
+        });
+        return count;
+    }
+
+    int64_t WsPluginServer::GetQueuingFtMsgCount() {
+        int count;
+        ft_routers_.ApplyAll([&](const auto&, const auto& r) {
             count += r->GetQueuingMsgCount();
         });
         return count;

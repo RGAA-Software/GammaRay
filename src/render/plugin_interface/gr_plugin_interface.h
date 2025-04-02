@@ -124,7 +124,8 @@ namespace tc
         void PostToTargetFileTransferMessage(const std::string& stream_id, const std::string& msg);
 
         std::map<std::string, GrNetPlugin*> GetNetPlugins();
-        int64_t GetQueuingMsgCountInNetPlugins();
+        int64_t GetQueuingMediaMsgCountInNetPlugins();
+        int64_t GetQueuingFtMsgCountInNetPlugins();
 
         virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
 

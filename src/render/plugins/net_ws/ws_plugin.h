@@ -32,7 +32,8 @@ namespace tc
         bool IsOnlyAudioClients() override;
         int ConnectedClientSize() override;
 
-        int64_t GetQueuingMsgCount() override;
+        int64_t GetQueuingMediaMsgCount() override;
+        int64_t GetQueuingFtMsgCount() override;
     private:
 
         std::shared_ptr<WsPluginServer> ws_server_ = nullptr;

@@ -229,11 +229,21 @@ namespace tc
         return net_plugins_;
     }
 
-    int64_t GrPluginInterface::GetQueuingMsgCountInNetPlugins() {
+    int64_t GrPluginInterface::GetQueuingMediaMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             if (plugin->ConnectedClientSize() > 0) {
-                queuing_msg_count += plugin->GetQueuingMsgCount();
+                queuing_msg_count += plugin->GetQueuingMediaMsgCount();
+            }
+        }
+        return queuing_msg_count;
+    }
+
+    int64_t GrPluginInterface::GetQueuingFtMsgCountInNetPlugins() {
+        int64_t queuing_msg_count = 0;
+        for (const auto& [plugin_id, plugin] : net_plugins_) {
+            if (plugin->ConnectedClientSize() > 0) {
+                queuing_msg_count += plugin->GetQueuingFtMsgCount();
             }
         }
         return queuing_msg_count;

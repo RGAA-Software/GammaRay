@@ -269,7 +269,7 @@ namespace tc
             }
 
             // test beg
-            auto queuing_msg_count = plugin_->GetQueuingMsgCountInNetPlugins();
+            auto queuing_msg_count = plugin_->GetQueuingMediaMsgCountInNetPlugins();
             if (queuing_msg_count >= 10) {
                 TimeUtil::DelayBySleep(1);
                 LOGW("too many queuing messages, ignore this capturing loop, count: {}", queuing_msg_count);

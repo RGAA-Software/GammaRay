@@ -101,9 +101,17 @@ namespace tc
         }
     }
 
-    int64_t WsPlugin::GetQueuingMsgCount() {
+    int64_t WsPlugin::GetQueuingMediaMsgCount() {
         if (IsWorking()) {
-            return ws_server_->GetQueuingMsgCount();
+            return ws_server_->GetQueuingMediaMsgCount();
+        } else {
+            return 0;
+        }
+    }
+
+    int64_t WsPlugin::GetQueuingFtMsgCount() {
+        if (IsWorking()) {
+            return ws_server_->GetQueuingFtMsgCount();
         } else {
             return 0;
         }

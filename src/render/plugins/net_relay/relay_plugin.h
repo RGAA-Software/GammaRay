@@ -29,7 +29,8 @@ namespace tc
         bool IsWorking() override;
         void SyncInfo(const tc::NetSyncInfo& info) override;
         void OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) override;
-        int64_t GetQueuingMsgCount() override;
+        int64_t GetQueuingMediaMsgCount() override;
+        int64_t GetQueuingFtMsgCount() override;
 
     private:
         void NotifyMediaClientConnected();

@@ -49,7 +49,11 @@ namespace tc
         sync_info_ = info;
     }
 
-    int64_t GrNetPlugin::GetQueuingMsgCount() {
+    int64_t GrNetPlugin::GetQueuingMediaMsgCount() {
+        return 0;
+    }
+
+    int64_t GrNetPlugin::GetQueuingFtMsgCount() {
         return 0;
     }
 
