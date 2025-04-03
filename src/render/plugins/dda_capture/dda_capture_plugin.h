@@ -34,7 +34,7 @@ namespace tc
         void On1Second() override;
 
         //根据显示器名字获取排序位置
-        std::optional<int> GetMonIndexByName(const std::string& name);
+        std::optional<int> GetMonIndexByName(const std::string& name) override;
     private:
         void InitVideoCaptures();
         void InitCursorCapture();

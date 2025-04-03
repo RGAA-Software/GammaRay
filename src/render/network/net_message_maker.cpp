@@ -121,10 +121,11 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-    std::string NetMessageMaker::MakeMonitorSwitched(const std::string& name) {
+    std::string NetMessageMaker::MakeMonitorSwitched(const std::string& name, const int& mon_index) {
         tc::Message msg;
         msg.set_type(kMonitorSwitched);
         msg.mutable_monitor_switched()->set_name(name);
+        msg.mutable_monitor_switched()->set_index(mon_index);
         return msg.SerializeAsString();
     }
 

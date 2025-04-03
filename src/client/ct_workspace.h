@@ -105,17 +105,20 @@ namespace tc
         // 3.70这台电脑,如果dda采集失败了，切换到GDI采集，研究下，GDI采集是否能单独采集某个屏幕
         // 4.game_view 产生的位置要错开(已完成)
         // 5.现在是每秒同步一次显示器信息,导致关闭掉的扩展屏 会再次显示，要改为监听win消息的方式，有变化再通知
-        // 6.屏幕切换的图标数量 (已完成, 待测)
+        // 6.屏幕切换的图标数量 (已完成)
         // 7.获取任一game_view的关闭事件(已完成)
         // 8.每个game_view的标题名字(已完成)
         // 9.切换屏幕按钮，以及分屏合并操作，要刷新桌面 
+        // 10.关闭弹窗显示在 点击关闭按钮所在的屏幕上(已完成)
+        
         QString origin_title_name_;
         std::vector<GameView*> game_views_;  
         std::map<std::string, int> monitor_name_map_index_;
         
 
         EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;
-
+        int monitors_count_ = 0;
+        QWidget* close_event_occurred_widget_ = nullptr;
     };
 
 }

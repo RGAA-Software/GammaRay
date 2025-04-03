@@ -305,7 +305,12 @@ namespace tc {
             //msg_notifier_->SendAppMessage(msg);
             win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
 
-            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.name());
+            int mon_index = 0;
+            auto mon_index_res = capture_plugin->GetMonIndexByName(sm.name());
+            if (mon_index_res.has_value()) {
+                mon_index = mon_index_res.value();
+            }
+            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.name(), mon_index);
             app_->PostNetMessage(proto_msg);
         });
     }

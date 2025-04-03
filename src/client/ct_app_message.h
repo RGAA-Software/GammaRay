@@ -123,6 +123,7 @@ namespace tc
     class MonitorSwitchedMessage : public AppMessage {
     public:
         std::string name_;
+        int index_ = 0;
     };
 
     class SwitchWorkModeMessage : public AppMessage {
@@ -157,6 +158,7 @@ namespace tc
     class MultiMonDisplayModeMessage : public AppMessage {
     public:
         EMultiMonDisplayMode mode_;
+        int current_cap_mon_index_ = 0;
     };
 }
 

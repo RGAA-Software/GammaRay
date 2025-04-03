@@ -199,6 +199,19 @@ namespace tc
 
         msg_listener_->Listen<MultiMonDisplayModeMessage>([=, this](const MultiMonDisplayModeMessage& msg) {
             multi_display_mode_ = msg.mode_;
+            context_->PostUITask([=]() {
+                if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
+                    if (monitors_count_ > 1) {
+                        setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
+                    }
+                    else {
+                        setWindowTitle(origin_title_name_);
+                    }
+                }
+                else if(EMultiMonDisplayMode::kTab == multi_display_mode_) {
+                    setWindowTitle(origin_title_name_);
+                }
+            });
         });
 
 #ifdef TC_ENABLE_FILE_TRANSMISSION
@@ -323,6 +336,7 @@ namespace tc
         sdk_->SetOnMonitorSwitchedCallback([=, this](const MonitorSwitched& ms) {
             context_->SendAppMessage(MonitorSwitchedMessage {
                 .name_ = ms.name(),
+                .index_ = ms.index()
             });
         });
 
@@ -383,8 +397,12 @@ namespace tc
 //            event->ignore();
 //        }
 
+        if (!close_event_occurred_widget_) {
+            close_event_occurred_widget_ = this;
+        }
         event->ignore();
-        auto dg = TcDialog::Make(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
+        auto dg = TcDialog::Make(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"), close_event_occurred_widget_);
+        close_event_occurred_widget_ = nullptr;
         dg->SetOnDialogSureClicked([=, this]() {
             Exit();
         });
@@ -649,10 +667,8 @@ namespace tc
     }
 
     void Workspace::OnGetCaptureMonitorsCount(int monitors_count) {
-        if (monitors_count > 1) {
-            setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
-        }
-        else {
+        monitors_count_ = monitors_count;
+        if (monitors_count <= 1) {
             setWindowTitle(origin_title_name_);
         }
         int min_temp = std::min(monitors_count, static_cast<int>(game_views_.size()));
@@ -669,6 +685,9 @@ namespace tc
     void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {
         if (kCaptureAllMonitorsSign == monitor_name) {
             multi_display_mode_ = EMultiMonDisplayMode::kSeparate;
+            if (monitors_count_ > 1) {
+                setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
+            }
         }
         else {
             multi_display_mode_ = EMultiMonDisplayMode::kTab;
@@ -728,6 +747,7 @@ namespace tc
                 switch (event->type())
                 {
                     case QEvent::Close: {
+                        close_event_occurred_widget_ = game_view;
                         event->ignore();
                         this->close();
                         return true;

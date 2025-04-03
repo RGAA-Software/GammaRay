@@ -36,7 +36,7 @@ namespace tc
         void UpdateCaptureMonitorInfo();
         void SwitchMonitor(ComputerIcon* w);
         void CaptureAllMonitor();
-        void UpdateCapturingMonitor(const std::string& name);
+        void UpdateCapturingMonitor(const std::string& name, int cur_cap_mon_index);
 
     private:
         OnClickListener debug_listener_;

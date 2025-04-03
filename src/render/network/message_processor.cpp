@@ -229,7 +229,7 @@ namespace tc {
             dc->SetCaptureMonitor(/*sm.index()*/0, sm.name());
             dc->SendCapturingMonitorMessage();
 
-            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.name());
+            auto proto_msg = NetMessageMaker::MakeMonitorSwitched(sm.name(), 0);
             app_->PostNetMessage(proto_msg);
         });
     }

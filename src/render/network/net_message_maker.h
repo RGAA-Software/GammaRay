@@ -33,7 +33,7 @@ namespace tc
         static std::string MakeCursorInfoSyncMsg(uint32_t x, uint32_t y, uint32_t hotspot_x, uint32_t hotspot_y, uint32_t width,
                                           uint32_t height, bool visable, const std::shared_ptr<Data>& data, uint32_t type);
 
-        static std::string MakeMonitorSwitched(const std::string& name);
+        static std::string MakeMonitorSwitched(const std::string& name, const int& mon_index);
 
     };
 

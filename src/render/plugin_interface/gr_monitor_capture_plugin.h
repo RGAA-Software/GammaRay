@@ -6,6 +6,7 @@
 #define GAMMARAY_GR_MONITOR_CAPTURE_PLUGIN_H
 
 #include "gr_plugin_interface.h"
+#include <optional>
 #include "tc_capture_new/win/desktop_capture/monitor_util.h"
 
 namespace tc
@@ -29,6 +30,8 @@ namespace tc
         virtual void SetCaptureMonitor(const std::string& name);
         virtual void SetCaptureFps(int fps);
         virtual std::string GetCapturingMonitorName() = 0;
+        //根据显示器名字获取排序位置
+        virtual std::optional<int> GetMonIndexByName(const std::string& name) = 0;
 
     protected:
         bool is_monitor_target_ = false;

@@ -35,11 +35,12 @@ namespace tc
         {
             auto layout = new QHBoxLayout();
 
-            //ÆÁÄ»Ë÷ÒıÇĞ»»°´Å¥
+            //å±å¹•ç´¢å¼•åˆ‡æ¢æŒ‰é’®
             for (int i = 0; i < kMaxGameViewCount; i++) {
                 auto ci = new ComputerIcon(ctx, i, this);
                 ci->setFixedSize(QSize(26, 26));
                 ci->UpdateSelectedState(true);
+                ci->Hide();
                 layout->addSpacing(3);
                 layout->addWidget(ci);
                 computer_icons_.push_back(ci);
@@ -50,7 +51,7 @@ namespace tc
                 });
             }
 
-            //·ÖÆÁ°´Å¥
+            //åˆ†å±æŒ‰é’®
             {
                 auto split_screen_btn = new FloatIcon(ctx, this);
                 split_screen_btn->setFixedSize(btn_size);
@@ -399,7 +400,7 @@ namespace tc
 
         msg_listener_->Listen<MonitorSwitchedMessage>([=, this](const MonitorSwitchedMessage& msg) {
             context_->PostUITask([=, this]() {
-                UpdateCapturingMonitor(msg.name_);
+                UpdateCapturingMonitor(msg.name_, msg.index_);
             });
         });
     }
@@ -492,7 +493,7 @@ namespace tc
         });
     }
 
-    void FloatControllerPanel::UpdateCapturingMonitor(const std::string& name) {
+    void FloatControllerPanel::UpdateCapturingMonitor(const std::string& name, int cur_cap_mon_index) {
         if (kCaptureAllMonitorsSign == name) {
             context_->SendAppMessage(MultiMonDisplayModeMessage{
                 .mode_ = EMultiMonDisplayMode::kSeparate,
@@ -505,6 +506,7 @@ namespace tc
 
         context_->SendAppMessage(MultiMonDisplayModeMessage{
             .mode_ = EMultiMonDisplayMode::kTab,
+            .current_cap_mon_index_ = cur_cap_mon_index
         });
 
         for (const auto& w: computer_icons_) {
