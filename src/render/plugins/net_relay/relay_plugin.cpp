@@ -124,17 +124,28 @@ namespace tc
 
                     auto ft_device_id = "ft_server_" + sys_settings_.device_id_;
                     relay_ft_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{
-                            .host_ = relay_host,
-                            .port_ = relay_port,
-                            .ssl_ = false,
-                            .device_id_ = ft_device_id,
-                            .net_info_ = net_info_,
+                        .host_ = relay_host,
+                        .port_ = relay_port,
+                        .ssl_ = false,
+                        .device_id_ = ft_device_id,
+                        .net_info_ = net_info_,
                     });
 
                     relay_ft_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
                         auto type = msg->type();
                         if (type == RelayMessageType::kRelayTargetMessage) {
                             auto sub = msg->relay();
+                            auto relay_msg_index = sub.relay_msg_index();
+                            if (recv_relay_ft_msg_index_ == 0) {
+                                recv_relay_ft_msg_index_ = relay_msg_index;
+                            }
+                            else {
+                                auto diff = relay_msg_index - recv_relay_ft_msg_index_;
+                                if (diff != 1) {
+                                    LOGE("FT error sequence, current: {}, last: {}", relay_msg_index, recv_relay_ft_msg_index_);
+                                }
+                                recv_relay_ft_msg_index_ = relay_msg_index;
+                            }
                             const auto &payload = sub.payload();
                             auto msg = std::string(payload.data(), payload.size());
                             this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
