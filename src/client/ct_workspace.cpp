@@ -396,7 +396,7 @@ namespace tc
 //        } else {
 //            event->ignore();
 //        }
-
+        this->showNormal();
         if (!close_event_occurred_widget_) {
             close_event_occurred_widget_ = this;
         }
