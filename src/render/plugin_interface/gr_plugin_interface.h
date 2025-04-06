@@ -129,6 +129,8 @@ namespace tc
 
         virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
 
+        virtual void DispatchAppEvent() {};
+
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;
