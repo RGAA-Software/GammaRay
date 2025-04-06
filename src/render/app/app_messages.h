@@ -16,6 +16,11 @@ namespace tc
     class Data;
     class Image;
 
+    class AppBaseEvent {
+    public:
+        virtual ~AppBaseEvent() = default;
+    };
+
     class MsgVideoFrameEncoded {
     public:
         uint32_t frame_width_ = 0;
@@ -115,6 +120,9 @@ namespace tc
     class MsgRenderConnected2Service {
     public:
     };
+
+
+    //: public AppBaseEvent
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H

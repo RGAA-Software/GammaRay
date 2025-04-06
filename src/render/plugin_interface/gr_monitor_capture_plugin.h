@@ -30,7 +30,7 @@ namespace tc
         virtual void SetCaptureMonitor(const std::string& name);
         virtual void SetCaptureFps(int fps);
         virtual std::string GetCapturingMonitorName() = 0;
-        //¸ù¾İÏÔÊ¾Æ÷Ãû×Ö»ñÈ¡ÅÅĞòÎ»ÖÃ
+        //æ ¹æ®æ˜¾ç¤ºå™¨åå­—è·å–æ’åºä½ç½®
         virtual std::optional<int> GetMonIndexByName(const std::string& name) = 0;
 
     protected:
