@@ -218,6 +218,7 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
         plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer tc_signaling_sdk #lib_GammaRayClient
         plugin_mock_video_stream plugin_obj_detector plugin_net_relay QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client
+        plugin_clipboard
 )
 
 add_custom_target(tc_build_client ALL COMMENT "Build client")
@@ -292,6 +293,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_net_relay.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_relay.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_relay/plugin_net_relay.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_relay.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_clipboard.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_clipboard.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/clipboard/plugin_clipboard.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_clipboard.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
