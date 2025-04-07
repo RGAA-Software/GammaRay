@@ -158,7 +158,7 @@ bool WinMessageWindow::registerWindowClass(HINSTANCE instance)
 }
 
 
-bool WinMessageWindow::create(const std::string& window_name) {
+bool WinMessageWindow::Create(const std::string& window_name) {
 
 	HINSTANCE instance = nullptr;
 	window_name_ = window_name;
@@ -192,7 +192,7 @@ bool WinMessageWindow::create(const std::string& window_name) {
 	return true;
 }
 
-HWND WinMessageWindow::getHwnd() const {
+HWND WinMessageWindow::GetHwnd() const {
 	return mHwnd;
 }
 
