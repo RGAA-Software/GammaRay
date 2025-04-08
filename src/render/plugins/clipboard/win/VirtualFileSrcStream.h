@@ -3,15 +3,19 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
-
+#include <map>
+#include <memory>
 #include "DataObject.h"
+#include <QString>
+#include <QFile>
+#include <QFileInfo>
 
 namespace clipboard
 {
 
     struct FileDetailInfo_ {
-        std::wstring mFileName; //可能是文件可能是文件夹
-        std::wstring mRemotePath;
+        QString mFileName; //可能是文件可能是文件夹
+        QString mRemotePath;
         bool mIsFile = true; //是否是文件
         uint64_t mFileSize = 0;
     };
@@ -20,10 +24,18 @@ namespace clipboard
     class FileStream : public IStream {
     public:
 
-        FileStream(uint64_t file_size)
-                : ref_(1) {
-            file_size_.QuadPart = file_size;
-            current_position_.QuadPart = 0;
+        FileStream(const FileDetailInfo& info) : ref_(1) {
+            mFileDetailInfo = info;
+            file_ = std::make_shared<QFile>(info.mRemotePath);
+            file_->open(QIODeviceBase::OpenModeFlag::ReadOnly);
+
+            QFileInfo file_info(info.mRemotePath);
+
+            mFileDetailInfo.mFileSize = file_->size();
+            mFileDetailInfo.mFileName = file_->fileName();
+
+            target_file_ = std::make_shared<QFile>(std::format("D:\\360Downloads\\z_{}", file_info.fileName().toStdString()).c_str());
+            target_file_->open(QIODeviceBase::OpenModeFlag::WriteOnly);
         }
 
         virtual ~FileStream() {
@@ -87,8 +99,10 @@ namespace clipboard
 
     private:
         LONG ref_;
-        ULARGE_INTEGER file_size_;
-        ULARGE_INTEGER current_position_;
+        uint64_t file_size_ {0};
+        uint64_t current_position_ {0};
+        std::shared_ptr<QFile> file_ = nullptr;
+        std::shared_ptr<QFile> target_file_ = nullptr;
     public:
         FileDetailInfo mFileDetailInfo;
     };
@@ -96,26 +110,16 @@ namespace clipboard
     class VirtualFileSrcStream : public CDataObject, public IDataObjectAsyncCapability {
     public:
         VirtualFileSrcStream() {}
-
-        ~VirtualFileSrcStream();
+        ~VirtualFileSrcStream() override;
 
         void init();
 
-//        bool set_to_clipboard();
-//
         IFACEMETHODIMP QueryInterface(REFIID riid, void **ppv) {
             if (IsEqualIID(IID_IDataObjectAsyncCapability, riid)) {
                 *ppv = (IDataObjectAsyncCapability *) this;
                 AddRef();
-                printf("--------------*ppv = (IDataObjectAsyncCapability*)this;-------IsEqualIID----------\n");
                 return S_OK;
             }
-
-            /*if (IsEqualIID(IID_IOperationsProgressDialog, riid)) {
-                return E_NOINTERFACE;
-            }*/
-            printf("--------------CDataObject::QueryInterface(riid, ppv);-----------------\n");
-            printf("VirtualFileSrcStream %x\n", this);
             return CDataObject::QueryInterface(riid, ppv);
         }
 
@@ -134,17 +138,13 @@ namespace clipboard
         IFACEMETHODIMP EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc);
 
         // IDataObjectAsyncCapability
-        virtual HRESULT SetAsyncMode(
-                /* [in] */ BOOL fDoOpAsync);
+        virtual HRESULT SetAsyncMode(/* [in] */ BOOL fDoOpAsync);
 
-        virtual HRESULT GetAsyncMode(
-                /* [out] */ __RPC__out BOOL *pfIsOpAsync);
+        virtual HRESULT GetAsyncMode(/* [out] */ __RPC__out BOOL *pfIsOpAsync);
 
-        virtual HRESULT StartOperation(
-                /* [optional][unique][in] */ __RPC__in_opt IBindCtx *pbcReserved);
+        virtual HRESULT StartOperation(/* [optional][unique][in] */ __RPC__in_opt IBindCtx *pbcReserved);
 
-        virtual HRESULT InOperation(
-                /* [out] */ __RPC__out BOOL *pfInAsyncOp);
+        virtual HRESULT InOperation(/* [out] */ __RPC__out BOOL *pfInAsyncOp);
 
         virtual HRESULT EndOperation(
                 /* [in] */ HRESULT hResult,
@@ -155,7 +155,8 @@ namespace clipboard
         uint32_t clip_format_filedesc_ = 0;
         uint32_t clip_format_filecontent_ = 0;
         BOOL in_async_op_ = false;
-        FileStream *file_stream_ = nullptr;
+        //std::map<int, std::shared_ptr<FileStream>> file_streams_;
+        std::shared_ptr<FileStream> file_stream_ = nullptr;
     public:
         int mFileCount = 0;
         std::vector<FileDetailInfo> mFileDetailInfos;

@@ -128,15 +128,11 @@ namespace tc
             }
         }
 
-        // file transfer plugin
-        auto ft_plugin = GetFileTransferPlugin();
-        auto dda_plugin = GetDDACapturePlugin();
-        VisitNetPlugins([=, this](GrNetPlugin* plugin) {
-            if (ft_plugin) {
-                ft_plugin->AttachNetPlugin(plugin->GetPluginId(), plugin);
-            }
-            if (dda_plugin) {
-                dda_plugin->AttachNetPlugin(plugin->GetPluginId(), plugin);
+        VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+            if (plugin->GetPluginType() != GrPluginType::kNet) {
+                VisitNetPlugins([=, this](GrNetPlugin* np) {
+                    plugin->AttachNetPlugin(np->GetPluginId(), np);
+                });
             }
         });
     }
