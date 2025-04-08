@@ -237,6 +237,14 @@ namespace tc
         return nullptr;
     }
 
+    GrDataConsumerPlugin* PluginManager::GetClipboardPlugin() {
+        auto plugin = GetPluginById(kClipboardPluginId);
+        if (plugin) {
+            return (GrDataConsumerPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

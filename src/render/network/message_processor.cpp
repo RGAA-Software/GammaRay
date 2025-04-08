@@ -19,7 +19,6 @@
 #include "rd_statistics.h"
 #include "ws_media_router.h"
 #include "net_message_maker.h"
-#include "app/clipboard_manager.h"
 #include "tc_capture_new/desktop_capture.h"
 
 namespace tc {
@@ -215,9 +214,9 @@ namespace tc {
     }
 
     void MessageProcessor::ProcessClipboardInfo(std::shared_ptr<Message>&& msg) {
-        auto info = msg->clipboard_info();
-        auto clipboard_mgr = app_->GetClipboardManager();
-        clipboard_mgr->UpdateRemoteInfo(std::move(msg));
+//        auto info = msg->clipboard_info();
+//        auto clipboard_mgr = app_->GetClipboardManager();
+//        clipboard_mgr->UpdateRemoteInfo(std::move(msg));
     }
 
     void MessageProcessor::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {

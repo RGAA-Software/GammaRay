@@ -18,7 +18,6 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "app/app_messages.h"
 #include "network/net_message_maker.h"
-#include "app/clipboard_manager.h"
 #include "tc_capture_new/desktop_capture.h"
 #include "tc_encoder_new/encoder_messages.h"
 #include "tc_message.pb.h"
@@ -277,8 +276,11 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessClipboardInfo(std::shared_ptr<Message>&& msg) {
-        auto clipboard_mgr = app_->GetClipboardManager();
-        clipboard_mgr->UpdateRemoteInfo(std::move(msg));
+        //auto clipboard_mgr = app_->GetClipboardManager();
+        //clipboard_mgr->UpdateRemoteInfo(std::move(msg));
+        if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
+            plugin->OnMessage(msg);
+        }
     }
 
     void PluginNetEventRouter::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {

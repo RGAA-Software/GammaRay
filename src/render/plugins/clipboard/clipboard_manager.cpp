@@ -9,14 +9,15 @@
 #include <QImage>
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
-#include "app_messages.h"
 #include "tc_message.pb.h"
+#include "clipboard_plugin.h"
+#include "plugin_interface/gr_plugin_events.h"
 
 namespace tc
 {
 
-    ClipboardManager::ClipboardManager(const std::shared_ptr<RdContext> &ctx) : QObject(nullptr) {
-        context_ = ctx;
+    ClipboardManager::ClipboardManager(ClipboardPlugin* plugin) : QObject(nullptr) {
+        this->plugin_ = plugin;
     }
 
     void ClipboardManager::Monitor() {
@@ -30,16 +31,17 @@ namespace tc
                 }
                 LOGI("===> new Text: {}", text.toStdString());
 
-                context_->SendAppMessage(ClipboardMessage {
-                    .type_ = ClipboardType::kClipboardText,
-                    .msg_ = text.toStdString(),
-                });
+                auto event = std::make_shared<GrPluginClipboardEvent>();
+                event->type_ = ClipboardType::kClipboardText;
+                event->msg_ = text.toStdString();
+                this->plugin_->CallbackEvent(event);
+
                 remote_info_ = text;
             }
         });
     }
 
-    void ClipboardManager::UpdateRemoteInfo(std::shared_ptr<Message>&& msg) {
+    void ClipboardManager::UpdateRemoteInfo(const std::shared_ptr<Message>& msg) {
         QMetaObject::invokeMethod(this, [=, this]() {
             auto sub = msg->clipboard_info();
             LOGI("===>2 clipboard type: {}", (int)sub.type());

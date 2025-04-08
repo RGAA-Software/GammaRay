@@ -10,6 +10,13 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_util.h"
+#include "clipboard_manager.h"
+#include "tc_message.pb.h"
+
+void* GetInstance() {
+    static tc::ClipboardPlugin plugin;
+    return (void*)&plugin;
+}
 
 namespace tc
 {
@@ -35,12 +42,23 @@ namespace tc
 
     bool ClipboardPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrPluginInterface::OnCreate(param);
-
+        clipboard_mgr_ = std::make_shared<ClipboardManager>(this);
+        clipboard_mgr_->Monitor();
         return true;
     }
 
     bool ClipboardPlugin::OnDestroy() {
         GrPluginInterface::OnDestroy();
         return true;
+    }
+
+    void ClipboardPlugin::OnMessage(const std::string &msg) {
+
+    }
+
+    void ClipboardPlugin::OnMessage(const std::shared_ptr<Message>& msg) {
+        if (clipboard_mgr_) {
+            clipboard_mgr_->UpdateRemoteInfo(msg);
+        }
     }
 }

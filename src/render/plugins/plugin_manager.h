@@ -49,6 +49,7 @@ namespace tc
         GrDataProviderPlugin* GetAudioCapturePlugin();
         GrAudioEncoderPlugin* GetAudioEncoderPlugin();
         GrDataConsumerPlugin* GetFileTransferPlugin();
+        GrDataConsumerPlugin* GetClipboardPlugin();
         GrNetPlugin* GetUdpPlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();

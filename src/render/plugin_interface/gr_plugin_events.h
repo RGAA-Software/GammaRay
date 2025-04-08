@@ -32,6 +32,7 @@ namespace tc
         kPluginRawAudioFrameEvent,
         kPluginSplitRawAudioFrameEvent,
         kPluginEncodedAudioFrameEvent,
+        kPluginClipboardEvent,
     };
 
     class GrPluginBaseEvent {
@@ -187,6 +188,17 @@ namespace tc
         int bits_ = 0;
         int frame_size_ = 0;
         std::shared_ptr<Data> data_ = nullptr;
+    };
+
+    // Clipboard message
+    class GrPluginClipboardEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginClipboardEvent() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginClipboardEvent;
+        }
+    public:
+        int type_;
+        std::string msg_;
     };
 }
 

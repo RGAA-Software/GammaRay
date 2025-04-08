@@ -8,7 +8,6 @@ if (WIN32)
         app_timer.cpp
         app_shared_info.cpp
         steam_game.cpp
-        clipboard_manager.cpp
         win/app_manager_win.cpp
         win/dx_address_loader.cpp
         win/win_event_replayer.cpp

@@ -43,7 +43,6 @@
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
 #include "rd_statistics.h"
-#include "app/clipboard_manager.h"
 #include "network/render_service_client.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
@@ -100,8 +99,8 @@ namespace tc
         plugin_manager_->DumpPluginInfo();
 
         // clipboard
-        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
-        clipboard_mgr_->Monitor();
+//        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
+//        clipboard_mgr_->Monitor();
 
         ws_panel_client_ = std::make_shared<WsPanelClient>(context_);
         ws_panel_client_->Start();
