@@ -52,11 +52,22 @@ namespace tc
         btn_conn_->setFixedSize(70, 25);
         btn_conn_->SetTextId("id_connect");
 
+        connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
+            if (conn_listener_) {
+                conn_listener_();
+            }
+        });
+
         auto btn_option = new TcImageButton(":/resources/image/ic_vert_dots.svg", QSize(22, 22), this);
         btn_option->SetColor(0, 0xf6f6f6, 0xeeeeee);
         btn_option->SetRoundRadius(15);
         btn_option->setFixedSize(25, 25);
         btn_option_ = btn_option;
+        btn_option->SetOnImageButtonClicked([=, this]() {
+            if (menu_listener_) {
+                menu_listener_();
+            }
+        });
     }
 
     StreamItemWidget::~StreamItemWidget() {
@@ -140,6 +151,14 @@ namespace tc
         auto y = this->height() - 35;
         btn_conn_->setGeometry(15, y, btn_conn_->width(), btn_conn_->height());
         btn_option_->setGeometry(this->width() - btn_option_->width() - 13, y, btn_option_->width(), btn_option_->height());
+    }
+
+    void StreamItemWidget::SetOnConnectListener(OnConnectListener&& listener) {
+        conn_listener_ = listener;
+    }
+
+    void StreamItemWidget::SetOnMenuListener(OnMenuListener&& listener) {
+        menu_listener_ = listener;
     }
 
 }

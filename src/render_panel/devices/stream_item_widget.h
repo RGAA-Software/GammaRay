@@ -20,6 +20,9 @@ namespace tc
 
     class TcPushButton;
 
+    using OnConnectListener = std::function<void()>;
+    using OnMenuListener = std::function<void()>;
+
     class StreamItemWidget : public QWidget {
     public:
 
@@ -31,6 +34,9 @@ namespace tc
         void leaveEvent(QEvent *event) override;
         void resizeEvent(QResizeEvent *event) override;
 
+        void SetOnConnectListener(OnConnectListener&& listener);
+        void SetOnMenuListener(OnMenuListener&& listener);
+
     private:
         StreamItem item_;
         int bg_color_ = 0;
@@ -41,6 +47,8 @@ namespace tc
         int radius_ = 10;
         TcPushButton* btn_conn_ = nullptr;
         QWidget* btn_option_ = nullptr;
+        OnConnectListener conn_listener_;
+        OnMenuListener menu_listener_;
     };
 
 }

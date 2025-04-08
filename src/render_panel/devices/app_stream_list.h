@@ -42,7 +42,7 @@ namespace tc
         void LoadStreamItems();
 
     private:
-        QListWidgetItem* AddItem(const StreamItem& item);
+        QListWidgetItem* AddItem(const StreamItem& item, int index);
         void RegisterActions(int index);
         void ProcessAction(int index, const StreamItem& item);
 

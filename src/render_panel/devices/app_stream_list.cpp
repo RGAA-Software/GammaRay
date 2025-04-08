@@ -234,11 +234,17 @@ namespace tc
         dialog->show();
     }
 
-    QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
+    QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream, int index) {
         auto item = new QListWidgetItem(stream_list_);
         item->setSizeHint(QSize(230, 150));
         auto widget = new StreamItemWidget(stream, stream.bg_color_, stream_list_);
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
+        widget->SetOnConnectListener([=, this]() {
+            StartStream(stream);
+        });
+        widget->SetOnMenuListener([=, this]() {
+            RegisterActions(index);
+        });
 
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
@@ -319,9 +325,11 @@ namespace tc
                 auto item = stream_list_->takeItem(0);
                 delete item;
             }
+
+            int index = 0;
             for (auto& stream : streams_) {
                 stream.device_id_ = settings_->device_id_;
-                AddItem(stream);
+                AddItem(stream, index++);
             }
 
             if (!streams_.empty()) {
