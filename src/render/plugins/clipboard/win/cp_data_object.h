@@ -16,15 +16,15 @@
 
 #pragma comment(lib, "shlwapi.lib")
 
-namespace clipboard
+namespace tc
 {
 
-    class CDataObject : public IDataObject {
+    class CpDataObject : public IDataObject {
     public:
-        CDataObject() : _cRef(1), _pdtobjShell(NULL) {
+        CpDataObject() : _cRef(1), _pdtobjShell(NULL) {
         }
 
-        virtual ~CDataObject() {
+        virtual ~CpDataObject() {
             if (_pdtobjShell) {
                 _pdtobjShell->Release();
             }
@@ -33,20 +33,20 @@ namespace clipboard
         // IUnknown
         IFACEMETHODIMP QueryInterface(REFIID riid, void **ppv) {
             static const QITAB qit[] = {
-                    QITABENT(CDataObject, IDataObject),
+                    QITABENT(CpDataObject, IDataObject),
                     {0},
             };
-            //printf("CDataObject %x\n", this);
+            //printf("CpDataObject %x\n", this);
             return QISearch(this, qit, riid, ppv);
         }
 
         IFACEMETHODIMP_(ULONG) AddRef() {
-            //OutputDebugString(L"CDataObject AddRef\n");
+            //OutputDebugString(L"CpDataObject AddRef\n");
             return InterlockedIncrement(&_cRef);
         }
 
         IFACEMETHODIMP_(ULONG) Release() {
-            //OutputDebugString(L"CDataObject Release\n");
+            //OutputDebugString(L"CpDataObject Release\n");
             long cRef = InterlockedDecrement(&_cRef);
             if (0 == cRef) {
                 delete this;

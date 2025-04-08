@@ -1,4 +1,4 @@
-﻿#include "VirtualFileSrcStream.h"
+﻿#include "cp_virtual_file.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <wininet.h>
@@ -11,157 +11,26 @@
 #include <ShlObj.h>
 #include <format>
 #include <QFileInfo>
+#include "cp_file_stream.h"
 
 #pragma comment(lib, "Wininet.lib")
 
-namespace clipboard
+namespace tc
 {
 
-    HRESULT STDMETHODCALLTYPE FileStream::QueryInterface(REFIID riid, void **ppvObject) {
-        if (ppvObject == NULL)
-            return E_INVALIDARG;
-
-        *ppvObject = NULL;
-
-        if (IsEqualIID(IID_IUnknown, riid) ||
-            IsEqualIID(IID_ISequentialStream, riid) ||
-            IsEqualIID(IID_IStream, riid)) {
-            *ppvObject = this;
-            AddRef();
-            return S_OK;
-        }
-
-        /*if (IsEqualIID(IID_IOperationsProgressDialog, riid)) {
-            return E_NOINTERFACE;
-        }*/
-
-        return E_NOINTERFACE;
-    }
-
-    HRESULT STDMETHODCALLTYPE FileStream::Read(void *pv, ULONG cb, ULONG *pcbRead) {
-
-        char* buffer = (char*)malloc(cb);
-        auto read_bytes = file_->read(buffer, cb);
-
-        memcpy(pv, buffer, read_bytes);
-        target_file_->write(buffer, read_bytes);
-
-        *pcbRead = read_bytes;
-
-        //std::cout << "cb: " << cb << ",read bytes: " << read_bytes << std::endl;
-        return read_bytes > 0 ? S_OK : S_FALSE;
-//        ULONG bytes_to_read = std::min((ULONG) (file_size_.QuadPart - current_position_.QuadPart), cb);
-//        const int BUF_SIZE = 256 * 1024;
-//        char *fake_data = new char[BUF_SIZE];
-//        //memset(fake_data, 'F', BUF_SIZE);
-//        memset(fake_data, 0, BUF_SIZE);
-//
-//        static DWORD Number = 1;
-//
-//        static HINTERNET hSession = InternetOpenW(L"RookIE/1.0", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-//        if (hSession != NULL) {
-//            static HINTERNET handle2 = InternetOpenUrlW(hSession, L"http://127.0.0.1:30500/muzzy.mp4", NULL, 0,
-//                                                        INTERNET_FLAG_DONT_CACHE, 0);
-//            if (handle2 != NULL) {
-//                InternetReadFile(handle2, fake_data, BUF_SIZE, &Number);
-//                if (Number <= 0) {
-//                    InternetCloseHandle(handle2);
-//                    InternetCloseHandle(hSession);
-//                    handle2 = NULL;
-//                    hSession = NULL;
-//                } else {
-//                    static std::ofstream writeFile;
-//                    static bool isFirst = true;
-//                    if (isFirst) {
-//                        writeFile.open(R"(.\httpdown.mp4)", std::ios::out | std::ios::binary);
-//                    }
-//                    isFirst = false;
-//                    writeFile.write(fake_data, Number);
-//                    writeFile.flush();
-//                }
-//            }
-//        }
-//        ULONG bytes_now = bytes_to_read;
-//        while (bytes_now > 0) {
-//            ULONG to_read_once = std::min((ULONG) BUF_SIZE, bytes_now);
-//            memcpy(pv, fake_data, to_read_once);
-//            (char *&) pv += to_read_once;
-//            bytes_now -= to_read_once;
-//        }
-//        delete fake_data;
-//        current_position_.QuadPart += bytes_to_read;
-//
-//        if (pcbRead) {
-//            *pcbRead = bytes_to_read;
-//        }
-//
-//        /*
-//        * Always returns S_OK even if the end of the stream is reached before the
-//        * buffer is filled
-//        */
-//        ::Sleep(10);
-//        static int times = 0;
-//        //printf("-------------------------------------FileStream::Read------new----------times=%d\n", ++times);
-//
-//        return S_FALSE;
-    }
-
-    HRESULT
-    STDMETHODCALLTYPE FileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition) {
-        //ULARGE_INTEGER new_pos = {0};
-
-        switch (dwOrigin) {
-            case STREAM_SEEK_SET:
-                current_position_ = 0;
-                if (plibNewPosition) {
-                    plibNewPosition->QuadPart = 0;
-                }
-                std::cout << "seek set" << std::endl;
-                break;
-            case STREAM_SEEK_CUR:
-                //new_pos = current_position_;
-                std::cout << "seek current" << std::endl;
-                break;
-            case STREAM_SEEK_END:
-                std::cout << "seek end" << std::endl;
-                //new_pos = file_size_;
-                break;
-            default:
-                return STG_E_INVALIDFUNCTION;
-        }
-//        printf("FileStream::Seek new_pos  =%d \n", new_pos);
-//        new_pos.QuadPart += dlibMove.QuadPart;
-//        if (new_pos.QuadPart < 0 || new_pos.QuadPart > file_size_.QuadPart) {
-//            return STG_E_INVALIDFUNCTION;
-//        }
-
-        return S_OK;
-    }
-
-    HRESULT WINAPI FileStream::Stat(STATSTG *pstatstg, DWORD grfStatFlag) {
-        memset(pstatstg, 0, sizeof(STATSTG));
-
-        pstatstg->pwcsName = NULL;
-        pstatstg->type = STGTY_STREAM;
-        pstatstg->cbSize.QuadPart = mFileDetailInfo.mFileSize;
-        printf("FileStream::Stat----size: %d\n", (int)mFileDetailInfo.mFileSize);
-        return S_OK;
-    }
-
-    //////////////////////////////////////////////////////
-    VirtualFileSrcStream::~VirtualFileSrcStream() {
+    CpVirtualFile::~CpVirtualFile() {
         if (file_stream_) {
             file_stream_->Release();
         }
     }
 
-    void VirtualFileSrcStream::init() {
+    void CpVirtualFile::init() {
         clip_format_filedesc_ = RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
         clip_format_filecontent_ = RegisterClipboardFormat(CFSTR_FILECONTENTS);
 
     }
 
-    STDMETHODIMP VirtualFileSrcStream::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
+    STDMETHODIMP CpVirtualFile::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
         ZeroMemory(pmedium, sizeof(*pmedium));
 
         std::vector<std::string> file_paths = {
@@ -233,19 +102,7 @@ namespace clipboard
             if ((pformatetcIn->tymed & TYMED_ISTREAM)) {
                 std::cout << "GetData, file desc. ISTREAM" << std::endl;
 
-                //if (!file_streams_.contains(pformatetcIn->lindex)) {
-                    //std::cout << "file_stream_ = new FileStream(FAKE_FILE_SIZE);" << std::endl;
-                    //auto fs = std::make_shared<FileStream>(FAKE_FILE_SIZE);
-                    //file_streams_[pformatetcIn->lindex] = fs;
-                //} else {
-                //    LARGE_INTEGER mov;
-                //    mov.QuadPart = 0;
-                //    file_streams_[pformatetcIn->lindex]->Seek(mov, STREAM_SEEK_SET, nullptr);
-                //}
-                if (!file_stream_) {
-
-                }
-                file_stream_ = std::make_shared<FileStream>(FileDetailInfo {
+                file_stream_ = std::make_shared<CpFileStream>(FileDetailInfo {
                     .mRemotePath = QString::fromStdString(file_paths.at(pformatetcIn->lindex)),
                 });
 
@@ -262,7 +119,7 @@ namespace clipboard
     }
 
 
-    STDMETHODIMP VirtualFileSrcStream::QueryGetData(FORMATETC *pformatetc) {
+    STDMETHODIMP CpVirtualFile::QueryGetData(FORMATETC *pformatetc) {
         HRESULT hr = S_FALSE;
         if (pformatetc->cfFormat == clip_format_filedesc_ ||
             pformatetc->cfFormat == clip_format_filecontent_) {
@@ -274,7 +131,7 @@ namespace clipboard
         return hr;
     }
 
-    STDMETHODIMP VirtualFileSrcStream::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc) {
+    STDMETHODIMP CpVirtualFile::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc) {
         *ppenumFormatEtc = NULL;
         HRESULT hr = E_NOTIMPL;
         if (dwDirection == DATADIR_GET) {
@@ -294,18 +151,18 @@ namespace clipboard
         return hr;
     }
 
-    HRESULT STDMETHODCALLTYPE VirtualFileSrcStream::SetAsyncMode(
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::SetAsyncMode(
             /* [in] */ BOOL fDoOpAsync) {
         return S_OK;
     }
 
-    HRESULT STDMETHODCALLTYPE VirtualFileSrcStream::GetAsyncMode(
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::GetAsyncMode(
             /* [out] */ __RPC__out BOOL *pfIsOpAsync) {
         *pfIsOpAsync = true;// VARIANT_TRUE;
         return S_OK;
     }
 
-    HRESULT STDMETHODCALLTYPE VirtualFileSrcStream::StartOperation(
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::StartOperation(
             /* [optional][unique][in] */ __RPC__in_opt IBindCtx *pbcReserved) {
         in_async_op_ = true;
         IOperationsProgressDialog *pDlg = nullptr;
@@ -314,13 +171,13 @@ namespace clipboard
         return S_OK;
     }
 
-    HRESULT STDMETHODCALLTYPE VirtualFileSrcStream::InOperation(
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::InOperation(
             /* [out] */ __RPC__out BOOL *pfInAsyncOp) {
         *pfInAsyncOp = in_async_op_;
         return S_OK;
     }
 
-    HRESULT STDMETHODCALLTYPE VirtualFileSrcStream::EndOperation(
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::EndOperation(
             /* [in] */ HRESULT hResult,
             /* [unique][in] */ __RPC__in_opt IBindCtx *pbcReserved,
             /* [in] */ DWORD dwEffects) {
@@ -331,7 +188,7 @@ namespace clipboard
 
     STDAPI VirtualFileSrcStream_CreateInstance(REFIID riid, void **ppv) {
         *ppv = NULL;
-        VirtualFileSrcStream *p = new VirtualFileSrcStream();
+        CpVirtualFile *p = new CpVirtualFile();
         p->init();
         HRESULT hr = p ? S_OK : E_OUTOFMEMORY;
         if (SUCCEEDED(hr)) {

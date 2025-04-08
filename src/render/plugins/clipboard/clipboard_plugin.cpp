@@ -12,6 +12,7 @@
 #include "tc_common_new/time_util.h"
 #include "clipboard_manager.h"
 #include "tc_message.pb.h"
+#include "win/cp_virtual_file.h"
 
 void* GetInstance() {
     static tc::ClipboardPlugin plugin;
@@ -44,6 +45,15 @@ namespace tc
         GrPluginInterface::OnCreate(param);
         clipboard_mgr_ = std::make_shared<ClipboardManager>(this);
         clipboard_mgr_->Monitor();
+
+//        ::OleInitialize(nullptr);
+//        IDataObject* data_obj = nullptr;
+//        HRESULT hr = tc::VirtualFileSrcStream_CreateInstance(IID_IDataObject, (void**)&data_obj);
+//        if (SUCCEEDED(hr)) {
+//            ::OleSetClipboard(data_obj);
+//            data_obj->Release();
+//        }
+
         return true;
     }
 

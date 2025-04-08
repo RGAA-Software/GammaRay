@@ -1,11 +1,11 @@
-﻿#include "DataObject.h"
+﻿#include "cp_data_object.h"
 
-namespace clipboard
+namespace tc
 {
 
     const WCHAR *const c_szText = L"Clipboard Contents";
 
-    STDMETHODIMP CDataObject::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
+    STDMETHODIMP CpDataObject::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
         ZeroMemory(pmedium, sizeof(*pmedium));
 
         HRESULT hr = DATA_E_FORMATETC;
@@ -26,7 +26,7 @@ namespace clipboard
         return hr;
     }
 
-    IFACEMETHODIMP CDataObject::SetData(FORMATETC *pformatetc, STGMEDIUM *pmedium, BOOL fRelease) {
+    IFACEMETHODIMP CpDataObject::SetData(FORMATETC *pformatetc, STGMEDIUM *pmedium, BOOL fRelease) {
         HRESULT hr = _EnsureShellDataObject();
         if (SUCCEEDED(hr)) {
             hr = _pdtobjShell->SetData(pformatetc, pmedium, fRelease);
@@ -34,7 +34,7 @@ namespace clipboard
         return hr;
     }
 
-    STDMETHODIMP CDataObject::QueryGetData(FORMATETC *pformatetc) {
+    STDMETHODIMP CpDataObject::QueryGetData(FORMATETC *pformatetc) {
         HRESULT hr = S_FALSE;
         if (pformatetc->cfFormat == CF_UNICODETEXT) {
             hr = S_OK;
@@ -44,7 +44,7 @@ namespace clipboard
         return hr;
     }
 
-    STDMETHODIMP CDataObject::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc) {
+    STDMETHODIMP CpDataObject::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc) {
         *ppenumFormatEtc = NULL;
         HRESULT hr = E_NOTIMPL;
         if (dwDirection == DATADIR_GET) {

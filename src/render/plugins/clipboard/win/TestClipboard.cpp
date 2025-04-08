@@ -6,9 +6,9 @@
 
 #include "framework.h"
 #include "TestClipboard.h"
-#include "DataObject.h"
+#include "cp_data_object.h"
 //#include "VirtualFileSrc.h"
-#include "VirtualFileSrcStream.h"
+#include "cp_virtual_file.h"
 //#include "DragDrop.h"
 //#include "MessageWindow.h"
 
