@@ -13,14 +13,15 @@
 #include <QFileInfo>
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
+#include "ct_workspace.h"
 
 #pragma comment(lib, "Wininet.lib")
 
 namespace tc
 {
 
-    CpVirtualFile::CpVirtualFile(ClipboardPlugin* plugin) {
-        plugin_ = plugin;
+    CpVirtualFile::CpVirtualFile(Workspace* ws) {
+        workspace_ = ws;
     }
 
     CpVirtualFile::~CpVirtualFile() {
@@ -103,7 +104,7 @@ namespace tc
                 if (file_stream_) {
                     file_stream_->Exit();
                 }
-                file_stream_ = std::make_shared<CpFileStream>(plugin_, fw);
+                file_stream_ = std::make_shared<CpFileStream>(workspace_, fw);
 
                 pmedium->pstm = (IStream *)file_stream_.get();
                 pmedium->pstm->AddRef();
@@ -197,9 +198,9 @@ namespace tc
         }
     }
 
-    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClipboardPlugin* plugin) {
+    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, Workspace* ws) {
         *ppv = nullptr;
-        auto p = new CpVirtualFile(plugin);
+        auto p = new CpVirtualFile(ws);
         p->Init();
         auto hr = p->QueryInterface(riid, ppv);
         if (SUCCEEDED(hr)) {

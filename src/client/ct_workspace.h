@@ -50,6 +50,8 @@ namespace tc
         bool eventFilter(QObject* watched, QEvent* event) override;
         void SendWindowsKey(unsigned long vk, bool down);
 
+        std::shared_ptr<ThunderSdk> GetThunderSdk();
+
     private:
         void RegisterSdkMsgCallbacks();
         void Exit();

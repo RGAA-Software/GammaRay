@@ -19,8 +19,6 @@ include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/client)
 
-#link_directories(${VCPKG_ROOT}/installed/x64-windows-static/lib)
-
 qt_add_resources(RES ${CMAKE_SOURCE_DIR}/resources/font.qrc ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
 add_compile_options(/bigobj)
 
@@ -39,20 +37,16 @@ set(SRCS_WS
         ct_opengl_video_widget.cpp
         ct_qt_key_converter.cpp
         ct_audio_player.cpp
-        ct_clipboard_manager.cpp
         ct_main_progress.cpp
         ct_game_view.cpp
         icon.rc ${RES}
         ui/switch_button.cpp
-        #ui/float_button.cpp
         ui/float_icon.cpp
         ui/round_rect_widget.cpp
         ui/app_menu.cpp
         ui/app_color_theme.cpp
         ui/app_content.cpp
         ui/background_widget.cpp
-        #db/stream_db_manager.cpp
-        #db/stream_item.cpp
         ct_settings.cpp
         ../theme/QtAdvancedStylesheet.cpp
         ui/float_controller.cpp
@@ -86,13 +80,8 @@ else()
     message(STATUS "file transmission is disabled.")
 endif()
 
-#add_library(lib_${PROJECT_NAME} ${SRCS})
-#target_link_libraries(lib_${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
-#        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
-#)
-
-#qt_add_executable(${PROJECT_NAME} WIN32 MANUAL_FINALIZATION ${SRCS_MAIN}) #${SRCS}
-add_executable(GammaRayClientInner ${SRCS_WS}) #WIN32 MANUAL_FINALIZATION
+add_subdirectory(clipboard)
+add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS}) #WIN32 MANUAL_FINALIZATION
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 if (APPLE)
@@ -111,12 +100,6 @@ if (APPLE)
             WIN32_EXECUTABLE TRUE
     )
 endif()
-
-#target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
-#        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame
-#)
-#target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
-#        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm QWindowKit::Widgets TC_WidgetFrame lib_${PROJECT_NAME})
 
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
         tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib

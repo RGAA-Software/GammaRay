@@ -26,7 +26,7 @@
 #include "transfer/file_transfer.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "ui/debug_panel.h"
-#include "client/ct_clipboard_manager.h"
+#include "client/clipboard/ct_clipboard_manager.h"
 #include "ui/no_margin_layout.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/process_util.h"
@@ -799,4 +799,9 @@ namespace tc
         }
         return QMainWindow::eventFilter(watched, event);
     }
+
+    std::shared_ptr<ThunderSdk> Workspace::GetThunderSdk() {
+        return sdk_;
+    }
+
 }

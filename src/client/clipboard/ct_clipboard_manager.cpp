@@ -2,7 +2,7 @@
 // Created by RGAA on 16/08/2024.
 //
 
-#include "client/ct_clipboard_manager.h"
+#include "ct_clipboard_manager.h"
 #include "client/ct_client_context.h"
 #include <QGuiApplication>
 #include <QClipboard>
