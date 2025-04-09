@@ -7,14 +7,15 @@
 
 #include <QString>
 #include <cstdint>
+#include "tc_message.pb.h"
 
 namespace tc
 {
 
-    struct FileDetailInfo {
-        QString mFileName;
-        QString mRemotePath;
-        uint64_t mFileSize = 0;
+    class ClipboardFileWrapper {
+    public:
+        std::string stream_id_;
+        ClipboardFile file_;
     };
 
 }

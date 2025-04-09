@@ -152,6 +152,12 @@ namespace tc {
                     }
                     break;
                 }
+                case MessageType::kClipboardRespBuffer: {
+                    if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
+                        plugin->OnMessage(msg);
+                    }
+                    break;
+                }
                 // file transmit end                         
                 default: {
                    

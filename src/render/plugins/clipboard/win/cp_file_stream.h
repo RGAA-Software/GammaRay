@@ -7,98 +7,100 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
+#include <condition_variable>
 #include <QFile>
 #include <QFileInfo>
 #include "cp_data_object.h"
 #include "cp_file_struct.h"
+#include "tc_message.pb.h"
 
 namespace tc
 {
 
+    class ClipboardPlugin;
+
     class CpFileStream : public IStream {
     public:
 
-        CpFileStream(const FileDetailInfo& info) : ref_(1) {
-            mFileDetailInfo = info;
-            file_ = std::make_shared<QFile>(info.mRemotePath);
-            file_->open(QIODeviceBase::OpenModeFlag::ReadOnly);
-
-            QFileInfo file_info(info.mRemotePath);
-
-            mFileDetailInfo.mFileSize = file_->size();
-            mFileDetailInfo.mFileName = file_->fileName();
-
-            target_file_ = std::make_shared<QFile>(std::format("D:\\360Downloads\\z_{}", file_info.fileName().toStdString()).c_str());
-            target_file_->open(QIODeviceBase::OpenModeFlag::WriteOnly);
+        CpFileStream(ClipboardPlugin* plugin, const ClipboardFileWrapper& fw) : ref_(1) {
+            plugin_ = plugin;
+            cp_file_ = fw;
         }
 
         virtual ~CpFileStream() {
 
         }
 
-        HRESULT QueryInterface(REFIID riid, void **ppvObject);
+        HRESULT QueryInterface(REFIID riid, void **ppvObject) override;
 
-        ULONG AddRef() {
+        ULONG AddRef() override {
             return InterlockedIncrement(&ref_);
         }
 
-        ULONG Release() {
+        ULONG Release() override {
             ULONG newRef = InterlockedDecrement(&ref_);
             if (newRef == 0) {
                 delete this;
             }
-
             return newRef;
         }
 
-        virtual HRESULT SetSize(ULARGE_INTEGER) {
+        HRESULT SetSize(ULARGE_INTEGER) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT CopyTo(IStream *, ULARGE_INTEGER, ULARGE_INTEGER *,
-                               ULARGE_INTEGER *) {
+        HRESULT CopyTo(IStream *, ULARGE_INTEGER, ULARGE_INTEGER *, ULARGE_INTEGER *) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT Commit(DWORD) {
+        HRESULT Commit(DWORD) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT Revert(void) {
+        HRESULT Revert(void) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT LockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) {
+        HRESULT LockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT UnlockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) {
+        HRESULT UnlockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT Clone(IStream **) {
+        HRESULT Clone(IStream **) override {
             return E_NOTIMPL;
         }
 
-        virtual HRESULT Read(void *pv, ULONG cb, ULONG *pcbRead);
+        HRESULT Read(void *pv, ULONG cb, ULONG *pcbRead) override;
 
-        virtual HRESULT Write(const void *pv, ULONG cb, ULONG *pcbWritten) {
+        HRESULT Write(const void *pv, ULONG cb, ULONG *pcbWritten) override {
             return S_OK;
         }
 
-        virtual HRESULT Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition);
+        HRESULT Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER* new_pos) override;
 
-        virtual HRESULT WINAPI Stat(STATSTG *pstatstg, DWORD grfStatFlag);
+        HRESULT WINAPI Stat(STATSTG *pstatstg, DWORD grfStatFlag) override;
 
+        void OnClipboardRespBuffer(const ClipboardRespBuffer& rb);
+        void Exit();
 
     private:
+        ClipboardPlugin* plugin_ = nullptr;
         LONG ref_;
         uint64_t file_size_ {0};
-        uint64_t current_position_ {0};
-        std::shared_ptr<QFile> file_ = nullptr;
-        std::shared_ptr<QFile> target_file_ = nullptr;
-    public:
-        FileDetailInfo mFileDetailInfo;
+        std::atomic_int64_t current_position_ = 0;
+        std::atomic_int64_t req_index_ = 0;
+        ClipboardFileWrapper cp_file_;
+
+        std::atomic_bool exit_ = false;
+        std::mutex wait_data_mtx_;
+        std::condition_variable data_cv_;
+
+        std::optional<ClipboardRespBuffer> resp_buffer_;
+
     };
 
 

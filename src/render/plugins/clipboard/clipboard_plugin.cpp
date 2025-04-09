@@ -46,13 +46,13 @@ namespace tc
         clipboard_mgr_ = std::make_shared<ClipboardManager>(this);
         clipboard_mgr_->Monitor();
 
-//        ::OleInitialize(nullptr);
-//        IDataObject* data_obj = nullptr;
-//        HRESULT hr = tc::VirtualFileSrcStream_CreateInstance(IID_IDataObject, (void**)&data_obj);
-//        if (SUCCEEDED(hr)) {
-//            ::OleSetClipboard(data_obj);
-//            data_obj->Release();
-//        }
+        ::OleInitialize(nullptr);
+        IDataObject* data_obj = nullptr;
+        virtual_file_ = tc::CreateVirtualFile(IID_IDataObject, (void **) &data_obj, this);
+        if (virtual_file_) {
+            ::OleSetClipboard(data_obj);
+            data_obj->Release();
+        }
 
         return true;
     }
@@ -67,8 +67,27 @@ namespace tc
     }
 
     void ClipboardPlugin::OnMessage(const std::shared_ptr<Message>& msg) {
-        if (clipboard_mgr_) {
-            clipboard_mgr_->UpdateRemoteInfo(msg);
+        if (msg->type() == MessageType::kClipboardInfo) {
+            if (msg->clipboard_info().type() == ClipboardType::kClipboardText && clipboard_mgr_) {
+                clipboard_mgr_->UpdateRemoteInfo(msg);
+            }
+            if (msg->clipboard_info().type() == ClipboardType::kClipboardFiles && virtual_file_) {
+                const auto& files = msg->clipboard_info().files();
+                std::vector<ClipboardFile> target_files;
+                for (auto& file : files) {
+                    ClipboardFile cpy_file;
+                    cpy_file.CopyFrom(file);
+                    target_files.push_back(file);
+                }
+                auto stream_id = msg->stream_id();
+                virtual_file_->OnClipboardFilesInfo(stream_id, target_files);
+            }
         }
+        else if (msg->type() == MessageType::kClipboardRespBuffer) {
+            if (virtual_file_) {
+                virtual_file_->OnClipboardRespBuffer(msg->cp_resp_buffer());
+            }
+        }
+
     }
 }

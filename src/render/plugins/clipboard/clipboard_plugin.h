@@ -12,6 +12,7 @@ namespace tc
 
     class Data;
     class ClipboardManager;
+    class CpVirtualFile;
 
     class ClipboardPlugin : public GrDataConsumerPlugin {
     public:
@@ -29,7 +30,7 @@ namespace tc
 
     private:
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
-
+        CpVirtualFile* virtual_file_ = nullptr;
     };
 
 }

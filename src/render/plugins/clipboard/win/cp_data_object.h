@@ -33,20 +33,17 @@ namespace tc
         // IUnknown
         IFACEMETHODIMP QueryInterface(REFIID riid, void **ppv) {
             static const QITAB qit[] = {
-                    QITABENT(CpDataObject, IDataObject),
-                    {0},
+                QITABENT(CpDataObject, IDataObject),
+                {0},
             };
-            //printf("CpDataObject %x\n", this);
             return QISearch(this, qit, riid, ppv);
         }
 
         IFACEMETHODIMP_(ULONG) AddRef() {
-            //OutputDebugString(L"CpDataObject AddRef\n");
             return InterlockedIncrement(&_cRef);
         }
 
         IFACEMETHODIMP_(ULONG) Release() {
-            //OutputDebugString(L"CpDataObject Release\n");
             long cRef = InterlockedDecrement(&_cRef);
             if (0 == cRef) {
                 delete this;
@@ -64,22 +61,15 @@ namespace tc
         IFACEMETHODIMP QueryGetData(FORMATETC *pformatetc);
 
         IFACEMETHODIMP GetCanonicalFormatEtc(FORMATETC *pformatetcIn, FORMATETC *pFormatetcOut) {
-#if 1
             pformatetcIn->ptd = NULL;
             return E_NOTIMPL;
-#else
-            *pFormatetcOut = *pformatetcIn;
-            pFormatetcOut->ptd = NULL;
-            return DATA_S_SAMEFORMATETC;
-#endif
         }
 
         IFACEMETHODIMP SetData(FORMATETC *pformatetc, STGMEDIUM *pmedium, BOOL fRelease);
 
         IFACEMETHODIMP EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc);
 
-        IFACEMETHODIMP DAdvise(FORMATETC * /* pformatetc */, DWORD /* advf */, IAdviseSink * /* pAdvSnk */,
-                               DWORD * /* pdwConnection */) {
+        IFACEMETHODIMP DAdvise(FORMATETC * /* pformatetc */, DWORD /* advf */, IAdviseSink * /* pAdvSnk */, DWORD * /* pdwConnection */) {
             return E_NOTIMPL;
         }
 
@@ -101,9 +91,9 @@ namespace tc
         IDataObject *_pdtobjShell;
 
     private:
-
         long _cRef;
+
     };
 
-}    // namespace clipboard
+}
 

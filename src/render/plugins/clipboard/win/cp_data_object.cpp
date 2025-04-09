@@ -58,5 +58,5 @@ namespace tc
     }
 
 
-}    // namespace clipboard
+}
 

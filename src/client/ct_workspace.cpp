@@ -39,8 +39,7 @@
 #include "tc_dialog.h"
 #include "ct_game_view.h"
 #include "ct_const_def.h"
-
-
+#include "tc_common_new/file.h"
 
 namespace tc
 {
@@ -145,7 +144,7 @@ namespace tc
         });
 
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
-            this->SendClipboardMessage(msg.type_, msg.msg_);
+            this->SendClipboardMessage(msg);
         });
 
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
@@ -326,7 +325,7 @@ namespace tc
             context_->SendAppMessage(msg);
 
             int monitors_count = config.monitors_info().size();
-            context_->PostUITask([=]() {
+            context_->PostUITask([=, this]() {
                 OnGetCaptureMonitorsCount(monitors_count);
                 OnGetCaptureMonitorName(config.capturing_monitor_name());
             });
@@ -377,6 +376,38 @@ namespace tc
 
         msg_listener_->Listen<SdkMsgTimer1000>([=, this](const SdkMsgTimer1000& msg) {
             force_update_cursor_ = true;
+        });
+
+        msg_listener_->Listen<SdkMsgClipboardReqBuffer>([=, this](const SdkMsgClipboardReqBuffer& buffer) {
+            auto req_index = buffer.req_buffer_.req_index();
+            auto req_start = buffer.req_buffer_.req_start();
+            auto req_size = buffer.req_buffer_.req_size();
+            auto full_filename = buffer.req_buffer_.full_name();
+
+            auto file = File::OpenForReadB(full_filename);
+            DataPtr data = nullptr;
+            if (file->Exists()) {
+                uint64_t read_size = 0;
+                data = file->Read(req_start, req_size, read_size);
+            }
+
+            tc::Message msg;
+            msg.set_device_id(settings_->device_id_);
+            msg.set_stream_id(settings_->stream_id_);
+            msg.set_type(MessageType::kClipboardRespBuffer);
+            auto sub = msg.mutable_cp_resp_buffer();
+            sub->set_full_name(full_filename);
+            sub->set_req_size(req_size);
+            sub->set_req_start(req_start);
+            sub->set_req_index(req_index);
+            if (data) {
+                sub->set_read_size(data->Size());
+                sub->set_buffer(data->AsString());
+            }
+
+            sdk_->PostFileTransferMessage(msg.SerializeAsString());
+
+            LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
         });
     }
 
@@ -531,7 +562,7 @@ namespace tc
         debug_panel_->move(offset/2, offset/2);
     }
 
-    void Workspace::SendClipboardMessage(int type, const std::string& msg) {
+    void Workspace::SendClipboardMessage(const ClipboardMessage& msg) {
         if (!sdk_) {
             return;
         }
@@ -540,8 +571,19 @@ namespace tc
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
         auto sub = m.mutable_clipboard_info();
-        sub->set_type((ClipboardType)type);
-        sub->set_msg(msg);
+        sub->set_type((ClipboardType)msg.type_);
+        if (msg.type_ == ClipboardType::kClipboardText) {
+            sub->set_msg(msg.msg_);
+        }
+        else if (msg.type_ == ClipboardType::kClipboardFiles) {
+            for (const auto& file : msg.files_) {
+                auto pf = sub->mutable_files()->Add();
+                pf->set_file_name(file.file_name());
+                pf->set_full_path(file.full_path());
+                pf->set_ref_path(file.ref_path());
+                pf->set_total_size(file.total_size());
+            }
+        }
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 

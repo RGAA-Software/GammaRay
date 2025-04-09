@@ -48,6 +48,7 @@ namespace tc
     public:
         int type_;
         std::string msg_;
+        std::vector<ClipboardFile> files_;
     };
 
     // Mouse pressed

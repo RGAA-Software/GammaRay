@@ -4,16 +4,17 @@
 
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
+#include "../clipboard_plugin.h"
 #include <iostream>
 
 namespace tc
 {
 
     HRESULT STDMETHODCALLTYPE CpFileStream::QueryInterface(REFIID riid, void **ppvObject) {
-        if (ppvObject == NULL)
+        if (ppvObject == nullptr)
             return E_INVALIDARG;
 
-        *ppvObject = NULL;
+        *ppvObject = nullptr;
 
         if (IsEqualIID(IID_IUnknown, riid) ||
             IsEqualIID(IID_ISequentialStream, riid) ||
@@ -23,67 +24,89 @@ namespace tc
             return S_OK;
         }
 
-        /*if (IsEqualIID(IID_IOperationsProgressDialog, riid)) {
-            return E_NOINTERFACE;
-        }*/
-
         return E_NOINTERFACE;
     }
 
     HRESULT STDMETHODCALLTYPE CpFileStream::Read(void *pv, ULONG cb, ULONG *pcbRead) {
+        // read from remote synchronized
+        tc::Message msg;
+        msg.set_type(MessageType::kClipboardReqBuffer);
+        auto req_buffer = msg.mutable_cp_req_buffer();
+        req_buffer->set_req_index(req_index_);
+        req_buffer->set_req_size(cb);
+        req_buffer->set_req_start(current_position_);
+        req_buffer->set_full_name(cp_file_.file_.full_path());
 
-        char* buffer = (char*)malloc(cb);
-        auto read_bytes = file_->read(buffer, cb);
+        plugin_->PostToTargetFileTransferMessage(cp_file_.stream_id_, msg.SerializeAsString());
 
-        memcpy(pv, buffer, read_bytes);
-        target_file_->write(buffer, read_bytes);
+        std::unique_lock lk(wait_data_mtx_);
+        data_cv_.wait(lk, [this]() -> bool {
+            return resp_buffer_.has_value();
+        });
 
-        *pcbRead = read_bytes;
+        if (exit_ || !resp_buffer_.has_value()) {
+            LOGW("exit copy file: {}", cp_file_.file_.ref_path());
+            return S_FALSE;
+        }
 
-        //std::cout << "cb: " << cb << ",read bytes: " << read_bytes << std::endl;
-        return read_bytes > 0 ? S_OK : S_FALSE;
+        if (req_index_ != resp_buffer_->req_index()) {
+            LOGE("invalid req index, send: {}, received: {}", req_index_, resp_buffer_->req_index());
+            return S_FALSE;
+        }
+
+        // copy data
+        auto resp_buffer = resp_buffer_.value();
+        memcpy(pv, resp_buffer.buffer().data(), resp_buffer.read_size());
+        *pcbRead = resp_buffer.read_size();
+
+        current_position_ += resp_buffer.read_size();
+        req_index_ += 1;
+
+        // clear data
+        resp_buffer_.reset();
+        return S_OK;
     }
 
-    HRESULT
-    STDMETHODCALLTYPE CpFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition) {
-        //ULARGE_INTEGER new_pos = {0};
-
+    HRESULT STDMETHODCALLTYPE CpFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER* new_pos) {
         switch (dwOrigin) {
             case STREAM_SEEK_SET:
                 current_position_ = 0;
-                if (plibNewPosition) {
-                    plibNewPosition->QuadPart = 0;
+                if (new_pos) {
+                    new_pos->QuadPart = 0;
                 }
-                std::cout << "seek set" << std::endl;
+                LOGI("seek set: {}", cp_file_.file_.file_name());
                 break;
             case STREAM_SEEK_CUR:
-                //new_pos = current_position_;
-                std::cout << "seek current" << std::endl;
+                LOGI("seek current: {}", cp_file_.file_.file_name());
                 break;
             case STREAM_SEEK_END:
-                std::cout << "seek end" << std::endl;
-                //new_pos = file_size_;
+                LOGI("seek end: {}", cp_file_.file_.file_name());
                 break;
             default:
                 return STG_E_INVALIDFUNCTION;
         }
-//        printf("CpFileStream::Seek new_pos  =%d \n", new_pos);
-//        new_pos.QuadPart += dlibMove.QuadPart;
-//        if (new_pos.QuadPart < 0 || new_pos.QuadPart > file_size_.QuadPart) {
-//            return STG_E_INVALIDFUNCTION;
-//        }
-
         return S_OK;
     }
 
+    // 没有被调用
     HRESULT WINAPI CpFileStream::Stat(STATSTG *pstatstg, DWORD grfStatFlag) {
         memset(pstatstg, 0, sizeof(STATSTG));
-
         pstatstg->pwcsName = NULL;
         pstatstg->type = STGTY_STREAM;
-        pstatstg->cbSize.QuadPart = mFileDetailInfo.mFileSize;
-        printf("CpFileStream::Stat----size: %d\n", (int)mFileDetailInfo.mFileSize);
+        pstatstg->cbSize.QuadPart = cp_file_.file_.total_size();
         return S_OK;
     }
-    
+
+    void CpFileStream::OnClipboardRespBuffer(const ClipboardRespBuffer& rb) {
+        ClipboardRespBuffer buffer;
+        buffer.CopyFrom(rb);
+        resp_buffer_ = buffer;
+        data_cv_.notify_all();
+    }
+
+    void CpFileStream::Exit() {
+        exit_ = true;
+        data_cv_.notify_all();
+    }
+
 }

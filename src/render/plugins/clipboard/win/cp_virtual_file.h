@@ -15,13 +15,14 @@ namespace tc
 {
 
     class CpFileStream;
+    class ClipboardPlugin;
 
     class CpVirtualFile : public CpDataObject, public IDataObjectAsyncCapability {
     public:
-        CpVirtualFile() {}
+        explicit CpVirtualFile(ClipboardPlugin* plugin);
         ~CpVirtualFile() override;
 
-        void init();
+        void Init();
 
         IFACEMETHODIMP QueryInterface(REFIID riid, void **ppv) {
             if (IsEqualIID(IID_IDataObjectAsyncCapability, riid)) {
@@ -60,18 +61,20 @@ namespace tc
                 /* [unique][in] */ __RPC__in_opt IBindCtx *pbcReserved,
                 /* [in] */ DWORD dwEffects);
 
+        void OnClipboardFilesInfo(const std::string& stream_id, const std::vector<ClipboardFile>& files);
+        void OnClipboardRespBuffer(const ClipboardRespBuffer& resp_buffer);
+
     private:
         uint32_t clip_format_filedesc_ = 0;
         uint32_t clip_format_filecontent_ = 0;
         BOOL in_async_op_ = false;
-        //std::map<int, std::shared_ptr<FileStream>> file_streams_;
         std::shared_ptr<CpFileStream> file_stream_ = nullptr;
-    public:
-        int mFileCount = 0;
-        std::vector<FileDetailInfo> mFileDetailInfos;
+        ClipboardPlugin* plugin_ = nullptr;
+        std::vector<ClipboardFile> menu_files_;
+        std::vector<ClipboardFileWrapper> task_files_;
     };
 
-    STDAPI VirtualFileSrcStream_CreateInstance(REFIID riid, void **ppv);
+    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClipboardPlugin* plugin);
 
 };
 
