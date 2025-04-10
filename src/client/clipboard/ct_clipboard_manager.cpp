@@ -134,6 +134,7 @@ namespace tc
 
     void ClipboardManager::UpdateRemoteInfo(const QString& in_text) {
         if (!Settings::Instance()->clipboard_on_) {
+            LOGI("clipboard is not on!");
             return;
         }
         context_->PostUITask([=, this]() {

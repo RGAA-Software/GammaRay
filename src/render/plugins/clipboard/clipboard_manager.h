@@ -18,7 +18,7 @@ namespace tc
     class ClipboardManager : public QObject {
     public:
         explicit ClipboardManager(ClipboardPlugin* plugin);
-        void Monitor();
+        void OnClipboardUpdate();
         void UpdateRemoteInfo(const std::shared_ptr<Message>& msg);
 
     private:

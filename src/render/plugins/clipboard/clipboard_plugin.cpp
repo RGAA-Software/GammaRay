@@ -44,7 +44,6 @@ namespace tc
     bool ClipboardPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrPluginInterface::OnCreate(param);
         clipboard_mgr_ = std::make_shared<ClipboardManager>(this);
-        clipboard_mgr_->Monitor();
 
         ::OleInitialize(nullptr);
         return true;
@@ -124,5 +123,12 @@ namespace tc
             }
         }
 
+    }
+
+    void ClipboardPlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
+        if (auto ev = std::dynamic_pointer_cast<MsgClipboardUpdate>(event); ev) {
+            LOGI("Clipboard update!");
+            clipboard_mgr_->OnClipboardUpdate();
+        }
     }
 }

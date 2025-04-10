@@ -56,6 +56,7 @@ namespace tc
     class SharedPreference;
     class RenderServiceClient;
     class MonitorRefresher;
+    class WinDesktopManager;
 
     class RdApplication : public std::enable_shared_from_this<RdApplication>, public QObject {
     public:
@@ -158,6 +159,8 @@ namespace tc
 
         // monitor refresher
         std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
+
+        std::shared_ptr<WinDesktopManager> desktop_mgr_ = nullptr;
     };
 
     // Windows

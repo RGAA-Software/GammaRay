@@ -218,8 +218,8 @@ namespace tc
 #endif // TC_ENABLE_FILE_TRANSMISSION
 
         QTimer::singleShot(100, [=, this](){
-            file_transfer_ = std::make_shared<FileTransferChannel>(context_);
-            file_transfer_->Start();
+            //file_transfer_ = std::make_shared<FileTransferChannel>(context_);
+            //file_transfer_->Start();
         });
 
         // clipboard manager
@@ -294,7 +294,7 @@ namespace tc
         });
 
         sdk_->SetOnClipboardCallback([=, this](const ClipboardInfo& clipboard) {
-            if (settings_->clipboard_on_ && clipboard_mgr_) {
+            if (clipboard_mgr_) {
                 clipboard_mgr_->UpdateRemoteInfo(QString::fromStdString(clipboard.msg()));
             }
         });

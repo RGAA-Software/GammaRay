@@ -20,25 +20,31 @@ namespace tc
         this->plugin_ = plugin;
     }
 
-    void ClipboardManager::Monitor() {
+    void ClipboardManager::OnClipboardUpdate() {
         QClipboard *board = QGuiApplication::clipboard();
-        connect(board, &QClipboard::dataChanged, this, [=, this]() {
-            auto text = board->text();
-            if (!text.isEmpty()) {
-                if (text.isEmpty() || text == remote_info_) {
-                    LOGI("Same with remote: {}", text.toStdString());
-                    return;
-                }
-                LOGI("===> new Text: {}", text.toStdString());
-
-                auto event = std::make_shared<GrPluginClipboardEvent>();
-                event->type_ = ClipboardType::kClipboardText;
-                event->msg_ = text.toStdString();
-                this->plugin_->CallbackEvent(event);
-
-                remote_info_ = text;
+        auto text = board->text();
+        if (!text.isEmpty()) {
+            if (text.isEmpty() || text == remote_info_) {
+                LOGI("Same with remote: {}", text.toStdString());
+                return;
             }
-        });
+            LOGI("===> new Text: {}", text.toStdString());
+
+            auto event = std::make_shared<GrPluginClipboardEvent>();
+            event->type_ = ClipboardType::kClipboardText;
+            event->msg_ = text.toStdString();
+            this->plugin_->CallbackEvent(event);
+
+            // send to remote
+            tc::Message m;
+            m.set_type(tc::kClipboardInfo);
+            auto sub = m.mutable_clipboard_info();
+            sub->set_type(ClipboardType::kClipboardText);
+            sub->set_msg(text.toStdString());
+            plugin_->PostToAllStreamMessage(m.SerializeAsString());
+
+            remote_info_ = text;
+        }
     }
 
     void ClipboardManager::UpdateRemoteInfo(const std::shared_ptr<Message>& msg) {

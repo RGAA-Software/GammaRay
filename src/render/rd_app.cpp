@@ -52,6 +52,7 @@
 #include "plugin_interface/gr_audio_encoder_plugin.h"
 #include "tc_service_message.pb.h"
 #include "app/monitor_refresher.h"
+#include "app/win/win_desktop_manager.h"
 
 namespace tc
 {
@@ -97,10 +98,6 @@ namespace tc
         plugin_manager_->LoadAllPlugins();
         plugin_manager_->RegisterPluginEventsCallback();
         plugin_manager_->DumpPluginInfo();
-
-        // clipboard
-//        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
-//        clipboard_mgr_->Monitor();
 
         ws_panel_client_ = std::make_shared<WsPanelClient>(context_);
         ws_panel_client_->Start();
@@ -155,6 +152,9 @@ namespace tc
 
         // monitor refresher
         monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
+
+        // desktop manager
+        desktop_mgr_ = WinDesktopManager::Make(context_);
 
         return qapp_->exec();
     }

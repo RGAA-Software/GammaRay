@@ -3,6 +3,8 @@
 #include <wtsapi32.h>
 #include "tc_common_new/log.h"
 #include "win_message_window.h"
+#include "rd_context.h"
+#include "plugins/plugin_manager.h"
 
 namespace tc {
 
@@ -17,13 +19,14 @@ void CALLBACK WinMessageLoop::WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD ev
 	}
 }
 
-std::shared_ptr<WinMessageLoop> WinMessageLoop::Make() {
-	return std::make_shared<WinMessageLoop>();
+std::shared_ptr<WinMessageLoop> WinMessageLoop::Make(const std::shared_ptr<RdContext>& ctx) {
+	return std::make_shared<WinMessageLoop>(ctx);
 }
 
-WinMessageLoop::WinMessageLoop() {
-
-	message_window_ = std::make_shared<WinMessageWindow>();
+WinMessageLoop::WinMessageLoop(const std::shared_ptr<RdContext>& ctx) {
+    context_ = ctx;
+    plugin_mgr_ = context_->GetPluginManager();
+	message_window_ = std::make_shared<WinMessageWindow>(ctx);
 
 	/*message_window_->session_change_delegate_.connect(
 		std::bind(&WinMessageLoop::OnWinSessionChange, this, std::placeholders::_1)
@@ -82,8 +85,8 @@ void WinMessageLoop::ThreadFunc() {
 		return;
 	}
 
-	// AddClipboardFormatListener(hwnd); // use qt clibpoard
-	// LOGI("AddClipboardFormatListener already add WinMessageWindow");
+	AddClipboardFormatListener(hwnd); // use qt clibpoard
+	LOGI("AddClipboardFormatListener already add WinMessageWindow");
 
 	if (!WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS)) {
 		LOGE("WTSRegisterSessionNotification error: %d", GetLastError());

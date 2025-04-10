@@ -27,6 +27,7 @@ namespace tc
 
         void OnMessage(const std::string &msg) override;
         void OnMessage(const std::shared_ptr<Message> &msg) override;
+        void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override;
 
     private:
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;

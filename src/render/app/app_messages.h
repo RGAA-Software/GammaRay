@@ -123,6 +123,10 @@ namespace tc
 
 
     //: public AppBaseEvent
+    class MsgClipboardUpdate : public AppBaseEvent {
+    public:
+
+    };
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H

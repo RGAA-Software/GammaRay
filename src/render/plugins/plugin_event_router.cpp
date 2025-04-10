@@ -104,6 +104,9 @@ namespace tc
                 plugin->InsertIdr();
             });
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginClipboardEvent) {
+            // clipboard update
+        }
     }
 
 }

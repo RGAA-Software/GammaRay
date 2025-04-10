@@ -20,6 +20,7 @@
 #include <mutex>
 #include <wrl/client.h>
 #include "gr_plugin_settings_info.h"
+#include "app/app_messages.h"
 
 namespace tc
 {
@@ -129,9 +130,11 @@ namespace tc
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
 
+        // app settings
         virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
 
-        virtual void DispatchAppEvent() {};
+        // app events
+        virtual void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {};
 
     protected:
         bool HasParam(const std::string& k) {
