@@ -2,7 +2,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <wininet.h>
-#include <Windows.h>
+#include <windows.h>
 #include <iostream>
 #include <string>
 #include <memory>
@@ -41,6 +41,7 @@ namespace tc
         HRESULT hr = DATA_E_FORMATETC;
         if (pformatetcIn->cfFormat == clip_format_filedesc_) {
             uint32_t file_count = menu_files_.size();
+            LOGI("GetData, file count: {}", file_count);
             if (file_count <= 0) {
                 return S_FALSE;
             }
@@ -64,6 +65,8 @@ namespace tc
 
                 for (uint32_t index = 0; index < file_count; ++index) {
                     auto clipboard_file = menu_files_.at(index);
+                    LOGI("GetData, file: {}", clipboard_file.file_name());
+
                     auto target_filename = QString::fromStdString(clipboard_file.ref_path()).toStdWString();
                     wcsncpy_s(fd_array[index].cFileName,
                               _countof(fd_array[index].cFileName), target_filename.c_str(), _TRUNCATE);
@@ -171,6 +174,11 @@ namespace tc
             file_stream_->Exit();
             file_stream_.reset();
         }
+
+        ::OleFlushClipboard();
+        ::OleSetClipboard(nullptr);
+        menu_files_.clear();
+        task_files_.clear();
         return S_OK;
     }
 
@@ -204,6 +212,10 @@ namespace tc
         auto hr = p->QueryInterface(riid, ppv);
         if (SUCCEEDED(hr)) {
             p->Release();
+            LOGI("CpVirtualFile ref count: {}", p->GetRefCount());
+        }
+        else {
+            LOGE("Query Clipboard DataObject failed: {:x}", hr);
         }
         return p;
     }

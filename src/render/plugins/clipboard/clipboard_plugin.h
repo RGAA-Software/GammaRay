@@ -31,6 +31,7 @@ namespace tc
     private:
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
         CpVirtualFile* virtual_file_ = nullptr;
+        IDataObject* data_object_ = nullptr;
     };
 
 }

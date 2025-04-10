@@ -35,7 +35,7 @@ namespace tc
     }
 
     void MockVideoStreamPlugin::On1Second() {
-        PostWorkThread([=, this]() {
+        PostWorkTask([=, this]() {
             ReGenerate();
         });
     }

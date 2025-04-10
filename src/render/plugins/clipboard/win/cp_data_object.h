@@ -51,6 +51,10 @@ namespace tc
             return cRef;
         }
 
+        long GetRefCount() {
+            return _cRef;
+        }
+
         // IDataObject
         IFACEMETHODIMP GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium);
 

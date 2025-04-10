@@ -28,7 +28,7 @@ namespace tc
         void OnDestroy();
 
         // tasks
-        void PostWorkThread(std::function<void()>&& task);
+        void PostWorkTask(std::function<void()>&& task);
         void PostUIThread(std::function<void()>&& task);
 
         // timer

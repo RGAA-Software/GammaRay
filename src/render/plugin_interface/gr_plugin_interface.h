@@ -91,7 +91,9 @@ namespace tc
         virtual bool OnDestroy();
 
         // task
-        void PostWorkThread(std::function<void()>&& task);
+        void PostWorkTask(std::function<void()>&& task);
+        void PostUITask(std::function<void()>&& task);
+        void PostUIDelayTask(int ms, std::function<void()>&& task);
 
         // event
         void RegisterEventCallback(const GrPluginEventCallback& cbk);

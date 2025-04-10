@@ -47,18 +47,12 @@ namespace tc
         clipboard_mgr_->Monitor();
 
         ::OleInitialize(nullptr);
-        IDataObject* data_obj = nullptr;
-        virtual_file_ = tc::CreateVirtualFile(IID_IDataObject, (void **) &data_obj, this);
-        if (virtual_file_) {
-            ::OleSetClipboard(data_obj);
-            data_obj->Release();
-        }
-
         return true;
     }
 
     bool ClipboardPlugin::OnDestroy() {
         GrPluginInterface::OnDestroy();
+        ::OleUninitialize();
         return true;
     }
 
@@ -71,7 +65,7 @@ namespace tc
             if (msg->clipboard_info().type() == ClipboardType::kClipboardText && clipboard_mgr_) {
                 clipboard_mgr_->UpdateRemoteInfo(msg);
             }
-            if (msg->clipboard_info().type() == ClipboardType::kClipboardFiles && virtual_file_) {
+            if (msg->clipboard_info().type() == ClipboardType::kClipboardFiles) {
                 const auto& files = msg->clipboard_info().files();
                 std::vector<ClipboardFile> target_files;
                 for (auto& file : files) {
@@ -79,8 +73,49 @@ namespace tc
                     cpy_file.CopyFrom(file);
                     target_files.push_back(file);
                 }
-                auto stream_id = msg->stream_id();
-                virtual_file_->OnClipboardFilesInfo(stream_id, target_files);
+
+                this->PostUITask([=, this]() {
+                    if (!virtual_file_) {
+                        virtual_file_ = tc::CreateVirtualFile(IID_IDataObject, (void **) &data_object_, this);
+                    }
+                    if (!data_object_) {
+                        LOGE("DataObject is null!");
+                        return;
+                    }
+
+                    bool cleared_clipboard = false;
+                    for (int i = 0; i < 100; i++) {
+                        auto hr = ::OleSetClipboard(nullptr);
+                        if (hr == S_OK) {
+                            cleared_clipboard = true;
+                            break;
+                        }
+                        TimeUtil::DelayBySleep(10);
+                    }
+                    if (!cleared_clipboard) {
+                        LOGE("Empty clipboard failed!");
+                        return;
+                    }
+
+                    TimeUtil::DelayBySleep(10);
+
+                    bool set_clipboard = false;
+                    for (int i = 0; i < 100; i++) {
+                        auto hr = ::OleSetClipboard(data_object_);
+                        if (hr == S_OK) {
+                            set_clipboard = true;
+                            break;
+                        }
+                    }
+                    if (!set_clipboard) {
+                        LOGE("Set clipboard failed!");
+                        return;
+                    }
+
+                    LOGI("Data obj ref count: {}", virtual_file_->GetRefCount());
+                    auto stream_id = msg->stream_id();
+                    virtual_file_->OnClipboardFilesInfo(stream_id, target_files);
+                });
             }
         }
         else if (msg->type() == MessageType::kClipboardRespBuffer) {

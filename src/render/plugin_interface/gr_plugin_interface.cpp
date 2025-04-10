@@ -9,7 +9,7 @@
 #include "gr_plugin_events.h"
 #include "tc_common_new/log.h"
 #include "gr_plugin_context.h"
-
+#include <QtCore/QTimer>
 #include <QtCore/QEvent>
 
 namespace tc
@@ -133,10 +133,24 @@ namespace tc
         return true;
     }
 
-    void GrPluginInterface::PostWorkThread(std::function<void()>&& task) {
+    void GrPluginInterface::PostWorkTask(std::function<void()>&& task) {
         if (plugin_context_ && !stopped_) {
-            plugin_context_->PostWorkThread(std::move(task));
+            plugin_context_->PostWorkTask(std::move(task));
         }
+    }
+
+    void GrPluginInterface::PostUITask(std::function<void()>&& task) {
+        QMetaObject::invokeMethod(this, [=, this]() {
+            task();
+        });
+    }
+
+    void GrPluginInterface::PostUIDelayTask(int ms, std::function<void()>&& task) {
+        this->PostUITask([ms, t = std::move(task)]() {
+            QTimer::singleShot(ms, [=]() {
+                t();
+            });
+        });
     }
 
     void GrPluginInterface::RegisterEventCallback(const GrPluginEventCallback& cbk) {
@@ -147,7 +161,7 @@ namespace tc
         if (!event_cbk_) {
             return;
         }
-        PostWorkThread([=, this]() {
+        PostWorkTask([=, this]() {
             event_cbk_(event);
         });
     }

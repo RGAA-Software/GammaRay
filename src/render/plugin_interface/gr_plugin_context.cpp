@@ -25,7 +25,7 @@ namespace tc
         }
     }
 
-    void GrPluginContext::PostWorkThread(std::function<void()>&& task) {
+    void GrPluginContext::PostWorkTask(std::function<void()>&& task) {
         if (work_thread_) {
             work_thread_->Post(std::move(task));
         }

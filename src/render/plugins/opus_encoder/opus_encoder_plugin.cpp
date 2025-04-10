@@ -66,7 +66,7 @@ namespace tc
             pcm_file->Append((char*)data->DataAddr(), data->Size());
         }
 
-        PostWorkThread([=, this]() {
+        PostWorkTask([=, this]() {
             audio_cache_->Append(data->DataAddr(), data->Size());
             // 2 or 6
             if (++audio_callback_count_ < 2) {

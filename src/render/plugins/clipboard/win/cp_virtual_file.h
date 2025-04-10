@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include "cp_data_object.h"
 #include "cp_file_struct.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -28,6 +29,7 @@ namespace tc
             if (IsEqualIID(IID_IDataObjectAsyncCapability, riid)) {
                 *ppv = (IDataObjectAsyncCapability *) this;
                 AddRef();
+                LOGI("Query interface => IID_IDataObjectAsyncCapability");
                 return S_OK;
             }
             return CpDataObject::QueryInterface(riid, ppv);
@@ -70,6 +72,7 @@ namespace tc
         BOOL in_async_op_ = false;
         std::shared_ptr<CpFileStream> file_stream_ = nullptr;
         ClipboardPlugin* plugin_ = nullptr;
+        // 这里分成2个，当点击粘贴后，清空menu_files，传输过程中再点击粘贴不让他再重复粘贴了
         std::vector<ClipboardFile> menu_files_;
         std::vector<ClipboardFileWrapper> task_files_;
     };
