@@ -1,7 +1,7 @@
 //
 // Created by RGAA on 2023-12-26.
 //
-
+#if 0
 #include <QDir>
 #include <QApplication>
 #include <QSurfaceFormat>
@@ -71,3 +71,4 @@ int main(int argc, char** argv) {
 
     return app.exec();
 }
+#endif

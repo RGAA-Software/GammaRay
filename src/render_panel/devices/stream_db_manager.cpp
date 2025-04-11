@@ -100,7 +100,7 @@ namespace tc
         return !streams.empty();
     }
 
-    void StreamDBManager::UpdateStream(const StreamItem &stream) {
+    bool StreamDBManager::UpdateStream(const StreamItem &stream) {
         auto ts = stream;
         ts.updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
         using Storage = decltype(GetStorageTypeValue());
@@ -109,6 +109,25 @@ namespace tc
         if (streams.size() == 1) {
             storage.update(ts);
         }
+        return true;
+    }
+
+    bool StreamDBManager::UpdateStreamRandomPwd(const std::string& stream_id, const std::string& random_pwd) {
+        auto opt_stream = GetStream(stream_id);
+        if (!opt_stream.has_value()) {
+            return false;
+        }
+        auto stream = opt_stream.value();
+        stream.updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
+        stream.remote_device_random_pwd_ = random_pwd;
+
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        if (streams.size() == 1) {
+            storage.update(stream);
+        }
+        return true;
     }
 
     std::optional<StreamItem> StreamDBManager::GetStream(const std::string& stream_id) {

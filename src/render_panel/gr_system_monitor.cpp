@@ -192,7 +192,7 @@ namespace tc
         }
 
         if (!connect_vigem_success_) {
-            LOGI("connect failed.");
+            //LOGI("connect failed.");
             return false;
         } else {
             //LOGI("already tested, connect to vigem success.");

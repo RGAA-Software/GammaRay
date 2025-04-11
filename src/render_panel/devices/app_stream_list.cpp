@@ -111,12 +111,18 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            if (!db_mgr_->HasStream(item.stream_id_)) {
+            auto opt_exist_stream = db_mgr_->GetStream(item.stream_id_);
+            if (!opt_exist_stream.has_value()) {
                 db_mgr_->AddStream(item);
             }
             else {
-                //TODO: update...
-
+                auto exist_stream = opt_exist_stream.value();
+                // todo: Check stream info.
+                // check password type: random / safety
+                // then update it in database
+                exist_stream.stream_host_ = item.stream_host_;
+                exist_stream.stream_port_ = item.stream_port_;
+                db_mgr_->UpdateStream(exist_stream);
             }
             LoadStreamItems();
         });

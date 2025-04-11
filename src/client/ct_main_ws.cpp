@@ -216,7 +216,9 @@ int main(int argc, char** argv) {
     LOGI("clipboard on: {}", settings->clipboard_on_);
     LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
     LOGI("device id: {}", settings->device_id_);
+    LOGI("device rdm pwd: {}", settings->device_random_pwd_);
     LOGI("remote device id: {}", settings->remote_device_id_);
+    LOGI("remote device rdm pwd: {}", settings->remote_device_random_pwd_);
     LOGI("stream id: {}", settings->stream_id_);
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
     LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
@@ -230,6 +232,15 @@ int main(int argc, char** argv) {
     auto remote_device_id = "server_" + settings->remote_device_id_;
     auto ft_device_id = "ft_" + device_id;
     auto ft_remote_device_id = "ft_" + remote_device_id;
+
+    auto client_type = []() {
+#if defined(WIN32)
+        return ClientType::kWindows;
+#elif defined(ANDROID)
+        return ClientType::kAndroid;
+#endif
+    } ();
+
     static Workspace ws(ctx, ThunderSdkParams {
             .ssl_ = false,
             .enable_audio_ = true,
@@ -239,11 +250,7 @@ int main(int argc, char** argv) {
             .port_ = port,
             .media_path_ = media_path,
             .ft_path_ = ft_path,
-#if defined(WIN32)
-            .client_type_ = ClientType::kWindows,
-#elif defined(ANDROID)
-            .client_type_ = ClientType::kAndroid,
-#endif
+            .client_type_ = client_type,
             .conn_type_ = settings->conn_type_,
             .nt_type_ = settings->network_type_,
             .device_id_ = device_id,

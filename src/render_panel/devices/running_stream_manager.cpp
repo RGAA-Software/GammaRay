@@ -41,6 +41,9 @@ namespace tc
         for (auto& arg : arguments) {
             LOGI("{}", arg.toStdString());
         }
+        LOGI("MY RDM PWD: {}", item.device_random_pwd_);
+        LOGI("RE RDM PWD: {}", item.remote_device_random_pwd_);
+
         process->start("./GammaRayClientInner.exe", arguments);
         running_processes_.erase(item.stream_id_);
         running_processes_.insert({item.stream_id_, process});

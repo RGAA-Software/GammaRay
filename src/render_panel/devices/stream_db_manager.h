@@ -23,7 +23,8 @@ namespace tc
         ~StreamDBManager();
         static std::string GenUUID();
         void AddStream(StreamItem &stream);
-        void UpdateStream(const StreamItem &stream);
+        bool UpdateStream(const StreamItem &stream);
+        bool UpdateStreamRandomPwd(const std::string& stream_id, const std::string& random_pwd);
         std::vector<StreamItem> GetAllStreams();
         std::vector<StreamItem> GetAllStreamsSortByCreatedTime(bool increase = false);
         std::vector<StreamItem> GetStreamsSortByCreatedTime(int page, int page_size, bool increase = false);
