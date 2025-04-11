@@ -203,11 +203,15 @@ namespace tc
         auto target_item = si.value();
 
         // verify in profile server
-        auto verify_result = DeviceApi::VerifyDeviceInfo(target_item.remote_device_id_, target_item.remote_device_random_pwd_, target_item.remote_device_safety_pwd_);
-        if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-            auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
-            dlg->show();
-            return;
+        if (target_item.IsRelay()) {
+            auto verify_result
+                = DeviceApi::VerifyDeviceInfo(target_item.remote_device_id_, target_item.remote_device_random_pwd_, target_item.remote_device_safety_pwd_);
+            if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
+                verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
+                dlg->show();
+                return;
+            }
         }
 
         running_stream_mgr_->StartStream(target_item);
