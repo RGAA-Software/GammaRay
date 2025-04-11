@@ -20,6 +20,7 @@
 #include "service/service_manager.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "tc_common_new/http_base_op.h"
+#include "devices/device_api.h"
 #include <QApplication>
 
 #pragma comment(lib, "version.lib")
@@ -58,8 +59,8 @@ namespace tc
 
                 // verify device id / pwd
                 context_->PostTask([=, this]() {
-                    auto r = settings_->VerifyDeviceInfo();
-                    if (r == DeviceVerifyResult::kVfNotPair) {
+                    auto r = DeviceApi::VerifyDeviceInfo(settings_->device_id_, settings_->device_random_pwd_, settings_->device_safety_pwd_);
+                    if (r != DeviceVerifyResult::kVfSuccessRandomPwd && r != DeviceVerifyResult::kVfSuccessSafetyPwd) {
                         LOGE("device id and device random pwd are not pair, will request new pair!");
                         // force update id
                         context_->SendAppMessage(MsgForceRequestDeviceId{});
@@ -310,7 +311,7 @@ namespace tc
             LOGE("Spvr is not online: {} {} ", settings_->spvr_server_host_, settings_->spvr_server_port_);
             return false;
         }
-        LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
+        //LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
 
         // check relay
         ok = HttpBaseOp::CanPingServer(settings_->relay_server_host_, settings_->relay_server_port_);
@@ -318,7 +319,7 @@ namespace tc
             LOGE("Relay is not online: {} {} ", settings_->relay_server_host_, settings_->relay_server_port_);
             return false;
         }
-        LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
+        //LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
 
         // check profile
         ok = HttpBaseOp::CanPingServer(settings_->profile_server_host_, settings_->profile_server_port_);
@@ -326,7 +327,7 @@ namespace tc
             LOGE("Profile is not online: {} {} ", settings_->profile_server_host_, settings_->profile_server_port_);
             return false;
         }
-        LOGI("Verify Profile ok, address: {}:{}", settings_->profile_server_host_, settings_->profile_server_port_);
+        //LOGI("Verify Profile ok, address: {}:{}", settings_->profile_server_host_, settings_->profile_server_port_);
 
         return true;
     }

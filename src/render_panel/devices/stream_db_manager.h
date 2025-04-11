@@ -29,6 +29,7 @@ namespace tc
         std::vector<StreamItem> GetAllStreamsSortByCreatedTime(bool increase = false);
         std::vector<StreamItem> GetStreamsSortByCreatedTime(int page, int page_size, bool increase = false);
         std::optional<StreamItem> GetStream(const std::string& stream_id);
+        std::optional<StreamItem> GetStreamByRemoteDeviceId(const std::string& remote_device_id);
         void DeleteStream(int id);
         int RandomColor();
         bool HasStream(const std::string& stream_id);

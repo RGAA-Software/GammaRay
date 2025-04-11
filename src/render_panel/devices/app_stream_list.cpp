@@ -25,6 +25,7 @@
 #include "tc_common_new/uid_spacer.h"
 #include "edit_relay_stream_dialog.h"
 #include "stream_settings_dialog.h"
+#include "device_api.h"
 
 namespace tc
 {
@@ -122,6 +123,12 @@ namespace tc
                 // then update it in database
                 exist_stream.stream_host_ = item.stream_host_;
                 exist_stream.stream_port_ = item.stream_port_;
+                if (exist_stream.remote_device_random_pwd_ != item.remote_device_random_pwd_ && !item.remote_device_random_pwd_.empty()) {
+                    exist_stream.remote_device_random_pwd_ = item.remote_device_random_pwd_;
+                }
+                if (exist_stream.remote_device_safety_pwd_ != item.remote_device_safety_pwd_ && !item.remote_device_safety_pwd_.empty()) {
+                    exist_stream.remote_device_safety_pwd_ = item.remote_device_safety_pwd_;
+                }
                 db_mgr_->UpdateStream(exist_stream);
             }
             LoadStreamItems();
@@ -192,7 +199,18 @@ namespace tc
             LOGE("read stream item from db failed: {}", item.stream_id_);
             return;
         }
-        running_stream_mgr_->StartStream(si.value());
+
+        auto target_item = si.value();
+
+        // verify in profile server
+        auto verify_result = DeviceApi::VerifyDeviceInfo(target_item.remote_device_id_, target_item.remote_device_random_pwd_, target_item.remote_device_safety_pwd_);
+        if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
+            auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
+            dlg->show();
+            return;
+        }
+
+        running_stream_mgr_->StartStream(target_item);
     }
 
     void AppStreamList::StopStream(const StreamItem& item) {

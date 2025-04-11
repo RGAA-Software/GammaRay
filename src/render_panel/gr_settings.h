@@ -66,16 +66,6 @@ namespace tc
     class SharedPreference;
     class MessageNotifier;
 
-    enum class DeviceVerifyResult {
-        kVfEmptyDeviceId,
-        kVfEmptyServerHost,
-        kVfNetworkFailed,
-        kVfResponseFailed,
-        kVfParseJsonFailed,
-        kVfSuccess,
-        kVfNotPair,
-    };
-
     class GrSettings {
     public:
 
@@ -118,9 +108,6 @@ namespace tc
         void SetSpvrServerPort(const std::string& port);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
-
-        // verify device_id/random_pwd pair
-        DeviceVerifyResult VerifyDeviceInfo();
 
     private:
 

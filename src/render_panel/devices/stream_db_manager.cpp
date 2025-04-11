@@ -140,6 +140,16 @@ namespace tc
         return streams[0];
     }
 
+    std::optional<StreamItem> StreamDBManager::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::remote_device_id_) == remote_device_id));
+        if (streams.empty()) {
+            return std::nullopt;
+        }
+        return streams[0];
+    }
+
     std::vector<StreamItem> StreamDBManager::GetAllStreams() {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);

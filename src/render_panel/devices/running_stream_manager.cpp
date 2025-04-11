@@ -7,8 +7,9 @@
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_context.h"
 #include "tc_common_new/log.h"
-#include "tc_dialog.h"
 #include "render_panel/gr_app_messages.h"
+#include "device_api.h"
+#include "tc_qt_widget/tc_dialog.h"
 
 namespace tc
 {
@@ -19,6 +20,7 @@ namespace tc
     }
 
     void RunningStreamManager::StartStream(const StreamItem& item) {
+        // start it
         auto process = std::make_shared<QProcess>();
         QStringList arguments;
         arguments

@@ -47,6 +47,7 @@
 #include "tc_dialog.h"
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/devices/stream_db_manager.h"
+#include "render_panel/devices/device_api.h"
 
 namespace tc
 {
@@ -201,6 +202,21 @@ namespace tc
                         remote_codes->addItem(stream.remote_device_id_.c_str());
                     }
 
+                    connect(remote_codes, &QComboBox::currentTextChanged, this, [this](const QString& text) {
+                        std::string password = "";
+                        for (auto& item : recent_streams_) {
+                            if (item.remote_device_id_ == text.toStdString()) {
+                                if (!item.remote_device_safety_pwd_.empty()) {
+                                    password = item.remote_device_safety_pwd_;
+                                }
+                                else if (!item.remote_device_random_pwd_.empty()) {
+                                    password = item.remote_device_random_pwd_;
+                                }
+                            }
+                        }
+                        password_input_->SetPassword(password.c_str());
+                    });
+
                     input_layout->addSpacing(5);
                     input_layout->addWidget(remote_codes, 0, Qt::AlignLeft);
                     remote_input_layout->addLayout(input_layout);
@@ -250,31 +266,71 @@ namespace tc
 
                     connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
                         auto remote_device_id = remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
-                        auto remote_password = password_input_->GetPassword().toStdString();
+                        auto input_password = password_input_->GetPassword().toStdString();
+
+                        // query device in database
+                        auto opt_remote_device = stream_db_mgr_->GetStreamByRemoteDeviceId(remote_device_id);
+                        auto already_exist_remote_device = opt_remote_device.has_value();
+
+                        std::string random_password;
+                        std::string safety_password;
+                        // this device is already in database
+                        if (already_exist_remote_device) {
+                            auto remote_device = opt_remote_device.value();
+                            // its passwords
+                            random_password = remote_device.remote_device_random_pwd_;
+                            safety_password = remote_device.remote_device_safety_pwd_;
+
+                            // the input password is not equals to random password, neither the safety password
+                            // this is a new password, will determine its type
+                            if (input_password != random_password && input_password != safety_password) {
+                                random_password = input_password;
+                                safety_password = input_password;
+                            }
+                        }
+                        else {
+                            // a new device, 
+                            random_password = input_password;
+                            safety_password = input_password;
+                        }
+
+                        // get device's relay server info
                         auto srv_remote_device_id = "server_" + remote_device_id;
                         auto spvr_mgr = context_->GetSpvrManager();
-                        auto r = spvr_mgr->GetDeviceInfo(srv_remote_device_id);
-                        if (!r) {
-                            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(r.error()));
+                        auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
+                        if (!relay_result) {
+                            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
                             auto dg = TcDialog::Make(tr("Error"), tr("Can't get remote device information."), nullptr);
                             dg->Show();
                             return;
                         }
-                        auto remote_device_info = r.value();
+                        auto relay_device_info = relay_result.value();
                         LOGI("Remote device info: id: {}, relay host: {}, port: {}",
-                             srv_remote_device_id, remote_device_info.relay_server_ip_, remote_device_info.relay_server_port_);
+                             srv_remote_device_id, relay_device_info.relay_server_ip_, relay_device_info.relay_server_port_);
+
+                        // verify in profile server
+                        auto verify_result = DeviceApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
+                        if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                            auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
+                            dlg->show();
+                            return;
+                        }
 
                         StreamItem item;
                         item.stream_id_ = "id_" + remote_device_id;
                         item.stream_name_ = remote_device_id;
-                        item.stream_host_ = remote_device_info.relay_server_ip_;
-                        item.stream_port_ = remote_device_info.relay_server_port_;
+                        item.stream_host_ = relay_device_info.relay_server_ip_;
+                        item.stream_port_ = relay_device_info.relay_server_port_;
                         item.encode_bps_ = 0;
                         item.encode_fps_ = 0;
                         item.network_type_ = kStreamItemNtTypeRelay;
                         item.remote_device_id_ = remote_device_id;
-                        item.remote_device_random_pwd_ = remote_password;
-                        item.remote_device_safety_pwd_ = remote_password;
+                        if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
+                            item.remote_device_random_pwd_ = random_password;
+                        }
+                        else {
+                            item.remote_device_safety_pwd_ = safety_password;
+                        }
                         context_->SendAppMessage(StreamItemAdded {
                             .item_ = item,
                         });
