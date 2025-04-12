@@ -209,7 +209,7 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client) #GammaRayClient
+        uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client tc_rtc_client) #GammaRayClient
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()

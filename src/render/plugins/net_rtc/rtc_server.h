@@ -5,7 +5,7 @@
 #ifndef TEST_WEBRTC_RTCSERVER_H
 #define TEST_WEBRTC_RTCSERVER_H
 
-#include "webrtc_helper.h"
+#include "tc_common_new/webrtc_helper.h"
 #include "video_source_mock.h"
 
 namespace tc

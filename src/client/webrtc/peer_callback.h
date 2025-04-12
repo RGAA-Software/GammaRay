@@ -2,13 +2,12 @@
 // Created by hy on 2024/2/18.
 //
 
-#ifndef PEER_CALLBACK_H
-#define PEER_CALLBACK_H
+#ifndef SDK_PEER_CALLBACK_H
+#define SDK_PEER_CALLBACK_H
 
 #include "tc_common_new/webrtc_helper.h"
 #include "http/httplib.h"
 #include "json/json.hpp"
-#include "video_source_mock.h"
 
 using namespace httplib;
 using namespace nlohmann;
@@ -16,14 +15,14 @@ using namespace nlohmann;
 namespace tc
 {
 
-    class RtcServer;
+    class RtcConnection;
 
     class PeerCallback : public webrtc::PeerConnectionObserver {
     public:
 
-        static std::shared_ptr<PeerCallback> Make(const std::shared_ptr<RtcServer>& client);
+        static std::shared_ptr<PeerCallback> Make(const std::shared_ptr<RtcConnection>& client);
 
-        explicit PeerCallback(const std::shared_ptr<RtcServer>& client);
+        explicit PeerCallback(const std::shared_ptr<RtcConnection>& client);
 
         // PeerConnection overrides
         void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) override;
@@ -49,31 +48,26 @@ namespace tc
         void OnInterestingUsage(int usage_pattern) override;
 
     private:
-
-        std::shared_ptr<RtcServer> rtc_server_ = nullptr;
-        std::shared_ptr<VideoStreamReceiver> video_receiver_;
     };
 
     class CreateSessCallback : public webrtc::CreateSessionDescriptionObserver {
     public:
-        static rtc::scoped_refptr<CreateSessCallback> Make(const std::shared_ptr<RtcServer>& srv);
-        explicit CreateSessCallback(const std::shared_ptr<RtcServer>& srv);
+        static rtc::scoped_refptr<CreateSessCallback> Make(const std::shared_ptr<RtcConnection>& srv);
+        explicit CreateSessCallback(const std::shared_ptr<RtcConnection>& srv);
         void OnSuccess(webrtc::SessionDescriptionInterface *desc) override;
         void OnFailure(webrtc::RTCError error) override;
 
     private:
-        std::shared_ptr<RtcServer> srv_server_ = nullptr;
     };
 
     class SetSessCallback : public webrtc::SetSessionDescriptionObserver {
     public:
-        static rtc::scoped_refptr<SetSessCallback> Make(const std::shared_ptr<RtcServer>& srv);
-        explicit SetSessCallback(const std::shared_ptr<RtcServer>& srv);
+        static rtc::scoped_refptr<SetSessCallback> Make(const std::shared_ptr<RtcConnection>& srv);
+        explicit SetSessCallback(const std::shared_ptr<RtcConnection>& srv);
         void OnSuccess() override;
         void OnFailure(webrtc::RTCError error) override;
 
     private:
-        std::shared_ptr<RtcServer> rtc_server_ = nullptr;
 
     };
 

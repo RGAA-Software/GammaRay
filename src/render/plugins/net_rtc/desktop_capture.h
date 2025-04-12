@@ -5,7 +5,7 @@
 #ifndef WEBRTC_CLIENT_DESKTOP_CAPTURE_H
 #define WEBRTC_CLIENT_DESKTOP_CAPTURE_H
 
-#include "webrtc_helper.h"
+#include "tc_common_new/webrtc_helper.h"
 #include "desktop_capture_source.h"
 
 namespace tc

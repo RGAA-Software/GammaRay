@@ -5,7 +5,7 @@
 #ifndef TEST_WEBRTC_VIDEO_SOURCE_MOCK_H
 #define TEST_WEBRTC_VIDEO_SOURCE_MOCK_H
 
-#include "webrtc_helper.h"
+#include "tc_common_new/webrtc_helper.h"
 #include "i420_creator.h"
 #include <fstream>
 #include <chrono>
