@@ -258,7 +258,8 @@ int main(int argc, char** argv) {
             .ft_device_id_ = ft_device_id,
             .ft_remote_device_id_ = ft_remote_device_id,
             .stream_id_ = settings->stream_id_,
-            .stream_name_ = settings->stream_name_
+            .stream_name_ = settings->stream_name_,
+            .enable_p2p_ = false,
     });
     ws.resize(1280, 768);
     ws.show();

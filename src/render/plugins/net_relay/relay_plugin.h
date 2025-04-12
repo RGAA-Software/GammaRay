@@ -45,7 +45,7 @@ namespace tc
 
         // don't send media stream at begin
         // client will request to resume it
-        bool paused_stream = false;
+        bool paused_stream = true;
     };
 
 }

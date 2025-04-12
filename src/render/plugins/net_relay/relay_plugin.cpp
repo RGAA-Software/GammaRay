@@ -106,11 +106,19 @@ namespace tc
                 });
 
                 relay_media_sdk_->SetOnRequestPauseStreamCallback([this]() {
+                    paused_stream = true;
 
+                    auto event = std::make_shared<GrPluginRelayPausedEvent>();
+                    this->CallbackEvent(event);
+                    LOGI("==> Pause stream.");
                 });
 
                 relay_media_sdk_->SetOnRequestResumeStreamCallback([this]() {
+                    paused_stream = false;
 
+                    auto event = std::make_shared<GrPluginRelayResumedEvent>();
+                    this->CallbackEvent(event);
+                    LOGI("==> Resume stream.");
                 });
 
                 relay_media_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
@@ -121,19 +129,6 @@ namespace tc
                         const auto &payload = sub.payload();
                         auto payload_msg = std::string(payload.data(), payload.size());
                         this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
-                    }
-                    else if (type == RelayMessageType::kRelayRequestPausedStream) {
-                        paused_stream = true;
-
-                        auto event = std::make_shared<GrPluginRelayPausedEvent>();
-                        this->CallbackEvent(event);
-
-                    }
-                    else if (type == RelayMessageType::kRelayRequestResumeStream) {
-                        paused_stream = false;
-
-                        auto event = std::make_shared<GrPluginRelayResumedEvent>();
-                        this->CallbackEvent(event);
                     }
                 });
 
