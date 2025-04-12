@@ -221,8 +221,23 @@ namespace tc
         //      monitor_index, target_monitor.left_, target_monitor.bottom_,
         //      target_monitor.virtual_left_, target_monitor.virtual_bottom_);
 
-        int x = (int)(x_ratio * target_monitor.virtual_width_ + target_monitor.virtual_left_);
-        int y = (int)(y_ratio * target_monitor.virtual_height_ + target_monitor.virtual_top_);
+        //  to do 尚未测试0显示器的时候
+        int x = (
+            x_ratio * target_monitor.Width()
+            +
+            std::abs(target_monitor.left_ - virtual_desktop_bound_rectangle_info_.far_left_)
+            ) * 65535
+            /
+            (virtual_desktop_bound_rectangle_info_.far_right_ - virtual_desktop_bound_rectangle_info_.far_left_ - 1);
+
+        int y = (
+            y_ratio * target_monitor.Height()
+            +
+            std::abs(target_monitor.top_ - virtual_desktop_bound_rectangle_info_.far_top_)
+            ) * 65535
+            /
+            (virtual_desktop_bound_rectangle_info_.far_bottom_ - virtual_desktop_bound_rectangle_info_.far_top_ - 1);
+
         INPUT evt;
         evt.type = INPUT_MOUSE;
         evt.mi.dx = x;
@@ -265,5 +280,7 @@ namespace tc
 
     void WinEventReplayer::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
         monitors_ = msg.monitors_;
+        virtual_desktop_bound_rectangle_info_ = msg.virtual_desktop_bound_rectangle_info_;
+        //LOGI("UpdateCaptureMonitorInfo, monitor count: {}", monitors_.size());
     }
 }

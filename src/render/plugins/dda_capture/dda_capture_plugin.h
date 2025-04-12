@@ -35,6 +35,10 @@ namespace tc
 
         //根据显示器名字获取排序位置
         std::optional<int> GetMonIndexByName(const std::string& name) override;
+
+        void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override;
+
+        virtual VirtulDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() override;
     private:
         void InitVideoCaptures();
         void InitCursorCapture();
@@ -42,6 +46,9 @@ namespace tc
         void CalculateVirtualDeskInfo();
         void NotifyCaptureMonitorInfo();
 
+        void RestartCapturing();
+
+        void HandleDisplayDeviceChangeEvent();
     private:
         std::map<std::string, CaptureMonitorInfo> monitors_;
         std::map<std::string, std::shared_ptr<DesktopCapture>> captures_;
@@ -50,6 +57,8 @@ namespace tc
         std::vector<CaptureMonitorInfo> sorted_monitors_;
         std::shared_ptr<CursorCapture> cursor_capture_ = nullptr;
         std::shared_ptr<Thread> cursor_capture_thread_ = nullptr;
+
+        VirtulDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
     };
 
 }

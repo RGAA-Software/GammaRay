@@ -407,7 +407,7 @@ namespace tc
 
             sdk_->PostFileTransferMessage(msg.SerializeAsString());
 
-            LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
+            //LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
         });
     }
 

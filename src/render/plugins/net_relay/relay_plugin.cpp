@@ -105,6 +105,14 @@ namespace tc
                     this->NotifyMediaClientDisConnected();
                 });
 
+                relay_media_sdk_->SetOnRequestPauseStreamCallback([this]() {
+
+                });
+
+                relay_media_sdk_->SetOnRequestResumeStreamCallback([this]() {
+
+                });
+
                 relay_media_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
                     auto type = msg->type();
                     if (type == RelayMessageType::kRelayTargetMessage) {

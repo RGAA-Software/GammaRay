@@ -5,6 +5,9 @@
 #include "win_message_window.h"
 #include "rd_context.h"
 #include "plugins/plugin_manager.h"
+#include "render/app/app_messages.h"
+#include "plugin_interface/gr_data_consumer_plugin.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc {
 
@@ -25,40 +28,39 @@ std::shared_ptr<WinMessageLoop> WinMessageLoop::Make(const std::shared_ptr<RdCon
 
 WinMessageLoop::WinMessageLoop(const std::shared_ptr<RdContext>& ctx) {
     context_ = ctx;
-    plugin_mgr_ = context_->GetPluginManager();
-	message_window_ = std::make_shared<WinMessageWindow>(ctx);
-
-	/*message_window_->session_change_delegate_.connect(
-		std::bind(&WinMessageLoop::OnWinSessionChange, this, std::placeholders::_1)
-	);
-
-	message_window_->display_change_delegate_.connect(
-		std::bind(&WinMessageLoop::OnDisplayDeviceChange, this)
-	);*/
+    plugin_mgr_ = context_->GetPluginManager();	
 }
 
 WinMessageLoop::~WinMessageLoop() {
 	
 }
 
-void WinMessageLoop::OnLocalClipboardUpdate(HWND hwnd) {
-	/*CtxLocalClipboardUpdateMsg msg;
-	msg.hwnd = hwnd;
-	cloud_ctx_->SendAppMessage(msg);*/
+void WinMessageLoop::CreateMessageWindow() {
+	//构造函数内 不能使用shared_from_this();
+	message_window_ = WinMessageWindow::Make(context_, shared_from_this());
+}
+
+void WinMessageLoop::OnClipboardUpdate(HWND hwnd) {
+	if (auto plugin = plugin_mgr_->GetClipboardPlugin(); plugin) {
+		auto event = std::make_shared<MsgClipboardUpdate>();
+		plugin->DispatchAppEvent(event);
+	}
 }
 
 void WinMessageLoop::OnWinSessionChange(uint32_t message) {
-	/*CtxWinSessionChangeMsg msg;
-	msg.session_msg = message;
-	cloud_ctx_->SendAppMessage(msg);*/
+	
 }
 
 void WinMessageLoop::OnDisplayDeviceChange() {
-	/*CtxDisplayDeviceMsg msg;
-	cloud_ctx_->SendAppMessage(msg);*/
+	if (auto plugin = plugin_mgr_->GetDDACapturePlugin(); plugin) {
+		auto event = std::make_shared<MsgDisplayDeviceChange>();
+		LOGI("OnDisplayDeviceChange, DispatchAppEvent is MsgDisplayDeviceChange");
+		plugin->DispatchAppEvent(event);
+	}
 }
 
 void WinMessageLoop::Start() {
+	CreateMessageWindow();
 	thread_ = std::thread(std::bind(&WinMessageLoop::ThreadFunc, this));
 }
 
@@ -85,7 +87,7 @@ void WinMessageLoop::ThreadFunc() {
 		return;
 	}
 
-	AddClipboardFormatListener(hwnd); // use qt clibpoard
+	AddClipboardFormatListener(hwnd);
 	LOGI("AddClipboardFormatListener already add WinMessageWindow");
 
 	if (!WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS)) {

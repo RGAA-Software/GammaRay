@@ -69,7 +69,9 @@ namespace tc {
         auto cm_msg = CaptureMonitorInfoMessage {
             .monitors_ = plugin->GetCaptureMonitorInfo(),
             .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+            .virtual_desktop_bound_rectangle_info_ = plugin->GetVirtualDesktopBoundRectangleInfo()
         };
+      
         // to event replayer
         win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
 
