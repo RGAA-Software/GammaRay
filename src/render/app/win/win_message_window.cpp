@@ -4,21 +4,24 @@
 #include "tc_common_new/log.h"
 #include "rd_context.h"
 #include "plugins/plugin_manager.h"
-#include "render/app/app_messages.h"
-#include "plugin_interface/gr_data_consumer_plugin.h"
+#include "win_message_loop.h"
 
 namespace tc
 {
-
     constexpr char kWindowClassName[] = "GammaRay_render_MessageWindowClass";
     std::atomic<int> WinMessageWindow::current_create_window_count_ = 0;
     std::string WinMessageWindow::class_name_;
     std::atomic<bool> WinMessageWindow::class_registered_ = false;
     std::mutex WinMessageWindow::register_mutex_;
 
-    WinMessageWindow::WinMessageWindow(const std::shared_ptr<RdContext>& ctx) {
+    std::shared_ptr<WinMessageWindow> WinMessageWindow::Make(const std::shared_ptr<RdContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop) {
+        return std::make_shared<WinMessageWindow>(ctx, message_loop);
+    }
+
+    WinMessageWindow::WinMessageWindow(const std::shared_ptr<RdContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop) {
         context_ = ctx;
         plugin_mgr_ = ctx->GetPluginManager();
+        message_loop_ = message_loop;
     }
 
     WinMessageWindow::~WinMessageWindow() {
@@ -128,7 +131,7 @@ namespace tc
 
         case WM_DISPLAYCHANGE: {
             LOGI("WM_DISPLAYCHANGE");
-            //self->display_change_delegate_();
+            self->OnDisplayChange();
             break;
         }
 
@@ -216,10 +219,19 @@ namespace tc
     }
 
     void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        if (auto plugin = plugin_mgr_->GetClipboardPlugin(); plugin) {
-            auto event = std::make_shared<MsgClipboardUpdate>();
-            plugin->DispatchAppEvent(event);
+        auto message_loop = message_loop_.lock();
+        if (!message_loop) {
+            return;
         }
+        message_loop->OnClipboardUpdate(hwnd);
+    }
+
+    void WinMessageWindow::OnDisplayChange() {
+        auto message_loop = message_loop_.lock();
+        if (!message_loop) {
+            return;
+        }
+        message_loop->OnDisplayDeviceChange();
     }
 
 }

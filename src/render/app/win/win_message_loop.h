@@ -17,11 +17,13 @@ public:
 	~WinMessageLoop();
 	void Start();
 	void Stop();
-private:
-	void ThreadFunc();
-	void OnLocalClipboardUpdate(HWND hwnd);
-	void OnWinSessionChange(uint32_t msg);
+
+	void OnClipboardUpdate(HWND hwnd);
 	void OnDisplayDeviceChange();
+private:
+	void CreateMessageWindow();
+	void ThreadFunc();
+	void OnWinSessionChange(uint32_t msg);
 	static void CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime);
 private:
     std::shared_ptr<RdContext> context_ = nullptr;

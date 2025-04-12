@@ -5,6 +5,7 @@
 #ifndef TC_APPLICATION_MESSAGE_PROCESSOR_H
 #define TC_APPLICATION_MESSAGE_PROCESSOR_H
 
+#if 0
 #include <string>
 #include <memory>
 #include <string_view>
@@ -51,4 +52,5 @@ namespace tc
     };
 }
 
+#endif
 #endif //TC_APPLICATION_MESSAGE_PROCESSOR_H

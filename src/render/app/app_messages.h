@@ -18,6 +18,13 @@ namespace tc
 
     class AppBaseEvent {
     public:
+        enum class EType {
+            kUnknown,
+            kClipboardUpdate,
+            kDisplayDeviceChange,
+        };
+        EType type_ = EType::kUnknown;
+    public:
         virtual ~AppBaseEvent() = default;
     };
 
@@ -122,10 +129,20 @@ namespace tc
     };
 
 
-    //: public AppBaseEvent
+    // public AppBaseEvent
     class MsgClipboardUpdate : public AppBaseEvent {
     public:
+        MsgClipboardUpdate() {
+            type_ = EType::kClipboardUpdate;
+        }
+        
+    };
 
+    class MsgDisplayDeviceChange : public AppBaseEvent {
+    public:
+        MsgDisplayDeviceChange() {
+            type_ = EType::kDisplayDeviceChange;
+        }
     };
 }
 

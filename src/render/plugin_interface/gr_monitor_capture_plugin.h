@@ -27,12 +27,14 @@ namespace tc
         bool IsMonitorTarget();
 
         virtual std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo();
+        virtual VirtulDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() { return VirtulDesktopBoundRectangleInfo{}; };
         virtual void SetCaptureMonitor(const std::string& name);
         virtual void SetCaptureFps(int fps);
         virtual std::string GetCapturingMonitorName() = 0;
         //根据显示器名字获取排序位置
         virtual std::optional<int> GetMonIndexByName(const std::string& name) = 0;
 
+        virtual void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override {};
     protected:
         bool is_monitor_target_ = false;
         int capture_fps_ = 60;

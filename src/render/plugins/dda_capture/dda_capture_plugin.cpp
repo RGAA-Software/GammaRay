@@ -176,6 +176,22 @@ namespace tc
 
     void DDACapturePlugin::StopCapturing() {
         init_success_ = false;
+        for(const auto&[dev_name, capture] : captures_) {
+            capture->StopCapture();
+        }
+    }
+
+
+    void DDACapturePlugin::RestartCapturing() {
+        LOGI("DDACapturePlugin RestartCapturing");
+        // to do  ¿¼ÂÇ¼ÓËø
+        StopCapturing();
+        captures_.clear();
+        monitors_.clear();
+        InitVideoCaptures();
+        NotifyCaptureMonitorInfo();
+        StartCapturing();
+        SetCaptureMonitor(capturing_monitor_name_);
     }
 
     std::vector<CaptureMonitorInfo> DDACapturePlugin::GetCaptureMonitorInfo() {
@@ -316,8 +332,33 @@ namespace tc
         std::sort(sorted_monitors_.begin(), sorted_monitors_.end(), [](const CaptureMonitorInfo& lh, const CaptureMonitorInfo& rh) -> bool {
             return lh.left_ < rh.left_;
         });
+
+		// to do Î´²âÊÔ0ÏÔÊ¾Æ÷µÄÊ±ºò
+        if (sorted_monitors_.size() <= 0) {
+            return;
+        }
+
+        int far_left = sorted_monitors_[0].left_, far_top = sorted_monitors_[0].top_, far_right = sorted_monitors_[0].right_, far_bottom = sorted_monitors_[0].bottom_;
+
         int left_monitor_virtual_size = 0;
         for (auto& info : sorted_monitors_) {
+
+            if (info.left_ < far_left) {
+                far_left = info.left_;
+            }
+
+            if (info.top_ < far_top) {
+                far_top = info.top_;
+            }
+
+            if (info.right_ > far_right) {
+                far_right = info.right_;
+            }
+
+            if (info.bottom_ > far_bottom) {
+                far_bottom = info.bottom_;
+            }
+
             info.virtual_width_ = info.Width() * 1.0f / total_width * max_virtual_coord;
             info.virtual_left_ = left_monitor_virtual_size;
             info.virtual_right_ = info.virtual_left_ + info.virtual_width_;
@@ -333,6 +374,11 @@ namespace tc
                  info.virtual_width_, info.virtual_height_, info.virtual_left_, info.virtual_right_, info.virtual_top_, info.virtual_bottom_,
                  info.virtual_bottom_ - info.virtual_top_);
         }
+        virtual_desktop_bound_rectangle_info_.far_left_ = far_left;
+        virtual_desktop_bound_rectangle_info_.far_top_ = far_top;
+        virtual_desktop_bound_rectangle_info_.far_right_ = far_right;
+        virtual_desktop_bound_rectangle_info_.far_bottom_ = far_bottom;
+        LOGI("{}", virtual_desktop_bound_rectangle_info_.Dump());
     }
 
     void DDACapturePlugin::NotifyCaptureMonitorInfo() {
@@ -349,5 +395,30 @@ namespace tc
             ++mon_index;
         }
         return { std::nullopt };
+    }
+
+    void DDACapturePlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
+        LOGI("DDACapturePlugin DispatchAppEvent type: {}", static_cast<int>(event->type_));
+        if (!event) {
+            return;
+        }
+        switch (event->type_)
+        {
+        case AppBaseEvent::EType::kDisplayDeviceChange: {
+            LOGI("DDACapturePlugin DispatchAppEvent is kDisplayDeviceChange");
+            HandleDisplayDeviceChangeEvent();
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    void DDACapturePlugin::HandleDisplayDeviceChangeEvent() {
+        RestartCapturing();
+    }
+
+    VirtulDesktopBoundRectangleInfo DDACapturePlugin::GetVirtualDesktopBoundRectangleInfo() {
+        return virtual_desktop_bound_rectangle_info_;
     }
 }
