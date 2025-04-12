@@ -42,6 +42,10 @@ namespace tc
         std::atomic_bool sdk_init_ = false;
         std::atomic_uint64_t recv_relay_ft_msg_index_ = 0;
         std::atomic_uint64_t recv_relay_media_msg_index_ = 0;
+
+        // don't send media stream at begin
+        // client will request to resume it
+        bool paused_stream = false;
     };
 
 }

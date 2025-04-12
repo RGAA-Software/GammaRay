@@ -111,8 +111,21 @@ namespace tc
                         auto sub = msg->relay();
                         auto relay_msg_index = sub.relay_msg_index();
                         const auto &payload = sub.payload();
-                        auto msg = std::string(payload.data(), payload.size());
-                        this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
+                        auto payload_msg = std::string(payload.data(), payload.size());
+                        this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
+                    }
+                    else if (type == RelayMessageType::kRelayRequestPausedStream) {
+                        paused_stream = true;
+
+                        auto event = std::make_shared<GrPluginRelayPausedEvent>();
+                        this->CallbackEvent(event);
+
+                    }
+                    else if (type == RelayMessageType::kRelayRequestResumeStream) {
+                        paused_stream = false;
+
+                        auto event = std::make_shared<GrPluginRelayResumedEvent>();
+                        this->CallbackEvent(event);
                     }
                 });
 
@@ -147,8 +160,8 @@ namespace tc
                                 recv_relay_ft_msg_index_ = relay_msg_index;
                             }
                             const auto &payload = sub.payload();
-                            auto msg = std::string(payload.data(), payload.size());
-                            this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, msg);
+                            auto payload_msg = std::string(payload.data(), payload.size());
+                            this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                         }
                     });
 
@@ -174,21 +187,21 @@ namespace tc
     }
 
     void RelayPlugin::PostProtoMessage(const std::string& msg) {
-        if (IsWorking()) {
+        if (IsWorking() && !paused_stream) {
             relay_media_sdk_->RelayProtoMessage(msg);
         }
     }
 
     bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
         // todo: stream id --> device id
-        if (IsWorking()) {
+        if (IsWorking() && !paused_stream) {
             relay_media_sdk_->RelayProtoMessage(stream_id, msg);
         }
         return true;
     }
 
     bool RelayPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg) {
-        if (IsWorking() && relay_ft_sdk_) {
+        if (IsWorking() && relay_ft_sdk_ && !paused_stream) {
             relay_ft_sdk_->RelayProtoMessage(stream_id, msg);
         }
         return true;

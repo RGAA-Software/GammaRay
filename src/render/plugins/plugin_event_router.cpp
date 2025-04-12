@@ -107,6 +107,12 @@ namespace tc
         else if (event->event_type_ == GrPluginEventType::kPluginClipboardEvent) {
             // clipboard update
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginRelayPausedEvent) {
+
+        }
+        else if (event->event_type_ == GrPluginEventType::kPluginRelayResumeEvent) {
+
+        }
     }
 
 }

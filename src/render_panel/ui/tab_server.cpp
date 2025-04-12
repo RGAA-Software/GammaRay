@@ -310,6 +310,11 @@ namespace tc
 
                         // verify in profile server
                         auto verify_result = DeviceApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
+                        if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
+                            auto dlg = TcDialog::Make("Connect Failed", "Can't access server.", nullptr);
+                            dlg->show();
+                            return;
+                        }
                         if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
                             auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
                             dlg->show();

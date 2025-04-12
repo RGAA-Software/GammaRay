@@ -33,6 +33,8 @@ namespace tc
         kPluginSplitRawAudioFrameEvent,
         kPluginEncodedAudioFrameEvent,
         kPluginClipboardEvent,
+        kPluginRelayPausedEvent,
+        kPluginRelayResumeEvent,
     };
 
     class GrPluginBaseEvent {
@@ -199,6 +201,22 @@ namespace tc
     public:
         int type_;
         std::string msg_;
+    };
+
+    // relay paused
+    class GrPluginRelayPausedEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRelayPausedEvent() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRelayPausedEvent;
+        }
+    };
+
+    // relay resumed
+    class GrPluginRelayResumedEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRelayResumedEvent() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRelayResumeEvent;
+        }
     };
 }
 
