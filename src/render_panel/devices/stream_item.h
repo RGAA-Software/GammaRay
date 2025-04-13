@@ -45,6 +45,9 @@ namespace tc
         // split windows
         int split_windows_ = 0;
 
+        // enable p2p
+        int enable_p2p_ = 0;
+
         // audio source, global / app_only
         std::string audio_capture_mode_;;
 

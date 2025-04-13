@@ -103,6 +103,10 @@ namespace tc
 
                 relay_media_sdk_->SetOnRoomDestroyedCallback([this]() {
                     this->NotifyMediaClientDisConnected();
+                    if (!relay_media_sdk_->HasRelayRooms()) {
+                        paused_stream = true;
+                        LOGW("No active rooms, paused stream.");
+                    }
                 });
 
                 relay_media_sdk_->SetOnRequestPauseStreamCallback([this]() {

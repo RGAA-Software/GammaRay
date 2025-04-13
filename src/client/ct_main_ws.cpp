@@ -85,6 +85,12 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_remote_device_sp("remote_device_sp", "remote_device sp", "value", "");
     parser.addOption(opt_remote_device_sp);
 
+    QCommandLineOption opt_enable_p2p("enable_p2p", "enable p2p", "value", "0");
+    parser.addOption(opt_enable_p2p);
+
+    QCommandLineOption opt_show_max_window("show_max_window", "show max window", "value", "0");
+    parser.addOption(opt_show_max_window);
+
     parser.process(app);
 
     g_host_ = parser.value(opt_host).toStdString();
@@ -151,6 +157,9 @@ void ParseCommandLine(QApplication& app) {
     if (!settings->remote_device_safety_pwd_.empty()) {
         settings->remote_device_safety_pwd_ = Base64::Base64Decode(settings->remote_device_safety_pwd_);
     }
+
+    settings->enable_p2p_ = parser.value(opt_enable_p2p).toInt() == 1;
+    settings->show_max_window_ = parser.value(opt_show_max_window).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -228,6 +237,8 @@ int main(int argc, char** argv) {
     LOGI("stream id: {}", settings->stream_id_);
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
     LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
+    LOGI("show max window: {}", (int)settings->show_max_window_);
+    LOGI("enable p2p: {}", (int)settings->enable_p2p_);
 
     // WebSocket only
     auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
@@ -265,9 +276,12 @@ int main(int argc, char** argv) {
             .ft_remote_device_id_ = ft_remote_device_id,
             .stream_id_ = settings->stream_id_,
             .stream_name_ = settings->stream_name_,
-            .enable_p2p_ = false,
+            .enable_p2p_ = settings->enable_p2p_,
     });
     ws.resize(1280, 768);
+    if (settings->show_max_window_) {
+        ws.showMaximized();
+    }
     ws.show();
 
     HHOOK keyboardHook = SetWindowsHookExA(WH_KEYBOARD_LL, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {

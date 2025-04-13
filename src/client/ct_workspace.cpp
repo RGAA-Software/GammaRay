@@ -135,6 +135,9 @@ namespace tc
         // message listener
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
 
+        // make rtc manager
+        rtc_mgr_ = std::make_shared<CtRtcManager>(context_);
+
         // sdk
         RegisterSdkMsgCallbacks();
         sdk_->Start();
@@ -230,10 +233,6 @@ namespace tc
         // clipboard manager
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
         clipboard_mgr_->Monitor();
-
-        //
-        rtc_mgr_ = std::make_shared<CtRtcManager>(context_);
-        rtc_mgr_->Init();
     }
 
     Workspace::~Workspace() {

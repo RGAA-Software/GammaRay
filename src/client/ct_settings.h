@@ -88,6 +88,10 @@ namespace tc
         std::string remote_device_random_pwd_;
         // remote device safety pwd
         std::string remote_device_safety_pwd_;
+        // enable p2p
+        bool enable_p2p_ = false;
+        // show max window
+        bool show_max_window_ = false;
     };
 
 }

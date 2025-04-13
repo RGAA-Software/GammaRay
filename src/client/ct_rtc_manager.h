@@ -16,6 +16,8 @@ namespace tc
     class ClientContext;
     class RtcClientInterface;
     class Message;
+    class MessageListener;
+    class Settings;
 
     class CtRtcManager {
     public:
@@ -23,13 +25,16 @@ namespace tc
 
         void Init();
 
-        void OnSignalingMessage(const std::shared_ptr<Message>& msg);
+    private:
+        void LoadRtcLibrary();
 
     private:
+        Settings* settings_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<Thread> thread_ = nullptr;
         QLibrary* rtc_lib_ = nullptr;
         RtcClientInterface* rtc_client_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

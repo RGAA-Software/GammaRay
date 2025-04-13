@@ -56,7 +56,8 @@ namespace tc
             make_column("remote_device_random_pwd", &StreamItem::remote_device_random_pwd_),
             make_column("remote_device_safety_pwd", &StreamItem::remote_device_safety_pwd_),
             make_column("created_timestamp", &StreamItem::created_timestamp_, default_value(0)),
-            make_column("updated_timestamp", &StreamItem::updated_timestamp_, default_value(0))
+            make_column("updated_timestamp", &StreamItem::updated_timestamp_, default_value(0)),
+            make_column("enable_p2p", &StreamItem::enable_p2p_, default_value(0))
         ));
         if (!name.empty()) {
             auto r = st.sync_schema(true);
