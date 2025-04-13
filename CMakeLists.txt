@@ -246,6 +246,8 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/settings.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
         COMMAND ${CMAKE_COMMAND} -E copy "${OpenCV_ROOT}/x64/vc16/bin/opencv_world4100.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
 
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}tc_rtc_client.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_client/tc_rtc_client.dll"
+
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_net_udp.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_udp.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_udp/plugin_net_udp.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_udp.dll.toml"
 

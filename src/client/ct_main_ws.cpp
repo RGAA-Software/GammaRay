@@ -205,6 +205,12 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    if (false) {
+#ifdef WIN32
+        MessageBox(0,0,0,0);
+#endif
+    }
+
     auto settings = tc::Settings::Instance();
     auto name = g_host_ + "_" + MD5::Hex(settings->stream_id_).substr(0, 10);
     auto ctx = std::make_shared<ClientContext>(name);

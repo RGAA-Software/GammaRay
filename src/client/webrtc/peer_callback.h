@@ -20,9 +20,9 @@ namespace tc
     class PeerCallback : public webrtc::PeerConnectionObserver {
     public:
 
-        static std::shared_ptr<PeerCallback> Make(const std::shared_ptr<RtcConnection>& client);
+        static std::shared_ptr<PeerCallback> Make(RtcConnection* client);
 
-        explicit PeerCallback(const std::shared_ptr<RtcConnection>& client);
+        explicit PeerCallback(RtcConnection* client);
 
         // PeerConnection overrides
         void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) override;
@@ -52,8 +52,8 @@ namespace tc
 
     class CreateSessCallback : public webrtc::CreateSessionDescriptionObserver {
     public:
-        static rtc::scoped_refptr<CreateSessCallback> Make(const std::shared_ptr<RtcConnection>& srv);
-        explicit CreateSessCallback(const std::shared_ptr<RtcConnection>& srv);
+        static rtc::scoped_refptr<CreateSessCallback> Make(RtcConnection* srv);
+        explicit CreateSessCallback(RtcConnection* srv);
         void OnSuccess(webrtc::SessionDescriptionInterface *desc) override;
         void OnFailure(webrtc::RTCError error) override;
 
@@ -62,8 +62,8 @@ namespace tc
 
     class SetSessCallback : public webrtc::SetSessionDescriptionObserver {
     public:
-        static rtc::scoped_refptr<SetSessCallback> Make(const std::shared_ptr<RtcConnection>& srv);
-        explicit SetSessCallback(const std::shared_ptr<RtcConnection>& srv);
+        static rtc::scoped_refptr<SetSessCallback> Make(RtcConnection* srv);
+        explicit SetSessCallback(RtcConnection* srv);
         void OnSuccess() override;
         void OnFailure(webrtc::RTCError error) override;
 

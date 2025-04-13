@@ -10,28 +10,26 @@
 namespace tc
 {
 
-    std::shared_ptr<PeerCallback> PeerCallback::Make(const std::shared_ptr<RtcConnection>& srv) {
-        return std::make_shared<PeerCallback>(srv);
+    std::shared_ptr<PeerCallback> PeerCallback::Make(RtcConnection* client) {
+        return std::make_shared<PeerCallback>(client);
     }
 
-    PeerCallback::PeerCallback(const std::shared_ptr<RtcConnection>& srv) {
+    PeerCallback::PeerCallback(RtcConnection* client) {
 
     }
 
     void PeerCallback::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
-        std::cout << std::this_thread::get_id() << ":"
-                  << "PeerCallback::SignalingChange(" << new_state << ")" << std::endl;
+        LOGI("PeerCallback::SignalingChange: {}", (int)new_state);
     }
 
     void PeerCallback::OnAddStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
         PeerConnectionObserver::OnAddStream(stream);
-        std::cout << std::this_thread::get_id() << ":" << "stream id: " << stream->id() << " PeerCallback::AddStream" << std::endl;
+        LOGI("OnAddStream, stream id: {}", stream->id());
     }
 
     void PeerCallback::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
         PeerConnectionObserver::OnRemoveStream(stream);
-        std::cout << std::this_thread::get_id() << ":"
-                  << "PeerCallback::RemoveStream" << std::endl;
+        LOGI("OnRemoveStream");
     }
 
     void PeerCallback::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) {
@@ -40,8 +38,6 @@ namespace tc
 
     void PeerCallback::OnRenegotiationNeeded() {
         PeerConnectionObserver::OnRenegotiationNeeded();
-        std::cout << std::this_thread::get_id() << ":"
-                  << "PeerCallback::RenegotiationNeeded" << std::endl;
     }
 
     void PeerCallback::OnNegotiationNeededEvent(uint32_t event_id) {
@@ -65,16 +61,14 @@ namespace tc
     }
 
     void PeerCallback::OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState new_state) {
-        std::cout << std::this_thread::get_id() << ":"
-                  << "PeerCallback::IceGatheringChange(" << new_state << ")" << std::endl;
+        LOGI("PeerCallback::IceGatheringChange: {}", (int)new_state);
         if (new_state == webrtc::PeerConnectionInterface::IceGatheringState::kIceGatheringComplete) {
             //rtc_server_->OnIceGatheringComplete();
         }
     }
 
     void PeerCallback::OnIceCandidate(const webrtc::IceCandidateInterface *candidate) {
-        std::cout << ":" << std::this_thread::get_id() << ":"
-                  << "PeerCallback::IceCandidate" << std::endl;
+        LOGI("PeerCallback::IceCandidate");
         //rtc_server_->OnIceCandidate(candidate);
     }
 
@@ -98,9 +92,9 @@ namespace tc
     void PeerCallback::OnAddTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
                                           const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams) {
         PeerConnectionObserver::OnAddTrack(receiver, streams);
-        std::cout << "OnAddTrack..." << std::endl;
+        LOGI("OnAddTrack");
         auto track = receiver->track().get();
-        std::cout<<"[info] on add track,kind:"<<track->kind()<<std::endl;
+        LOGI("[info] on add track,kind:{}", track->kind());
 //        if(track->kind() == "video" && video_receiver_) {
 //            auto cast_track = static_cast<webrtc::VideoTrackInterface*>(track);
 //            cast_track->AddOrUpdateSink(video_receiver_.get(), rtc::VideoSinkWants());
@@ -121,40 +115,40 @@ namespace tc
     }
 
     ///
-    rtc::scoped_refptr<CreateSessCallback> CreateSessCallback::Make(const std::shared_ptr<RtcConnection>& srv) {
+    rtc::scoped_refptr<CreateSessCallback> CreateSessCallback::Make(RtcConnection* srv) {
         auto r =  new rtc::RefCountedObject<CreateSessCallback>(srv);
         return rtc::scoped_refptr<rtc::RefCountedObject<CreateSessCallback>>(r);
     }
 
-    CreateSessCallback::CreateSessCallback(const std::shared_ptr<RtcConnection>& srv) {
+    CreateSessCallback::CreateSessCallback(RtcConnection* srv) {
 //        this->srv_server_ = srv;
     }
 
     void CreateSessCallback::OnSuccess(webrtc::SessionDescriptionInterface *desc) {
-        std::cout << "@@ CreateSessCallback::OnSuccess" << std::endl;
+        LOGI("@@ CreateSessCallback::OnSuccess");
 //        this->srv_server_->OnSessionCreated(desc);
     }
 
     void CreateSessCallback::OnFailure(webrtc::RTCError error) {
-        std::cout << "@@ CreateSessCallback::OnFailure" << error.message() << std::endl;
+        LOGE("@@ CreateSessCallback::OnFailure: {}", error.message());
     }
 
     ///
-    rtc::scoped_refptr<SetSessCallback> SetSessCallback::Make(const std::shared_ptr<RtcConnection>& srv) {
+    rtc::scoped_refptr<SetSessCallback> SetSessCallback::Make(RtcConnection* srv) {
         auto c = new rtc::RefCountedObject<SetSessCallback>(srv);
         return rtc::scoped_refptr<rtc::RefCountedObject<SetSessCallback>>(c);
     }
 
-    SetSessCallback::SetSessCallback(const std::shared_ptr<RtcConnection>& srv) {
+    SetSessCallback::SetSessCallback(RtcConnection* srv) {
 //        this->rtc_server_ = srv;
     }
 
     void SetSessCallback::OnSuccess() {
-        std::cout << "@@ SetSessCallback::OnSuccess" << std::endl;
+        LOGI("@@ SetSessCallback::OnSuccess");
     }
 
     void SetSessCallback::OnFailure(webrtc::RTCError error) {
-        std::cout << "@@ SetSessCallback::OnFailure" << error.message() << std::endl;
+        LOGE("@@ SetSessCallback::OnFailure: {}", error.message());
     }
 
 }

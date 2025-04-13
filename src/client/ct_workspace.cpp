@@ -40,6 +40,8 @@
 #include "ct_game_view.h"
 #include "ct_const_def.h"
 #include "tc_common_new/file.h"
+#include "webrtc/rtc_client_interface.h"
+#include "ct_rtc_manager.h"
 
 namespace tc
 {
@@ -228,6 +230,10 @@ namespace tc
         // clipboard manager
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
         clipboard_mgr_->Monitor();
+
+        //
+        rtc_mgr_ = std::make_shared<CtRtcManager>(context_);
+        rtc_mgr_->Init();
     }
 
     Workspace::~Workspace() {

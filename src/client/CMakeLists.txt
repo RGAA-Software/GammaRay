@@ -69,6 +69,8 @@ set(SRCS_WS
         transfer/file_writer.cpp
         transfer/fs_file.cpp
         transfer/fs_folder.cpp
+        webrtc/rtc_client_interface.cpp
+        ct_rtc_manager.cpp
 )
 
 if(TC_USE_FILE_TRANSMISSION)

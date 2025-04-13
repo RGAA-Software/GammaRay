@@ -7,6 +7,7 @@
 
 #include <QWidget>
 #include <QMainWindow>
+#include <QLibrary>
 #include <map>
 #include <vector>
 #include <qlist.h>
@@ -34,6 +35,8 @@ namespace tc
     class FileTransInterface;
     class MainProgress;
     class GameView;
+    class RtcClientInterface;
+    class CtRtcManager;
 
     class Workspace : public QMainWindow {
     public:
@@ -76,6 +79,7 @@ namespace tc
         void OnGetCaptureMonitorName(std::string monitor_name);
         void InitGameViews(const ThunderSdkParams& params);
         void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
+        
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
@@ -105,6 +109,8 @@ namespace tc
         int title_bar_height_ = 0; //35;
 
         bool full_screen_ = false;
+        std::shared_ptr<CtRtcManager> rtc_mgr_ = nullptr;
+
     private:
         // 扩展屏
         // to do:
