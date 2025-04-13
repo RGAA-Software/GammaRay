@@ -446,7 +446,7 @@ namespace tc
 
         if (monitor_capture_plugin_) {
             monitor_capture_plugin_->StartCapturing();
-            monitor_capture_plugin_->SetCaptureMonitor("");
+            //monitor_capture_plugin_->SetCaptureMonitor("");
         }
         if (data_provider_plugin) {
             data_provider_plugin->StartProviding();
@@ -678,6 +678,10 @@ namespace tc
         m.mutable_req_ctrl_alt_delete()->set_req_device_id(device_id);
         m.mutable_req_ctrl_alt_delete()->set_req_stream_id(stream_id);
         service_client_->PostNetMessage(m.SerializeAsString());
+    }
+
+    std::shared_ptr<WinDesktopManager> RdApplication::GetDesktopManager() {
+        return desktop_mgr_;
     }
 
     void RdApplication::Exit() {

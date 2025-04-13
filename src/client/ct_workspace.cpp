@@ -149,6 +149,7 @@ namespace tc
 
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
             this->SendSwitchMonitorMessage(msg.name_);
+            this->SendUpdateDesktopMessage();
         });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
@@ -162,6 +163,7 @@ namespace tc
         // step 1
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
             this->SendSwitchWorkModeMessage(settings_->work_mode_);
+            this->SendUpdateDesktopMessage();
             main_progress_->ResetProgress();
             main_progress_->StepForward();
             LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
@@ -211,6 +213,7 @@ namespace tc
                     setWindowTitle(origin_title_name_);
                 }
             });
+            this->SendUpdateDesktopMessage();
         });
 
 #ifdef TC_ENABLE_FILE_TRANSMISSION
@@ -299,7 +302,7 @@ namespace tc
             }
         });
 
-        // todo: Send by Renderer every 1S
+        // to do: Send by Renderer every 1S
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
@@ -409,6 +412,20 @@ namespace tc
 
             //LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
         });
+
+        msg_listener_->Listen<FullscreenMessage>([=, this](const FullscreenMessage& msg) {
+            context_->PostUITask([=, this]() {
+                full_screen_ = true;
+                this->UpdateGameViewsStatus();
+            });
+        });
+
+        msg_listener_->Listen<ExitFullscreenMessage>([=, this](const ExitFullscreenMessage& msg) {
+            context_->PostUITask([=, this]() {
+                full_screen_ = false;
+                this->UpdateGameViewsStatus();
+            });
+        });
     }
 
     void Workspace::changeEvent(QEvent* event) {
@@ -421,12 +438,8 @@ namespace tc
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {
-//        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"));
-//        if (msg_box->exec() == 0) {
-//            Exit();
-//        } else {
-//            event->ignore();
-//        }
+        this->raise();             
+        this->activateWindow();    
         this->showNormal();
         if (!close_event_occurred_widget_) {
             close_event_occurred_widget_ = this;
@@ -599,6 +612,15 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
+    void Workspace::SendUpdateDesktopMessage() {
+        if (!sdk_) {
+            return;
+        }
+        tc::Message m;
+        m.set_type(tc::kUpdateDesktop);
+        sdk_->PostMediaMessage(m.SerializeAsString());
+    }
+
     void Workspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
         if (!sdk_) {
             return;
@@ -686,10 +708,17 @@ namespace tc
     }
 
     void Workspace::UpdateGameViewsStatus() {
+        QList<QScreen*> screens = QGuiApplication::screens();
         if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
             for (auto game_view : game_views_) {
                 if (game_view->IsMainView()) {
-                    game_view->show();
+                    if (full_screen_) {
+                        WidgetSelectMonitor(this, screens);
+                        game_view->showFullScreen();
+                    }
+                    else {
+                        game_view->showNormal();
+                    }
                 }
                 else {
                     game_view->hide();
@@ -699,7 +728,18 @@ namespace tc
         else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
             for (auto game_view : game_views_) {
                 if (game_view->GetActiveStatus()) {
-                    game_view->show();
+                    if (full_screen_) {
+                        if (game_view->IsMainView()) {
+                            WidgetSelectMonitor(this, screens);
+                        }
+                        else {
+                            WidgetSelectMonitor(game_view, screens);
+                        }
+                        game_view->showFullScreen();
+                    }
+                    else {
+                        game_view->showNormal();
+                    }
                 }
                 else {
                     game_view->hide();
@@ -804,4 +844,21 @@ namespace tc
         return sdk_;
     }
 
+
+    void Workspace::WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens) {
+        QRect widget_geometry = widget->geometry();
+        int max_widget_with_screen_visible_area = 0;
+        QScreen* target_screen = nullptr;
+        for (auto screen : screens) {
+            QRect widget_screen_intersection = screen->availableGeometry().intersected(widget_geometry);
+            int  widget_with_screen_visible_area = widget_screen_intersection.width() * widget_screen_intersection.height();
+            if (widget_with_screen_visible_area > max_widget_with_screen_visible_area) {
+                max_widget_with_screen_visible_area = widget_with_screen_visible_area;
+                target_screen = screen;
+            }
+        }
+        if (target_screen) {
+            widget->windowHandle()->setScreen(target_screen);
+        }
+    }
 }

@@ -46,6 +46,8 @@ namespace tc
         void ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg);
         void ProcessInsertKeyFrame(std::shared_ptr<Message>&& msg);
         void ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg);
+        // Ë¢ÐÂ×ÀÃæ
+        void ProcessUpdateDesktop();
 
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
 

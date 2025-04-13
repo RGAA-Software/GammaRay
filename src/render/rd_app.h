@@ -98,6 +98,7 @@ namespace tc
             context_->SendAppMessage(m);
         }
 
+        std::shared_ptr<WinDesktopManager> GetDesktopManager();
     private:
         void InitAppTimer();
         void InitMessages();

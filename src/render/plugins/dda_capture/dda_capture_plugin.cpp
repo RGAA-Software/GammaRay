@@ -170,7 +170,20 @@ namespace tc
             capture->StartCapture();
             captures_.insert({dev_name, capture});
         }
+
+        //to do: 先这样循环判断是否都初始化成功，等要找更好的方法
+        for (const auto& [dev_name, capture] : captures_) {
+            while (true) {
+                if (!capture->IsInitSuccess()) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                else {
+                    break;
+                }
+            }
+        }
         init_success_ = true;
+        SetCaptureMonitor(capturing_monitor_name_);
         return init_success_;
     }
 
@@ -184,14 +197,12 @@ namespace tc
 
     void DDACapturePlugin::RestartCapturing() {
         LOGI("DDACapturePlugin RestartCapturing");
-        // to do  ���Ǽ���
+        // to do  考虑加锁
         StopCapturing();
         captures_.clear();
         monitors_.clear();
         InitVideoCaptures();
-        NotifyCaptureMonitorInfo();
         StartCapturing();
-        SetCaptureMonitor(capturing_monitor_name_);
     }
 
     std::vector<CaptureMonitorInfo> DDACapturePlugin::GetCaptureMonitorInfo() {
@@ -210,7 +221,7 @@ namespace tc
         if (name.empty()) {
             use_default_monitor = true;
         }
-        //LOGI("SetCaptureMonitor: {}, use_default_monitor: {}", name, use_default_monitor);
+        LOGI("SetCaptureMonitor: {}, use_default_monitor: {}", name, use_default_monitor);
 
         // todo: capture all monitors at same time
         if (IsWorking()) {
@@ -238,7 +249,7 @@ namespace tc
                     }
                     else {
                         if (!capture->IsInitSuccess()) {
-                            LOGW("Capture for: {} is not valid now.", monitor_name);
+                            LOGW("Capture for: {} is not valid now.", monitor_name);  // 如果StartCapturing后，接着执行SetCaptureMonitor，这时候 capture->IsInitSuccess () 返回 false, 所以不会采集，等看看应该怎么做
                             continue;
                         }
                         if (use_default_monitor && capture->IsPrimaryMonitor()) {
@@ -278,8 +289,8 @@ namespace tc
 
     void DDACapturePlugin::On1Second() {
         // TODO: IGNORE THIS
-        SetCaptureMonitor(capturing_monitor_name_);
-        NotifyCaptureMonitorInfo();
+        //SetCaptureMonitor(capturing_monitor_name_);
+        //NotifyCaptureMonitorInfo();
     }
 
     void DDACapturePlugin::OnNewClientIn() {
@@ -333,7 +344,7 @@ namespace tc
             return lh.left_ < rh.left_;
         });
 
-		// to do δ����0��ʾ����ʱ��
+		// to do 未测试0显示器的时候
         if (sorted_monitors_.size() <= 0) {
             return;
         }

@@ -12,6 +12,8 @@ namespace tc
         static std::shared_ptr<WinDesktopManager> Make(const std::shared_ptr<RdContext>& ctx);
         explicit WinDesktopManager(const std::shared_ptr<RdContext>& ctx);
         ~WinDesktopManager();
+        // 刷新桌面
+        void UpdateDesktop();
     public:
     private:
         std::shared_ptr<RdContext> context_ = nullptr;

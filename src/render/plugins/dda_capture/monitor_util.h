@@ -30,6 +30,8 @@ namespace tc
         long left_{};
         long right_{};
         long bottom_{};
+
+        //to do ´ýÉ¾³ý
         long virtual_top_{};
         long virtual_left_{};
         long virtual_right_{};

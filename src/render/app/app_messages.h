@@ -138,6 +138,7 @@ namespace tc
         
     };
 
+    // 当监听到显示变更的windows消息,然后分发到 dda capture plugin
     class MsgDisplayDeviceChange : public AppBaseEvent {
     public:
         MsgDisplayDeviceChange() {

@@ -9,6 +9,7 @@
 #include <QMainWindow>
 #include <map>
 #include <vector>
+#include <qlist.h>
 #include "thunder_sdk.h"
 #include "theme/QtAdvancedStylesheet.h"
 #include "client/ct_app_message.h"
@@ -62,6 +63,8 @@ namespace tc
         void SendClipboardMessage(const ClipboardMessage& msg);
         void SendSwitchMonitorMessage(const std::string& name);
         void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
+        // client->render 发送刷新桌面的消息
+        void SendUpdateDesktopMessage();
         void SwitchScaleMode(const ScaleMode& mode);
         void CalculateAspectRatio();
         void SwitchToFullWindow();
@@ -72,6 +75,7 @@ namespace tc
         void OnGetCaptureMonitorsCount(int monitors_count);
         void OnGetCaptureMonitorName(std::string monitor_name);
         void InitGameViews(const ThunderSdkParams& params);
+        void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
@@ -99,6 +103,8 @@ namespace tc
         MainProgress* main_progress_ = nullptr;
 
         int title_bar_height_ = 0; //35;
+
+        bool full_screen_ = false;
     private:
         // 扩展屏
         // to do:
@@ -106,12 +112,15 @@ namespace tc
         // 2.可能连上对端后，对端设置的显示器采集模式 就是 all，那么客户端默认 kTab 就不合理了 (已完成)
         // 3.70这台电脑,如果dda采集失败了，切换到GDI采集，研究下，GDI采集是否能单独采集某个屏幕
         // 4.game_view 产生的位置要错开(已完成)
-        // 5.现在是每秒同步一次显示器信息,导致关闭掉的扩展屏 会再次显示，要改为监听win消息的方式，有变化再通知
+        // 5.现在是每秒同步一次显示器信息,导致关闭掉的扩展屏 会再次显示，要改为监听win消息的方式，有变化再通知(已完成,但是render端还要优化)
         // 6.屏幕切换的图标数量 (已完成)
         // 7.获取任一game_view的关闭事件(已完成)
         // 8.每个game_view的标题名字(已完成)
-        // 9.切换屏幕按钮，以及分屏合并操作，要刷新桌面 
+        // 9.切换屏幕按钮，以及分屏合并操作，要刷新桌面 (已完成)
         // 10.关闭弹窗显示在 点击关闭按钮所在的屏幕上(已完成)
+        // 11.全屏动作，扩展屏未生效 (已完成)
+        // 12.关闭的时候，将widget显示到前面,尤其是在任务栏关闭(已完成)
+        // 13.点击文件传输按钮, 文件传输页面显示到前面(已完成)
         
         QString origin_title_name_;
         std::vector<GameView*> game_views_;  

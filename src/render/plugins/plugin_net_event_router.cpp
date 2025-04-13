@@ -25,6 +25,7 @@
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_data_consumer_plugin.h"
+#include "app/win/win_desktop_manager.h"
 
 namespace tc {
 
@@ -161,6 +162,10 @@ namespace tc {
                     break;
                 }
                 // file transmit end                         
+                case MessageType::kUpdateDesktop: {
+                    ProcessUpdateDesktop();
+                    break;
+                }
                 default: {
                    
                 }
@@ -362,6 +367,14 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg) {
         app_->ReqCtrlAltDelete(msg->device_id(), msg->stream_id());
+    }
+
+    void PluginNetEventRouter::ProcessUpdateDesktop() {
+        auto desk_manager = app_->GetDesktopManager();
+        if (!desk_manager) {
+            return;
+        }
+        desk_manager->UpdateDesktop();
     }
 
     void PluginNetEventRouter::SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id) {
