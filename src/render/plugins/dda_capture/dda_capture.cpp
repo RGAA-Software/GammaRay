@@ -148,7 +148,7 @@ namespace tc
                                 continue;
                             } else {
                                 init_dda_success = true;
-                                LOGI("Init DDA mode success: {}", monitor_index);
+                                LOGI("Init DDA mode success, monitor_index: {}, monitor_name: {}", monitor_index, my_monitor_info_.name_);
                                 break;
                             }
                         }
@@ -256,6 +256,11 @@ namespace tc
                     break;
                 }
             }
+
+            if (dda_init_success_callback_) {
+                dda_init_success_callback_();
+            }
+
             LOGI("DDA Init success, will start capturing.");
             Capture();
         });
