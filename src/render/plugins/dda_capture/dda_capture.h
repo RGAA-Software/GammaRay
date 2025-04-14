@@ -11,6 +11,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <functional>
 
 #include "desktop_capture.h"
 #include "tc_common_new/monitors.h"
@@ -52,6 +53,11 @@ namespace tc
         bool IsPrimaryMonitor() override;
         bool IsInitSuccess() override;
 
+        using DDAInitSuccessCallback = std::function<void()>;
+        DDAInitSuccessCallback dda_init_success_callback_ = nullptr;
+        void SetDDAInitSuccessCallback(DDAInitSuccessCallback&& cbk){
+            dda_init_success_callback_ = std::move(cbk);
+        }
     private:
         void Start();
         bool Exit();

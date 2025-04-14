@@ -307,7 +307,6 @@ namespace tc
             }
         });
 
-        // to do: Send by Renderer every 1S
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
@@ -337,7 +336,6 @@ namespace tc
                 OnGetCaptureMonitorsCount(monitors_count);
                 OnGetCaptureMonitorName(config.capturing_monitor_name());
             });
-            
         });
 
         sdk_->SetOnMonitorSwitchedCallback([=, this](const MonitorSwitched& ms) {

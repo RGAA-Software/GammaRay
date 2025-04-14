@@ -28,7 +28,7 @@ namespace tc
         virtual void RefreshScreen();
         virtual bool IsPrimaryMonitor();
         virtual bool IsInitSuccess() = 0;
-
+        virtual CaptureMonitorInfo GetMyMonitorInfo() { return my_monitor_info_; }
     private:
 
     protected:

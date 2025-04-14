@@ -49,6 +49,8 @@ namespace tc
         void RestartCapturing();
 
         void HandleDisplayDeviceChangeEvent();
+
+        bool ExistCaptureMonitor(const std::string& name);
     private:
         std::map<std::string, CaptureMonitorInfo> monitors_;
         std::map<std::string, std::shared_ptr<DesktopCapture>> captures_;

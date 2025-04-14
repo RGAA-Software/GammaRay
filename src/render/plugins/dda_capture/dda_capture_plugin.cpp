@@ -19,6 +19,8 @@ static void* GetInstance() {
 namespace tc
 {
 
+    const std::string kAllMonitorsNameSign = "all";
+
     DDACapturePlugin::DDACapturePlugin() : GrMonitorCapturePlugin() {
 
     }
@@ -164,26 +166,44 @@ namespace tc
         return !captures_.empty() && init_success_;
     }
 
+    bool DDACapturePlugin::ExistCaptureMonitor(const std::string& name) {
+        for (const auto& [dev_name, monitor_info] : monitors_) {
+            if (dev_name == name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool DDACapturePlugin::StartCapturing() {
+        if (capturing_monitor_name_ != kAllMonitorsNameSign && capturing_monitor_name_ != "") {
+            if (!ExistCaptureMonitor(capturing_monitor_name_)) {
+                capturing_monitor_name_ = "";
+            }
+        }
+
         for(const auto&[dev_name, monitor_info] : monitors_) {
             auto capture = std::make_shared<DDACapture>(this, monitor_info);
             capture->StartCapture();
+            capture->SetDDAInitSuccessCallback([=, this]() {
+                if (kAllMonitorsNameSign == capturing_monitor_name_) {
+                    capture->ResumeCapture();
+                }
+                else if("" == capturing_monitor_name_) {
+                    if (capture->IsPrimaryMonitor()) {
+                        capture->ResumeCapture();
+                    }
+                    capturing_monitor_name_ = capture->GetMyMonitorInfo().name_;
+                }
+                else if (capture->GetMyMonitorInfo().name_ == capturing_monitor_name_) {
+                    capture->ResumeCapture();
+                }
+                NotifyCaptureMonitorInfo();
+            });
             captures_.insert({dev_name, capture});
         }
-
-        //to do: 先这样循环判断是否都初始化成功，等要找更好的方法
-        for (const auto& [dev_name, capture] : captures_) {
-            while (true) {
-                if (!capture->IsInitSuccess()) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                }
-                else {
-                    break;
-                }
-            }
-        }
+        // to do 这个 init_success_ 已经不准确
         init_success_ = true;
-        SetCaptureMonitor(capturing_monitor_name_);
         return init_success_;
     }
 
@@ -225,7 +245,7 @@ namespace tc
 
         // todo: capture all monitors at same time
         if (IsWorking()) {
-            if (name == "all") {
+            if (kAllMonitorsNameSign == name) {
                 capturing_monitor_name_ = name;
                 // TODO
                 for (const auto& [monitor_name, capture]: captures_) {
@@ -249,7 +269,7 @@ namespace tc
                     }
                     else {
                         if (!capture->IsInitSuccess()) {
-                            LOGW("Capture for: {} is not valid now.", monitor_name);  // 如果StartCapturing后，接着执行SetCaptureMonitor，这时候 capture->IsInitSuccess () 返回 false, 所以不会采集，等看看应该怎么做
+                            LOGW("Capture for: {} is not valid now.", monitor_name);  // 如果StartCapturing后，接着执行SetCaptureMonitor，这时候 capture->IsInitSuccess () 返回 false
                             continue;
                         }
                         if (use_default_monitor && capture->IsPrimaryMonitor()) {
