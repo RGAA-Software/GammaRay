@@ -16,15 +16,15 @@ namespace tc
 
     }
 
-    void GrNetPlugin::PostProtoMessage(const std::string& msg) {
+    void GrNetPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
 
     }
 
-    bool GrNetPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
+    bool GrNetPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         return false;
     }
 
-    bool GrNetPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg) {
+    bool GrNetPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         return false;
     }
 

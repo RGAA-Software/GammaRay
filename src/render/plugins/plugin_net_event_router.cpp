@@ -171,6 +171,7 @@ namespace tc {
                     if (auto plugin = plugin_manager_->GetRtcPlugin(); plugin) {
                         plugin->OnMessageRaw(MsgRtcRemoteSdp {
                             .stream_id_ = msg->stream_id(),
+                            .device_id_ = msg->device_id(),
                             .sdp_ = msg->sig_offer_sdp().sdp(),
                         });
                     }
@@ -181,6 +182,7 @@ namespace tc {
                         auto sub = msg->sig_ice();
                         plugin->OnMessageRaw(MsgRtcRemoteIce {
                             .stream_id_ = msg->stream_id(),
+                            .device_id_ = msg->device_id(),
                             .ice_ = sub.ice(),
                             .mid_ = sub.mid(),
                             .sdp_mline_index_ = sub.sdp_mline_index(),

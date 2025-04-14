@@ -35,6 +35,8 @@ namespace tc
         kPluginClipboardEvent,
         kPluginRelayPausedEvent,
         kPluginRelayResumeEvent,
+        kPluginRtcAnswerSdpEvent,
+        kPluginRtcIceEvent,
     };
 
     class GrPluginBaseEvent {
@@ -217,6 +219,31 @@ namespace tc
         GrPluginRelayResumedEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginRelayResumeEvent;
         }
+    };
+
+    // rtc answer
+    class GrPluginRtcAnswerSdpEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRtcAnswerSdpEvent() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRtcAnswerSdpEvent;
+        }
+
+    public:
+        std::string stream_id_;
+        std::string sdp_;
+    };
+
+    // rtc ice
+    class GrPluginRtcIceEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRtcIceEvent() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRtcIceEvent;
+        }
+    public:
+        std::string stream_id_;
+        std::string ice_;
+        std::string mid_;
+        int sdp_mline_index_{0};
     };
 }
 

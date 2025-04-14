@@ -7,6 +7,7 @@
 #include "video_source_mock.h"
 #include "tc_common_new/log.h"
 #include "rtc_messages.h"
+#include "rtc_server.h"
 
 namespace tc
 {
@@ -35,16 +36,43 @@ namespace tc
     void RtcPlugin::OnMessageRaw(const std::any& msg) {
         if (HoldsType<MsgRtcRemoteSdp>(msg)) {
             auto m = std::any_cast<MsgRtcRemoteSdp>(msg);
-            LOGI("==> Offer sdp {} => {}", m.stream_id_, m.sdp_);
+            this->OnRemoteSdp(m);
         }
         else if (HoldsType<MsgRtcRemoteIce>(msg)) {
             auto m = std::any_cast<MsgRtcRemoteIce>(msg);
-            LOGI("==> Ice {} => {}", m.stream_id_, m.ice_);
+            this->OnRemoteIce(m);
         }
     }
 
-    void RtcPlugin::PostProtoMessage(const std::string& msg) {
+    void RtcPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
 
+    }
+
+    void RtcPlugin::OnRemoteSdp(const MsgRtcRemoteSdp& m) {
+        PostWorkTask([=, this]() {
+            auto conn_id = m.device_id_ + ":" + m.stream_id_;
+            LOGI("==>OnRemote Offer sdp {} => {}", conn_id, m.sdp_.size());
+            auto opt_rtc_server = rtc_servers_.TryGet(conn_id);
+            if (opt_rtc_server.has_value()) {
+                LOGI("Remove old one.");
+                opt_rtc_server.value()->Exit();
+                rtc_servers_.Remove(conn_id);
+            }
+
+            auto rtc_server = RtcServer::Make(this);
+            rtc_server->Start(m.stream_id_, m.sdp_);
+            rtc_servers_.Insert(conn_id, rtc_server);
+        });
+    }
+
+    void RtcPlugin::OnRemoteIce(const MsgRtcRemoteIce& m) {
+        PostWorkTask([=, this]() {
+            auto conn_id = m.device_id_ + ":" + m.stream_id_;
+            if (auto opt_rtc_server = rtc_servers_.TryGet(conn_id); opt_rtc_server.has_value()) {
+                auto rtc_server = opt_rtc_server.value();
+                rtc_server->OnRemoteIce(m.ice_, m.mid_, m.sdp_mline_index_);
+            }
+        });
     }
 
 }

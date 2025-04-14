@@ -21,8 +21,11 @@ namespace tc
     class PluginEventRouter {
     public:
         explicit PluginEventRouter(const std::shared_ptr<RdApplication>& app);
-
         void ProcessPluginEvent(const std::shared_ptr<GrPluginBaseEvent>& event);
+
+    private:
+        void SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event);
+        void SendIceToRemote(const std::shared_ptr<GrPluginBaseEvent>& event);
 
     private:
         std::shared_ptr<RdApplication> app_ = nullptr;

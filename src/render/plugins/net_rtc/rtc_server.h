@@ -14,47 +14,42 @@ namespace tc
     class PeerCallback;
     class CreateSessCallback;
     class SetSessCallback;
-    class SigManager;
-    class RtcContext;
     class DesktopCapture;
+    class RtcPlugin;
 
     class RtcServer : public std::enable_shared_from_this<RtcServer> {
     public:
 
-        static std::shared_ptr<RtcServer> Make(const std::shared_ptr<RtcContext>& ctx);
-        explicit RtcServer(const std::shared_ptr<RtcContext>& ctx);
+        static std::shared_ptr<RtcServer> Make(RtcPlugin* plugin);
+        explicit RtcServer(RtcPlugin* plugin);
 
-        bool Start();
+        bool Start(const std::string& stream_id, const std::string& offer_sdp);
         void Exit();
-
-        // callbacks
-        void OnSessionCreated(webrtc::SessionDescriptionInterface *desc);
-        void OnIceCandidate(const webrtc::IceCandidateInterface *candidate);
-        void OnIceGatheringComplete();
-        void OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver);
+        void OnRemoteIce(const std::string& ice, const std::string& mid, int sdp_mline_index);
 
     private:
         void CreatePeerConnectionFactory();
         void CreatePeerConnection();
 
+        void SendSdpToRemote(const std::string& sdp);
+        void SendIceToRemote(const std::string& ice, const std::string& mid, int sdp_mline_index);
+
     private:
+        RtcPlugin* plugin_ = nullptr;
         std::unique_ptr<rtc::Thread> network_thread_;
         std::unique_ptr<rtc::Thread> worker_thread_;
         std::unique_ptr<rtc::Thread> sig_thread_;
+        std::string stream_id_;
+        std::string offer_sdp_;
         std::string sdp_;
         std::shared_ptr<PeerCallback> peer_callback_ = nullptr;
-        rtc::scoped_refptr<SetSessCallback> set_sess_callback_ = nullptr;
-        rtc::scoped_refptr<CreateSessCallback> create_sess_callback_ = nullptr;
+        rtc::scoped_refptr<SetSessCallback> set_remote_offer_sdp_callback_ = nullptr;
+        rtc::scoped_refptr<SetSessCallback> set_local_answer_sdp_callback_ = nullptr;
+        rtc::scoped_refptr<CreateSessCallback> create_answer_callback_ = nullptr;
 
         rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_conn_ = nullptr;
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_conn_factory_;
         webrtc::PeerConnectionInterface::RTCConfiguration configuration_;
-
-        rtc::scoped_refptr<VideoTrack> video_track_;
-//        VideoTrack* video_track_ = nullptr;
-        std::shared_ptr<RtcContext> rtc_ctx_ = nullptr;
-        std::shared_ptr<DesktopCapture> desktop_capture_ = nullptr;
-        std::shared_ptr<VideoSourceMock> mock_video_source_ = nullptr;
     };
 
 }

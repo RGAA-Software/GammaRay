@@ -159,13 +159,13 @@ namespace tc
         CreateSomeMediaDeps(media_deps);
 
         peer_conn_factory_ = webrtc::CreatePeerConnectionFactory(
-                network_thread_.get(), worker_thread_.get(), sig_thread_.get(),
-                nullptr,
-                std::move(media_deps.audio_encoder_factory),
-                std::move(media_deps.audio_decoder_factory),
-                std::move(media_deps.video_encoder_factory),
-                std::move(media_deps.video_decoder_factory),
-                nullptr, nullptr);
+            network_thread_.get(), worker_thread_.get(), sig_thread_.get(),
+            nullptr,
+            std::move(media_deps.audio_encoder_factory),
+            std::move(media_deps.audio_decoder_factory),
+            std::move(media_deps.video_encoder_factory),
+            std::move(media_deps.video_decoder_factory),
+            nullptr, nullptr);
 
         if (peer_conn_factory_.get() == nullptr) {
             LOGE("Error on CreateModularPeerConnectionFactory.");
@@ -216,15 +216,41 @@ namespace tc
 
         }
 
-//        desktop_capture_ = DesktopCapture::Create(60, 0);
-//        desktop_capture_->StartCapture();
-//
-//        mock_video_source_ = std::make_shared<VideoSourceMock>();
-//
-//        video_track_ = new rtc::RefCountedObject<VideoTrack>(desktop_capture_);
-//        auto video_track = peer_conn_factory_->CreateVideoTrack(video_track_, "video");
-//        peer_conn_->AddTrack(video_track, {"stream1"});
+    }
 
+    bool RtcConnection::OnRemoteSdp(const std::string &sdp) {
+        LOGI("OnRemoteSdp, Will set remote answer sdp");
+        webrtc::SdpParseError error;
+        webrtc::SessionDescriptionInterface* session_description(webrtc::CreateSessionDescription("answer", sdp, &error));
+        peer_conn_->SetRemoteDescription(set_remote_sdp_callback_.get(), session_description);
+        already_set_answer_sdp_ = error.line.empty();
+        if (already_set_answer_sdp_) {
+            LOGI("SetRemoteAnswerSdp success, may send ices.");
+            //this->SendCachedIces();
+        } else {
+            LOGE("SetRemoteAnswerSdp failed, error line: {}, desc: {}", error.line, error.description);
+            return false;
+        }
+        return true;
+    }
+
+    bool RtcConnection::OnRemoteIce(const std::string &ice, const std::string &mid, int32_t sdp_mline_index) {
+        LOGI("OnRemoteIce, Will set remote ice: {}", ice);
+        webrtc::SdpParseError error;
+        std::unique_ptr<webrtc::IceCandidateInterface>
+                candidate(webrtc::CreateIceCandidate(mid, sdp_mline_index, ice, &error));
+        if (!error.line.empty()) {
+            LOGE("Create IceCandidate failed: {} - {}", error.line, error.description);
+            return false;
+        }
+        peer_conn_->AddIceCandidate(std::move(candidate), [](webrtc::RTCError error) {
+            if (error.ok()) {
+                LOGI("AddIceCandidate success.");
+            } else {
+                LOGE("AddIceCandidate failed: {}", error.message());
+            }
+        });
+        return false;
     }
 
     void RtcConnection::SendCachedIces() {

@@ -36,8 +36,8 @@ namespace tc
 
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
-        void PostProtoMessage(const std::string &msg) override;
-        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) override;
+        void PostProtoMessage(const std::string &msg, bool run_through = false) override;
+        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through = false) override;
         int ConnectedClientSize() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;

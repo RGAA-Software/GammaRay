@@ -16,6 +16,12 @@ using namespace nlohmann;
 namespace tc
 {
 
+    using OnCreateSdpSuccessCallback = std::function<void(webrtc::SessionDescriptionInterface*)>;
+    using OnCreateSdpFailedCallback = std::function<void(const std::string&)>;
+    using OnSetSdpSuccessCallback = std::function<void()>;
+    using OnSetSdpFailedCallback = std::function<void(const std::string&)>;
+    using OnIceCallback = std::function<void(const std::string& ice, const std::string& mid, int sdp_mline_index)>;
+
     class RtcServer;
 
     class PeerCallback : public webrtc::PeerConnectionObserver {
@@ -48,10 +54,13 @@ namespace tc
         void OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) override;
         void OnInterestingUsage(int usage_pattern) override;
 
+        //
+        void SetOnIceCallback(OnIceCallback&& cbk) {
+            ice_callback_ = cbk;
+        }
     private:
+        OnIceCallback ice_callback_;
 
-        std::shared_ptr<RtcServer> rtc_server_ = nullptr;
-        std::shared_ptr<VideoStreamReceiver> video_receiver_;
     };
 
     class CreateSessCallback : public webrtc::CreateSessionDescriptionObserver {
@@ -61,8 +70,16 @@ namespace tc
         void OnSuccess(webrtc::SessionDescriptionInterface *desc) override;
         void OnFailure(webrtc::RTCError error) override;
 
+        void SetOnCreateSdpSuccessCallback(OnCreateSdpSuccessCallback&& cbk) {
+            cbk_success_ = cbk;
+        }
+
+        void SetOnCreateSdpFailedCallback(OnCreateSdpFailedCallback&& cbk) {
+            cbk_failed_ = cbk;
+        }
     private:
-        std::shared_ptr<RtcServer> srv_server_ = nullptr;
+        OnCreateSdpSuccessCallback cbk_success_;
+        OnCreateSdpFailedCallback cbk_failed_;
     };
 
     class SetSessCallback : public webrtc::SetSessionDescriptionObserver {
@@ -72,8 +89,16 @@ namespace tc
         void OnSuccess() override;
         void OnFailure(webrtc::RTCError error) override;
 
+        void SetSdpSuccessCallback(OnSetSdpSuccessCallback&& cbk) {
+            cbk_success_ = cbk;
+        }
+
+        void SetSdpFailedCallback(OnSetSdpFailedCallback&& cbk) {
+            cbk_failed_ = cbk;
+        }
     private:
-        std::shared_ptr<RtcServer> rtc_server_ = nullptr;
+        OnSetSdpSuccessCallback cbk_success_;
+        OnSetSdpFailedCallback cbk_failed_;
 
     };
 

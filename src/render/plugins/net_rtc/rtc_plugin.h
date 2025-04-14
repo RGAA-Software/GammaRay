@@ -6,9 +6,13 @@
 #define GAMMARAY_RTC_PLUGIN_H
 
 #include "plugin_interface/gr_net_plugin.h"
+#include "rtc_messages.h"
+#include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
+
+    class RtcServer;
 
     class RtcPlugin : public GrNetPlugin {
     public:
@@ -18,7 +22,14 @@ namespace tc
         uint32_t GetVersionCode() override;
         bool OnCreate(const tc::GrPluginParam &param) override;
         void OnMessageRaw(const std::any &msg) override;
-        void PostProtoMessage(const std::string &msg) override;
+        void PostProtoMessage(const std::string &msg, bool run_through = false) override;
+
+    private:
+        void OnRemoteSdp(const MsgRtcRemoteSdp& m);
+        void OnRemoteIce(const MsgRtcRemoteIce& m);
+
+    private:
+        ConcurrentHashMap<std::string, std::shared_ptr<RtcServer>> rtc_servers_;
     };
 
 }

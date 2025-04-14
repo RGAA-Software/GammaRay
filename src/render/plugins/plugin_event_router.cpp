@@ -16,6 +16,7 @@
 #include "rd_context.h"
 #include <fstream>
 #include "rd_app.h"
+#include "tc_message.pb.h"
 
 namespace tc
 {
@@ -113,6 +114,60 @@ namespace tc
         else if (event->event_type_ == GrPluginEventType::kPluginRelayResumeEvent) {
 
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginRtcAnswerSdpEvent) {
+            this->SendAnswerSdpToRemote(event);
+        }
+        else if (event->event_type_ == GrPluginEventType::kPluginRtcIceEvent) {
+            this->SendIceToRemote(event);
+        }
+    }
+
+    void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
+        auto target_event = std::dynamic_pointer_cast<GrPluginRtcAnswerSdpEvent>(event);
+        auto stream_id = target_event->stream_id_;
+
+        tc::Message pt_msg;
+        pt_msg.set_type(MessageType::kSigAnswerSdpMessage);
+        auto sub = pt_msg.mutable_sig_answer_sdp();
+        sub->set_sdp(target_event->sdp_);
+        auto msg = pt_msg.SerializeAsString();
+
+        plugin_manager_->VisitNetPlugins([=, this](GrNetPlugin* plugin) {
+            if (plugin->GetPluginId() == kRelayPluginId) {
+                if (stream_id.empty()) {
+                    plugin->PostProtoMessage(msg, true);
+                }
+                else {
+                    plugin->PostTargetStreamProtoMessage(stream_id, msg, true);
+                }
+                LOGI("Send SDP by relay: {}", stream_id);
+            }
+        });
+    }
+
+    void PluginEventRouter::SendIceToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
+        auto target_event = std::dynamic_pointer_cast<GrPluginRtcIceEvent>(event);
+        auto stream_id = target_event->stream_id_;
+
+        tc::Message pt_msg;
+        pt_msg.set_type(MessageType::kSigIceMessage);
+        auto sub = pt_msg.mutable_sig_ice();
+        sub->set_ice(target_event->ice_);
+        sub->set_mid(target_event->mid_);
+        sub->set_sdp_mline_index(target_event->sdp_mline_index_);
+        auto msg = pt_msg.SerializeAsString();
+
+        plugin_manager_->VisitNetPlugins([=, this](GrNetPlugin* plugin) {
+            if (plugin->GetPluginId() == kRelayPluginId) {
+                if (stream_id.empty()) {
+                    plugin->PostProtoMessage(msg, true);
+                }
+                else {
+                    plugin->PostTargetStreamProtoMessage(stream_id, msg, true);
+                }
+                LOGI("Send ICE by relay: {}", target_event->ice_);
+            }
+        });
     }
 
 }

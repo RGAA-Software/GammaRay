@@ -59,12 +59,12 @@ namespace tc
             }
 
             rtc_client_->SetOnLocalSdpSetCallback([=, this](const std::string& sdp) {
-                // TODO: send to remote.
+                LOGI("Will send sdp to remote, sdp size: {}", sdp.size());
                 this->SendSdpToRemote(sdp);
             });
 
             rtc_client_->SetOnLocalIceCallback([=, this](const std::string& ice, const std::string& mid, int sdp_mline_index) {
-                // TODO: send to remote
+                LOGI("Will send ice to remote: {}", ice);
                 this->SendIceToRemote(ice, mid, sdp_mline_index);
             });
 

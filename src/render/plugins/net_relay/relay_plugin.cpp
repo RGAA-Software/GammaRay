@@ -193,22 +193,22 @@ namespace tc
         return true;
     }
 
-    void RelayPlugin::PostProtoMessage(const std::string& msg) {
-        if (IsWorking() && !paused_stream) {
+    void RelayPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
+        if ((IsWorking() && !paused_stream) || run_through) {
             relay_media_sdk_->RelayProtoMessage(msg);
         }
     }
 
-    bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
+    bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         // todo: stream id --> device id
-        if (IsWorking() && !paused_stream) {
+        if ((IsWorking() && !paused_stream) || run_through) {
             relay_media_sdk_->RelayProtoMessage(stream_id, msg);
         }
         return true;
     }
 
-    bool RelayPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg) {
-        if (IsWorking() && relay_ft_sdk_ && !paused_stream) {
+    bool RelayPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        if ((IsWorking() && relay_ft_sdk_ && !paused_stream) || run_through) {
             relay_ft_sdk_->RelayProtoMessage(stream_id, msg);
         }
         return true;

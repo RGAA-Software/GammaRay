@@ -32,6 +32,8 @@ namespace tc
     public:
         RtcConnection();
         bool Init() override;
+        bool OnRemoteSdp(const std::string &sdp) override;
+        bool OnRemoteIce(const std::string &ice, const std::string &mid, int32_t sdp_mline_index) override;
 
     private:
         void CreatePeerConnection();

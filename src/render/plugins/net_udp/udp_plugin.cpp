@@ -43,7 +43,7 @@ namespace tc
         return true;
     }
 
-    void UdpPlugin::PostProtoMessage(const std::string& msg) {
+    void UdpPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
         sessions_.VisitAll([=, this](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
             us->sess_->async_send(msg, [=](std::size_t bytes_sent) {
                 if (bytes_sent != msg.size()) {
@@ -53,7 +53,7 @@ namespace tc
         });
     }
 
-    bool UdpPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
+    bool UdpPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         bool found_target_stream = false;
         sessions_.VisitAll([=, &found_target_stream](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
             if (us->stream_id_ == stream_id) {

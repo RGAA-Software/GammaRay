@@ -65,20 +65,20 @@ namespace tc
         return ws_server_ && ws_server_->GetConnectionPeerCount() > 0;
     }
 
-    void WsPlugin::PostProtoMessage(const std::string& msg) {
+    void WsPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
         if (IsWorking()) {
             ws_server_->PostNetMessage(msg);
         }
     }
 
-    bool WsPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg) {
+    bool WsPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         if (!IsWorking()) {
             return false;
         }
         return ws_server_->PostTargetStreamMessage(stream_id, msg);
     }
 
-    bool WsPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg) {
+    bool WsPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         if (!IsWorking()) {
             return false;
         }

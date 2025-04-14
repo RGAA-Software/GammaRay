@@ -6,28 +6,73 @@
 #include "peer_callback.h"
 #include "desktop_capture.h"
 #include "desktop_capture_source.h"
+#include "rtc_plugin.h"
+#include "plugin_interface/gr_plugin_events.h"
 
 using namespace webrtc;
 
 namespace tc
 {
 
-    std::shared_ptr<RtcServer> RtcServer::Make(const std::shared_ptr<RtcContext>& ctx) {
-        return std::make_shared<RtcServer>(ctx);
+    std::shared_ptr<RtcServer> RtcServer::Make(RtcPlugin* plugin) {
+        return std::make_shared<RtcServer>(plugin);
     }
 
-    RtcServer::RtcServer(const std::shared_ptr<RtcContext>& ctx) {
-        rtc_ctx_ = ctx;
+    RtcServer::RtcServer(RtcPlugin* plugin) {
+        plugin_ = plugin;
     }
 
-    bool RtcServer::Start() {
+    bool RtcServer::Start(const std::string& stream_id, const std::string& offer_sdp) {
+        this->stream_id_ = stream_id;
+        this->offer_sdp_ = offer_sdp;
         webrtc::field_trial::InitFieldTrialsFromString("");
         rtc::LogMessage::LogToDebug(rtc::LS_ERROR);
         rtc::InitializeSSL();
 
+        set_remote_offer_sdp_callback_ = SetSessCallback::Make(shared_from_this());
+        set_local_answer_sdp_callback_ = SetSessCallback::Make(shared_from_this());
+        create_answer_callback_ = CreateSessCallback::Make(shared_from_this());
         peer_callback_ = PeerCallback::Make(shared_from_this());
-        set_sess_callback_ = SetSessCallback::Make(shared_from_this());
-        create_sess_callback_ = CreateSessCallback::Make(shared_from_this());
+
+        // set remote offer sdp
+        set_remote_offer_sdp_callback_->SetSdpSuccessCallback([=]() {
+            LOGI("Set remote sdp success");
+        });
+
+        set_remote_offer_sdp_callback_->SetSdpFailedCallback([=](const std::string& m) {
+            LOGE("Set remote sdp failed: {}", m);
+        });
+
+        // set local answer sdp
+        set_local_answer_sdp_callback_->SetSdpSuccessCallback([=]() {
+            LOGI("Set local answer sdp success.");
+        });
+
+        set_local_answer_sdp_callback_->SetSdpFailedCallback([=, this](const std::string& m) {
+            LOGI("Set local answer sdp failed:{}", m);
+        });
+
+        // create answer sdp callback
+        create_answer_callback_->SetOnCreateSdpSuccessCallback([=, this](webrtc::SessionDescriptionInterface* desc) {
+            LOGI("Create answer sdp success, will set local sdp.");
+            peer_conn_->SetLocalDescription(this->set_local_answer_sdp_callback_.get(), desc);
+            std::string sdp;
+            desc->ToString(&sdp);
+            this->sdp_ = sdp;
+            // send to remote
+            this->SendSdpToRemote(sdp);
+        });
+
+        create_answer_callback_->SetOnCreateSdpFailedCallback([=, this](const std::string& m) {
+            LOGE("Create answer sdp failed: {}", m);
+        });
+
+        // peer connection
+        peer_callback_->SetOnIceCallback([=, this](const std::string& ice, const std::string& mid, int sdp_mline_index) {
+            LOGI("ICE: {}", ice);
+            this->SendIceToRemote(ice, mid, sdp_mline_index);
+        });
+
         CreatePeerConnectionFactory();
         CreatePeerConnection();
         return true;
@@ -58,10 +103,10 @@ namespace tc
 
         {
             auto stun = webrtc::PeerConnectionInterface::IceServer();
-            stun.uri = "stun:syxmsg.xyz:3478";
+            stun.uri = "stun:39.91.109.105:60498";
             configuration_.servers.push_back(stun);
         }
-        {
+        if (0) {
             auto turn = webrtc::PeerConnectionInterface::IceServer();
             turn.tls_cert_policy = webrtc::PeerConnectionInterface::TlsCertPolicy::kTlsCertPolicyInsecureNoCheck;
             turn.uri = "turn:syxmsg.xyz:3478";
@@ -69,31 +114,6 @@ namespace tc
             turn.password = "123456";
             configuration_.servers.push_back(turn);
         }
-
-        {
-            auto turn = webrtc::PeerConnectionInterface::IceServer();
-            turn.tls_cert_policy = webrtc::PeerConnectionInterface::TlsCertPolicy::kTlsCertPolicyInsecureNoCheck;
-            turn.uri = "turn:syxmsg.xyz:3478?transport=tcp";
-            turn.username = "test";
-            turn.password = "123456";
-            configuration_.servers.push_back(turn);
-        }
-        {
-            auto turn = webrtc::PeerConnectionInterface::IceServer();
-            turn.uri = "turn:syxmsg.xyz:3478?transport=udp";
-            turn.username = "test";
-            turn.password = "123456";
-            configuration_.servers.push_back(turn);
-        }
-        {
-            auto turn = webrtc::PeerConnectionInterface::IceServer();
-            turn.tls_cert_policy = webrtc::PeerConnectionInterface::TlsCertPolicy::kTlsCertPolicyInsecureNoCheck;
-            turn.uri = "turn:syxmsg.xyz:5349?transport=tcp";
-            turn.username = "test";
-            turn.password = "123456";
-            configuration_.servers.push_back(turn);
-        }
-
         network_thread_ = rtc::Thread::CreateWithSocketServer();
         network_thread_->Start();
         worker_thread_ = rtc::Thread::Create();
@@ -106,31 +126,30 @@ namespace tc
         CreateSomeMediaDeps(media_deps);
 
         peer_conn_factory_ = webrtc::CreatePeerConnectionFactory(
-                network_thread_.get(), worker_thread_.get(), sig_thread_.get(),
-                nullptr,
-                std::move(media_deps.audio_encoder_factory),
-                std::move(media_deps.audio_decoder_factory),
-                std::move(media_deps.video_encoder_factory),
-                std::move(media_deps.video_decoder_factory),
-                nullptr, nullptr);
+            network_thread_.get(), worker_thread_.get(), sig_thread_.get(),
+            nullptr,
+            std::move(media_deps.audio_encoder_factory),
+            std::move(media_deps.audio_decoder_factory),
+            std::move(media_deps.video_encoder_factory),
+            std::move(media_deps.video_decoder_factory),
+            nullptr, nullptr);
 
         if (peer_conn_factory_.get() == nullptr) {
-            std::cout << ":" << std::this_thread::get_id() << ":" << "Error on CreateModularPeerConnectionFactory." << std::endl;
-            exit(EXIT_FAILURE);
+            LOGE("Error on CreateModularPeerConnectionFactory.");
+            return;
         }
-        std::cout << "after init ...." << std::endl;
+        LOGI("CreatePeerConnectionFactory success.");
     }
 
     void RtcServer::CreatePeerConnection() {
-        configuration_.port_allocator_config.min_port = 30000;
-        configuration_.port_allocator_config.max_port = 30200;
+        configuration_.port_allocator_config.min_port = 60430;
+        configuration_.port_allocator_config.max_port = 60490;
         auto result = peer_conn_factory_->
                 CreatePeerConnectionOrError(configuration_, webrtc::PeerConnectionDependencies(peer_callback_.get()));
         if (!result.ok()) {
             std::cerr << "create peer connection failed: " << result.error().message() << std::endl;
             return;
         }
-        std::cout << "after create peer connection" << std::endl;
         auto peer_conn = result.value();
 
         if (peer_conn.get() == nullptr) {
@@ -139,54 +158,56 @@ namespace tc
             exit(EXIT_FAILURE);
         }
         this->peer_conn_ = peer_conn;
-#if 0
-        auto options = webrtc::PeerConnectionInterface::RTCOfferAnswerOptions();
+
+        // set remote sdp
+        LOGI("Will set remote offer sdp.");
+        webrtc::SdpParseError error;
+        webrtc::SessionDescriptionInterface* session_description(webrtc::CreateSessionDescription("offer", offer_sdp_, &error));
+        peer_conn_->SetRemoteDescription(this->set_remote_offer_sdp_callback_.get(), session_description);
+        if (!error.line.empty()) {
+            LOGE("OnOfferSdpCallback, SetRemoteDescription error: {}, {}", error.line, error.description);
+            return;
+        }
+
+        LOGI("Will create answer sdp.");
+        webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
         options.offer_to_receive_audio = true;
         options.offer_to_receive_video = true;
-        auto create_session_observer = this->peer_callback_.get();
-        peer_conn->CreateOffer(create_session_observer, options);
+        peer_conn_->CreateAnswer(this->create_answer_callback_.get(), options);
 
-        std::string typeStr = "offer";
-        absl::optional<webrtc::SdpType> type_maybe = webrtc::SdpTypeFromString(typeStr);
-        if (!type_maybe) {
+    }
 
+    void RtcServer::OnRemoteIce(const std::string& ice, const std::string& mid, int sdp_mline_index) {
+        LOGI("OnRemoteIce: {}", ice);
+        webrtc::SdpParseError error;
+        std::unique_ptr<webrtc::IceCandidateInterface> candidate(webrtc::CreateIceCandidate(mid, sdp_mline_index, ice, &error));
+        if (!error.line.empty()) {
+            LOGE("Create IceCandidate failed: {} - {}", error.line, error.description);
+            return;
         }
-#endif
-
-        desktop_capture_ = DesktopCapture::Create(60, 0);
-        desktop_capture_->StartCapture();
-
-        mock_video_source_ = std::make_shared<VideoSourceMock>();
-
-        video_track_ = new rtc::RefCountedObject<VideoTrack>(desktop_capture_);
-        auto video_track = peer_conn_factory_->CreateVideoTrack(video_track_, "video");
-        peer_conn_->AddTrack(video_track, {"stream1"});
-
+        peer_conn_->AddIceCandidate(std::move(candidate), [](webrtc::RTCError error) {
+            if (error.ok()) {
+                LOGI("AddIceCandidate success.");
+            } else {
+                LOGE("AddIceCandidate failed: {}", error.message());
+            }
+        });
     }
 
-    void RtcServer::OnSessionCreated(webrtc::SessionDescriptionInterface *desc) {
-        peer_conn_->SetLocalDescription(this->set_sess_callback_.get(), desc);
-        std::string sdp;
-        desc->ToString(&sdp);
-        this->sdp_ = sdp;
-
+    void RtcServer::SendSdpToRemote(const std::string& sdp) {
+        auto event = std::make_shared<GrPluginRtcAnswerSdpEvent>();
+        event->stream_id_ = stream_id_;
+        event->sdp_ = sdp;
+        plugin_->CallbackEvent(event);
     }
 
-    void RtcServer::OnIceCandidate(const webrtc::IceCandidateInterface *candidate) {
-        std::string ice_candidate;
-        candidate->ToString(&ice_candidate);
-        std::string ice_sdp_mid = candidate->sdp_mid();
-        int ice_sdp_mline_idx = candidate->sdp_mline_index();
-
-
-    }
-
-    void RtcServer::OnIceGatheringComplete() {
-
-    }
-
-    void RtcServer::OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) {
-
+    void RtcServer::SendIceToRemote(const std::string& ice, const std::string& mid, int sdp_mline_index) {
+        auto event = std::make_shared<GrPluginRtcIceEvent>();
+        event->stream_id_ = stream_id_;
+        event->ice_ = ice;
+        event->mid_;
+        event->sdp_mline_index_ = sdp_mline_index;
+        plugin_->CallbackEvent(event);
     }
 
     void RtcServer::Exit() {

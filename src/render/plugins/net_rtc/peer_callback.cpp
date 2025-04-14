@@ -16,8 +16,6 @@ namespace tc
     }
 
     PeerCallback::PeerCallback(const std::shared_ptr<RtcServer>& srv) {
-        rtc_server_ = srv;
-        video_receiver_ = std::make_shared<VideoStreamReceiver>();
     }
 
     void PeerCallback::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
@@ -37,7 +35,7 @@ namespace tc
     }
 
     void PeerCallback::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) {
-
+        LOGI("OnDataChannel...");
     }
 
     void PeerCallback::OnRenegotiationNeeded() {
@@ -70,14 +68,20 @@ namespace tc
         std::cout << std::this_thread::get_id() << ":"
                   << "PeerCallback::IceGatheringChange(" << new_state << ")" << std::endl;
         if (new_state == webrtc::PeerConnectionInterface::IceGatheringState::kIceGatheringComplete) {
-            rtc_server_->OnIceGatheringComplete();
+            //rtc_server_->OnIceGatheringComplete();
         }
     }
 
     void PeerCallback::OnIceCandidate(const webrtc::IceCandidateInterface *candidate) {
-        std::cout << ":" << std::this_thread::get_id() << ":"
-                  << "PeerCallback::IceCandidate" << std::endl;
-        rtc_server_->OnIceCandidate(candidate);
+        LOGI("PeerCallback::IceCandidate");
+        //rtc_server_->OnIceCandidate(candidate);
+        if (ice_callback_) {
+            std::string ice;
+            candidate->ToString(&ice);
+            std::string mid = candidate->sdp_mid();
+            int sdp_mline_idx = candidate->sdp_mline_index();
+            ice_callback_(ice, mid, sdp_mline_idx);
+        }
     }
 
     void PeerCallback::OnIceCandidateError(const std::string &address, int port, const std::string &url,
@@ -100,18 +104,18 @@ namespace tc
     void PeerCallback::OnAddTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
                                           const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams) {
         PeerConnectionObserver::OnAddTrack(receiver, streams);
-        std::cout << "OnAddTrack..." << std::endl;
-        auto track = receiver->track().get();
-        std::cout<<"[info] on add track,kind:"<<track->kind()<<std::endl;
-        if(track->kind() == "video" && video_receiver_) {
-            auto cast_track = static_cast<webrtc::VideoTrackInterface*>(track);
-            cast_track->AddOrUpdateSink(video_receiver_.get(), rtc::VideoSinkWants());
-        }
+//        std::cout << "OnAddTrack..." << std::endl;
+//        auto track = receiver->track().get();
+//        std::cout<<"[info] on add track,kind:"<<track->kind()<<std::endl;
+//        if(track->kind() == "video" && video_receiver_) {
+//            auto cast_track = static_cast<webrtc::VideoTrackInterface*>(track);
+//            cast_track->AddOrUpdateSink(video_receiver_.get(), rtc::VideoSinkWants());
+//        }
     }
 
     void PeerCallback::OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) {
         PeerConnectionObserver::OnTrack(transceiver);
-        rtc_server_->OnTrack(transceiver);
+        //rtc_server_->OnTrack(transceiver);
     }
 
     void PeerCallback::OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) {
@@ -129,16 +133,19 @@ namespace tc
     }
 
     CreateSessCallback::CreateSessCallback(const std::shared_ptr<RtcServer>& srv) {
-        this->srv_server_ = srv;
+        //this->srv_server_ = srv;
     }
 
     void CreateSessCallback::OnSuccess(webrtc::SessionDescriptionInterface *desc) {
-        std::cout << "@@ CreateSessCallback::OnSuccess" << std::endl;
-        this->srv_server_->OnSessionCreated(desc);
+        if (cbk_success_) {
+            cbk_success_(desc);
+        }
     }
 
     void CreateSessCallback::OnFailure(webrtc::RTCError error) {
-        std::cout << "@@ CreateSessCallback::OnFailure" << error.message() << std::endl;
+        if (cbk_failed_) {
+            cbk_failed_(error.message());
+        }
     }
 
     ///
@@ -148,15 +155,19 @@ namespace tc
     }
 
     SetSessCallback::SetSessCallback(const std::shared_ptr<RtcServer>& srv) {
-        this->rtc_server_ = srv;
+        //this->rtc_server_ = srv;
     }
 
     void SetSessCallback::OnSuccess() {
-        std::cout << "@@ SetSessCallback::OnSuccess" << std::endl;
+        if (cbk_success_) {
+            cbk_success_();
+        }
     }
 
     void SetSessCallback::OnFailure(webrtc::RTCError error) {
-        std::cout << "@@ SetSessCallback::OnFailure" << error.message() << std::endl;
+        if (cbk_failed_) {
+            cbk_failed_(error.message());
+        }
     }
 
 }
