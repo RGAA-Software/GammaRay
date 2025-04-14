@@ -33,7 +33,7 @@ namespace tc
     }
 
     void PeerCallback::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) {
-
+        LOGI("OnDataChannel...");
     }
 
     void PeerCallback::OnRenegotiationNeeded() {
@@ -70,6 +70,13 @@ namespace tc
     void PeerCallback::OnIceCandidate(const webrtc::IceCandidateInterface *candidate) {
         LOGI("PeerCallback::IceCandidate");
         //rtc_server_->OnIceCandidate(candidate);
+        if (ice_callback_) {
+            std::string ice;
+            candidate->ToString(&ice);
+            std::string mid = candidate->sdp_mid();
+            int sdp_mline_idx = candidate->sdp_mline_index();
+            ice_callback_(ice, mid, sdp_mline_idx);
+        }
     }
 
     void PeerCallback::OnIceCandidateError(const std::string &address, int port, const std::string &url,
@@ -114,41 +121,50 @@ namespace tc
         PeerConnectionObserver::OnInterestingUsage(usage_pattern);
     }
 
-    ///
+    ///CreateSessCallback
     rtc::scoped_refptr<CreateSessCallback> CreateSessCallback::Make(RtcConnection* srv) {
         auto r =  new rtc::RefCountedObject<CreateSessCallback>(srv);
         return rtc::scoped_refptr<rtc::RefCountedObject<CreateSessCallback>>(r);
     }
 
     CreateSessCallback::CreateSessCallback(RtcConnection* srv) {
-//        this->srv_server_ = srv;
+
     }
 
     void CreateSessCallback::OnSuccess(webrtc::SessionDescriptionInterface *desc) {
-        LOGI("@@ CreateSessCallback::OnSuccess");
-//        this->srv_server_->OnSessionCreated(desc);
+        if (cbk_success_) {
+            cbk_success_(desc);
+        }
     }
 
     void CreateSessCallback::OnFailure(webrtc::RTCError error) {
-        LOGE("@@ CreateSessCallback::OnFailure: {}", error.message());
+        if (cbk_failed_) {
+            cbk_failed_(error.message());
+        }
     }
 
-    ///
+    ///SetSessCallback
     rtc::scoped_refptr<SetSessCallback> SetSessCallback::Make(RtcConnection* srv) {
         auto c = new rtc::RefCountedObject<SetSessCallback>(srv);
         return rtc::scoped_refptr<rtc::RefCountedObject<SetSessCallback>>(c);
     }
 
     SetSessCallback::SetSessCallback(RtcConnection* srv) {
-//        this->rtc_server_ = srv;
+
     }
 
     void SetSessCallback::OnSuccess() {
         LOGI("@@ SetSessCallback::OnSuccess");
+        if (cbk_success_) {
+            cbk_success_();
+        }
     }
 
     void SetSessCallback::OnFailure(webrtc::RTCError error) {
         LOGE("@@ SetSessCallback::OnFailure: {}", error.message());
+        if (cbk_failed_) {
+            cbk_failed_(error.message());
+        }
     }
 
 }

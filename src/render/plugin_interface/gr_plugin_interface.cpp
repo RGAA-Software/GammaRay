@@ -239,6 +239,14 @@ namespace tc
         }
     }
 
+    void GrPluginInterface::OnMessage(const std::shared_ptr<Message>& msg) {
+
+    }
+
+    void GrPluginInterface::OnMessageRaw(const std::any& msg) {
+
+    }
+
     std::map<std::string, GrNetPlugin*> GrPluginInterface::GetNetPlugins() {
         return net_plugins_;
     }

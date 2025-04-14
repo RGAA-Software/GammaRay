@@ -5,7 +5,7 @@
 #ifndef GAMMARAY_CLIPBOARD_PLUGIN_H
 #define GAMMARAY_CLIPBOARD_PLUGIN_H
 
-#include "plugin_interface/gr_data_consumer_plugin.h"
+#include "plugin_interface/gr_plugin_interface.h"
 
 namespace tc
 {
@@ -14,7 +14,7 @@ namespace tc
     class ClipboardManager;
     class CpVirtualFile;
 
-    class ClipboardPlugin : public GrDataConsumerPlugin {
+    class ClipboardPlugin : public GrPluginInterface {
     public:
         std::string GetPluginId() override;
         std::string GetPluginName() override;
@@ -25,7 +25,6 @@ namespace tc
         bool OnCreate(const tc::GrPluginParam& param) override;
         bool OnDestroy() override;
 
-        void OnMessage(const std::string &msg) override;
         void OnMessage(const std::shared_ptr<Message> &msg) override;
         void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override;
 

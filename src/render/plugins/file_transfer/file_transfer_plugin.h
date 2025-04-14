@@ -5,7 +5,7 @@
 #ifndef GAMMARAY_RTC_PLUGIN_H
 #define GAMMARAY_RTC_PLUGIN_H
 #include <memory>
-#include "plugin_interface/gr_data_consumer_plugin.h"
+#include "plugin_interface/gr_plugin_interface.h"
 
 namespace tc
 {
@@ -13,16 +13,14 @@ namespace tc
     class Message;
     class FileTransmitMsgInterface;
 
-    class FileTransferPlugin : public GrDataConsumerPlugin {
+    class FileTransferPlugin : public GrPluginInterface {
     public:
         std::string GetPluginId() override;
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
 
-        virtual bool OnCreate(const GrPluginParam& param) override;
-
-        void OnMessage(const std::string& msg) override;
+        bool OnCreate(const GrPluginParam& param) override;
         void OnMessage(const std::shared_ptr<tc::Message>& msg) override;
 
     private:

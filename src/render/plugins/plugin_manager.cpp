@@ -12,7 +12,6 @@
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
-#include "plugin_interface/gr_data_consumer_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_event_router.h"
 #include "plugin_ids.h"
@@ -221,10 +220,10 @@ namespace tc
         return nullptr;
     }
 
-    GrDataConsumerPlugin* PluginManager::GetFileTransferPlugin() {
+    GrPluginInterface* PluginManager::GetFileTransferPlugin() {
         auto plugin = GetPluginById(kNetFileTransferPluginId);
         if (plugin) {
-            return (GrDataConsumerPlugin*)plugin;
+            return (GrPluginInterface*)plugin;
         }
         return nullptr;
     }
@@ -237,10 +236,18 @@ namespace tc
         return nullptr;
     }
 
-    GrDataConsumerPlugin* PluginManager::GetClipboardPlugin() {
+    GrPluginInterface* PluginManager::GetClipboardPlugin() {
         auto plugin = GetPluginById(kClipboardPluginId);
         if (plugin) {
-            return (GrDataConsumerPlugin*)plugin;
+            return (GrPluginInterface*)plugin;
+        }
+        return nullptr;
+    }
+
+    GrPluginInterface* PluginManager::GetRtcPlugin() {
+        auto plugin = GetPluginById(kNetRtcPluginId);
+        if (plugin) {
+            return plugin;
         }
         return nullptr;
     }

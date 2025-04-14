@@ -24,8 +24,8 @@
 #include "plugin_manager.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
-#include "plugin_interface/gr_data_consumer_plugin.h"
 #include "app/win/win_desktop_manager.h"
+#include "plugins/net_rtc/rtc_messages.h"
 
 namespace tc {
 
@@ -155,15 +155,37 @@ namespace tc {
                     }
                     break;
                 }
+                // file transmit end
                 case MessageType::kClipboardRespBuffer: {
                     if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
                         plugin->OnMessage(msg);
                     }
                     break;
                 }
-                // file transmit end                         
                 case MessageType::kUpdateDesktop: {
                     ProcessUpdateDesktop();
+                    break;
+                }
+                // offer sdp / ice
+                case MessageType::kSigOfferSdpMessage: {
+                    if (auto plugin = plugin_manager_->GetRtcPlugin(); plugin) {
+                        plugin->OnMessageRaw(MsgRtcRemoteSdp {
+                            .stream_id_ = msg->stream_id(),
+                            .sdp_ = msg->sig_offer_sdp().sdp(),
+                        });
+                    }
+                    break;
+                }
+                case MessageType::kSigIceMessage: {
+                    if (auto plugin = plugin_manager_->GetRtcPlugin(); plugin) {
+                        auto sub = msg->sig_ice();
+                        plugin->OnMessageRaw(MsgRtcRemoteIce {
+                            .stream_id_ = msg->stream_id(),
+                            .ice_ = sub.ice(),
+                            .mid_ = sub.mid(),
+                            .sdp_mline_index_ = sub.sdp_mline_index(),
+                        });
+                    }
                     break;
                 }
                 default: {

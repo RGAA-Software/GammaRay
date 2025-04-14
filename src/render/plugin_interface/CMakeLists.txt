@@ -19,7 +19,6 @@ set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_frame_processor_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_data_provider_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_audio_encoder_plugin.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gr_data_consumer_plugin.cpp
 )
 
 add_library(${PROJECT_NAME} ${PLUGIN_SRCS})

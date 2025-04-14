@@ -6,7 +6,6 @@
 #include "rd_context.h"
 #include "plugins/plugin_manager.h"
 #include "render/app/app_messages.h"
-#include "plugin_interface/gr_data_consumer_plugin.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc {

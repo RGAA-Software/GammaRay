@@ -8,6 +8,7 @@
 #include <memory>
 #include <QLibrary>
 #include <QApplication>
+#include "sdk_messages.h"
 
 namespace tc
 {
@@ -18,15 +19,23 @@ namespace tc
     class Message;
     class MessageListener;
     class Settings;
+    class ThunderSdk;
 
     class CtRtcManager {
     public:
-        explicit CtRtcManager(const std::shared_ptr<ClientContext>& ctx);
+        explicit CtRtcManager(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk);
 
         void Init();
 
     private:
         void LoadRtcLibrary();
+        void OnRemoteSdp(const SdkMsgRemoteAnswerSdp& m);
+        void OnRemoteIce(const SdkMsgRemoteIce& m);
+
+        void SendSdpToRemote(const std::string& sdp);
+        void SendIceToRemote(const std::string& ice, const std::string& mid, int sdp_mline_index);
+
+        void RunInRtcThread(std::function<void()>&&);
 
     private:
         Settings* settings_ = nullptr;
@@ -35,6 +44,7 @@ namespace tc
         QLibrary* rtc_lib_ = nullptr;
         RtcClientInterface* rtc_client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<ThunderSdk> sdk_ = nullptr;
     };
 
 }

@@ -135,12 +135,12 @@ namespace tc
         // message listener
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
 
-        // make rtc manager
-        rtc_mgr_ = std::make_shared<CtRtcManager>(context_);
-
         // sdk
         RegisterSdkMsgCallbacks();
         sdk_->Start();
+
+        // make rtc manager
+        rtc_mgr_ = std::make_shared<CtRtcManager>(context_, sdk_);
 
         msg_listener_->Listen<ExitAppMessage>([=, this](const ExitAppMessage& msg) {
             context_->PostUITask([=, this]() {

@@ -16,17 +16,14 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
+        bool OnCreate(const tc::GrPluginParam &param) override;
+        void OnMessageRaw(const std::any &msg) override;
         void PostProtoMessage(const std::string &msg) override;
     };
 
 }
 
 extern "C" __declspec(dllexport) void* GetInstance();
-
-void* GetInstance() {
-    static tc::RtcPlugin plugin;
-    return (void*)&plugin;
-}
 
 
 #endif //GAMMARAY_UDP_PLUGIN_H

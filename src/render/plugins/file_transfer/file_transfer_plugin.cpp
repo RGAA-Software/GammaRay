@@ -32,10 +32,6 @@ namespace tc
         return 102;
     }
 
-    void FileTransferPlugin::OnMessage(const std::string& msg) {
-
-    }
-
     void FileTransferPlugin::OnMessage(const std::shared_ptr<tc::Message>& msg) {
         if (!file_trans_msg_interface_) {
             return;
@@ -44,7 +40,7 @@ namespace tc
     }
 
     bool FileTransferPlugin::OnCreate(const GrPluginParam& param) {
-        if (!GrDataConsumerPlugin::OnCreate(param)) {
+        if (!GrPluginInterface::OnCreate(param)) {
             return false;
         }
         file_trans_msg_interface_ = FileTransmitMsgInterface::Make(this);

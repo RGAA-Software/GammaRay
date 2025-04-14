@@ -13,7 +13,7 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 #        PRIVATE
 #        $<$<CXX_COMPILER_ID:MSVC>:/bigobj>
 #        $<$<CXX_COMPILER_ID:GNU>:-Wa,-mbig-obj>)
-
+include_directories()
 set(WEBRTC_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc)
 include_directories(${WEBRTC_ROOT}/)
 include_directories(${WEBRTC_ROOT}/include)
@@ -34,7 +34,7 @@ set(PLUGIN_SRCS
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})
 #add_library(${PROJECT_NAME} ${PLUGIN_SRCS})
-target_link_libraries(${PROJECT_NAME} PUBLIC tc_common_new tc_net_plugin
+target_link_libraries(${PROJECT_NAME} PUBLIC tc_common_new tc_message tc_net_plugin
         webrtc.lib
         Winmm
         ws2_32

@@ -55,10 +55,6 @@ namespace tc
         return true;
     }
 
-    void ClipboardPlugin::OnMessage(const std::string &msg) {
-
-    }
-
     void ClipboardPlugin::OnMessage(const std::shared_ptr<Message>& msg) {
         if (msg->type() == MessageType::kClipboardInfo) {
             if (msg->clipboard_info().type() == ClipboardType::kClipboardText && clipboard_mgr_) {

@@ -26,7 +26,6 @@ namespace tc
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
-    class GrDataConsumerPlugin;
     class RdSettings;
 
     class PluginManager {
@@ -48,8 +47,9 @@ namespace tc
         GrDataProviderPlugin* GetMockVideoStreamPlugin();
         GrDataProviderPlugin* GetAudioCapturePlugin();
         GrAudioEncoderPlugin* GetAudioEncoderPlugin();
-        GrDataConsumerPlugin* GetFileTransferPlugin();
-        GrDataConsumerPlugin* GetClipboardPlugin();
+        GrPluginInterface* GetFileTransferPlugin();
+        GrPluginInterface* GetClipboardPlugin();
+        GrPluginInterface* GetRtcPlugin();
         GrNetPlugin* GetUdpPlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();

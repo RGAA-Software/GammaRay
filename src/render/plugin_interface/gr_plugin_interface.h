@@ -30,6 +30,7 @@ namespace tc
     class GrPluginBaseEvent;
     class GrPluginContext;
     class GrNetPlugin;
+    class Message;
 
     // param
     class GrPluginParam {
@@ -126,6 +127,11 @@ namespace tc
         // via file transfer stream
         void PostToTargetFileTransferMessage(const std::string& stream_id, const std::string& msg);
 
+        // messages from remote
+        virtual void OnMessage(const std::shared_ptr<Message>& msg);
+        // msg: Parsed messages
+        virtual void OnMessageRaw(const std::any& msg);
+
         std::map<std::string, GrNetPlugin*> GetNetPlugins();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
@@ -148,6 +154,12 @@ namespace tc
             }
             return T{};
         }
+
+        template<typename T>
+        bool HoldsType(const std::any& a) {
+            return a.type() == typeid(T);
+        }
+
         std::string GetConfigStringParam(const std::string& k) { return GetConfigParam<std::string>(k); }
         int64_t GetConfigIntParam(const std::string& k) { return GetConfigParam<int64_t>(k); }
         bool GetConfigBoolParam(const std::string& k) {return GetConfigParam<bool>(k); }
