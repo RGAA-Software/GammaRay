@@ -8,6 +8,7 @@
 #include "desktop_capture_source.h"
 #include "rtc_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
+#include "rtc_data_channel.h"
 
 using namespace webrtc;
 
@@ -20,6 +21,10 @@ namespace tc
 
     RtcServer::RtcServer(RtcPlugin* plugin) {
         plugin_ = plugin;
+    }
+
+    RtcPlugin* RtcServer::GetPlugin() {
+        return plugin_;
     }
 
     bool RtcServer::Start(const std::string& stream_id, const std::string& offer_sdp) {
@@ -71,6 +76,19 @@ namespace tc
         peer_callback_->SetOnIceCallback([=, this](const std::string& ice, const std::string& mid, int sdp_mline_index) {
             LOGI("ICE: {}", ice);
             this->SendIceToRemote(ice, mid, sdp_mline_index);
+        });
+
+        peer_callback_->SetOnDataChannelCallback([=, this](const std::string& name, rtc::scoped_refptr<webrtc::DataChannelInterface> ch) {
+            if (name == "media_data_channel") {
+                media_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
+
+                // notify
+                auto event = std::make_shared<GrPluginClientConnectedEvent>();
+                this->plugin_->CallbackEvent(event);
+            }
+            else if (name == "ft_data_channel") {
+                ft_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
+            }
         });
 
         CreatePeerConnectionFactory();
@@ -210,7 +228,37 @@ namespace tc
         plugin_->CallbackEvent(event);
     }
 
+    void RtcServer::PostProtoMessage(const std::string &msg, bool run_through) {
+        if (media_data_channel_) {
+            media_data_channel_->SendData(msg);
+        }
+    }
+
+    bool RtcServer::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        if (media_data_channel_) {
+            media_data_channel_->SendData(msg);
+        }
+        return true;
+    }
+
+    bool RtcServer::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        if (ft_data_channel_) {
+            ft_data_channel_->SendData(msg);
+        }
+        return true;
+    }
+
+    bool RtcServer::IsDataChannelConnected() {
+        return media_data_channel_ && media_data_channel_->IsConnected();
+    }
+
     void RtcServer::Exit() {
+        if (media_data_channel_) {
+            media_data_channel_->Close();
+        }
+        if (ft_data_channel_) {
+            ft_data_channel_->Close();
+        }
         if (peer_conn_) {
             peer_conn_->Close();
             peer_conn_ = nullptr;

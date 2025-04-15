@@ -194,14 +194,27 @@ namespace tc
         }
         this->peer_conn_ = peer_conn;
 
-        webrtc::DataChannelInit data_channel_config;
-        data_channel_config.ordered = true;
-        RTCErrorOr<rtc::scoped_refptr<DataChannelInterface>> r_dc = peer_conn->CreateDataChannelOrError("dataChannel", &data_channel_config);
-        if (!r_dc.ok()) {
-            LOGE("create datachannel error: {}", r_dc.error().message());
+        {
+            webrtc::DataChannelInit data_channel_config;
+            data_channel_config.ordered = true;
+            RTCErrorOr<rtc::scoped_refptr<DataChannelInterface>> r_dc = peer_conn->CreateDataChannelOrError(
+                    "media_data_channel", &data_channel_config);
+            if (!r_dc.ok()) {
+                LOGE("create datachannel error: {}", r_dc.error().message());
+            } else {
+                media_data_channel_ = RtcDataChannel::Make(this, r_dc.value());
+            }
         }
-        else {
-            data_channel_ = RtcDataChannel::Make(this, r_dc.value());
+        {
+            webrtc::DataChannelInit data_channel_config;
+            data_channel_config.ordered = true;
+            RTCErrorOr<rtc::scoped_refptr<DataChannelInterface>> r_dc = peer_conn->CreateDataChannelOrError(
+                    "ft_data_channel", &data_channel_config);
+            if (!r_dc.ok()) {
+                LOGE("create datachannel error: {}", r_dc.error().message());
+            } else {
+                ft_data_channel_ = RtcDataChannel::Make(this, r_dc.value());
+            }
         }
 
         auto options = webrtc::PeerConnectionInterface::RTCOfferAnswerOptions();

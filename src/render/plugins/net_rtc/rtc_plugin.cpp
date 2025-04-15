@@ -45,7 +45,23 @@ namespace tc
     }
 
     void RtcPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
+        rtc_servers_.ApplyAll([=](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            srv->PostProtoMessage(msg, run_through);
+        });
+    }
 
+    bool RtcPlugin::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        rtc_servers_.ApplyAll([=](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            srv->PostTargetStreamProtoMessage(stream_id, msg, run_through);
+        });
+        return true;
+    }
+
+    bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        rtc_servers_.ApplyAll([=](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
+        });
+        return true;
     }
 
     void RtcPlugin::OnRemoteSdp(const MsgRtcRemoteSdp& m) {
@@ -73,6 +89,16 @@ namespace tc
                 rtc_server->OnRemoteIce(m.ice_, m.mid_, m.sdp_mline_index_);
             }
         });
+    }
+
+    int RtcPlugin::ConnectedClientSize() {
+        bool has_connected_channel_ = false;
+        rtc_servers_.ApplyAll([&](const auto&, const std::shared_ptr<RtcServer>& srv) {
+            if (srv->IsDataChannelConnected()) {
+                has_connected_channel_ = true;
+            }
+        });
+        return has_connected_channel_;
     }
 
 }

@@ -16,16 +16,23 @@ namespace tc
     class SetSessCallback;
     class DesktopCapture;
     class RtcPlugin;
+    class RtcDataChannel;
 
     class RtcServer : public std::enable_shared_from_this<RtcServer> {
     public:
 
         static std::shared_ptr<RtcServer> Make(RtcPlugin* plugin);
         explicit RtcServer(RtcPlugin* plugin);
+        RtcPlugin* GetPlugin();
 
         bool Start(const std::string& stream_id, const std::string& offer_sdp);
         void Exit();
         void OnRemoteIce(const std::string& ice, const std::string& mid, int sdp_mline_index);
+        bool IsDataChannelConnected();
+
+        void PostProtoMessage(const std::string &msg, bool run_through = false);
+        bool PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through = false);
+        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through = false);
 
     private:
         void CreatePeerConnectionFactory();
@@ -50,6 +57,9 @@ namespace tc
         rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_conn_ = nullptr;
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_conn_factory_;
         webrtc::PeerConnectionInterface::RTCConfiguration configuration_;
+
+        std::shared_ptr<RtcDataChannel> media_data_channel_ = nullptr;
+        std::shared_ptr<RtcDataChannel> ft_data_channel_ = nullptr;
     };
 
 }

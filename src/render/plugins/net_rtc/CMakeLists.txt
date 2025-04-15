@@ -30,6 +30,7 @@ set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/peer_callback.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/desktop_capture.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/desktop_capture_source.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/rtc_data_channel.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})

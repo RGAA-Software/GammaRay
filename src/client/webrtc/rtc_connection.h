@@ -54,7 +54,8 @@ namespace tc
         rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_conn_ = nullptr;
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_conn_factory_;
         webrtc::PeerConnectionInterface::RTCConfiguration configuration_;
-        std::shared_ptr<RtcDataChannel> data_channel_ = nullptr;
+        std::shared_ptr<RtcDataChannel> media_data_channel_ = nullptr;
+        std::shared_ptr<RtcDataChannel> ft_data_channel_ = nullptr;
 
         std::string local_sdp_;
         std::mutex ice_mtx_;

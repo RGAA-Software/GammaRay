@@ -19,23 +19,22 @@ namespace tc
     }
 
     void PeerCallback::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
-        std::cout << std::this_thread::get_id() << ":"
-                  << "PeerCallback::SignalingChange(" << new_state << ")" << std::endl;
+        LOGI("OnSignalingChange: {}", (int)new_state);
     }
 
     void PeerCallback::OnAddStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
         PeerConnectionObserver::OnAddStream(stream);
-        std::cout << std::this_thread::get_id() << ":" << "stream id: " << stream->id() << " PeerCallback::AddStream" << std::endl;
     }
 
     void PeerCallback::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
         PeerConnectionObserver::OnRemoveStream(stream);
-        std::cout << std::this_thread::get_id() << ":"
-                  << "PeerCallback::RemoveStream" << std::endl;
     }
 
     void PeerCallback::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) {
-        LOGI("OnDataChannel...");
+        LOGI("OnDataChannel... {}", data_channel->label());
+        if (ch_callback_) {
+            ch_callback_(data_channel->label(), data_channel);
+        }
     }
 
     void PeerCallback::OnRenegotiationNeeded() {
@@ -62,6 +61,7 @@ namespace tc
 
     void PeerCallback::OnConnectionChange(webrtc::PeerConnectionInterface::PeerConnectionState new_state) {
         PeerConnectionObserver::OnConnectionChange(new_state);
+        LOGI("Connection state: {}", (int)new_state);
     }
 
     void PeerCallback::OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState new_state) {
@@ -70,6 +70,7 @@ namespace tc
         if (new_state == webrtc::PeerConnectionInterface::IceGatheringState::kIceGatheringComplete) {
             //rtc_server_->OnIceGatheringComplete();
         }
+        LOGI("OnIceGatheringChange:{}", (int)new_state);
     }
 
     void PeerCallback::OnIceCandidate(const webrtc::IceCandidateInterface *candidate) {

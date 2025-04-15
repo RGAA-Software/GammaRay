@@ -21,6 +21,7 @@ namespace tc
     using OnSetSdpSuccessCallback = std::function<void()>;
     using OnSetSdpFailedCallback = std::function<void(const std::string&)>;
     using OnIceCallback = std::function<void(const std::string& ice, const std::string& mid, int sdp_mline_index)>;
+    using OnDataChannelCallback = std::function<void(const std::string& name, rtc::scoped_refptr<webrtc::DataChannelInterface> ch)>;
 
     class RtcServer;
 
@@ -58,8 +59,14 @@ namespace tc
         void SetOnIceCallback(OnIceCallback&& cbk) {
             ice_callback_ = cbk;
         }
+
+        void SetOnDataChannelCallback(OnDataChannelCallback&& cbk) {
+            ch_callback_ = cbk;
+        }
+
     private:
         OnIceCallback ice_callback_;
+        OnDataChannelCallback ch_callback_;
 
     };
 

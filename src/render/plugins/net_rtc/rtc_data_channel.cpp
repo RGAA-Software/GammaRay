@@ -4,16 +4,15 @@
 
 #include "rtc_data_channel.h"
 #include "tc_common_new/log.h"
+#include "rtc_server.h"
 
 namespace tc
 {
 
-    std::shared_ptr<RtcDataChannel> RtcDataChannel::Make(RtcConnection* client, rtc::scoped_refptr<webrtc::DataChannelInterface> ch) {
-        return std::make_shared<RtcDataChannel>(client, ch);
-    }
-
-    RtcDataChannel::RtcDataChannel(RtcConnection* client, rtc::scoped_refptr<webrtc::DataChannelInterface> ch) {
-        this->client_ = client;
+    RtcDataChannel::RtcDataChannel(const std::string& name, const std::shared_ptr<RtcServer>& rtc_server, rtc::scoped_refptr<webrtc::DataChannelInterface> ch) {
+        this->name_ = name;
+        this->rtc_server_ = rtc_server;
+        this->plugin_ = rtc_server->GetPlugin();
         this->data_channel_ = ch;
         this->data_channel_->RegisterObserver(this);
     }
@@ -23,9 +22,9 @@ namespace tc
     }
 
     void RtcDataChannel::OnStateChange() {
-        if (exit_via_reconnect_) {
-            return;
-        }
+//        if (exit_via_reconnect_) {
+//            return;
+//        }
         if (data_channel_->state() == webrtc::DataChannelInterface::kOpen) {
             connected_ = true;
             //context_->SendAppMessage(ClientEvtDataChannelReady{});
@@ -39,7 +38,7 @@ namespace tc
     }
 
     void RtcDataChannel::OnMessage(const webrtc::DataBuffer &buffer) {
-        LOGI("DataChannel Message: {}", buffer.size());
+        //RLogI("DataChannel Message: {}", buffer.size());
         std::string event((char*)buffer.data.data(), buffer.size());
         //ClientEvtFromDataChannel evt;
         //evt.event_ = event;
@@ -56,13 +55,15 @@ namespace tc
 
     void RtcDataChannel::SendData(const std::string& msg) {
         if (!connected_) {
-            LOGW("DataChannel is not connected now.");
+            LOGW("DataChannel is not connected now, channel name: {}", name_);
             return;
         }
         ++pending_data_count_;
         this->data_channel_->Send(webrtc::DataBuffer(msg));
         //RLogI("send data via data channel: {}", msg.size());
         --pending_data_count_;
+
+        //LOGI("send pending count: {}", pending_data_count_);
     }
 
     int RtcDataChannel::GetPendingDataCount() {
@@ -70,10 +71,10 @@ namespace tc
     }
 
     void RtcDataChannel::Close() {
+        connected_ = false;
         if (data_channel_) {
             data_channel_->Close();
         }
-        connected_ = false;
     }
 
 } // namespace dl
