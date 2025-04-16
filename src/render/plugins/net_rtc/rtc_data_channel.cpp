@@ -5,6 +5,7 @@
 #include "rtc_data_channel.h"
 #include "tc_common_new/log.h"
 #include "rtc_server.h"
+#include "tc_common_new/net_tlv_header.h"
 
 namespace tc
 {
@@ -59,22 +60,92 @@ namespace tc
             //LOGW("DataChannel is invalid, name: {}", name_);
             return;
         }
-        ++pending_data_count_;
+
         //auto total_size = data_channel_->buffered_amount();
         //LOGI("buffered: {}", total_size);
         //if (!this->data_channel_->Send(webrtc::DataBuffer(msg))) {
         //    LOGE("Send data failed, size: {}", msg.size());
         //}
-        auto kB_size = msg.size()/1024;
-        if (kB_size > 15) {
-            LOGI("send data via data channel: {}", kB_size);
+        if (msg.size() <= kSplitBufferSize) {
+            // wrap message
+            auto header = NetTlvHeader {
+                .type_ = kNetTlvFull,
+                .this_buffer_length_ = (uint32_t)msg.size(),
+                .this_buffer_begin_ = 0,
+                .this_buffer_end_ = (uint32_t)msg.size(),
+                .parent_buffer_length_ = (uint32_t)msg.size(),
+            };
+
+            std::string buffer;
+            buffer.resize(sizeof(NetTlvHeader) + msg.size());
+            memcpy((char*)buffer.data(), (char*)&header, sizeof(NetTlvHeader));
+            memcpy((char*)buffer.data() + sizeof(NetTlvHeader), msg.data(), msg.size());
+
+            ++pending_data_count_;
+            auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
+            data_channel_->SendAsync(rtc_buffer, [=, this](webrtc::RTCError err) {
+                 --pending_data_count_;
+                 if (!err.ok()) {
+                     LOGE("SendAsync error: {}", err.message());
+                 }
+             });
         }
-        data_channel_->SendAsync(webrtc::DataBuffer(rtc::CopyOnWriteBuffer(msg),true), [=, this](webrtc::RTCError err) {
-            --pending_data_count_;
-            if (!err.ok()) {
-                LOGE("SendAsync error: {}", err.message());
+        else {
+            auto size = (uint32_t)msg.size();
+            auto pieces = [&]() {
+                auto full_part_size = size / kSplitBufferSize;
+                auto left_size = size % kSplitBufferSize;
+                if (left_size == 0) {
+                    return full_part_size;
+                }
+                else {
+                    return full_part_size + 1;
+                }
+            }();
+
+            LOGI("message size: {}KB, to pieces: {}, base: {}", msg.size()/1024, pieces, kSplitBufferSize);
+
+            auto total_size = (uint32_t)msg.size();
+            for (int i = 0; i < pieces; i++) {
+                auto type = kNetTlvBegin;
+                if (i == 0) {
+                    type = kNetTlvBegin;
+                }
+                else if (i == (pieces-1)) {
+                    type = kNetTlvEnd;
+                }
+                else {
+                    type = kNetTlvCenter;
+                }
+
+                auto this_buffer_begin = i * kSplitBufferSize;
+                auto this_buffer_end = std::min(total_size, this_buffer_begin + kSplitBufferSize);
+                auto this_buffer_length = this_buffer_end - this_buffer_begin;
+                auto header = NetTlvHeader {
+                    .type_ = type,
+                    .this_buffer_length_ = this_buffer_length,
+                    .this_buffer_begin_ = this_buffer_begin,
+                    .this_buffer_end_ = this_buffer_end,
+                    .parent_buffer_length_ = total_size,
+                };
+
+                LOGI("send buffer from: {} => {}, size: {}, total: {}", this_buffer_begin, this_buffer_end, this_buffer_length, total_size);
+
+                std::string buffer;
+                buffer.resize(sizeof(NetTlvHeader) + this_buffer_length);
+                memcpy((char*)buffer.data(), (char*)&header, sizeof(NetTlvHeader));
+                memcpy((char*)buffer.data() + sizeof(NetTlvHeader), (char*)msg.data()+this_buffer_begin, this_buffer_length);
+
+                ++pending_data_count_;
+                auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
+                data_channel_->SendAsync(rtc_buffer, [=, this](webrtc::RTCError err) {
+                    --pending_data_count_;
+                    if (!err.ok()) {
+                        LOGE("SendAsync error: {}", err.message());
+                    }
+                });
             }
-        });
+        }
 
         //LOGI("send pending count: {}", pending_data_count_);
     }
