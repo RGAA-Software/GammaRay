@@ -223,7 +223,7 @@ namespace tc
         auto event = std::make_shared<GrPluginRtcIceEvent>();
         event->stream_id_ = stream_id_;
         event->ice_ = ice;
-        event->mid_;
+        event->mid_ = mid;
         event->sdp_mline_index_ = sdp_mline_index;
         plugin_->CallbackEvent(event);
     }

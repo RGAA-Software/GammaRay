@@ -36,7 +36,6 @@ namespace tc
     class MainProgress;
     class GameView;
     class RtcClientInterface;
-    class CtRtcManager;
 
     class Workspace : public QMainWindow {
     public:
@@ -109,7 +108,6 @@ namespace tc
         int title_bar_height_ = 0; //35;
 
         bool full_screen_ = false;
-        std::shared_ptr<CtRtcManager> rtc_mgr_ = nullptr;
 
     private:
         // 扩展屏

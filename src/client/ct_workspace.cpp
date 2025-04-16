@@ -40,8 +40,6 @@
 #include "ct_game_view.h"
 #include "ct_const_def.h"
 #include "tc_common_new/file.h"
-#include "webrtc/rtc_client_interface.h"
-#include "ct_rtc_manager.h"
 
 namespace tc
 {
@@ -138,9 +136,6 @@ namespace tc
         // sdk
         RegisterSdkMsgCallbacks();
         sdk_->Start();
-
-        // make rtc manager
-        rtc_mgr_ = std::make_shared<CtRtcManager>(context_, sdk_);
 
         msg_listener_->Listen<ExitAppMessage>([=, this](const ExitAppMessage& msg) {
             context_->PostUITask([=, this]() {

@@ -69,8 +69,6 @@ set(SRCS_WS
         transfer/file_writer.cpp
         transfer/fs_file.cpp
         transfer/fs_folder.cpp
-        webrtc/rtc_client_interface.cpp
-        ct_rtc_manager.cpp
 )
 
 if(TC_USE_FILE_TRANSMISSION)
@@ -83,7 +81,6 @@ else()
 endif()
 
 add_subdirectory(clipboard)
-add_subdirectory(webrtc)
 add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS}) #WIN32 MANUAL_FINALIZATION
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
@@ -107,6 +104,7 @@ endif()
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
         tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> QWindowKit::Widgets TC_WidgetFrame Winmm.lib
+        tc_rtc_client
 )
 
 if(TC_USE_FILE_TRANSMISSION) #file_transfer

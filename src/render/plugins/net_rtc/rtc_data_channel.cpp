@@ -34,11 +34,12 @@ namespace tc
             //context_->SendAppMessage(ClientEvtDataChannelClosed{});
 
         }
-        LOGI("DataChannel state changed: {}, connected: {}", data_channel_->state(), connected_);
+
+        LOGI("DataChannel[ {} ] state changed: {}, connected: {}", name_, (int)data_channel_->state(), connected_);
     }
 
     void RtcDataChannel::OnMessage(const webrtc::DataBuffer &buffer) {
-        //RLogI("DataChannel Message: {}", buffer.size());
+        //LOGI("from: {}=> Message: {}", name_, buffer.size());
         std::string event((char*)buffer.data.data(), buffer.size());
         //ClientEvtFromDataChannel evt;
         //evt.event_ = event;
@@ -55,13 +56,25 @@ namespace tc
 
     void RtcDataChannel::SendData(const std::string& msg) {
         if (!connected_) {
-            LOGW("DataChannel is not connected now, channel name: {}", name_);
+            //LOGW("DataChannel is invalid, name: {}", name_);
             return;
         }
         ++pending_data_count_;
-        this->data_channel_->Send(webrtc::DataBuffer(msg));
-        //RLogI("send data via data channel: {}", msg.size());
-        --pending_data_count_;
+        //auto total_size = data_channel_->buffered_amount();
+        //LOGI("buffered: {}", total_size);
+        //if (!this->data_channel_->Send(webrtc::DataBuffer(msg))) {
+        //    LOGE("Send data failed, size: {}", msg.size());
+        //}
+        auto kB_size = msg.size()/1024;
+        if (kB_size > 15) {
+            LOGI("send data via data channel: {}", kB_size);
+        }
+        data_channel_->SendAsync(webrtc::DataBuffer(rtc::CopyOnWriteBuffer(msg),true), [=, this](webrtc::RTCError err) {
+            --pending_data_count_;
+            if (!err.ok()) {
+                LOGE("SendAsync error: {}", err.message());
+            }
+        });
 
         //LOGI("send pending count: {}", pending_data_count_);
     }
@@ -71,6 +84,7 @@ namespace tc
     }
 
     void RtcDataChannel::Close() {
+        LOGI("DataChannel will close!");
         connected_ = false;
         if (data_channel_) {
             data_channel_->Close();

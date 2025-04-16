@@ -52,3 +52,6 @@
 [submodule "deps/tc_spvr_client"]
 	path = deps/tc_spvr_client
 	url = git@github.com:RGAA-Software/tc_spvr_client.git
+[submodule "deps/tc_webrtc_client"]
+	path = deps/tc_webrtc_client
+	url = git@github.com:RGAA-Software/tc_webrtc_client.git

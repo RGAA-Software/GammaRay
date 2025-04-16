@@ -45,21 +45,27 @@ namespace tc
     }
 
     void RtcPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
-        rtc_servers_.ApplyAll([=](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
-            srv->PostProtoMessage(msg, run_through);
+        rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            PostWorkTask([=, this]() {
+                srv->PostProtoMessage(msg, run_through);
+            });
         });
     }
 
     bool RtcPlugin::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
-        rtc_servers_.ApplyAll([=](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
-            srv->PostTargetStreamProtoMessage(stream_id, msg, run_through);
+        rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            PostWorkTask([=, this]() {
+                srv->PostTargetStreamProtoMessage(stream_id, msg, run_through);
+            });
         });
         return true;
     }
 
     bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
-        rtc_servers_.ApplyAll([=](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
-            srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
+        rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            PostWorkTask([=, this]() {
+                srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
+            });
         });
         return true;
     }

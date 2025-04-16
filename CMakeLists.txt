@@ -110,6 +110,8 @@ set(OpenCV_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/opencv_410)
 set(OpenCV_Libs ${OpenCV_ROOT}/x64/vc16/lib/opencv_world4100.lib)
 include_directories(${OpenCV_ROOT}/include)
 
+set(WEBRTC_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc)
+
 add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(src/tests)
