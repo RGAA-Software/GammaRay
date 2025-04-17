@@ -46,26 +46,20 @@ namespace tc
 
     void RtcPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
-            PostWorkTask([=, this]() {
-                srv->PostProtoMessage(msg, run_through);
-            });
+            srv->PostProtoMessage(msg, run_through);
         });
     }
 
     bool RtcPlugin::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
-            PostWorkTask([=, this]() {
-                srv->PostTargetStreamProtoMessage(stream_id, msg, run_through);
-            });
+            srv->PostTargetStreamProtoMessage(stream_id, msg, run_through);
         });
         return true;
     }
 
     bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
-            PostWorkTask([=, this]() {
-                srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
-            });
+            srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
         });
         return true;
     }
@@ -105,6 +99,23 @@ namespace tc
             }
         });
         return has_connected_channel_;
+    }
+
+    int64_t RtcPlugin::GetQueuingMediaMsgCount() {
+        uint32_t total_pending_messages = 0;
+        rtc_servers_.ApplyAll([&](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            total_pending_messages += srv->GetMediaPendingMessages();
+        });
+        return total_pending_messages;
+    }
+
+    int64_t RtcPlugin::GetQueuingFtMsgCount() {
+        // TODO: 连接断开之后，清空srv中的计数
+        uint32_t total_pending_messages = 0;
+        rtc_servers_.ApplyAll([&](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            total_pending_messages += srv->GetFtPendingMessages();
+        });
+        return total_pending_messages;
     }
 
 }

@@ -26,6 +26,8 @@ namespace tc
         bool PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
         bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
         int ConnectedClientSize() override;
+        int64_t GetQueuingMediaMsgCount() override;
+        int64_t GetQueuingFtMsgCount() override;
 
     private:
         void OnRemoteSdp(const MsgRtcRemoteSdp& m);

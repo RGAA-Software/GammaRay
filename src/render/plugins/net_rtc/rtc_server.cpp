@@ -241,14 +241,18 @@ namespace tc
     }
 
     void RtcServer::PostProtoMessage(const std::string &msg, bool run_through) {
-        if (media_data_channel_) {
-            media_data_channel_->SendData(msg);
+        if (network_thread_ && media_data_channel_) {
+            network_thread_->PostTask([=, this]() {
+                media_data_channel_->SendData(msg);
+            });
         }
     }
 
     bool RtcServer::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
-        if (media_data_channel_) {
-            media_data_channel_->SendData(msg);
+        if (network_thread_ && media_data_channel_) {
+            network_thread_->PostTask([=, this]() {
+                media_data_channel_->SendData(msg);
+            });
         }
         return true;
     }
@@ -262,6 +266,14 @@ namespace tc
 
     bool RtcServer::IsDataChannelConnected() {
         return media_data_channel_ && media_data_channel_->IsConnected();
+    }
+
+    uint32_t RtcServer::GetMediaPendingMessages() {
+        return media_data_channel_ ? media_data_channel_->GetPendingDataCount() : 0;
+    }
+
+    uint32_t RtcServer::GetFtPendingMessages() {
+        return ft_data_channel_ ? ft_data_channel_->GetPendingDataCount() : 0;
     }
 
     void RtcServer::Exit() {

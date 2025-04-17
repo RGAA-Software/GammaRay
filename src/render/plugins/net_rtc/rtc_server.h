@@ -34,6 +34,9 @@ namespace tc
         bool PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through = false);
         bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through = false);
 
+        uint32_t GetMediaPendingMessages();
+        uint32_t GetFtPendingMessages();
+
     private:
         void CreatePeerConnectionFactory();
         void CreatePeerConnection();

@@ -45,9 +45,6 @@ namespace tc
         if (data_cbk_) {
             data_cbk_(std::move(data));
         }
-        //ClientEvtFromDataChannel evt;
-        //evt.event_ = event;
-        //context_->SendAppMessage(evt);
     }
 
     void RtcDataChannel::OnBufferedAmountChange(uint64_t sent_data_size) {
@@ -64,7 +61,7 @@ namespace tc
 
     void RtcDataChannel::SendData(const std::string& msg) {
         if (!connected_) {
-            //LOGW("DataChannel is invalid, name: {}", name_);
+            LOGW("DataChannel is invalid, name: {}", name_);
             return;
         }
 
@@ -85,12 +82,20 @@ namespace tc
 
             ++pending_data_count_;
             auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
-            data_channel_->SendAsync(rtc_buffer, [=, this](webrtc::RTCError err) {
-                 --pending_data_count_;
-                 if (!err.ok()) {
-                     LOGE("SendAsync error: {}", err.message());
-                 }
-             });
+            bool ok = data_channel_->Send(rtc_buffer);
+            if (!ok) {
+                LOGE("SendAsync error in channel: {}", name_);
+                pending_data_count_ = 0;
+                connected_ = false;
+                // TODO: Notify
+            }
+            else {
+                --pending_data_count_;
+            }
+
+            if (pending_data_count_ > 80) {
+                LOGI("[ {} ] pending_data_count: {}", name_, pending_data_count_);
+            }
         }
         else {
             auto size = (uint32_t)msg.size();
@@ -140,12 +145,16 @@ namespace tc
 
                 ++pending_data_count_;
                 auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
-                data_channel_->SendAsync(rtc_buffer, [=, this](webrtc::RTCError err) {
+                bool ok = data_channel_->Send(rtc_buffer);
+                if (!ok) {
+                    LOGE("SendAsync error in channel: {}", name_);
+                    pending_data_count_ = 0;
+                    connected_ = false;
+                    // TODO: Notify
+                }
+                else {
                     --pending_data_count_;
-                    if (!err.ok()) {
-                        LOGE("SendAsync error: {}", err.message());
-                    }
-                });
+                }
             }
         }
 
