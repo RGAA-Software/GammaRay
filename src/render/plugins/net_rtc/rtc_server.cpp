@@ -83,7 +83,7 @@ namespace tc
                 media_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
 
                 // data callback
-                ft_data_channel_->SetOnDataCallback([=, this](std::string&& data) {
+                media_data_channel_->SetOnDataCallback([=, this](std::string&& data) {
                     auto payload_msg = std::string(data.data(), data.size());
                     plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                 });
