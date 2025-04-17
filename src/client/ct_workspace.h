@@ -40,7 +40,7 @@ namespace tc
     class Workspace : public QMainWindow {
     public:
 
-        explicit Workspace(const std::shared_ptr<ClientContext>& ctx, const ThunderSdkParams& params, QWidget* parent = nullptr);
+        explicit Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent = nullptr);
         ~Workspace() override;
 
         void closeEvent(QCloseEvent *event) override;
@@ -76,7 +76,7 @@ namespace tc
         void UpdateGameViewsStatus();
         void OnGetCaptureMonitorsCount(int monitors_count);
         void OnGetCaptureMonitorName(std::string monitor_name);
-        void InitGameViews(const ThunderSdkParams& params);
+        void InitGameViews(const std::shared_ptr<ThunderSdkParams>& params);
         void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
         
     private:

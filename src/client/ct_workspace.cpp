@@ -44,11 +44,11 @@
 namespace tc
 {
 
-    Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const ThunderSdkParams& params, QWidget* parent) : QMainWindow(parent) {
+    Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent) : QMainWindow(parent) {
         this->context_ = ctx;
         this->settings_ = Settings::Instance();
 
-        origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params.stream_name_.c_str() + "]";
+        origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params->stream_name_.c_str() + "]";
         setWindowTitle(origin_title_name_);
         auto notifier = this->context_->GetMessageNotifier();
         //(new MainWindowWrapper(notifier, this))->Setup(title_name);
@@ -774,7 +774,7 @@ namespace tc
         }
     }
 
-    void Workspace::InitGameViews(const ThunderSdkParams& params) {
+    void Workspace::InitGameViews(const std::shared_ptr<ThunderSdkParams>& params) {
         
         for (int index = 0; index < kMaxGameViewCount; ++index) {
             GameView* game_view = nullptr;

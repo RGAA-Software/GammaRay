@@ -8,7 +8,7 @@
 
 namespace tc {
 	
-GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const ThunderSdkParams& params, QWidget* parent) 
+GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent)
     : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
 
     auto main_vbox_layout = new NoMarginVLayout();

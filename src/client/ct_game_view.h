@@ -11,7 +11,7 @@ class ThunderSdk;
 
 class GameView : public QWidget {
 public:
-	GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const ThunderSdkParams& params, QWidget* parent);
+	GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent);
 	~GameView();
 
 	void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info);
@@ -50,7 +50,7 @@ private:
 	OpenGLVideoWidget* video_widget_ = nullptr;
 	std::shared_ptr<ClientContext> ctx_ = nullptr;
 	std::shared_ptr<ThunderSdk> sdk_ = nullptr;
-	ThunderSdkParams params_;
+    std::shared_ptr<ThunderSdkParams> params_;
 
 	int monitor_index_ = 0;
 	std::string monitor_name_ = "";

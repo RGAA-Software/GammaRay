@@ -258,26 +258,28 @@ int main(int argc, char** argv) {
 #endif
     } ();
 
-    static Workspace ws(ctx, ThunderSdkParams {
-            .ssl_ = false,
-            .enable_audio_ = true,
-            .enable_video_ = true,
-            .enable_controller_ = false,
-            .ip_ = host,
-            .port_ = port,
-            .media_path_ = media_path,
-            .ft_path_ = ft_path,
-            .client_type_ = client_type,
-            .conn_type_ = settings->conn_type_,
-            .nt_type_ = settings->network_type_,
-            .device_id_ = device_id,
-            .remote_device_id_ = remote_device_id,
-            .ft_device_id_ = ft_device_id,
-            .ft_remote_device_id_ = ft_remote_device_id,
-            .stream_id_ = settings->stream_id_,
-            .stream_name_ = settings->stream_name_,
-            .enable_p2p_ = settings->enable_p2p_,
+    auto params = std::shared_ptr<ThunderSdkParams>(new ThunderSdkParams {
+        .ssl_ = false,
+        .enable_audio_ = true,
+        .enable_video_ = true,
+        .enable_controller_ = false,
+        .ip_ = host,
+        .port_ = port,
+        .media_path_ = media_path,
+        .ft_path_ = ft_path,
+        .client_type_ = client_type,
+        .conn_type_ = settings->conn_type_,
+        .nt_type_ = settings->network_type_,
+        .device_id_ = device_id,
+        .remote_device_id_ = remote_device_id,
+        .ft_device_id_ = ft_device_id,
+        .ft_remote_device_id_ = ft_remote_device_id,
+        .stream_id_ = settings->stream_id_,
+        .stream_name_ = settings->stream_name_,
+        .enable_p2p_ = settings->enable_p2p_,
     });
+
+    static Workspace ws(ctx, params);
     ws.resize(1280, 768);
     if (settings->show_max_window_) {
         ws.showMaximized();
