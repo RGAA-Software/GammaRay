@@ -41,7 +41,10 @@ namespace tc
 
     void RtcDataChannel::OnMessage(const webrtc::DataBuffer &buffer) {
         //LOGI("from: {}=> Message: {}", name_, buffer.size());
-        std::string event((char*)buffer.data.data(), buffer.size());
+        std::string data((char*)buffer.data.data(), buffer.size());
+        if (data_cbk_) {
+            data_cbk_(std::move(data));
+        }
         //ClientEvtFromDataChannel evt;
         //evt.event_ = event;
         //context_->SendAppMessage(evt);
@@ -55,17 +58,16 @@ namespace tc
         return connected_;
     }
 
+    void RtcDataChannel::SetOnDataCallback(OnDataCallback&& cbk) {
+        data_cbk_ = cbk;
+    }
+
     void RtcDataChannel::SendData(const std::string& msg) {
         if (!connected_) {
             //LOGW("DataChannel is invalid, name: {}", name_);
             return;
         }
 
-        //auto total_size = data_channel_->buffered_amount();
-        //LOGI("buffered: {}", total_size);
-        //if (!this->data_channel_->Send(webrtc::DataBuffer(msg))) {
-        //    LOGE("Send data failed, size: {}", msg.size());
-        //}
         if (msg.size() <= kSplitBufferSize) {
             // wrap message
             auto header = NetTlvHeader {
@@ -103,7 +105,7 @@ namespace tc
                 }
             }();
 
-            LOGI("message size: {}KB, to pieces: {}, base: {}", msg.size()/1024, pieces, kSplitBufferSize);
+            LOGI("[ {} ]message size: {}KB, to pieces: {}, base: {}", name_, msg.size()/1024, pieces, kSplitBufferSize);
 
             auto total_size = (uint32_t)msg.size();
             for (int i = 0; i < pieces; i++) {
@@ -129,7 +131,7 @@ namespace tc
                     .parent_buffer_length_ = total_size,
                 };
 
-                LOGI("send buffer from: {} => {}, size: {}, total: {}", this_buffer_begin, this_buffer_end, this_buffer_length, total_size);
+                LOGI("[ {} ]send buffer from: {} => {}, size: {}, total: {}", name_, this_buffer_begin, this_buffer_end, this_buffer_length, total_size);
 
                 std::string buffer;
                 buffer.resize(sizeof(NetTlvHeader) + this_buffer_length);

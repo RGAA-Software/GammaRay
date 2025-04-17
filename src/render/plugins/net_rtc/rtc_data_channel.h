@@ -10,6 +10,7 @@
 
 namespace tc
 {
+    using OnDataCallback = std::function<void(std::string&&)>;
 
     class RtcServer;
     class RtcPlugin;
@@ -25,8 +26,9 @@ namespace tc
         bool IsConnected();
         void SendData(const std::string& data);
         int GetPendingDataCount();
-        void SetExitViaReconnect(bool reconn) { exit_via_reconnect_ = reconn; }
         void Close();
+
+        void SetOnDataCallback(OnDataCallback&&);
 
     private:
         RtcPlugin* plugin_;
@@ -35,7 +37,7 @@ namespace tc
         std::shared_ptr<RtcServer> rtc_server_ = nullptr;
         std::atomic<bool> connected_ = false;
         std::atomic<int> pending_data_count_ = 0;  //只是表达排队数,并没有关心data发送是否成功
-        bool exit_via_reconnect_ = false;
+        OnDataCallback data_cbk_;
     };
 
 } // namespace dl

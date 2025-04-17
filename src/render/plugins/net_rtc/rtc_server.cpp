@@ -82,12 +82,24 @@ namespace tc
             if (name == "media_data_channel") {
                 media_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
 
+                // data callback
+                ft_data_channel_->SetOnDataCallback([=, this](std::string&& data) {
+                    auto payload_msg = std::string(data.data(), data.size());
+                    plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
+                });
+
                 // notify
                 auto event = std::make_shared<GrPluginClientConnectedEvent>();
                 this->plugin_->CallbackEvent(event);
             }
             else if (name == "ft_data_channel") {
                 ft_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
+
+                // data callback
+                ft_data_channel_->SetOnDataCallback([=, this](std::string&& data) {
+                    auto payload_msg = std::string(data.data(), data.size());
+                    plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
+                });
             }
         });
 
