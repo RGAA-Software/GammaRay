@@ -5,11 +5,17 @@
 #include "tc_dialog.h"
 #include "no_margin_layout.h"
 #include "ct_const_def.h"
+#include "ui/float_controller.h"
+#include "ui/float_controller_panel.h"
+#include "ct_client_context.h"
+
 
 namespace tc {
 	
 GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent)
     : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
+
+    msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
 
     auto main_vbox_layout = new NoMarginVLayout();
     main_vbox_layout->setAlignment(Qt::AlignCenter);
@@ -37,10 +43,19 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     cur_size_policy.setHorizontalPolicy(QSizePolicy::Expanding);
     cur_size_policy.setVerticalPolicy(QSizePolicy::Expanding);
     this->setSizePolicy(cur_size_policy);
+
+    InitFloatController();
 }
 
 GameView::~GameView() {
     
+}
+
+void GameView::resizeEvent(QResizeEvent* event) {
+    if (float_controller_) {
+        float_controller_->ReCalculatePosition();
+    }
+    QWidget::resizeEvent(event);
 }
 
 void GameView::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
@@ -90,26 +105,73 @@ void GameView::CalculateAspectRatio() {
         target_height = vh * (this->width() * 1.0f / vw);
     }
 
-    //        if (h_ratio > v_ratio) {
-    //            // use width
-    //            target_width = this->width();
-    //            target_height = vh * (this->width()*1.0f/vw);
-    //            LOGI("H > V");
-    //        } else {
-    //            LOGI("H < V");
-    //            // use height
-    //            //target_height = this->height();
-    //            //target_width = vw * (this->height()*1.0f/vh);
-    //            target_height = available_height;
-    //            target_width = vw * (available_height*1.0f/vh);
-    //        }
-
-    //        target_height = available_height;
-    //        target_width = vw * (available_height*1.0f/vh);
-
-            //video_widget_->setGeometry((this->width()-target_width)/2, (this->height()-target_height)/2, target_width, target_height);
     video_widget_->setGeometry((this->width() - target_width) / 2, (available_height - target_height) / 2 + target_title_bar_height, target_width, target_height);
 
 }
+
+void GameView::InitFloatController()
+{
+    // float controller
+    int shadow_color = 0x999999;
+    float_controller_ = new FloatController(ctx_, this);
+    float_controller_->setFixedSize(50, 50);
+    WidgetHelper::AddShadow(float_controller_, shadow_color);
+    controller_panel_ = new FloatControllerPanel(ctx_, this);
+    WidgetHelper::AddShadow(controller_panel_, shadow_color);
+    RegisterControllerPanelListeners();
+    controller_panel_->hide();
+
+    float_controller_->SetOnClickListener([=, this]() {
+        QPoint point = float_controller_->mapToGlobal(QPoint(0, 0));
+        point.setX(float_controller_->pos().x() + float_controller_->width() + 10);
+        point.setY(float_controller_->pos().y());
+        controller_panel_->move(point);
+        if (controller_panel_->isHidden()) {
+            if (!float_controller_->HasMoved()) {
+                controller_panel_->show();
+            }
+        }
+        else {
+            controller_panel_->Hide();
+        }
+    });
+
+    float_controller_->SetOnMoveListener([=, this]() {
+        if (!controller_panel_) {
+            return;
+        }
+        controller_panel_->Hide();
+    });
+}
+
+void GameView::RegisterControllerPanelListeners() {
+    controller_panel_->SetOnDebugListener([=, this](QWidget* w) {
+        ctx_->PostUITask([=]() {
+            controller_panel_->Hide();
+        });
+        this->ctx_->SendAppMessage(OpenDebugPanelMsg{});
+    });
+
+    controller_panel_->SetOnFileTransListener([=, this](QWidget* w) {
+        ctx_->PostUITask([=]() {
+            controller_panel_->Hide();
+        });
+        this->ctx_->SendAppMessage(OpenFiletransMsg{});
+    });
+}
+
+void GameView::SetMainView(bool main_view) {
+    main_view_ = main_view;
+    if (main_view_ && controller_panel_) {
+        controller_panel_->SetMainControl();
+    }
+}
+
+void GameView::SetMonitorName(const std::string mon_name) {
+    monitor_name_ = mon_name;
+    controller_panel_->SetMonitorName(mon_name);
+}
+
+
 
 }

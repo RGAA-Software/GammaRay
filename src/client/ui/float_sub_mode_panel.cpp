@@ -9,6 +9,7 @@
 #include "client/ct_settings.h"
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
+#include "tc_common_new/log.h"
 #include <QLabel>
 
 namespace tc
@@ -46,11 +47,13 @@ namespace tc
             sb->SetStatus(settings_->work_mode_ == SwitchWorkMode::kWork);
             layout->addWidget(sb);
             sb->SetClickCallback([=, this](bool enabled) {
-                settings_->work_mode_ = enabled ? SwitchWorkMode::kWork : SwitchWorkMode::kGame;
+                SwitchWorkMode::WorkMode mode = enabled ? SwitchWorkMode::kWork : SwitchWorkMode::kGame;
+                settings_->SetWorkMode(mode);
                 sb_game_->SetStatus(!enabled);
                 context_->SendAppMessage(SwitchWorkModeMessage {
-                    .mode_ = settings_->work_mode_,
+                    .mode_ = mode,
                 });
+                context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kWorkMode});
             });
 
             layout->addSpacing(border_spacing);
@@ -79,11 +82,13 @@ namespace tc
             sb->SetStatus(settings_->work_mode_ == SwitchWorkMode::kGame);
             layout->addWidget(sb);
             sb->SetClickCallback([=, this](bool enabled) {
-                settings_->work_mode_ = enabled ? SwitchWorkMode::kGame : SwitchWorkMode::kWork;
+                SwitchWorkMode::WorkMode mode = enabled ? SwitchWorkMode::kGame : SwitchWorkMode::kWork;
+                settings_->SetWorkMode(mode);
                 sb_work_->SetStatus(!enabled);
                 context_->SendAppMessage(SwitchWorkModeMessage {
-                    .mode_ = settings_->work_mode_,
+                    .mode_ = mode,
                 });
+                context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kWorkMode });
             });
 
             layout->addSpacing(border_spacing);
@@ -108,4 +113,10 @@ namespace tc
         BaseWidget::paintEvent(event);
     }
 
+    void SubModePanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
+        if (FloatControllerPanelUpdateMessage::EUpdate::kWorkMode == msg.update_type_) {
+            sb_game_->SetStatus(SwitchWorkMode::kGame == settings_->work_mode_);
+            sb_work_->SetStatus(SwitchWorkMode::kWork == settings_->work_mode_);
+        }
+    }
 }

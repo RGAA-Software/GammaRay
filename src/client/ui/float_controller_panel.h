@@ -20,6 +20,7 @@ namespace tc
     };
 
     class ComputerIcon;
+    class FloatIcon;
 
     class FloatControllerPanel : public BaseWidget {
     public:
@@ -29,7 +30,8 @@ namespace tc
         void SetOnDebugListener(OnClickListener&& l) { debug_listener_ = l; }
         void SetOnFileTransListener(OnClickListener&& listener) { file_trans_listener_ = listener; }
         void Hide() override;
-
+        void SetMainControl();
+        void SetMonitorName(const std::string& mon_name);
     private:
         BaseWidget* GetSubPanel(const SubPanelType& type);
         void HideAllSubPanels();
@@ -37,7 +39,7 @@ namespace tc
         void SwitchMonitor(ComputerIcon* w);
         void CaptureAllMonitor();
         void UpdateCapturingMonitor(const std::string& name, int cur_cap_mon_index);
-
+        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
     private:
         OnClickListener debug_listener_;
         OnClickListener file_trans_listener_;
@@ -46,6 +48,15 @@ namespace tc
         CaptureMonitorMessage capture_monitor_;
 
         const int kInitialWidth = 240;
+
+        FloatIcon* audio_btn_ = nullptr;
+
+        FloatIcon* full_screen_btn_ = nullptr;
+
+        //是否是主窗口的控制面板
+        bool is_main_control_ = false;
+
+        std::string monitor_name_;
     };
 
 }

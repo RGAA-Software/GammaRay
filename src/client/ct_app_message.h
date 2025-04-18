@@ -32,6 +32,8 @@ namespace tc
 
     const std::string kCaptureAllMonitorsSign = "all";
 
+    const int kMainGameViewIndex = 0;
+
     // 多显示器展示方式
     enum class EMultiMonDisplayMode {
         kTab,        //标签页
@@ -160,6 +162,26 @@ namespace tc
     public:
         EMultiMonDisplayMode mode_;
         int current_cap_mon_index_ = 0;
+    };
+
+    class FloatControllerPanelUpdateMessage : public AppMessage {
+    public:
+        enum class EUpdate {
+            kUnknow,
+            kImageScaleMode,
+            kWorkMode,
+            kClipboardSharedStatus,
+            kAudioStatus,
+        };
+        EUpdate update_type_ = EUpdate::kUnknow;
+    };
+
+    class OpenFiletransMsg : public AppMessage {
+    public:
+    };
+
+    class OpenDebugPanelMsg : public AppMessage {
+    public:
     };
 }
 

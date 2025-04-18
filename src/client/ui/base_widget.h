@@ -17,6 +17,7 @@
 #include <memory>
 #include <functional>
 #include "widget_helper.h"
+#include "ct_app_message.h"
 
 namespace tc
 {
@@ -34,6 +35,7 @@ namespace tc
         virtual void Hide();
         virtual void Show();
 
+        virtual void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {};
     protected:
         std::shared_ptr<ClientContext> context_ = nullptr;
         OnClickListener click_listener_;
