@@ -116,4 +116,12 @@ namespace tc
             return 0;
         }
     }
+
+    bool WsPlugin::HasEnoughBufferForQueuingMediaMessages() {
+        return true;
+    }
+
+    bool WsPlugin::HasEnoughBufferForQueuingFtMessages() {
+        return true;
+    }
 }

@@ -31,6 +31,8 @@ namespace tc
         void OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) override;
         int64_t GetQueuingMediaMsgCount() override;
         int64_t GetQueuingFtMsgCount() override;
+        bool HasEnoughBufferForQueuingMediaMessages() override;
+        bool HasEnoughBufferForQueuingFtMessages() override;
 
     private:
         void NotifyMediaClientConnected();

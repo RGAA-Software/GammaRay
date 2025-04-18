@@ -8,6 +8,7 @@
 #include "tc_common_new/log.h"
 #include "rtc_messages.h"
 #include "rtc_server.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc
 {
@@ -58,6 +59,16 @@ namespace tc
     }
 
     bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        auto has_buffer = this->HasEnoughBufferForQueuingFtMessages();
+        auto wait_count = 0;
+        while (!has_buffer) {
+            TimeUtil::DelayBySleep(1);
+            has_buffer = this->HasEnoughBufferForQueuingFtMessages();
+            wait_count++;
+        }
+        if (wait_count > 0) {
+            LOGI("===> Send file wait for: {}ms", wait_count);
+        }
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
             srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
         });
@@ -116,6 +127,22 @@ namespace tc
             total_pending_messages += srv->GetFtPendingMessages();
         });
         return total_pending_messages;
+    }
+
+    bool RtcPlugin::HasEnoughBufferForQueuingMediaMessages() {
+        bool flag = true;
+        rtc_servers_.ApplyAll([&](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            flag &= srv->HasEnoughBufferForQueuingMediaMessages();
+        });
+        return flag;
+    }
+
+    bool RtcPlugin::HasEnoughBufferForQueuingFtMessages() {
+        bool flag = true;
+        rtc_servers_.ApplyAll([&](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+            flag &= srv->HasEnoughBufferForQueuingFtMessages();
+        });
+        return flag;
     }
 
 }

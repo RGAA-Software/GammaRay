@@ -6,6 +6,7 @@
 #define TC_PLUGIN_DATA_CHANNEL_OBSERVER_H
 
 #include <atomic>
+#include <mutex>
 #include "tc_common_new/webrtc_helper.h"
 
 namespace tc
@@ -29,6 +30,11 @@ namespace tc
         void Close();
 
         void SetOnDataCallback(OnDataCallback&&);
+        bool HasEnoughBufferForQueuingMessages();
+
+    private:
+        bool IsMediaChannel();
+        bool IsFtChannel();
 
     private:
         RtcPlugin* plugin_;
@@ -36,8 +42,12 @@ namespace tc
         rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel_ = nullptr;
         std::shared_ptr<RtcServer> rtc_server_ = nullptr;
         std::atomic<bool> connected_ = false;
-        std::atomic<int> pending_data_count_ = 0;  //只是表达排队数,并没有关心data发送是否成功
+        std::atomic<int> pending_data_count_ = 0;
+        std::atomic<uint32_t> send_pkt_index_ = 0;
         OnDataCallback data_cbk_;
+
+        std::mutex msg_in_mtx_;
+        std::atomic<uint32_t> last_recv_pkt_index_ = 0;
     };
 
 } // namespace dl

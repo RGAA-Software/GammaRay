@@ -158,4 +158,12 @@ namespace tc
         });
     }
 
+    bool UdpPlugin::HasEnoughBufferForQueuingMediaMessages() {
+        return true;
+    }
+
+    bool UdpPlugin::HasEnoughBufferForQueuingFtMessages() {
+        return true;
+    }
+
 }

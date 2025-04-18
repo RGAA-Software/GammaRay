@@ -23,9 +23,6 @@ namespace tc
     }
 
     void RtcDataChannel::OnStateChange() {
-//        if (exit_via_reconnect_) {
-//            return;
-//        }
         if (data_channel_->state() == webrtc::DataChannelInterface::kOpen) {
             connected_ = true;
             //context_->SendAppMessage(ClientEvtDataChannelReady{});
@@ -40,10 +37,28 @@ namespace tc
     }
 
     void RtcDataChannel::OnMessage(const webrtc::DataBuffer &buffer) {
-        //LOGI("from: {}=> Message: {}", name_, buffer.size());
-        std::string data((char*)buffer.data.data(), buffer.size());
-        if (data_cbk_) {
-            data_cbk_(std::move(data));
+        std::lock_guard<std::mutex> guard(msg_in_mtx_);
+        auto header = (NetTlvHeader*)buffer.data.data();
+        if (name_ == "ft_data_channel") {
+            //LOGI("from: {}, index: {} => Message size: {}", name_, header->pkt_index_, header->this_buffer_length_);
+            auto curr_pkt_index = header->pkt_index_;
+            if (last_recv_pkt_index_ == 0) {
+                last_recv_pkt_index_ = curr_pkt_index;
+            }
+            auto diff = curr_pkt_index - last_recv_pkt_index_;
+            if (diff > 1) {
+                LOGE("**** Message Index Error ****\n current index: {}, last index: {}", curr_pkt_index, last_recv_pkt_index_);
+            }
+            last_recv_pkt_index_ = curr_pkt_index;
+        }
+
+        std::string data;
+        data.resize(header->this_buffer_length_);
+        memcpy(data.data(), (char*)header + sizeof(NetTlvHeader), header->this_buffer_length_);
+        if (header->type_ == kNetTlvFull) {
+            if (data_cbk_) {
+                data_cbk_(std::move(data));
+            }
         }
     }
 
@@ -73,6 +88,7 @@ namespace tc
                 .this_buffer_begin_ = 0,
                 .this_buffer_end_ = (uint32_t)msg.size(),
                 .parent_buffer_length_ = (uint32_t)msg.size(),
+                .pkt_index_ = send_pkt_index_++,
             };
 
             std::string buffer;
@@ -82,9 +98,18 @@ namespace tc
 
             ++pending_data_count_;
             auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
+
+            // test beg //
+            auto buffered_amount = data_channel_->buffered_amount();
+            auto max_queue_size = data_channel_->MaxSendQueueSize();
+            if (buffered_amount >= max_queue_size/2) {
+                //LOGW("buffered amount: {}, max queue size: {}", buffered_amount, max_queue_size);
+            }
+            // test end //
+
             bool ok = data_channel_->Send(rtc_buffer);
             if (!ok) {
-                LOGE("SendAsync error in channel: {}", name_);
+                LOGE("Send error in channel: {}", name_);
                 pending_data_count_ = 0;
                 connected_ = false;
                 // TODO: Notify
@@ -110,7 +135,9 @@ namespace tc
                 }
             }();
 
-            LOGI("[ {} ]message size: {}KB, to pieces: {}, base: {}", name_, msg.size()/1024, pieces, kSplitBufferSize);
+            if (IsMediaChannel()) {
+                //LOGI("[ {} ]message size: {}KB, to pieces: {}, base: {}", name_, msg.size() / 1024, pieces, kSplitBufferSize);
+            }
 
             auto total_size = (uint32_t)msg.size();
             for (int i = 0; i < pieces; i++) {
@@ -134,10 +161,13 @@ namespace tc
                     .this_buffer_begin_ = this_buffer_begin,
                     .this_buffer_end_ = this_buffer_end,
                     .parent_buffer_length_ = total_size,
+                    .pkt_index_ = send_pkt_index_++,
                 };
 
-                LOGI("[ {} ]send buffer from: {} => {}, size: {}, total: {}", name_, this_buffer_begin, this_buffer_end, this_buffer_length, total_size);
-
+                if (IsMediaChannel()) {
+                    //LOGI("[ {} ]send buffer from: {} => {}, size: {}, total: {}", name_, this_buffer_begin,
+                    //     this_buffer_end, this_buffer_length, total_size);
+                }
                 std::string buffer;
                 buffer.resize(sizeof(NetTlvHeader) + this_buffer_length);
                 memcpy((char*)buffer.data(), (char*)&header, sizeof(NetTlvHeader));
@@ -147,7 +177,7 @@ namespace tc
                 auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
                 bool ok = data_channel_->Send(rtc_buffer);
                 if (!ok) {
-                    LOGE("SendAsync error in channel: {}", name_);
+                    LOGE("Send error in channel: {}", name_);
                     pending_data_count_ = 0;
                     connected_ = false;
                     // TODO: Notify
@@ -163,6 +193,20 @@ namespace tc
 
     int RtcDataChannel::GetPendingDataCount() {
         return pending_data_count_;
+    }
+
+    bool RtcDataChannel::HasEnoughBufferForQueuingMessages() {
+        return data_channel_
+               && data_channel_->state() == webrtc::DataChannelInterface::DataState::kOpen
+               && data_channel_->buffered_amount() <= data_channel_->MaxSendQueueSize()*1/4;
+    }
+
+    bool RtcDataChannel::IsMediaChannel() {
+        return name_ == "media_data_channel";
+    }
+
+    bool RtcDataChannel::IsFtChannel() {
+        return name_ == "ft_data_channel";
     }
 
     void RtcDataChannel::Close() {

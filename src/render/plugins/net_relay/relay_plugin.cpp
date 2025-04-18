@@ -251,4 +251,12 @@ namespace tc
     int64_t RelayPlugin::GetQueuingFtMsgCount() {
         return relay_ft_sdk_ && sdk_init_ ? relay_ft_sdk_->GetQueuingMsgCount() : 0;
     }
+
+    bool RelayPlugin::HasEnoughBufferForQueuingMediaMessages() {
+        return true;
+    }
+
+    bool RelayPlugin::HasEnoughBufferForQueuingFtMessages() {
+        return true;
+    }
 }

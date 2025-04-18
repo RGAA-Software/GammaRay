@@ -34,6 +34,9 @@ namespace tc
 
         int64_t GetQueuingMediaMsgCount() override;
         int64_t GetQueuingFtMsgCount() override;
+        bool HasEnoughBufferForQueuingMediaMessages() override;
+        bool HasEnoughBufferForQueuingFtMessages() override;
+
     private:
 
         std::shared_ptr<WsPluginServer> ws_server_ = nullptr;

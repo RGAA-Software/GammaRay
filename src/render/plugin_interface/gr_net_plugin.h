@@ -65,6 +65,9 @@ namespace tc
         // how many message in ft queue but not be sent now
         virtual int64_t GetQueuingFtMsgCount();
 
+        virtual bool HasEnoughBufferForQueuingMediaMessages();
+        virtual bool HasEnoughBufferForQueuingFtMessages();
+
     protected:
         NetSyncInfo sync_info_{};
 

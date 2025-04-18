@@ -41,7 +41,7 @@ namespace tc
             auto sub = m.mutable_clipboard_info();
             sub->set_type(ClipboardType::kClipboardText);
             sub->set_msg(text.toStdString());
-            plugin_->PostToAllStreamMessage(m.SerializeAsString());
+            plugin_->DispatchAllStreamMessage(m.SerializeAsString());
 
             remote_info_ = text;
         }

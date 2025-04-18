@@ -120,12 +120,26 @@ namespace tc
         void AttachNetPlugin(const std::string& id, GrNetPlugin* plugin);
         //
         bool HasAttachedNetPlugins();
-        // via media stream
-        void PostToAllStreamMessage(const std::string& msg);
-        // via media stream
-        void PostToTargetStreamMessage(const std::string& stream_id, const std::string& msg);
-        // via file transfer stream
-        void PostToTargetFileTransferMessage(const std::string& stream_id, const std::string& msg);
+        // Serialized proto message from Renderer
+        // to see format details in tc_message_new/tc_message.proto
+        // such as : message VideoFrame { ... }
+        // you can send it to any clients
+        //                       -> client 1
+        // Renderer Messages ->  -> client 2
+        //                       -> client 3
+        // run_through: send the message even if stream was paused
+        // !! Call this function in a NON-NET-PLUGIN !!
+        void DispatchAllStreamMessage(const std::string& msg, bool run_through = false);
+
+        // Serialized proto message from Renderer
+        // to a specific stream
+        // !! Call this function in a NON-NET-PLUGIN !!
+        void DispatchTargetStreamMessage(const std::string& stream_id, const std::string& msg, bool run_through = false);
+
+        // Serialized proto message from Renderer
+        // to file transfer
+        // !! Call this function in a NON-NET-PLUGIN !!
+        void DispatchTargetFileTransferMessage(const std::string& stream_id, const std::string& msg, bool run_through = false);
 
         // messages from remote
         virtual void OnMessage(const std::shared_ptr<Message>& msg);

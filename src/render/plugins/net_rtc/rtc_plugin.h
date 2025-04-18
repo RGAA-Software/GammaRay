@@ -28,6 +28,8 @@ namespace tc
         int ConnectedClientSize() override;
         int64_t GetQueuingMediaMsgCount() override;
         int64_t GetQueuingFtMsgCount() override;
+        bool HasEnoughBufferForQueuingMediaMessages() override;
+        bool HasEnoughBufferForQueuingFtMessages() override;
 
     private:
         void OnRemoteSdp(const MsgRtcRemoteSdp& m);

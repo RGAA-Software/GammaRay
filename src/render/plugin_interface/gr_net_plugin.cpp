@@ -57,4 +57,12 @@ namespace tc
         return 0;
     }
 
+    bool GrNetPlugin::HasEnoughBufferForQueuingMediaMessages() {
+        return false;
+    }
+
+    bool GrNetPlugin::HasEnoughBufferForQueuingFtMessages() {
+        return false;
+    }
+
 }

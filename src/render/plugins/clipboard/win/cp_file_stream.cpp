@@ -37,7 +37,7 @@ namespace tc
         req_buffer->set_req_start(current_position_);
         req_buffer->set_full_name(cp_file_.file_.full_path());
 
-        plugin_->PostToTargetFileTransferMessage(cp_file_.stream_id_, msg.SerializeAsString());
+        plugin_->DispatchTargetFileTransferMessage(cp_file_.stream_id_, msg.SerializeAsString());
 
         std::unique_lock lk(wait_data_mtx_);
         data_cv_.wait(lk, [this]() -> bool {

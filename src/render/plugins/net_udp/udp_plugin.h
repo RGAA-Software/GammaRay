@@ -45,6 +45,9 @@ namespace tc
         void NotifyMediaClientConnected();
         void NotifyMediaClientDisConnected();
 
+        bool HasEnoughBufferForQueuingMediaMessages() override;
+        bool HasEnoughBufferForQueuingFtMessages() override;
+
     private:
         void StartInternal();
 

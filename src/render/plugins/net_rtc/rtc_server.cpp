@@ -276,6 +276,14 @@ namespace tc
         return ft_data_channel_ ? ft_data_channel_->GetPendingDataCount() : 0;
     }
 
+    bool RtcServer::HasEnoughBufferForQueuingMediaMessages() {
+        return media_data_channel_ && media_data_channel_->HasEnoughBufferForQueuingMessages();
+    }
+
+    bool RtcServer::HasEnoughBufferForQueuingFtMessages() {
+        return ft_data_channel_ && ft_data_channel_->HasEnoughBufferForQueuingMessages();
+    }
+
     void RtcServer::Exit() {
         if (media_data_channel_) {
             media_data_channel_->Close();

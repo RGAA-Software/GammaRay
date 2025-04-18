@@ -37,6 +37,9 @@ namespace tc
         uint32_t GetMediaPendingMessages();
         uint32_t GetFtPendingMessages();
 
+        bool HasEnoughBufferForQueuingMediaMessages();
+        bool HasEnoughBufferForQueuingFtMessages();
+
     private:
         void CreatePeerConnectionFactory();
         void CreatePeerConnection();
