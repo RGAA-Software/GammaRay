@@ -48,6 +48,7 @@ namespace tc
         VideoRenderType GetVideoRenderType();
 
         void SetAudioEnabled(bool enabled);
+        // 废弃
         void SetTempAudioEnabled(bool enabled);
         void SetClipboardEnabled(bool enabled);
         void SetMultiDisplayMode(MultiDisplayMode mode);

@@ -64,9 +64,12 @@ namespace tc
             }
 
             layout->addStretch();
+
+            //声音
             WidgetHelper::ClearMargins(layout);
             {
                 auto btn = new FloatIcon(ctx, this);
+                audio_btn_ = btn;
                 btn->setFixedSize(btn_size);
                 btn->SetIcons(":resources/image/ic_volume_on.svg", ":resources/image/ic_volume_off.svg");
                 layout->addWidget(btn);
@@ -81,11 +84,12 @@ namespace tc
                 btn->SetOnClickListener([=, this](QWidget* w) {
                     if (settings->IsAudioEnabled()) {
                         btn->SwitchToSelectedState();
-                        settings->SetTempAudioEnabled(false);
+                        settings->SetAudioEnabled(false);
                     } else {
                         btn->SwitchToNormalState();
-                        settings->SetTempAudioEnabled(true);
+                        settings->SetAudioEnabled(true);
                     }
+                    context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kAudioStatus});
                 });
             }
             {
@@ -100,6 +104,7 @@ namespace tc
             }
             {
                 auto btn = new FloatIcon(ctx, this);
+                full_screen_btn_ = btn;
                 btn->setFixedSize(btn_size);
                 btn->SetIcons(":resources/image/ic_fullscreen.svg", ":resources/image/ic_fullscreen_exit.svg");
                 layout->addSpacing(border_spacing);
@@ -107,11 +112,9 @@ namespace tc
                 btn->SetOnClickListener([=, this](QWidget* w) {
                     if (parent->isFullScreen()) {
                         parent->showNormal();
-                        btn->SwitchToNormalState();
                         context_->SendAppMessage(ExitFullscreenMessage{});
                     } else {
                         parent->showFullScreen();
-                        btn->SwitchToSelectedState();
                         context_->SendAppMessage(FullscreenMessage{});
                         HideAllSubPanels();
                     }
@@ -280,6 +283,7 @@ namespace tc
                 }
                 auto item_pos = this->mapTo((QWidget*)this->parent(), w->pos());
                 HideAllSubPanels();
+                ((SubDisplayPanel*)panel)->SetCaptureMonitorName(monitor_name_);
                 ((SubDisplayPanel*)panel)->UpdateMonitorInfo(this->capture_monitor_);
                 panel->setGeometry(this->pos().x() + this->width(), item_pos.y(), panel->width(), panel->height());
                 panel->show();
@@ -386,7 +390,7 @@ namespace tc
         root_layout->addStretch();
         setLayout(root_layout);
 
-        CreateMsgListener();
+     
         msg_listener_->Listen<MousePressedMessage>([=, this](const MousePressedMessage& msg) {
             this->Hide();
         });
@@ -402,6 +406,18 @@ namespace tc
             context_->PostUITask([=, this]() {
                 UpdateCapturingMonitor(msg.name_, msg.index_);
             });
+        });
+
+        msg_listener_->Listen<FullscreenMessage>([=, this](const FullscreenMessage& msg) {
+            if (full_screen_btn_) {
+                full_screen_btn_->SwitchToSelectedState();
+            }
+        });
+
+        msg_listener_->Listen<ExitFullscreenMessage>([=, this](const ExitFullscreenMessage& msg) {
+            if (full_screen_btn_) {
+                full_screen_btn_->SwitchToNormalState();
+            }
         });
     }
 
@@ -522,5 +538,25 @@ namespace tc
         context_->SendAppMessage(SwitchMonitorMessage{
            .name_ = kCaptureAllMonitorsSign,
         });
+    }
+
+    void FloatControllerPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
+        if (FloatControllerPanelUpdateMessage::EUpdate::kAudioStatus == msg.update_type_) {
+            auto settings = Settings::Instance();
+            if (settings->IsAudioEnabled()) {
+                audio_btn_->SwitchToSelectedState();
+            }
+            else {
+                audio_btn_->SwitchToNormalState();
+            }
+        }
+    }
+
+    void FloatControllerPanel::SetMainControl() {
+        is_main_control_ = true;
+    }
+
+    void FloatControllerPanel::SetMonitorName(const std::string& mon_name) {
+        monitor_name_ = mon_name;
     }
 }

@@ -85,35 +85,6 @@ namespace tc
         WidgetHelper::AddShadow(debug_panel_, 0x999999);
         debug_panel_->hide();
 
-        // float controller
-        float_controller_ = new FloatController(ctx, this);
-        float_controller_->setFixedSize(50, 50);
-        WidgetHelper::AddShadow(float_controller_, shadow_color);
-        controller_panel_ = new FloatControllerPanel(ctx, this);
-        WidgetHelper::AddShadow(controller_panel_, shadow_color);
-        RegisterControllerPanelListeners();
-        controller_panel_->hide();
-
-        float_controller_->SetOnClickListener([=, this]() {
-            QPoint point = float_controller_->mapToGlobal(QPoint(0, 0));
-            point.setX(float_controller_->pos().x() + float_controller_->width() + 10);
-            point.setY(float_controller_->pos().y());
-            controller_panel_->move(point);
-            if (controller_panel_->isHidden()) {
-                if (!float_controller_->HasMoved()) {
-                    controller_panel_->show();
-                }
-            } else {
-                controller_panel_->Hide();
-            }
-        });
-        float_controller_->SetOnMoveListener([=, this]() {
-            if (!controller_panel_) {
-                return;
-            }
-            controller_panel_->Hide();
-        });
-
         // notification handle
         notification_handler_ = new FloatNotificationHandle(context_, this);
         notification_handler_->SetPixmap(":resources/image/ic_mail.svg");
@@ -216,11 +187,14 @@ namespace tc
             this->SendUpdateDesktopMessage();
         });
 
+        RegisterControllerPanelListeners();
+
 #ifdef TC_ENABLE_FILE_TRANSMISSION
         file_trans_interface_ = FileTransInterface::Make(sdk_);
 #endif // TC_ENABLE_FILE_TRANSMISSION
 
         QTimer::singleShot(100, [=, this](){
+            //原有文件传输,已用file_trans_interface_替代
             //file_transfer_ = std::make_shared<FileTransferChannel>(context_);
             //file_transfer_->Start();
         });
@@ -243,9 +217,9 @@ namespace tc
             //LOGI("SdkCaptureMonitorInfo mon_index_: {}", info.mon_index_);
             if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
                 if (game_views_.size() > 0) {
-                    if (game_views_[0]) {
-                        game_views_[0]->RefreshCapturedMonitorInfo(info);
-                        game_views_[0]->RefreshI420Image(image);
+                    if (game_views_[kMainGameViewIndex]) {
+                        game_views_[kMainGameViewIndex]->RefreshCapturedMonitorInfo(info);
+                        game_views_[kMainGameViewIndex]->RefreshI420Image(image);
                     }
                 }
             }
@@ -310,7 +284,7 @@ namespace tc
             for (const auto& item : config.monitors_info()) {
                 std::string monitor_name = item.name();
                 //LOGI("monitor name: {}", item.name());
-                monitor_name_map_index_[monitor_name] = monitor_index;
+                monitor_index_map_name_[monitor_index] = monitor_name;
                 std::vector<CaptureMonitorMessage::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
                     resolutions.push_back(CaptureMonitorMessage::Resolution {
@@ -328,8 +302,8 @@ namespace tc
 
             int monitors_count = config.monitors_info().size();
             context_->PostUITask([=, this]() {
-                OnGetCaptureMonitorsCount(monitors_count);
                 OnGetCaptureMonitorName(config.capturing_monitor_name());
+                OnGetCaptureMonitorsCount(monitors_count);
             });
         });
 
@@ -478,8 +452,8 @@ namespace tc
 
     void Workspace::SendWindowsKey(unsigned long vk, bool down) {
         if (game_views_.size() > 0) {
-            if (game_views_[0]) {
-                game_views_[0]->SendKeyEvent(vk, down);
+            if (game_views_[kMainGameViewIndex]) {
+                game_views_[kMainGameViewIndex]->SendKeyEvent(vk, down);
             }
         }
     }
@@ -490,7 +464,6 @@ namespace tc
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
         UpdateFloatButtonIndicatorPosition();
-        float_controller_->ReCalculatePosition();
     }
 
     void Workspace::UpdateNotificationHandlePosition() {
@@ -551,18 +524,16 @@ namespace tc
     }
 
     void Workspace::RegisterControllerPanelListeners() {
-        controller_panel_->SetOnDebugListener([=, this](QWidget* w) {
-            controller_panel_->Hide();
-            debug_panel_->setHidden(!debug_panel_->isHidden());
+
+        msg_listener_->Listen<OpenFiletransMsg>([=, this](const OpenFiletransMsg& msg) {
+            context_->PostUITask([=, this]() {
+                file_trans_interface_->OnClickedFileTrans();
+            });
         });
 
-        controller_panel_->SetOnFileTransListener([=, this](QWidget* w) {
-            if (!file_trans_interface_) {
-                return;
-            }
+        msg_listener_->Listen<OpenDebugPanelMsg>([=, this](const OpenDebugPanelMsg& msg) {
             context_->PostUITask([=, this]() {
-                controller_panel_->Hide();
-                file_trans_interface_->OnClickedFileTrans();
+                debug_panel_->setHidden(!debug_panel_->isHidden());
             });
         });
     }
@@ -712,9 +683,11 @@ namespace tc
                 if (game_view->IsMainView()) {
                     if (full_screen_) {
                         WidgetSelectMonitor(this, screens);
+                        this->showFullScreen();
                         game_view->showFullScreen();
                     }
                     else {
+                        this->showNormal();
                         game_view->showNormal();
                     }
                 }
@@ -729,6 +702,8 @@ namespace tc
                     if (full_screen_) {
                         if (game_view->IsMainView()) {
                             WidgetSelectMonitor(this, screens);
+                            this->showFullScreen();
+                            
                         }
                         else {
                             WidgetSelectMonitor(game_view, screens);
@@ -736,6 +711,9 @@ namespace tc
                         game_view->showFullScreen();
                     }
                     else {
+                        if (game_view->IsMainView()) {
+                            this->showNormal();
+                        }
                         game_view->showNormal();
                     }
                 }
@@ -763,14 +741,26 @@ namespace tc
     }
 
     void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {
+        for (const auto& index_name : monitor_index_map_name_) {
+            if (game_views_.size() > index_name.first) {
+                if (game_views_[index_name.first]) {
+                    game_views_[index_name.first]->SetMonitorName(index_name.second);
+                }
+            }
+        }
+
         if (kCaptureAllMonitorsSign == monitor_name) {
             multi_display_mode_ = EMultiMonDisplayMode::kSeparate;
             if (monitors_count_ > 1) {
                 setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
             }
+            
         }
         else {
             multi_display_mode_ = EMultiMonDisplayMode::kTab;
+            if (game_views_[kMainGameViewIndex]) {
+                game_views_[kMainGameViewIndex]->SetMonitorName(monitor_name);
+            }
         }
     }
 

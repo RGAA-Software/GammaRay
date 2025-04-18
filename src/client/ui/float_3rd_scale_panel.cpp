@@ -42,26 +42,20 @@ namespace tc
         });
         root_layout->addWidget(listview_);
         setLayout(root_layout);
-
-        int target_index = 0;
-        if (settings_->scale_mode_ == ScaleMode::kKeepAspectRatio) {
-            target_index = 0;
-        } else if (settings_->scale_mode_ == ScaleMode::kFullWindow) {
-            target_index = 1;
-        } else if (settings_->scale_mode_ == ScaleMode::kOriginSize) {
-            target_index = 2;
-        }
-        listview_->Select(target_index);
-
+        UpdateStatus(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kImageScaleMode });
         listview_->SetOnItemClickListener([=, this](int idx, QWidget* w) {
-            context_->SendAppMessage(SwitchScaleModeMessage{
-                .mode_ = [idx]() {
-                    if (idx == 0) { return ScaleMode::kKeepAspectRatio;}
-                    else if (idx == 1) {return ScaleMode::kFullWindow;}
-                    else if (idx == 2) {return ScaleMode::kOriginSize;}
-                    return ScaleMode::kFullWindow;
-                }(),
-            });
+            ScaleMode mode = ScaleMode::kFullWindow;
+            if (idx == 0) { 
+                mode = ScaleMode::kKeepAspectRatio;
+            } else if (idx == 1) { 
+                mode = ScaleMode::kFullWindow; 
+            } else if (idx == 2) { 
+                mode = ScaleMode::kOriginSize; 
+            }
+            UpdateScaleMode(mode);
+            SwitchScaleModeMessage scale_mode_msg{.mode_ = mode};
+            context_->SendAppMessage(scale_mode_msg);
+            context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage ::EUpdate::kImageScaleMode});
         });
     }
 
@@ -78,8 +72,22 @@ namespace tc
     }
 
     void ThirdScalePanel::UpdateScaleMode(ScaleMode mode) {
-        settings_->scale_mode_ = mode;
-
+        settings_->SetScaleMode(mode);
     }
 
+    void ThirdScalePanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
+        if (FloatControllerPanelUpdateMessage::EUpdate::kImageScaleMode == msg.update_type_) {
+            int target_index = 0;
+            if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_) {
+                target_index = 0;
+            }
+            else if (ScaleMode::kFullWindow == settings_->scale_mode_) {
+                target_index = 1;
+            }
+            else if (ScaleMode::kOriginSize == settings_->scale_mode_) {
+                target_index = 2;
+            }
+            listview_->Select(target_index);
+        }
+    }
 }

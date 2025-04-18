@@ -319,6 +319,7 @@ namespace tc
             capture->RefreshScreen();
         }
         LOGI("OnNewClientIn!");
+        NotifyCaptureMonitorInfo();
     }
 
     std::vector<SupportedResolution> DDACapturePlugin::GetSupportedResolutions(const std::wstring& name) {

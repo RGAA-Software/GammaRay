@@ -39,11 +39,13 @@ namespace tc
             layout->addStretch();
 
             auto sb = new SwitchButton(this);
+            clibpboard_btn_ = sb;
             sb->setFixedSize(35, 20);
             sb->SetStatus(Settings::Instance()->clipboard_on_);
             layout->addWidget(sb);
-            sb->SetClickCallback([](bool enabled) {
-                Settings::Instance()->clipboard_on_ = enabled;
+            sb->SetClickCallback([=,this](bool enabled) {
+                Settings::Instance()->SetClipboardEnabled(enabled);
+                this->context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kClipboardSharedStatus});
             });
 
             layout->addSpacing(border_spacing);
@@ -90,6 +92,12 @@ namespace tc
 
     void SubControlPanel::RequestCtrlAltDelete() {
         context_->SendAppMessage(MsgCtrlAltDelete{});
+    }
+
+    void SubControlPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
+        if (FloatControllerPanelUpdateMessage::EUpdate::kClipboardSharedStatus == msg.update_type_) {
+            clibpboard_btn_->SetStatus(Settings::Instance()->clipboard_on_);
+        }
     }
 
 }

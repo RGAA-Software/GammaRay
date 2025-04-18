@@ -78,13 +78,10 @@ namespace tc
         void OnGetCaptureMonitorName(std::string monitor_name);
         void InitGameViews(const std::shared_ptr<ThunderSdkParams>& params);
         void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
-        
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
         std::shared_ptr<AudioPlayer> audio_player_ = nullptr;
-        FloatController* float_controller_ = nullptr;
-        FloatControllerPanel* controller_panel_ = nullptr;
         bool is_window_active_ = false;
         acss::QtAdvancedStylesheet* theme_{};
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
@@ -125,10 +122,15 @@ namespace tc
         // 11.全屏动作，扩展屏未生效 (已完成)
         // 12.关闭的时候，将widget显示到前面,尤其是在任务栏关闭(已完成)
         // 13.点击文件传输按钮, 文件传输页面显示到前面(已完成)
+        // 14.setting 保存各种模式的时候，不需要重复保存，避免重复保存
+        // 15.测试一开始 又出现没有当前显示器标识的情况
+        // 16.分辨率还要传递回来 当前真正使用的分辨率
+        // 17.全屏的时候，多屏之间 要同步全屏或者退出全屏(已完成)
+        // 18.不知道为什么会闪烁
         
         QString origin_title_name_;
         std::vector<GameView*> game_views_;  
-        std::map<std::string, int> monitor_name_map_index_;
+        std::map<int, std::string> monitor_index_map_name_;
         
 
         EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;

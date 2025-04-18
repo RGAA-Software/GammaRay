@@ -61,7 +61,6 @@ namespace tc
         root_layout->addStretch();
         setLayout(root_layout);
 
-        CreateMsgListener();
         msg_listener_->Listen<MsgMonitorChanged>([=, this](const MsgMonitorChanged& msg) {
             context_->PostUITask([=, this]() {
                 this->SelectCapturingMonitorSize();

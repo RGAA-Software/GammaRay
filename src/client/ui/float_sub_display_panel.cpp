@@ -102,11 +102,12 @@ namespace tc
                 auto item_pos = this->mapTo((QWidget*)this->parent(), w->pos());
                 HideAllSubPanels();
                 auto capturing_monitor_name = context_->GetCapturingMonitorName();
-                if (monitors_.monitors_.empty() || capturing_monitor_name.empty()) {
-                    LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_name, monitors_.monitors_.size());
+                if (cap_monitors_info_.monitors_.empty() || capturing_monitor_name.empty()) {
+                    LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_name, cap_monitors_info_.monitors_.size());
                     return;
                 }
-                auto capture_monitor = monitors_.GetCaptureMonitorByName(capturing_monitor_name);
+                //auto capture_monitor = cap_monitors_info_.GetCaptureMonitorByName(capturing_monitor_name);
+                auto capture_monitor = cap_monitors_info_.GetCaptureMonitorByName(capture_monitor_name_);
                 if (capture_monitor.IsValid()) {
                     ((ThirdResolutionPanel *) panel)->UpdateMonitor(capture_monitor);
                     panel->setGeometry(this->pos().x() + this->width(), item_pos.y(), panel->width(), panel->height());
@@ -159,13 +160,17 @@ namespace tc
     }
 
     void SubDisplayPanel::UpdateMonitorInfo(const CaptureMonitorMessage& m) {
-        monitors_ = m;
+        cap_monitors_info_ = m;
         // sort it
-        for (auto& monitor : monitors_.monitors_) {
+        for (auto& monitor : cap_monitors_info_.monitors_) {
             std::sort(monitor.resolutions_.begin(), monitor.resolutions_.end(), [](const auto& left, const auto& right) {
                 return left.width_ > right.width_;
             });
         }
+    }
+
+    void SubDisplayPanel::SetCaptureMonitorName(const std::string& name) {
+        capture_monitor_name_ = name;
     }
 
 }

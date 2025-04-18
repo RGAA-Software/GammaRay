@@ -10,7 +10,7 @@
 
 namespace tc
 {
-
+    class SwitchButton;
     class SubControlPanel : BaseWidget {
     public:
         explicit SubControlPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
@@ -18,6 +18,10 @@ namespace tc
 
     private:
         void RequestCtrlAltDelete();
+        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
+
+    private:
+        SwitchButton* clibpboard_btn_ = nullptr;
     };
 
 }
