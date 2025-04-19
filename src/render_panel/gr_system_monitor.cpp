@@ -285,12 +285,14 @@ namespace tc
                 auto srv = online_servers->relay_servers_.at(0);
                 settings_->SetRelayServerHost(srv.srv_w3c_ip_);
                 settings_->SetRelayServerPort(srv.srv_working_port_);
+                LOGI("Got Relay server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
                 settings_changed = true;
             }
             if (!online_servers->pr_servers_.empty()) {
                 auto srv = online_servers->pr_servers_.at(0);
-                settings_->SetIdServerHost(srv.srv_w3c_ip_);
-                settings_->SetIdServerPort(srv.srv_working_port_);
+                settings_->SetProfileServerHost(srv.srv_w3c_ip_);
+                settings_->SetProfileServerPort(srv.srv_working_port_);
+                LOGI("Got Profile server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
                 settings_changed = true;
             }
             if (settings_changed) {

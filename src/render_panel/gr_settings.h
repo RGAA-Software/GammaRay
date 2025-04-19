@@ -44,8 +44,8 @@ namespace tc
     static const std::string kStCoturnPort = "coturn_server_port";
     static const std::string kStDeviceId = "device_id";
     static const std::string kStDeviceRandomPwd = "device_random_pwd";
-    static const std::string kStIDServerHost = "id_server_host";
-    static const std::string kStIDServerPort = "id_server_port";
+    static const std::string kStProfileServerHost = "profile_server_host";
+    static const std::string kStProfileServerPort = "profile_server_port";
     static const std::string kStRelayServerHost = "relay_server_host";
     static const std::string kStRelayServerPort = "relay_server_port";
     static const std::string kStSpvrServerHost = "spvr_server_host";
@@ -100,8 +100,8 @@ namespace tc
         void SetDeviceId(const std::string& id);
         void SetDeviceRandomPwd(const std::string& pwd);
         void SetPanelListeningPort(int port);
-        void SetIdServerHost(const std::string& host);
-        void SetIdServerPort(const std::string& port);
+        void SetProfileServerHost(const std::string& host);
+        void SetProfileServerPort(const std::string& port);
         void SetRelayServerHost(const std::string& host);
         void SetRelayServerPort(const std::string& port);
         void SetSpvrServerHost(const std::string& host);
@@ -145,7 +145,7 @@ namespace tc
         // Spvr Server
         std::string spvr_server_host_;
         std::string spvr_server_port_;
-        // ID Server
+        // Profile Server
         std::string profile_server_host_;
         std::string profile_server_port_;
         // Relay Server

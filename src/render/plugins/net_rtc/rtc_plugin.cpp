@@ -9,6 +9,7 @@
 #include "rtc_messages.h"
 #include "rtc_server.h"
 #include "tc_common_new/time_util.h"
+#include "plugin_interface/gr_plugin_context.h"
 
 namespace tc
 {
@@ -31,6 +32,14 @@ namespace tc
 
     bool RtcPlugin::OnCreate(const tc::GrPluginParam &param) {
         GrNetPlugin::OnCreate(param);
+
+        //
+        plugin_context_->StartTimer(100, [=, this]() {
+            rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
+                srv->On100msTimeout();
+            });
+        });
+
         return true;
     }
 

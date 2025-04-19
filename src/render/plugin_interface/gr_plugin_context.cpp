@@ -10,7 +10,7 @@ namespace tc
 {
 
     GrPluginContext::GrPluginContext(const std::string& plugin_name) {
-        work_thread_ = Thread::Make(plugin_name, 1024);
+        work_thread_ = Thread::Make(plugin_name, 1024 * 1024 * 10);
         work_thread_->Poll();
 
         timer_ = std::make_shared<asio2::timer>();

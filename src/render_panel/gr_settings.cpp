@@ -77,8 +77,8 @@ namespace tc
         coturn_server_address_ = sp_->Get(kStCoturnAddress, "");
         coturn_server_port_ = sp_->Get(kStCoturnPort, "");
         // id server
-        profile_server_host_ = sp_->Get(kStIDServerHost, "");
-        profile_server_port_ = sp_->Get(kStIDServerPort, "");
+        profile_server_host_ = sp_->Get(kStProfileServerHost, "");
+        profile_server_port_ = sp_->Get(kStProfileServerPort, "");
         // relay server
         relay_server_host_ = sp_->Get(kStRelayServerHost, "");
         relay_server_port_ = sp_->Get(kStRelayServerPort, "");
@@ -119,6 +119,8 @@ namespace tc
         ss << "relay port: " << relay_server_port_ << std::endl;
         ss << "spvr server host: " << spvr_server_host_ << std::endl;
         ss << "spvr server port: " << spvr_server_port_ << std::endl;
+        ss << "pr server host: " << profile_server_host_ << std::endl;
+        ss << "pr server port: " << profile_server_port_ << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -275,14 +277,14 @@ namespace tc
         sp_->Put(kStPanelListeningPort, std::to_string(port));
     }
 
-    void GrSettings::SetIdServerHost(const std::string& host) {
+    void GrSettings::SetProfileServerHost(const std::string& host) {
         profile_server_host_ = host;
-        sp_->Put(kStIDServerHost, host);
+        sp_->Put(kStProfileServerHost, host);
     }
 
-    void GrSettings::SetIdServerPort(const std::string& port) {
+    void GrSettings::SetProfileServerPort(const std::string& port) {
         profile_server_port_ = port;
-        sp_->Put(kStIDServerPort, port);
+        sp_->Put(kStProfileServerPort, port);
     }
 
     void GrSettings::SetRelayServerHost(const std::string& host) {

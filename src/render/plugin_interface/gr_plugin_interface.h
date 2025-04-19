@@ -67,6 +67,8 @@ namespace tc
         GrPluginInterface(const GrPluginInterface&) = delete;
         GrPluginInterface& operator=(const GrPluginInterface&) = delete;
 
+        std::shared_ptr<GrPluginContext> GetPluginContext();
+
         // info
         virtual std::string GetPluginId() = 0;
         virtual std::string GetPluginName();

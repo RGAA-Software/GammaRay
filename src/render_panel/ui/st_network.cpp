@@ -418,8 +418,8 @@ namespace tc
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                //settings_->SetIdServerHost(edt_id_server_host_->text().toStdString());
-                //settings_->SetIdServerPort(edt_id_server_port_->text().toStdString());
+                //settings_->SetProfileServerHost(edt_id_server_host_->text().toStdString());
+                //settings_->SetProfileServerPort(edt_id_server_port_->text().toStdString());
                 //settings_->SetRelayServerHost(edt_relay_server_host_->text().toStdString());
                 //settings_->SetRelayServerPort(edt_relay_server_port_->text().toStdString());
                 //settings_->SetSigServerAddress(edt_sig_server_host_->text().toStdString());

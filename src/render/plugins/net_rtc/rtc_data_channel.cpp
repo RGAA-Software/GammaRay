@@ -6,6 +6,9 @@
 #include "tc_common_new/log.h"
 #include "rtc_server.h"
 #include "tc_common_new/net_tlv_header.h"
+#include "tc_common_new/time_util.h"
+#include "plugin_interface/gr_plugin_context.h"
+#include "rtc_plugin.h"
 
 namespace tc
 {
@@ -14,6 +17,7 @@ namespace tc
         this->name_ = name;
         this->rtc_server_ = rtc_server;
         this->plugin_ = rtc_server->GetPlugin();
+        this->plugin_ctx_ = this->plugin_->GetPluginContext();
         this->data_channel_ = ch;
         this->data_channel_->RegisterObserver(this);
     }
@@ -37,11 +41,14 @@ namespace tc
     }
 
     void RtcDataChannel::OnMessage(const webrtc::DataBuffer &buffer) {
-        std::lock_guard<std::mutex> guard(msg_in_mtx_);
         auto header = (NetTlvHeader*)buffer.data.data();
         std::string data;
         data.resize(header->this_buffer_length_);
         memcpy(data.data(), (char*)header + sizeof(NetTlvHeader), header->this_buffer_length_);
+
+        auto curr_timestamp = tc::TimeUtil::GetCurrentTimestamp();
+        auto diff_time = curr_timestamp - last_recv_msg_timestamp_;
+        last_recv_msg_timestamp_ = curr_timestamp;
 
         if (IsFtChannel()) {
             //LOGI("from: {}, index: {} => Message size: {}", name_, header->pkt_index_, header->this_buffer_length_);
@@ -55,47 +62,58 @@ namespace tc
             }
             last_recv_pkt_index_ = curr_pkt_index;
 
+            std::lock_guard<std::mutex> guard(cached_messages_mtx_);
             cached_ft_messages_.insert({header->pkt_index_, data});
-
-            if (cached_ft_messages_.size() >= 4) {
-                uint64_t begin_idx = 0;
-                bool ordered = true;
-                for (const auto& [idx, m] : cached_ft_messages_) {
-                    if (begin_idx == 0) {
-                        begin_idx = idx;
-                    }
-                    auto diff = idx - begin_idx;
-                    if (diff > 1) {
-                        ordered = false;
-                        break;
-                    }
-                }
-                if (!ordered) {
-                    LOGW("Wait for ordered messages, current has:\n");
-                    std::stringstream ss;
-                    for (const auto& [idx, m] : cached_ft_messages_) {
-                        ss << idx << ", ";
-                    }
-                    LOGW("==> {}", ss.str());
-                }
-                else {
-                    for (const auto& [idx, m] : cached_ft_messages_) {
-                        if (data_cbk_) {
-                            auto m_data = m;
-                            data_cbk_(std::move(m_data));
-                        }
-                    }
-                }
-            }
 
         }
         else {
             if (header->type_ == kNetTlvFull) {
                 if (data_cbk_) {
-                    data_cbk_(std::move(data));
+                    data_cbk_(data);
                 }
             }
         }
+    }
+
+    void RtcDataChannel::On100msTimeout() {
+        this->plugin_->PostWorkTask([=, this]() {
+            std::lock_guard<std::mutex> guard(cached_messages_mtx_);
+            uint64_t beg_idx = 0;
+            bool lack_messages = false;
+            for (const auto& [k, data] : cached_ft_messages_) {
+                if (beg_idx == 0) {
+                    beg_idx = k;
+                }
+                if (k - beg_idx > 1) {
+                    lack_messages = true;
+                    break;
+                }
+                beg_idx = k;
+            }
+
+            if (lack_messages) {
+                LOGW("Lack messages! cached message size: {}", cached_ft_messages_.size());
+                std::stringstream ss;
+                for (const auto& [k, data] : cached_ft_messages_) {
+                    ss << k << ",";
+                }
+                LOGW("cached message sort: {}", ss.str());
+                if (cached_ft_messages_.size() > 1024*8) {
+                    // clear it
+                    LOGE("Clear all cached messages, count: {}", cached_ft_messages_.size());
+                    cached_ft_messages_.clear();
+                }
+                return;
+            }
+
+            //LOGI("Cached message size: {}", cached_ft_messages_.size());
+            for (const auto& [k, data] : cached_ft_messages_) {
+                if (data_cbk_) {
+                    data_cbk_(data);
+                }
+            }
+            cached_ft_messages_.clear();
+        });
     }
 
     void RtcDataChannel::OnBufferedAmountChange(uint64_t sent_data_size) {

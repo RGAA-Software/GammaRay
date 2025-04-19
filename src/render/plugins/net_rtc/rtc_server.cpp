@@ -83,7 +83,7 @@ namespace tc
                 media_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
 
                 // data callback
-                media_data_channel_->SetOnDataCallback([=, this](std::string&& data) {
+                media_data_channel_->SetOnDataCallback([=, this](const std::string& data) {
                     auto payload_msg = std::string(data.data(), data.size());
                     plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                 });
@@ -96,7 +96,7 @@ namespace tc
                 ft_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
 
                 // data callback
-                ft_data_channel_->SetOnDataCallback([=, this](std::string&& data) {
+                ft_data_channel_->SetOnDataCallback([=, this](const std::string& data) {
                     auto payload_msg = std::string(data.data(), data.size());
                     plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                 });
@@ -241,7 +241,7 @@ namespace tc
     }
 
     void RtcServer::PostProtoMessage(const std::string &msg, bool run_through) {
-        if (network_thread_ && media_data_channel_) {
+        if (network_thread_ && media_data_channel_ && !exit_) {
             network_thread_->PostTask([=, this]() {
                 media_data_channel_->SendData(msg);
             });
@@ -249,7 +249,7 @@ namespace tc
     }
 
     bool RtcServer::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
-        if (network_thread_ && media_data_channel_) {
+        if (network_thread_ && media_data_channel_ && !exit_) {
             network_thread_->PostTask([=, this]() {
                 media_data_channel_->SendData(msg);
             });
@@ -258,33 +258,40 @@ namespace tc
     }
 
     bool RtcServer::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
-        if (ft_data_channel_) {
+        if (ft_data_channel_ && !exit_) {
             ft_data_channel_->SendData(msg);
         }
         return true;
     }
 
     bool RtcServer::IsDataChannelConnected() {
-        return media_data_channel_ && media_data_channel_->IsConnected();
+        return !exit_ && media_data_channel_ && media_data_channel_->IsConnected();
     }
 
     uint32_t RtcServer::GetMediaPendingMessages() {
-        return media_data_channel_ ? media_data_channel_->GetPendingDataCount() : 0;
+        return !exit_ && media_data_channel_ ? media_data_channel_->GetPendingDataCount() : 0;
     }
 
     uint32_t RtcServer::GetFtPendingMessages() {
-        return ft_data_channel_ ? ft_data_channel_->GetPendingDataCount() : 0;
+        return !exit_ && ft_data_channel_ ? ft_data_channel_->GetPendingDataCount() : 0;
     }
 
     bool RtcServer::HasEnoughBufferForQueuingMediaMessages() {
-        return media_data_channel_ && media_data_channel_->HasEnoughBufferForQueuingMessages();
+        return !exit_ && media_data_channel_ && media_data_channel_->HasEnoughBufferForQueuingMessages();
     }
 
     bool RtcServer::HasEnoughBufferForQueuingFtMessages() {
-        return ft_data_channel_ && ft_data_channel_->HasEnoughBufferForQueuingMessages();
+        return !exit_ && ft_data_channel_ && ft_data_channel_->HasEnoughBufferForQueuingMessages();
+    }
+
+    void RtcServer::On100msTimeout() {
+        if (ft_data_channel_ && !exit_) {
+            ft_data_channel_->On100msTimeout();
+        }
     }
 
     void RtcServer::Exit() {
+        exit_ = true;
         if (media_data_channel_) {
             media_data_channel_->Close();
         }

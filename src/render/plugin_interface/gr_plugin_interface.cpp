@@ -15,6 +15,10 @@
 namespace tc
 {
 
+    std::shared_ptr<GrPluginContext> GrPluginInterface::GetPluginContext() {
+        return plugin_context_;
+    }
+
     std::string GrPluginInterface::GetPluginName() {
         return "dummy";
     }

@@ -40,6 +40,8 @@ namespace tc
         bool HasEnoughBufferForQueuingMediaMessages();
         bool HasEnoughBufferForQueuingFtMessages();
 
+        void On100msTimeout();
+
     private:
         void CreatePeerConnectionFactory();
         void CreatePeerConnection();
@@ -66,6 +68,7 @@ namespace tc
 
         std::shared_ptr<RtcDataChannel> media_data_channel_ = nullptr;
         std::shared_ptr<RtcDataChannel> ft_data_channel_ = nullptr;
+        std::atomic<bool> exit_ = false;
     };
 
 }
