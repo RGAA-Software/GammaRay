@@ -357,7 +357,7 @@ namespace tc
 
     void RdApplication::PostNetMessage(const std::string& msg) {
         plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
-            plugin->PostProtoMessage(msg);
+            plugin->PostProtoMessage(msg, false);
         });
     }
 

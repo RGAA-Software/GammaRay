@@ -46,12 +46,16 @@ namespace tc
     }
 
     void RtcPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
+        WaitForMediaChannelActive();
+
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
             srv->PostProtoMessage(msg, run_through);
         });
     }
 
     bool RtcPlugin::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        WaitForMediaChannelActive();
+
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
             srv->PostTargetStreamProtoMessage(stream_id, msg, run_through);
         });
@@ -59,20 +63,37 @@ namespace tc
     }
 
     bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+        auto queuing_msg_count = GetQueuingFtMsgCount();
         auto has_buffer = this->HasEnoughBufferForQueuingFtMessages();
         auto wait_count = 0;
-        while (!has_buffer) {
+        while (queuing_msg_count > 256 ||  !has_buffer) {
             TimeUtil::DelayBySleep(1);
             has_buffer = this->HasEnoughBufferForQueuingFtMessages();
+            queuing_msg_count = GetQueuingFtMsgCount();
             wait_count++;
         }
         if (wait_count > 0) {
-            LOGI("===> Send file wait for: {}ms", wait_count);
+            LOGI("===> Send file wait for: {}ms, msg count: {}", wait_count, queuing_msg_count);
         }
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
             srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
         });
         return true;
+    }
+
+    void RtcPlugin::WaitForMediaChannelActive() {
+        auto queuing_msg_count = GetQueuingMediaMsgCount();
+        auto has_buffer = this->HasEnoughBufferForQueuingMediaMessages();
+        auto wait_count = 0;
+        while (queuing_msg_count > 256 ||  !has_buffer) {
+            TimeUtil::DelayBySleep(1);
+            has_buffer = this->HasEnoughBufferForQueuingMediaMessages();
+            queuing_msg_count = GetQueuingMediaMsgCount();
+            wait_count++;
+        }
+        if (wait_count > 0) {
+            LOGI("===> Send media wait for: {}ms, msg count: {}", wait_count, queuing_msg_count);
+        }
     }
 
     void RtcPlugin::OnRemoteSdp(const MsgRtcRemoteSdp& m) {

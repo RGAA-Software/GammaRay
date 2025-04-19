@@ -25,9 +25,9 @@ namespace tc
         void On1Second() override;
         bool IsWorking() override;
 
-        void PostProtoMessage(const std::string& msg, bool run_through = false) override;
-        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through = false) override;
-        bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through = false) override;
+        void PostProtoMessage(const std::string& msg, bool run_through) override;
+        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) override;
+        bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) override;
 
         bool IsOnlyAudioClients() override;
         int ConnectedClientSize() override;

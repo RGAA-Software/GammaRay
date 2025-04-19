@@ -81,7 +81,7 @@ namespace tc
 
         // plugins: Frame encoded
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
-            plugin->PostProtoMessage(net_msg);
+            plugin->PostProtoMessage(net_msg, false);
         });
 
         context_->PostStreamPluginTask([=, this]() {

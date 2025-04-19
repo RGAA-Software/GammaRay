@@ -34,6 +34,7 @@ namespace tc
     private:
         void OnRemoteSdp(const MsgRtcRemoteSdp& m);
         void OnRemoteIce(const MsgRtcRemoteIce& m);
+        void WaitForMediaChannelActive();
 
     private:
         ConcurrentHashMap<std::string, std::shared_ptr<RtcServer>> rtc_servers_;

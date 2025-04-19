@@ -37,15 +37,15 @@ namespace tc
         // Renderer Messages ->  -> client 2
         //                       -> client 3
         // run_through: send the message even if stream was paused
-        virtual void PostProtoMessage(const std::string& msg, bool run_through = false);
+        virtual void PostProtoMessage(const std::string& msg, bool run_through);
 
         // Serialized proto message from Renderer
         // to a specific stream
-        virtual bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through = false);
+        virtual bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through);
 
         // Serialized proto message from Renderer
         // to file transfer
-        virtual bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through = false);
+        virtual bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through);
 
         // messages from remote(client) -> this plugin -> process it
         // client 1 ->

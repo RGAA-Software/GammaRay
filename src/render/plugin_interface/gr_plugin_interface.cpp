@@ -235,7 +235,7 @@ namespace tc
 
     void GrPluginInterface::DispatchTargetFileTransferMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
-            plugin->PostTargetFileTransferProtoMessage(stream_id, msg);
+            plugin->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
         }
     }
 

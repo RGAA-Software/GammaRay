@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <map>
 #include "tc_common_new/webrtc_helper.h"
 
 namespace tc
@@ -43,11 +44,14 @@ namespace tc
         std::shared_ptr<RtcServer> rtc_server_ = nullptr;
         std::atomic<bool> connected_ = false;
         std::atomic<int> pending_data_count_ = 0;
-        std::atomic<uint32_t> send_pkt_index_ = 0;
+        std::atomic<uint64_t> send_pkt_index_ = 0;
         OnDataCallback data_cbk_;
 
         std::mutex msg_in_mtx_;
-        std::atomic<uint32_t> last_recv_pkt_index_ = 0;
+        std::atomic<uint64_t> last_recv_pkt_index_ = 0;
+        uint64_t total_send_content_bytes_ = 0;
+
+        std::map<uint64_t, std::string> cached_ft_messages_;
     };
 
 } // namespace dl
