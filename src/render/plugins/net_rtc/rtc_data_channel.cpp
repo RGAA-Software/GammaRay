@@ -102,6 +102,8 @@ namespace tc
                     // clear it
                     LOGE("Clear all cached messages, count: {}", cached_ft_messages_.size());
                     cached_ft_messages_.clear();
+
+                    // TODO: Notify error
                 }
                 return;
             }

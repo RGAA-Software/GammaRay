@@ -1,4 +1,4 @@
-//
+Ôªø//
 // Created by RGAA on 2024/1/25.
 //
 
@@ -31,6 +31,7 @@ namespace tc
         void ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
         void ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event);
         void ProcessEncodedAudioFrameEvent(const std::shared_ptr<Data>& data, int samples, int channels, int bits, int frame_size);
+        void ProcessRtcReportEvent(const std::shared_ptr<GrPluginRtcReportEvent>& event);
 
     private:
         void ProcessHelloEvent(std::shared_ptr<Message>&& msg);
@@ -46,7 +47,7 @@ namespace tc
         void ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg);
         void ProcessInsertKeyFrame(std::shared_ptr<Message>&& msg);
         void ProcessCtrlAltDelete(std::shared_ptr<Message>&& msg);
-        // À¢–¬◊¿√Ê
+        // Âà∑Êñ∞Ê°åÈù¢
         void ProcessUpdateDesktop();
 
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);

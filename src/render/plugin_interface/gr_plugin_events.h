@@ -37,6 +37,7 @@ namespace tc
         kPluginRelayResumeEvent,
         kPluginRtcAnswerSdpEvent,
         kPluginRtcIceEvent,
+        kPluginRtcReportEvent,
     };
 
     class GrPluginBaseEvent {
@@ -244,6 +245,18 @@ namespace tc
         std::string ice_;
         std::string mid_;
         int sdp_mline_index_{0};
+    };
+
+    // rtc report event
+    class GrPluginRtcReportEvent : public GrPluginBaseEvent {
+    public:
+        GrPluginRtcReportEvent() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRtcReportEvent;
+        }
+    public:
+        std::string evt_name_;
+        std::string msg_;
+        std::string data_channel_name_;
     };
 }
 

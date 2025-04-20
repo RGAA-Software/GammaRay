@@ -26,6 +26,7 @@
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "app/win/win_desktop_manager.h"
 #include "plugins/net_rtc/rtc_messages.h"
+#include "net_rtc/rtc_report_event.h"
 
 namespace tc {
 
@@ -411,5 +412,20 @@ namespace tc {
             .device_id_ = device_id,
             .stream_id_ = stream_id
         });
+    }
+
+    void PluginNetEventRouter::ProcessRtcReportEvent(const std::shared_ptr<GrPluginRtcReportEvent>& event) {
+        if (event->evt_name_ == kDataChannelOpen) {
+
+        }
+        else if (event->evt_name_ == kDataChannelClose) {
+
+        }
+        else if (event->evt_name_ == kDataChannelSendError) {
+
+        }
+        else if (event->evt_name_ == kDataChannelRecvError) {
+
+        }
     }
 }

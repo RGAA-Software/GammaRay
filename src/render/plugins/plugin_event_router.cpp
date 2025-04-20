@@ -120,6 +120,10 @@ namespace tc
         else if (event->event_type_ == GrPluginEventType::kPluginRtcIceEvent) {
             this->SendIceToRemote(event);
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginRtcReportEvent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginRtcReportEvent>(event);
+            net_event_router_->ProcessRtcReportEvent(target_event);
+        }
     }
 
     void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
