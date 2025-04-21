@@ -82,7 +82,7 @@ namespace tc
             wait_count++;
         }
         if (wait_count > 0) {
-            LOGI("===> Send file wait for: {}ms, msg count: {}", wait_count, queuing_msg_count);
+            //LOGI("===> Send file wait for: {}ms, msg count: {}", wait_count, queuing_msg_count);
         }
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
             srv->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);

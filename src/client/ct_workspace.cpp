@@ -318,6 +318,19 @@ namespace tc
             if (file_trans_interface_) {
                 file_trans_interface_->OnProtoMessage(msg);
             }
+
+            // test beg //
+            if (false && msg->type() == tc::kFileTransDataPacket) {
+                // test beg //
+                static std::ofstream tst_file("2.test.recv.zip", std::ios::binary);
+                std::string data = msg->file_trans_data_packet().data();
+                tst_file.write(data.data(), data.size());
+                tst_file.flush();
+                LOGI("2.Write size: {}", data.size());
+                // test end //
+            }
+            // test end //
+
         });
 
         msg_listener_->Listen<SdkMsgChangeMonitorResolutionResult>([=, this](const SdkMsgChangeMonitorResolutionResult& msg) {

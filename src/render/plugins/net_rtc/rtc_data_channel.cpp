@@ -260,7 +260,7 @@ namespace tc
     bool RtcDataChannel::HasEnoughBufferForQueuingMessages() {
         return data_channel_
                && data_channel_->state() == webrtc::DataChannelInterface::DataState::kOpen
-               && data_channel_->buffered_amount() <= data_channel_->MaxSendQueueSize()*1/2;
+               && data_channel_->buffered_amount() <= data_channel_->MaxSendQueueSize()*1/4;
     }
 
     bool RtcDataChannel::IsMediaChannel() {
