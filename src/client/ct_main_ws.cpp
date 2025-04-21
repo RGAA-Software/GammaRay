@@ -280,7 +280,7 @@ int main(int argc, char** argv) {
     });
 
     static Workspace ws(ctx, params);
-    ws.resize(1280, 768);
+    ws.resize(1366, 768);
     if (settings->show_max_window_) {
         ws.showMaximized();
     }

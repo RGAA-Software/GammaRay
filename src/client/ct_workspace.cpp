@@ -81,8 +81,9 @@ namespace tc
         WidgetHelper::AddShadow(btn_indicator_, shadow_color);
 
         // debug panel
-        debug_panel_ = new DebugPanel(context_, this);
-        WidgetHelper::AddShadow(debug_panel_, 0x999999);
+        debug_panel_ = new DebugPanel(context_, nullptr);
+        debug_panel_->resize(1366, 768);
+        //WidgetHelper::AddShadow(debug_panel_, 0x999999);
         debug_panel_->hide();
 
         // notification handle
@@ -552,9 +553,9 @@ namespace tc
     }
 
     void Workspace::UpdateDebugPanelPosition() {
-        int offset = 120;
-        debug_panel_->resize(this->width()-offset, this->height()-offset);
-        debug_panel_->move(offset/2, offset/2);
+//        int offset = 120;
+//        debug_panel_->resize(this->width()-offset, this->height()-offset);
+//        debug_panel_->move(offset/2, offset/2);
     }
 
     void Workspace::SendClipboardMessage(const ClipboardMessage& msg) {

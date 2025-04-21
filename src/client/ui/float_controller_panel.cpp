@@ -329,14 +329,14 @@ namespace tc
 
             auto icon = new QLabel(this);
             icon->setFixedSize(icon_size);
-            icon->setStyleSheet(R"( background-image: url(:resources/image/ic_debug_off.svg);
+            icon->setStyleSheet(R"( background-image: url(:resources/image/ic_statistics.svg);
                                     background-repeat:no-repeat;
                                     background-position: center center;)");
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
             auto text = new QLabel();
-            text->setText(tr("Debug"));
+            text->setText(tr("Statistics"));
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);

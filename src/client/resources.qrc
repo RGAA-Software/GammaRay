@@ -48,6 +48,7 @@
         <file>resources/image/ic_icon_selected.svg</file>
         <file>resources/image/ic_info.svg</file>
         <file>resources/image/ic_warning.svg</file>
+        <file>resources/image/ic_statistics.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

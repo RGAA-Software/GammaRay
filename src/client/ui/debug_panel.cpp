@@ -13,6 +13,7 @@ namespace tc
 {
 
     DebugPanel::DebugPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
+        setWindowTitle("Statistics");
         auto root_layout = new NoMarginHLayout();
         root_layout->addSpacing(20);
         {
@@ -33,22 +34,21 @@ namespace tc
         }
         root_layout->addStretch();
         setLayout(root_layout);
-        this->setStyleSheet("background:#00000000;");
 
         // close button
-        auto btn = new FloatIcon(ctx, this);
-        close_btn_ = btn;
-        btn->setFixedSize(QSize(30, 30));
-        btn->SetIcons(":resources/image/ic_close.svg", "");
-        btn->SetOnClickListener([=, this](QWidget* w) {
-            this->hide();
-        });
+//        auto btn = new FloatIcon(ctx, this);
+//        close_btn_ = btn;
+//        btn->setFixedSize(QSize(30, 30));
+//        btn->SetIcons(":resources/image/ic_close.svg", "");
+//        btn->SetOnClickListener([=, this](QWidget* w) {
+//            this->hide();
+//        });
     }
 
     void DebugPanel::resizeEvent(QResizeEvent *event) {
-        int close_btn_offset = 10;
-        close_btn_->setGeometry(this->width() - close_btn_->width() - close_btn_offset,
-                                close_btn_offset, close_btn_->width(), close_btn_->height());
+//        int close_btn_offset = 10;
+//        close_btn_->setGeometry(this->width() - close_btn_->width() - close_btn_offset,
+//                                close_btn_offset, close_btn_->width(), close_btn_->height());
     }
 
     void DebugPanel::paintEvent(QPaintEvent *event) {
