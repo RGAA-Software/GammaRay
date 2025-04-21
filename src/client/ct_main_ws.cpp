@@ -91,6 +91,12 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_show_max_window("show_max_window", "show max window", "value", "0");
     parser.addOption(opt_show_max_window);
 
+    QCommandLineOption opt_display_name("display_name", "display name", "value", "");
+    parser.addOption(opt_display_name);
+
+    QCommandLineOption opt_display_remote_name("display_remote_name", "display remote name", "value", "");
+    parser.addOption(opt_display_remote_name);
+
     parser.process(app);
 
     g_host_ = parser.value(opt_host).toStdString();
@@ -160,6 +166,9 @@ void ParseCommandLine(QApplication& app) {
 
     settings->enable_p2p_ = parser.value(opt_enable_p2p).toInt() == 1;
     settings->show_max_window_ = parser.value(opt_show_max_window).toInt() == 1;
+
+    settings->display_name_ = parser.value(opt_display_name).toStdString();
+    settings->display_remote_name_ = parser.value(opt_display_remote_name).toStdString();
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -239,6 +248,8 @@ int main(int argc, char** argv) {
     LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
     LOGI("show max window: {}", (int)settings->show_max_window_);
     LOGI("enable p2p: {}", (int)settings->enable_p2p_);
+    LOGI("display name: {}", settings->display_name_);
+    LOGI("display remote name: {}", settings->display_remote_name_);
 
     // WebSocket only
     auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
@@ -277,6 +288,8 @@ int main(int argc, char** argv) {
         .stream_id_ = settings->stream_id_,
         .stream_name_ = settings->stream_name_,
         .enable_p2p_ = settings->enable_p2p_,
+        .display_name_ = settings->display_name_,
+        .display_remote_name_ = settings->display_remote_name_,
     });
 
     static Workspace ws(ctx, params);

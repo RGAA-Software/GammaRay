@@ -93,6 +93,8 @@ namespace tc
         bool enable_p2p_ = false;
         // show max window
         bool show_max_window_ = false;
+        std::string display_name_;
+        std::string display_remote_name_;
     };
 
 }

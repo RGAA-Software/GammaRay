@@ -40,6 +40,22 @@ namespace tc
             << std::format("--remote_device_sp={}", Base64::Base64Encode(item.remote_device_safety_pwd_)).c_str()
             << std::format("--enable_p2p={}", item.enable_p2p_).c_str()
             << std::format("--show_max_window={}", item.show_max_window_).c_str()
+            << std::format("--display_name={}", [=, this]() -> std::string {
+                if (item.network_type_ == kStreamItemNtTypeRelay) {
+                    return settings_->device_id_;
+                }
+                else {
+                    return "My Computer";
+                }
+            }()).c_str()
+            << std::format("--display_remote_name={}", [=, this]() -> std::string {
+                if (item.network_type_ == kStreamItemNtTypeRelay) {
+                    return item.remote_device_id_;
+                }
+                else {
+                    return item.stream_name_.empty() ? item.stream_host_ : item.stream_name_;
+                }
+            } ()).c_str();
         ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {
