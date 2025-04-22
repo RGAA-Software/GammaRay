@@ -19,6 +19,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/file_util.h"
+#include "win/win_message_loop.h"
 
 namespace tc
 {
@@ -27,7 +28,10 @@ namespace tc
         context_ = ctx;
     }
 
-    void ClipboardManager::Monitor() {
+    void ClipboardManager::Start() {
+        msg_loop_ = WinMessageLoop::Make(context_);
+        msg_loop_->Start();
+
         QClipboard *board = QGuiApplication::clipboard();
         connect(board, &QClipboard::dataChanged, this, [=, this]() {
             if (!Settings::Instance()->clipboard_on_) {
@@ -130,6 +134,12 @@ namespace tc
                 remote_info_ = text;
             }
         });
+    }
+
+    void ClipboardManager::Stop() {
+        if (msg_loop_) {
+            msg_loop_->Stop();
+        }
     }
 
     void ClipboardManager::UpdateRemoteInfo(const QString& in_text) {

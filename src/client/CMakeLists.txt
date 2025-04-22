@@ -81,7 +81,7 @@ else()
 endif()
 
 add_subdirectory(clipboard)
-add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS}) #WIN32 MANUAL_FINALIZATION
+add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS} ${CLIPBOARD_WIN_SRCS}) #WIN32 MANUAL_FINALIZATION
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 if (APPLE)

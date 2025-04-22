@@ -202,7 +202,7 @@ namespace tc
 
         // clipboard manager
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
-        clipboard_mgr_->Monitor();
+        clipboard_mgr_->Start();
     }
 
     Workspace::~Workspace() {

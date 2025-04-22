@@ -26,12 +26,15 @@ def collceion_program_files(type, force_update, publish, in_target_path):
 
     ignore_files = [
         "plugin_amf_encoder.dll",
+        "plugin_clipboard.dll",
         "plugin_dda_capture.dll",
         "plugin_ffmpeg_encoder.dll",
+        "plugin_file_transfer.dll",
         "plugin_frame_debugger.dll",
         "plugin_frame_resizer.dll",
         "plugin_media_recorder.dll",
         "plugin_mock_video_stream.dll",
+        "plugin_net_relay.dll",
         "plugin_net_rtc.dll",
         "plugin_net_udp.dll",
         "plugin_net_ws.dll",
@@ -93,6 +96,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
     folders_path.append(base_path + "qml")
     folders_path.append(base_path + "qmltooling")
     folders_path.append(base_path + "gr_plugins")
+    folders_path.append(base_path + "gr_client")
 
     target_path = base_path + "package/packages/com.rgaa.gammaray/data/"#+ "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:

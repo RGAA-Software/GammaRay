@@ -12,16 +12,19 @@ namespace tc
 {
 
     class ClientContext;
+    class WinMessageLoop;
 
     class ClipboardManager : public QObject {
     public:
         explicit ClipboardManager(const std::shared_ptr<ClientContext>& ctx);
-        void Monitor();
+        void Start();
+        void Stop();
         void UpdateRemoteInfo(const QString& info);
 
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
         QString remote_info_;
+        std::shared_ptr<WinMessageLoop> msg_loop_ = nullptr;
     };
 
 }
