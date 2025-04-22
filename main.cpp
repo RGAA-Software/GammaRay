@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QDir>
 #include <QLockFile>
+#include <QMessageBox>
 
 #include "tc_common_new/log.h"
 #include "tc_common_new/folder_util.h"
@@ -44,7 +45,11 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
     QApplication app(argc, argv);
 
-    auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());
+    //auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());
+    auto base_dir = QApplication::applicationDirPath();
+
+    PrepareDirs(base_dir);
+
     auto log_path = base_dir + "/gr_logs/gammaray.log";
     std::cout << "log path: " << log_path.toStdString() << std::endl;
     Logger::InitLog(log_path.toStdString(), true);
@@ -64,11 +69,13 @@ int main(int argc, char *argv[]) {
     mon_detector->PrintAdapters();
 
     tcFontMgr()->InitFont(":/src/client/resources/font/ms_yahei.ttf");
-    PrepareDirs(base_dir);
 
     // init sp
     auto sp_dir = qApp->applicationDirPath() + "/gr_data";
-    SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat");
+    if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
+        QMessageBox::critical(nullptr, "Error", "Init failed");
+        return -1;
+    }
 
     // init language
     tcTrMgr()->InitLanguage();
