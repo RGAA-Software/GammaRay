@@ -72,7 +72,8 @@ namespace tc
         // for client render process --- below
         std::string stream_id_;
         // conn type
-        ClientConnectType conn_type_;
+        // deprecated !
+        // ClientConnectType conn_type_;
         // network type
         ClientNetworkType network_type_;
         // stream name

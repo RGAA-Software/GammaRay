@@ -127,18 +127,18 @@ void ParseCommandLine(QApplication& app) {
         }
     }();
 
-    g_conn_type_ = parser.value(opt_conn_type).toStdString();
-    settings->conn_type_ = [=]() -> ClientConnectType {
-        if (g_conn_type_ == kStreamItemConnTypeDirect) {
-            return ClientConnectType::kDirect;
-        }
-        else if (g_conn_type_ == kStreamItemConnTypeSignaling) {
-            return ClientConnectType::kSignaling;
-        }
-        else {
-            return ClientConnectType::kSignaling;
-        }
-    }();
+//    g_conn_type_ = parser.value(opt_conn_type).toStdString();
+//    settings->conn_type_ = [=]() -> ClientConnectType {
+//        if (g_conn_type_ == kStreamItemConnTypeDirect) {
+//            return ClientConnectType::kDirect;
+//        }
+//        else if (g_conn_type_ == kStreamItemConnTypeSignaling) {
+//            return ClientConnectType::kSignaling;
+//        }
+//        else {
+//            return ClientConnectType::kSignaling;
+//        }
+//    }();
 
     settings->stream_name_ = parser.value(opt_stream_name).toStdString();
     if (!settings->stream_name_.empty()) {
@@ -230,7 +230,15 @@ int main(int argc, char** argv) {
     }
 
     auto settings = tc::Settings::Instance();
-    auto name = g_host_ + "_" + MD5::Hex(settings->stream_id_).substr(0, 10);
+    // auto name = g_host_ + "_" + MD5::Hex(settings->stream_id_).substr(0, 10);
+    auto name = [=]() -> std::string {
+        if (settings->network_type_ == ClientNetworkType::kRelay || settings->network_type_ == ClientNetworkType::kWebRtc) {
+            return settings->remote_device_id_;
+        }
+        else {
+            return settings->remote_address_;
+        }
+    } ();
     auto ctx = std::make_shared<ClientContext>(name);
     ctx->Init(true);
 
@@ -245,7 +253,7 @@ int main(int argc, char** argv) {
     LOGI("remote device rdm pwd: {}", settings->remote_device_random_pwd_);
     LOGI("stream id: {}", settings->stream_id_);
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
-    LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
+    //LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
     LOGI("show max window: {}", (int)settings->show_max_window_);
     LOGI("enable p2p: {}", (int)settings->enable_p2p_);
     LOGI("display name: {}", settings->display_name_);
@@ -279,8 +287,9 @@ int main(int argc, char** argv) {
         .media_path_ = media_path,
         .ft_path_ = ft_path,
         .client_type_ = client_type,
-        .conn_type_ = settings->conn_type_,
         .nt_type_ = settings->network_type_,
+        .bare_device_id_ = settings->device_id_,
+        .bare_remote_device_id_ = settings->remote_device_id_,
         .device_id_ = device_id,
         .remote_device_id_ = remote_device_id,
         .ft_device_id_ = ft_device_id,

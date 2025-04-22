@@ -52,8 +52,7 @@ namespace tc
 
         // progress bar
         {
-            LOGI("For progressbar, conn type: {}, network type: {}, total steps: {}",
-                 (int)settings_->conn_type_, (int)settings_->network_type_, sdk_->GetProgressSteps());
+            LOGI("For progressbar, network type: {}, total steps: {}", (int)settings_->network_type_, sdk_->GetProgressSteps());
             auto layout = new NoMarginHLayout();
             auto progress_bar = new QProgressBar();
             progress_bar_ = progress_bar;
