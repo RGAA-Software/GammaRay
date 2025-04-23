@@ -26,33 +26,49 @@ namespace tc
 
     ClipboardManager::ClipboardManager(const std::shared_ptr<ClientContext> &ctx) : QObject(nullptr) {
         context_ = ctx;
+
+        msg_listener_ = context_->ObtainMessageListener();
+        msg_listener_->Listen<ClipboardUpdatedMsg>([=, this](const ClipboardUpdatedMsg& msg) {
+            context_->PostUITask([=, this]() {
+                this->OnClipboardUpdated();
+            });
+        });
     }
 
     void ClipboardManager::Start() {
         msg_loop_ = WinMessageLoop::Make(context_);
         msg_loop_->Start();
+    }
+
+    void ClipboardManager::Stop() {
+        if (msg_loop_) {
+            msg_loop_->Stop();
+        }
+    }
+
+    void ClipboardManager::OnClipboardUpdated() {
+        if (!Settings::Instance()->clipboard_on_) {
+            return;
+        }
+
+        LOGI("===> OnClipboardUpdated!");
 
         QClipboard *board = QGuiApplication::clipboard();
-        connect(board, &QClipboard::dataChanged, this, [=, this]() {
-            if (!Settings::Instance()->clipboard_on_) {
-                return;
-            }
+        auto mime_data = const_cast<QMimeData*>(board->mimeData());
 
-            auto mime_data = const_cast<QMimeData*>(board->mimeData());
+        bool has_urls = mime_data->hasUrls();
+        auto text = board->text();
+        if (has_urls) {
+            auto urls = mime_data->urls();
+            LOGI("Has urls: {}", has_urls);
 
-            bool has_urls = mime_data->hasUrls();
-            auto text = board->text();
-            if (has_urls) {
-                auto urls = mime_data->urls();
-                LOGI("Has urls: {}", has_urls);
+            // URL:         file:///C:/Users/xx/Documents/aaa.png
+            // Full Path:   C:/Users/xx/Documents/aaa.png
+            // Ref Path:    aaa.png
+            // Base Folder: C:/Users/xx/Documents
 
-                // URL:         file:///C:/Users/xx/Documents/aaa.png
-                // Full Path:   C:/Users/xx/Documents/aaa.png
-                // Ref Path:    aaa.png
-                // Base Folder: C:/Users/xx/Documents
-
-                auto fn_make_cp_file=
-                        [](const QString& base_folder_path, const QString& full_path) -> std::optional<ClipboardFile> {
+            auto fn_make_cp_file=
+                [=, this](const QString& base_folder_path, const QString& full_path) -> std::optional<ClipboardFile> {
                     QFileInfo file_info(full_path);
                     if (!file_info.exists()) {
                         return std::nullopt;
@@ -72,73 +88,66 @@ namespace tc
                     return cp_file;
                 };
 
-                // find base folder
-                QString base_folder_path = "";
-                for (auto& url : urls) {
-                    auto full_path = url.toLocalFile();
-                    QFileInfo file_info(full_path);
-                    base_folder_path = file_info.dir().path();
-                    break;
-                }
-                LOGI("Clipboard, base folder path: {}", base_folder_path.toStdString());
-                if (base_folder_path.isEmpty()) {
-                    LOGE("Clipboard base folder path is empty.");
-                    return;
-                }
+            // find base folder
+            QString base_folder_path = "";
+            for (auto& url : urls) {
+                auto full_path = url.toLocalFile();
+                QFileInfo file_info(full_path);
+                base_folder_path = file_info.dir().path();
+                break;
+            }
+            LOGI("Clipboard, base folder path: {}", base_folder_path.toStdString());
+            if (base_folder_path.isEmpty()) {
+                LOGE("Clipboard base folder path is empty.");
+                return;
+            }
 
-                // retrieve all files
-                std::vector<ClipboardFile> cp_files;
-                for (auto& url : urls) {
-                    auto full_path = url.toLocalFile();
-                    QFileInfo file_info(full_path);
-                    if (file_info.isDir()) {
-                        FolderUtil::VisitAllByQt(full_path.toStdString(), [&](VisitResult&& r) {
-                            auto cp_file = fn_make_cp_file(base_folder_path, QString::fromStdWString(r.path_));
-                            if (cp_file) {
-                                cp_files.push_back(cp_file.value());
-                            }
-                        });
-                    }
-                    else {
-                        auto cp_file = fn_make_cp_file(base_folder_path, full_path);
-                        if (cp_file.has_value()) {
+            // retrieve all files
+            std::vector<ClipboardFile> cp_files;
+            for (auto& url : urls) {
+                auto full_path = url.toLocalFile();
+                QFileInfo file_info(full_path);
+                if (file_info.isDir()) {
+                    FolderUtil::VisitAllByQt(full_path.toStdString(), [&](VisitResult&& r) {
+                        auto cp_file = fn_make_cp_file(base_folder_path, QString::fromStdWString(r.path_));
+                        if (cp_file) {
                             cp_files.push_back(cp_file.value());
                         }
+                    });
+                }
+                else {
+                    auto cp_file = fn_make_cp_file(base_folder_path, full_path);
+                    if (cp_file.has_value()) {
+                        cp_files.push_back(cp_file.value());
                     }
-
-                    LOGI("url: {}, path: {}", url.toString().toStdString(), url.toLocalFile().toStdString());
                 }
 
-                // debug
-                LOGI("Total files: {}", cp_files.size());
-                for (const auto& file : cp_files) {
-                    LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
-                }
+                LOGI("url: {}, path: {}", url.toString().toStdString(), url.toLocalFile().toStdString());
+            }
 
-                context_->SendAppMessage(ClipboardMessage{
+            // debug
+            LOGI("Total files: {}", cp_files.size());
+            for (const auto& file : cp_files) {
+                LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
+            }
+
+            context_->SendAppMessage(ClipboardMessage{
                     .type_ = ClipboardType::kClipboardFiles,
                     .files_ = cp_files,
-                });
+            });
+        }
+        else if (!text.isEmpty()) {
+            LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
+            if (text == remote_info_) {
+                return;
             }
-            else if (!text.isEmpty()) {
-                LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
-                if (text == remote_info_) {
-                    return;
-                }
-                LOGI("===> new Text: {}", text.toStdString());
+            LOGI("===> new Text: {}", text.toStdString());
 
-                context_->SendAppMessage(ClipboardMessage{
+            context_->SendAppMessage(ClipboardMessage{
                     .type_ = ClipboardType::kClipboardText,
                     .msg_ = text.toStdString(),
-                });
-                remote_info_ = text;
-            }
-        });
-    }
-
-    void ClipboardManager::Stop() {
-        if (msg_loop_) {
-            msg_loop_->Stop();
+            });
+            remote_info_ = text;
         }
     }
 

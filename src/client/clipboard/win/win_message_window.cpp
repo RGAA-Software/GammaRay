@@ -3,6 +3,8 @@
 #include <atomic>
 #include "tc_common_new/log.h"
 #include "win_message_loop.h"
+#include "client/ct_client_context.h"
+#include "client/ct_app_message.h"
 
 namespace tc
 {
@@ -216,11 +218,9 @@ namespace tc
     }
 
     void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        auto message_loop = message_loop_.lock();
-        if (!message_loop) {
-            return;
-        }
-        message_loop->OnClipboardUpdate(hwnd);
+        context_->SendAppMessage(ClipboardUpdatedMsg {
+            .hwnd_ = hwnd,
+        });
     }
 
     void WinMessageWindow::OnDisplayChange() {

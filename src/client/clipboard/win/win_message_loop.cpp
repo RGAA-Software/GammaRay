@@ -36,10 +36,6 @@ namespace tc
         message_window_ = WinMessageWindow::Make(context_, shared_from_this());
     }
 
-    void WinMessageLoop::OnClipboardUpdate(HWND hwnd) {
-
-    }
-
     void WinMessageLoop::OnWinSessionChange(uint32_t message) {
 
     }

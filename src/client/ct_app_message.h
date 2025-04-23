@@ -183,6 +183,14 @@ namespace tc
     class OpenDebugPanelMsg : public AppMessage {
     public:
     };
+
+    // clipboard updated
+    class ClipboardUpdatedMsg : public AppMessage {
+    public:
+#ifdef WIN32
+        HWND hwnd_ = nullptr;
+#endif
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

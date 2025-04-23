@@ -18,7 +18,6 @@ namespace tc
         void Start();
         void Stop();
 
-        void OnClipboardUpdate(HWND hwnd);
         void OnDisplayDeviceChange();
     private:
         void CreateMessageWindow();
