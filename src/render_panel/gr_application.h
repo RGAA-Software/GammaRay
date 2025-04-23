@@ -23,6 +23,7 @@ namespace tc
     class WsSigClient;
     class MgrClientSdk;
     class MessageListener;
+    class GrAccountManager;
 
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -36,9 +37,14 @@ namespace tc
         std::shared_ptr<GrContext> GetContext() { return context_; }
         std::shared_ptr<WsPanelServer> GetWsPanelServer() { return ws_panel_server_; }
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
+        std::shared_ptr<GrAccountManager> GetAccountManager() { return account_mgr_; }
         bool PostMessage2Service(const std::string& msg);
         void RequestNewClientId(bool force_update);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
+
+        // 1. device id is empty ?
+        // 2. device id & password paired ?
+        bool CheckLocalDeviceInfoWithPopup();
 
     private:
         void RefreshSigServerSettings();
@@ -57,7 +63,10 @@ namespace tc
         std::shared_ptr<MgrClientSdk> mgr_client_sdk_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
+        std::shared_ptr<GrAccountManager> account_mgr_ = nullptr;
     };
+
+    extern std::shared_ptr<GrApplication> grApp;
 
 }
 

@@ -5,8 +5,8 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/network/gr_service_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ws_sig_client.cpp
 
-        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_game.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_game_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/game/db_game.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/game/db_game_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_base.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server.cpp
@@ -36,6 +36,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_render_controller.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_run_game_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_running_pipe.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_account_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/transfer/file_transfer.cpp
 

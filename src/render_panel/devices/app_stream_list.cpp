@@ -26,6 +26,8 @@
 #include "edit_relay_stream_dialog.h"
 #include "stream_settings_dialog.h"
 #include "device_api.h"
+#include "render_panel/gr_account_manager.h"
+#include "render_panel/gr_application.h"
 
 namespace tc
 {
@@ -204,6 +206,12 @@ namespace tc
 
         // verify in profile server
         if (target_item.IsRelay()) {
+            // verify my self
+            if (!grApp->CheckLocalDeviceInfoWithPopup()) {
+                return;
+            }
+
+            // verify remote
             auto verify_result
                 = DeviceApi::VerifyDeviceInfo(target_item.remote_device_id_, target_item.remote_device_random_pwd_, target_item.remote_device_safety_pwd_);
             if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
@@ -213,7 +221,7 @@ namespace tc
             }
             if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
                 verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
+                auto dlg = TcDialog::Make("Connect Failed", "Password is invalid, please check it.", nullptr);
                 dlg->show();
                 return;
             }

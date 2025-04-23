@@ -5,7 +5,7 @@
 #include "game_info_preview.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/round_img_display.h"
-#include "render_panel/db/db_game.h"
+#include "render_panel/game/db_game.h"
 
 namespace tc
 {

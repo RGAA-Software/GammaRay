@@ -89,19 +89,6 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-//    std::string NetMessageMaker::MakeServerAudioSpectrumMsg() {
-//        auto st = RdStatistics::Instance();
-//        auto msg = std::make_shared<Message>();
-//        msg->set_type(tc::kServerAudioSpectrum);
-//        auto sas = msg->mutable_server_audio_spectrum();
-//        sas->set_samples(st->audio_samples_);
-//        sas->set_bits(st->audio_bits_);
-//        sas->set_channels(st->audio_channels_);
-//        sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
-//        sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
-//        return msg->SerializeAsString();
-//    }
-
     std::string NetMessageMaker::MakeCursorInfoSyncMsg(uint32_t x, uint32_t y, uint32_t hotspot_x, uint32_t hotspot_y,
                                                        uint32_t  width, uint32_t height, bool visable,
                                                        const std::shared_ptr<Data>& data, uint32_t type) {

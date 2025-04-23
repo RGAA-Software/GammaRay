@@ -47,7 +47,6 @@ int main(int argc, char *argv[]) {
 
     //auto base_dir = QString::fromStdWString(FolderUtil::GetCurrentFolderPath());
     auto base_dir = QApplication::applicationDirPath();
-
     PrepareDirs(base_dir);
 
     auto log_path = base_dir + "/gr_logs/gammaray.log";

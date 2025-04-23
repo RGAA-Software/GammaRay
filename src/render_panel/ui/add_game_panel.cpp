@@ -7,8 +7,8 @@
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
 #include "tc_qt_widget/sized_msg_box.h"
-#include "render_panel/db/db_game.h"
-#include "render_panel/db/db_game_manager.h"
+#include "render_panel/game/db_game.h"
+#include "render_panel/game/db_game_manager.h"
 #include "render_panel/gr_context.h"
 #include "tc_dialog.h"
 #include <QPushButton>

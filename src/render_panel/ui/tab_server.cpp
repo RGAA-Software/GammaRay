@@ -265,6 +265,11 @@ namespace tc
                     remote_input_layout->addLayout(input_layout);
 
                     connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
+                        // verify my self
+                        if (!grApp->CheckLocalDeviceInfoWithPopup()) {
+                            return;
+                        }
+
                         auto remote_device_id = remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
                         auto input_password = password_input_->GetPassword().toStdString();
 
@@ -316,7 +321,7 @@ namespace tc
                             return;
                         }
                         if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                            auto dlg = TcDialog::Make("Connect Failed", "Password is not invalid, please check it.", nullptr);
+                            auto dlg = TcDialog::Make("Connect Failed", "Password is invalid, please check it.", nullptr);
                             dlg->show();
                             return;
                         }

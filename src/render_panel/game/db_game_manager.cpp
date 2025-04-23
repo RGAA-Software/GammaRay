@@ -4,6 +4,7 @@
 
 #include "db_game_manager.h"
 #include "tc_common_new/log.h"
+#include <QApplication>
 
 namespace tc
 {
@@ -35,7 +36,8 @@ namespace tc
     }
 
     void DBGameManager::Init() {
-        auto storage = InitAppDatabase("game.db");
+        auto db_path = qApp->applicationDirPath() + "/gr_data/game.db";
+        auto storage = InitAppDatabase(db_path.toStdString());
         db_storage_ = storage;
         storage.sync_schema();
     }

@@ -24,6 +24,8 @@
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_manager_client/mgr_device.h"
 #include "tc_common_new/time_util.h"
+#include "gr_account_manager.h"
+#include "tc_dialog.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -33,6 +35,8 @@ using namespace nlohmann;
 namespace tc
 {
 
+    std::shared_ptr<GrApplication> grApp;
+
     GrApplication::GrApplication() : QObject(nullptr) {
 
     }
@@ -41,6 +45,7 @@ namespace tc
 
     void GrApplication::Init() {
         TimeDuration td("GrApplication::Init");
+        grApp = shared_from_this();
         msg_notifier_ = std::make_shared<MessageNotifier>();
 
         auto begin_ctx_init_ts = TimeUtil::GetCurrentTimestamp();
@@ -57,6 +62,8 @@ namespace tc
         context_->Init(shared_from_this());
         auto ctx_init_diff = TimeUtil::GetCurrentTimestamp() - begin_ctx_init_ts;
         LOGI("** Context init used: {}ms", ctx_init_diff);
+
+        account_mgr_ = std::make_shared<GrAccountManager>(context_);
 
         // firewall
         context_->PostTask([this]() {
@@ -192,4 +199,16 @@ namespace tc
         return msg_notifier_;
     }
 
+    bool GrApplication::CheckLocalDeviceInfoWithPopup() {
+        auto r = account_mgr_->IsDeviceInfoOk();
+        auto ok = r.value_or(false);
+        if (ok) {
+            return true;
+        }
+
+        auto err_msg = GrAccountError2String(r.error());
+        auto dlg = TcDialog::Make(tr("Error"), std::format("Local device info error: {}", err_msg).c_str(), nullptr);
+        dlg->show();
+        return false;
+    }
 }
