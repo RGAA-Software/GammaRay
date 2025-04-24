@@ -130,7 +130,8 @@ namespace tc
         // 16.分辨率还要传递回来 当前真正使用的分辨率
         // 17.全屏的时候，多屏之间 要同步全屏或者退出全屏(已完成)
         // 18.不知道为什么会闪烁
-        
+        // 19.如果对端第一次启动,好像配置信息没有正确传递过来
+        // 20.加接口
         QString origin_title_name_;
         std::vector<GameView*> game_views_;  
         std::map<int, std::string> monitor_index_map_name_;
