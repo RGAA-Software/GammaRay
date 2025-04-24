@@ -24,6 +24,7 @@ namespace tc
 
     DDACapture::DDACapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info)
         : DesktopCapture(plugin, my_monitor_info) {
+        fps_stat_ = std::make_shared<FpsStat>();
         LOGI("DDACapture my monitor info: {}", my_monitor_info.Dump());
     }
 
@@ -289,6 +290,7 @@ namespace tc
             bool is_cached = false;
             if (res == S_OK) {
                 // ok
+                fps_stat_->Tick();
             }
             else if (res == S_FALSE || res == DXGI_ERROR_ACCESS_LOST || res == DXGI_ERROR_INVALID_CALL) {
                 LOGE("CaptureNextFrame reinit, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringExt::GetErrorStr(res));
@@ -502,6 +504,10 @@ namespace tc
 
     bool DDACapture::IsPrimaryMonitor() {
         return is_primary_monitor_;
+    }
+
+    int DDACapture::GetCaptureFps() {
+        return fps_stat_->value();
     }
 
 } // tc

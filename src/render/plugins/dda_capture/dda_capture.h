@@ -15,6 +15,7 @@
 
 #include "desktop_capture.h"
 #include "tc_common_new/monitors.h"
+#include "tc_common_new/fps_stat.h"
 
 using namespace Microsoft::WRL;
 
@@ -52,6 +53,7 @@ namespace tc
         void RefreshScreen() override;
         bool IsPrimaryMonitor() override;
         bool IsInitSuccess() override;
+        int GetCaptureFps() override;
 
         using DDAInitSuccessCallback = std::function<void()>;
         DDAInitSuccessCallback dda_init_success_callback_ = nullptr;
@@ -73,6 +75,7 @@ namespace tc
         std::thread capture_thread_;
         int64_t monitor_frame_index_ = 0;
         int used_cache_times_ = 0;
+        std::shared_ptr<FpsStat> fps_stat_ = nullptr;
 
         SharedD3d11Texture2D last_list_texture_;
         DXGIOutputDuplication dxgi_output_duplication_;

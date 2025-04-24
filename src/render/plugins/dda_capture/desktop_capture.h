@@ -24,10 +24,13 @@ namespace tc
         virtual void ResumeCapture() = 0;
         virtual bool IsPausing() { return pausing_; }
         virtual void StopCapture() = 0;
+        // set the value that our expected
         virtual void SetCaptureFps(int fps);
         virtual void RefreshScreen();
         virtual bool IsPrimaryMonitor();
         virtual bool IsInitSuccess() = 0;
+        // by counting the real frames
+        virtual int GetCaptureFps() {return 0;}
         virtual CaptureMonitorInfo GetMyMonitorInfo() { return my_monitor_info_; }
     private:
 

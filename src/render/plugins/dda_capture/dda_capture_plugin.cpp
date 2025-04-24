@@ -311,6 +311,10 @@ namespace tc
         // TODO: IGNORE THIS
         //SetCaptureMonitor(capturing_monitor_name_);
         //NotifyCaptureMonitorInfo();
+        LOGI("Capturing monitor: {}", capturing_monitor_name_);
+        for (auto& [k, v] : captures_) {
+            LOGI("capture name: {}, fps: {}", k, v->GetCaptureFps());
+        }
     }
 
     void DDACapturePlugin::OnNewClientIn() {
