@@ -198,6 +198,7 @@ namespace tc
                 else if (capture->GetMyMonitorInfo().name_ == capturing_monitor_name_) {
                     capture->ResumeCapture();
                 }
+                SetCaptureMonitor(capturing_monitor_name_);
                 NotifyCaptureMonitorInfo();
             });
             captures_.insert({dev_name, capture});
