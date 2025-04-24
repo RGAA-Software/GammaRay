@@ -219,19 +219,17 @@ namespace tc
     }
 
     void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        auto message_loop = message_loop_.lock();
-        if (!message_loop) {
+        if (!message_loop_) {
             return;
         }
-        message_loop->OnClipboardUpdate(hwnd);
+        message_loop_->OnClipboardUpdate(hwnd);
     }
 
     void WinMessageWindow::OnDisplayChange() {
-        auto message_loop = message_loop_.lock();
-        if (!message_loop) {
+        if (!message_loop_) {
             return;
         }
-        message_loop->OnDisplayDeviceChange();
+        message_loop_->OnDisplayDeviceChange();
     }
 
 }

@@ -13,6 +13,7 @@
 #include "clipboard_manager.h"
 #include "tc_message.pb.h"
 #include "win/cp_virtual_file.h"
+#include "plugin_interface/gr_plugin_context.h"
 
 void* GetInstance() {
     static tc::ClipboardPlugin plugin;
@@ -124,7 +125,9 @@ namespace tc
     void ClipboardPlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
         if (auto ev = std::dynamic_pointer_cast<MsgClipboardUpdate>(event); ev) {
             LOGI("Clipboard update!");
-            clipboard_mgr_->OnClipboardUpdate();
+            plugin_context_->PostUIThread([=, this]() {
+                clipboard_mgr_->OnClipboardUpdated(ev);
+            });
         }
     }
 }

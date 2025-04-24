@@ -135,7 +135,7 @@ namespace tc
         MsgClipboardUpdate() {
             type_ = EType::kClipboardUpdate;
         }
-        
+        HWND hwnd_ = nullptr;
     };
 
     // 当监听到显示变更的windows消息,然后分发到 dda capture plugin

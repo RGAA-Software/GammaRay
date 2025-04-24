@@ -19,7 +19,7 @@ namespace tc
 
     class CpVirtualFile : public CpDataObject, public IDataObjectAsyncCapability {
     public:
-        explicit CpVirtualFile(Workspace* ws);
+        explicit CpVirtualFile(const std::shared_ptr<Workspace>& ws);
         ~CpVirtualFile() override;
 
         void Init();
@@ -61,7 +61,7 @@ namespace tc
                 /* [unique][in] */ __RPC__in_opt IBindCtx *pbcReserved,
                 /* [in] */ DWORD dwEffects);
 
-        void OnClipboardFilesInfo(const std::string& stream_id, const std::vector<ClipboardFile>& files);
+        void OnClipboardFilesInfo(const std::vector<ClipboardFile>& files);
         void OnClipboardRespBuffer(const ClipboardRespBuffer& resp_buffer);
 
     private:
@@ -69,12 +69,12 @@ namespace tc
         uint32_t clip_format_filecontent_ = 0;
         BOOL in_async_op_ = false;
         std::shared_ptr<CpFileStream> file_stream_ = nullptr;
-        Workspace* workspace_ = nullptr;
+        std::shared_ptr<Workspace> workspace_ = nullptr;
         std::vector<ClipboardFile> menu_files_;
         std::vector<ClipboardFileWrapper> task_files_;
     };
 
-    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, Workspace* ws);
+    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<Workspace>& ws);
 
 };
 

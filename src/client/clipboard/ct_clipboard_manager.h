@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <QObject>
+#include "tc_message.pb.h"
+#include <objidl.h>
 
 namespace tc
 {
@@ -14,22 +16,27 @@ namespace tc
     class ClientContext;
     class WinMessageLoop;
     class MessageListener;
+    class CpVirtualFile;
+    class Workspace;
 
     class ClipboardManager : public QObject {
     public:
-        explicit ClipboardManager(const std::shared_ptr<ClientContext>& ctx);
+        explicit ClipboardManager(const std::shared_ptr<Workspace>& ws);
         void Start();
         void Stop();
-        void UpdateRemoteInfo(const QString& info);
+        void OnRemoteClipboardMessage(std::shared_ptr<tc::Message> msg);
 
     private:
         void OnClipboardUpdated();
 
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
+        std::shared_ptr<Workspace> ws_ = nullptr;
         QString remote_info_;
         std::shared_ptr<WinMessageLoop> msg_loop_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        CpVirtualFile* virtual_file_ = nullptr;
+        IDataObject* data_object_ = nullptr;
     };
 
 }

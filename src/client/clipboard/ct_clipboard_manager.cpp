@@ -20,12 +20,15 @@
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/file_util.h"
 #include "win/win_message_loop.h"
+#include "clipboard/win/cp_virtual_file.h"
+#include "client/ct_workspace.h"
 
 namespace tc
 {
 
-    ClipboardManager::ClipboardManager(const std::shared_ptr<ClientContext> &ctx) : QObject(nullptr) {
-        context_ = ctx;
+    ClipboardManager::ClipboardManager(const std::shared_ptr<Workspace>& ws) : QObject(nullptr) {
+        ws_ = ws;
+        context_ = ws_->GetContext();
 
         msg_listener_ = context_->ObtainMessageListener();
         msg_listener_->Listen<ClipboardUpdatedMsg>([=, this](const ClipboardUpdatedMsg& msg) {
@@ -51,7 +54,7 @@ namespace tc
             return;
         }
 
-        LOGI("===> OnClipboardUpdated!");
+        //LOGI("===> OnClipboardUpdated!");
 
         QClipboard *board = QGuiApplication::clipboard();
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
@@ -132,8 +135,8 @@ namespace tc
             }
 
             context_->SendAppMessage(ClipboardMessage{
-                    .type_ = ClipboardType::kClipboardFiles,
-                    .files_ = cp_files,
+                .type_ = ClipboardType::kClipboardFiles,
+                .files_ = cp_files,
             });
         }
         else if (!text.isEmpty()) {
@@ -144,42 +147,100 @@ namespace tc
             LOGI("===> new Text: {}", text.toStdString());
 
             context_->SendAppMessage(ClipboardMessage{
-                    .type_ = ClipboardType::kClipboardText,
-                    .msg_ = text.toStdString(),
+                .type_ = ClipboardType::kClipboardText,
+                .msg_ = text.toStdString(),
             });
             remote_info_ = text;
         }
     }
 
-    void ClipboardManager::UpdateRemoteInfo(const QString& in_text) {
+    void ClipboardManager::OnRemoteClipboardMessage(std::shared_ptr<tc::Message> msg) {
         if (!Settings::Instance()->clipboard_on_) {
             LOGI("clipboard is not on!");
             return;
         }
+
         context_->PostUITask([=, this]() {
-            auto updated = false;
-            auto count = 0;
-            for (int i = 0; i < 50; i++) {
-                QClipboard *board = QGuiApplication::clipboard();
-                if (board->text() == in_text) {
-                    LOGI("Already same with clipboard, ignore: {}", in_text.toStdString());
-                    return;
+            if (msg->type() == MessageType::kClipboardInfo) {
+                auto info = msg->clipboard_info();
+                if (info.type() == ClipboardType::kClipboardText) {
+                    auto in_text = QString::fromStdString(info.msg());
+                    auto updated = false;
+                    auto count = 0;
+                    for (int i = 0; i < 50; i++) {
+                        QClipboard *board = QGuiApplication::clipboard();
+                        if (board->text() == in_text) {
+                            LOGI("Already same with clipboard, ignore: {}", in_text.toStdString());
+                            return;
+                        }
+                        board->setText(in_text);
+                        if (board->ownsClipboard() && board->text() == in_text) {
+                            updated = true;
+                            LOGI("*** update remote clipboard info: {}", in_text.toStdString());
+                            break;
+                        } else {
+                            LOGE("Can't update remote clipboard, not own it.");
+                        }
+                        count++;
+                        TimeUtil::DelayBySleep(5);
+                    }
+                    LOGI("update remote clipboard info used count: {}", count);
+                    if (updated) {
+                        remote_info_ = in_text;
+                    }
+                } else if (info.type() == ClipboardType::kClipboardFiles) {
+                    const auto &files = info.files();
+                    std::vector<ClipboardFile> target_files;
+                    for (auto &file: files) {
+                        ClipboardFile cpy_file;
+                        cpy_file.CopyFrom(file);
+                        target_files.push_back(file);
+                    }
+
+                    if (!virtual_file_) {
+                        virtual_file_ = tc::CreateVirtualFile(IID_IDataObject, (void **) &data_object_, ws_);
+                    }
+                    if (!data_object_) {
+                        LOGE("DataObject is null!");
+                        return;
+                    }
+
+                    bool cleared_clipboard = false;
+                    for (int i = 0; i < 100; i++) {
+                        auto hr = ::OleSetClipboard(nullptr);
+                        if (hr == S_OK) {
+                            cleared_clipboard = true;
+                            break;
+                        }
+                        TimeUtil::DelayBySleep(10);
+                    }
+                    if (!cleared_clipboard) {
+                        LOGE("Empty clipboard failed!");
+                        return;
+                    }
+
+                    TimeUtil::DelayBySleep(10);
+
+                    bool set_clipboard = false;
+                    for (int i = 0; i < 100; i++) {
+                        auto hr = ::OleSetClipboard(data_object_);
+                        if (hr == S_OK) {
+                            set_clipboard = true;
+                            break;
+                        }
+                    }
+                    if (!set_clipboard) {
+                        LOGE("Set clipboard failed!");
+                        return;
+                    }
+
+                    virtual_file_->OnClipboardFilesInfo(target_files);
                 }
-                board->setText(in_text);
-                if (board->ownsClipboard() && board->text() == in_text) {
-                    updated = true;
-                    LOGI("*** update remote clipboard info: {}", in_text.toStdString());
-                    break;
-                }
-                else {
-                    LOGE("Can't update remote clipboard, not own it.");
-                }
-                count++;
-                TimeUtil::DelayBySleep(5);
             }
-            LOGI("update remote clipboard info used count: {}", count);
-            if (updated) {
-                remote_info_ = in_text;
+            else if (msg->type() == MessageType::kClipboardRespBuffer) {
+                if (virtual_file_) {
+                    virtual_file_->OnClipboardRespBuffer(msg->cp_resp_buffer());
+                }
             }
         });
     }

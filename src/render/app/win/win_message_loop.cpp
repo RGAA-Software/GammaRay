@@ -7,6 +7,9 @@
 #include "plugins/plugin_manager.h"
 #include "render/app/app_messages.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
+#include <QApplication>
+#include <QMimeData>
+#include <QClipboard>
 
 namespace tc {
 
@@ -40,8 +43,15 @@ void WinMessageLoop::CreateMessageWindow() {
 }
 
 void WinMessageLoop::OnClipboardUpdate(HWND hwnd) {
+    LOGI("--OnClipboardUpdated.");
+    QClipboard *board = QGuiApplication::clipboard();
+    auto mime_data = const_cast<QMimeData*>(board->mimeData());
+    bool has_urls = mime_data->hasUrls();
+    LOGI("has urls: {}", has_urls);
+
 	if (auto plugin = plugin_mgr_->GetClipboardPlugin(); plugin) {
 		auto event = std::make_shared<MsgClipboardUpdate>();
+        event->hwnd_ = hwnd;
 		plugin->DispatchAppEvent(event);
 	}
 }
@@ -108,8 +118,7 @@ void WinMessageLoop::ThreadFunc() {
 		if (bRet == -1) {
 			break;
 		}
-		else
-		{
+		else {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}

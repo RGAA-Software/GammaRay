@@ -199,14 +199,16 @@ namespace tc
             //file_transfer_ = std::make_shared<FileTransferChannel>(context_);
             //file_transfer_->Start();
         });
-
-        // clipboard manager
-        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
-        clipboard_mgr_->Start();
     }
 
     Workspace::~Workspace() {
 
+    }
+
+    void Workspace::Init() {
+        // clipboard manager
+        clipboard_mgr_ = std::make_shared<ClipboardManager>(shared_from_this());
+        clipboard_mgr_->Start();
     }
 
     void Workspace::RegisterSdkMsgCallbacks() {
@@ -271,9 +273,9 @@ namespace tc
             }
         });
 
-        sdk_->SetOnClipboardCallback([=, this](const ClipboardInfo& clipboard) {
+        sdk_->SetOnClipboardCallback([=, this](std::shared_ptr<tc::Message> msg) {
             if (clipboard_mgr_) {
-                clipboard_mgr_->UpdateRemoteInfo(QString::fromStdString(clipboard.msg()));
+                clipboard_mgr_->OnRemoteClipboardMessage(msg);
             }
         });
 
@@ -846,6 +848,9 @@ namespace tc
         return sdk_;
     }
 
+    std::shared_ptr<ClientContext> Workspace::GetContext() {
+        return context_;
+    }
 
     void Workspace::WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens) {
         QRect widget_geometry = widget->geometry();

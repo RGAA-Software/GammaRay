@@ -37,11 +37,13 @@ namespace tc
     class GameView;
     class RtcClientInterface;
 
-    class Workspace : public QMainWindow {
+    class Workspace : public QMainWindow, public std::enable_shared_from_this<Workspace> {
     public:
 
         explicit Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent = nullptr);
         ~Workspace() override;
+
+        void Init();
 
         void closeEvent(QCloseEvent *event) override;
         void changeEvent(QEvent* event) override;
@@ -54,6 +56,7 @@ namespace tc
         void SendWindowsKey(unsigned long vk, bool down);
 
         std::shared_ptr<ThunderSdk> GetThunderSdk();
+        std::shared_ptr<ClientContext> GetContext();
 
     private:
         void RegisterSdkMsgCallbacks();

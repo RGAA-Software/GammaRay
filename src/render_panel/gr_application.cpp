@@ -123,12 +123,13 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgSettingsChanged>([=, this](const MsgSettingsChanged& msg) {
             RefreshSigServerSettings();
-            RequestNewClientId(false);
+            bool force_update = settings_->device_id_.empty();
+            RequestNewClientId(force_update);
         });
 
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
             if (settings_->device_id_.empty()) {
-                RequestNewClientId(false);
+                RequestNewClientId(true);
             }
         });
 

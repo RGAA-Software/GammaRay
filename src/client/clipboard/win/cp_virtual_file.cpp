@@ -20,7 +20,7 @@
 namespace tc
 {
 
-    CpVirtualFile::CpVirtualFile(Workspace* ws) {
+    CpVirtualFile::CpVirtualFile(const std::shared_ptr<Workspace>& ws) {
         workspace_ = ws;
     }
 
@@ -175,14 +175,13 @@ namespace tc
         return S_OK;
     }
 
-    void CpVirtualFile::OnClipboardFilesInfo(const std::string& stream_id, const std::vector<ClipboardFile>& files) {
+    void CpVirtualFile::OnClipboardFilesInfo(const std::vector<ClipboardFile>& files) {
         menu_files_ = files;
         task_files_.clear();
         for (const auto& file : files) {
             ClipboardFile cpy_file;
             cpy_file.CopyFrom(file);
             task_files_.push_back(ClipboardFileWrapper {
-                .stream_id_ = stream_id,
                 .file_ = cpy_file,
             });
         }
@@ -198,7 +197,7 @@ namespace tc
         }
     }
 
-    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, Workspace* ws) {
+    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<Workspace>& ws) {
         *ppv = nullptr;
         auto p = new CpVirtualFile(ws);
         p->Init();

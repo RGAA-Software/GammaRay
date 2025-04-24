@@ -23,7 +23,7 @@ namespace tc
     class CpFileStream : public IStream {
     public:
 
-        CpFileStream(Workspace* ws, const ClipboardFileWrapper& fw) : ref_(1) {
+        CpFileStream(const std::shared_ptr<Workspace>& ws, const ClipboardFileWrapper& fw) : ref_(1) {
             workspace_ = ws;
             cp_file_ = fw;
         }
@@ -88,7 +88,7 @@ namespace tc
         void Exit();
 
     private:
-        Workspace* workspace_ = nullptr;
+        std::shared_ptr<Workspace> workspace_ = nullptr;
         LONG ref_;
         uint64_t file_size_ {0};
         std::atomic_int64_t current_position_ = 0;

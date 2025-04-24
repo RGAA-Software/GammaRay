@@ -43,7 +43,7 @@ namespace tc
         HWND mHwnd = nullptr;
         std::string window_name_;
 
-        std::weak_ptr<WinMessageLoop> message_loop_;
+        std::shared_ptr<WinMessageLoop> message_loop_;
 
         static std::mutex register_mutex_;
         static std::atomic<int> current_create_window_count_;
