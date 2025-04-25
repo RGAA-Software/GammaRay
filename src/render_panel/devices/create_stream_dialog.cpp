@@ -316,7 +316,7 @@ namespace tc
         } ();
 
         if (host.empty() || port == 0) {
-            TcDialog dialog(tr("Tips"), tr("Please input necessary information !"), nullptr);
+            TcDialog dialog(tr("Tips"), tr("Please input necessary information !"), this);
             dialog.exec();
             return false;
         }

@@ -127,7 +127,7 @@ namespace tc
 
         add_btn_ = new AddButton(this);
         add_btn_->SetOnClickCallback([=, this]() {
-            auto dialog = new CreateStreamDialog(ctx);
+            auto dialog = new CreateStreamDialog(ctx, this);
             dialog->show();
         });
 

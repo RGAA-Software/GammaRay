@@ -81,6 +81,8 @@ namespace tc
         void OnGetCaptureMonitorName(std::string monitor_name);
         void InitGameViews(const std::shared_ptr<ThunderSdkParams>& params);
         void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
+        void ExitClientWithDialog();
+
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;

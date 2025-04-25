@@ -120,7 +120,7 @@ namespace tc
 
         msg_listener_->Listen<ExitAppMessage>([=, this](const ExitAppMessage& msg) {
             context_->PostUITask([=, this]() {
-                this->Exit();
+                this->ExitClientWithDialog();
             });
         });
 
@@ -436,6 +436,11 @@ namespace tc
         }
         event->ignore();
 
+        ExitClientWithDialog();
+        close_event_occurred_widget_ = nullptr;
+    }
+
+    void Workspace::ExitClientWithDialog() {
         QString msg = "Do you want to stop controlling of remote PC ?";
         if (file_trans_interface_) {
             if (file_trans_interface_->HasTransTask()) {
@@ -446,7 +451,6 @@ namespace tc
         if (dialog.exec() == kDoneOk) {
             Exit();
         }
-        close_event_occurred_widget_ = nullptr;
     }
 
     void Workspace::dragEnterEvent(QDragEnterEvent *event) {
