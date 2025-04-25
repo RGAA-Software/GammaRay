@@ -435,7 +435,14 @@ namespace tc
             close_event_occurred_widget_ = this;
         }
         event->ignore();
-        TcDialog dialog(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"), this);
+
+        QString msg = "Do you want to stop controlling of remote PC ?";
+        if (file_trans_interface_) {
+            if (file_trans_interface_->HasTransTask()) {
+                msg = "File transfers are still in progress." + msg;
+            }
+        }
+        TcDialog dialog(tr("Stop"), msg, this);
         if (dialog.exec() == kDoneOk) {
             Exit();
         }
