@@ -203,9 +203,8 @@ namespace tc
             || lbl_game_exe_name_->text().isEmpty()
             || lbl_game_installed_dir_->text().isEmpty()) {
 
-            auto dlg = TcDialog::Make(tr("Error"), tr("Please input necessary information !"), nullptr);
-            dlg->SetOnDialogSureClicked([=, this]() {});
-            dlg->show();
+            TcDialog dialog(tr("Error"), tr("Please input necessary information !"), nullptr);
+            dialog.exec();
 
             return;
         }
@@ -230,9 +229,7 @@ namespace tc
         game_mgr->SaveOrUpdateGame(game);
         done(0);
 
-        auto dlg = TcDialog::Make(tr("Tips"), tr("Save game success !"), nullptr);
-        dlg->SetOnDialogSureClicked([=, this]() {
-        });
-        dlg->show();
+        TcDialog dialog(tr("Tips"), tr("Save game success !"), nullptr);
+        dialog.exec();
     }
 }

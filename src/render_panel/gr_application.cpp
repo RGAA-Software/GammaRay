@@ -26,6 +26,7 @@
 #include "tc_common_new/time_util.h"
 #include "gr_account_manager.h"
 #include "tc_dialog.h"
+#include "gr_workspace.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -208,8 +209,8 @@ namespace tc
         }
 
         auto err_msg = GrAccountError2String(r.error());
-        auto dlg = TcDialog::Make(tr("Error"), std::format("Local device info error: {}", err_msg).c_str(), nullptr);
-        dlg->show();
+        TcDialog dialog(tr("Error"), std::format("Local device info error: {}", err_msg).c_str(), grWorkspace.get());
+        dialog.exec();
         return false;
     }
 }

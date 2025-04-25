@@ -80,6 +80,7 @@ int main(int argc, char *argv[]) {
     tcTrMgr()->InitLanguage();
 
     g_workspace = std::make_shared<GrWorkspace>();
+    g_workspace->Init();
     g_workspace->setFixedSize(1450, 800);
     g_workspace->show();
 

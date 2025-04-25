@@ -76,12 +76,11 @@ namespace tc
         if (running_processes_.contains(item.stream_id_)) {
             auto process = running_processes_[item.stream_id_];
             if (process) {
-                auto dlg = TcDialog::Make("Stop Stream", "Do you want to stop the stream ?", nullptr);
-                dlg->SetOnDialogSureClicked([=, this]() {
+                TcDialog dialog("Stop Stream", "Do you want to stop the stream ?", nullptr);
+                if (dialog.exec() == kDoneOk) {
                     process->kill();
                     running_processes_.erase(item.stream_id_);
-                });
-                dlg->show();
+                }
             }
         }
     }

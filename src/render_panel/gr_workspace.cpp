@@ -32,9 +32,13 @@
 namespace tc
 {
 
+    std::shared_ptr<GrWorkspace> grWorkspace;
+
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
+
+        setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
 
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);
@@ -49,12 +53,11 @@ namespace tc
         });
 
         auto fun_stop_all = [=, this]() {
-            auto dlg = TcDialog::Make(tr("Exit"), tr("Do you want to exit all programs?"), this);
-            dlg->SetOnDialogSureClicked([=, this]() {
+            TcDialog dialog(tr("Exit"), tr("Do you want to exit all programs?"), this);
+            if (dialog.exec() == kDoneOk) {
                 auto srv_mgr = this->app_->GetContext()->GetServiceManager();
                 srv_mgr->Remove();
-            });
-            dlg->show();
+            }
 
 //            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit all programs?"));
 //            if (msg_box->exec() == 0) {
@@ -94,7 +97,7 @@ namespace tc
 
         // window
         auto notifier = app_->GetMessageNotifier();
-        (new MainWindowWrapper(notifier, this))->Setup(tr("GammaRay"));
+        //(new MainWindowWrapper(notifier, this))->Setup(tr("GammaRay"));
 
         // background
         setStyleSheet(R"(QMainWindow {background-color:#FFFFFF;})");
@@ -286,6 +289,10 @@ namespace tc
         InitListeners();
     }
 
+    void GrWorkspace::Init() {
+        grWorkspace = shared_from_this();
+    }
+
     void GrWorkspace::ChangeTab(const TabName& tn) {
         for (auto& [name, tab] : tabs_) {
             if (tn == name) {
@@ -301,11 +308,8 @@ namespace tc
 
     void GrWorkspace::closeEvent(QCloseEvent *event) {
         event->ignore();
-        auto dlg = TcDialog::Make(tr("Hide"), tr("Do you want to hide GammaRay?"), nullptr);
-        dlg->SetOnDialogSureClicked([=, this]() {
-            this->hide();
-        });
-        dlg->show();
+        TcDialog dialog(tr("Hide"), tr("Do you want to hide GammaRay?"), this);
+        dialog.exec();
         //
 
 //        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Hide"), tr("Do you want to hide GammaRay?"));

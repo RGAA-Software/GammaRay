@@ -316,11 +316,8 @@ namespace tc
         } ();
 
         if (host.empty() || port == 0) {
-            auto dlg = TcDialog::Make(tr("Tips"), tr("Please input necessary information !"), nullptr);
-            dlg->SetOnDialogSureClicked([=, this]() {
-            });
-            dlg->show();
-
+            TcDialog dialog(tr("Tips"), tr("Please input necessary information !"), nullptr);
+            dialog.exec();
             return false;
         }
 

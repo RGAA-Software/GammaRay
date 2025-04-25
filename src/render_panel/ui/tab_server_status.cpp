@@ -115,11 +115,10 @@ namespace tc
 //                        context_->SendAppMessage(MsgInstallViGEm{});
 //                    }
 
-                    auto dlg = TcDialog::Make(tr("Install ViGEm"), tr("Do you want to install ViGEm?"), this);
-                    dlg->SetOnDialogSureClicked([=, this]() {
+                    TcDialog dialog(tr("Install ViGEm"), tr("Do you want to install ViGEm?"), this);
+                    if (dialog.exec() == kDoneOk) {
                         context_->SendAppMessage(MsgInstallViGEm{});
-                    });
-                    dlg->show();
+                    }
                 });
 
                 layout->addLayout(item_layout);
@@ -170,13 +169,12 @@ namespace tc
 //                        });
 //                    }
 
-                    auto dlg = TcDialog::Make(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), nullptr);
-                    dlg->SetOnDialogSureClicked([=, this]() {
+                    TcDialog dialog(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), nullptr);
+                    if (dialog.exec() == kDoneOk) {
                         this->context_->PostTask([=, this]() {
                             RestartServer();
                         });
-                    });
-                    dlg->show();
+                    }
                 });
 
                 layout->addLayout(item_layout);
@@ -238,13 +236,10 @@ namespace tc
 //                        });
 //                    }
 
-                    auto dlg = TcDialog::Make(tr("Install Service"), tr("Do you want to install Service?"), nullptr);
-                    dlg->SetOnDialogSureClicked([=, this]() {
-                        this->context_->PostTask([=, this]() {
-                            this->context_->GetServiceManager()->Install();
-                        });
-                    });
-                    dlg->show();
+                    TcDialog dialog(tr("Install Service"), tr("Do you want to install Service?"), nullptr);
+                    if (dialog.exec() == kDoneOk) {
+                        this->context_->GetServiceManager()->Install();
+                    }
                 });
 
                 layout->addLayout(item_layout);

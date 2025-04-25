@@ -48,13 +48,13 @@ namespace tc
         this->context_ = ctx;
         this->settings_ = Settings::Instance();
 
-        //windowFlags() |
         setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
 
         auto test = new QPushButton("ExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHint", this);
         test->setFixedWidth(500);
+        test->setFixedHeight(200);
         connect(test, &QPushButton::clicked, this, [=, this]() {
-            MessageBoxA(0,0,0,0);
+
         });
 
         origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params->stream_name_.c_str() + "]";
@@ -353,22 +353,15 @@ namespace tc
 //                    auto box = SizedMessageBox::MakeInfoOkBox(tr("Info"), tr("Changing resolution success."));
 //                    box->exec();
 
-                    auto dlg = TcDialog::Make(tr("Tips"), tr("Changing resolution success."), nullptr);
-                    dlg->SetOnDialogSureClicked([=, this]() {
-
-                    });
-                    dlg->show();
-
+                    TcDialog dialog(tr("Tips"), tr("Changing resolution success."), this);
+                    dialog.exec();
 
                 } else {
 //                    auto box = SizedMessageBox::MakeErrorOkBox(tr("Error"), tr("Changing resolution failed, please check your server's monitor."));
 //                    box->exec();
 
-                    auto dlg = TcDialog::Make(tr("Error"), tr("Changing resolution failed, please check your server's monitor."), nullptr);
-                    dlg->SetOnDialogSureClicked([=, this]() {
-
-                    });
-                    dlg->show();
+                    TcDialog dialog(tr("Error"), tr("Changing resolution failed, please check your server's monitor."), this);
+                    dialog.exec();
                 }
             });
 
@@ -442,12 +435,11 @@ namespace tc
             close_event_occurred_widget_ = this;
         }
         event->ignore();
-        auto dg = TcDialog::Make(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"), close_event_occurred_widget_);
-        close_event_occurred_widget_ = nullptr;
-        dg->SetOnDialogSureClicked([=, this]() {
+        TcDialog dialog(tr("Stop"), tr("Do you want to stop controlling of remote PC ?"), this);
+        if (dialog.exec() == kDoneOk) {
             Exit();
-        });
-        dg->Show();
+        }
+        close_event_occurred_widget_ = nullptr;
     }
 
     void Workspace::dragEnterEvent(QDragEnterEvent *event) {

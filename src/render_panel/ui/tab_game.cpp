@@ -147,9 +147,8 @@ namespace tc
                             auto func_start_error = [this](const std::string& msg) {
                                 //SizedMessageBox::MakeErrorOkBox(tr("Error"), std::format("Start process failed: {}", msg).c_str())->exec();
 
-                                auto dlg = TcDialog::Make(tr("Error"), std::format("Start process failed: {}", msg).c_str(), nullptr);
-                                dlg->SetOnDialogSureClicked([=, this]() {});
-                                dlg->show();
+                                TcDialog dialog(tr("Error"), std::format("Start process failed: {}", msg).c_str(), nullptr);
+                                dialog.exec();
                             };
 
                             if (game->exes_.empty()) {

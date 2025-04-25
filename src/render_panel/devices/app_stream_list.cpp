@@ -28,6 +28,7 @@
 #include "device_api.h"
 #include "render_panel/gr_account_manager.h"
 #include "render_panel/gr_application.h"
+#include "render_panel/gr_workspace.h"
 
 namespace tc
 {
@@ -215,14 +216,14 @@ namespace tc
             auto verify_result
                 = DeviceApi::VerifyDeviceInfo(target_item.remote_device_id_, target_item.remote_device_random_pwd_, target_item.remote_device_safety_pwd_);
             if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
-                auto dlg = TcDialog::Make("Connect Failed", "Can't access server.", nullptr);
-                dlg->show();
+                TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
+                dialog.exec();
                 return;
             }
             if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
                 verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                auto dlg = TcDialog::Make("Connect Failed", "Password is invalid, please check it.", nullptr);
-                dlg->show();
+                TcDialog dialog("Connect Failed", "Password is invalid, please check it.", grWorkspace.get());
+                dialog.exec();
                 return;
             }
         }
@@ -246,23 +247,22 @@ namespace tc
             return;
         }
         if (item.IsRelay()) {
-            auto dialog = new EditRelayStreamDialog(context_, si.value());
-            dialog->show();
+            auto dialog = new EditRelayStreamDialog(context_, si.value(), grWorkspace.get());
+            dialog->exec();
         }
         else {
-            auto dialog = new CreateStreamDialog(context_, si.value());
-            dialog->show();
+            auto dialog = new CreateStreamDialog(context_, si.value(), grWorkspace.get());
+            dialog->exec();
         }
     }
 
     void AppStreamList::DeleteStream(const StreamItem& item) {
-        auto dlg = TcDialog::Make(tr("Warning"), tr("Do you want to delete the remote control?"), nullptr);
-        dlg->SetOnDialogSureClicked([=, this]() {
+        TcDialog dialog(tr("Warning"), tr("Do you want to delete the remote control?"), grWorkspace.get());
+        if (dialog.exec() == kDoneOk) {
             auto mgr = context_->GetStreamDBManager();
             mgr->DeleteStream(item._id);
             LoadStreamItems();
-        });
-        dlg->show();
+        }
     }
 
     void AppStreamList::ShowSettings(const StreamItem& item) {
@@ -271,8 +271,8 @@ namespace tc
             LOGE("read stream item from db failed: {}", item.stream_id_);
             return;
         }
-        auto dialog = new StreamSettingsDialog(context_, si.value());
-        dialog->show();
+        auto dialog = new StreamSettingsDialog(context_, si.value(), grWorkspace.get());
+        dialog->exec();
     }
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream, int index) {

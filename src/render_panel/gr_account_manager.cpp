@@ -5,6 +5,7 @@
 #include "gr_account_manager.h"
 #include "gr_settings.h"
 #include "tc_common_new/log.h"
+#include "gr_workspace.h"
 
 namespace tc
 {

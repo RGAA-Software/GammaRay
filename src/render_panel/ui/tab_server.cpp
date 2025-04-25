@@ -48,6 +48,7 @@
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/devices/stream_db_manager.h"
 #include "render_panel/devices/device_api.h"
+#include "render_panel/gr_workspace.h"
 
 namespace tc
 {
@@ -305,8 +306,8 @@ namespace tc
                         auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
                         if (!relay_result) {
                             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
-                            auto dg = TcDialog::Make(tr("Error"), tr("Can't get remote device information."), nullptr);
-                            dg->Show();
+                            TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
+                            dialog.exec();
                             return;
                         }
                         auto relay_device_info = relay_result.value();
@@ -316,13 +317,13 @@ namespace tc
                         // verify in profile server
                         auto verify_result = DeviceApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
                         if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
-                            auto dlg = TcDialog::Make("Connect Failed", "Can't access server.", nullptr);
-                            dlg->show();
+                            TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
+                            dialog.exec();
                             return;
                         }
                         if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                            auto dlg = TcDialog::Make("Connect Failed", "Password is invalid, please check it.", nullptr);
-                            dlg->show();
+                            TcDialog dialog("Connect Failed", "Password is invalid, please check it.", grWorkspace.get());
+                            dialog.exec();
                             return;
                         }
 

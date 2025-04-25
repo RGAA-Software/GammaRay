@@ -133,11 +133,8 @@ namespace tc
 //                        context_->SendAppMessage(ExitAppMessage {});
 //                    }
 
-                    auto dlg = TcDialog::Make(tr("Warning"), tr("Do you want to stop the control of remote PC?"), nullptr);
-                    dlg->SetOnDialogSureClicked([=, this]() {
-                        context_->SendAppMessage(ExitAppMessage {});
-                    });
-                    dlg->show();
+                    TcDialog dialog(tr("Warning"), tr("Do you want to stop the control of remote PC?"), nullptr);
+                    dialog.exec();
 
                 });
             }
@@ -380,11 +377,10 @@ namespace tc
 //                    context_->SendAppMessage(ExitAppMessage {});
 //                }
 
-                auto dlg = TcDialog::Make(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
-                dlg->SetOnDialogSureClicked([=, this]() {
+                TcDialog dialog(tr("Exit"), tr("Do you want to stop controlling of remote PC ?"), nullptr);
+                if (dialog.exec() == kDoneOk) {
                     context_->SendAppMessage(ExitAppMessage {});
-                });
-                dlg->show();
+                }
             });
         }
         root_layout->addStretch();

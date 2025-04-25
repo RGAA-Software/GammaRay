@@ -36,9 +36,10 @@ namespace tc
     class GrSettings;
     class MessageListener;
 
-    class GrWorkspace : public QMainWindow {
+    class GrWorkspace : public QMainWindow, public std::enable_shared_from_this<GrWorkspace> {
     public:
         GrWorkspace();
+        void Init();
         void closeEvent(QCloseEvent *event) override;
         void resizeEvent(QResizeEvent *event) override;
 
@@ -60,6 +61,8 @@ namespace tc
         QSystemTrayIcon* sys_tray_icon_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
+
+    extern std::shared_ptr<GrWorkspace> grWorkspace;
 
 }
 

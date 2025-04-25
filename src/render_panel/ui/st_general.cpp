@@ -538,9 +538,8 @@ namespace tc
 //                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
 //                msg_box->exec();
 
-                auto dlg = TcDialog::Make(tr("Error"), msg, nullptr);
-                dlg->SetOnDialogSureClicked([=, this]() {});
-                dlg->show();
+                TcDialog dialog(tr("Error"), msg, nullptr);
+                dialog.exec();
             };
 
             auto layout = new NoMarginHLayout();
@@ -605,11 +604,10 @@ namespace tc
 //                    this->context_->SendAppMessage(AppMsgRestartServer{});
 //                }
 
-                auto dlg = TcDialog::Make(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
-                dlg->SetOnDialogSureClicked([=, this]() {
+                TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
+                if (dialog.exec() == kDoneOk) {
                     this->context_->SendAppMessage(AppMsgRestartServer{});
-                });
-                dlg->show();
+                }
 
             });
 

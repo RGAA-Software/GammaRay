@@ -75,8 +75,8 @@ namespace tc
             tooltip->hide();
             tooltip->SetText("Will play audio from remote device if selected");
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
-                auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y()+btn_tips->height());
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
@@ -121,8 +121,8 @@ namespace tc
             tooltip->SetText("Copy & Paste text between devices");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
-                auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
@@ -166,8 +166,8 @@ namespace tc
             tooltip->SetText("You can only view frames from remote device, but can't operate it by Mouse or Keyboard.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
-                auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
@@ -212,8 +212,8 @@ namespace tc
             tooltip->SetText("Maximize the window when the stream was started.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
-                auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
@@ -256,8 +256,8 @@ namespace tc
             tooltip->SetText("Split the windows when the stream was started, if your remote device have more than one monitors.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
-                auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
@@ -301,8 +301,8 @@ namespace tc
             tooltip->SetText("Try P2P network when started.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
-                auto w_pos = w->pos();
-                tooltip->move(w_pos.x() - tooltip->width(), w_pos.y()+btn_tips->height());
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
                 tooltip->show();
             });
             btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
