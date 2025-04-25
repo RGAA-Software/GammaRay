@@ -48,6 +48,15 @@ namespace tc
         this->context_ = ctx;
         this->settings_ = Settings::Instance();
 
+        //windowFlags() |
+        setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+
+        auto test = new QPushButton("ExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHint", this);
+        test->setFixedWidth(500);
+        connect(test, &QPushButton::clicked, this, [=, this]() {
+            MessageBoxA(0,0,0,0);
+        });
+
         origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params->stream_name_.c_str() + "]";
         setWindowTitle(origin_title_name_);
         auto notifier = this->context_->GetMessageNotifier();
