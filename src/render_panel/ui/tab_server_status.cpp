@@ -169,7 +169,7 @@ namespace tc
 //                        });
 //                    }
 
-                    TcDialog dialog(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), nullptr);
+                    TcDialog dialog(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->PostTask([=, this]() {
                             RestartServer();
@@ -236,7 +236,7 @@ namespace tc
 //                        });
 //                    }
 
-                    TcDialog dialog(tr("Install Service"), tr("Do you want to install Service?"), nullptr);
+                    TcDialog dialog(tr("Install Service"), tr("Do you want to install Service?"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->GetServiceManager()->Install();
                     }
