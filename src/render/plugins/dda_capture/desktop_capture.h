@@ -30,7 +30,7 @@ namespace tc
         virtual bool IsPrimaryMonitor();
         virtual bool IsInitSuccess() = 0;
         // by counting the real frames
-        virtual int GetCaptureFps() {return 0;}
+        virtual int GetCapturingFps() {return 0;}
         virtual CaptureMonitorInfo GetMyMonitorInfo() { return my_monitor_info_; }
     private:
 

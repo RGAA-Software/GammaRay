@@ -6,7 +6,6 @@
 
 namespace tc
 {
-
     GrMonitorCapturePlugin::GrMonitorCapturePlugin() {
 
     }
@@ -29,16 +28,16 @@ namespace tc
 
     }
 
-    bool GrMonitorCapturePlugin::IsMonitorTarget() {
-        return is_monitor_target_;
-    }
-
     std::vector<CaptureMonitorInfo> GrMonitorCapturePlugin::GetCaptureMonitorInfo() {
         return {};
     }
 
     void GrMonitorCapturePlugin::SetCaptureMonitor(const std::string& name) {
 
+    }
+
+    std::string GrMonitorCapturePlugin::GetCapturingMonitor() {
+        return capturing_monitor_name_;
     }
 
     void GrMonitorCapturePlugin::SetCaptureFps(int fps) {

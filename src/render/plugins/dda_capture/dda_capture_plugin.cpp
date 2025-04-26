@@ -19,8 +19,6 @@ static void* GetInstance() {
 namespace tc
 {
 
-    const std::string kAllMonitorsNameSign = "all";
-
     DDACapturePlugin::DDACapturePlugin() : GrMonitorCapturePlugin() {
 
     }
@@ -163,7 +161,7 @@ namespace tc
     }
 
     bool DDACapturePlugin::IsWorking() {
-        return !captures_.empty() && init_success_;
+        return !captures_.empty();
     }
 
     bool DDACapturePlugin::ExistCaptureMonitor(const std::string& name) {
@@ -176,7 +174,7 @@ namespace tc
     }
 
     bool DDACapturePlugin::StartCapturing() {
-        if (capturing_monitor_name_ != kAllMonitorsNameSign && capturing_monitor_name_ != "") {
+        if (capturing_monitor_name_ != kAllMonitorsNameSign && !capturing_monitor_name_.empty()) {
             if (!ExistCaptureMonitor(capturing_monitor_name_)) {
                 capturing_monitor_name_ = "";
             }
@@ -189,7 +187,7 @@ namespace tc
                 if (kAllMonitorsNameSign == capturing_monitor_name_) {
                     capture->ResumeCapture();
                 }
-                else if("" == capturing_monitor_name_) {
+                else if(capturing_monitor_name_.empty()) {
                     if (capture->IsPrimaryMonitor()) {
                         capture->ResumeCapture();
                     }
@@ -203,13 +201,10 @@ namespace tc
             });
             captures_.insert({dev_name, capture});
         }
-        // to do 这个 init_success_ 已经不准确
-        init_success_ = true;
-        return init_success_;
+        return true;
     }
 
     void DDACapturePlugin::StopCapturing() {
-        init_success_ = false;
         for(const auto&[dev_name, capture] : captures_) {
             capture->StopCapture();
         }
@@ -312,10 +307,10 @@ namespace tc
         // TODO: IGNORE THIS
         //SetCaptureMonitor(capturing_monitor_name_);
         //NotifyCaptureMonitorInfo();
-        LOGI("Capturing monitor: {}", capturing_monitor_name_);
-        for (auto& [k, v] : captures_) {
-            LOGI("capture name: {}, fps: {}", k, v->GetCaptureFps());
-        }
+        //LOGI("Capturing monitor: {}", capturing_monitor_name_);
+        //for (auto& [k, v] : captures_) {
+        //    LOGI("capture name: {}, fps: {}", k, v->GetCapturingFps());
+        //}
     }
 
     void DDACapturePlugin::OnNewClientIn() {
@@ -457,5 +452,16 @@ namespace tc
 
     VirtulDesktopBoundRectangleInfo DDACapturePlugin::GetVirtualDesktopBoundRectangleInfo() {
         return virtual_desktop_bound_rectangle_info_;
+    }
+
+    std::map<std::string, int32_t> DDACapturePlugin::GetCapturingFps() {
+        std::map<std::string, int32_t> result;
+        for (const auto& [name, capture] : captures_) {
+            if (capture->IsPausing()) {
+                continue;
+            }
+            result.insert({name, capture->GetCapturingFps()});
+        }
+        return result;
     }
 }

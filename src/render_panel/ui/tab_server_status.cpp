@@ -346,7 +346,7 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Renderer WebSocket Port"));
+                label->setText(tr("Renderer TCP Port"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 

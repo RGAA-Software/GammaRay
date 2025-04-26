@@ -305,7 +305,7 @@ namespace tc
                     LOGE("ReInit successfully.");
                 }
                 continue;
-            } else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED) && true) {
+            } else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED)) {
                 if (refresh_screen_) {
                     if (cached_texture_ == nullptr) {
                         continue;
@@ -506,7 +506,7 @@ namespace tc
         return is_primary_monitor_;
     }
 
-    int DDACapture::GetCaptureFps() {
+    int DDACapture::GetCapturingFps() {
         return fps_stat_->value();
     }
 

@@ -53,7 +53,7 @@ namespace tc
         void RefreshScreen() override;
         bool IsPrimaryMonitor() override;
         bool IsInitSuccess() override;
-        int GetCaptureFps() override;
+        int GetCapturingFps() override;
 
         using DDAInitSuccessCallback = std::function<void()>;
         DDAInitSuccessCallback dda_init_success_callback_ = nullptr;

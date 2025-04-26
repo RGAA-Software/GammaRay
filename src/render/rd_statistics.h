@@ -20,6 +20,8 @@ namespace tc
     class RdContext;
     class Thread;
     class MessageListener;
+    class PluginManager;
+    class RdApplication;
 
     class RdStatistics {
     public:
@@ -30,7 +32,7 @@ namespace tc
         }
 
         RdStatistics();
-        void SetContext(const std::shared_ptr<RdContext>& ctx);
+        void SetApplication(const std::shared_ptr<RdApplication>& app);
         void StartMonitor();
         void Exit();
         void IncreaseRunningTime();
@@ -47,9 +49,11 @@ namespace tc
         void OnChecking();
 
     public:
+        std::shared_ptr<RdApplication> app_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<PluginManager> plugin_mgr_ = nullptr;
         // unit: S
         int64_t running_time_{};
         int64_t send_media_bytes_{};

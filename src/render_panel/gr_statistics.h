@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <string>
 
 namespace tc
 {
@@ -42,16 +43,16 @@ namespace tc
         int64_t server_send_media_bytes = 0;
 
         // from client
-        std::vector<uint32_t> decode_durations_;
-        std::vector<uint32_t> client_video_recv_gaps_;
-        uint32_t client_fps_video_recv_ = 0;
-        uint32_t client_fps_render_ = 0;
-        int64_t client_recv_media_data_ = 0;
+        //std::vector<uint32_t> decode_durations_;
+        //std::vector<uint32_t> client_video_recv_gaps_;
+        //uint32_t client_fps_video_recv_ = 0;
+        //uint32_t client_fps_render_ = 0;
+        //int64_t client_recv_media_data_ = 0;
 
         // from client
-        int32_t render_width_ = 0;
+        //int32_t render_width_ = 0;
         // from client
-        int32_t render_height_ = 0;
+        //int32_t render_height_ = 0;
         // from inner server
         int32_t capture_width_ = 0;
         // from inner server
@@ -64,6 +65,10 @@ namespace tc
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;
 
+        // monitor1:15; monitor2:60;
+        std::string video_capture_fps_;
+        std::string video_capture_target_;
+        int32_t connected_clients_ = 0;
     };
 
 }

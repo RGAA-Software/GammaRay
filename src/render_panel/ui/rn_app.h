@@ -27,16 +27,16 @@ namespace tc
         StatChart* stat_chart_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_;
 
-        QLabel* lbl_fps_video_recv_ = nullptr;
-        QLabel* lbl_fps_render_ = nullptr;
-        QLabel* lbl_recv_media_data_ = nullptr;
+        QLabel* lbl_connected_clients_ = nullptr;
+        QLabel* lbl_capture_target_ = nullptr;
+        QLabel* lbl_capture_fps_ = nullptr;
+        //QLabel* lbl_render_size_ = nullptr;
 
         QLabel* lbl_app_running_time_ = nullptr;
         QLabel* lbl_fps_encode_ = nullptr;
         QLabel* lbl_send_media_bytes_ = nullptr;
 
         QLabel* lbl_capture_size_ = nullptr;
-        QLabel* lbl_render_size_ = nullptr;
     };
 
 }

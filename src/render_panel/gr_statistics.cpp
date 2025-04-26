@@ -26,25 +26,25 @@ namespace tc
             this->audio_frame_gaps_.insert(this->audio_frame_gaps_.begin(),
                                            msg.statistics_->audio_frame_gaps().begin(),
                                            msg.statistics_->audio_frame_gaps().end());
-            this->decode_durations_.clear();
-            this->decode_durations_.insert(this->decode_durations_.begin(),
-                                           msg.statistics_->decode_durations().begin(),
-                                           msg.statistics_->decode_durations().end());
-            this->client_video_recv_gaps_.clear();
-            this->client_video_recv_gaps_.insert(this->client_video_recv_gaps_.begin(),
-                                           msg.statistics_->client_video_recv_gaps().begin(),
-                                           msg.statistics_->client_video_recv_gaps().end());
-            this->client_fps_video_recv_ = msg.statistics_->client_fps_video_recv();
-            this->client_fps_render_ = msg.statistics_->client_fps_render();
-            this->client_recv_media_data_ = msg.statistics_->client_recv_media_data();
+            //this->decode_durations_.clear();
+            //this->decode_durations_.insert(this->decode_durations_.begin(),
+            //                               msg.statistics_->decode_durations().begin(),
+            //                               msg.statistics_->decode_durations().end());
+            //this->client_video_recv_gaps_.clear();
+            //this->client_video_recv_gaps_.insert(this->client_video_recv_gaps_.begin(),
+            //                               msg.statistics_->client_video_recv_gaps().begin(),
+            //                               msg.statistics_->client_video_recv_gaps().end());
+            //this->client_fps_video_recv_ = msg.statistics_->client_fps_video_recv();
+            //this->client_fps_render_ = msg.statistics_->client_fps_render();
+            //this->client_recv_media_data_ = msg.statistics_->client_recv_media_data();
             // from inner server
             this->fps_video_encode = msg.statistics_->fps_video_encode();
             // from inner server
             this->app_running_time = msg.statistics_->app_running_time();
             // from inner server
             this->server_send_media_bytes = msg.statistics_->server_send_media_data();
-            this->render_width_ = msg.statistics_->render_width();
-            this->render_height_ = msg.statistics_->render_height();
+            //this->render_width_ = msg.statistics_->render_width();
+            //this->render_height_ = msg.statistics_->render_height();
             this->capture_width_ = msg.statistics_->capture_width();
             this->capture_height_ = msg.statistics_->capture_height();
         });

@@ -89,8 +89,6 @@ namespace tc
         // context
         context_ = std::make_shared<RdContext>();
         context_->Init();
-        statistics_->SetContext(context_);
-        statistics_->StartMonitor();
 
         plugin_manager_ = PluginManager::Make(shared_from_this());
         context_->SetPluginManager(plugin_manager_);
@@ -98,6 +96,9 @@ namespace tc
         plugin_manager_->LoadAllPlugins();
         plugin_manager_->RegisterPluginEventsCallback();
         plugin_manager_->DumpPluginInfo();
+
+        statistics_->SetApplication(shared_from_this());
+        statistics_->StartMonitor();
 
         ws_panel_client_ = std::make_shared<WsPanelClient>(context_);
         ws_panel_client_->Start();

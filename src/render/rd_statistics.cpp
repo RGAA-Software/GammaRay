@@ -12,6 +12,8 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/time_util.h"
+#include "plugins/plugin_manager.h"
+#include "render/rd_app.h"
 
 namespace tc
 {
@@ -20,8 +22,10 @@ namespace tc
         fps_video_encode_ = std::make_shared<FpsStat>();
     }
 
-    void RdStatistics::SetContext(const std::shared_ptr<RdContext>& ctx) {
-        context_ = ctx;
+    void RdStatistics::SetApplication(const std::shared_ptr<RdApplication>& app) {
+        app_ = app;
+        context_ = app_->GetContext();
+        plugin_mgr_ = context_->GetPluginManager();
     }
 
     void RdStatistics::StartMonitor() {
@@ -82,11 +86,11 @@ namespace tc
         cst->mutable_encode_durations()->Add(encode_durations_.begin(), encode_durations_.end());
         cst->mutable_audio_frame_gaps()->Add(audio_frame_gaps_.begin(), audio_frame_gaps_.end());
 
-        cst->mutable_decode_durations()->Add(decode_durations_.begin(), decode_durations_.end());
-        cst->mutable_client_video_recv_gaps()->Add(client_video_recv_gaps_.begin(), client_video_recv_gaps_.end());
-        cst->set_client_fps_video_recv(client_fps_video_recv_);
-        cst->set_client_fps_render(client_fps_render_);
-        cst->set_client_recv_media_data(client_recv_media_data_);
+        //cst->mutable_decode_durations()->Add(decode_durations_.begin(), decode_durations_.end());
+        //cst->mutable_client_video_recv_gaps()->Add(client_video_recv_gaps_.begin(), client_video_recv_gaps_.end());
+        //cst->set_client_fps_video_recv(client_fps_video_recv_);
+        //cst->set_client_fps_render(client_fps_render_);
+        //cst->set_client_recv_media_data(client_recv_media_data_);
         // from inner server
         cst->set_fps_video_encode(fps_video_encode_value_);
         // from inner server
@@ -95,8 +99,8 @@ namespace tc
         cst->set_server_send_media_data(send_media_bytes_);
         cst->set_capture_width(capture_width_);
         cst->set_capture_height(capture_height_);
-        cst->set_render_width(render_width_);
-        cst->set_render_height(render_height_);
+        //cst->set_render_width(render_width_);
+        //cst->set_render_height(render_height_);
         return msg.SerializeAsString();
     }
 

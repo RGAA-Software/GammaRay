@@ -23,8 +23,8 @@
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartAudioFrameGap = "Capture Audio Gap";
 constexpr auto kChartEncode = "Encode";
-constexpr auto kChartDecode = "Decode";
-constexpr auto kChartRecvVideoFrame = "Recv Video Gap";
+//constexpr auto kChartDecode = "Decode";
+//constexpr auto kChartRecvVideoFrame = "Recv Video Gap";
 
 namespace tc
 {
@@ -41,7 +41,7 @@ namespace tc
             auto head_layout = new NoMarginHLayout();
             head_layout->addSpacing(margin_left);
             // app info
-            auto label_size = QSize(220, 35);
+            auto label_size = QSize(200, 35);
 
             // 2nd column
             {
@@ -68,7 +68,7 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("FPS(Encode)");
+                    label->setText("Video Encode FPS");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
@@ -128,12 +128,12 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("FPS(Video Receive)");
+                    label->setText("Connected Clients");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
-                    lbl_fps_video_recv_ = op;
+                    lbl_connected_clients_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -145,12 +145,12 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("FPS(Client Render)");
+                    label->setText("Video Capture FPS");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
-                    lbl_fps_render_ = op;
+                    lbl_capture_fps_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -162,12 +162,12 @@ namespace tc
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Client Received Data");
+                    label->setText("Video Capture Target");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
-                    lbl_recv_media_data_ = op;
+                    lbl_capture_target_ = op;
                     op->setText("");
                     op->setFixedSize(QSize(150, label_size.height()));
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -175,23 +175,24 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
-                {
-                    auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
-                    label->setFixedSize(label_size);
-                    label->setText("Render Size");
-                    label->setStyleSheet("font-size: 13px;");
-                    item_layout->addWidget(label);
-
-                    auto op = new QLabel(this);
-                    lbl_render_size_ = op;
-                    op->setText("");
-                    op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
-                    item_layout->addWidget(op);
-                    item_layout->addStretch();
-                    layout->addLayout(item_layout);
-                }
+//                {
+//                    auto item_layout = new NoMarginHLayout();
+//                    auto label = new QLabel(this);
+//                    label->setFixedSize(label_size);
+//                    label->setText("Render Size");
+//                    label->setStyleSheet("font-size: 13px;");
+//                    item_layout->addWidget(label);
+//
+//                    auto op = new QLabel(this);
+//                    lbl_render_size_ = op;
+//                    op->setText("");
+//                    op->setFixedSize(QSize(150, label_size.height()));
+//                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+//                    item_layout->addWidget(op);
+//                    item_layout->addStretch();
+//                    layout->addLayout(item_layout);
+//                }
+                layout->addStretch();
                 head_layout->addLayout(layout);
             }
             head_layout->addStretch();
@@ -202,7 +203,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             layout->addSpacing(margin_left);
-            auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode, kChartDecode, kChartRecvVideoFrame}, this);
+            auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode,/* kChartDecode, kChartRecvVideoFrame*/}, this);
             stat_chart_ = chart;
             chart->setFixedSize(680, 360);
             layout->addWidget(chart);
@@ -237,23 +238,23 @@ namespace tc
         // update encode durations
         stat_value.insert({kChartEncode, stat->encode_durations_});
         // update decode durations
-        stat_value.insert({kChartDecode, stat->decode_durations_});
+        //stat_value.insert({kChartDecode, stat->decode_durations_});
         // update recv video frame gamp
-        stat_value.insert({kChartRecvVideoFrame, stat->client_video_recv_gaps_});
+        //stat_value.insert({kChartRecvVideoFrame, stat->client_video_recv_gaps_});
         // update audio frame gap
         stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
         stat_chart_->UpdateLines(stat_value);
 
-        lbl_fps_video_recv_->setText(std::to_string(stat->client_fps_video_recv_).c_str());
-        lbl_fps_render_->setText(std::to_string(stat->client_fps_render_).c_str());
-        lbl_recv_media_data_->setText(NumFormatter::FormatStorageSize(stat->client_recv_media_data_).c_str());
+//        lbl_fps_video_recv_->setText(std::to_string(stat->client_fps_video_recv_).c_str());
+//        lbl_fps_render_->setText(std::to_string(stat->client_fps_render_).c_str());
+//        lbl_recv_media_data_->setText(NumFormatter::FormatStorageSize(stat->client_recv_media_data_).c_str());
+//        lbl_render_size_->setText(std::format("{}x{}", stat->render_width_, stat->render_height_).c_str());
 
         lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
         lbl_fps_encode_->setText(std::to_string(stat->fps_video_encode).c_str());
         lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
 
         lbl_capture_size_->setText(std::format("{}x{}", stat->capture_width_, stat->capture_height_).c_str());
-        lbl_render_size_->setText(std::format("{}x{}", stat->render_width_, stat->render_height_).c_str());
 
     }
 
