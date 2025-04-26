@@ -109,14 +109,22 @@ namespace tc
     }
 
     void FFmpegEncoderPlugin::ExitAll() {
-        for (const auto& [monitor_index, video_encoder] : video_encoders_) {
+        for (const auto& [monitor, video_encoder] : video_encoders_) {
             video_encoder->Exit();
         }
         video_encoders_.clear();
     }
 
     std::map<std::string, WorkingEncoderInfoPtr> FFmpegEncoderPlugin::GetWorkingCapturesInfo() {
-        return {};
+        std::map<std::string, WorkingEncoderInfoPtr> result;
+        for (const auto& [monitor, video_encoder] : video_encoders_) {
+            result.insert({monitor, std::make_shared<WorkingEncoderInfo>(WorkingEncoderInfo {
+                .target_name_ = monitor,
+                .fps_ = video_encoder->GetEncodeFps(),
+                .encoder_name_ = "Software",
+            })});
+        }
+        return result;
     }
 
 }

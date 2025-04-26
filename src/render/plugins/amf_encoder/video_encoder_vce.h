@@ -7,6 +7,7 @@
 #include "amf/common/Thread.h"
 #include "tc_encoder_new/encoder_config.h"
 #include "tc_encoder_new/video_encoder.h"
+#include "tc_common_new/fps_stat.h"
 #include <thread>
 #include <fstream>
 #include <functional>
@@ -65,6 +66,7 @@ namespace tc
         void Exit();
         void Shutdown();
         void Receive(amf::AMFData *data);
+        int32_t GetEncodeFps();
 
     private:
         void ApplyFrameProperties(const amf::AMFSurfacePtr &surface, bool insertIDR);
@@ -89,6 +91,9 @@ namespace tc
         std::shared_ptr<FrameRender> frame_render_ = nullptr;
 
         std::any extra_;
+
+        std::shared_ptr<FpsStat> fps_stat_ = nullptr;
+
     };
 
 }

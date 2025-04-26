@@ -27,6 +27,8 @@ namespace tc
         int32_t fps_ = 0;
         // DXGI / GDI / HOOK
         std::string capture_type_;
+        int32_t capture_frame_width_ = 0;
+        int32_t capture_frame_height_ = 0;
     };
     using WorkingCaptureInfoPtr = std::shared_ptr<WorkingCaptureInfo>;
 

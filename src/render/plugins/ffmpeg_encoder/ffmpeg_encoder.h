@@ -9,6 +9,8 @@
 #include <memory>
 #include "ffmpeg_encoder_defs.h"
 #include "tc_encoder_new/encoder_config.h"
+#include "tc_common_new/fps_stat.h"
+
 extern "C" {
     #include "libavcodec/avcodec.h"
 }
@@ -27,6 +29,7 @@ namespace tc
         void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
         void InsertIdr();
         void Exit();
+        int32_t GetEncodeFps();
 
     private:
         FFmpegEncoderPlugin* plugin_ = nullptr;
@@ -37,6 +40,7 @@ namespace tc
         int bitrate_ = 10000000; // 10Mbps
         bool insert_idr_ = false;
         EncoderConfig encoder_config_;
+        std::shared_ptr<FpsStat> fps_stat_ = nullptr;
     };
 
 }

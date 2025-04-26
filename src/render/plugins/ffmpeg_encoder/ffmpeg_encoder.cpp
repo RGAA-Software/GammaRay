@@ -17,6 +17,7 @@ namespace tc
 
     FFmpegEncoder::FFmpegEncoder(FFmpegEncoderPlugin* plugin) {
         plugin_ = plugin;
+        fps_stat_ = std::make_shared<FpsStat>();
     }
 
     bool FFmpegEncoder::Init(const EncoderConfig& config, const std::string& monitor_name) {
@@ -140,6 +141,8 @@ namespace tc
             event->extra_ = extra;
             plugin_->CallbackEvent(event);
 
+            fps_stat_->Tick();
+
             av_packet_unref(packet_);
         }
     }
@@ -150,6 +153,10 @@ namespace tc
 
     void FFmpegEncoder::Exit() {
 
+    }
+
+    int32_t FFmpegEncoder::GetEncodeFps() {
+        return fps_stat_->value();
     }
 
 }

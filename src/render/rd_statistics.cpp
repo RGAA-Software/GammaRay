@@ -13,9 +13,11 @@
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/time_util.h"
 #include "plugins/plugin_manager.h"
+#include "plugins/plugin_ids.h"
 #include "render/rd_app.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
@@ -126,8 +128,19 @@ namespace tc
                         item->set_encoding_fps(encoder_info->fps_);
                     }
                 }
+                item->set_capture_frame_width(info->capture_frame_width_);
+                item->set_capture_frame_height(info->capture_frame_height_);
             }
         }
+
+        int32_t connected_clients = 0;
+        plugin_mgr_->VisitNetPlugins([&](GrNetPlugin* plugin) {
+            if (plugin->GetPluginId() == kRelayPluginId) {
+                return;
+            }
+            connected_clients += plugin->ConnectedClientSize();
+        });
+        cst->set_connected_clients(connected_clients);
 
         return msg.SerializeAsString();
     }

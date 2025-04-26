@@ -25,7 +25,20 @@ namespace tc
 
             auto w = new TcLabel(this);
             lbl_target_name_ = w;
-            w->setText("DISPLAY1");
+            w->setText("");
+            layout->addWidget(w);
+            layout->addStretch();
+        }
+
+        {
+            auto layout = new NoMarginHLayout();
+            layout->addSpacing(item_spacing);
+            root_layout->addSpacing(item_spacing);
+            root_layout->addLayout(layout);
+
+            auto w = new TcLabel(this);
+            lbl_capture_size_ = w;
+            w->setText("");
             layout->addWidget(w);
             layout->addStretch();
         }
@@ -38,7 +51,7 @@ namespace tc
 
             auto w = new TcLabel(this);
             lbl_capture_fps_ = w;
-            w->setText("DISPLAY1");
+            w->setText("");
             layout->addWidget(w);
             layout->addStretch();
         }
@@ -51,7 +64,7 @@ namespace tc
 
             auto w = new TcLabel(this);
             lbl_encode_fps_ = w;
-            w->setText("DISPLAY1");
+            w->setText("");
             layout->addWidget(w);
             layout->addStretch();
         }
@@ -65,11 +78,15 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         QPen pen;
-        if (lbl_target_name_->text().isEmpty()) {
-            pen.setColor(0xeeeeee);
+        if (mouse_enter_) {
+            pen.setColor(0x999999);
         }
         else {
-            pen.setColor(0xcccccc);
+            if (lbl_target_name_->text().isEmpty()) {
+                pen.setColor(0xeeeeee);
+            } else {
+                pen.setColor(0xcccccc);
+            }
         }
         pen.setStyle(Qt::PenStyle::DashDotDotLine);
         painter.setPen(pen);
@@ -83,6 +100,7 @@ namespace tc
 
     void StatCaptureInfoItem::UpdateInfo(const PtMsgWorkingCaptureInfo& info) {
         lbl_target_name_->setText(info.target_name().c_str());
+        lbl_capture_size_->setText(std::format("Capture Size: {}x{}", info.capture_frame_width(), info.capture_frame_height()).c_str());
         lbl_capture_fps_->setText(std::format("Capture FPS: {}",info.capturing_fps()).c_str());
         lbl_encode_fps_->setText(std::format("Encoder: {}, FPS: {}", info.encoder_name(), info.encoding_fps()).c_str());
         update();

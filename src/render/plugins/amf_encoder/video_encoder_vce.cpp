@@ -29,7 +29,6 @@ const wchar_t* WIDTH_INDEX_PROPERTY = L"FrameWidthIndexProperty";
 const wchar_t* HEIGHT_INDEX_PROPERTY = L"FrameHeightIndexProperty";
 const wchar_t* IS_KEY_FRAME = L"IsKeyFrame";
 static uint64_t last_time = tc::TimeUtil::GetCurrentTimestamp();
-static int fps = 0;
 
 namespace tc
 {
@@ -249,6 +248,8 @@ namespace tc
         encoder_->Start();
         converter_->Start();
 
+        fps_stat_ = std::make_shared<FpsStat>();
+
         LOGI("Successfully initialized VideoEncoderVCE.");
         return true;
     }
@@ -355,12 +356,11 @@ namespace tc
         event->extra_ = this->extra_;
         this->plugin_->CallbackEvent(event);
 
-        fps++;
+        fps_stat_->Tick();
+
         uint64_t ct = tc::TimeUtil::GetCurrentTimestamp();
         if (ct - last_time > 1000) {
-            //LOGI("Amf encoder FPS : {}", fps);
             last_time = ct;
-            fps = 0;
         }
     }
 
@@ -417,6 +417,10 @@ namespace tc
         }
         *buffer += AUD_NAL_SIZE;
         *length -= AUD_NAL_SIZE;
+    }
+
+    int32_t VideoEncoderVCE::GetEncodeFps() {
+        return fps_stat_->value();
     }
 
 }

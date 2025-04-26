@@ -462,10 +462,13 @@ namespace tc
             if (capture->IsPausing()) {
                 continue;
             }
+            const auto& my_monitor = capture->GetMyMonitorInfo();
             result.insert({name, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
                 .target_name_ = name,
                 .fps_ = capture->GetCapturingFps(),
                 .capture_type_ = kCaptureTypeDXGI,
+                .capture_frame_width_ = my_monitor.Width(),
+                .capture_frame_height_ = my_monitor.Height(),
             })});
         }
         return result;

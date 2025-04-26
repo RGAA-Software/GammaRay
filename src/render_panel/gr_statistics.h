@@ -55,9 +55,9 @@ namespace tc
         // from client
         //int32_t render_height_ = 0;
         // from inner server
-        int32_t capture_width_ = 0;
+        //int32_t capture_width_ = 0;
         // from inner server
-        int32_t capture_height_ = 0;
+        //int32_t capture_height_ = 0;
 
         // from inner server
         int32_t audio_samples_{0};
@@ -68,6 +68,7 @@ namespace tc
 
         std::vector<tc::PtMsgWorkingCaptureInfo> captures_info_;
         int32_t connected_clients_ = 0;
+        std::string video_capture_type_;
     };
 
 }

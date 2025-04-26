@@ -109,7 +109,7 @@ namespace tc
     }
 
     void AmfEncoderPlugin::ExitAll() {
-        for (const auto& [monitor_index, video_encoder] : video_encoders_) {
+        for (const auto& [monitor, video_encoder] : video_encoders_) {
             if (video_encoder) {
                 video_encoder->Exit();
             }
@@ -119,7 +119,15 @@ namespace tc
     }
 
     std::map<std::string, WorkingEncoderInfoPtr> AmfEncoderPlugin::GetWorkingCapturesInfo() {
-        return {};
+        std::map<std::string, WorkingEncoderInfoPtr> result;
+        for (const auto& [monitor, video_encoder] : video_encoders_) {
+            auto info = std::make_shared<WorkingEncoderInfo>();
+            info->target_name_ = monitor;
+            info->fps_ = video_encoder->GetEncodeFps();
+            info->encoder_name_ = "AMF";
+            result.insert({monitor, info});
+        }
+        return result;
     }
 
 }

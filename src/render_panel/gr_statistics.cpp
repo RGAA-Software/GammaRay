@@ -45,8 +45,8 @@ namespace tc
             this->server_send_media_bytes = msg.statistics_->server_send_media_data();
             //this->render_width_ = msg.statistics_->render_width();
             //this->render_height_ = msg.statistics_->render_height();
-            this->capture_width_ = msg.statistics_->capture_width();
-            this->capture_height_ = msg.statistics_->capture_height();
+            //this->capture_width_ = msg.statistics_->capture_width();
+            //this->capture_height_ = msg.statistics_->capture_height();
 
             // captures information
             {
@@ -57,8 +57,14 @@ namespace tc
                     PtMsgWorkingCaptureInfo cpy_info;
                     cpy_info.CopyFrom(info);
                     captures_info_.push_back(cpy_info);
+
+                    if (video_capture_type_ != info.capture_type()) {
+                        video_capture_type_ = info.capture_type();
+                    }
                 }
             }
+
+            connected_clients_ = msg.statistics_->connected_clients();
 
         });
 

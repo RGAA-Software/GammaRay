@@ -25,6 +25,7 @@ namespace tc
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         TcLabel* lbl_target_name_;
+        TcLabel* lbl_capture_size_;
         TcLabel* lbl_capture_fps_;
         TcLabel* lbl_encode_fps_;
     };

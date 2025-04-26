@@ -200,6 +200,8 @@ namespace tc
         lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
 
         //lbl_capture_size_->setText(std::format("{}x{}", stat->capture_width_, stat->capture_height_).c_str());
+        lbl_connected_clients_->setText(std::to_string(stat->connected_clients_).c_str());
+        lbl_capture_type_->setText(stat->video_capture_type_.c_str());
 
         for (const auto& cp : capture_info_items_) {
             cp->ClearInfo();
