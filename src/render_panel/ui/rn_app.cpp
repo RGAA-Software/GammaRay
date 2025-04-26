@@ -41,7 +41,7 @@ namespace tc
             auto head_layout = new NoMarginHLayout();
             head_layout->addSpacing(margin_left);
             // app info
-            auto label_size = QSize(200, 35);
+            auto label_size = QSize(150, 35);
 
             // 2nd column
             {
@@ -123,6 +123,7 @@ namespace tc
             // 3rd column
             {
                 //
+                int info_length = 220;
                 auto layout = new NoMarginVLayout();
                 {
                     auto item_layout = new NoMarginHLayout();
@@ -135,7 +136,24 @@ namespace tc
                     auto op = new QLabel(this);
                     lbl_connected_clients_ = op;
                     op->setText("");
-                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setFixedSize(QSize(info_length, label_size.height()));
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Video Capture Type");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_capture_target_ = op;
+                    op->setText("");
+                    op->setFixedSize(QSize(info_length, label_size.height()));
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
@@ -152,24 +170,7 @@ namespace tc
                     auto op = new QLabel(this);
                     lbl_capture_fps_ = op;
                     op->setText("");
-                    op->setFixedSize(QSize(150, label_size.height()));
-                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
-                    item_layout->addWidget(op);
-                    item_layout->addStretch();
-                    layout->addLayout(item_layout);
-                }
-                {
-                    auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
-                    label->setFixedSize(label_size);
-                    label->setText("Video Capture Target");
-                    label->setStyleSheet("font-size: 13px;");
-                    item_layout->addWidget(label);
-
-                    auto op = new QLabel(this);
-                    lbl_capture_target_ = op;
-                    op->setText("");
-                    op->setFixedSize(QSize(150, label_size.height()));
+                    op->setFixedSize(QSize(info_length, label_size.height()));
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                     item_layout->addWidget(op);
                     item_layout->addStretch();
@@ -245,10 +246,7 @@ namespace tc
         stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
         stat_chart_->UpdateLines(stat_value);
 
-//        lbl_fps_video_recv_->setText(std::to_string(stat->client_fps_video_recv_).c_str());
-//        lbl_fps_render_->setText(std::to_string(stat->client_fps_render_).c_str());
-//        lbl_recv_media_data_->setText(NumFormatter::FormatStorageSize(stat->client_recv_media_data_).c_str());
-//        lbl_render_size_->setText(std::format("{}x{}", stat->render_width_, stat->render_height_).c_str());
+        lbl_capture_fps_->setText(stat->video_capture_fps_.c_str());
 
         lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
         lbl_fps_encode_->setText(std::to_string(stat->fps_video_encode).c_str());

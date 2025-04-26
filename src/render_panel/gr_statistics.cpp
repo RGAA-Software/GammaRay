@@ -47,6 +47,21 @@ namespace tc
             //this->render_height_ = msg.statistics_->render_height();
             this->capture_width_ = msg.statistics_->capture_width();
             this->capture_height_ = msg.statistics_->capture_height();
+
+            // capturing fps
+            {
+                video_capture_fps_.clear();
+                int size = msg.statistics_->working_captures_info_size();
+                for (int i = 0; i < size; i++) {
+                    auto info = msg.statistics_->working_captures_info(i);
+                    auto tmp = QString::fromStdString(info.target_name());
+                    if (tmp.contains(R"(\\)")) {
+                        tmp = tmp.mid(4);
+                    }
+                    video_capture_fps_ = video_capture_fps_.append(std::format("{}:{}; ", tmp.toStdString(), info.fps()));
+                }
+            }
+
         });
 
         msg_listener_->Listen<MsgServerAudioSpectrum>([=, this](const MsgServerAudioSpectrum& msg) {

@@ -67,6 +67,7 @@ namespace tc
 
         // monitor1:15; monitor2:60;
         std::string video_capture_fps_;
+        // monitor1;monitor2; // all
         std::string video_capture_target_;
         int32_t connected_clients_ = 0;
     };

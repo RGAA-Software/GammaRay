@@ -14,6 +14,7 @@
 #include "tc_common_new/time_util.h"
 #include "plugins/plugin_manager.h"
 #include "render/rd_app.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc
 {
@@ -101,6 +102,25 @@ namespace tc
         cst->set_capture_height(capture_height_);
         //cst->set_render_width(render_width_);
         //cst->set_render_height(render_height_);
+
+        //
+        auto video_capture_plugin = app_->GetWorkingMonitorCapturePlugin();
+        if (video_capture_plugin) {
+            auto captures_info = video_capture_plugin->GetWorkingCapturesInfo();
+            for (const auto& [name, info] : captures_info) {
+                auto cp_info = cst->mutable_working_captures_info();
+                auto item = cp_info->Add();
+                item->set_target_name(info->target_name_);
+                item->set_fps(info->fps_);
+                item->set_capture_type(info->capture_type_);
+            }
+        }
+
+        auto video_encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
+        for (const auto& [name, plugin] : video_encoder_plugins) {
+
+        }
+
         return msg.SerializeAsString();
     }
 

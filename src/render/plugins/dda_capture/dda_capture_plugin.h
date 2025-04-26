@@ -40,8 +40,8 @@ namespace tc
 
         VirtulDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() override;
 
-        // Monitor name <==> FPS
-        std::map<std::string, int32_t> GetCapturingFps() override;
+        // Capturing target <==> information
+        std::map<std::string, WorkingCaptureInfoPtr> GetWorkingCapturesInfo() override;
 
     private:
         void InitVideoCaptures();

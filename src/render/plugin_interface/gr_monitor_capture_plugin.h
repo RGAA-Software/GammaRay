@@ -12,9 +12,23 @@
 namespace tc
 {
     const std::string kAllMonitorsNameSign = "all";
+    const std::string kCaptureTypeDXGI = "DXGI";
+    const std::string kCaptureTypeGDI = "GDI";
+    const std::string kCaptureTypeHook = "INNER";
 
     class Image;
     class Data;
+
+    // dynamic working capture information
+    class WorkingCaptureInfo {
+    public:
+        // monitor name or hook capturing
+        std::string target_name_;
+        int32_t fps_ = 0;
+        // DXGI / GDI / HOOK
+        std::string capture_type_;
+    };
+    using WorkingCaptureInfoPtr = std::shared_ptr<WorkingCaptureInfo>;
 
     class GrMonitorCapturePlugin : public GrPluginInterface {
     public:
@@ -32,8 +46,8 @@ namespace tc
         virtual void SetCaptureMonitor(const std::string& name);
         // capturing monitor
         std::string GetCapturingMonitor();
-        // capturing fps for monitors
-        virtual std::map<std::string, int32_t> GetCapturingFps() = 0;
+        // capturing information for monitors/hook
+        virtual std::map<std::string, WorkingCaptureInfoPtr> GetWorkingCapturesInfo() = 0;
 
         virtual void SetCaptureFps(int fps);
         virtual std::string GetCapturingMonitorName() = 0;

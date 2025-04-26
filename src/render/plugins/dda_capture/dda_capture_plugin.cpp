@@ -3,6 +3,8 @@
 //
 
 #include <ShlObj_core.h>
+
+#include <memory>
 #include "dda_capture_plugin.h"
 #include "render/plugins/plugin_ids.h"
 #include "dda_capture.h"
@@ -454,13 +456,17 @@ namespace tc
         return virtual_desktop_bound_rectangle_info_;
     }
 
-    std::map<std::string, int32_t> DDACapturePlugin::GetCapturingFps() {
-        std::map<std::string, int32_t> result;
+    std::map<std::string, WorkingCaptureInfoPtr> DDACapturePlugin::GetWorkingCapturesInfo() {
+        std::map<std::string, WorkingCaptureInfoPtr> result;
         for (const auto& [name, capture] : captures_) {
             if (capture->IsPausing()) {
                 continue;
             }
-            result.insert({name, capture->GetCapturingFps()});
+            result.insert({name, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
+                .target_name_ = name,
+                .fps_ = capture->GetCapturingFps(),
+                .capture_type_ = kCaptureTypeDXGI,
+            })});
         }
         return result;
     }
