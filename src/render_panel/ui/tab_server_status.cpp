@@ -459,7 +459,7 @@ namespace tc
             title->setText(tr("Statistics"));
             title->setAlignment(Qt::AlignLeft);
             title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
-            item_layout->addSpacing(40);
+            item_layout->addSpacing(30);
             item_layout->addWidget(title);
             item_layout->addStretch();
             layout->addSpacing(10);

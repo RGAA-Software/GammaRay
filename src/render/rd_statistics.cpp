@@ -15,6 +15,7 @@
 #include "plugins/plugin_manager.h"
 #include "render/rd_app.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
 
 namespace tc
 {
@@ -105,20 +106,27 @@ namespace tc
 
         //
         auto video_capture_plugin = app_->GetWorkingMonitorCapturePlugin();
-        if (video_capture_plugin) {
+        auto video_encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
+        if (video_capture_plugin && !video_encoder_plugins.empty()) {
+            // encoder info
+
             auto captures_info = video_capture_plugin->GetWorkingCapturesInfo();
             for (const auto& [name, info] : captures_info) {
                 auto cp_info = cst->mutable_working_captures_info();
                 auto item = cp_info->Add();
                 item->set_target_name(info->target_name_);
-                item->set_fps(info->fps_);
+                item->set_capturing_fps(info->fps_);
                 item->set_capture_type(info->capture_type_);
+                if (video_encoder_plugins.contains(info->target_name_)) {
+                    auto video_encoder_plugin = video_encoder_plugins[info->target_name_];
+                    auto video_encoders_info = video_encoder_plugin->GetWorkingCapturesInfo();
+                    if (video_encoders_info.contains(info->target_name_)) {
+                        auto encoder_info = video_encoders_info[info->target_name_];
+                        item->set_encoder_name(encoder_info->encoder_name_);
+                        item->set_encoding_fps(encoder_info->fps_);
+                    }
+                }
             }
-        }
-
-        auto video_encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
-        for (const auto& [name, plugin] : video_encoder_plugins) {
-
         }
 
         return msg.SerializeAsString();

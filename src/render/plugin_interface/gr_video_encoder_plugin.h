@@ -15,6 +15,17 @@ namespace tc
 {
     class Image;
 
+    // dynamic working capture information
+    class WorkingEncoderInfo {
+    public:
+        // monitor name or hook capturing
+        std::string target_name_;
+        int32_t fps_ = 0;
+        // NVENC / AMF / SOFTWARE
+        std::string encoder_name_;
+    };
+    using WorkingEncoderInfoPtr = std::shared_ptr<WorkingEncoderInfo>;
+
     class GrVideoEncoderPlugin : public GrPluginInterface {
     public:
         GrVideoEncoderPlugin();
@@ -31,6 +42,8 @@ namespace tc
         virtual void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
         virtual void Exit(const std::string& monitor_name);
         virtual void ExitAll();
+        // encoding information for monitors/hook
+        virtual std::map<std::string, WorkingEncoderInfoPtr> GetWorkingCapturesInfo() = 0;
 
         EncoderConfig GetEncoderConfig(const std::string& monitor_name);
 

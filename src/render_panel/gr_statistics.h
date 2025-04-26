@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include "tc_message.pb.h"
 
 namespace tc
 {
@@ -65,10 +66,7 @@ namespace tc
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;
 
-        // monitor1:15; monitor2:60;
-        std::string video_capture_fps_;
-        // monitor1;monitor2; // all
-        std::string video_capture_target_;
+        std::vector<tc::PtMsgWorkingCaptureInfo> captures_info_;
         int32_t connected_clients_ = 0;
     };
 

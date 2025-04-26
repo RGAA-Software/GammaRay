@@ -118,4 +118,8 @@ namespace tc
         LOGI("Amf encoders all exit.");
     }
 
+    std::map<std::string, WorkingEncoderInfoPtr> AmfEncoderPlugin::GetWorkingCapturesInfo() {
+        return {};
+    }
+
 }

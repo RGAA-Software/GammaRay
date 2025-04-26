@@ -17,6 +17,7 @@ namespace tc
         plugin_ = plugin;
         d3d11_device_ = plugin->d3d11_device_;
         d3d11_device_context_ = plugin->d3d11_device_context_;
+        fps_stat_ = std::make_shared<FpsStat>();
     }
 
     NVENCVideoEncoder::~NVENCVideoEncoder() = default;
@@ -114,6 +115,8 @@ namespace tc
             event->extra_ = extra;
             this->plugin_->CallbackEvent(event);
         }
+
+        fps_stat_->Tick();
     }
 
     void
@@ -370,5 +373,8 @@ namespace tc
         }
     }
 
+    int32_t NVENCVideoEncoder::GetEncodeFps() {
+        return fps_stat_->value();
+    }
 
 } // namespace tc

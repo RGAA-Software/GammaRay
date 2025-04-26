@@ -115,4 +115,8 @@ namespace tc
         video_encoders_.clear();
     }
 
+    std::map<std::string, WorkingEncoderInfoPtr> FFmpegEncoderPlugin::GetWorkingCapturesInfo() {
+        return {};
+    }
+
 }

@@ -12,11 +12,12 @@ namespace tc
 {
     class StatChart;
     class MessageListener;
+    class StatCaptureInfoItem;
 
     class RnApp : public TabBase {
     public:
         RnApp(const std::shared_ptr<GrApplication>& app, QWidget *parent);
-        ~RnApp() = default;
+        ~RnApp() override = default;
 
         void OnTabShow() override;
         void OnTabHide() override;
@@ -24,19 +25,24 @@ namespace tc
         void UpdateUI();
 
     private:
+        StatCaptureInfoItem* MakeCapturesInfoWidget();
+
+    private:
         StatChart* stat_chart_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_;
 
         QLabel* lbl_connected_clients_ = nullptr;
-        QLabel* lbl_capture_target_ = nullptr;
-        QLabel* lbl_capture_fps_ = nullptr;
+        QLabel* lbl_capture_type_ = nullptr;
+        //QLabel* lbl_capture_fps_ = nullptr;
         //QLabel* lbl_render_size_ = nullptr;
 
         QLabel* lbl_app_running_time_ = nullptr;
-        QLabel* lbl_fps_encode_ = nullptr;
+        //QLabel* lbl_fps_encode_ = nullptr;
         QLabel* lbl_send_media_bytes_ = nullptr;
 
-        QLabel* lbl_capture_size_ = nullptr;
+        //QLabel* lbl_capture_size_ = nullptr;
+        std::vector<StatCaptureInfoItem*> capture_info_items_;
+
     };
 
 }

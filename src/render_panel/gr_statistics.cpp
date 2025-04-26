@@ -48,17 +48,15 @@ namespace tc
             this->capture_width_ = msg.statistics_->capture_width();
             this->capture_height_ = msg.statistics_->capture_height();
 
-            // capturing fps
+            // captures information
             {
-                video_capture_fps_.clear();
+                captures_info_.clear();
                 int size = msg.statistics_->working_captures_info_size();
                 for (int i = 0; i < size; i++) {
                     auto info = msg.statistics_->working_captures_info(i);
-                    auto tmp = QString::fromStdString(info.target_name());
-                    if (tmp.contains(R"(\\)")) {
-                        tmp = tmp.mid(4);
-                    }
-                    video_capture_fps_ = video_capture_fps_.append(std::format("{}:{}; ", tmp.toStdString(), info.fps()));
+                    PtMsgWorkingCaptureInfo cpy_info;
+                    cpy_info.CopyFrom(info);
+                    captures_info_.push_back(cpy_info);
                 }
             }
 

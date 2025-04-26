@@ -34,6 +34,7 @@ namespace tc
         void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) override;
         void Exit(const std::string& monitor_name) override;
         void ExitAll() override;
+        std::map<std::string, WorkingEncoderInfoPtr> GetWorkingCapturesInfo() override;
 
     private:
         std::map<std::string, std::shared_ptr<VideoEncoderVCE>> video_encoders_;

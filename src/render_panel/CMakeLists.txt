@@ -25,6 +25,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt_vertical.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/add_game_panel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_profile.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/stat_capture_info_item.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp

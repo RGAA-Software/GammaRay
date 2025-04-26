@@ -102,4 +102,15 @@ namespace tc
 
     }
 
+    std::map<std::string, WorkingEncoderInfoPtr> NvencEncoderPlugin::GetWorkingCapturesInfo() {
+        std::map<std::string, WorkingEncoderInfoPtr> result;
+        for (const auto& [name, encoder] : video_encoders_) {
+            result.insert({name, std::make_shared<WorkingEncoderInfo>(WorkingEncoderInfo {
+                .target_name_ = name,
+                .fps_ = encoder->GetEncodeFps(),
+                .encoder_name_ = "NVENC",
+            })});
+        }
+        return result;
+    }
 }
