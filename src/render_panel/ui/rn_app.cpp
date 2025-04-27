@@ -117,7 +117,48 @@ namespace tc
                     item_layout->addWidget(label);
 
                     auto op = new QLabel(this);
-                    lbl_capture_type_ = op;
+                    lbl_video_capture_type_ = op;
+                    op->setText("");
+                    op->setFixedSize(value_size);
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                //layout->addStretch();
+                head_layout->addLayout(layout);
+            }
+
+            //
+            {
+                auto layout = new NoMarginVLayout();
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Relay Connected");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_relay_connected_ = op;
+                    op->setText("");
+                    op->setFixedSize(value_size);
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Audio Capture Type");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_audio_capture_type_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -134,11 +175,26 @@ namespace tc
         }
 
         // capturing info
+        int capture_size = 4;
         {
             auto layout = new NoMarginHLayout();
             layout->addSpacing(margin_left);
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < capture_size; i++) {
                 auto item_widget = MakeCapturesInfoWidget();
+                auto object_name = std::format("item{}", i);
+                item_widget->setObjectName(object_name.c_str());
+                item_widget->SetOnClickWidgetCallback([=, this](QWidget* w) {
+                    for (const auto item : capture_info_items_) {
+                        if (item->objectName() == QString::fromStdString(object_name)) {
+                            item->Select();
+
+                            stat_chat_stack_->setCurrentIndex(i);
+                        }
+                        else {
+                            item->Unselect();
+                        }
+                    }
+                });
                 layout->addWidget(item_widget);
                 layout->addSpacing(10);
                 capture_info_items_.push_back(item_widget);
@@ -151,10 +207,20 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             layout->addSpacing(margin_left);
-            auto chart = new StatChart(app_->GetContext(), {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode,/* kChartDecode, kChartRecvVideoFrame*/}, this);
-            stat_chart_ = chart;
-            chart->setFixedSize(680, 300);
-            layout->addWidget(chart);
+            stat_chat_stack_ = new QStackedWidget(this);
+            stat_chat_stack_->setFixedSize(680, 300);
+
+            for (int i = 0; i < capture_size; i++) {
+                auto chart = new StatChart(app_->GetContext(),
+                                           "",
+                                           {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode,/* kChartDecode, kChartRecvVideoFrame*/},
+                                           this);
+                chart->setFixedSize(stat_chat_stack_->size());
+                stat_charts_.push_back(chart);
+                stat_chat_stack_->addWidget(chart);
+            }
+
+            layout->addWidget(stat_chat_stack_);
             layout->addStretch();
             root_layout->addSpacing(20);
             root_layout->addLayout(layout);
@@ -185,23 +251,17 @@ namespace tc
         stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
         // update encode durations
         stat_value.insert({kChartEncode, stat->encode_durations_});
-        // update decode durations
-        //stat_value.insert({kChartDecode, stat->decode_durations_});
-        // update recv video frame gamp
-        //stat_value.insert({kChartRecvVideoFrame, stat->client_video_recv_gaps_});
         // update audio frame gap
         stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
-        stat_chart_->UpdateLines(stat_value);
-
-        //lbl_capture_fps_->setText(stat->video_capture_fps_.c_str());
+        //stat_chart_->UpdateLines(stat_value);
+        stat_charts_[0]->UpdateLines(stat_value);
 
         lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
-        //lbl_fps_encode_->setText(std::to_string(stat->fps_video_encode).c_str());
         lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
-
-        //lbl_capture_size_->setText(std::format("{}x{}", stat->capture_width_, stat->capture_height_).c_str());
         lbl_connected_clients_->setText(std::to_string(stat->connected_clients_).c_str());
-        lbl_capture_type_->setText(stat->video_capture_type_.c_str());
+        lbl_video_capture_type_->setText(stat->video_capture_type_.c_str());
+        lbl_relay_connected_->setText(stat->relay_connected_ ? "YES" : "NO");
+        lbl_audio_capture_type_->setText(stat->audio_capture_type_.c_str());
 
         for (const auto& cp : capture_info_items_) {
             cp->ClearInfo();
@@ -211,7 +271,7 @@ namespace tc
             if (index >= 4) {
                 break;
             }
-
+            stat_charts_[index]->UpdateTitle(info.target_name().c_str());
             capture_info_items_[index]->UpdateInfo(info);
 
             index++;

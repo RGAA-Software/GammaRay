@@ -15,11 +15,15 @@
 namespace tc
 {
 
-    StatChart::StatChart(const std::shared_ptr<GrContext>& ctx, const std::vector<QString>& line_names, QWidget* parent) : QWidget(parent) {
+    StatChart::StatChart(const std::shared_ptr<GrContext>& ctx,
+                         const QString& title,
+                         const std::vector<QString>& line_names,
+                         QWidget* parent) : QWidget(parent) {
         ctx_ = ctx;
         setStyleSheet("background-color:#ffffff; border: 1px solid #eeeeee;");
         auto layout = new NoMarginVLayout();
         chart_ = new QChart();
+        chart_->setTitle(title);
         for (auto& n : line_names) {
             auto s = new QLineSeries();
 //            auto pen = s->pen();
@@ -54,6 +58,10 @@ namespace tc
         }
 
         setLayout(layout);
+    }
+
+    void StatChart::UpdateTitle(const QString& title) {
+        chart_->setTitle(title);
     }
 
     void StatChart::UpdateLines(const std::map<QString, std::vector<uint32_t>>& value) {

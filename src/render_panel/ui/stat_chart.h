@@ -23,13 +23,14 @@ namespace tc
 
     class StatChart : public QWidget {
     public:
-
-        explicit StatChart(const std::shared_ptr<GrContext>& ctx, const std::vector<QString>& line_names, QWidget* parent = nullptr);
-
+        explicit StatChart(const std::shared_ptr<GrContext>& ctx,
+                           const QString& title,
+                           const std::vector<QString>& line_names,
+                           QWidget* parent = nullptr);
+        void UpdateTitle(const QString& title);
         void UpdateLines(const std::map<QString, std::vector<uint32_t>>& value);
 
     private:
-
         std::shared_ptr<GrContext> ctx_ = nullptr;
         QChart* chart_ = nullptr;
         QChartView* chart_view_ = nullptr;

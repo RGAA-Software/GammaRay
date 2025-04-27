@@ -78,14 +78,14 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         QPen pen;
-        if (mouse_enter_) {
-            pen.setColor(0x999999);
+        if (mouse_enter_ || selected_) {
+            pen.setColor(0x888888);
         }
         else {
             if (lbl_target_name_->text().isEmpty()) {
-                pen.setColor(0xeeeeee);
+                pen.setColor(0xdddddd);
             } else {
-                pen.setColor(0xcccccc);
+                pen.setColor(0xbbbbbb);
             }
         }
         pen.setStyle(Qt::PenStyle::DashDotDotLine);
@@ -110,6 +110,16 @@ namespace tc
         lbl_target_name_->setText("");
         lbl_capture_fps_->setText("");
         lbl_encode_fps_->setText("");
+        update();
+    }
+
+    void StatCaptureInfoItem::Select() {
+        selected_ = true;
+        update();
+    }
+
+    void StatCaptureInfoItem::Unselect() {
+        selected_ = false;
         update();
     }
 

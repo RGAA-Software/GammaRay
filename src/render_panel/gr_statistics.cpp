@@ -65,7 +65,8 @@ namespace tc
             }
 
             connected_clients_ = msg.statistics_->connected_clients();
-
+            relay_connected_ = msg.statistics_->relay_connected();
+            audio_capture_type_ = msg.statistics_->audio_capture_type();
         });
 
         msg_listener_->Listen<MsgServerAudioSpectrum>([=, this](const MsgServerAudioSpectrum& msg) {

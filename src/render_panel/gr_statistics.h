@@ -69,6 +69,8 @@ namespace tc
         std::vector<tc::PtMsgWorkingCaptureInfo> captures_info_;
         int32_t connected_clients_ = 0;
         std::string video_capture_type_;
+        bool relay_connected_ = false;
+        std::string audio_capture_type_;
     };
 
 }

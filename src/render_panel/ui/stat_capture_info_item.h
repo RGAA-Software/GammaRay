@@ -21,9 +21,12 @@ namespace tc
         std::string GetTargetName();
         void UpdateInfo(const PtMsgWorkingCaptureInfo& info);
         void ClearInfo();
+        void Select();
+        void Unselect();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
+        bool selected_ = false;
         TcLabel* lbl_target_name_;
         TcLabel* lbl_capture_size_;
         TcLabel* lbl_capture_fps_;

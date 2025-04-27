@@ -7,6 +7,7 @@
 
 #include "tab_base.h"
 #include <QLabel>
+#include <QStackedWidget>
 
 namespace tc
 {
@@ -28,21 +29,19 @@ namespace tc
         StatCaptureInfoItem* MakeCapturesInfoWidget();
 
     private:
-        StatChart* stat_chart_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_;
 
         QLabel* lbl_connected_clients_ = nullptr;
-        QLabel* lbl_capture_type_ = nullptr;
-        //QLabel* lbl_capture_fps_ = nullptr;
-        //QLabel* lbl_render_size_ = nullptr;
+        QLabel* lbl_video_capture_type_ = nullptr;
+        QLabel* lbl_relay_connected_ = nullptr;
+        QLabel* lbl_audio_capture_type_ = nullptr;
 
         QLabel* lbl_app_running_time_ = nullptr;
-        //QLabel* lbl_fps_encode_ = nullptr;
         QLabel* lbl_send_media_bytes_ = nullptr;
 
-        //QLabel* lbl_capture_size_ = nullptr;
         std::vector<StatCaptureInfoItem*> capture_info_items_;
-
+        QStackedWidget* stat_chat_stack_ = nullptr;
+        std::vector<StatChart*> stat_charts_;
     };
 
 }

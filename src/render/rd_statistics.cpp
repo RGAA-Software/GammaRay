@@ -134,13 +134,25 @@ namespace tc
         }
 
         int32_t connected_clients = 0;
+        int32_t relay_connected_size = 0;
         plugin_mgr_->VisitNetPlugins([&](GrNetPlugin* plugin) {
             if (plugin->GetPluginId() == kRelayPluginId) {
+                relay_connected_size = plugin->ConnectedClientSize();
                 return;
             }
             connected_clients += plugin->ConnectedClientSize();
         });
         cst->set_connected_clients(connected_clients);
+
+        if (relay_connected_size >= 1) {
+            cst->set_relay_connected(true);
+        }
+        else {
+            cst->set_relay_connected(false);
+        }
+
+        // audio capture
+        cst->set_audio_capture_type("WASAPI");
 
         return msg.SerializeAsString();
     }
