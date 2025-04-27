@@ -42,7 +42,6 @@ namespace tc
         void AppendAudioFrameGap(uint32_t time);
         void IncreaseDDAFailedCount();
 
-        void TickFps();
         std::string AsProtoMessage();
 
     private:
@@ -57,14 +56,11 @@ namespace tc
         // unit: S
         int64_t running_time_{};
         int64_t send_media_bytes_{};
-        std::shared_ptr<FpsStat> fps_video_encode_{};
         int fps_video_encode_value_{0};
 
         std::vector<uint32_t> encode_durations_;
         std::vector<uint32_t> video_frame_gaps_;
         std::vector<uint32_t> audio_frame_gaps_;
-        int capture_width_ = 0;
-        int capture_height_ = 0;
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;
 

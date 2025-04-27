@@ -32,6 +32,7 @@ namespace tc
         void InsertIdr();
         void Exit();
         int32_t GetEncodeFps();
+        std::vector<int32_t> GetEncodeDurations();
 
     private:
         void Transmit(ID3D11Texture2D* pTexture, uint64_t frame_index, std::any extra);
@@ -50,6 +51,7 @@ namespace tc
         ComPtr<ID3D11Texture2D> texture2d_;
 
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
+        std::deque<int32_t> encode_durations_;
 
     };
 

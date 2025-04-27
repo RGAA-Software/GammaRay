@@ -109,6 +109,7 @@ namespace tc
                 .target_name_ = name,
                 .fps_ = encoder->GetEncodeFps(),
                 .encoder_name_ = "NVENC",
+                .encode_durations_ = encoder->GetEncodeDurations(),
             })});
         }
         return result;

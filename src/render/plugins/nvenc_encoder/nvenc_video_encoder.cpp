@@ -78,6 +78,7 @@ namespace tc
     }
 
     void NVENCVideoEncoder::Transmit(ID3D11Texture2D* texture, uint64_t frame_index, std::any extra) {
+        auto beg = TimeUtil::GetCurrentTimestamp();
         std::vector<std::vector<uint8_t>> out_packet;
         const NvEncInputFrame *input_frame = nv_encoder_->GetNextInputFrame();
         auto pInputTexture = reinterpret_cast<ID3D11Texture2D*>(input_frame->inputPtr);
@@ -115,6 +116,13 @@ namespace tc
             event->extra_ = extra;
             this->plugin_->CallbackEvent(event);
         }
+
+        auto end = TimeUtil::GetCurrentTimestamp();
+        auto diff = end - beg;
+        if (encode_durations_.size() >= 180) {
+            encode_durations_.pop_front();
+        }
+        encode_durations_.push_back((int32_t)diff);
 
         fps_stat_->Tick();
     }
@@ -375,6 +383,14 @@ namespace tc
 
     int32_t NVENCVideoEncoder::GetEncodeFps() {
         return fps_stat_->value();
+    }
+
+    std::vector<int32_t> NVENCVideoEncoder::GetEncodeDurations() {
+        std::vector<int32_t> result;
+        for (const auto& item : encode_durations_) {
+            result.push_back(item);
+        }
+        return result;
     }
 
 } // namespace tc

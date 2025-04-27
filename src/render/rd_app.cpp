@@ -187,7 +187,6 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgTimer1000>([=, this](const MsgTimer1000& msg) {
-            statistics_->TickFps();
             statistics_->IncreaseRunningTime();
 
             auto plugin_manager = context_->GetPluginManager();
@@ -430,8 +429,6 @@ namespace tc
                 auto gap = current_time - last_capture_screen_time_;
                 last_capture_screen_time_ = current_time;
                 statistics_->AppendFrameGap(gap);
-                statistics_->capture_width_ = msg.frame_width_;
-                statistics_->capture_height_ = msg.frame_height_;
             }
 
             // to encode

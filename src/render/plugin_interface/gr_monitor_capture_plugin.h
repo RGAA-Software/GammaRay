@@ -29,6 +29,8 @@ namespace tc
         std::string capture_type_;
         int32_t capture_frame_width_ = 0;
         int32_t capture_frame_height_ = 0;
+        // max 180
+        std::vector<int32_t> capture_gaps_;
     };
     using WorkingCaptureInfoPtr = std::shared_ptr<WorkingCaptureInfo>;
 

@@ -225,6 +225,10 @@ namespace tc
         if (ret != AMF_OK) {
             return false;
         }
+        if (!g_AMFFactory.GetFactory()) {
+            LOGE("g_AMFFactory.GetFactory() is null");
+            return false;
+        }
         ::amf_increase_timer_precision();
         ret = g_AMFFactory.GetFactory()->CreateContext(&amf_context_);
         AMF_LOG_ERR_IF(ret);

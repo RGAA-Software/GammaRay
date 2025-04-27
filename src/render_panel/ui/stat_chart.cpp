@@ -24,6 +24,10 @@ namespace tc
         auto layout = new NoMarginVLayout();
         chart_ = new QChart();
         chart_->setTitle(title);
+        QFont font;
+        font.setPixelSize(16);
+        font.setBold(true);
+        chart_->setTitleFont(font);
         for (auto& n : line_names) {
             auto s = new QLineSeries();
 //            auto pen = s->pen();
@@ -64,7 +68,7 @@ namespace tc
         chart_->setTitle(title);
     }
 
-    void StatChart::UpdateLines(const std::map<QString, std::vector<uint32_t>>& value) {
+    void StatChart::UpdateLines(const std::map<QString, std::vector<int32_t>>& value) {
         ctx_->PostUITask([=, this]() {
             auto beg = TimeUtil::GetCurrentTimestamp();
             for (auto& [in_n, in_v] : value) {

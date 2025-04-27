@@ -246,15 +246,15 @@ namespace tc
 
     void RnApp::UpdateUI() {
         auto stat = GrStatistics::Instance();
-        std::map<QString, std::vector<uint32_t>> stat_value;
-        // update video frame gap
-        stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
-        // update encode durations
-        stat_value.insert({kChartEncode, stat->encode_durations_});
-        // update audio frame gap
-        stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
-        //stat_chart_->UpdateLines(stat_value);
-        stat_charts_[0]->UpdateLines(stat_value);
+//        std::map<QString, std::vector<uint32_t>> stat_value;
+//        // update video frame gap
+//        stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
+//        // update encode durations
+//        stat_value.insert({kChartEncode, stat->encode_durations_});
+//        // update audio frame gap
+//        stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
+//        //stat_chart_->UpdateLines(stat_value);
+//        stat_charts_[0]->UpdateLines(stat_value);
 
         lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
         lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
@@ -273,6 +273,18 @@ namespace tc
             }
             stat_charts_[index]->UpdateTitle(info.target_name().c_str());
             capture_info_items_[index]->UpdateInfo(info);
+
+            std::map<QString, std::vector<int32_t>> stat_value;
+            // update video frame gap
+            //stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
+            // update encode durations
+            if (stat->encode_durations_.contains(info.target_name())) {
+                stat_value.insert({kChartEncode, stat->encode_durations_[info.target_name()]});
+            }
+            // update audio frame gap
+            //stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
+            //stat_chart_->UpdateLines(stat_value);
+            stat_charts_[index]->UpdateLines(stat_value);
 
             index++;
         }

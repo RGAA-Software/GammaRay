@@ -23,6 +23,8 @@ namespace tc
         int32_t fps_ = 0;
         // NVENC / AMF / SOFTWARE
         std::string encoder_name_;
+        // max 180
+        std::vector<int32_t> encode_durations_;
     };
     using WorkingEncoderInfoPtr = std::shared_ptr<WorkingEncoderInfo>;
 

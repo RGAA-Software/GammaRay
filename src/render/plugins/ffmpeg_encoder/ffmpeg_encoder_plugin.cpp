@@ -121,7 +121,7 @@ namespace tc
             result.insert({monitor, std::make_shared<WorkingEncoderInfo>(WorkingEncoderInfo {
                 .target_name_ = monitor,
                 .fps_ = video_encoder->GetEncodeFps(),
-                .encoder_name_ = "Software",
+                .encoder_name_ = "S/W",
             })});
         }
         return result;

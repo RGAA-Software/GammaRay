@@ -28,7 +28,7 @@ namespace tc
                            const std::vector<QString>& line_names,
                            QWidget* parent = nullptr);
         void UpdateTitle(const QString& title);
-        void UpdateLines(const std::map<QString, std::vector<uint32_t>>& value);
+        void UpdateLines(const std::map<QString, std::vector<int32_t>>& value);
 
     private:
         std::shared_ptr<GrContext> ctx_ = nullptr;

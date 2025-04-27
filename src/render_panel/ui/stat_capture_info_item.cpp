@@ -15,15 +15,16 @@ namespace tc
         auto root_layout = new NoMarginVLayout();
         setLayout(root_layout);
 
-        auto item_spacing = 10;
+        auto item_spacing = 5;
         //
         {
             auto layout = new NoMarginHLayout();
-            layout->addSpacing(item_spacing);
-            root_layout->addSpacing(item_spacing);
+            layout->addSpacing(10);
+            root_layout->addSpacing(10);
             root_layout->addLayout(layout);
 
             auto w = new TcLabel(this);
+            w->setStyleSheet("font-size: 13px; font-weight:700; color: #444444;");
             lbl_target_name_ = w;
             w->setText("");
             layout->addWidget(w);
@@ -37,6 +38,7 @@ namespace tc
             root_layout->addLayout(layout);
 
             auto w = new TcLabel(this);
+            w->setStyleSheet("font-size: 12px; color: #444444;");
             lbl_capture_size_ = w;
             w->setText("");
             layout->addWidget(w);
@@ -50,6 +52,7 @@ namespace tc
             root_layout->addLayout(layout);
 
             auto w = new TcLabel(this);
+            w->setStyleSheet("font-size: 12px; color: #444444;");
             lbl_capture_fps_ = w;
             w->setText("");
             layout->addWidget(w);
@@ -63,6 +66,7 @@ namespace tc
             root_layout->addLayout(layout);
 
             auto w = new TcLabel(this);
+            w->setStyleSheet("font-size: 12px; color: #444444;");
             lbl_encode_fps_ = w;
             w->setText("");
             layout->addWidget(w);
@@ -108,6 +112,7 @@ namespace tc
 
     void StatCaptureInfoItem::ClearInfo() {
         lbl_target_name_->setText("");
+        lbl_capture_size_->setText("");
         lbl_capture_fps_->setText("");
         lbl_encode_fps_->setText("");
         update();

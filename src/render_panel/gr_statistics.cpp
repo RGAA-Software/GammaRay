@@ -19,9 +19,9 @@ namespace tc
                                            msg.statistics_->video_frame_gaps().begin(),
                                            msg.statistics_->video_frame_gaps().end());
             this->encode_durations_.clear();
-            this->encode_durations_.insert(this->encode_durations_.begin(),
-                                           msg.statistics_->encode_durations().begin(),
-                                           msg.statistics_->encode_durations().end());
+//            this->encode_durations_.insert(this->encode_durations_.begin(),
+//                                           msg.statistics_->encode_durations().begin(),
+//                                           msg.statistics_->encode_durations().end());
             this->audio_frame_gaps_.clear();
             this->audio_frame_gaps_.insert(this->audio_frame_gaps_.begin(),
                                            msg.statistics_->audio_frame_gaps().begin(),
@@ -61,6 +61,12 @@ namespace tc
                     if (video_capture_type_ != info.capture_type()) {
                         video_capture_type_ = info.capture_type();
                     }
+
+                    std::vector<int32_t> encode_durations;
+                    for (const auto& v : info.encode_durations()) {
+                        encode_durations.push_back(v);
+                    }
+                    encode_durations_.insert({info.target_name(), encode_durations});
                 }
             }
 

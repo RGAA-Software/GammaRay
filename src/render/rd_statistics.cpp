@@ -23,7 +23,6 @@ namespace tc
 {
 
     RdStatistics::RdStatistics() {
-        fps_video_encode_ = std::make_shared<FpsStat>();
     }
 
     void RdStatistics::SetApplication(const std::shared_ptr<RdApplication>& app) {
@@ -77,17 +76,13 @@ namespace tc
         audio_frame_gaps_.push_back(time);
     }
 
-    void RdStatistics::TickFps() {
-        fps_video_encode_value_ = fps_video_encode_->value();
-    }
-
     std::string RdStatistics::AsProtoMessage() {
         tc::Message msg;
         msg.set_type(tc::MessageType::kCaptureStatistics);
 
         auto cst = msg.mutable_capture_statistics();
         cst->mutable_video_frame_gaps()->Add(video_frame_gaps_.begin(), video_frame_gaps_.end());
-        cst->mutable_encode_durations()->Add(encode_durations_.begin(), encode_durations_.end());
+        //cst->mutable_encode_durations()->Add(encode_durations_.begin(), encode_durations_.end());
         cst->mutable_audio_frame_gaps()->Add(audio_frame_gaps_.begin(), audio_frame_gaps_.end());
 
         //cst->mutable_decode_durations()->Add(decode_durations_.begin(), decode_durations_.end());
@@ -101,8 +96,8 @@ namespace tc
         cst->set_app_running_time(running_time_);
         // from inner server
         cst->set_server_send_media_data(send_media_bytes_);
-        cst->set_capture_width(capture_width_);
-        cst->set_capture_height(capture_height_);
+        //cst->set_capture_width(capture_width_);
+        //cst->set_capture_height(capture_height_);
         //cst->set_render_width(render_width_);
         //cst->set_render_height(render_height_);
 
@@ -126,6 +121,11 @@ namespace tc
                         auto encoder_info = video_encoders_info[info->target_name_];
                         item->set_encoder_name(encoder_info->encoder_name_);
                         item->set_encoding_fps(encoder_info->fps_);
+
+                        auto encode_durations = item->mutable_encode_durations();
+                        for (const auto& v : encoder_info->encode_durations_) {
+                            encode_durations->Add(v);
+                        }
                     }
                 }
                 item->set_capture_frame_width(info->capture_frame_width_);
