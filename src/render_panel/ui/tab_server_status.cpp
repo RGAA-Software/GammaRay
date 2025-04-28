@@ -28,6 +28,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
+#include "qt_vertical.h"
 #include "render_panel/gr_statistics.h"
 #include "render_panel/gr_application.h"
 #include "tc_qt_widget/sized_msg_box.h"
@@ -110,11 +111,6 @@ namespace tc
                 item_layout->addStretch();
 
                 connect(btn_install, &QPushButton::clicked, this, [=, this]() {
-//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install ViGEm"), tr("Do you want to install ViGEm?"));
-//                    if (msg_box->exec() == 0) {
-//                        context_->SendAppMessage(MsgInstallViGEm{});
-//                    }
-
                     TcDialog dialog(tr("Install ViGEm"), tr("Do you want to install ViGEm?"), this);
                     if (dialog.exec() == kDoneOk) {
                         context_->SendAppMessage(MsgInstallViGEm{});
@@ -161,14 +157,6 @@ namespace tc
                 item_layout->addStretch();
 
                 connect(btn_restart, &QPushButton::clicked, this, [=, this]() {
-                   // restart
-//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Restart Renderer"), tr("Do you want to restart Renderer?"));
-//                    if (msg_box->exec() == 0) {
-//                        this->context_->PostTask([=, this]() {
-//                            RestartServer();
-//                        });
-//                    }
-
                     TcDialog dialog(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->PostTask([=, this]() {
@@ -229,13 +217,6 @@ namespace tc
                 item_layout->addStretch();
 
                 connect(btn_install, &QPushButton::clicked, this, [=, this]() {
-//                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Install Service"), tr("Do you want to install Service?"));
-//                    if (msg_box->exec() == 0) {
-//                        this->context_->PostTask([=, this]() {
-//                            this->context_->GetServiceManager()->Install();
-//                        });
-//                    }
-
                     TcDialog dialog(tr("Install Service"), tr("Do you want to install Service?"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->GetServiceManager()->Install();
@@ -407,9 +388,16 @@ namespace tc
 
                 auto sc_layout = new NoMarginHLayout();
                 sc_layout->addSpacing(margin_left);
-                spectrum_circle_ = new QtCircle(this);
-                spectrum_circle_->setFixedSize(400, 140);
-                sc_layout->addWidget(spectrum_circle_);
+                //spectrum_circle_ = new QtCircle(this);
+                //spectrum_circle_->setFixedSize(400, 140);
+                //sc_layout->addWidget(spectrum_circle_);
+
+                spectrum_vertical_ = new QtVertical(this);
+                spectrum_vertical_->setFixedSize(400, 140);
+                sc_layout->addSpacing(10);
+                sc_layout->addWidget(spectrum_vertical_);
+                sc_layout->addStretch();
+                layout->addSpacing(15);
                 layout->addLayout(sc_layout);
             }
 

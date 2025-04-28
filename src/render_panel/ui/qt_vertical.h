@@ -13,11 +13,10 @@ namespace tc
 
     class QtVertical : public EffectWidget {
     public:
-        QtVertical(QWidget *parent);
+        explicit QtVertical(QWidget *parent);
         void paintEvent(QPaintEvent *event) override;
 
     private:
-        QPixmap pixmap;
     };
 
 

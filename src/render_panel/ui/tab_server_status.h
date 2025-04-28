@@ -20,6 +20,7 @@ namespace tc
     class RnEmpty;
     class MessageListener;
     class QtCircle;
+    class QtVertical;
     class GrStatistics;
 
     class TabServerStatus : public TabBase {
@@ -44,7 +45,8 @@ namespace tc
         QLabel* lbl_service_state_ = nullptr;
         QLabel* lbl_audio_format_ = nullptr;
         QLabel* lbl_running_games_ = nullptr;
-        QtCircle* spectrum_circle_ = nullptr;
+        //QtCircle* spectrum_circle_ = nullptr;
+        QtVertical* spectrum_vertical_ = nullptr;
         QStackedWidget* rn_stack_ = nullptr;
         RnApp* rn_app_ = nullptr;
 
