@@ -87,6 +87,7 @@ namespace tc
     }
 
     void FFmpegEncoder::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
+        auto beg = TimeUtil::GetCurrentTimestamp();
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
         auto img_width = i420_image->width;
         auto img_height = i420_image->height;
@@ -141,6 +142,13 @@ namespace tc
             event->extra_ = extra;
             plugin_->CallbackEvent(event);
 
+            auto end = TimeUtil::GetCurrentTimestamp();
+            auto diff = end - beg;
+            if (encode_durations_.size() >= 180) {
+                encode_durations_.pop_front();
+            }
+            encode_durations_.push_back((int32_t)diff);
+
             fps_stat_->Tick();
 
             av_packet_unref(packet_);
@@ -157,6 +165,14 @@ namespace tc
 
     int32_t FFmpegEncoder::GetEncodeFps() {
         return fps_stat_->value();
+    }
+
+    std::vector<int32_t> FFmpegEncoder::GetEncodeDurations() {
+        std::vector<int32_t> result;
+        for (const auto& item : encode_durations_) {
+            result.push_back(item);
+        }
+        return result;
     }
 
 }

@@ -30,6 +30,7 @@ namespace tc
         void InsertIdr();
         void Exit();
         int32_t GetEncodeFps();
+        std::vector<int32_t> GetEncodeDurations();
 
     private:
         FFmpegEncoderPlugin* plugin_ = nullptr;
@@ -41,6 +42,7 @@ namespace tc
         bool insert_idr_ = false;
         EncoderConfig encoder_config_;
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
+        std::deque<int32_t> encode_durations_;
     };
 
 }

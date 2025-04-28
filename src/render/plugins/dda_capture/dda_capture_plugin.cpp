@@ -469,6 +469,7 @@ namespace tc
                 .capture_type_ = kCaptureTypeDXGI,
                 .capture_frame_width_ = my_monitor.Width(),
                 .capture_frame_height_ = my_monitor.Height(),
+                .capture_gaps_ = capture->GetCaptureGaps(),
             })});
         }
         return result;

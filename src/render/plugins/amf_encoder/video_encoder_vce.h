@@ -67,6 +67,7 @@ namespace tc
         void Shutdown();
         void Receive(amf::AMFData *data);
         int32_t GetEncodeFps();
+        std::vector<int32_t> GetEncodeDurations();
 
     private:
         void ApplyFrameProperties(const amf::AMFSurfacePtr &surface, bool insertIDR);
@@ -93,7 +94,7 @@ namespace tc
         std::any extra_;
 
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
-
+        std::deque<int32_t> encode_durations_;
     };
 
 }

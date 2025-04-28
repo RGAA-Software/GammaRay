@@ -114,6 +114,12 @@ namespace tc
                 item->set_target_name(info->target_name_);
                 item->set_capturing_fps(info->fps_);
                 item->set_capture_type(info->capture_type_);
+                auto video_capture_gaps = item->mutable_video_capture_gaps();
+                for (const auto& v : info->capture_gaps_) {
+                    video_capture_gaps->Add(v);
+                }
+
+                // encoder
                 if (video_encoder_plugins.contains(info->target_name_)) {
                     auto video_encoder_plugin = video_encoder_plugins[info->target_name_];
                     auto video_encoders_info = video_encoder_plugin->GetWorkingCapturesInfo();

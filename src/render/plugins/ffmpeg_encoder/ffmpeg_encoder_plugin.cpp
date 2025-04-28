@@ -122,6 +122,7 @@ namespace tc
                 .target_name_ = monitor,
                 .fps_ = video_encoder->GetEncodeFps(),
                 .encoder_name_ = "S/W",
+                .encode_durations_ = video_encoder->GetEncodeDurations(),
             })});
         }
         return result;

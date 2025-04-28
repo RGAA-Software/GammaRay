@@ -34,9 +34,9 @@ namespace tc
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 
-        std::vector<uint32_t> video_frame_gaps_;
         std::map<std::string, std::vector<int32_t>> encode_durations_;
-        std::vector<uint32_t> audio_frame_gaps_;
+        std::map<std::string, std::vector<int32_t>> video_capture_gaps_;
+        std::vector<int32_t> audio_frame_gaps_;
         // from inner server
         int32_t fps_video_encode = 0;
         // from inner server

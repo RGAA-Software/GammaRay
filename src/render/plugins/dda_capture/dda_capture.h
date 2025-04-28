@@ -76,6 +76,7 @@ namespace tc
         int64_t monitor_frame_index_ = 0;
         int used_cache_times_ = 0;
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
+        int64_t last_captured_timestamp_ = 0;
 
         SharedD3d11Texture2D last_list_texture_;
         DXGIOutputDuplication dxgi_output_duplication_;

@@ -366,6 +366,13 @@ namespace tc
         if (ct - last_time > 1000) {
             last_time = ct;
         }
+
+        //auto end = TimeUtil::GetCurrentTimestamp();
+        auto diff = double(current_time - start_time) / 10000;//MILLISEC_TIME;//(int32_t)end - encode_begin_timestamp_;
+        if (encode_durations_.size() >= 180) {
+            encode_durations_.pop_front();
+        }
+        encode_durations_.push_back((int32_t)diff);
     }
 
     void VideoEncoderVCE::ApplyFrameProperties(const amf::AMFSurfacePtr &surface, bool insertIDR) {
@@ -427,4 +434,11 @@ namespace tc
         return fps_stat_->value();
     }
 
+    std::vector<int32_t> VideoEncoderVCE::GetEncodeDurations() {
+        std::vector<int32_t> result;
+        for (const auto& item : encode_durations_) {
+            result.push_back(item);
+        }
+        return result;
+    }
 }

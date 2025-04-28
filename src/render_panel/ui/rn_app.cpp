@@ -276,14 +276,19 @@ namespace tc
 
             std::map<QString, std::vector<int32_t>> stat_value;
             // update video frame gap
-            //stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
+            if (stat->video_capture_gaps_.contains(info.target_name())) {
+                stat_value.insert({kChartVideoFrameGap, stat->video_capture_gaps_[info.target_name()]});
+            }
+
             // update encode durations
             if (stat->encode_durations_.contains(info.target_name())) {
                 stat_value.insert({kChartEncode, stat->encode_durations_[info.target_name()]});
             }
-            // update audio frame gap
-            //stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
-            //stat_chart_->UpdateLines(stat_value);
+
+            if (index == 0) {
+                // update audio frame gap
+                stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
+            }
             stat_charts_[index]->UpdateLines(stat_value);
 
             index++;

@@ -289,8 +289,20 @@ namespace tc
 
             bool is_cached = false;
             if (res == S_OK) {
-                // ok
+                // fps tick
                 fps_stat_->Tick();
+
+                // capture gaps
+                auto curr_timestamp = (int64_t)TimeUtil::GetCurrentTimestamp();
+                if (last_captured_timestamp_ == 0) {
+                    last_captured_timestamp_ = curr_timestamp;
+                }
+                auto diff = curr_timestamp - last_captured_timestamp_;
+                if (capture_gaps_.size() >= 180) {
+                    capture_gaps_.pop_front();
+                }
+                capture_gaps_.push_back((int32_t)diff);
+                last_captured_timestamp_ = curr_timestamp;
             }
             else if (res == S_FALSE || res == DXGI_ERROR_ACCESS_LOST || res == DXGI_ERROR_INVALID_CALL) {
                 LOGE("CaptureNextFrame reinit, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringExt::GetErrorStr(res));

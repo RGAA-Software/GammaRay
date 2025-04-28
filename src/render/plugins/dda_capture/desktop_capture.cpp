@@ -29,4 +29,12 @@ namespace tc
         return false;
     }
 
+    std::vector<int32_t> DesktopCapture::GetCaptureGaps() {
+        std::vector<int32_t> result;
+        for (const auto& item : capture_gaps_) {
+            result.push_back(item);
+        }
+        return result;
+    }
+
 }

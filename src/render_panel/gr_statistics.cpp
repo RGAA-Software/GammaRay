@@ -14,11 +14,11 @@ namespace tc
     void GrStatistics::RegisterEventListeners() {
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgCaptureStatistics>([=, this](const MsgCaptureStatistics& msg) {
-            this->video_frame_gaps_.clear();
-            this->video_frame_gaps_.insert(this->video_frame_gaps_.begin(),
-                                           msg.statistics_->video_frame_gaps().begin(),
-                                           msg.statistics_->video_frame_gaps().end());
-            this->encode_durations_.clear();
+//            this->video_frame_gaps_.clear();
+//            this->video_frame_gaps_.insert(this->video_frame_gaps_.begin(),
+//                                           msg.statistics_->video_frame_gaps().begin(),
+//                                           msg.statistics_->video_frame_gaps().end());
+
 //            this->encode_durations_.insert(this->encode_durations_.begin(),
 //                                           msg.statistics_->encode_durations().begin(),
 //                                           msg.statistics_->encode_durations().end());
@@ -49,6 +49,8 @@ namespace tc
             //this->capture_height_ = msg.statistics_->capture_height();
 
             // captures information
+            this->encode_durations_.clear();
+            this->video_capture_gaps_.clear();
             {
                 captures_info_.clear();
                 int size = msg.statistics_->working_captures_info_size();
@@ -62,11 +64,19 @@ namespace tc
                         video_capture_type_ = info.capture_type();
                     }
 
+                    // encode durations
                     std::vector<int32_t> encode_durations;
                     for (const auto& v : info.encode_durations()) {
                         encode_durations.push_back(v);
                     }
                     encode_durations_.insert({info.target_name(), encode_durations});
+
+                    // video capture gaps
+                    std::vector<int32_t> video_capture_gaps;
+                    for (const auto& v : info.video_capture_gaps()) {
+                        video_capture_gaps.push_back(v);
+                    }
+                    video_capture_gaps_.insert({info.target_name(), video_capture_gaps});
                 }
             }
 

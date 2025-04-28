@@ -125,6 +125,7 @@ namespace tc
             info->target_name_ = monitor;
             info->fps_ = video_encoder->GetEncodeFps();
             info->encoder_name_ = "AMF";
+            info->encode_durations_ = video_encoder->GetEncodeDurations();
             result.insert({monitor, info});
         }
         return result;

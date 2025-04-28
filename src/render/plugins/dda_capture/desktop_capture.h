@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <deque>
 #include "tc_capture_new/win/desktop_capture/monitor_util.h"
 
 namespace tc
@@ -31,6 +32,7 @@ namespace tc
         virtual bool IsInitSuccess() = 0;
         // by counting the real frames
         virtual int GetCapturingFps() {return 0;}
+        virtual std::vector<int32_t> GetCaptureGaps();
         virtual CaptureMonitorInfo GetMyMonitorInfo() { return my_monitor_info_; }
     private:
 
@@ -41,6 +43,7 @@ namespace tc
         std::atomic_bool pausing_ = true;
         CaptureMonitorInfo my_monitor_info_;
         bool is_primary_monitor_ = false;
+        std::deque<int32_t> capture_gaps_;
     };
 }
 
