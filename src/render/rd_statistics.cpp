@@ -21,7 +21,40 @@
 
 namespace tc
 {
+    /// ---
+    constexpr auto kMaxDurationCount = 180;
 
+    void MsgWorkingCaptureInfo::AppendCopyTextureDuration(int32_t duration) {
+        copy_texture_durations_.push_back(duration);
+        if (copy_texture_durations_.size() > kMaxDurationCount) {
+            copy_texture_durations_.pop_front();
+        }
+    }
+
+    std::vector<int32_t> MsgWorkingCaptureInfo::GetCopyTextureDurations() {
+        std::vector<int32_t> result;
+        for (const auto& v : copy_texture_durations_) {
+            result.push_back(v);
+        }
+        return result;
+    }
+
+    void MsgWorkingCaptureInfo::AppendMapCvtTextureDuration(int32_t duration) {
+        map_cvt_texture_durations_.push_back(duration);
+        if (map_cvt_texture_durations_.size() > kMaxDurationCount) {
+            map_cvt_texture_durations_.pop_front();
+        }
+    }
+
+    std::vector<int32_t> MsgWorkingCaptureInfo::GetMapCvtTextureDurations() {
+        std::vector<int32_t> result;
+        for (const auto& v : map_cvt_texture_durations_) {
+            result.push_back(v);
+        }
+        return result;
+    }
+
+    /// ----
     RdStatistics::RdStatistics() {
     }
 
@@ -108,6 +141,26 @@ namespace tc
                 }
                 item->set_capture_frame_width(info->capture_frame_width_);
                 item->set_capture_frame_height(info->capture_frame_height_);
+
+                //
+                //LOGI("Target name: {}", info->target_name_);
+                if (app_captures_info_.contains(info->target_name_)) {
+                    auto app_cp_info = CaptureInfo(info->target_name_);
+                    //LOGI("copy texture durations: {}", app_cp_info->copy_texture_durations_.size());
+                    //LOGI("map&cvt texture durations: {}", app_cp_info->map_cvt_texture_durations_.size());
+                    {
+                        auto durations = item->mutable_copy_texture_durations();
+                        for (const auto &v: app_cp_info->copy_texture_durations_) {
+                            durations->Add(v);
+                        }
+                    }
+                    {
+                        auto durations = item->mutable_map_cvt_texture_durations();
+                        for (const auto& v : app_cp_info->map_cvt_texture_durations_) {
+                            durations->Add(v);
+                        }
+                    }
+                }
             }
         }
 
@@ -159,6 +212,15 @@ namespace tc
             //TODO:
             //LOGI("Thread count: {}", thread_count);
         });
+    }
+
+    std::shared_ptr<MsgWorkingCaptureInfo> RdStatistics::CaptureInfo(const std::string& name) {
+        if (app_captures_info_.contains(name)) {
+            return app_captures_info_[name];
+        }
+        auto info = std::make_shared<MsgWorkingCaptureInfo>();
+        app_captures_info_[name] = info;
+        return info;
     }
 
 }

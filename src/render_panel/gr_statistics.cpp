@@ -40,6 +40,8 @@ namespace tc
         // captures information
         this->encode_durations_.clear();
         this->video_capture_gaps_.clear();
+        this->copy_texture_durations_.clear();
+        this->map_cvt_texture_durations_.clear();
         {
             captures_info_.clear();
             int size = msg.statistics_->working_captures_info_size();
@@ -66,6 +68,20 @@ namespace tc
                     video_capture_gaps.push_back(v);
                 }
                 video_capture_gaps_.insert({info.target_name(), video_capture_gaps});
+
+                // copy texture durations
+                std::vector<int32_t> copy_texture_durations;
+                for (const auto& v : info.copy_texture_durations()) {
+                    copy_texture_durations.push_back(v);
+                }
+                copy_texture_durations_.insert({info.target_name(), copy_texture_durations});
+
+                // map cvt texture durations
+                std::vector<int32_t> map_cvt_texture_durations;
+                for (const auto& v : info.map_cvt_texture_durations()) {
+                    map_cvt_texture_durations.push_back(v);
+                }
+                map_cvt_texture_durations_.insert({info.target_name(), map_cvt_texture_durations});
             }
         }
 

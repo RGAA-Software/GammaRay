@@ -24,6 +24,21 @@ namespace tc
     class PluginManager;
     class RdApplication;
 
+    // video capture/encode info
+    class MsgWorkingCaptureInfo {
+    public:
+        void AppendCopyTextureDuration(int32_t duration);
+        std::vector<int32_t> GetCopyTextureDurations();
+
+        void AppendMapCvtTextureDuration(int32_t duration);
+        std::vector<int32_t> GetMapCvtTextureDurations();
+
+    public:
+        std::deque<int32_t> copy_texture_durations_;
+        std::deque<int32_t> map_cvt_texture_durations_;
+
+    };
+
     class RdStatistics {
     public:
 
@@ -40,6 +55,7 @@ namespace tc
         void AppendMediaBytes(int bytes);
         void AppendAudioFrameGap(uint32_t time);
         void IncreaseDDAFailedCount();
+        std::shared_ptr<MsgWorkingCaptureInfo> CaptureInfo(const std::string& name);
 
         std::string AsProtoMessage();
 
@@ -76,6 +92,10 @@ namespace tc
         int32_t audio_bits_{0};
 
         std::atomic_int dda_failed_count_{0};
+
+        // in app level not in plugins
+        std::map<std::string, std::shared_ptr<MsgWorkingCaptureInfo>> app_captures_info_;
+
     };
 
 }

@@ -41,6 +41,8 @@ namespace tc
 
         std::map<std::string, std::vector<int32_t>> encode_durations_;
         std::map<std::string, std::vector<int32_t>> video_capture_gaps_;
+        std::map<std::string, std::vector<int32_t>> copy_texture_durations_;
+        std::map<std::string, std::vector<int32_t>> map_cvt_texture_durations_;
         std::vector<int32_t> audio_frame_gaps_;
         // from inner server
         int32_t app_running_time = 0;

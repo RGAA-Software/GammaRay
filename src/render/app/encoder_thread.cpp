@@ -293,6 +293,9 @@ namespace tc
                     LOGI("Don't have target texture, frame carrier copies texture failed!");
                     return;
                 }
+                auto copy_texture_end = TimeUtil::GetCurrentTimestamp();
+                auto diff_copy_texture = copy_texture_end - beg;
+                stat_->CaptureInfo(monitor_name)->AppendCopyTextureDuration((int32_t)diff_copy_texture);
 
                 //video_encoder_->Encode(target_texture, frame_index);
                 bool can_encode_texture = false;
@@ -305,6 +308,9 @@ namespace tc
                 if (!can_encode_texture /*|| other configs*/) {
                     //Todo: TEST
                     //TimeDuration td("Measure Map Raw Texture");
+
+                    auto beg_map_texture = TimeUtil::GetCurrentTimestamp();
+
                     D3D11_TEXTURE2D_DESC desc;
                     target_texture->GetDesc(&desc);
                     auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
@@ -316,6 +322,11 @@ namespace tc
                         });
                     };
                     auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                        // calculate used time
+                        auto end_map_cvt_texture = TimeUtil::GetCurrentTimestamp();
+                        auto diff_map_cvt_texture = end_map_cvt_texture - beg_map_texture;
+                        stat_->CaptureInfo(monitor_name)->AppendMapCvtTextureDuration((int32_t)diff_map_cvt_texture);
+
                         // callback in YUV converter thread
                         if (target_encoder_plugin && !can_encode_texture) {
                             PostEncTask([=, this]() {

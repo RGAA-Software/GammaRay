@@ -24,8 +24,8 @@
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartAudioFrameGap = "Capture Audio Gap";
 constexpr auto kChartEncode = "Encode";
-//constexpr auto kChartDecode = "Decode";
-//constexpr auto kChartRecvVideoFrame = "Recv Video Gap";
+constexpr auto kChartCopyTexture = "Copy&Resize Texture";
+constexpr auto kChartMapCvtTexture = "Map&Cvt Texture";
 
 namespace tc
 {
@@ -278,9 +278,13 @@ namespace tc
             stat_chat_stack_->setFixedSize(680, 300);
 
             for (int i = 0; i < capture_size; i++) {
-                auto chart = new StatChart(app_->GetContext(),
-                                           "",
-                                           {kChartVideoFrameGap, kChartAudioFrameGap, kChartEncode,/* kChartDecode, kChartRecvVideoFrame*/},
+                auto chart = new StatChart(app_->GetContext(), "",
+                                           { kChartVideoFrameGap,
+                                             kChartAudioFrameGap,
+                                             kChartEncode,
+                                             kChartCopyTexture,
+                                             kChartMapCvtTexture
+                                             },
                                            this);
                 chart->setFixedSize(stat_chat_stack_->size());
                 stat_charts_.push_back(chart);
@@ -329,9 +333,9 @@ namespace tc
         lbl_audio_capture_type_->setText(stat->audio_capture_type_.c_str());
         lbl_audio_encode_type_->setText("OPUS");
 
-        for (const auto& cp : capture_info_items_) {
-            cp->ClearInfo();
-        }
+//        for (const auto& cp : capture_info_items_) {
+//            cp->ClearInfo();
+//        }
         int index = 0;
         for (const auto& info : stat->captures_info_) {
             if (index >= 4) {
@@ -349,6 +353,15 @@ namespace tc
             // update encode durations
             if (stat->encode_durations_.contains(info.target_name())) {
                 stat_value.insert({kChartEncode, stat->encode_durations_[info.target_name()]});
+            }
+
+            // copy / resize texture
+            if (stat->copy_texture_durations_.contains(info.target_name())) {
+                stat_value.insert({kChartCopyTexture, stat->copy_texture_durations_[info.target_name()]});
+            }
+
+            if (stat->map_cvt_texture_durations_.contains(info.target_name())) {
+                stat_value.insert({kChartMapCvtTexture, stat->map_cvt_texture_durations_[info.target_name()]});
             }
 
             if (index == 0) {
