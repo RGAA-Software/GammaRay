@@ -9,6 +9,7 @@
 #include "render_panel/ui/st_client.h"
 #include "render_panel/ui/st_about_me.h"
 #include "render_panel/ui/st_network.h"
+#include "render_panel/ui/st_plugins.h"
 #include "app_colors.h"
 
 namespace tc
@@ -43,7 +44,7 @@ namespace tc
         // network
         {
             auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
-            btn_client_ = btn;
+            btn_network_ = btn;
             btn->SetBorderRadius(border_radius);
             btn->SetTextId("id_settings_network");
 
@@ -52,6 +53,22 @@ namespace tc
             //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
             QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                 ChangeTab(StTabName::kStNetwork);
+            });
+            left_button_layout->addSpacing(10);
+            left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
+        }
+        // plugins
+        {
+            auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+            btn_plugins_ = btn;
+            btn->SetBorderRadius(border_radius);
+            btn->SetTextId("id_settings_plugins");
+
+            btn->SetSelectedFontColor(btn_font_color);
+            btn->setFixedSize(btn_size);
+            //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
+            QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                ChangeTab(StTabName::kStPlugins);
             });
             left_button_layout->addSpacing(10);
             left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
@@ -78,16 +95,19 @@ namespace tc
             // tabs
             tabs_.insert({StTabName::kStGeneral, new StGeneral(app_, this)});
             tabs_.insert({StTabName::kStNetwork, new StNetwork(app_, this)});
+            tabs_.insert({StTabName::kStPlugins, new StPlugins(app_, this)});
             tabs_.insert({StTabName::kStAboutMe, new StAboutMe(app_, this)});
 
             tabs_[StTabName::kStGeneral]->SetAttach(btn_input_);
-            tabs_[StTabName::kStNetwork]->SetAttach(btn_client_);
+            tabs_[StTabName::kStNetwork]->SetAttach(btn_network_);
+            tabs_[StTabName::kStPlugins]->SetAttach(btn_plugins_);
             tabs_[StTabName::kStAboutMe]->SetAttach(btn_about_me_);
 
             auto layout = new NoMarginVLayout();
             auto stack_widget = new QStackedWidget(this);
             stack_widget->addWidget(tabs_[StTabName::kStGeneral]);
             stack_widget->addWidget(tabs_[StTabName::kStNetwork]);
+            stack_widget->addWidget(tabs_[StTabName::kStPlugins]);
             stack_widget->addWidget(tabs_[StTabName::kStAboutMe]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);

@@ -8,11 +8,12 @@
 
   "id_settings_general": "通用",
   "id_settings_network": "网络",
+  "id_settings_plugins": "插件",
   "id_settings_aboutme": "关于",
 
   "id_tab_remote_control": "远程控制",
   "id_tab_server_status": "服务状态",
-  "id_tab_games": "游戏",
+  "id_tab_games": "安装的游戏",
   "id_tab_profile": "用户",
 
   "id_this_device": "此设备",
