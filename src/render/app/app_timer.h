@@ -19,6 +19,7 @@ namespace tc
         kTimerDuration1000 = 1000,
         kTimerDuration2000 = 2000,
         kTimerDuration5000 = 5000,
+        kTimerDuration500 = 500,
         kTimerDuration100 = 100,
         kTimerDuration16 = 16,
     };

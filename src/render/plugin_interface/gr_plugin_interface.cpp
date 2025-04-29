@@ -23,6 +23,10 @@ namespace tc
         return "dummy";
     }
 
+    std::string GrPluginInterface::GetPluginAuthor() {
+        return plugin_author_;
+    }
+
     std::string GrPluginInterface::GetPluginDescription() {
         return "plugin description";
     }
@@ -64,6 +68,10 @@ namespace tc
         if (param.cluster_.contains("name")) {
             auto n = param.cluster_.at("name");
             plugin_file_name_ = std::any_cast<std::string>(n);
+        }
+        else if (param.cluster_.contains("author")) {
+            auto n = param.cluster_.at("author");
+            plugin_author_ = std::any_cast<std::string>(n);
         }
 
         if (param.cluster_.contains("base_path")) {

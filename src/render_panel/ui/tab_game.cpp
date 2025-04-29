@@ -58,7 +58,6 @@ namespace tc
         // operators
         auto op_layout = new NoMarginHLayout();
         auto btn_size = QSize(120, 33);
-        root_layout->addSpacing(10);
         {
             auto btn = new QPushButton(this);
             btn->setText(tr("Add Game"));

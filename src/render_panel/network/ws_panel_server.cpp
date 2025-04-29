@@ -260,16 +260,16 @@ namespace tc
                     LOGI("Update session type: {} for socket: {}", v->session_type_, socket_fd);
                 }
             });
-
-        } else if (proto_msg->type() == tc::kCaptureStatistics) {
+        }
+        else if (proto_msg->type() == tc::kCaptureStatistics) {
             auto statistics = std::make_shared<CaptureStatistics>();
             statistics->CopyFrom(proto_msg->capture_statistics());
             context_->SendAppMessage(MsgCaptureStatistics{
                 .msg_ = proto_msg,
                 .statistics_ = statistics,
             });
-
-        } else if (proto_msg->type() == tc::kServerAudioSpectrum) {
+        }
+        else if (proto_msg->type() == tc::kServerAudioSpectrum) {
             //auto spectrum = proto_msg->server_audio_spectrum();
             auto spectrum = std::make_shared<ServerAudioSpectrum>();
             spectrum->CopyFrom(proto_msg->server_audio_spectrum());
@@ -277,9 +277,16 @@ namespace tc
                 .msg_ = proto_msg,
                 .spectrum_ = spectrum,
             });
-
-        }  else if (proto_msg->type() == tc::kRestartServer) {
+        }
+        else if (proto_msg->type() == tc::kRestartServer) {
             context_->SendAppMessage(AppMsgRestartServer {});
+        }
+        else if (proto_msg->type() == tc::kPluginsInfo) {
+            auto plugins_info = std::make_shared<PluginsInfo>();
+            plugins_info->CopyFrom(proto_msg->plugins_info());
+            context_->SendAppMessage(MsgPluginsInfo {
+                .plugins_info_ = plugins_info,
+            });
         }
     }
 

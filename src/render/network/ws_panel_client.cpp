@@ -26,6 +26,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
             this->SendStatistics();
+            this->SendPluginsInfo();
         });
     }
 
@@ -70,6 +71,24 @@ namespace tc
 
     void WsPanelClient::SendStatistics() {
         PostNetMessage(statistics_->AsProtoMessage());
+    }
+
+    void WsPanelClient::SendPluginsInfo() {
+        tc::Message msg;
+        msg.set_type(kPluginsInfo);
+        auto m_info = msg.mutable_plugins_info();
+        auto plugins_info = m_info->mutable_plugins_info();
+        plugin_mgr_->VisitAllPlugins([&](GrPluginInterface* plugin) {
+            auto info = plugins_info->Add();
+            info->set_name(plugin->GetPluginName());
+            info->set_author(plugin->GetPluginAuthor());
+            info->set_desc(plugin->GetPluginDescription());
+            info->set_version_name(plugin->GetVersionName());
+            info->set_version_code((int32_t)plugin->GetVersionCode());
+            info->set_enabled(plugin->IsPluginEnabled());
+        });
+
+        PostNetMessage(msg.SerializeAsString());
     }
 
     void WsPanelClient::PostNetMessage(const std::string& msg) {

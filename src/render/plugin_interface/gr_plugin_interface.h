@@ -62,7 +62,7 @@ namespace tc
     class GrPluginInterface : public QObject {
     public:
         GrPluginInterface() = default;
-        virtual ~GrPluginInterface() override = default;
+        ~GrPluginInterface() override = default;
 
         GrPluginInterface(const GrPluginInterface&) = delete;
         GrPluginInterface& operator=(const GrPluginInterface&) = delete;
@@ -72,6 +72,7 @@ namespace tc
         // info
         virtual std::string GetPluginId() = 0;
         virtual std::string GetPluginName();
+        virtual std::string GetPluginAuthor();
         virtual std::string GetPluginDescription();
         virtual GrPluginType GetPluginType();
         virtual bool IsStreamPlugin();

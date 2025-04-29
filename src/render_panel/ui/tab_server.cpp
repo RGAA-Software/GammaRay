@@ -81,7 +81,6 @@ namespace tc
                 title->SetTextId("id_this_device");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
-                left_root->addSpacing(10);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 
@@ -144,7 +143,6 @@ namespace tc
 
             {
                 auto layout = new NoMarginVLayout();
-                layout->addSpacing(10);
 
                 auto qr_info = new TcQRWidget(this);
                 qr_info->setFixedSize(171, 171);

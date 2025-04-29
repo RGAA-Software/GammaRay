@@ -69,7 +69,6 @@ namespace tc
                 item_layout->addSpacing(margin_left + 9);
                 item_layout->addWidget(title);
                 item_layout->addStretch();
-                layout->addSpacing(10);
                 layout->addLayout(item_layout);
                 layout->addSpacing(8);
             }
@@ -450,7 +449,6 @@ namespace tc
             item_layout->addSpacing(30);
             item_layout->addWidget(title);
             item_layout->addStretch();
-            layout->addSpacing(10);
             layout->addLayout(item_layout);
             layout->addSpacing(8);
 

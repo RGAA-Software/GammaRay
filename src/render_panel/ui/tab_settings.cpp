@@ -38,7 +38,7 @@ namespace tc
             QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                 ChangeTab(StTabName::kStGeneral);
             });
-            left_button_layout->addSpacing(30);
+            //left_button_layout->addSpacing(30);
             left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
         }
         // network

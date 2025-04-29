@@ -28,6 +28,7 @@ namespace tc
 
     private:
         void SendStatistics();
+        void SendPluginsInfo();
         void ParseNetMessage(std::string_view msg);
 
     private:

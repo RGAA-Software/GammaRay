@@ -97,7 +97,6 @@ namespace tc
 
         // window
         auto notifier = app_->GetMessageNotifier();
-        //(new MainWindowWrapper(notifier, this))->Setup(tr("GammaRay"));
 
         // background
         setStyleSheet(R"(QMainWindow {background-color:#FFFFFF;})");
@@ -310,15 +309,6 @@ namespace tc
         event->ignore();
         TcDialog dialog(tr("Hide"), tr("Do you want to hide GammaRay?"), this);
         dialog.exec();
-        //
-
-//        auto dlg = SizedMessageBox::MakeOkCancelBox(tr("Hide"), tr("Do you want to hide GammaRay?"));
-//        if (dlg->exec() == 0) {
-//            this->hide();
-//            event->ignore();
-//        } else {
-//            event->ignore();
-//        }
     }
 
     void GrWorkspace::resizeEvent(QResizeEvent *event) {

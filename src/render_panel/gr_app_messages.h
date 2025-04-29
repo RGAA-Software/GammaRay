@@ -9,6 +9,7 @@ namespace tc
     class CaptureStatistics;
     class ServerAudioSpectrum;
     class GrSettings;
+    class PluginsInfo;
 
     // can't connect or not installed
     class MsgViGEmState {
@@ -117,6 +118,12 @@ namespace tc
     class ClearWorkspace {
     public:
         StreamItem item_;
+    };
+
+    // reported plugins info
+    class MsgPluginsInfo {
+    public:
+        std::shared_ptr<tc::PluginsInfo> plugins_info_;
     };
 
 }

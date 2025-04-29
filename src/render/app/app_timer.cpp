@@ -23,6 +23,7 @@ namespace tc
             kTimerDuration1000,
             kTimerDuration2000,
             kTimerDuration5000,
+            kTimerDuration500,
             kTimerDuration100,
             kTimerDuration16,
         };
@@ -43,6 +44,9 @@ namespace tc
         }
         else if (duration == AppTimerDuration::kTimerDuration5000) {
             context_->SendAppMessage(MsgTimer5000{});
+        }
+        else if (duration == AppTimerDuration::kTimerDuration500) {
+            context_->SendAppMessage(MsgTimer500{});
         }
         else if (duration == AppTimerDuration::kTimerDuration100) {
             context_->SendAppMessage(MsgTimer100{});

@@ -108,7 +108,6 @@ namespace tc
             title->SetTextId("id_remote_devices");
             title->setAlignment(Qt::AlignLeft);
             title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
-            root_layout->addSpacing(10);
 
             auto layout = new QHBoxLayout();
             WidgetHelper::ClearMargins(layout);
