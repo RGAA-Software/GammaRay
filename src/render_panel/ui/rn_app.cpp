@@ -49,6 +49,7 @@ namespace tc
             {
                 //
                 auto layout = new NoMarginVLayout();
+                // Running time
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
@@ -66,6 +67,8 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
+
+                // Send media bytes
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
@@ -83,6 +86,25 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
+
+                // Send media speed
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Send Speed");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_send_media_speed_ = op;
+                    op->setText("");
+                    op->setFixedSize(value_size);
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
                 //layout->addStretch();
                 //head_layout->addSpacing(10);
                 head_layout->addLayout(layout);
@@ -91,6 +113,7 @@ namespace tc
             // 3rd column
             {
                 auto layout = new NoMarginVLayout();
+                // connected clients
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
@@ -108,6 +131,8 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
+
+                // video capture type
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
@@ -125,6 +150,26 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
+
+                // video encode type
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Video Encode Type");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_video_encode_type_ = op;
+                    op->setText("");
+                    op->setFixedSize(value_size);
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+
                 //layout->addStretch();
                 head_layout->addLayout(layout);
             }
@@ -132,6 +177,7 @@ namespace tc
             //
             {
                 auto layout = new NoMarginVLayout();
+                // relay connected
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
@@ -149,6 +195,8 @@ namespace tc
                     item_layout->addStretch();
                     layout->addLayout(item_layout);
                 }
+
+                // audio capture type
                 {
                     auto item_layout = new NoMarginHLayout();
                     auto label = new QLabel(this);
@@ -159,6 +207,25 @@ namespace tc
 
                     auto op = new QLabel(this);
                     lbl_audio_capture_type_ = op;
+                    op->setText("");
+                    op->setFixedSize(value_size);
+                    op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                    item_layout->addWidget(op);
+                    item_layout->addStretch();
+                    layout->addLayout(item_layout);
+                }
+
+                // audio encode type
+                {
+                    auto item_layout = new NoMarginHLayout();
+                    auto label = new QLabel(this);
+                    label->setFixedSize(label_size);
+                    label->setText("Audio Encode Type");
+                    label->setStyleSheet("font-size: 13px;");
+                    item_layout->addWidget(label);
+
+                    auto op = new QLabel(this);
+                    lbl_audio_encode_type_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
                     op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -246,22 +313,21 @@ namespace tc
 
     void RnApp::UpdateUI() {
         auto stat = GrStatistics::Instance();
-//        std::map<QString, std::vector<uint32_t>> stat_value;
-//        // update video frame gap
-//        stat_value.insert({kChartVideoFrameGap, stat->video_frame_gaps_});
-//        // update encode durations
-//        stat_value.insert({kChartEncode, stat->encode_durations_});
-//        // update audio frame gap
-//        stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
-//        //stat_chart_->UpdateLines(stat_value);
-//        stat_charts_[0]->UpdateLines(stat_value);
 
+        // column 1
         lbl_app_running_time_->setText(NumFormatter::FormatTime(stat->app_running_time*1000).c_str());
         lbl_send_media_bytes_->setText(NumFormatter::FormatStorageSize(stat->server_send_media_bytes).c_str());
+        lbl_send_media_speed_->setText(NumFormatter::FormatSpeed(stat->send_speed_bytes).c_str());
+
+        // column 2
         lbl_connected_clients_->setText(std::to_string(stat->connected_clients_).c_str());
         lbl_video_capture_type_->setText(stat->video_capture_type_.c_str());
+        lbl_video_encode_type_->setText(stat->video_encode_type_.c_str());
+
+        // column 3
         lbl_relay_connected_->setText(stat->relay_connected_ ? "YES" : "NO");
         lbl_audio_capture_type_->setText(stat->audio_capture_type_.c_str());
+        lbl_audio_encode_type_->setText("OPUS");
 
         for (const auto& cp : capture_info_items_) {
             cp->ClearInfo();

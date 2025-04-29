@@ -25,6 +25,7 @@ namespace tc
     class GrVideoEncoderPlugin;
     class VideoFrameCarrier;
     class RdApplication;
+    class RdStatistics;
 
     class EncoderThread {
     public:
@@ -47,11 +48,10 @@ namespace tc
 
     private:
         RdSettings* settings_ = nullptr;
+        RdStatistics* stat_ = nullptr;
         std::shared_ptr<Thread> enc_thread_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<RdApplication> app_ = nullptr;
-//        uint32_t frame_width_ = 0;
-//        uint32_t frame_height_ = 0;
         Encoder::EncoderFormat encoder_format_ = Encoder::EncoderFormat::kH264;
 
         // debug

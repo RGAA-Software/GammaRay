@@ -11,6 +11,7 @@
 #include <memory>
 #include <atomic>
 #include "tc_common_new/fps_stat.h"
+#include "settings/rd_settings.h"
 
 namespace tc
 {
@@ -37,8 +38,6 @@ namespace tc
         void Exit();
         void IncreaseRunningTime();
         void AppendMediaBytes(int bytes);
-        void AppendEncodeDuration(uint32_t time);
-        void AppendFrameGap(uint32_t time);
         void AppendAudioFrameGap(uint32_t time);
         void IncreaseDDAFailedCount();
 
@@ -56,10 +55,9 @@ namespace tc
         // unit: S
         int64_t running_time_{};
         int64_t send_media_bytes_{};
-        int fps_video_encode_value_{0};
 
-        std::vector<uint32_t> encode_durations_;
-        std::vector<uint32_t> video_frame_gaps_;
+        Encoder::EncoderFormat video_encoder_format_;
+
         std::vector<uint32_t> audio_frame_gaps_;
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;

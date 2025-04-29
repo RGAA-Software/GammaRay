@@ -421,15 +421,15 @@ namespace tc
             }
 
             // calculate gaps between 2 captured frames.
-            {
-                auto current_time = TimeUtil::GetCurrentTimestamp();
-                if (last_capture_screen_time_ == 0) {
-                    last_capture_screen_time_ = current_time;
-                }
-                auto gap = current_time - last_capture_screen_time_;
-                last_capture_screen_time_ = current_time;
-                statistics_->AppendFrameGap(gap);
-            }
+            //{
+            //    auto current_time = TimeUtil::GetCurrentTimestamp();
+            //    if (last_capture_screen_time_ == 0) {
+            //        last_capture_screen_time_ = current_time;
+            //    }
+            //    auto gap = current_time - last_capture_screen_time_;
+            //    last_capture_screen_time_ = current_time;
+            //    statistics_->AppendFrameGap(gap);
+            //}
 
             // to encode
             encoder_thread_->Encode(msg);

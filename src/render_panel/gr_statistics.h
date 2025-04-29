@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <string>
 #include "tc_message.pb.h"
+#include "gr_app_messages.h"
 
 namespace tc
 {
@@ -29,8 +30,12 @@ namespace tc
         void SetContext(const std::shared_ptr<GrContext>& ctx) { context_ = ctx;}
         void RegisterEventListeners();
 
-    public:
+    private:
+        void ProcessCaptureStatistics(const MsgCaptureStatistics& msg);
+        void ProcessAudioSpectrum(const MsgServerAudioSpectrum& msg);
+        void Process1SCalculation();
 
+    public:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 
@@ -38,27 +43,11 @@ namespace tc
         std::map<std::string, std::vector<int32_t>> video_capture_gaps_;
         std::vector<int32_t> audio_frame_gaps_;
         // from inner server
-        int32_t fps_video_encode = 0;
-        // from inner server
         int32_t app_running_time = 0;
         // from inner server
         int64_t server_send_media_bytes = 0;
-
-        // from client
-        //std::vector<uint32_t> decode_durations_;
-        //std::vector<uint32_t> client_video_recv_gaps_;
-        //uint32_t client_fps_video_recv_ = 0;
-        //uint32_t client_fps_render_ = 0;
-        //int64_t client_recv_media_data_ = 0;
-
-        // from client
-        //int32_t render_width_ = 0;
-        // from client
-        //int32_t render_height_ = 0;
-        // from inner server
-        //int32_t capture_width_ = 0;
-        // from inner server
-        //int32_t capture_height_ = 0;
+        int64_t last_server_send_media_bytes = 0;
+        int64_t send_speed_bytes = 0;
 
         // from inner server
         int32_t audio_samples_{0};
@@ -70,8 +59,10 @@ namespace tc
         std::vector<tc::PtMsgWorkingCaptureInfo> captures_info_;
         int32_t connected_clients_ = 0;
         std::string video_capture_type_;
+        std::string video_encode_type_;
         bool relay_connected_ = false;
         std::string audio_capture_type_;
+
     };
 
 }

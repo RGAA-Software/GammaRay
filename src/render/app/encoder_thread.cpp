@@ -44,6 +44,7 @@ namespace tc
 
     EncoderThread::EncoderThread(const std::shared_ptr<RdApplication>& app) {
         app_ = app;
+        stat_ = RdStatistics::Instance();
         context_ = app->GetContext();
         settings_ = RdSettings::Instance();
         plugin_manager_ = context_->GetPluginManager();
@@ -272,6 +273,8 @@ namespace tc
                     });
                 });
 
+                stat_->video_encoder_format_ = settings->encoder_.encoder_format_;
+
                 encoder_format_ = settings->encoder_.encoder_format_;
                 last_video_frames_[monitor_name] = cap_video_msg;
             }
@@ -298,6 +301,7 @@ namespace tc
                     target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
                 }
 
+                // TODO: Add Texture Mapping duration
                 if (!can_encode_texture /*|| other configs*/) {
                     //Todo: TEST
                     //TimeDuration td("Measure Map Raw Texture");
@@ -329,7 +333,7 @@ namespace tc
 
                 auto end = TimeUtil::GetCurrentTimestamp();
                 auto diff = end - beg;
-                RdStatistics::Instance()->AppendEncodeDuration(diff);
+                //RdStatistics::Instance()->AppendEncodeDuration(diff);
             }
             else {
                 context_->PostStreamPluginTask([=, this]() {
