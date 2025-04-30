@@ -80,6 +80,10 @@ namespace tc
     }
 
     bool FFmpegEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        if (!plugin_enabled_) {
+            LOGE("This plugin is disabled!");
+            return false;
+        }
         GrVideoEncoderPlugin::Init(config, monitor_name);
         auto encoder = std::make_shared<FFmpegEncoder>(this);
         auto ok = encoder->Init(config, monitor_name);

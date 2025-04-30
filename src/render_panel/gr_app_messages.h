@@ -9,7 +9,7 @@ namespace tc
     class CaptureStatistics;
     class ServerAudioSpectrum;
     class GrSettings;
-    class PluginsInfo;
+    class PtPluginsInfo;
 
     // can't connect or not installed
     class MsgViGEmState {
@@ -123,7 +123,7 @@ namespace tc
     // reported plugins info
     class MsgPluginsInfo {
     public:
-        std::shared_ptr<tc::PluginsInfo> plugins_info_;
+        std::shared_ptr<tc::PtPluginsInfo> plugins_info_;
     };
 
 }

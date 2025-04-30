@@ -80,6 +80,7 @@ namespace tc
         auto plugins_info = m_info->mutable_plugins_info();
         plugin_mgr_->VisitAllPlugins([&](GrPluginInterface* plugin) {
             auto info = plugins_info->Add();
+            info->set_id(plugin->GetPluginId());
             info->set_name(plugin->GetPluginName());
             info->set_author(plugin->GetPluginAuthor());
             info->set_desc(plugin->GetPluginDescription());

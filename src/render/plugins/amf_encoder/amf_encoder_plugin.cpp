@@ -69,6 +69,10 @@ namespace tc
     }
 
     bool AmfEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        if (!plugin_enabled_) {
+            LOGE("This plugin is disabled!");
+            return false;
+        }
         GrVideoEncoderPlugin::Init(config, monitor_name);
         auto encoder = std::make_shared<VideoEncoderVCE>(this, config.adapter_uid_);
         auto ok = encoder->Initialize(config);

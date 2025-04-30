@@ -17,7 +17,7 @@ namespace tc
     }
 
     std::string ObjDetectorPlugin::GetPluginName() {
-        return "Obj Detector Plugin";
+        return "Obj Detector";
     }
 
     std::string ObjDetectorPlugin::GetVersionName() {

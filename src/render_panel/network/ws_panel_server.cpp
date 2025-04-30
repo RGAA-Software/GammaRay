@@ -282,7 +282,7 @@ namespace tc
             context_->SendAppMessage(AppMsgRestartServer {});
         }
         else if (proto_msg->type() == tc::kPluginsInfo) {
-            auto plugins_info = std::make_shared<PluginsInfo>();
+            auto plugins_info = std::make_shared<PtPluginsInfo>();
             plugins_info->CopyFrom(proto_msg->plugins_info());
             context_->SendAppMessage(MsgPluginsInfo {
                 .plugins_info_ = plugins_info,

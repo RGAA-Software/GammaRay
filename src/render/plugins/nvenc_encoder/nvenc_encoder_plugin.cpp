@@ -68,6 +68,10 @@ namespace tc
     }
 
     bool NvencEncoderPlugin::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        if (!plugin_enabled_) {
+            LOGE("This plugin is disabled!");
+            return false;
+        }
         auto encoder = std::make_shared<NVENCVideoEncoder>(this, config.adapter_uid_);
         LOGI("config bitrate: {} for monitor: {}", config.bitrate, monitor_name);
         auto ok = encoder->Initialize(config);

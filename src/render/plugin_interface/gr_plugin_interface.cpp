@@ -48,15 +48,15 @@ namespace tc
     }
 
     bool GrPluginInterface::IsPluginEnabled() {
-        return enabled_;
+        return plugin_enabled_;
     }
 
     void GrPluginInterface::EnablePlugin() {
-        enabled_ = true;
+        plugin_enabled_ = true;
     }
 
     void GrPluginInterface::DisablePlugin() {
-        enabled_ = false;
+        plugin_enabled_ = false;
     }
 
     bool GrPluginInterface::IsWorking() {
@@ -68,10 +68,6 @@ namespace tc
         if (param.cluster_.contains("name")) {
             auto n = param.cluster_.at("name");
             plugin_file_name_ = std::any_cast<std::string>(n);
-        }
-        else if (param.cluster_.contains("author")) {
-            auto n = param.cluster_.at("author");
-            plugin_author_ = std::any_cast<std::string>(n);
         }
 
         if (param.cluster_.contains("base_path")) {
@@ -118,8 +114,6 @@ namespace tc
                 plugin_enabled_ = std::any_cast<bool>(value);
             }
         }
-
-        this->enabled_ = plugin_enabled_;
 
         root_widget_ = new QWidget();
         root_widget_->resize(960, 540);

@@ -184,7 +184,6 @@ namespace tc
 
     protected:
         std::shared_ptr<GrPluginContext> plugin_context_ = nullptr;
-        std::atomic_bool enabled_ = false;
         std::atomic_bool stopped_ = false;
         std::atomic_bool destroyed_ = false;
         GrPluginParam param_;

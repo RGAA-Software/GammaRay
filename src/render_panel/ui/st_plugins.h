@@ -7,9 +7,29 @@
 
 #include <QLabel>
 #include "tab_base.h"
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QListWidgetItem>
+#include <QPainter>
+#include <QPen>
+#include <QBrush>
+#include <QString>
+#include <QPaintEvent>
 
 namespace tc
 {
+
+    class PtPluginInfo;
+
+    class PluginItemInfo {
+    public:
+        std::string id_;
+        std::shared_ptr<PtPluginInfo> info_ = nullptr;
+    };
 
     class StPlugins : public TabBase {
     public:
@@ -20,7 +40,13 @@ namespace tc
         void OnTabHide() override;
 
     private:
+        void RefreshListWidget();
+        void UpdateItemStatus();
+        QListWidgetItem* AddItem(const std::shared_ptr<PluginItemInfo>& item, int index);
 
+    private:
+        QListWidget* stream_list_ = nullptr;
+        std::vector<std::shared_ptr<PluginItemInfo>> items_info_;
     };
 
 }
