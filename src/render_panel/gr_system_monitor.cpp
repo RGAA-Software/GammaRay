@@ -117,7 +117,7 @@ namespace tc
                     auto msg = rgm->GetRunningGamesAsProto();
                     auto ws_server = app_->GetWsPanelServer();
                     if (ws_server) {
-                        ws_server->PostPanelBinaryMessage(msg);
+                        ws_server->PostPanelMessage(msg);
                     }
 
                     auto game_ids = rgm->GetRunningGameIds();

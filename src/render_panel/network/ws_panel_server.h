@@ -32,17 +32,25 @@ namespace tc
 
     class WsPanelServer {
     public:
-
         static std::shared_ptr<WsPanelServer> Make(const std::shared_ptr<GrApplication>& app);
         explicit WsPanelServer(const std::shared_ptr<GrApplication>& ctx);
         ~WsPanelServer();
 
         void Start();
         void Exit();
+        bool IsAlive();
 
-        void PostPanelBinaryMessage(const std::string& msg, bool only_inner = false);
-        void PostPanelBinaryMessage(std::string_view msg, bool only_inner = false);
-        void ParsePanelBinaryMessage(uint64_t socket_fd, std::string_view msg);
+        // to /panel socket
+        void PostPanelMessage(const std::string& msg, bool only_inner = false);
+
+        // parse /panel socket
+        void ParsePanelMessage(uint64_t socket_fd, std::string_view msg);
+
+        // to /panel/renderer socket
+        void PostRendererMessage(const std::string& msg);
+
+        // parse /panel/renderer socket
+        void ParseRendererMessage(uint64_t socket_fd, std::string_view msg);
 
         void ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg);
 
@@ -64,6 +72,7 @@ namespace tc
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> panel_sessions_;
+        ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> renderer_sessions_;
         ConcurrentHashMap<uint64_t, std::shared_ptr<FtSession>> ft_sessions_;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
         GrSettings* settings_ = nullptr;

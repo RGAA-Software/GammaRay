@@ -30,6 +30,8 @@ namespace tc
         void SendStatistics();
         void SendPluginsInfo();
         void ParseNetMessage(std::string_view msg);
+        void ProcessCommandEnablePlugin(const std::string& plugin_id);
+        void ProcessCommandDisablePlugin(const std::string& plugin_id);
 
     private:
         RdStatistics* statistics_ = nullptr;

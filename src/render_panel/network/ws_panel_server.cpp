@@ -17,6 +17,7 @@ namespace tc
 {
 
     static std::string kUrlPanel = "/panel";
+    static std::string kUrlPanelRenderer = "/panel/renderer";
     static std::string kUrlFileTransfer = "/file/transfer";
 
     struct aop_log {
@@ -49,11 +50,14 @@ namespace tc
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             if (panel_sessions_.HasKey(socket_fd)) {
                 panel_sessions_.Remove(socket_fd);
-                //NotifyMediaClientDisConnected();
-                LOGI("client disconnected: {}", socket_fd);
-                LOGI("App server media close, media router size: {}", panel_sessions_.Size());
+                LOGI("Panel;client disconnected: {}", socket_fd);
+                LOGI("Panel;App server media close, media router size: {}", panel_sessions_.Size());
             }
-            //this->NotifyPeerDisconnected();
+            if (renderer_sessions_.HasKey(socket_fd)) {
+                renderer_sessions_.Remove(socket_fd);
+                LOGI("Renderer;client disconnected: {}", socket_fd);
+                LOGI("Renderer;App server media close, media router size: {}", panel_sessions_.Size());
+            }
         });
 
         http_server_->support_websocket(true);
@@ -120,7 +124,8 @@ namespace tc
 
         // panel
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanel, http_server_);
-
+        // panel/renderer
+        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanelRenderer, http_server_);
         // file transfer
         AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlFileTransfer, http_server_);
 
@@ -153,7 +158,10 @@ namespace tc
             .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlPanel) {
-                    this->ParsePanelBinaryMessage(socket_fd, data);
+                    this->ParsePanelMessage(socket_fd, data);
+                }
+                else if (path == kUrlPanelRenderer) {
+                    this->ParseRendererMessage(socket_fd, data);
                 }
                 else if (path == kUrlFileTransfer) {
                     this->ParseFtBinaryMessage(socket_fd, data);
@@ -169,12 +177,18 @@ namespace tc
                     ws_sess->socket_fd_ = socket_fd;
                     ws_sess->session_ = sess_ptr;
                     this->panel_sessions_.Insert(socket_fd, ws_sess);
-                    LOGI("client connect : {}", socket_fd);
+                    LOGI("Panel;client connect : {}", socket_fd);
+                }
+                else if (path == kUrlPanelRenderer) {
+                    auto ws_sess = std::make_shared<WSSession>();
+                    ws_sess->socket_fd_ = socket_fd;
+                    ws_sess->session_ = sess_ptr;
+                    this->renderer_sessions_.Insert(socket_fd, ws_sess);
+                    LOGI("Renderer;client connect : {}", socket_fd);
 
                     sess_ptr->post_queued_event([=, this]() {
                         this->SyncPanelInfo();
                     });
-                    //this->NotifyPeerConnected();
                 }
                 else if (path == kUrlFileTransfer) {
                     auto ft_sess = std::make_shared<FtSession>();
@@ -191,7 +205,11 @@ namespace tc
                     if (panel_sessions_.HasKey(socket_fd)) {
                         panel_sessions_.Remove(socket_fd);
                     }
-                    //this->NotifyPeerDisconnected();
+                }
+                else if (path == kUrlPanelRenderer) {
+                    if (renderer_sessions_.HasKey(socket_fd)) {
+                        renderer_sessions_.Remove(socket_fd);
+                    }
                 }
                 else if (path == kUrlFileTransfer) {
                     if (ft_sessions_.HasKey(socket_fd)) {
@@ -210,6 +228,10 @@ namespace tc
         );
     }
 
+    bool WsPanelServer::IsAlive() {
+        return http_server_ && http_server_->is_started();
+    }
+
     void WsPanelServer::AddHttpGetRouter(const std::string &path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
         http_server_->bind<http::verb::get>(path, [=, this](http::web_request &req, http::web_response &rep) {
@@ -224,7 +246,7 @@ namespace tc
         }, aop_log{});
     }
 
-    void WsPanelServer::PostPanelBinaryMessage(const std::string& msg, bool only_inner) {
+    void WsPanelServer::PostPanelMessage(const std::string& msg, bool only_inner) {
         panel_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
                 return;
@@ -235,18 +257,53 @@ namespace tc
         });
     }
 
-    void WsPanelServer::PostPanelBinaryMessage(std::string_view msg, bool only_inner) {
-        panel_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
-            if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
-                return;
-            }
+    void WsPanelServer::ParsePanelMessage(uint64_t socket_fd, std::string_view msg) {
+        auto proto_msg = std::make_shared<tc::Message>();
+        if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
+            LOGE("Parse binary message failed.");
+            return;
+        }
+        if (proto_msg->type() == tc::kUIServerHello) {
+            auto hello = proto_msg->ui_server_hello();
+            panel_sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
+                if (v->socket_fd_ == socket_fd) {
+                    v->session_type_ = hello.type();
+                    LOGI("Update session type: {} for socket: {}", v->session_type_, socket_fd);
+                }
+            });
+        }
+    }
+
+    void WsPanelServer::SyncPanelInfo() {
+        tc::Message m;
+        m.set_type(MessageType::kSyncPanelInfo);
+        auto sub = m.mutable_sync_panel_info();
+        sub->set_device_id(settings_->device_id_);
+        sub->set_device_random_pwd(settings_->device_random_pwd_);
+        sub->set_device_safety_pwd(settings_->device_safety_pwd_);
+        sub->set_relay_host(settings_->relay_server_host_);
+        sub->set_relay_port(settings_->relay_server_port_);
+        PostRendererMessage(m.SerializeAsString());
+    }
+
+    void WsPanelServer::ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg) {
+        if (ft_sessions_.HasKey(socket_fd)) {
+            auto sess = ft_sessions_.Get(socket_fd);
+            sess->ch_->ParseBinaryMessage(msg);
+        }
+    }
+
+    // to /panel/renderer socket
+    void WsPanelServer::PostRendererMessage(const std::string& msg) {
+        renderer_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (sess->session_) {
                 sess->session_->async_send(msg);
             }
         });
     }
 
-    void WsPanelServer::ParsePanelBinaryMessage(uint64_t socket_fd, std::string_view msg) {
+    // parse /panel/renderer socket
+    void WsPanelServer::ParseRendererMessage(uint64_t socket_fd, std::string_view msg) {
         auto proto_msg = std::make_shared<tc::Message>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
             LOGE("Parse binary message failed.");
@@ -265,8 +322,8 @@ namespace tc
             auto statistics = std::make_shared<CaptureStatistics>();
             statistics->CopyFrom(proto_msg->capture_statistics());
             context_->SendAppMessage(MsgCaptureStatistics{
-                .msg_ = proto_msg,
-                .statistics_ = statistics,
+                    .msg_ = proto_msg,
+                    .statistics_ = statistics,
             });
         }
         else if (proto_msg->type() == tc::kServerAudioSpectrum) {
@@ -274,8 +331,8 @@ namespace tc
             auto spectrum = std::make_shared<ServerAudioSpectrum>();
             spectrum->CopyFrom(proto_msg->server_audio_spectrum());
             context_->SendAppMessage(MsgServerAudioSpectrum {
-                .msg_ = proto_msg,
-                .spectrum_ = spectrum,
+                    .msg_ = proto_msg,
+                    .spectrum_ = spectrum,
             });
         }
         else if (proto_msg->type() == tc::kRestartServer) {
@@ -287,25 +344,6 @@ namespace tc
             context_->SendAppMessage(MsgPluginsInfo {
                 .plugins_info_ = plugins_info,
             });
-        }
-    }
-
-    void WsPanelServer::SyncPanelInfo() {
-        tc::Message m;
-        m.set_type(MessageType::kSyncPanelInfo);
-        auto sub = m.mutable_sync_panel_info();
-        sub->set_device_id(settings_->device_id_);
-        sub->set_device_random_pwd(settings_->device_random_pwd_);
-        sub->set_device_safety_pwd(settings_->device_safety_pwd_);
-        sub->set_relay_host(settings_->relay_server_host_);
-        sub->set_relay_port(settings_->relay_server_port_);
-        PostPanelBinaryMessage(m.SerializeAsString());
-    }
-
-    void WsPanelServer::ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg) {
-        if (ft_sessions_.HasKey(socket_fd)) {
-            auto sess = ft_sessions_.Get(socket_fd);
-            sess->ch_->ParseBinaryMessage(msg);
         }
     }
 

@@ -112,6 +112,14 @@ namespace tc
         return true;
     }
 
+    bool GrApplication::PostMessage2Renderer(const std::string& msg) {
+        if (!ws_panel_server_ || !ws_panel_server_->IsAlive()) {
+            return false;
+        }
+        ws_panel_server_->PostRendererMessage(msg);
+        return true;
+    }
+
     void GrApplication::RefreshSigServerSettings() {
         mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
             .host_ = settings_->profile_server_host_,

@@ -15,6 +15,7 @@
 namespace tc
 {
 
+    class GrContext;
     class GrApplication;
     class PluginItemInfo;
 
@@ -22,16 +23,19 @@ namespace tc
     public:
         StPluginItemWidget(const std::shared_ptr<GrApplication>& app,
                            const std::shared_ptr<PluginItemInfo>& item_info,
+                           int index,
                            QWidget* parent);
         void paintEvent(QPaintEvent *event) override;
-
-        void UpdateStatus(const std::shared_ptr<PluginItemInfo>& item_info);
+        void UpdateStatus();
 
     private:
-        void SetEnabled(bool enabled);
+        void UpdatePluginStatus(bool enabled);
+        void SwitchPluginStatusInner(bool enabled);
 
     private:
         std::shared_ptr<PluginItemInfo> item_info_;
+        std::shared_ptr<GrApplication> app_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         QLabel* lbl_enabled_ = nullptr;
     };
 

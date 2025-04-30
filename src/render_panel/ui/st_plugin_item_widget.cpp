@@ -6,16 +6,24 @@
 #include "no_margin_layout.h"
 #include "st_plugins.h"
 #include "tc_message.pb.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/gr_app_messages.h"
 #include <QLabel>
 #include <QPushButton>
 
 namespace tc
 {
 
+    const QString kDisplayPluginEnabled = "Enabled";
+    const QString kDisplayPluginDisabled = "Disabled";
+
     StPluginItemWidget::StPluginItemWidget(const std::shared_ptr<GrApplication>& app,
                        const std::shared_ptr<PluginItemInfo>& item_info,
+                       int index,
                        QWidget* parent) : QWidget(parent) {
-
+        app_ = app;
+        context_ = app->GetContext();
         item_info_ = item_info;
 
         this->setObjectName("StPluginItemWidget");
@@ -28,6 +36,17 @@ namespace tc
         root_layout->addLayout(content_layout);
         root_layout->addStretch();
 
+        content_layout->addSpacing(20);
+
+        {
+            auto lbl = new QLabel(this);
+            lbl->setStyleSheet(R"(font-weight: 700;)");
+            lbl->setFixedWidth(20);
+            lbl->setText(std::to_string(index+1).c_str());
+            content_layout->addWidget(lbl);
+            content_layout->addSpacing(20);
+        }
+
         // icon
         {
             auto icon = new QLabel(this);
@@ -37,7 +56,6 @@ namespace tc
                         background-position: center;
                     )";
             icon->setStyleSheet(style);
-            content_layout->addSpacing(10);
             content_layout->addWidget(icon);
             content_layout->addSpacing(20);
         }
@@ -54,7 +72,7 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(R"(font-size: 12px;)");
-            lbl->setFixedWidth(300);
+            lbl->setFixedWidth(400);
             lbl->setText(item_info->info_->desc().c_str());
             content_layout->addWidget(lbl);
             content_layout->addSpacing(20);
@@ -66,7 +84,7 @@ namespace tc
             lbl->setFixedWidth(120);
             content_layout->addWidget(lbl);
             content_layout->addSpacing(20);
-            SetEnabled(item_info->info_->enabled());
+            UpdatePluginStatus(item_info->info_->enabled());
         }
 
         content_layout->addStretch();
@@ -79,6 +97,9 @@ namespace tc
             btn->setText("Disable");
             content_layout->addWidget(btn);
             content_layout->addSpacing(10);
+            connect(btn, &QPushButton::clicked, this, [=, this]() {
+                SwitchPluginStatusInner(false);
+            });
         }
         {
             auto btn = new QPushButton(this);
@@ -86,6 +107,9 @@ namespace tc
             btn->setText("Enable");
             content_layout->addWidget(btn);
             content_layout->addSpacing(10);
+            connect(btn, &QPushButton::clicked, this, [=, this]() {
+                SwitchPluginStatusInner(true);
+            });
         }
 
         content_layout->addSpacing(10);
@@ -105,28 +129,47 @@ namespace tc
         QWidget::paintEvent(event);
     }
 
-    void StPluginItemWidget::UpdateStatus(const std::shared_ptr<PluginItemInfo>& item_info) {
+    void StPluginItemWidget::UpdateStatus() {
         if (!lbl_enabled_) {
             return;
         }
-        if (item_info->info_->enabled() == item_info_->info_->enabled()) {
-            return;
-        }
 
-        item_info_ = item_info;
-        SetEnabled(item_info_->info_->enabled());
+        bool need_update = false;
+        auto enabled = item_info_->info_->enabled();
+        if (enabled) {
+            if (lbl_enabled_->text() != kDisplayPluginEnabled) {
+                need_update = true;
+            }
+        }
+        else {
+            if (lbl_enabled_->text() != kDisplayPluginDisabled) {
+                need_update = true;
+            }
+        }
+        if (need_update) {
+            UpdatePluginStatus(enabled);
+        }
 
     }
 
-    void StPluginItemWidget::SetEnabled(bool enabled) {
+    void StPluginItemWidget::UpdatePluginStatus(bool enabled) {
         if (enabled) {
-            lbl_enabled_->setText("Enabled");
+            lbl_enabled_->setText(kDisplayPluginEnabled);
             lbl_enabled_->setStyleSheet(R"(font-weight: 700; color: #555555;)");
         }
         else {
-            lbl_enabled_->setText("Disabled");
+            lbl_enabled_->setText(kDisplayPluginDisabled);
             lbl_enabled_->setStyleSheet(R"(font-weight: 700; color: #ff2200;)");
         }
+    }
+
+    void StPluginItemWidget::SwitchPluginStatusInner(bool enabled) {
+        tc::Message pt_msg;
+        pt_msg.set_type(MessageType::kCommandRenderer);
+        auto sub = pt_msg.mutable_command_renderer();
+        sub->set_command(enabled ? PtPanelCommand::kEnablePlugin : PtPanelCommand::kDisablePlugin);
+        sub->set_plugin_id(item_info_->id_);
+        app_->PostMessage2Renderer(pt_msg.SerializeAsString());
     }
 
 }

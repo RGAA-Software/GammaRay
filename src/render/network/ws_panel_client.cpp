@@ -58,7 +58,7 @@ namespace tc
             ParseNetMessage(data);
         });
 
-        if (!client_->async_start("127.0.0.1", settings_->panel_server_port_, "/panel")) {
+        if (!client_->async_start("127.0.0.1", settings_->panel_server_port_, "/panel/renderer")) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }
@@ -110,7 +110,7 @@ namespace tc
             tc::Message m;
             m.ParseFromString(msg);
             if (m.type() == MessageType::kSyncPanelInfo) {
-                auto sub = m.sync_panel_info();
+                const auto& sub = m.sync_panel_info();
                 settings_->device_id_ = sub.device_id();
                 settings_->device_random_pwd_ = sub.device_random_pwd();
                 settings_->device_safety_pwd_ = sub.device_safety_pwd();
@@ -122,12 +122,42 @@ namespace tc
                     .relay_host_ = settings_->relay_host_,
                     .relay_port_ = settings_->relay_port_,
                 });
-
-                //LOGI("SyncPanelInfo, client id: {}, random pwd: {}", sub.client_id(), sub.client_random_pwd());
             }
+            else if (m.type() == MessageType::kCommandRenderer) {
+                LOGI("====> CommandRenderer <====");
+                const auto& sub = m.command_renderer();
+                int ws_port = sub.ws_port();
+                const auto& plugin_id = sub.plugin_id();
+                LOGI("Plugin id: {}", plugin_id);
+                if (sub.command() == tc::PtPanelCommand::kEnablePlugin) {
+                    ProcessCommandEnablePlugin(plugin_id);
+                }
+                else if (sub.command() == tc::PtPanelCommand::kDisablePlugin) {
+                    ProcessCommandDisablePlugin(plugin_id);
+                }
+            }
+
         } catch(std::exception& e) {
             LOGE("ParseNetMessage failed: {}", e.what());
         }
+    }
+
+    void WsPanelClient::ProcessCommandEnablePlugin(const std::string& plugin_id) {
+        plugin_mgr_->VisitAllPlugins([&](GrPluginInterface* plugin) {
+            if (plugin_id == plugin->GetPluginId()) {
+                LOGI("Enable plugin: {}", plugin->GetPluginName());
+                plugin->EnablePlugin();
+            }
+        });
+    }
+
+    void WsPanelClient::ProcessCommandDisablePlugin(const std::string& plugin_id) {
+        plugin_mgr_->VisitAllPlugins([&](GrPluginInterface* plugin) {
+            if (plugin_id == plugin->GetPluginId()) {
+                LOGI("Disable plugin: {}", plugin->GetPluginName());
+                plugin->DisablePlugin();
+            }
+        });
     }
 
 }

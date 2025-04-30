@@ -78,40 +78,27 @@ namespace tc
 
         msg_listener_->Listen<MsgPluginsInfo>([=, this](const MsgPluginsInfo& m_info) {
             auto plugins_info = m_info.plugins_info_->plugins_info();
-            bool has_new_plugin = false;
-            for (int i = 0; i < plugins_info.size(); i++) {
-                auto info = plugins_info.at(i);
-
-                bool found = false;
-                bool plugin_enabled = true;
-                for (const auto& item_info : items_info_) {
-                    if (item_info->id_ == info.id()) {
-                        found = true;
-                        plugin_enabled = info.enabled();
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    has_new_plugin = true;
+            if (items_info_.empty()) {
+                for (const auto& new_info : plugins_info) {
                     auto plugin_info = std::make_shared<PtPluginInfo>();
-                    plugin_info->CopyFrom(info);
-                    items_info_.push_back(std::make_shared<PluginItemInfo>(PluginItemInfo {
-                        .id_ = info.id(),
+                    plugin_info->CopyFrom(new_info);
+                    items_info_.push_back(std::make_shared<PluginItemInfo>(PluginItemInfo{
+                        .id_ = new_info.id(),
                         .info_ = plugin_info,
                     }));
-                }
-                else {
-                    for (const auto& item_info : items_info_) {
-                        item_info->info_->set_enabled(plugin_enabled);
-                    }
-                }
-            }
 
-            if (has_new_plugin) {
+                }
                 RefreshListWidget();
             }
             else {
+                for (const auto& new_info : plugins_info) {
+                    for (const auto &item_info: items_info_) {
+                        if (item_info->id_ == new_info.id()) {
+                            item_info->info_->set_enabled(new_info.enabled());
+                            break;
+                        }
+                    }
+                }
                 UpdateItemStatus();
             }
         });
@@ -132,7 +119,7 @@ namespace tc
         auto item = new QListWidgetItem(stream_list_);
         auto item_size = QSize(955, 60);
         item->setSizeHint(item_size);
-        auto widget = new StPluginItemWidget(app_, item_info, stream_list_);
+        auto widget = new StPluginItemWidget(app_, item_info, index, stream_list_);
         widget->setFixedSize(item_size);
         stream_list_->setItemWidget(item, widget);
         return item;
@@ -164,10 +151,9 @@ namespace tc
         context_->PostUITask([=, this]() {
             int count = stream_list_->count();
             for (int i = 0; i < count; i++) {
-                //LOGI("plugin: {}, name: {}, enabled: {}", i, items_info_[i]->info_->name(), items_info_[i]->info_->enabled());
                 QListWidgetItem *item = stream_list_->item(i);
                 auto item_widget = (StPluginItemWidget*)stream_list_->itemWidget(item);
-                item_widget->UpdateStatus(items_info_[i]);
+                item_widget->UpdateStatus();
             }
         });
     }
