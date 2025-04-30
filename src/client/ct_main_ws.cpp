@@ -21,6 +21,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <QDir>
+#include <memory>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "translator/tc_translator.h"
@@ -277,7 +278,7 @@ int main(int argc, char** argv) {
 #endif
     } ();
 
-    auto params = std::shared_ptr<ThunderSdkParams>(new ThunderSdkParams {
+    auto params = std::make_shared<ThunderSdkParams>(ThunderSdkParams {
         .ssl_ = false,
         .enable_audio_ = true,
         .enable_video_ = true,
