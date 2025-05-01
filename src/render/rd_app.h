@@ -57,6 +57,7 @@ namespace tc
     class RenderServiceClient;
     class MonitorRefresher;
     class WinDesktopManager;
+    class D3D11DeviceWrapper;
 
     class RdApplication : public std::enable_shared_from_this<RdApplication>, public QObject {
     public:
@@ -88,8 +89,8 @@ namespace tc
         tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin();
         std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
         bool GenerateD3DDevice(uint64_t adapter_uid);
-        ComPtr<ID3D11Device> GetD3DDevice();
-        ComPtr<ID3D11DeviceContext> GetD3DContext();
+        ComPtr<ID3D11Device> GetD3DDevice(uint64_t adapter_uid);
+        ComPtr<ID3D11DeviceContext> GetD3DContext(uint64_t adapter_uid);
         SharedPreference* GetSp() { return sp_; }
         void ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id);
 
@@ -142,16 +143,14 @@ namespace tc
 
         std::shared_ptr<QApplication> qapp_ = nullptr;
 
-        //std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
-
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         tc::GrMonitorCapturePlugin* monitor_capture_plugin_ = nullptr;
         tc::GrDataProviderPlugin* data_provider_plugin = nullptr;
         tc::GrDataProviderPlugin* audio_capture_plugin_ = nullptr;
         tc::GrAudioEncoderPlugin* audio_encoder_plugin_ = nullptr;
 
-        ComPtr<ID3D11Device> d3d11_device_ = nullptr;
-        ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
+        // uint64_t adapter_uid <==> D3D11Device/D3D11DeviceContext
+        std::map<uint64_t, std::shared_ptr<D3D11DeviceWrapper>> d3d11_devices_;
 
         std::vector<double> fft_left_;
         std::vector<double> fft_right_;
@@ -172,7 +171,6 @@ namespace tc
 
         int Run() override;
         void Exit() override;
-        //void SendHelloMessageToDll(uint32_t pid) override;
         void CaptureControlC();
         void LoadDxAddress();
     };

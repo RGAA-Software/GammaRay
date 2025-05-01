@@ -53,6 +53,7 @@
 #include "tc_service_message.pb.h"
 #include "app/monitor_refresher.h"
 #include "app/win/win_desktop_manager.h"
+#include "app/win/d3d11_wrapper.h"
 
 namespace tc
 {
@@ -608,14 +609,13 @@ namespace tc
 
     bool RdApplication::GenerateD3DDevice(uint64_t adapter_uid) {
         LOGI("GenerateD3DDevice, adapter_uid = {}", adapter_uid);
-        if (d3d11_device_context_) {
-            d3d11_device_context_->ClearState();
-            d3d11_device_context_->Flush();
-            d3d11_device_context_->Release();
+        if (d3d11_devices_.contains(adapter_uid)) {
+            d3d11_devices_[adapter_uid]->Release();
+            d3d11_devices_.erase(adapter_uid);
         }
-        if (d3d11_device_) {
-            d3d11_device_->Release();
-        }
+
+        auto new_device_wrapper = std::make_shared<D3D11DeviceWrapper>();
+
         ComPtr<IDXGIFactory1> factory1;
         ComPtr<IDXGIAdapter1> adapter;
         DXGI_ADAPTER_DESC desc;
@@ -648,23 +648,30 @@ namespace tc
                                 D3D_DRIVER_TYPE_UNKNOWN, nullptr,
                                 D3D11_CREATE_DEVICE_BGRA_SUPPORT,
                                 nullptr, 0, D3D11_SDK_VERSION,
-                                &d3d11_device_, &featureLevel, &d3d11_device_context_);
+                                &new_device_wrapper->d3d11_device_, &featureLevel, &new_device_wrapper->d3d11_device_context_);
 
-        if (res != S_OK || !d3d11_device_) {
+        if (res != S_OK || !new_device_wrapper->d3d11_device_) {
             LOGE("D3D11CreateDevice failed: {}", res);
             return false;
         } else {
-            LOGI("D3D11CreateDevice mDevice = {}", (void *) d3d11_device_.Get());
+            LOGI("D3D11CreateDevice mDevice = {}", (void *) new_device_wrapper->d3d11_device_.Get());
+            d3d11_devices_[adapter_uid] = new_device_wrapper;
             return true;
         }
     }
 
-    ComPtr<ID3D11Device> RdApplication::GetD3DDevice() {
-        return d3d11_device_;
+    ComPtr<ID3D11Device> RdApplication::GetD3DDevice(uint64_t adapter_uid) {
+        if (!d3d11_devices_.contains(adapter_uid)) {
+            return nullptr;
+        }
+        return d3d11_devices_[adapter_uid]->d3d11_device_;
     }
 
-    ComPtr<ID3D11DeviceContext> RdApplication::GetD3DContext() {
-        return d3d11_device_context_;
+    ComPtr<ID3D11DeviceContext> RdApplication::GetD3DContext(uint64_t adapter_uid) {
+        if (!d3d11_devices_.contains(adapter_uid)) {
+            return nullptr;
+        }
+        return d3d11_devices_[adapter_uid]->d3d11_device_context_;
     }
 
     void RdApplication::ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) {
