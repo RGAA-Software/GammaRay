@@ -156,7 +156,7 @@ namespace tc
             //frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
 
             auto target_encoder_plugin = GetEncoderForMonitor(monitor_name);
-            if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !target_encoder_plugin) {
+            if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !target_encoder_plugin || !target_encoder_plugin->IsPluginEnabled()) {
                 if (target_encoder_plugin) {
                     // todo : Test it!
                     target_encoder_plugin->Exit(monitor_name);
