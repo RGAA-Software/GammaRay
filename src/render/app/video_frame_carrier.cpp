@@ -291,4 +291,16 @@ namespace tc
         }
     }
 
+    bool VideoFrameCarrier::IsResizeFrameSize() {
+        return resize_;
+    }
+
+    int VideoFrameCarrier::GetResizeWidth() {
+        return resize_width_;
+    }
+
+    int VideoFrameCarrier::GetResizeHeight() {
+        return resize_height_;
+    }
+
 }

@@ -397,6 +397,10 @@ namespace tc
         return encoder_plugins_;
     }
 
+    std::map<std::string, std::shared_ptr<VideoFrameCarrier>> EncoderThread::GetWorkingFrameCarriers() {
+        return frame_carriers_;
+    }
+
     bool EncoderThread::HasEncoderForMonitor(const std::string& monitor_name) {
         return GetEncoderForMonitor(monitor_name) != nullptr;
     }

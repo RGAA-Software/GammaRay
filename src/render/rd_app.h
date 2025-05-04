@@ -58,6 +58,7 @@ namespace tc
     class MonitorRefresher;
     class WinDesktopManager;
     class D3D11DeviceWrapper;
+    class VideoFrameCarrier;
 
     class RdApplication : public std::enable_shared_from_this<RdApplication>, public QObject {
     public:
@@ -88,6 +89,7 @@ namespace tc
         std::shared_ptr<PluginManager> GetPluginManager();
         tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin();
         std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
+        std::map<std::string, std::shared_ptr<VideoFrameCarrier>> GetWorkingFrameCarriers();
         bool GenerateD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11Device> GetD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11DeviceContext> GetD3DContext(uint64_t adapter_uid);

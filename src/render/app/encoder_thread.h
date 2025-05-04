@@ -38,6 +38,7 @@ namespace tc
         void Encode(const CaptureVideoFrame& msg);
         void Exit();
         std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
+        std::map<std::string, std::shared_ptr<VideoFrameCarrier>> GetWorkingFrameCarriers();
 
     private:
         void PostEncTask(std::function<void()>&& task);

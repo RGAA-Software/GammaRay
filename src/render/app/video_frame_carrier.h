@@ -46,6 +46,10 @@ namespace tc
         ID3D11Texture2D* CopyTexture(uint64_t handle, uint64_t frame_index);
         void Exit();
 
+        bool IsResizeFrameSize();
+        int GetResizeWidth();
+        int GetResizeHeight();
+
     private:
         static bool D3D11Texture2DLockMutex(const ComPtr<ID3D11Texture2D>& texture2d);
         static bool D3D11Texture2DReleaseMutex(const ComPtr<ID3D11Texture2D>& texture2d);

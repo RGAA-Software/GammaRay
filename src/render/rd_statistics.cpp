@@ -18,6 +18,8 @@
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
+#include "settings/rd_settings.h"
+#include "app/video_frame_carrier.h"
 
 namespace tc
 {
@@ -56,6 +58,7 @@ namespace tc
 
     /// ----
     RdStatistics::RdStatistics() {
+        settings_ = RdSettings::Instance();
     }
 
     void RdStatistics::SetApplication(const std::shared_ptr<RdApplication>& app) {
@@ -109,6 +112,7 @@ namespace tc
         //
         auto video_capture_plugin = app_->GetWorkingMonitorCapturePlugin();
         auto video_encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
+        auto frame_carriers = app_->GetWorkingFrameCarriers();
         if (video_capture_plugin && !video_encoder_plugins.empty()) {
             // encoder info
 
@@ -142,7 +146,7 @@ namespace tc
                 item->set_capture_frame_width(info->capture_frame_width_);
                 item->set_capture_frame_height(info->capture_frame_height_);
 
-                //
+                // capture info
                 //LOGI("Target name: {}", info->target_name_);
                 if (app_captures_info_.contains(info->target_name_)) {
                     auto app_cp_info = CaptureInfo(info->target_name_);
@@ -159,6 +163,19 @@ namespace tc
                         for (const auto& v : app_cp_info->map_cvt_texture_durations_) {
                             durations->Add(v);
                         }
+                    }
+                }
+
+                // resize info
+                if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
+                    item->set_resize_frame_width(0);
+                    item->set_resize_frame_height(0);
+                }
+                else {
+                    if (frame_carriers.contains(info->target_name_)) {
+                        auto carrier = frame_carriers[info->target_name_];
+                        item->set_resize_frame_width(carrier->GetResizeWidth());
+                        item->set_resize_frame_height(carrier->GetResizeHeight());
                     }
                 }
             }
