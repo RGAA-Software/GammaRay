@@ -19,10 +19,10 @@ namespace tc
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
         void On1Second() override;
-        ComPtr<ID3D11Texture2D> Process(ID3D11Texture2D* input, int target_width, int target_height) override;
+        ComPtr<ID3D11Texture2D> Process(ID3D11Texture2D* input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) override;
 
     private:
-        std::shared_ptr<FrameRender> frame_render_ = nullptr;
+        std::map<std::string, std::shared_ptr<FrameRender>> frame_renders_;
     };
 
 }

@@ -15,8 +15,8 @@ namespace tc
 
     NVENCVideoEncoder::NVENCVideoEncoder(NvencEncoderPlugin* plugin, uint64_t adapter_uid) {
         plugin_ = plugin;
-        d3d11_device_ = plugin->d3d11_device_;
-        d3d11_device_context_ = plugin->d3d11_device_context_;
+        d3d11_device_ = plugin->d3d11_devices_[adapter_uid];
+        d3d11_device_context_ = plugin->d3d11_devices_context_[adapter_uid];
         fps_stat_ = std::make_shared<FpsStat>();
     }
 

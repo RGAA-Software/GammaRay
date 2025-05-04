@@ -23,7 +23,8 @@ namespace tc
     VideoFrameCarrier::VideoFrameCarrier(const std::shared_ptr<RdContext>& ctx,
                                          const ComPtr<ID3D11Device>& d3d11_device,
                                          const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
-                                         uint64_t adapter_id,
+                                         uint64_t adapter_uid,
+                                         const std::string& monitor_name,
                                          bool resize,
                                          int resize_width,
                                          int resize_height) {
@@ -31,6 +32,8 @@ namespace tc
         context_ = ctx;
         d3d11_device_ = d3d11_device;
         d3d11_device_context_ = d3d11_device_context;
+        adapter_uid_ = adapter_uid;
+        monitor_name_ = monitor_name;
         resize_ = resize;
         resize_width_ = resize_width;
         resize_height_ = resize_height;
@@ -168,7 +171,7 @@ namespace tc
             std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
                 D3D11Texture2DReleaseMutex(shared_texture);
             });
-            auto final_texture = frame_resize_plugin_->Process(shared_texture.Get(), resize_width_, resize_height_);
+            auto final_texture = frame_resize_plugin_->Process(shared_texture.Get(), adapter_uid_, monitor_name_, resize_width_, resize_height_);
             if (!final_texture) {
                 LOGE("Frame resize failed!");
                 return nullptr;

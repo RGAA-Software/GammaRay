@@ -198,8 +198,8 @@ namespace tc
 
     VideoEncoderVCE::VideoEncoderVCE(AmfEncoderPlugin* plugin, uint64_t adapter_uid) {
         this->plugin_ = plugin;
-        this->d3d11_device_ = plugin->d3d11_device_;
-        this->d3d11_device_context_ = plugin->d3d11_device_context_;
+        this->d3d11_device_ = plugin->d3d11_devices_[adapter_uid];
+        this->d3d11_device_context_ = plugin->d3d11_devices_context_[adapter_uid];
     }
 
     VideoEncoderVCE::~VideoEncoderVCE() {

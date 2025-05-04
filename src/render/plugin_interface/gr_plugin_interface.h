@@ -204,8 +204,10 @@ namespace tc
         GrPluginSettingsInfo sys_settings_{};
 
     public:
-        Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_ = nullptr;
-        Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
+        // adapter uid <==> D3D11Device
+        std::map<uint64_t, Microsoft::WRL::ComPtr<ID3D11Device>> d3d11_devices_;
+        // adapter uid <==> D3D11DeviceContext
+        std::map<uint64_t, Microsoft::WRL::ComPtr<ID3D11DeviceContext>> d3d11_devices_context_;
     };
 
 }

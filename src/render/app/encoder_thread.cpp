@@ -203,13 +203,13 @@ namespace tc
                     LOGI("We use d3d device from capture.");
                 }
 
-                encoder_config.d3d11_device_ = app_->GetD3DDevice(adapter_uid);
-                encoder_config.d3d11_device_context_ = app_->GetD3DContext(adapter_uid);
+                //encoder_config.d3d11_device_ = app_->GetD3DDevice(adapter_uid);
+                //encoder_config.d3d11_device_context_ = app_->GetD3DContext(adapter_uid);
 
                 // all plugins
                 plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
-                    plugin->d3d11_device_ = app_->GetD3DDevice(adapter_uid);
-                    plugin->d3d11_device_context_ = app_->GetD3DContext(adapter_uid);
+                    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
+                    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
                 });
 
                 // video frame carrier
@@ -220,12 +220,24 @@ namespace tc
                     frame_carrier = nullptr;
                 }
                 if (encoder_config.frame_resize) {
-                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(adapter_uid), app_->GetD3DContext(adapter_uid), cap_video_msg.adapter_uid_,
-                                                                         true, encoder_config.encode_width, encoder_config.encode_height);
+                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
+                                                                        app_->GetD3DDevice(adapter_uid),
+                                                                        app_->GetD3DContext(adapter_uid),
+                                                                        cap_video_msg.adapter_uid_,
+                                                                        monitor_name,
+                                                                        true,
+                                                                        encoder_config.encode_width,
+                                                                        encoder_config.encode_height);
                 }
                 else {
-                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_, app_->GetD3DDevice(adapter_uid), app_->GetD3DContext(adapter_uid),
-                                                                         cap_video_msg.adapter_uid_,false, -1, -1);
+                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
+                                                                        app_->GetD3DDevice(adapter_uid),
+                                                                        app_->GetD3DContext(adapter_uid),
+                                                                        cap_video_msg.adapter_uid_,
+                                                                        monitor_name,
+                                                                        false,
+                                                                        -1,
+                                                                        -1);
                 }
                 frame_carriers_[monitor_name] = frame_carrier;
                 LOGI("Create frame carrier for monitor: {}", monitor_name);

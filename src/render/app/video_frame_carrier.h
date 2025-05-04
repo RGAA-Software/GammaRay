@@ -33,7 +33,8 @@ namespace tc
         explicit VideoFrameCarrier(const std::shared_ptr<RdContext>& ctx,
                                    const ComPtr<ID3D11Device>& d3d11_device,
                                    const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
-                                   uint64_t adapter_id,
+                                   uint64_t adapter_uid,
+                                   const std::string& monitor_name,
                                    bool resize,
                                    int resize_width,
                                    int resize_height);
@@ -75,6 +76,9 @@ namespace tc
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         GrFrameProcessorPlugin* frame_resize_plugin_ = nullptr;
+
+        uint64_t adapter_uid_ = 0;
+        std::string monitor_name_;
     };
 
 }

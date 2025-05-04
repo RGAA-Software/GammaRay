@@ -39,29 +39,32 @@ namespace tc
 
     }
 
-    ComPtr<ID3D11Texture2D> FrameResizerPlugin::Process(ID3D11Texture2D* input, int target_width, int target_height) {
+    ComPtr<ID3D11Texture2D> FrameResizerPlugin::Process(ID3D11Texture2D* input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) {
         if (!input) {
             return nullptr;
         }
         D3D11_TEXTURE2D_DESC desc;
         input->GetDesc(&desc);
-        if (!frame_render_ && d3d11_device_ && d3d11_device_context_) {
-            frame_render_ = std::make_shared<FrameRender>(d3d11_device_.Get(), d3d11_device_context_.Get());
-            auto hr = frame_render_->Prepare({target_width, target_height}, {(LONG)desc.Width, (LONG)desc.Height}, desc.Format);
+        if (!frame_renders_.contains(monitor_name) && d3d11_devices_[adapter_uid] && d3d11_devices_context_[adapter_uid]) {
+            auto frame_render = std::make_shared<FrameRender>(d3d11_devices_[adapter_uid].Get(), d3d11_devices_context_[adapter_uid].Get());
+            auto hr = frame_render->Prepare({target_width, target_height}, {(LONG)desc.Width, (LONG)desc.Height}, desc.Format);
             if (hr != S_OK) {
                 LOGE("Prepare for frame render failed!");
                 return nullptr;
             }
+            frame_renders_[monitor_name] = frame_render;
         }
 
-        auto resize_ctx = frame_render_->GetD3D11DeviceContext();
-        auto pre_texture = frame_render_->GetSrcTexture();
+        auto frame_render = frame_renders_[monitor_name];
+
+        auto resize_ctx = frame_render->GetD3D11DeviceContext();
+        auto pre_texture = frame_render->GetSrcTexture();
         resize_ctx->CopyResource(pre_texture, input);
 
         //DebugOutDDS(pre_texture, "2.dds");
 
-        frame_render_->Draw();
-        auto final_texture = frame_render_->GetFinalTexture();
+        frame_render->Draw();
+        auto final_texture = frame_render->GetFinalTexture();
         return final_texture;
     }
 

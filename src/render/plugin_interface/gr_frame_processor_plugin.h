@@ -22,7 +22,7 @@ namespace tc
     class GrFrameProcessorPlugin : public GrPluginInterface {
     public:
         GrFrameProcessorPlugin();
-        virtual ComPtr<ID3D11Texture2D> Process(ID3D11Texture2D* input, int target_width, int target_height) = 0;
+        virtual ComPtr<ID3D11Texture2D> Process(ID3D11Texture2D* input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) = 0;
 
     public:
         int priority_ = 0;
