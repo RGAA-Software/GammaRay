@@ -53,6 +53,20 @@ namespace tc
 
             auto w = new TcLabel(this);
             w->setStyleSheet("font-size: 12px; color: #444444;");
+            lbl_frame_resize_size_ = w;
+            w->setText("");
+            layout->addWidget(w);
+            layout->addStretch();
+        }
+
+        {
+            auto layout = new NoMarginHLayout();
+            layout->addSpacing(item_spacing);
+            root_layout->addSpacing(item_spacing);
+            root_layout->addLayout(layout);
+
+            auto w = new TcLabel(this);
+            w->setStyleSheet("font-size: 12px; color: #444444;");
             lbl_capture_fps_ = w;
             w->setText("");
             layout->addWidget(w);
@@ -105,6 +119,7 @@ namespace tc
     void StatCaptureInfoItem::UpdateInfo(const PtMsgWorkingCaptureInfo& info) {
         lbl_target_name_->setText(info.target_name().c_str());
         lbl_capture_size_->setText(std::format("Capture Size: {}x{}", info.capture_frame_width(), info.capture_frame_height()).c_str());
+        lbl_frame_resize_size_->setText(std::format("Frame Resize: {}x{}", info.resize_frame_width(), info.resize_frame_height()).c_str());
         lbl_capture_fps_->setText(std::format("Capture FPS: {}",info.capturing_fps()).c_str());
         lbl_encode_fps_->setText(std::format("Encoder: {}, FPS: {}", info.encoder_name(), info.encoding_fps()).c_str());
         update();
@@ -115,6 +130,7 @@ namespace tc
         lbl_capture_size_->setText("");
         lbl_capture_fps_->setText("");
         lbl_encode_fps_->setText("");
+        lbl_frame_resize_size_->setText("");
         update();
     }
 

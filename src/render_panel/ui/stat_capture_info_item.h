@@ -30,6 +30,7 @@ namespace tc
         TcLabel* lbl_target_name_;
         TcLabel* lbl_capture_size_;
         TcLabel* lbl_capture_fps_;
+        TcLabel* lbl_frame_resize_size_;
         TcLabel* lbl_encode_fps_;
     };
 
