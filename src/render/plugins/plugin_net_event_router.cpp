@@ -59,7 +59,9 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
+        app_->GetContext()->SendAppMessage(MsgClientDisconnected {
 
+        });
     }
 
     void PluginNetEventRouter::ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) {

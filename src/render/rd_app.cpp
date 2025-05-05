@@ -219,9 +219,10 @@ namespace tc
 
         msg_listener_->Listen<MsgClientDisconnected>([=, this](const MsgClientDisconnected& msg) {
             this->PostGlobalTask([=, this]() {
-                if (msg.client_size_ <= 0) {
+                // TODO: Release controller when Android client disconnected
+                //if (msg.client_size_ <= 0) {
                     ReleaseVigemController();
-                }
+                //}
             });
         });
 

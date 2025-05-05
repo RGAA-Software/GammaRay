@@ -86,9 +86,9 @@ namespace tc
 
     void WsPluginServer::PostNetMessage(const std::string& data) {
         stream_routers_.ApplyAll([=](const uint64_t& socket_fd, const std::shared_ptr<WsStreamRouter>& router) {
-            if (!router->enable_video_) {
-                return;
-            }
+//            if (!router->enable_video_) {
+//                return;
+//            }
             router->PostBinaryMessage(data);
         });
     }
