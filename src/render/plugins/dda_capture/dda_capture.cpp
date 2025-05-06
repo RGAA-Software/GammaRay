@@ -353,6 +353,8 @@ namespace tc
         UINT input_height = input_desc.Height;
         DXGI_FORMAT input_format = input_desc.Format;
 
+        //LOGI("OnCaptureFrame texture, format: {}", (int)input_format); // DXGI_FORMAT_B8G8R8A8_UNORM
+
         // shared texture info if exists
         UINT shared_width = 0;
         UINT shared_height = 0;

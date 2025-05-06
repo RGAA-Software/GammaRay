@@ -190,6 +190,9 @@ namespace tc
                 encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
                 encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
 
+
+                encoder_config.enable_full_color_mode_ = settings_->enable_full_color_mode_;
+
                 PrintEncoderConfig(encoder_config);
 
                 // generate d3d device/context
@@ -227,7 +230,8 @@ namespace tc
                                                                         monitor_name,
                                                                         true,
                                                                         encoder_config.encode_width,
-                                                                        encoder_config.encode_height);
+                                                                        encoder_config.encode_height,
+																		encoder_config.enable_full_color_mode_);
                 }
                 else {
                     frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
@@ -237,7 +241,8 @@ namespace tc
                                                                         monitor_name,
                                                                         false,
                                                                         -1,
-                                                                        -1);
+                                                                        -1,
+																		encoder_config.enable_full_color_mode_);
                 }
                 frame_carriers_[monitor_name] = frame_carrier;
                 LOGI("Create frame carrier for monitor: {}", monitor_name);
@@ -314,6 +319,7 @@ namespace tc
                 bool can_encode_texture = false;
                 if (target_encoder_plugin && target_encoder_plugin->CanEncodeTexture()) {
                     can_encode_texture = true;
+                    // plugins: EncodeTexture
                     target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
                 }
 

@@ -18,7 +18,9 @@ public:
 	~GameView();
 	void resizeEvent(QResizeEvent* event) override;
 	void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info);
+	void RefreshImage(const std::shared_ptr<RawImage>& image);
 	void RefreshI420Image(const std::shared_ptr<RawImage>& image);
+	void RefreshI444Image(const std::shared_ptr<RawImage>& image);
 
 	void SendKeyEvent(quint32 vk, bool down);
 

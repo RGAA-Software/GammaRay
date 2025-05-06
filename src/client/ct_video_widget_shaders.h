@@ -168,5 +168,42 @@ static const char* kI420FragmentShader = R"(
 
 )";
 
+static const char* kI444FragmentShader = R"(
+
+    #version 330
+
+    in vec3 outColor;
+    in vec2 outTex;
+
+    uniform sampler2D imageY;
+    uniform sampler2D imageU;
+    uniform sampler2D imageV;
+
+    out vec4 FragColor;
+
+    void main()
+    {   
+        float y, u, v, r, g, b;
+        y = texture(imageY, outTex).r;
+        u = texture(imageU, outTex).r;
+        v = texture(imageV, outTex).r;        
+        
+        y = 1.164 * (y - 16.0 / 255.0);
+        u = u - 128.0 / 255.0;
+        v = v - 128.0 / 255.0;
+
+        r = y + 1.596 * v;
+        g = y - 0.391 * u - 0.813 * v;
+        b = y + 2.018 * u;
+
+        //FragColor = vec4(r, g, b, 1.0); 
+        FragColor = vec4(r, g, b, 1.0);
+        //FragColor = vec4(1.0, outColor.r, outTex.g, 1.0);
+        //FragColor = vec4(0.2, 0.2, 0.3, 1.0);
+        //FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    }
+
+)";
+
 
 #endif // TEX_SHADER_H

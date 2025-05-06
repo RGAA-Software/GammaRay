@@ -8,6 +8,7 @@
 #include "ui/float_controller.h"
 #include "ui/float_controller_panel.h"
 #include "ct_client_context.h"
+#include "tc_common_new/log.h"
 
 
 namespace tc {
@@ -22,7 +23,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     main_vbox_layout->setSpacing(0);
     setLayout(main_vbox_layout);
 
-    video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kI420, this);
+    video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
     //video_widget_->setMouseTracking(true);
     //video_widget_->setFocusPolicy(Qt::StrongFocus);
     //video_widget_->setFocus();
@@ -58,8 +59,34 @@ void GameView::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
 }
 
+void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
+    if (kRawImageI420 == image->Format()) {
+
+        //LOGI("RefreshImage kRawImageI420");
+
+        RefreshI420Image(image);
+    }
+    else if (kRawImageI444 == image->Format()) {
+
+        //LOGI("RefreshImage kRawImageI444");
+
+        RefreshI444Image(image);
+    }
+}
+
 void GameView::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
+
+    if (video_widget_->GetDisplayImageFormat() != kRawImageI420) {
+        video_widget_->SetDisplayImageFormat(kRawImageI420);
+    }
     video_widget_->RefreshI420Image(image);
+}
+
+void GameView::RefreshI444Image(const std::shared_ptr<RawImage>& image) {
+    if (video_widget_->GetDisplayImageFormat() != kRawImageI444) {
+        video_widget_->SetDisplayImageFormat(kRawImageI444);
+    }
+    video_widget_->RefreshI444Image(image);
 }
 
 void GameView::RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info) {

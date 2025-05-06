@@ -9,6 +9,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/defer.h"
+#include "tc_common_new/string_ext.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "ffmpeg_encoder_plugin.h"
 
@@ -21,6 +22,7 @@ namespace tc
     }
 
     bool FFmpegEncoder::Init(const EncoderConfig& config, const std::string& monitor_name) {
+        InitLog();
         encoder_config_ = config;
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
         const AVCodec* encoder = avcodec_find_encoder(encoder_id);
@@ -42,6 +44,9 @@ namespace tc
         context_->framerate = { encoder_config_.fps, 1};
         context_->flags |= AV_CODEC_FLAG_LOW_DELAY;
         context_->pix_fmt = AV_PIX_FMT_YUV420P;
+        if (encoder_config_.enable_full_color_mode_) {
+            context_->pix_fmt = AV_PIX_FMT_YUV444P;
+        }
         context_->thread_count = std::min(16, (int)std::thread::hardware_concurrency());
         context_->thread_type = FF_THREAD_SLICE;
         context_->gop_size = gop_size_;
@@ -51,7 +56,7 @@ namespace tc
         LOGI("ffmpeg encoder config:");
         LOGI("bitrate: {}", context_->bit_rate);
         LOGI("format: {}", (config.codec_type == EVideoCodecType::kHEVC ? "HEVC" : "H264"));
-        LOGI("refresh rate(fps): {}", config.fps);
+        LOGI("refresh rate(fps): {}", encoder_config_.fps);
         LOGI("thread count: {}", context_->thread_count);
         LOGI("gop size: {}", context_->gop_size);
 
@@ -86,18 +91,20 @@ namespace tc
         return true;
     }
 
-    void FFmpegEncoder::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
-        auto beg = TimeUtil::GetCurrentTimestamp();
+    void FFmpegEncoder::Encode(const std::shared_ptr<Image>& image, uint64_t frame_index, const std::any& extra) {
+        if (!image) {
+            LOGE("image is nullptr!");
+            return;
+        }
+		auto beg = TimeUtil::GetCurrentTimestamp();
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
-        auto img_width = i420_image->width;
-        auto img_height = i420_image->height;
-        auto i420_data = i420_image->data;
+        auto img_width = image->width;
+        auto img_height = image->height;
+        auto image_data = image->data;
 
         // re-create when width/height changed
         // todo
-
         frame_->pts = (int64_t)frame_index;
-
         if (insert_idr_) {
             insert_idr_ = false;
             frame_->key_frame = 1;
@@ -107,16 +114,26 @@ namespace tc
             frame_->key_frame = 0;
             frame_->pict_type = AV_PICTURE_TYPE_NONE;
         }
-
         int y_size =  img_width * img_height;
         int uv_size = img_width * img_height / 4;
-        memcpy(frame_->data[0], i420_data->CStr(), y_size);
-        memcpy(frame_->data[1], i420_data->CStr() + y_size, uv_size);
-        memcpy(frame_->data[2], i420_data->CStr() + y_size + uv_size, uv_size);
+        if (RawImageType::kI420 == image->raw_img_type_) {
+            uv_size = img_width * img_height / 4;
+        }
+        else if (RawImageType::kI444 == image->raw_img_type_) {
+            LOGI("RawImageType::kI444");
+            uv_size = img_width * img_height;
+        }
+        memcpy(frame_->data[0], image_data->CStr(), y_size);
+        memcpy(frame_->data[1], image_data->CStr() + y_size, uv_size);
+        memcpy(frame_->data[2], image_data->CStr() + y_size + uv_size, uv_size);
 
         int send_result = avcodec_send_frame(context_, frame_);
+
+        //LOGI("avcodec_send_frame send_result: {}", send_result);
+
         while (send_result >= 0) {
             int receiveResult = avcodec_receive_packet(context_, packet_);
+            //LOGI("avcodec_receive_packet receiveResult: {}", receiveResult);
             if (receiveResult == AVERROR(EAGAIN) || receiveResult == AVERROR_EOF) {
                 break;
             }
@@ -140,6 +157,7 @@ namespace tc
             event->key_frame_ = key_frame;
             event->frame_index_ = frame_index;
             event->extra_ = extra;
+            event->frame_format_ = encoder_config_.enable_full_color_mode_ ? RawImageType::kI444 : RawImageType::kI420;
             plugin_->CallbackEvent(event);
 
             auto end = TimeUtil::GetCurrentTimestamp();
@@ -174,5 +192,21 @@ namespace tc
         }
         return result;
     }
-
+	
+    void FFmpegEncoder::InitLog() {
+        std::call_once(init_log_flag_, []() {
+            av_log_set_level(AV_LOG_WARNING);
+            av_log_set_callback([](void* ptr, int level, const char* fmt, va_list vl)
+                {
+                    static int print_prefix = 1;
+                    std::string line;
+                    line.resize(4096);
+                    av_log_format_line(ptr, level, fmt, vl, line.data(), line.size(), &print_prefix);
+                    line = StringExt::Trim(line);
+                    if (level <= AV_LOG_WARNING)
+                        LOGI("ffmpeg_wlog:{}", line.c_str());
+                }
+            );
+        });
+    }
 }

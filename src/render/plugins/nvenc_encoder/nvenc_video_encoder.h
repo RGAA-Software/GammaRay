@@ -39,7 +39,7 @@ namespace tc
         void Shutdown();
         void FillEncodeConfig(NV_ENC_INITIALIZE_PARAMS& initialize_params, int refreshRate, int renderWidth, int renderHeight, uint64_t bitrate_bps);
         static NV_ENC_BUFFER_FORMAT DxgiFormatToNvEncFormat(DXGI_FORMAT dxgiFormat);
-
+        bool CreateNvEncoder();
     private:
         std::shared_ptr<NvEncoder> nv_encoder_ = nullptr;
         EncoderConfig encoder_config_;
@@ -52,6 +52,8 @@ namespace tc
 
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
         std::deque<int32_t> encode_durations_;
+
+        NV_ENC_BUFFER_FORMAT e_buffer_format_;
 
     };
 

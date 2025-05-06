@@ -217,6 +217,12 @@ public:
     */
     virtual ~NvEncoder();
 
+    NV_ENCODE_API_FUNCTION_LIST GetNVENC() {
+        return m_nvenc;
+    }
+
+    bool SupportYuv444EncodeH264();
+
 public:
     /**
     *  @brief This a static function to get chroma offsets for YUV planar formats.

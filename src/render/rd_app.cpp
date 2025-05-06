@@ -364,18 +364,19 @@ namespace tc
     }
 
     void RdApplication::StartProcessWithHook() {
+#if 0   // to do, 目前用不到暂时注释掉
         msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg([=]() -> tc::VideoType {
-                return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
-            } (), msg.image_->data, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.key_frame_, msg.monitor_name_,
+                return (Encoder::EncoderFormat)msg.frame_encode_type_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
+            } (), msg.data_, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.key_frame_, msg.monitor_name_,
             msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_);
 
             if (settings_->app_.debug_enabled_) {
                 if (!debug_encode_file_) {
                     debug_encode_file_ = File::OpenForWriteB("1.debug_after_encode.h264");
                 }
-                debug_encode_file_->Append(msg.image_->data->AsString());
-                LOGI("encoded frame callback, size: {}x{}, buffer size: {}", msg.frame_width_, msg.frame_height_, msg.image_->data->Size());
+                debug_encode_file_->Append(msg.data_->AsString());
+                LOGI("encoded frame callback, size: {}x{}, buffer size: {}", msg.frame_width_, msg.frame_height_, msg.data_->Size());
             }
             PostNetMessage(net_msg);
         });
@@ -393,8 +394,8 @@ namespace tc
             fn_start_process();
             return;
         }
-
         fn_start_process();
+#endif
     }
 
     void RdApplication::StartProcessWithScreenCapture() {

@@ -56,25 +56,36 @@ namespace tc
         MsgVideoFrameEncoded msg {
             .frame_width_ = static_cast<uint32_t>(frame_width),
             .frame_height_ = static_cast<uint32_t>(frame_height),
-            .frame_format_ = (uint32_t)event->type_,
+            .frame_encode_type_ = (uint32_t)event->type_,
             .frame_index_ = frame_index,
             .key_frame_ = key,
-            .image_ = Image::Make(event->data_, frame_width, frame_height),
+            .data_ = event->data_,
             .monitor_name_ = last_capture_video_frame_.display_name_,
             .monitor_left_ = last_capture_video_frame_.left_,
             .monitor_top_ = last_capture_video_frame_.top_,
             .monitor_right_ = last_capture_video_frame_.right_,
             .monitor_bottom_ = last_capture_video_frame_.bottom_,
+            .frame_image_format_ = event->frame_format_,
         };
         //context_->SendAppMessage(msg);
 
         auto video_type = [=]() -> tc::VideoType {
-            return (Encoder::EncoderFormat)msg.frame_format_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
+            return (Encoder::EncoderFormat)msg.frame_encode_type_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
         } ();
-        auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.image_->data,msg.frame_index_, msg.frame_width_,
-                                                          msg.frame_height_, msg.key_frame_, msg.monitor_name_,
-                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_, last_capture_video_frame_.monitor_index_);
 
+        auto img_format = [=]() -> tc::EImageFormat {
+            if (RawImageType::kI420 == msg.frame_image_format_) {
+                return tc::EImageFormat::kI420;
+            }
+            else if (RawImageType::kI444 == msg.frame_image_format_) {
+                return tc::EImageFormat::kI444;
+            }
+            return tc::EImageFormat::kI420;
+        }();
+
+        auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.data_, msg.frame_index_, msg.frame_width_,
+                                                          msg.frame_height_, msg.key_frame_, msg.monitor_name_,
+                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_, img_format, last_capture_video_frame_.monitor_index_);
         // statistics
         RdStatistics::Instance()->AppendMediaBytes(net_msg.size());
 

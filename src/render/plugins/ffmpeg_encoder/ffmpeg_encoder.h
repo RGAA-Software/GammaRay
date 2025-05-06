@@ -7,6 +7,7 @@
 
 #include <any>
 #include <memory>
+#include <mutex>
 #include "ffmpeg_encoder_defs.h"
 #include "tc_encoder_new/encoder_config.h"
 #include "tc_common_new/fps_stat.h"
@@ -26,7 +27,7 @@ namespace tc
     public:
         explicit FFmpegEncoder(FFmpegEncoderPlugin* plugin);
         bool Init(const EncoderConfig& config, const std::string& monitor_name);
-        void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
+        void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index, const std::any& extra);
         void InsertIdr();
         void Exit();
         int32_t GetEncodeFps();
@@ -43,6 +44,9 @@ namespace tc
         EncoderConfig encoder_config_;
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
         std::deque<int32_t> encode_durations_;
+        std::once_flag init_log_flag_;
+    private:
+        void InitLog();
     };
 
 }

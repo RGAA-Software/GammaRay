@@ -55,7 +55,7 @@ namespace tc
     std::string NetMessageMaker::MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
                                                    uint64_t frame_index, int frame_width, int frame_height, bool key,
                                                    const std::string& display_name, int mon_left,
-                                                   int mon_top, int mon_right, int mon_bottom, int mon_index) {
+                                                   int mon_top, int mon_right, int mon_bottom, const tc::EImageFormat& img_format, int mon_index) {
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kVideoFrame);
         auto frame = new VideoFrame();
@@ -71,6 +71,7 @@ namespace tc
         frame->set_mon_right(mon_right);
         frame->set_mon_bottom(mon_bottom);
         frame->set_mon_index(mon_index);
+        frame->set_image_format(img_format);
         msg->set_allocated_video_frame(frame);
         return msg->SerializeAsString();
     }

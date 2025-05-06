@@ -9,6 +9,7 @@
 
 #include "tc_steam_manager_new/steam_entities.h"
 #include "tc_controller/vigem/vigem_defs.h"
+#include "tc_common_new/image.h"
 
 namespace tc
 {
@@ -32,15 +33,17 @@ namespace tc
     public:
         uint32_t frame_width_ = 0;
         uint32_t frame_height_ = 0;
-        uint32_t frame_format_ = 0;
+        uint32_t frame_encode_type_ = 0;
         uint64_t frame_index_ = 0;
         bool key_frame_ = false;
-        std::shared_ptr<Image> image_ = nullptr;
+        std::shared_ptr<Data> data_ = nullptr;
         std::string monitor_name_;
         int monitor_left_ = 0;
         int monitor_top_ = 0;
         int monitor_right_ = 0;
         int monitor_bottom_ = 0;
+
+        RawImageType frame_image_format_ = RawImageType::kI420;
     };
 
     class MsgAudioFrameEncoded {

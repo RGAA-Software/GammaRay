@@ -10,10 +10,12 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
+#include "tc_common_new/file.h"
 #include "rd_context.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_frame_processor_plugin.h"
 #include <libyuv/convert.h>
+#include <libyuv/convert_from_argb.h>
 #include <atlcomcli.h>
 #include "settings/rd_settings.h"
 
@@ -27,7 +29,9 @@ namespace tc
                                          const std::string& monitor_name,
                                          bool resize,
                                          int resize_width,
-                                         int resize_height) {
+                                         int resize_height,
+                                         bool enable_full_color_mode)
+    {
         settings_ = RdSettings::Instance();
         context_ = ctx;
         d3d11_device_ = d3d11_device;
@@ -37,6 +41,7 @@ namespace tc
         resize_ = resize;
         resize_width_ = resize_width;
         resize_height_ = resize_height;
+        enable_full_color_mode_ = enable_full_color_mode;
         yuv_converter_thread_ = Thread::Make("video frame carrier", 1024);
         yuv_converter_thread_->Poll();
         plugin_manager_ = context_->GetPluginManager();
@@ -138,7 +143,7 @@ namespace tc
         HRESULT res;
         res = d3d11_device_->OpenSharedResource(handle, IID_PPV_ARGS(sharedTexture.GetAddressOf()));
         if (FAILED(res)) {
-            LOGE("OpenSharedResource failed: {}", res);
+            LOGE("OpenSharedResource failed: {:x}", (uint32_t)res);
             return nullptr;
         }
         return sharedTexture;
@@ -214,8 +219,14 @@ namespace tc
         if (ok) {
             rgba_cbk(raw_image_rgba_);
         }
+        
+        if (enable_full_color_mode_) {
+            ConvertToYuv444(std::move(yuv_cbk));
+        }
+        else {
+            ConvertToYuv420(std::move(yuv_cbk));
+        }
 
-        ConvertToYuv(std::move(yuv_cbk));
         return ok;
     }
 
@@ -235,14 +246,16 @@ namespace tc
         return true;
     }
 
-    void VideoFrameCarrier::ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
+    void VideoFrameCarrier::ConvertToYuv420(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
         auto task = [=, this]() {
             auto beg = TimeUtil::GetCurrentTimestamp();
             if (!raw_image_rgba_ || !raw_image_rgba_->GetData()) {
                 return;
             }
             if (!raw_image_yuv_ ||
-                (raw_image_yuv_->GetWidth() != raw_image_rgba_->GetWidth() || raw_image_yuv_->GetHeight() != raw_image_yuv_->GetHeight())) {
+                (raw_image_yuv_->GetWidth() != raw_image_rgba_->GetWidth() || raw_image_yuv_->GetHeight() != raw_image_yuv_->GetHeight()) ||
+                raw_image_yuv_->raw_img_type_ != RawImageType::kI420) 
+            {
                 raw_image_yuv_ = Image::Make(Data::Make(nullptr, raw_image_rgba_->GetWidth() * raw_image_rgba_->GetHeight() * 1.5),
                                              raw_image_rgba_->GetWidth(), raw_image_rgba_->GetHeight(), RawImageType::kI420);
             }
@@ -267,6 +280,65 @@ namespace tc
                 libyuv::ARGBToI420(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
             }
 
+#if 0   // save to file
+            static int index = 0;
+            auto file = File::OpenForWrite("ConvertToYuv_" +  std::to_string(index % 10) + ".yuv420");
+            if (file) {
+                file->Write(0, raw_image_yuv_->GetData());
+            }
+            ++index;
+#endif
+
+            yuv_cbk(raw_image_yuv_);
+        };
+        yuv_converter_thread_->Post(std::move(task));
+
+    }
+
+    void VideoFrameCarrier::ConvertToYuv444(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
+        auto task = [=, this]() {
+            auto beg = TimeUtil::GetCurrentTimestamp();
+
+            if (!raw_image_rgba_ || !raw_image_rgba_->GetData()) {
+                return;
+            }
+
+            if (!raw_image_yuv_ ||
+                (raw_image_yuv_->GetWidth() != raw_image_rgba_->GetWidth() || raw_image_yuv_->GetHeight() != raw_image_yuv_->GetHeight()) ||
+                raw_image_yuv_->raw_img_type_ != RawImageType::kI444)
+            {
+                raw_image_yuv_ = Image::Make(Data::Make(nullptr, raw_image_rgba_->GetWidth() * raw_image_rgba_->GetHeight() * 3),
+                    raw_image_rgba_->GetWidth(), raw_image_rgba_->GetHeight(), RawImageType::kI444);
+            }
+            int width = raw_image_rgba_->GetWidth();
+            int height = raw_image_rgba_->GetHeight();
+            size_t pixel_size = width * height;
+
+            const int uv_stride = width;
+            uint8_t* y = (uint8_t*)raw_image_yuv_->GetData()->DataAddr();
+            uint8_t* u = y + pixel_size;
+            uint8_t* v = u + pixel_size;
+
+            auto pitch = raw_image_rgba_->GetWidth() * 4;
+            auto data_buffer = (uint8_t*)raw_image_rgba_->GetData()->DataAddr();
+            if (DXGI_FORMAT_B8G8R8A8_UNORM == raw_image_rgba_format_) {
+                libyuv::ARGBToI444(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
+            }
+            else if (DXGI_FORMAT_R8G8B8A8_UNORM == raw_image_rgba_format_) {
+                libyuv::ARGBToI444(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
+            }
+            else {
+                libyuv::ARGBToI444(data_buffer, pitch, y, width, u, uv_stride, v, uv_stride, width, height);
+            }
+
+#if 0   // save yuv file
+            static int index = 0;
+            auto yuv444_file = File::OpenForWrite("ConvertToYuv_" + std::to_string(index % 10) + ".yuv444");
+            if (yuv444_file) {
+                yuv444_file->Write(0, raw_image_yuv_->GetData());
+            }
+            ++index;
+#endif
             yuv_cbk(raw_image_yuv_);
         };
         yuv_converter_thread_->Post(std::move(task));

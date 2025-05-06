@@ -9,6 +9,7 @@
 #include "tc_common_new/string_ext.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "nvenc_encoder_plugin.h"
+#include "nvEncodeAPI.h"
 
 namespace tc
 {
@@ -24,18 +25,24 @@ namespace tc
 
     bool NVENCVideoEncoder::Initialize(const tc::EncoderConfig& config) {
         encoder_config_ = config;
-        auto format = DxgiFormatToNvEncFormat(static_cast<DXGI_FORMAT>(config.texture_format));
+        e_buffer_format_ = DxgiFormatToNvEncFormat(static_cast<DXGI_FORMAT>(encoder_config_.texture_format));
+       
         LOGI("input_frame_width_ = {}, input_frame_height_ = {}, format = {:x} , m_pD3DRender->GetDevice() = {}",
-             config.width, config.height, (int) format, (void *) d3d11_device_.Get());
-        try {
-            nv_encoder_ = std::make_shared<NvEncoderD3D11>(d3d11_device_.Get(), config.width, config.height, format, 0);
-        } catch (const NVENCException& e) {
-            nv_encoder_ = nullptr;
-            LOGI("NVENC NvEncoderD3D11 failed: {} => {}", e.getErrorCode(), e.what());
+             config.width, config.height, (int)e_buffer_format_, (void *) d3d11_device_.Get());
+
+        if (!CreateNvEncoder()) {
             return false;
         }
+
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
         NV_ENC_CONFIG encode_config = {NV_ENC_CONFIG_VER};
+        bool supprot_yuv444 = nv_encoder_->SupportYuv444EncodeH264();
+        LOGI("NVENC NvEncoderD3D11 supprot_yuv444: {}", (int)supprot_yuv444);
+
+        if (encoder_config_.enable_full_color_mode_ && supprot_yuv444) { // 虽然这样设置了, 但实际在264编码中，输出的编码帧解码后还是yuv420
+            encode_config.profileGUID = NV_ENC_H264_PROFILE_HIGH_444_GUID;
+            encode_config.encodeCodecConfig.h264Config.chromaFormatIDC = 3;
+        }
 
         encode_config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;
         encode_config.rcParams.averageBitRate = 10 * 1024 * 1024;
@@ -369,7 +376,7 @@ namespace tc
         switch (dxgiFormat) {
             case DXGI_FORMAT_NV12:
                 return NV_ENC_BUFFER_FORMAT_NV12;
-            case DXGI_FORMAT_B8G8R8A8_UNORM:
+            case DXGI_FORMAT_B8G8R8A8_UNORM: // dda 
                 return NV_ENC_BUFFER_FORMAT_ARGB;
             case DXGI_FORMAT_R8G8B8A8_UNORM:
             case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
@@ -390,7 +397,19 @@ namespace tc
         for (const auto& item : encode_durations_) {
             result.push_back(item);
         }
-        return result;
+		return result;
+	}
+
+    bool NVENCVideoEncoder::CreateNvEncoder() {
+        try {
+            nv_encoder_ = std::make_shared<NvEncoderD3D11>(d3d11_device_.Get(), encoder_config_.width, encoder_config_.height, e_buffer_format_, 0);
+        }
+        catch (const NVENCException& e) {
+            nv_encoder_ = nullptr;
+            LOGI("NVENC NvEncoderD3D11 failed: {} => {}", e.getErrorCode(), e.what());
+            return false;
+        }
+        return true;
     }
 
 } // namespace tc

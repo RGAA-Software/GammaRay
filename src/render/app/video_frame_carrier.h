@@ -14,6 +14,7 @@
 #include <wrl/client.h>
 #endif
 #include <mutex>
+#include "tc_common_new/image.h"
 
 namespace tc
 {
@@ -37,7 +38,8 @@ namespace tc
                                    const std::string& monitor_name,
                                    bool resize,
                                    int resize_width,
-                                   int resize_height);
+                                   int resize_height, 
+                                   bool enable_full_color_mode = false);
 
         bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
@@ -56,7 +58,8 @@ namespace tc
         bool CopyID3D11Texture2D(const ComPtr<ID3D11Texture2D>& shared_texture2d);
         ComPtr<ID3D11Texture2D> OpenSharedTexture(HANDLE handle);
         bool CopyToRawImage(const uint8_t* data, int row_pitch_bytes, int height);
-        void ConvertToYuv(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
+        void ConvertToYuv420(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
+        void ConvertToYuv444(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
         [[nodiscard]] int GetRawImageType() const;
 
     private:
@@ -81,8 +84,12 @@ namespace tc
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         GrFrameProcessorPlugin* frame_resize_plugin_ = nullptr;
 
+
         uint64_t adapter_uid_ = 0;
         std::string monitor_name_;
+
+        bool enable_full_color_mode_ = false;
+
     };
 
 }

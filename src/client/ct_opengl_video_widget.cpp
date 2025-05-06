@@ -62,14 +62,17 @@ namespace tc
 		auto vertex_shader = kMainVertexShader;
 		char* fragment_shader = nullptr;
 
-		if (raw_image_format_ == RawImageFormat::kNV12) {
+		if (raw_image_format_ == RawImageFormat::kRawImageNV12) {
 			fragment_shader = const_cast<char*>(kNV12FragmentShader);
 		}
-		else if (raw_image_format_ == RawImageFormat::kRGB || raw_image_format_ == RawImageFormat::kRGBA) {
+		else if (raw_image_format_ == RawImageFormat::kRawImageRGB || raw_image_format_ == RawImageFormat::kRawImageRGBA) {
 			fragment_shader = const_cast<char*>(kRGBFragmentShader);
 		}
-		else if (raw_image_format_ == RawImageFormat::kI420) {
+		else if (raw_image_format_ == RawImageFormat::kRawImageI420) {
 			fragment_shader = const_cast<char*>(kI420FragmentShader);
+		}
+		else if (raw_image_format_ == RawImageFormat::kRawImageI444) {
+			fragment_shader = const_cast<char*>(kI444FragmentShader);
 		}
 		if (!fragment_shader) {
 			return;
@@ -170,12 +173,15 @@ namespace tc
         auto target_u_size = width/2 * height/2;
 		if (!y_buffer_ || y_buffer_->Size() != y_buf_size) {
 			y_buffer_ = Data::Make(y_buf, y_buf_size);
+			need_create_texture_ = true;
 		}
 		if (!u_buffer_ || u_buffer_->Size() != u_buf_size) {
 			u_buffer_ = Data::Make(u_buf, u_buf_size);
+			need_create_texture_ = true;
 		}
 		if (!v_buffer_ || v_buffer_->Size() != v_buf_size) {
 			v_buffer_ = Data::Make(v_buf, v_buf_size);
+			need_create_texture_ = true;
 		}
 	
 		if (tex_width_ != width || tex_height_ != height) {
@@ -189,6 +195,65 @@ namespace tc
 		tex_height_ = height;
 
         this->Update();
+	}
+
+	void OpenGLVideoWidget::RefreshI444Image(const std::shared_ptr<RawImage>& image) {
+		std::lock_guard<std::mutex> guard(buf_mtx_);
+		int y_buf_size = image->img_width * image->img_height;
+		int uv_buf_size = y_buf_size;
+		char* buf = image->Data();
+#if 0   // debug: save yuv file
+		{
+			std::string img_data;
+			img_data.resize(image->Size());
+			memcpy(img_data.data(), buf, image->Size());
+			static int index = 0;
+			auto yuv444_file = File::OpenForWrite("RefreshI444Image_" + std::to_string(index % 10) + ".yuv444");
+			if (yuv444_file) {
+				yuv444_file->Write(0, img_data);
+			}
+			++index;
+		}
+#endif
+		RefreshI444Buffer(
+			buf, y_buf_size,
+			buf + y_buf_size, uv_buf_size,
+			buf + y_buf_size + uv_buf_size, uv_buf_size,
+			image->img_width, image->img_height
+		);
+	}
+
+	void OpenGLVideoWidget::RefreshI444Buffer(const char* y_buf, int y_buf_size,
+		const char* u_buf, int u_buf_size,
+		const char* v_buf, int v_buf_size,
+		int width, int height) {
+		auto target_y_size = width * height;
+		auto target_u_size = width * height;
+
+		if (!y_buffer_ || y_buffer_->Size() != y_buf_size) {
+			y_buffer_ = Data::Make(y_buf, y_buf_size);
+			need_create_texture_ = true;
+		}
+		if (!u_buffer_ || u_buffer_->Size() != u_buf_size) {
+			u_buffer_ = Data::Make(u_buf, u_buf_size);
+			need_create_texture_ = true;
+		}
+		if (!v_buffer_ || v_buffer_->Size() != v_buf_size) {
+			v_buffer_ = Data::Make(v_buf, v_buf_size);
+			need_create_texture_ = true;
+		}
+
+		if (tex_width_ != width || tex_height_ != height) {
+			need_create_texture_ = true;
+		}
+		memcpy(y_buffer_->DataAddr(), y_buf, y_buf_size);
+		memcpy(u_buffer_->DataAddr(), u_buf, u_buf_size);
+		memcpy(v_buffer_->DataAddr(), v_buf, v_buf_size);
+
+		tex_width_ = width;
+		tex_height_ = height;
+
+		this->Update();
 	}
 
 	void OpenGLVideoWidget::resizeEvent(QResizeEvent* event) {
@@ -216,7 +281,7 @@ namespace tc
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		if (raw_image_format_ == RawImageFormat::kRGBA || raw_image_format_ == RawImageFormat::kRGB) {
+		if (raw_image_format_ == RawImageFormat::kRawImageRGBA || raw_image_format_ == RawImageFormat::kRawImageRGB) {
 			if (rgb_buffer_ && need_create_texture_) {
 				need_create_texture_ = false;
 				InitRGBATexture();
@@ -227,7 +292,7 @@ namespace tc
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RGB, GL_UNSIGNED_BYTE, rgb_buffer_);
 			}
 		}
-		else if (raw_image_format_ == RawImageFormat::kI420) {
+		else if (raw_image_format_ == RawImageFormat::kRawImageI420) {
 			if (y_buffer_ && u_buffer_ && v_buffer_ && need_create_texture_) {
 				need_create_texture_ = false;
 				InitI420Texture();
@@ -249,15 +314,42 @@ namespace tc
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_ / 2, tex_height_ / 2, GL_RED, GL_UNSIGNED_BYTE, v_buffer_->CStr());
 			}
 		}
+		else if (raw_image_format_ == RawImageFormat::kRawImageI444) {
+			if (y_buffer_ && u_buffer_ && v_buffer_ && need_create_texture_) {
+				need_create_texture_ = false;
+				InitI444Texture();
+			}
 
-		if (raw_image_format_ == RawImageFormat::kRGB || raw_image_format_ == RawImageFormat::kRGBA) {
+			if (y_buffer_) {
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, y_texture_id_);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, y_buffer_->CStr());
+			}
+			if (u_buffer_) {
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, u_texture_id_);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, u_buffer_->CStr());
+			}
+			if (v_buffer_) {
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, v_texture_id_);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, v_buffer_->CStr());
+			}
+		}
+
+		if (raw_image_format_ == RawImageFormat::kRawImageRGB || raw_image_format_ == RawImageFormat::kRawImageRGBA) {
 			shader_program_->SetUniform1i("image1", 0);
 		}
-		else if (raw_image_format_ == RawImageFormat::kNV12) {
+		else if (raw_image_format_ == RawImageFormat::kRawImageNV12) {
 			shader_program_->SetUniform1i("image1", 0);
 			shader_program_->SetUniform1i("image2", 1);
 		}
-		else if (raw_image_format_ == RawImageFormat::kI420) {
+		else if (raw_image_format_ == RawImageFormat::kRawImageI420) {
+			shader_program_->SetUniform1i("imageY", 0);
+			shader_program_->SetUniform1i("imageU", 1);
+			shader_program_->SetUniform1i("imageV", 2);
+		}
+		else if (raw_image_format_ == RawImageFormat::kRawImageI444) {
 			shader_program_->SetUniform1i("imageY", 0);
 			shader_program_->SetUniform1i("imageU", 1);
 			shader_program_->SetUniform1i("imageV", 2);
@@ -313,6 +405,24 @@ namespace tc
 		create_luminance_texture(v_texture_id_, tex_width_, tex_height_, true);
 
         LOGI("Init I420 texture : {} x {} ", tex_width_, tex_height_);
+	}
+
+	void OpenGLVideoWidget::InitI444Texture() {
+		auto create_luminance_texture = [this](GLuint& tex_id, int width, int height) {
+			glGenTextures(1, &tex_id);
+			glBindTexture(GL_TEXTURE_2D, tex_id);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			};
+		create_luminance_texture(y_texture_id_, tex_width_, tex_height_);
+		create_luminance_texture(u_texture_id_, tex_width_, tex_height_);
+		create_luminance_texture(v_texture_id_, tex_width_, tex_height_);
+
+		LOGI("Init I444 texture : {} x {} ", tex_width_, tex_height_);
 	}
 
     void OpenGLVideoWidget::Update() {
@@ -447,4 +557,12 @@ namespace tc
         doneCurrent();
     }
 
+
+	RawImageFormat OpenGLVideoWidget::GetDisplayImageFormat() {
+		return raw_image_format_;
+	}
+
+	void OpenGLVideoWidget::SetDisplayImageFormat(RawImageFormat format) {
+		raw_image_format_ = format;
+	}
 }

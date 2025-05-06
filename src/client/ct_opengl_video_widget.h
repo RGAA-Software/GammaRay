@@ -39,12 +39,16 @@ namespace tc
         void RefreshRGBBuffer(const char *buf, int width, int height, int channel);
         void RefreshI420Image(const std::shared_ptr<RawImage> &image);
         void RefreshI420Buffer(const char *y, int y_size, const char *u, int u_size, const char *v, int v_size, int width, int height);
+        void RefreshI444Image(const std::shared_ptr<RawImage>& image);
+        void RefreshI444Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
         void RefreshCursor(int x, int y, int tex_left, int text_right, int hpx, int hpy, const std::shared_ptr<RawImage> &cursor);
         void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo &mon_info);
         void Exit();
 
         int GetCapturingMonitorWidth();
         int GetCapturingMonitorHeight();
+        RawImageFormat GetDisplayImageFormat();
+        void SetDisplayImageFormat(RawImageFormat format);
 
     protected:
         void resizeEvent(QResizeEvent *event) override;
@@ -62,6 +66,7 @@ namespace tc
     private:
         void InitRGBATexture();
         void InitI420Texture();
+        void InitI444Texture();
         void Update();
 
     private:

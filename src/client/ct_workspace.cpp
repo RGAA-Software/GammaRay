@@ -225,12 +225,12 @@ namespace tc
                 has_frame_arrived_ = true;
                 UpdateVideoWidgetSize();
             }
-            //LOGI("SdkCaptureMonitorInfo mon_index_: {}", info.mon_index_);
+            //LOGI("SdkCaptureMonitorInfo mon_index_: {}, w: {}, h: {}", info.mon_index_, image->img_width, image->img_height);
             if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
                 if (game_views_.size() > 0) {
                     if (game_views_[kMainGameViewIndex]) {
                         game_views_[kMainGameViewIndex]->RefreshCapturedMonitorInfo(info);
-                        game_views_[kMainGameViewIndex]->RefreshI420Image(image);
+                        game_views_[kMainGameViewIndex]->RefreshImage(image);
                     }
                 }
             }
@@ -238,7 +238,7 @@ namespace tc
                 if (game_views_.size() > info.mon_index_) {
                     if (game_views_[info.mon_index_]) {
                         game_views_[info.mon_index_]->RefreshCapturedMonitorInfo(info);
-                        game_views_[info.mon_index_]->RefreshI420Image(image);
+                        game_views_[info.mon_index_]->RefreshImage(image);
                         if (!game_views_[info.mon_index_]->GetActiveStatus()) {
                             game_views_[info.mon_index_]->SetActiveStatus(true);
                             UpdateGameViewsStatus();

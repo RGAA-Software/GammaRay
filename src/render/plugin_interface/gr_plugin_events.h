@@ -11,6 +11,7 @@
 #include "gr_net_plugin.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/image.h"
 
 namespace tc
 {
@@ -105,6 +106,7 @@ namespace tc
         uint32_t frame_height_ = 0;
         bool key_frame_ = false;
         uint64_t frame_index_ = 0;
+        RawImageType frame_format_ = RawImageType::kI420;
     };
 
     //
