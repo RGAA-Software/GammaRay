@@ -1,4 +1,4 @@
-project(GammaRayRender)
+project(GammaRayRender VERSION ${TC_APP_VERSION} LANGUAGES CXX)
 
 add_subdirectory(settings)
 add_subdirectory(plugin_interface)
@@ -12,6 +12,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/include)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd)
 include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/asio2/3rd/asio)
+
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/rd_icon.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/rd_icon.rc"
+        @ONLY
+)
 
 set(SRCS
         rd_app.cpp
@@ -51,7 +57,7 @@ target_link_libraries(main app_manager libprotobuf tc_message Dexode::EventBus)
 target_link_libraries(main Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network)
 
-add_executable(${PROJECT_NAME} WIN32 rd_main.cpp)
+add_executable(${PROJECT_NAME} WIN32 rd_main.cpp ${CMAKE_CURRENT_BINARY_DIR}/rd_icon.rc)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_encoder_new tc_steam_manager_new tc_vigem legacy_encoder tc_plugin) # tc_rtc
 target_link_libraries(${PROJECT_NAME} sqlite_orm EasyHook64 gflags::gflags leveldb)

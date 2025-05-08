@@ -1,0 +1,40 @@
+1 VERSIONINFO
+ FILEVERSION @PROJECT_VERSION_MAJOR@, @PROJECT_VERSION_MINOR@, @PROJECT_VERSION_PATCH@
+ PRODUCTVERSION @PROJECT_VERSION_MAJOR@, @PROJECT_VERSION_MINOR@, @PROJECT_VERSION_PATCH@
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004b0"
+        BEGIN
+            VALUE "CompanyName", "RGAA"
+            VALUE "FileDescription", "GammaRay Render Panel"
+            VALUE "FileVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+            VALUE "InternalName", "GammaRay.exe"
+            VALUE "LegalCopyright", "Copyright (c) 2022-2025 RGAA <https://github.com/rgaa-software>"
+            VALUE "OriginalFilename", "GammaRay.exe"
+            VALUE "ProductName", "GammaRay"
+            VALUE "ProductVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1200
+    END
+END
+
+// RCDATA
+//IDR_USB_IDS             RCDATA                  "xxx.ids"
+
+// ICON
+IDI_ICON1 ICON DISCARDABLE "icon.ico"
+
+

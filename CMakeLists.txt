@@ -4,8 +4,7 @@ include(env_settings.cmake)
 set(CMAKE_PREFIX_PATH ${QT_ROOT}/lib/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
-#project(GammaRay VERSION 0.1 LANGUAGES CXX)
-project(GammaRay)
+project(GammaRay VERSION ${TC_APP_VERSION} LANGUAGES CXX)
 
 set(BUILD_FROM "IDE" CACHE STRING "Build from")
 set(BUILD_TYPE_PATH "")
@@ -36,6 +35,13 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core
 find_package(SDL2 CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/app_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/app_config.h)
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/icon.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/icon.rc"
+        @ONLY
+)
 
 include_directories(${VK_SDK})
 include_directories(${CMAKE_SOURCE_DIR}/)
@@ -148,7 +154,7 @@ add_executable(${PROJECT_NAME} WIN32
         ${RES}
         ${MAIN_SRCS}
         ${NETWORK_SRCS}
-        icon.rc
+        ${CMAKE_CURRENT_BINARY_DIR}/icon.rc
         ${TS_FILES}
         ${SERVICE_MGR_SRCS}
         ${DEVICE_LIST_SRCS}
