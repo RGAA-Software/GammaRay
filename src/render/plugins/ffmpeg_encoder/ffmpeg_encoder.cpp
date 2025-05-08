@@ -27,8 +27,8 @@ namespace tc
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
         const AVCodec* encoder = avcodec_find_encoder(encoder_id);
 
-        context_ = avcodec_alloc_context3(encoder);
-        if (!context_) {
+        codec_ctx_ = avcodec_alloc_context3(encoder);
+        if (!codec_ctx_) {
             LOGE("avcodec_alloc_context3 error!");
             return false;
         }
@@ -38,27 +38,27 @@ namespace tc
             encoder_config_.fps = 60;
         }
 
-        context_->width = encoder_config_.encode_width;
-        context_->height = encoder_config_.encode_height;
-        context_->time_base = { 1, encoder_config_.fps };
-        context_->framerate = { encoder_config_.fps, 1};
-        context_->flags |= AV_CODEC_FLAG_LOW_DELAY;
-        context_->pix_fmt = AV_PIX_FMT_YUV420P;
+        codec_ctx_->width = encoder_config_.encode_width;
+        codec_ctx_->height = encoder_config_.encode_height;
+        codec_ctx_->time_base = { 1, encoder_config_.fps };
+        codec_ctx_->framerate = { encoder_config_.fps, 1};
+        codec_ctx_->flags |= AV_CODEC_FLAG_LOW_DELAY;
+        codec_ctx_->pix_fmt = AV_PIX_FMT_YUV420P;
         if (encoder_config_.enable_full_color_mode_) {
-            context_->pix_fmt = AV_PIX_FMT_YUV444P;
+            codec_ctx_->pix_fmt = AV_PIX_FMT_YUV444P;
         }
-        context_->thread_count = std::min(16, (int)std::thread::hardware_concurrency());
-        context_->thread_type = FF_THREAD_SLICE;
-        context_->gop_size = gop_size_;
-        context_->max_b_frames = 0;
-        context_->bit_rate = bitrate_;
+        codec_ctx_->thread_count = std::min(16, (int)std::thread::hardware_concurrency());
+        codec_ctx_->thread_type = FF_THREAD_SLICE;
+        codec_ctx_->gop_size = gop_size_;
+        codec_ctx_->max_b_frames = 0;
+        codec_ctx_->bit_rate = bitrate_;
 
         LOGI("ffmpeg encoder config:");
-        LOGI("bitrate: {}", context_->bit_rate);
+        LOGI("bitrate: {}", codec_ctx_->bit_rate);
         LOGI("format: {}", (config.codec_type == EVideoCodecType::kHEVC ? "HEVC" : "H264"));
         LOGI("refresh rate(fps): {}", encoder_config_.fps);
-        LOGI("thread count: {}", context_->thread_count);
-        LOGI("gop size: {}", context_->gop_size);
+        LOGI("thread count: {}", codec_ctx_->thread_count);
+        LOGI("gop size: {}", codec_ctx_->gop_size);
 
         AVDictionary* param = nullptr;
         if(encoder_id == AV_CODEC_ID_H264) {
@@ -74,16 +74,16 @@ namespace tc
             av_dict_set(&param, "tune", "zero-latency", 0);
         }
 
-        auto ret = avcodec_open2(context_, encoder, &param);
+        auto ret = avcodec_open2(codec_ctx_, encoder, &param);
         if (ret != 0) {
             LOGE("avcodec_open2 error : {}", ret);
             return false;
         }
 
         frame_ = av_frame_alloc();
-        frame_->width = context_->width;
-        frame_->height = context_->height;
-        frame_->format = context_->pix_fmt;
+        frame_->width = codec_ctx_->width;
+        frame_->height = codec_ctx_->height;
+        frame_->format = codec_ctx_->pix_fmt;
 
         av_frame_get_buffer(frame_, 0);
         packet_ = av_packet_alloc();
@@ -127,12 +127,12 @@ namespace tc
         memcpy(frame_->data[1], image_data->CStr() + y_size, uv_size);
         memcpy(frame_->data[2], image_data->CStr() + y_size + uv_size, uv_size);
 
-        int send_result = avcodec_send_frame(context_, frame_);
+        int send_result = avcodec_send_frame(codec_ctx_, frame_);
 
         //LOGI("avcodec_send_frame send_result: {}", send_result);
 
         while (send_result >= 0) {
-            int receiveResult = avcodec_receive_packet(context_, packet_);
+            int receiveResult = avcodec_receive_packet(codec_ctx_, packet_);
             //LOGI("avcodec_receive_packet receiveResult: {}", receiveResult);
             if (receiveResult == AVERROR(EAGAIN) || receiveResult == AVERROR_EOF) {
                 break;
@@ -178,7 +178,12 @@ namespace tc
     }
 
     void FFmpegEncoder::Exit() {
-
+        av_packet_unref(packet_);
+        av_frame_free(&frame_);
+        if (codec_ctx_) {
+            avcodec_close(codec_ctx_);
+        }
+        avcodec_free_context(&codec_ctx_);
     }
 
     int32_t FFmpegEncoder::GetEncodeFps() {

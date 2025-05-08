@@ -156,11 +156,32 @@ namespace tc
             }();
             //frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
 
-            auto target_encoder_plugin = GetEncoderForMonitor(monitor_name);
-            if (frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !target_encoder_plugin || !target_encoder_plugin->IsPluginEnabled()) {
+           // LOGI("EncoderThread settings_->enable_full_color_mode_: {}", settings_->enable_full_color_mode_);
+
+            bool full_color_mode_changed = false;
+            auto target_encoder_plugin = GetEncoderPluginForMonitor(monitor_name);
+            if (target_encoder_plugin) {
+                auto encoder_config_res = target_encoder_plugin->GetEncoderConfig(monitor_name);
+                if (encoder_config_res.has_value()) {
+                    const auto selected_encoder_config = encoder_config_res.value();
+                    if (selected_encoder_config.enable_full_color_mode_ != settings_->enable_full_color_mode_ ) {
+                        full_color_mode_changed = true;
+                        LOGI("full_color_mode_changed!!!");
+                    }
+                } else {
+                
+                    LOGI("EncoderThread encoder_config_res no value");
+                }
+            }
+            else {
+                LOGI("EncoderThread target_encoder_plugin is nullptr");
+            }
+
+            if (full_color_mode_changed || frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !target_encoder_plugin || !target_encoder_plugin->IsPluginEnabled()) {
                 if (target_encoder_plugin) {
                     // todo : Test it!
                     target_encoder_plugin->Exit(monitor_name);
+                    target_encoder_plugin = nullptr;
                 }
                 tc::EncoderConfig encoder_config;
                 if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
@@ -190,8 +211,10 @@ namespace tc
                 encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
                 encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
 
-
                 encoder_config.enable_full_color_mode_ = settings_->enable_full_color_mode_;
+
+
+                LOGI("encoder_config.enable_full_color_mode_ : {}", encoder_config.enable_full_color_mode_);
 
                 PrintEncoderConfig(encoder_config);
 
@@ -250,22 +273,36 @@ namespace tc
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
                 bool is_mocking = settings_->capture_.mock_video_;
-                auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-                if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_name)) {
-                    target_encoder_plugin = nvenc_encoder;
-                } else {
-                    LOGW("Init NVENC failed, will try AMF.");
-                    auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                    if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_name)) {
-                        target_encoder_plugin = amf_encoder;
-                    } else {
-                        LOGW("Init AMF failed, will try FFmpeg.");
-                        auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                            target_encoder_plugin = ffmpeg_encoder;
-                        } else {
-                            LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
-                            return;
+
+                // 因为英伟达encode sdk 264编码不支持yuv444输出,所以目前用户设置了yuv444时, 优先使用ffmpeg, to do: 研究下英伟达h265 是否支持yuv444
+                if (encoder_config.enable_full_color_mode_) {
+                    auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                    if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                        target_encoder_plugin = ffmpeg_encoder;
+                    }
+                }
+               
+                if (!target_encoder_plugin) {
+                    auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
+                    if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_name)) {
+                        target_encoder_plugin = nvenc_encoder;
+                    }
+                    else {
+                        LOGW("Init NVENC failed, will try AMF.");
+                        auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
+                        if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_name)) {
+                            target_encoder_plugin = amf_encoder;
+                        }
+                        else {
+                            LOGW("Init AMF failed, will try FFmpeg.");
+                            auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                            if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                                target_encoder_plugin = ffmpeg_encoder;
+                            }
+                            else {
+                                LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                                return;
+                            }
                         }
                     }
                 }
@@ -408,10 +445,10 @@ namespace tc
     }
 
     bool EncoderThread::HasEncoderForMonitor(const std::string& monitor_name) {
-        return GetEncoderForMonitor(monitor_name) != nullptr;
+        return GetEncoderPluginForMonitor(monitor_name) != nullptr;
     }
 
-    GrVideoEncoderPlugin* EncoderThread::GetEncoderForMonitor(const std::string& monitor_name) {
+    GrVideoEncoderPlugin* EncoderThread::GetEncoderPluginForMonitor(const std::string& monitor_name) {
         for (const auto& [name, plugin] : encoder_plugins_) {
             if (name == monitor_name) {
                 return plugin;
@@ -426,6 +463,7 @@ namespace tc
         LOGI("width x height:{}x{}", config.width, config.height);
         LOGI("gop size: {}", config.gop_size);
         LOGI("gop bitrate: {}", config.bitrate);
+        LOGI("enable full color: {}", config.enable_full_color_mode_);
         LOGI("***************************************************");
     }
 

@@ -44,6 +44,7 @@ namespace tc
 
         bool IsAudioEnabled() const;
         bool IsClipboardEnabled() const;
+        bool IsFullColorEnabled() const;
         MultiDisplayMode GetMultiDisplayMode();
         VideoRenderType GetVideoRenderType();
 
@@ -54,12 +55,14 @@ namespace tc
         void SetMultiDisplayMode(MultiDisplayMode mode);
         void SetWorkMode(SwitchWorkMode::WorkMode mode);
         void SetScaleMode(ScaleMode mode);
+        void SetFullColorEnabled(bool enabled);
 
         void Dump();
     public:
         std::string version_;
         bool audio_on_ = false;
         bool clipboard_on_ = false;
+        bool full_color_on_ = false;
         MultiDisplayMode display_mode_ = MultiDisplayMode::kSeparated;
         VideoRenderType render_type_ = VideoRenderType::kOpenGL;
         std::shared_ptr<SharedPreference> sp_ = nullptr;

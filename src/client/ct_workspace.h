@@ -68,6 +68,7 @@ namespace tc
         void SendClipboardMessage(const ClipboardMessage& msg);
         void SendSwitchMonitorMessage(const std::string& name);
         void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
+        void SendSwitchFullColorMessage(bool enable);
         // client->render 发送刷新桌面的消息
         void SendUpdateDesktopMessage();
         void SwitchScaleMode(const ScaleMode& mode);

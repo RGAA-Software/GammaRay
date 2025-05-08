@@ -134,6 +134,12 @@ namespace tc
         SwitchWorkMode::WorkMode mode_;
     };
 
+    // 切换全彩模式
+    class SwitchFullColorMessage : public AppMessage {
+    public:
+        bool enable_ = false;
+    };
+
     class SwitchScaleModeMessage : public AppMessage {
     public:
         ScaleMode mode_;
@@ -172,6 +178,7 @@ namespace tc
             kWorkMode,
             kClipboardSharedStatus,
             kAudioStatus,
+            kFullColorStatus,
         };
         EUpdate update_type_ = EUpdate::kUnknow;
     };

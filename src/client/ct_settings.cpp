@@ -65,6 +65,10 @@ namespace tc
         return clipboard_on_;
     }
 
+    bool Settings::IsFullColorEnabled() const {
+        return full_color_on_;
+    }
+
     MultiDisplayMode Settings::GetMultiDisplayMode() {
         return display_mode_;
     }
@@ -81,6 +85,10 @@ namespace tc
     void Settings::SetClipboardEnabled(bool enabled) {
         clipboard_on_ = enabled;
         sp_->Put(kKeyClipboardStatus, std::to_string(enabled));
+    }
+
+    void Settings::SetFullColorEnabled(bool enabled) {
+        full_color_on_ = enabled;
     }
 
     void Settings::SetMultiDisplayMode(MultiDisplayMode mode) {

@@ -8,6 +8,7 @@
 #include <d3d11.h>
 #include <mutex>
 #include <map>
+#include <optional>
 #include "gr_plugin_interface.h"
 #include "tc_encoder_new/encoder_config.h"
 
@@ -47,7 +48,8 @@ namespace tc
         // encoding information for monitors/hook
         virtual std::map<std::string, WorkingEncoderInfoPtr> GetWorkingCapturesInfo() = 0;
 
-        EncoderConfig GetEncoderConfig(const std::string& monitor_name);
+        
+        std::optional<EncoderConfig> GetEncoderConfig(const std::string& monitor_name);
 
     public:
         int refresh_rate_ = 60;

@@ -140,6 +140,10 @@ namespace tc
             this->SwitchScaleMode(msg.mode_);
         });
 
+        msg_listener_->Listen<SwitchFullColorMessage>([=, this](const SwitchFullColorMessage& msg) {
+            this->SendSwitchFullColorMessage(msg.enable_);
+        });
+
         // step 1
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
             this->SendSwitchWorkModeMessage(settings_->work_mode_);
@@ -628,6 +632,19 @@ namespace tc
         m.set_stream_id(settings_->stream_id_);
         auto wm = m.mutable_work_mode();
         wm->set_mode(mode);
+        sdk_->PostMediaMessage(m.SerializeAsString());
+    }
+
+    void Workspace::SendSwitchFullColorMessage(bool enable) {
+        if (!sdk_) {
+            return;
+        }
+        tc::Message m;
+        m.set_type(tc::kSwitchFullColorMode);
+        m.set_device_id(settings_->device_id_);
+        m.set_stream_id(settings_->stream_id_);
+        auto wm = m.mutable_switch_full_color_mode();
+        wm->set_enable(enable);
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 

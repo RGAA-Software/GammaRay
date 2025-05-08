@@ -52,11 +52,12 @@ namespace tc
         insert_idr_ = true;
     }
 
-    EncoderConfig GrVideoEncoderPlugin::GetEncoderConfig(const std::string& monitor_name) {
-        if (encoder_configs_.find(monitor_name) == encoder_configs_.end()) {
+    std::optional<EncoderConfig> GrVideoEncoderPlugin::GetEncoderConfig(const std::string& monitor_name) {
+
+        if (encoder_configs_.find(monitor_name) != encoder_configs_.end()) {
             return encoder_configs_[monitor_name];
         }
-        return EncoderConfig{};
+        return std::nullopt;
     }
 
     void GrVideoEncoderPlugin::Exit(const std::string& monitor_name) {

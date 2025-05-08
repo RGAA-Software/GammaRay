@@ -35,7 +35,7 @@ namespace tc
 
     private:
         FFmpegEncoderPlugin* plugin_ = nullptr;
-        AVCodecContext* context_ = nullptr;
+        AVCodecContext* codec_ctx_ = nullptr;
         AVFrame* frame_ = nullptr;
         AVPacket* packet_ = nullptr;
         int gop_size_ = 60;

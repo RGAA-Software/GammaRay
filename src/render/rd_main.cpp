@@ -237,6 +237,6 @@ int main(int argc, char** argv) {
     app->Init(argc, argv);
     app->CaptureControlC();
     // yuv444 / yuv420
-    settings->enable_full_color_mode_ = true;
+    settings->enable_full_color_mode_ = false;
     return app->Run();
 }

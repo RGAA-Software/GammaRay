@@ -19,6 +19,7 @@ namespace tc
     };
 
     class MessageListener;
+    class SwitchButton;
 
     class SubDisplayPanel : BaseWidget {
     public:
@@ -31,13 +32,15 @@ namespace tc
     private:
         BaseWidget* GetSubPanel(const SubDisplayType& type);
         void HideAllSubPanels();
-
+        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
     private:
         std::map<SubDisplayType, BaseWidget*> sub_panels_;
         CaptureMonitorMessage cap_monitors_info_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 
         std::string capture_monitor_name_;
+
+        SwitchButton* full_color_btn_ = nullptr;
     };
 
 }

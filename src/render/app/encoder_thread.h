@@ -45,7 +45,7 @@ namespace tc
         std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
         void PrintEncoderConfig(const tc::EncoderConfig& config);
         bool HasEncoderForMonitor(const std::string& monitor_name);
-        GrVideoEncoderPlugin* GetEncoderForMonitor(const std::string& monitor_name);
+        GrVideoEncoderPlugin* GetEncoderPluginForMonitor(const std::string& monitor_name);
 
     private:
         RdSettings* settings_ = nullptr;

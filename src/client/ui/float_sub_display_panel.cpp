@@ -116,6 +116,42 @@ namespace tc
             });
 
         }
+
+        //È«²ÊÄ£Ê½
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new QWidget(this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
+
+            auto lbl = new QLabel();
+            lbl->setText(tr("Full Color"));
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing * 2);
+            layout->addWidget(lbl);
+
+            layout->addStretch();
+
+            auto sb = new SwitchButton(this);
+            full_color_btn_ = sb;
+            sb->setFixedSize(35, 20);
+            sb->SetStatus(Settings::Instance()->IsFullColorEnabled());
+            layout->addWidget(sb);
+            sb->SetClickCallback([=, this](bool enabled) {
+                Settings::Instance()->SetFullColorEnabled(enabled);
+                context_->SendAppMessage(SwitchFullColorMessage {
+                  .enable_ = enabled,
+                });
+                this->context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus });
+            });
+
+            layout->addSpacing(border_spacing);
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+        }
+
         root_layout->addStretch();
         setLayout(root_layout);
 
@@ -171,6 +207,12 @@ namespace tc
 
     void SubDisplayPanel::SetCaptureMonitorName(const std::string& name) {
         capture_monitor_name_ = name;
+    }
+
+    void SubDisplayPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
+        if (FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus == msg.update_type_) {
+            full_color_btn_->SetStatus(Settings::Instance()->IsFullColorEnabled());
+        }
     }
 
 }
