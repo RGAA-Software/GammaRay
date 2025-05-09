@@ -126,7 +126,7 @@ namespace tc
             layout->addWidget(widget);
 
             auto lbl = new QLabel();
-            lbl->setText(tr("Full Color"));
+            lbl->setText(tr("Full Color(4:4:4)"));
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing * 2);
             layout->addWidget(lbl);

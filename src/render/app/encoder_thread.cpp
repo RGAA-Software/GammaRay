@@ -201,8 +201,11 @@ namespace tc
                 encoder_config.enable_adaptive_quantization = true;
                 encoder_config.gop_size = -1;
                 encoder_config.quality_preset = 1;
-                encoder_config.fps = -1;
-                //encoder_config.fps = 60;
+                //encoder_config.fps = -1; // fps 如果设置为-1, nvenc 1060 显卡无法编码hevc(265), 提示编码器初始化失败，无效参数
+                encoder_config.fps = settings_->encoder_.fps_;
+                if (encoder_config.fps < 15 || encoder_config.fps > 120) {
+                    encoder_config.fps = 60;
+                }
                 encoder_config.multi_pass = tc::ENvdiaEncMultiPass::kMultiPassDisabled;
                 encoder_config.rate_control_mode = tc::ERateControlMode::kRateControlModeCbr;
                 encoder_config.sample_desc_count = 1;
@@ -214,7 +217,7 @@ namespace tc
                 encoder_config.enable_full_color_mode_ = settings_->enable_full_color_mode_;
 
 
-                LOGI("encoder_config.enable_full_color_mode_ : {}", encoder_config.enable_full_color_mode_);
+                LOGI("encoder_config.enable_full_color_mode_ : {}, encoder_config.codec_type: {}", encoder_config.enable_full_color_mode_, (int)encoder_config.codec_type);
 
                 PrintEncoderConfig(encoder_config);
 

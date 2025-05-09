@@ -27,8 +27,8 @@ namespace tc
         encoder_config_ = config;
         e_buffer_format_ = DxgiFormatToNvEncFormat(static_cast<DXGI_FORMAT>(encoder_config_.texture_format));
        
-        LOGI("input_frame_width_ = {}, input_frame_height_ = {}, format = {:x} , m_pD3DRender->GetDevice() = {}",
-             config.width, config.height, (int)e_buffer_format_, (void *) d3d11_device_.Get());
+        LOGI("input_frame_width_ = {}, input_frame_height_ = {}, format = {:x} , m_pD3DRender->GetDevice() = {}, config.fps = {}",
+             config.width, config.height, (int)e_buffer_format_, (void *) d3d11_device_.Get(), config.fps);
 
         if (!CreateNvEncoder()) {
             return false;
@@ -39,9 +39,20 @@ namespace tc
         bool supprot_yuv444 = nv_encoder_->SupportYuv444EncodeH264();
         LOGI("NVENC NvEncoderD3D11 supprot_yuv444: {}", (int)supprot_yuv444);
 
-        if (encoder_config_.enable_full_color_mode_ && supprot_yuv444) { // 虽然这样设置了, 但实际在264编码中，输出的编码帧解码后还是yuv420
-            encode_config.profileGUID = NV_ENC_H264_PROFILE_HIGH_444_GUID;
-            encode_config.encodeCodecConfig.h264Config.chromaFormatIDC = 3;
+
+        // 虽然这样设置了, 但实际在264编码中，输出的编码帧解码后还是yuv420, 解决办法: 需要在编码前将纹理格式 参考:https://github.com/LizardByte/Sunshine 
+        // 参考Sunshine项目中的 synchronize_input_buffer
+        if (encoder_config_.enable_full_color_mode_ && supprot_yuv444) {             
+            if (EVideoCodecType::kH264 == config.codec_type) {
+                //LOGI("NVENCVideoEncoder Initialize codec: kH264");
+                encode_config.profileGUID = NV_ENC_H264_PROFILE_HIGH_444_GUID;
+                encode_config.encodeCodecConfig.h264Config.chromaFormatIDC = 3;
+            }
+            else {
+                //LOGI("NVENCVideoEncoder Initialize codec: kHEVC");
+                encode_config.profileGUID = NV_ENC_HEVC_PROFILE_FREXT_GUID;
+                encode_config.encodeCodecConfig.hevcConfig.chromaFormatIDC = 3;
+            }
         }
 
         encode_config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;

@@ -21,13 +21,14 @@ namespace tc
         void OnTabShow() override;
         void OnTabHide() override;
     private:
-        QLineEdit* et_bitrate_;
-        QComboBox* cb_language_;
-        QLineEdit* et_res_width_;
-        QLineEdit* et_res_height_;
-        QCheckBox* cb_resize_res_;
-        QComboBox* cb_capture_monitor_;
-        QComboBox* cb_capture_audio_device_name_;
+        QLineEdit* et_bitrate_ = nullptr;
+        QLineEdit* et_fps_ = nullptr;
+        QComboBox* cb_language_ = nullptr;
+        QLineEdit* et_res_width_ = nullptr;
+        QLineEdit* et_res_height_ = nullptr;
+        QCheckBox* cb_resize_res_ = nullptr;
+        QComboBox* cb_capture_monitor_ = nullptr;
+        QComboBox* cb_capture_audio_device_name_ = nullptr;
     };
 
 }

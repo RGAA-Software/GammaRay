@@ -17,6 +17,7 @@ namespace tc
     static const std::string kStEncoderName = "encoder_name";
     static const std::string kStEncoderFormat = "encoder_format";
     static const std::string kStEncoderBitrate = "encoder_bitrate";
+    static const std::string kStEncoderFPS = "encoder_fps";
     static const std::string kStEncoderResolutionType = "encoder_resolution_type";
     static const std::string kStEncoderWidth = "encoder_width";
     static const std::string kStEncoderHeight = "encoder_height";
@@ -80,6 +81,7 @@ namespace tc
         [[nodiscard]] std::vector<std::string> GetArgs() const;
 
         void SetBitrate(int br);
+        void SetFPS(int fps);
         void SetEnableResResize(bool enabled);
         void SetResWidth(int width);
         void SetResHeight(int height);
@@ -127,6 +129,7 @@ namespace tc
         std::string encoder_name_;
         std::string encoder_format_;
         std::string encoder_bitrate_;
+        std::string encoder_fps_;
         std::string encoder_resolution_type_;
         std::string encoder_width_;
         std::string encoder_height_;

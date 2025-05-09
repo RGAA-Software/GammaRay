@@ -34,6 +34,7 @@ namespace tc
         encoder_name_ = sp_->Get(kStEncoderName, "nvenc");
         encoder_format_ = sp_->Get(kStEncoderFormat, "h264");
         encoder_bitrate_ = sp_->Get(kStEncoderBitrate, "5");
+        encoder_fps_ = sp_->Get(kStEncoderFPS, "60");
         encoder_resolution_type_ = sp_->Get(kStEncoderResolutionType, "origin");
         encoder_width_ = sp_->Get(kStEncoderWidth, "1280");
         encoder_height_ = sp_->Get(kStEncoderHeight, "720");
@@ -132,6 +133,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStEncoderName, encoder_name_));
         args.push_back(std::format("--{}={}", kStEncoderFormat, encoder_format_));
         args.push_back(std::format("--{}={}", kStEncoderBitrate, encoder_bitrate_));
+        args.push_back(std::format("--{}={}", kStEncoderFPS, encoder_fps_));
         args.push_back(std::format("--{}={}", kStEncoderResolutionType, encoder_resolution_type_));
         args.push_back(std::format("--{}={}", kStEncoderWidth, encoder_width_));
         args.push_back(std::format("--{}={}", kStEncoderHeight, encoder_height_));
@@ -173,6 +175,11 @@ namespace tc
     void GrSettings::SetBitrate(int br) {
         encoder_bitrate_ = std::to_string(br);
         sp_->Put(kStEncoderBitrate, encoder_bitrate_);
+    }
+
+    void GrSettings::SetFPS(int fps) {
+        encoder_fps_ = std::to_string(fps);
+        sp_->Put(kStEncoderFPS, encoder_fps_);
     }
 
     void GrSettings::SetResWidth(int width) {

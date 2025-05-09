@@ -135,6 +135,28 @@ namespace tc
                 segment_layout->addSpacing(10);
                 segment_layout->addLayout(layout);
             }
+
+
+            // FPS
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_fps");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                edit->setValidator(new QIntValidator(0, 1000));
+                et_fps_ = edit;
+                et_fps_->setText(settings_->encoder_fps_.c_str());
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+            }
+
             // Format
             {
                 auto layout = new NoMarginHLayout();
@@ -556,6 +578,14 @@ namespace tc
                     return;
                 }
                 settings_->SetBitrate(bitrate);
+
+                // fps
+                auto fps = et_fps_->text().toInt();
+                if (fps < 15 || fps > 120) {
+                    func_show_err(tr("FPS between 15 and 120!"));
+                    return;
+                }
+                settings_->SetFPS(fps);
 
                 if (cb_resize_res_->isChecked()) {
                     // resize width

@@ -25,6 +25,7 @@
   "id_connect": "Connect",
   "id_encoder_settings": "Encoder Settings",
   "id_bitrate": "Bitrate(Mbps)",
+  "id_fps": "FPS",
   "id_format": "Format",
   "id_resize_resolution": "Resize Resolution",
   "id_resize_width": "Resize Width",

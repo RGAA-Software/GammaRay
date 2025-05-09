@@ -23,6 +23,7 @@ DEFINE_string(encoder_select_type, "auto", "auto/specify");
 DEFINE_string(encoder_name, "nvenc", "nvenc/amf/ffmpeg");
 DEFINE_string(encoder_format, "h264", "h264/h265");
 DEFINE_int32(encoder_bitrate, 20, "encoder bitrate");
+DEFINE_int32(encoder_fps, 60, "encoder fps");
 DEFINE_string(encoder_resolution_type, "origin", "origin/specify");
 DEFINE_int32(encoder_width, 1280, "");
 DEFINE_int32(encoder_height, 720, "");
@@ -91,6 +92,8 @@ void UpdateSettings(RdSettings* settings) {
 
     settings->encoder_.bitrate_ = FLAGS_encoder_bitrate;
 
+    settings->encoder_.fps_ = FLAGS_encoder_fps;
+
     if (FLAGS_encoder_resolution_type == "origin") {
         settings->encoder_.encode_res_type_ = Encoder::EncodeResolutionType::kOrigin;
     } else {
@@ -150,6 +153,7 @@ void PrintInputArgs() {
     LOGI("encoder_name: {}", FLAGS_encoder_name);
     LOGI("encoder_format: {}", FLAGS_encoder_format);
     LOGI("encoder_bitrate: {}", FLAGS_encoder_bitrate);
+    LOGI("encoder_fps: {}", FLAGS_encoder_fps);
     LOGI("encoder_resolution_type: {}", FLAGS_encoder_resolution_type);
     LOGI("encoder_width: {}", FLAGS_encoder_width);
     LOGI("encoder_height: {}", FLAGS_encoder_height);
