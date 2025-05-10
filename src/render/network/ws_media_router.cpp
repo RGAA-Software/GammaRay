@@ -5,7 +5,6 @@
 #include "ws_media_router.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
-#include "message_processor.h"
 #include "rd_statistics.h"
 
 namespace tc

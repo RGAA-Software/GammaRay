@@ -23,11 +23,8 @@ set(SRCS
         rd_app.cpp
         rd_context.cpp
         rd_statistics.cpp
-        network/app_server.cpp
         network/ws_media_router.cpp
         network/ws_ipc_router.cpp
-        network/connection.cpp
-        network/message_processor.cpp
         network/ws_panel_client.cpp
         network/net_message_maker.cpp
         network/server_cast.cpp
