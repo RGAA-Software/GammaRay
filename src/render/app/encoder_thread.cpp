@@ -164,7 +164,7 @@ namespace tc
                 auto encoder_config_res = target_encoder_plugin->GetEncoderConfig(monitor_name);
                 if (encoder_config_res.has_value()) {
                     const auto selected_encoder_config = encoder_config_res.value();
-                    if (selected_encoder_config.enable_full_color_mode_ != settings_->enable_full_color_mode_ ) {
+                    if (selected_encoder_config.enable_full_color_mode_ != settings_->EnableFullColorMode() ) {
                         full_color_mode_changed = true;
                         LOGI("full_color_mode_changed!!!");
                     }
@@ -214,7 +214,7 @@ namespace tc
                 encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
                 encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
 
-                encoder_config.enable_full_color_mode_ = settings_->enable_full_color_mode_;
+                encoder_config.enable_full_color_mode_ = settings_->EnableFullColorMode();
 
 
                 LOGI("encoder_config.enable_full_color_mode_ : {}, encoder_config.codec_type: {}", encoder_config.enable_full_color_mode_, (int)encoder_config.codec_type);
@@ -277,7 +277,7 @@ namespace tc
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
                 bool is_mocking = settings_->capture_.mock_video_;
 
-                // 因为英伟达encode sdk 264编码不支持yuv444输出,所以目前用户设置了yuv444时, 优先使用ffmpeg, to do: 研究下英伟达h265 是否支持yuv444
+                // 因为英伟达encode sdk 264编码不支持yuv444输出,所以目前用户设置了yuv444时, 优先使用ffmpeg, to do: 研究下英伟达硬编码,支持yuv444
                 if (encoder_config.enable_full_color_mode_) {
                     auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
                     if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {

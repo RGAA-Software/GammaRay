@@ -9,6 +9,7 @@
 #include "ui/float_controller_panel.h"
 #include "ct_client_context.h"
 #include "tc_common_new/log.h"
+#include "client/ct_settings.h"
 
 
 namespace tc {
@@ -60,17 +61,22 @@ void GameView::resizeEvent(QResizeEvent* event) {
 }
 
 void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
+    bool enable_full_color = false;
     if (kRawImageI420 == image->Format()) {
-
         //LOGI("RefreshImage kRawImageI420");
-
         RefreshI420Image(image);
     }
     else if (kRawImageI444 == image->Format()) {
-
         //LOGI("RefreshImage kRawImageI444");
-
+        enable_full_color = true;
         RefreshI444Image(image);
+    }
+
+    if (main_view_) {
+        if (Settings::Instance()->IsFullColorEnabled() != enable_full_color) {
+            Settings::Instance()->SetFullColorEnabled(enable_full_color);
+            ctx_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus });
+        }
     }
 }
 

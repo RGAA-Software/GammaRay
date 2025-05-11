@@ -10,6 +10,7 @@
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/log.h"
 #include "tc_capture_new/win/client_ipc_manager.h"
+#include "tc_common_new/shared_preference.h"
 
 namespace tc
 {
@@ -167,4 +168,19 @@ namespace tc
         return ss.str();
     }
 
+
+    void RdSettings::LoadSettingsFromDatabase() {
+        auto sp = SharedPreference::Instance();
+        enable_full_color_mode_ = sp->GetInt(kFullColorModeKey, 0);
+    }
+
+    bool RdSettings::EnableFullColorMode() {
+        return enable_full_color_mode_;
+    }
+
+    void RdSettings::SetFullColorMode(bool enable) {
+        enable_full_color_mode_ = enable;
+        auto sp = SharedPreference::Instance();
+        sp->PutInt(kFullColorModeKey, enable ? 1 : 0);
+    }
 }

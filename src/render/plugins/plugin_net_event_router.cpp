@@ -379,12 +379,7 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessSwitchFullColorMode(std::shared_ptr<Message>&& msg) {
         auto sw = msg->switch_full_color_mode();
-
-        
-
-        this->settings_->enable_full_color_mode_ = sw.enable();
-
-        LOGI("ProcessSwitchFullColorMode this->settings_->enable_full_color_mode_ : {}", this->settings_->enable_full_color_mode_);
+        this->settings_->SetFullColorMode(sw.enable());
     }
 
     void PluginNetEventRouter::ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg) {

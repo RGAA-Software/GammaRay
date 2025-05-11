@@ -240,7 +240,6 @@ int main(int argc, char** argv) {
     auto app = tc::RdApplication::Make(params);
     app->Init(argc, argv);
     app->CaptureControlC();
-    // yuv444 / yuv420
-    settings->enable_full_color_mode_ = false;
+    settings->LoadSettingsFromDatabase();
     return app->Run();
 }

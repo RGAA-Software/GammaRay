@@ -12,6 +12,7 @@
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include <QLabel>
+#include <qtimer.h>
 
 namespace tc
 {
@@ -117,7 +118,7 @@ namespace tc
 
         }
 
-        //ȫ��ģʽ
+        //全彩模式
         {
             auto layout = new NoMarginHLayout();
             auto widget = new QWidget(this);
@@ -138,12 +139,20 @@ namespace tc
             sb->setFixedSize(35, 20);
             sb->SetStatus(Settings::Instance()->IsFullColorEnabled());
             layout->addWidget(sb);
+
+            auto timer = new QTimer(this);
+            connect(timer, &QTimer::timeout, [=]() {
+                sb->setEnabled(true);
+            });
+            timer->setInterval(3000);
+            timer->setSingleShot(true);
+
             sb->SetClickCallback([=, this](bool enabled) {
-                Settings::Instance()->SetFullColorEnabled(enabled);
+                sb->setEnabled(false);
+                timer->start();
                 context_->SendAppMessage(SwitchFullColorMessage {
                   .enable_ = enabled,
                 });
-                this->context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus });
             });
 
             layout->addSpacing(border_spacing);
