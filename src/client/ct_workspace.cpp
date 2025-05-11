@@ -731,8 +731,14 @@ namespace tc
                         game_view->showFullScreen();
                     }
                     else {
-                        this->showNormal();
-                        game_view->showNormal();
+                        if (this->isMaximized()) {
+                            this->showMaximized();
+                            game_view->showMaximized();
+                        }
+                        else {
+                            this->showNormal();
+                            game_view->showNormal();
+                        }
                     }
                 }
                 else {
@@ -747,7 +753,6 @@ namespace tc
                         if (game_view->IsMainView()) {
                             WidgetSelectMonitor(this, screens);
                             this->showFullScreen();
-                            
                         }
                         else {
                             WidgetSelectMonitor(game_view, screens);
@@ -755,10 +760,18 @@ namespace tc
                         game_view->showFullScreen();
                     }
                     else {
-                        if (game_view->IsMainView()) {
-                            this->showNormal();
+                        if (game_view->isMaximized()) {
+                            game_view->showMaximized();
+                            if (game_view->IsMainView()) {
+                                this->showMaximized();
+                            }
                         }
-                        game_view->showNormal();
+                        else {
+                            game_view->showNormal();
+                            if (game_view->IsMainView()) {
+                                this->showNormal();
+                            }
+                        }
                     }
                 }
                 else {
