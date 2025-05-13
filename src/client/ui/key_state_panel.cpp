@@ -24,14 +24,19 @@ namespace tc
         painter.setPen(Qt::NoPen);
         painter.setBrush(QBrush(pressed_? kBgPressedColor : kBgNormalColor));
         painter.drawRoundedRect(this->rect(), radius, radius);
-        painter.setPen(QPen(pressed_? kFontPressedColor : kFontNormalColor));
+        QPen pen(pressed_? kFontPressedColor : kFontNormalColor);
+        QFont font = painter.font();
+        font.setBold(true);
+        font.setPixelSize(10);
+        painter.setFont(font);
+        painter.setPen(pen);
         painter.drawText(this->rect(), Qt::AlignCenter, txt_);
 
         if (indicator_) {
             int color = 0x00FF00;
             painter.setPen(QColor(color));
             painter.setBrush(QBrush(color));
-            painter.drawRoundedRect(4,4, 6,6, 3,3);
+            painter.drawRoundedRect(4,4, 8,8, 3,3);
         }
     }
 
@@ -54,7 +59,7 @@ namespace tc
 
     // panel
     KeyStatePanel::KeyStatePanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
-        setFixedWidth(300);
+        setFixedWidth(600);
         auto root_layout = new NoMarginVLayout();
         {
             auto layout = new NoMarginHLayout();
@@ -75,12 +80,7 @@ namespace tc
                 control_item_ = item;
                 layout->addWidget(item);
             }
-            layout->addStretch();
-            root_layout->addLayout(layout);
-        }
-        root_layout->addSpacing(10);
-        {
-            auto layout = new NoMarginHLayout();
+            layout->addSpacing(10);
             {
                 auto item = new KeyItem("WIN");
                 win_item_ = item;
@@ -101,6 +101,29 @@ namespace tc
             layout->addStretch();
             root_layout->addLayout(layout);
         }
+//        root_layout->addSpacing(10);
+//        {
+//            auto layout = new NoMarginHLayout();
+//            {
+//                auto item = new KeyItem("WIN");
+//                win_item_ = item;
+//                layout->addWidget(item);
+//            }
+//            layout->addSpacing(10);
+//            {
+//                auto item = new KeyItem("CAPS LOCK");
+//                caps_lock_item_ = item;
+//                layout->addWidget(item);
+//            }
+//            layout->addSpacing(10);
+//            {
+//                auto item = new KeyItem("NUM LOCK");
+//                num_lock_item_ = item;
+//                layout->addWidget(item);
+//            }
+//            layout->addStretch();
+//            root_layout->addLayout(layout);
+//        }
         setLayout(root_layout);
     }
 }

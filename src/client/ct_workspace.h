@@ -29,7 +29,7 @@ namespace tc
     class FloatNotificationHandle;
     class NotificationPanel;
     class FileTransferChannel;
-    class DebugPanel;
+    class CtStatisticsPanel;
     class ClipboardManager;
     class FloatButtonStateIndicator;
     class FileTransInterface;
@@ -97,7 +97,7 @@ namespace tc
         std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         uint32_t cursor_type_ = 100000;
         bool force_update_cursor_ = true;
-        DebugPanel* debug_panel_ = nullptr;
+        CtStatisticsPanel* st_panel_ = nullptr;
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
         FloatButtonStateIndicator* btn_indicator_ = nullptr;
         std::atomic_bool has_frame_arrived_ = false;

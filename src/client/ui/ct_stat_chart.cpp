@@ -1,0 +1,92 @@
+//
+// Created by RGAA on 2024-04-20.
+//
+
+#include "ct_stat_chart.h"
+#include "ct_client_context.h"
+#include "tc_qt_widget/no_margin_layout.h"
+#include "tc_common_new/log.h"
+#include "tc_common_new/time_util.h"
+
+#include <QTime>
+#include <QTimer>
+#include <QRandomGenerator>
+
+namespace tc
+{
+
+    CtStatChart::CtStatChart(const std::shared_ptr<ClientContext>& ctx,
+                         const QString& title,
+                         const std::vector<QString>& line_names,
+                         const CtStatChartAxisSettings& x_axis_settings,
+                         const CtStatChartAxisSettings& y_axis_settings,
+                         QWidget* parent) : QWidget(parent) {
+        ctx_ = ctx;
+        setStyleSheet("background-color:#ffffff; border: 1px solid #eeeeee;");
+        auto layout = new NoMarginVLayout();
+        chart_ = new QChart();
+        chart_->setTitle(title);
+        QFont font;
+        font.setPixelSize(16);
+        font.setBold(true);
+        chart_->setTitleFont(font);
+        for (auto& n : line_names) {
+            auto s = new QLineSeries();
+            s->setName(n);
+            series_.insert({n, s});
+            chart_->addSeries(s);
+        }
+
+        chart_view_ = new QChartView(this);
+        chart_view_->setRenderHint(QPainter::Antialiasing);
+        chart_view_->setChart(chart_);
+        layout->addWidget(chart_view_);
+
+        x_axis_ = new QValueAxis();
+        x_axis_->setTickCount(x_axis_settings.count_);
+        x_axis_->setRange(x_axis_settings.rng_beg_, x_axis_settings.rng_end_);
+        x_axis_->setLabelFormat(x_axis_settings.format_);
+        chart_->addAxis(x_axis_, Qt::AlignBottom);
+        for (auto& [n, s] : series_) {
+            s->attachAxis(x_axis_);
+        }
+
+        y_axis_ = new QValueAxis();
+        y_axis_->setTickCount(y_axis_settings.count_);
+        y_axis_->setRange(y_axis_settings.rng_beg_, y_axis_settings.rng_end_);
+        y_axis_->setLabelFormat(y_axis_settings.format_);
+        chart_->addAxis(y_axis_, Qt::AlignLeft);
+        for (auto& [n, s] : series_) {
+            s->attachAxis(y_axis_);
+        }
+
+        setLayout(layout);
+    }
+
+    void CtStatChart::UpdateTitle(const QString& title) {
+        chart_->setTitle(title);
+    }
+
+    void CtStatChart::UpdateLines(const std::map<QString, std::vector<float>>& value) {
+        ctx_->PostUITask([=, this]() {
+            auto beg = TimeUtil::GetCurrentTimestamp();
+            for (auto& [in_n, in_v] : value) {
+                for (auto& [n, s] : series_) {
+                    if (in_n == n) {
+                        QList<QPointF> points;
+                        for (int i = 0; i < in_v.size(); i++) {
+                            points.push_back(QPointF(i, in_v.at(i)));
+                        }
+                        s->clear();
+                        s->replace(points);
+                        break;
+                    }
+                }
+            }
+            chart_view_->update();
+            auto end = TimeUtil::GetCurrentTimestamp();
+            //LOGI("UpdateLines UI, {}ms", (end-beg));
+        });
+    }
+
+}

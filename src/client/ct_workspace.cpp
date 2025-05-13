@@ -25,7 +25,7 @@
 #include "ui/notification_panel.h"
 #include "transfer/file_transfer.h"
 #include "tc_qt_widget/sized_msg_box.h"
-#include "ui/debug_panel.h"
+#include "ui/ct_statistics_panel.h"
 #include "client/clipboard/ct_clipboard_manager.h"
 #include "ui/no_margin_layout.h"
 #include "tc_client_sdk_new/sdk_messages.h"
@@ -89,10 +89,10 @@ namespace tc
         WidgetHelper::AddShadow(btn_indicator_, shadow_color);
 
         // debug panel
-        debug_panel_ = new DebugPanel(context_, nullptr);
-        debug_panel_->resize(1366, 768);
-        //WidgetHelper::AddShadow(debug_panel_, 0x999999);
-        debug_panel_->hide();
+        st_panel_ = new CtStatisticsPanel(context_, nullptr);
+        st_panel_->resize(1366, 768);
+        //WidgetHelper::AddShadow(st_panel_, 0x999999);
+        st_panel_->hide();
 
         // notification handle
         notification_handler_ = new FloatNotificationHandle(context_, this);
@@ -277,8 +277,8 @@ namespace tc
         });
 
         sdk_->SetOnHeartBeatCallback([=, this](const OnHeartBeat& hb) {
-            if (debug_panel_) {
-                debug_panel_->UpdateOnHeartBeat(hb);
+            if (st_panel_) {
+                st_panel_->UpdateOnHeartBeat(hb);
             }
             if (btn_indicator_) {
                 btn_indicator_->UpdateOnHeartBeat(hb);
@@ -564,15 +564,15 @@ namespace tc
 
         msg_listener_->Listen<OpenDebugPanelMsg>([=, this](const OpenDebugPanelMsg& msg) {
             context_->PostUITask([=, this]() {
-                debug_panel_->setHidden(!debug_panel_->isHidden());
+                st_panel_->setHidden(!st_panel_->isHidden());
             });
         });
     }
 
     void Workspace::UpdateDebugPanelPosition() {
 //        int offset = 120;
-//        debug_panel_->resize(this->width()-offset, this->height()-offset);
-//        debug_panel_->move(offset/2, offset/2);
+//        st_panel_->resize(this->width()-offset, this->height()-offset);
+//        st_panel_->move(offset/2, offset/2);
     }
 
     void Workspace::SendClipboardMessage(const ClipboardMessage& msg) {

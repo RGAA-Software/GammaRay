@@ -4,3 +4,4 @@ cmake-build-relwithdebinfo/*
 cmake-build-release/*
 .vs/*
 out/*
+.vscode/*

@@ -13,7 +13,7 @@ else ()
 
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Svg)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Svg Charts)
 
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -56,7 +56,8 @@ set(SRCS_WS
         ui/notification_panel.cpp
         ui/notification_item.cpp
         ui/key_state_panel.cpp
-        ui/debug_panel.cpp
+        ui/ct_statistics_panel.cpp
+        ui/ct_stat_chart.cpp
         ui/float_sub_control_panel.cpp
         ui/float_sub_mode_panel.cpp
         ui/float_sub_display_panel.cpp
@@ -101,7 +102,7 @@ if (APPLE)
     )
 endif()
 
-target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg
+target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg Qt6::Charts
         tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> QWindowKit::Widgets TC_WidgetFrame Winmm.lib
         tc_rtc_client

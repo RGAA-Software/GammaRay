@@ -1,0 +1,42 @@
+//
+// Created by RGAA on 12/08/2024.
+//
+
+#ifndef GAMMARAYPC_CT_STATISTICS_PANEL_H
+#define GAMMARAYPC_CT_STATISTICS_PANEL_H
+
+#include "base_widget.h"
+#include "tc_message.pb.h"
+#include <QLabel>
+
+namespace tc
+{
+
+    class KeyStatePanel;
+    class FloatIcon;
+    class CtStatChart;
+    class SdkStatistics;
+
+    class CtStatisticsPanel : public BaseWidget {
+    public:
+        explicit CtStatisticsPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
+
+        void resizeEvent(QResizeEvent *event) override;
+        void paintEvent(QPaintEvent *event) override;
+
+        void UpdateOnHeartBeat(const OnHeartBeat& hb);
+    private:
+        void UpdateDataSpeedChart();
+
+    private:
+        KeyStatePanel* key_state_panel_ = nullptr;
+        FloatIcon* close_btn_ = nullptr;
+        CtStatChart* data_speed_stat_chart_ = nullptr;
+        CtStatChart* durations_stat_chart_ = nullptr;
+        SdkStatistics* sdk_stat_ = nullptr;
+        QLabel* lbl_data_speed_ = nullptr;
+    };
+
+}
+
+#endif //GAMMARAYPC_DEBUG_PANEL_H
