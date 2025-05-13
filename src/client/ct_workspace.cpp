@@ -40,6 +40,7 @@
 #include "ct_game_view.h"
 #include "ct_const_def.h"
 #include "tc_common_new/file.h"
+#include "tc_common_new/qwidget_helper.h"
 
 namespace tc
 {
@@ -729,6 +730,7 @@ namespace tc
                         WidgetSelectMonitor(this, screens);
                         this->showFullScreen();
                         game_view->showFullScreen();
+                        tc::QWidgetHelper::SetBorderInFullScreen(this, true);
                     }
                     else {
                         if (this->isMaximized()) {
@@ -753,11 +755,14 @@ namespace tc
                         if (game_view->IsMainView()) {
                             WidgetSelectMonitor(this, screens);
                             this->showFullScreen();
+                            game_view->showFullScreen();
+                            tc::QWidgetHelper::SetBorderInFullScreen(this, true);
                         }
                         else {
                             WidgetSelectMonitor(game_view, screens);
+                            game_view->showFullScreen();
+                            tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
                         }
-                        game_view->showFullScreen();
                     }
                     else {
                         if (game_view->isMaximized()) {
