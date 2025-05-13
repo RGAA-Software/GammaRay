@@ -49,7 +49,7 @@ public:
 	void SetMainView(bool main_view);
 
 	bool IsMainView() {
-		return main_view_;
+		return is_main_view_;
 	}
 private:
 	OpenGLVideoWidget* video_widget_ = nullptr;
@@ -60,7 +60,7 @@ private:
 	int monitor_index_ = 0;
 	std::string monitor_name_ = "";
 	bool active_ = false;
-	bool main_view_ = false;
+	bool is_main_view_ = false;
 
 	FloatController* float_controller_ = nullptr;
 	FloatControllerPanel* controller_panel_ = nullptr;

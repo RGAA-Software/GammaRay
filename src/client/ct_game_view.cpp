@@ -72,7 +72,7 @@ void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
         RefreshI444Image(image);
     }
 
-    if (main_view_) {
+    if (is_main_view_) {
         if (Settings::Instance()->IsFullColorEnabled() != enable_full_color) {
             Settings::Instance()->SetFullColorEnabled(enable_full_color);
             ctx_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus });
@@ -194,8 +194,8 @@ void GameView::RegisterControllerPanelListeners() {
 }
 
 void GameView::SetMainView(bool main_view) {
-    main_view_ = main_view;
-    if (main_view_ && controller_panel_) {
+    is_main_view_ = main_view;
+    if (is_main_view_ && controller_panel_) {
         controller_panel_->SetMainControl();
     }
 }
