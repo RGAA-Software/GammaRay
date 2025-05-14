@@ -308,7 +308,9 @@ namespace tc
     void GrWorkspace::closeEvent(QCloseEvent *event) {
         event->ignore();
         TcDialog dialog(tr("Hide"), tr("Do you want to hide GammaRay?"), this);
-        dialog.exec();
+        if (kDoneOk == dialog.exec()) {
+            this->hide();
+        }
     }
 
     void GrWorkspace::resizeEvent(QResizeEvent *event) {
