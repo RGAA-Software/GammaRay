@@ -1,0 +1,68 @@
+
+#include "gdi_capture_plugin.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "tc_common_new/log.h"
+#include "tc_common_new/file.h"
+#include "tc_common_new/image.h"
+#include "render/plugins/plugin_ids.h"
+
+namespace tc
+{
+
+    std::string GdiCapturePlugin::GetPluginId() {
+        return kNetObjDetectorPluginId;
+    }
+
+    std::string GdiCapturePlugin::GetPluginName() {
+        return "Gdi Capture";
+    }
+
+    std::string GdiCapturePlugin::GetVersionName() {
+        return "1.1.0";
+    }
+
+    uint32_t GdiCapturePlugin::GetVersionCode() {
+        return 110;
+    }
+
+    void GdiCapturePlugin::On1Second() {
+        GrPluginInterface::On1Second();
+
+    }
+    
+    bool GdiCapturePlugin::OnCreate(const tc::GrPluginParam &param) {
+        GrPluginInterface::OnCreate(param);
+        plugin_type_ = GrPluginType::kStream;
+
+        if (!IsPluginEnabled()) {
+            return true;
+        }
+        root_widget_->hide();
+        //root_widget_->show();
+        return true;
+    }
+
+    void GdiCapturePlugin::OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image) {
+        if (!IsPluginEnabled()) {
+            return;
+        }
+        QMetaObject::invokeMethod(this, [=, this]() {
+            QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
+            QPixmap pixmap = QPixmap::fromImage(img);
+            pixmap = pixmap.scaled(root_widget_->size().width(), root_widget_->size().height());
+            if (!previewers_.contains(name)) {
+                previewers_[name] = new QLabel();
+                previewers_[name]->setWindowTitle(name.c_str());
+                previewers_[name]->resize(960, 540);
+                previewers_[name]->show();
+            }
+            previewers_[name]->setPixmap(pixmap);
+            previewers_[name]->repaint();
+        });
+    }
+
+    void GdiCapturePlugin::OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image) {
+
+    }
+
+}

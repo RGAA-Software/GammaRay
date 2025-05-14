@@ -222,10 +222,12 @@ if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()
 #
+
+# gdi 
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder  plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
         plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer tc_signaling_sdk #lib_GammaRayClient
-        plugin_mock_video_stream plugin_obj_detector plugin_net_relay QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client
+        plugin_mock_video_stream plugin_obj_detector plugin_net_relay plugin_gdi_capture QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client
         plugin_clipboard
 )
 
@@ -244,6 +246,7 @@ if(TC_USE_VR_MANAGER)
 endif ()
 
 add_custom_command(TARGET tc_build_all POST_BUILD
+# gdi 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/icon.ico"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_icon.ico"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/icon.ico"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_client_icon.ico"
@@ -306,6 +309,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_clipboard.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_clipboard.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/clipboard/plugin_clipboard.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_clipboard.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_gdi_capture.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_gdi_capture.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/gdi_capture/plugin_gdi_capture.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_gdi_capture.dll.toml"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

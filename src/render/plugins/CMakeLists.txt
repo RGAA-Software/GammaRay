@@ -15,6 +15,7 @@ add_subdirectory(was_audio_capture)
 add_subdirectory(opus_encoder)
 add_subdirectory(file_transfer)
 add_subdirectory(clipboard)
+add_subdirectory(gdi_capture)
 
 if(TC_USE_VR_MANAGER)
     add_definitions(-DVR_MANAGER_ENABLED=1)
