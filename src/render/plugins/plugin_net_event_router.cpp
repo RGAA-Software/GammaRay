@@ -314,7 +314,8 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessHeartBeat(std::shared_ptr<Message>&& msg) {
         app_->PostGlobalTask([=, this]() {
-            auto proto_msg = NetMessageMaker::MakeOnHeartBeatMsg(msg->heartbeat().index());
+            auto& hb = msg->heartbeat();
+            auto proto_msg = NetMessageMaker::MakeOnHeartBeatMsg(hb.index(), hb.timestamp());
             app_->PostNetMessage(proto_msg);
         });
     }

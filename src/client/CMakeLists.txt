@@ -58,6 +58,7 @@ set(SRCS_WS
         ui/key_state_panel.cpp
         ui/ct_statistics_panel.cpp
         ui/ct_stat_chart.cpp
+        ui/ct_stat_capture_info_item.cpp
         ui/float_sub_control_panel.cpp
         ui/float_sub_mode_panel.cpp
         ui/float_sub_display_panel.cpp

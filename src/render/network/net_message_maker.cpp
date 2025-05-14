@@ -36,7 +36,7 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-    std::string NetMessageMaker::MakeOnHeartBeatMsg(uint64_t index) {
+    std::string NetMessageMaker::MakeOnHeartBeatMsg(uint64_t index, int64_t timestamp) {
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kOnHeartBeat);
         auto hb = msg->mutable_on_heartbeat();
@@ -49,6 +49,7 @@ namespace tc
         hb->set_control_pressed(KeyHelper::IsControlPressed());
         hb->set_win_pressed(KeyHelper::IsWinPressed());
         hb->set_shift_pressed(KeyHelper::IsShiftPressed());
+        hb->set_timestamp(timestamp);
         return msg->SerializeAsString();
     }
 

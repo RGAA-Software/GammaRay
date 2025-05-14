@@ -11,6 +11,7 @@
 #include "tc_client_sdk_new/sdk_statistics.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/num_formatter.h"
+#include "ct_stat_capture_info_item.h"
 #include <QLabel>
 
 namespace tc
@@ -18,6 +19,9 @@ namespace tc
 
     const QString kChartDataSpeed = "Video&Audio Data Speed";
     const QString kChartNetworkDelay = "Network Delay";
+    const QString kChartDecodeDuration = "Decode Duration(ms)";
+    const QString kChartVideoFrameGap = "Video Frame Gap(ms)";
+    const QString kChartVideoFrameFps = "Video Frame FPS";
 
     CtStatisticsPanel::CtStatisticsPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         setWindowTitle("Statistics");
@@ -83,7 +87,7 @@ namespace tc
                 layout->addSpacing(10);
 
                 durations_stat_chart_ = new CtStatChart(context_, "Durations", {
-                        kChartDataSpeed,
+                        kChartNetworkDelay,
                 }, CtStatChartAxisSettings {
                         .count_ = 15,
                         .rng_beg_ = 0,
@@ -101,9 +105,230 @@ namespace tc
             }
         }
 
+        root_layout->addSpacing(20);
+
         // RIGHT
         {
+            //auto margin_left = 20;
+            auto right_layout = new NoMarginVLayout();
+            {
 
+                auto lbl = new QLabel(this);
+                lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
+                lbl->setText(tr("Information"));
+                right_layout->addSpacing(20);
+                right_layout->addWidget(lbl);
+                right_layout->addSpacing(10);
+
+                auto label_size = QSize(150, 30);
+                auto value_size = QSize(80, 30);
+
+                // line 1
+                {
+                    //
+                    auto layout = new NoMarginHLayout();
+                    // received data
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Received Data");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_received_data_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+
+                    // video format
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Video Format");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_video_format_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+
+                    // video color
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Video Color Mode");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_video_color_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+                    right_layout->addLayout(layout);
+
+                } // end line 1
+
+                // line 2
+                {
+                    //
+                    auto layout = new NoMarginHLayout();
+                    // received data
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Video Decoder");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_video_decoder_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+
+                    // video format
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        //label->setText("Video Format");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        //lbl_video_format_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+
+                    // video color
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        //label->setText("Video Color Mode");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        //lbl_video_color_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+                    right_layout->addLayout(layout);
+
+                } // end line 2
+
+                // monitor info
+                {
+
+                    // title
+                    auto lbl = new QLabel(this);
+                    lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
+                    lbl->setText(tr("Isolated Monitor Information"));
+                    right_layout->addSpacing(20);
+                    right_layout->addWidget(lbl);
+                    right_layout->addSpacing(10);
+
+                    // chart
+                    int capture_size = 4;
+                    {
+                        auto layout = new NoMarginHLayout();
+                        for (int i = 0; i < capture_size; i++) {
+                            auto item_widget = new CtStatCaptureInfoItem(context_, this);
+                            item_widget->setFixedSize(162, 185);
+
+                            auto object_name = std::format("item{}", i);
+                            item_widget->setObjectName(object_name.c_str());
+                            item_widget->SetOnClickWidgetCallback([=, this](QWidget* w) {
+                                for (const auto item : capture_info_items_) {
+                                    if (item->objectName() == QString::fromStdString(object_name)) {
+                                        item->Select();
+
+                                        stat_chat_stack_->setCurrentIndex(i);
+                                    }
+                                    else {
+                                        item->Unselect();
+                                    }
+                                }
+                            });
+                            layout->addWidget(item_widget);
+                            layout->addSpacing(10);
+                            capture_info_items_.push_back(item_widget);
+                        }
+                        layout->addStretch();
+                        right_layout->addSpacing(10);
+                        right_layout->addLayout(layout);
+                    }
+
+                    {
+                        auto layout = new NoMarginHLayout();
+                        stat_chat_stack_ = new QStackedWidget(this);
+                        stat_chat_stack_->setFixedSize(600, 250);
+
+                        for (int i = 0; i < capture_size; i++) {
+                            auto chart = new CtStatChart(context_, "", {
+                                    kChartVideoFrameGap,
+                                    kChartDecodeDuration,
+                                    kChartVideoFrameFps,
+                            }, CtStatChartAxisSettings {
+                                    .count_ = 15,
+                                    .rng_beg_ = 0,
+                                    .rng_end_ = 180,
+                                    .format_ = "%d"
+                            }, CtStatChartAxisSettings {
+                                    .count_ = 4,
+                                    .rng_beg_ = 0,
+                                    .rng_end_ = 200,
+                                    .format_ = "%d"
+                            }, this);
+                            chart->setFixedSize(stat_chat_stack_->size());
+                            stat_charts_.push_back(chart);
+                            stat_chat_stack_->addWidget(chart);
+                        }
+
+                        layout->addWidget(stat_chat_stack_);
+                        layout->addStretch();
+                        right_layout->addSpacing(20);
+                        right_layout->addLayout(layout);
+                    }
+                }
+            }
+
+            right_layout->addStretch();
+            root_layout->addLayout(right_layout);
         }
         root_layout->addStretch();
         root_layout->addSpacing(20);
@@ -143,6 +368,9 @@ namespace tc
     }
 
     void CtStatisticsPanel::UpdateDataSpeedChart() {
+        if (!lbl_received_data_) {
+            return;
+        }
         // data speed
         {
             std::map<QString, std::vector<float>> stat_value;
@@ -157,8 +385,52 @@ namespace tc
         //
         {
             std::map<QString, std::vector<float>> stat_value;
-            //stat_value.insert({kChartNetworkDelay, sdk_stat_->data_speeds_});
-            //durations_stat_chart_->UpdateLines(stat_value);
+            stat_value.insert({kChartNetworkDelay, sdk_stat_->net_delays_});
+            durations_stat_chart_->UpdateLines(stat_value);
+        }
+
+        {
+            lbl_received_data_->setText(NumFormatter::FormatStorageSize(sdk_stat_->recv_data_).c_str());
+            lbl_video_format_->setText(sdk_stat_->video_format_.c_str());
+            lbl_video_color_->setText(sdk_stat_->video_color_.c_str());
+
+            lbl_video_decoder_->setText(sdk_stat_->video_decoder_.c_str());
+        }
+
+        {
+            int index = 0;
+            for (const auto& [mon_name, value] : sdk_stat_->decode_durations_) {
+                if (index >= 4) {
+                    break;
+                }
+                capture_info_items_[index]->UpdateInfo(CtStatItemInfo {
+                    .name_ = mon_name,
+                });
+
+                std::map<QString, std::vector<float>> stat_value;
+                // decode duration
+                stat_value.insert({kChartDecodeDuration, value});
+
+                // gaps
+                if (sdk_stat_->video_recv_gaps_.contains(mon_name)) {
+                    stat_value.insert({kChartVideoFrameGap, sdk_stat_->video_recv_gaps_[mon_name]});
+                }
+
+                // video receive fps
+                if (sdk_stat_->video_recv_fps_.contains(mon_name)) {
+                    stat_value.insert({kChartVideoFrameFps, sdk_stat_->video_recv_fps_[mon_name]});
+                }
+
+                // update
+                stat_charts_[index]->UpdateTitle(mon_name.c_str());
+                stat_charts_[index]->UpdateLines(stat_value);
+
+                index++;
+            }
+
+            for (int i = index; i < 4; i++) {
+                capture_info_items_[index]->ClearInfo();
+            }
         }
     }
 }

@@ -373,7 +373,7 @@ namespace tc
             index++;
         }
         for (int i = index; i < 4; i++) {
-            capture_info_items_[index]->ClearInfo();
+            capture_info_items_[i]->ClearInfo();
         }
 
     }

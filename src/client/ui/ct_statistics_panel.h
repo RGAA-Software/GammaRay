@@ -8,6 +8,7 @@
 #include "base_widget.h"
 #include "tc_message.pb.h"
 #include <QLabel>
+#include <QStackedWidget>
 
 namespace tc
 {
@@ -16,6 +17,7 @@ namespace tc
     class FloatIcon;
     class CtStatChart;
     class SdkStatistics;
+    class CtStatCaptureInfoItem;
 
     class CtStatisticsPanel : public BaseWidget {
     public:
@@ -35,6 +37,14 @@ namespace tc
         CtStatChart* durations_stat_chart_ = nullptr;
         SdkStatistics* sdk_stat_ = nullptr;
         QLabel* lbl_data_speed_ = nullptr;
+        QLabel* lbl_received_data_ = nullptr;
+        QLabel* lbl_video_format_ = nullptr;
+        QLabel* lbl_video_color_ = nullptr;
+
+        QLabel* lbl_video_decoder_ = nullptr;
+        std::vector<CtStatCaptureInfoItem*> capture_info_items_;
+        QStackedWidget* stat_chat_stack_ = nullptr;
+        std::vector<CtStatChart*> stat_charts_;
     };
 
 }

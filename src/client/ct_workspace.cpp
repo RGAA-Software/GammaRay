@@ -565,7 +565,8 @@ namespace tc
 
         msg_listener_->Listen<OpenDebugPanelMsg>([=, this](const OpenDebugPanelMsg& msg) {
             context_->PostUITask([=, this]() {
-                st_panel_->setHidden(!st_panel_->isHidden());
+                //st_panel_->setHidden(!st_panel_->isHidden());
+                st_panel_->setHidden(false);
             });
         });
     }
