@@ -116,7 +116,7 @@ namespace tc
                 auto lbl = new QLabel(this);
                 lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
                 lbl->setText(tr("Information"));
-                right_layout->addSpacing(20);
+                right_layout->addSpacing(10);
                 right_layout->addWidget(lbl);
                 right_layout->addSpacing(10);
 
@@ -311,7 +311,59 @@ namespace tc
                     }
                     right_layout->addLayout(layout);
 
-                } // end line 2
+                } // end line 3
+
+                // line 4
+                {
+                    //
+                    auto layout = new NoMarginHLayout();
+                    // remote computer info
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Remote PC Info");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_remote_computer_info_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+                    right_layout->addLayout(layout);
+
+                } // end line 4
+
+                // line 4
+                {
+                    //
+                    auto layout = new NoMarginHLayout();
+                    // remote computer info
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Local PC Info");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_local_computer_info_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+                    right_layout->addLayout(layout);
+
+                } // end line 4
 
                 // monitor info
                 {
@@ -320,9 +372,9 @@ namespace tc
                     auto lbl = new QLabel(this);
                     lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
                     lbl->setText(tr("Isolated Monitor Information"));
-                    right_layout->addSpacing(20);
-                    right_layout->addWidget(lbl);
                     right_layout->addSpacing(10);
+                    right_layout->addWidget(lbl);
+                    right_layout->addSpacing(6);
 
                     // chart
                     int capture_size = 4;
@@ -358,7 +410,7 @@ namespace tc
                     {
                         auto layout = new NoMarginHLayout();
                         stat_chat_stack_ = new QStackedWidget(this);
-                        stat_chat_stack_->setFixedSize(600, 250);
+                        stat_chat_stack_->setFixedSize(680, 250);
 
                         for (int i = 0; i < capture_size; i++) {
                             auto chart = new CtStatChart(context_, "", {
@@ -383,13 +435,13 @@ namespace tc
 
                         layout->addWidget(stat_chat_stack_);
                         layout->addStretch();
-                        right_layout->addSpacing(20);
+                        right_layout->addSpacing(10);
                         right_layout->addLayout(layout);
                     }
                 }
             }
 
-            right_layout->addStretch();
+            right_layout->addStretch(100);
             root_layout->addLayout(right_layout);
         }
         root_layout->addStretch();

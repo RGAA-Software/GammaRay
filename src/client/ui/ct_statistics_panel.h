@@ -43,6 +43,8 @@ namespace tc
         QLabel* lbl_video_capture_type_ = nullptr;
         QLabel* lbl_audio_capture_type_ = nullptr;
         QLabel* lbl_audio_encode_type_ = nullptr;
+        QLabel* lbl_remote_computer_info_ = nullptr;
+        QLabel* lbl_local_computer_info_ = nullptr;
 
         QLabel* lbl_video_decoder_ = nullptr;
         std::vector<CtStatFrameInfoItem*> frame_info_items_;
