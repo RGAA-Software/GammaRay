@@ -93,7 +93,7 @@ namespace tc
 
         std::atomic_int dda_failed_count_{0};
 
-        // in app level not in plugins
+        // in renderer app level not in plugins
         std::map<std::string, std::shared_ptr<MsgWorkingCaptureInfo>> app_captures_info_;
 
         RdSettings* settings_ = nullptr;

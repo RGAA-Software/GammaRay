@@ -14,6 +14,7 @@ namespace tc
 {
 
     class Data;
+    class RdApplication;
 
     class NetMessageMaker {
     public:
@@ -21,7 +22,7 @@ namespace tc
         static std::string MakeHelloMsg();
         static std::string MakeAckMsg();
         static std::string MakeHeartBeatMsg();
-        static std::string MakeOnHeartBeatMsg(uint64_t index, int64_t timestamp);
+        static std::string MakeOnHeartBeatMsg(const std::shared_ptr<RdApplication>& app, uint64_t index, int64_t timestamp);
         static std::string MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
                                              uint64_t frame_index, int frame_width, int frame_height, bool key,
                                              const std::string& display_name, int mon_left,

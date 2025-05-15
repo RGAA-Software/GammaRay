@@ -42,7 +42,7 @@ namespace tc
         QLabel* lbl_send_media_bytes_ = nullptr;
         QLabel* lbl_send_media_speed_ = nullptr;
 
-        std::vector<StatCaptureInfoItem*> capture_info_items_;
+        std::vector<StatCaptureInfoItem*> frame_info_items_;
         QStackedWidget* stat_chat_stack_ = nullptr;
         std::vector<StatChart*> stat_charts_;
     };

@@ -30,10 +30,6 @@ namespace tc
         chart_->setTitleFont(font);
         for (auto& n : line_names) {
             auto s = new QLineSeries();
-//            auto pen = s->pen();
-//            pen.setWidth(2);
-//            pen.setColor(pen.color());
-//            s->setPen(pen);
             s->setName(n);
             series_.insert({n, s});
             chart_->addSeries(s);

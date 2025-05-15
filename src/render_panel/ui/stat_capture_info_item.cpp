@@ -97,7 +97,7 @@ namespace tc
         painter.setRenderHint(QPainter::Antialiasing);
         QPen pen;
         if (mouse_enter_ || selected_) {
-            pen.setColor(0x888888);
+            pen.setColor(0x2979ff);
         }
         else {
             if (lbl_target_name_->text().isEmpty()) {

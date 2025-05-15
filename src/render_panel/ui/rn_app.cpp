@@ -251,7 +251,7 @@ namespace tc
                 auto object_name = std::format("item{}", i);
                 item_widget->setObjectName(object_name.c_str());
                 item_widget->SetOnClickWidgetCallback([=, this](QWidget* w) {
-                    for (const auto item : capture_info_items_) {
+                    for (const auto item : frame_info_items_) {
                         if (item->objectName() == QString::fromStdString(object_name)) {
                             item->Select();
 
@@ -264,7 +264,7 @@ namespace tc
                 });
                 layout->addWidget(item_widget);
                 layout->addSpacing(10);
-                capture_info_items_.push_back(item_widget);
+                frame_info_items_.push_back(item_widget);
             }
             layout->addStretch();
             root_layout->addSpacing(10);
@@ -301,6 +301,10 @@ namespace tc
 
         setLayout(root_layout);
 
+        // select default chart
+        frame_info_items_[0]->Select();
+        stat_chat_stack_->setCurrentIndex(0);
+
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgGrTimer100>([=, this](const MsgGrTimer100& msg) {
             this->UpdateUI();
@@ -333,7 +337,7 @@ namespace tc
         lbl_audio_capture_type_->setText(stat->audio_capture_type_.c_str());
         lbl_audio_encode_type_->setText("OPUS");
 
-//        for (const auto& cp : capture_info_items_) {
+//        for (const auto& cp : frame_info_items_) {
 //            cp->ClearInfo();
 //        }
         int index = 0;
@@ -342,7 +346,7 @@ namespace tc
                 break;
             }
             stat_charts_[index]->UpdateTitle(info.target_name().c_str());
-            capture_info_items_[index]->UpdateInfo(info);
+            frame_info_items_[index]->UpdateInfo(info);
 
             std::map<QString, std::vector<int32_t>> stat_value;
             // update video frame gap
@@ -373,7 +377,7 @@ namespace tc
             index++;
         }
         for (int i = index; i < 4; i++) {
-            capture_info_items_[i]->ClearInfo();
+            frame_info_items_[i]->ClearInfo();
         }
 
     }

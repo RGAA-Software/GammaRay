@@ -6,8 +6,14 @@
 
 #include "tc_common_new/data.h"
 #include "tc_message.pb.h"
-//#include "rd_statistics.h"
 #include "tc_common_new/key_helper.h"
+#include "plugins/plugin_manager.h"
+#include "plugins/plugin_ids.h"
+#include "render/rd_app.h"
+#include "render/rd_statistics.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
@@ -36,7 +42,9 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-    std::string NetMessageMaker::MakeOnHeartBeatMsg(uint64_t index, int64_t timestamp) {
+    std::string NetMessageMaker::MakeOnHeartBeatMsg(const std::shared_ptr<RdApplication>& app, uint64_t index, int64_t timestamp) {
+        auto stat = RdStatistics::Instance();
+
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kOnHeartBeat);
         auto hb = msg->mutable_on_heartbeat();
@@ -50,6 +58,39 @@ namespace tc
         hb->set_win_pressed(KeyHelper::IsWinPressed());
         hb->set_shift_pressed(KeyHelper::IsShiftPressed());
         hb->set_timestamp(timestamp);
+        // TODO::
+        hb->set_video_capture_type("DXGI");
+        hb->set_audio_capture_type("WASAPI");
+        hb->set_audio_encode_type("OPUS");
+
+        //
+        auto video_capture_plugin = app->GetWorkingMonitorCapturePlugin();
+        auto video_encoder_plugins = app->GetWorkingVideoEncoderPlugins();
+        if (video_capture_plugin && !video_encoder_plugins.empty()) {
+            auto captures_info = video_capture_plugin->GetWorkingCapturesInfo();
+            for (const auto& [name, info] : captures_info) {
+                auto monitors_info = hb->mutable_monitors_info();
+                IsolatedMonitorStatisticsInfoInRender st_info;
+                // capture info
+                st_info.set_name(info->target_name_);
+                st_info.set_capture_fps(info->fps_);
+                st_info.set_capture_frame_width(info->capture_frame_width_);
+                st_info.set_capture_frame_height(info->capture_frame_height_);
+
+                // encoder info
+                if (video_encoder_plugins.contains(info->target_name_)) {
+                    auto video_encoder_plugin = video_encoder_plugins[info->target_name_];
+                    auto video_encoders_info = video_encoder_plugin->GetWorkingCapturesInfo();
+                    if (video_encoders_info.contains(info->target_name_)) {
+                        auto encoder_info = video_encoders_info[info->target_name_];
+                        st_info.set_encoder_name(encoder_info->encoder_name_);
+                        st_info.set_encode_fps(encoder_info->fps_);
+                    }
+                }
+                monitors_info->insert({name, st_info});
+            }
+        }
+
         return msg->SerializeAsString();
     }
 

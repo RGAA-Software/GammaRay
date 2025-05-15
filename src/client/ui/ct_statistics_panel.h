@@ -17,7 +17,7 @@ namespace tc
     class FloatIcon;
     class CtStatChart;
     class SdkStatistics;
-    class CtStatCaptureInfoItem;
+    class CtStatFrameInfoItem;
 
     class CtStatisticsPanel : public BaseWidget {
     public:
@@ -40,9 +40,12 @@ namespace tc
         QLabel* lbl_received_data_ = nullptr;
         QLabel* lbl_video_format_ = nullptr;
         QLabel* lbl_video_color_ = nullptr;
+        QLabel* lbl_video_capture_type_ = nullptr;
+        QLabel* lbl_audio_capture_type_ = nullptr;
+        QLabel* lbl_audio_encode_type_ = nullptr;
 
         QLabel* lbl_video_decoder_ = nullptr;
-        std::vector<CtStatCaptureInfoItem*> capture_info_items_;
+        std::vector<CtStatFrameInfoItem*> frame_info_items_;
         QStackedWidget* stat_chat_stack_ = nullptr;
         std::vector<CtStatChart*> stat_charts_;
     };

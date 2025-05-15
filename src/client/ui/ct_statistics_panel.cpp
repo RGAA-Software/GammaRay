@@ -11,7 +11,7 @@
 #include "tc_client_sdk_new/sdk_statistics.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/num_formatter.h"
-#include "ct_stat_capture_info_item.h"
+#include "ct_stat_frame_info_item.h"
 #include <QLabel>
 
 namespace tc
@@ -67,9 +67,9 @@ namespace tc
                             .rng_end_ = 180,
                             .format_ = "%d"
                         }, CtStatChartAxisSettings {
-                            .count_ = 4,
+                            .count_ = 6,
                             .rng_beg_ = 0,
-                            .rng_end_ = 3,
+                            .rng_end_ = 5,
                             .format_ = "%d MB/s"
                         }, this);
                     data_speed_stat_chart_->setFixedSize(600, 250);
@@ -82,11 +82,11 @@ namespace tc
                 layout->addSpacing(20);
                 auto lbl = new QLabel(this);
                 lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
-                lbl->setText(tr("Time Durations"));
+                lbl->setText(tr("Network"));
                 layout->addWidget(lbl);
                 layout->addSpacing(10);
 
-                durations_stat_chart_ = new CtStatChart(context_, "Durations", {
+                durations_stat_chart_ = new CtStatChart(context_, "Network Information", {
                         kChartNetworkDelay,
                 }, CtStatChartAxisSettings {
                         .count_ = 15,
@@ -191,7 +191,7 @@ namespace tc
                 {
                     //
                     auto layout = new NoMarginHLayout();
-                    // received data
+                    // video decoder
                     {
                         auto item_layout = new NoMarginHLayout();
                         auto label = new QLabel(this);
@@ -210,17 +210,17 @@ namespace tc
                         layout->addLayout(item_layout);
                     }
 
-                    // video format
+                    // video capture type
                     {
                         auto item_layout = new NoMarginHLayout();
                         auto label = new QLabel(this);
                         label->setFixedSize(label_size);
-                        //label->setText("Video Format");
+                        label->setText("Video Capture Type");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
                         auto op = new QLabel(this);
-                        //lbl_video_format_ = op;
+                        lbl_video_capture_type_ = op;
                         op->setText("");
                         op->setFixedSize(value_size);
                         op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -229,17 +229,79 @@ namespace tc
                         layout->addLayout(item_layout);
                     }
 
-                    // video color
+                    // audio capture type
                     {
                         auto item_layout = new NoMarginHLayout();
                         auto label = new QLabel(this);
                         label->setFixedSize(label_size);
-                        //label->setText("Video Color Mode");
+                        label->setText("Audio Capture Mode");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
                         auto op = new QLabel(this);
-                        //lbl_video_color_ = op;
+                        lbl_audio_capture_type_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+                    right_layout->addLayout(layout);
+
+                } // end line 2
+
+                // line 3
+                {
+                    //
+                    auto layout = new NoMarginHLayout();
+                    // audio encode type
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("Audio Encode Type");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_audio_encode_type_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        //lbl_capture_type_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new QLabel(this);
+                        label->setFixedSize(label_size);
+                        label->setText("");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        //lbl_audio_capture_type_ = op;
                         op->setText("");
                         op->setFixedSize(value_size);
                         op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -267,13 +329,13 @@ namespace tc
                     {
                         auto layout = new NoMarginHLayout();
                         for (int i = 0; i < capture_size; i++) {
-                            auto item_widget = new CtStatCaptureInfoItem(context_, this);
+                            auto item_widget = new CtStatFrameInfoItem(context_, this);
                             item_widget->setFixedSize(162, 185);
 
                             auto object_name = std::format("item{}", i);
                             item_widget->setObjectName(object_name.c_str());
                             item_widget->SetOnClickWidgetCallback([=, this](QWidget* w) {
-                                for (const auto item : capture_info_items_) {
+                                for (const auto item : frame_info_items_) {
                                     if (item->objectName() == QString::fromStdString(object_name)) {
                                         item->Select();
 
@@ -286,7 +348,7 @@ namespace tc
                             });
                             layout->addWidget(item_widget);
                             layout->addSpacing(10);
-                            capture_info_items_.push_back(item_widget);
+                            frame_info_items_.push_back(item_widget);
                         }
                         layout->addStretch();
                         right_layout->addSpacing(10);
@@ -333,6 +395,10 @@ namespace tc
         root_layout->addStretch();
         root_layout->addSpacing(20);
         setLayout(root_layout);
+
+        // select default page
+        frame_info_items_[0]->Select();
+        stat_chat_stack_->setCurrentIndex(0);
 
         // messages
         msg_listener_->Listen<SdkMsgTimer1000>([=, this](const SdkMsgTimer1000& msg) {
@@ -395,6 +461,10 @@ namespace tc
             lbl_video_color_->setText(sdk_stat_->video_color_.c_str());
 
             lbl_video_decoder_->setText(sdk_stat_->video_decoder_.c_str());
+            lbl_video_capture_type_->setText(sdk_stat_->video_capture_type_.c_str());
+            lbl_audio_capture_type_->setText(sdk_stat_->audio_capture_type_.c_str());
+
+            lbl_audio_encode_type_->setText(sdk_stat_->audio_encode_type_.c_str());
         }
 
         {
@@ -403,10 +473,28 @@ namespace tc
                 if (index >= 4) {
                     break;
                 }
-                capture_info_items_[index]->UpdateInfo(CtStatItemInfo {
-                    .name_ = mon_name,
-                });
 
+                if (sdk_stat_->frames_size_.contains(mon_name) && sdk_stat_->render_monitor_stat_.contains(mon_name)) {
+                    auto& frame_size = sdk_stat_->frames_size_[mon_name];
+                    float target_recv_fps = 0;
+                    if (sdk_stat_->video_recv_fps_.contains(mon_name)) {
+                        if (auto& recv_fps = sdk_stat_->video_recv_fps_[mon_name]; !recv_fps.empty()) {
+                            target_recv_fps = recv_fps[recv_fps.size()-1];
+                        }
+                    }
+                    auto render_monitor_stat = sdk_stat_->render_monitor_stat_[mon_name];
+                    frame_info_items_[index]->UpdateInfo(CtStatItemInfo{
+                        .name_ = mon_name,
+                        .frame_width_ = frame_size.width_,
+                        .frame_height_ = frame_size.height_,
+                        .received_fps_ = (int)target_recv_fps,
+                        .render_capture_fps_ = render_monitor_stat.capture_fps(),
+                        .render_capture_frame_width_ = render_monitor_stat.capture_frame_width(),
+                        .render_capture_frame_height_ = render_monitor_stat.capture_frame_height(),
+                        .render_encoder_name_ = render_monitor_stat.encoder_name(),
+                        .render_encode_fps_ = render_monitor_stat.encode_fps(),
+                    });
+                }
                 std::map<QString, std::vector<float>> stat_value;
                 // decode duration
                 stat_value.insert({kChartDecodeDuration, value});
@@ -429,7 +517,7 @@ namespace tc
             }
 
             for (int i = index; i < 4; i++) {
-                capture_info_items_[index]->ClearInfo();
+                frame_info_items_[index]->ClearInfo();
             }
         }
     }
