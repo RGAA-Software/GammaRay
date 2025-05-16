@@ -19,12 +19,9 @@ namespace tc
     const std::string kKeyScaleMode = "key_scale_mode";
     const std::string kKeyDeviceId = "key_device_id";
 
-    void Settings::SetSharedPreference(const std::shared_ptr<SharedPreference>& sp) {
-        version_ = "V 1.1.9";
-        sp_ = sp;
-    }
-
     void Settings::LoadMainSettings() {
+        version_ = "V 1.1.9";
+        sp_ = SharedPreference::Instance();
         auto init = sp_->Get(kKeyInit);
         if (init.empty()) {
             sp_->Put(kKeyInit, "inited");
@@ -42,6 +39,8 @@ namespace tc
     }
 
     void Settings::LoadRenderSettings() {
+        version_ = "V 1.1.9";
+        sp_ = SharedPreference::Instance();
         auto work_mode = sp_->Get(kKeyWorkMode);
         if (!work_mode.empty()) {
             work_mode_ = (SwitchWorkMode::WorkMode)std::atoi(work_mode.c_str());

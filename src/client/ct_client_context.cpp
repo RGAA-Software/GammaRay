@@ -10,6 +10,7 @@
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
+#include "tc_common_new/hardware.h"
 #include "client/ct_app_message.h"
 #include <QTimer>
 #include <QApplication>
@@ -26,8 +27,6 @@ namespace tc
         this->capturing_info_ = SdkCaptureMonitorInfo {
 
         };
-        sp_ = std::make_shared<SharedPreference>();
-        sp_->Init("", std::format("./gr_data/app.{}.dat", this->name_));
     }
 
     ClientContext::~ClientContext() {
@@ -36,6 +35,12 @@ namespace tc
 
     void ClientContext::Init(bool render) {
         render_ = render;
+
+        sp_ = SharedPreference::Instance();
+        auto sp_name = std::format("./gr_data/app.{}.dat", this->name_);
+        if (!sp_->Init("", sp_name)) {
+            LOGE("Init sp failed: {}", sp_name);
+        }
 
         auto base_dir = QApplication::applicationDirPath();
         auto log_path = base_dir + std::format("/gr_logs/app.{}.log", this->name_).c_str();
@@ -57,7 +62,6 @@ namespace tc
         LOGI("ClientContext in {}", this->name_);
 
         auto settings = Settings::Instance();
-        settings->SetSharedPreference(sp_);
         if (!render) {
             settings->LoadMainSettings();
         } else {
@@ -69,6 +73,12 @@ namespace tc
 
         LOGI("Client params for: {}", this->name_);
         settings->Dump();
+
+        PostTask([=, this]() {
+            auto hardware = Hardware::Instance();
+            hardware->Detect(false, true, false);
+            hardware->Dump();
+        });
     }
 
     void ClientContext::PostTask(std::function<void()>&& task) {

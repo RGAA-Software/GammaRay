@@ -38,7 +38,6 @@ namespace tc
             return &sts;
         }
 
-        void SetSharedPreference(const std::shared_ptr<SharedPreference>& sp);
         void LoadMainSettings();
         void LoadRenderSettings();
 
@@ -65,7 +64,7 @@ namespace tc
         bool full_color_on_ = false;
         MultiDisplayMode display_mode_ = MultiDisplayMode::kSeparated;
         VideoRenderType render_type_ = VideoRenderType::kOpenGL;
-        std::shared_ptr<SharedPreference> sp_ = nullptr;
+        SharedPreference* sp_ = nullptr;
         std::string remote_address_;
         int file_transfer_port_ = 20369;
         std::string file_transfer_path_ = "/file/transfer";

@@ -44,7 +44,7 @@ namespace tc
 
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
-        std::shared_ptr<SharedPreference> sp_ = nullptr;
+        SharedPreference* sp_ = nullptr;
         std::shared_ptr<Thread> task_thread_ = nullptr;
         std::string name_;
         bool render_ = false;

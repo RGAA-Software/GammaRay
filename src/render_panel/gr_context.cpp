@@ -9,6 +9,7 @@
 #include "tc_common_new/uuid.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/time_util.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_settings.h"
 #include "render_panel/game/db_game_manager.h"
@@ -41,8 +42,11 @@ namespace tc
         sp_ = SharedPreference::Instance();
 
         auto hardware = Hardware::Instance();
+        auto beg = TimeUtil::GetCurrentTimestamp();
         hardware->Detect(false, true, false);
         hardware->Dump();
+        auto end = TimeUtil::GetCurrentTimestamp();
+        LOGI("Detect hardware info used: {}ms", end-beg);
 
         srv_manager_ = std::make_shared<GrRenderController>(app);
 

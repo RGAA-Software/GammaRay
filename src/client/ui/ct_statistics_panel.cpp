@@ -11,6 +11,7 @@
 #include "tc_client_sdk_new/sdk_statistics.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/num_formatter.h"
+#include "tc_common_new/hardware.h"
 #include "ct_stat_frame_info_item.h"
 #include <QLabel>
 
@@ -329,8 +330,8 @@ namespace tc
                         auto op = new QLabel(this);
                         lbl_remote_computer_info_ = op;
                         op->setText("");
-                        op->setFixedSize(value_size);
-                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        op->setFixedSize(QSize(520, 30));
+                        op->setStyleSheet("font-size: 12px; font-weight:500; color: #2979ff;");
                         item_layout->addWidget(op);
                         item_layout->addStretch();
                         layout->addLayout(item_layout);
@@ -355,8 +356,8 @@ namespace tc
                         auto op = new QLabel(this);
                         lbl_local_computer_info_ = op;
                         op->setText("");
-                        op->setFixedSize(value_size);
-                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        op->setFixedSize(QSize(520, 30));
+                        op->setStyleSheet("font-size: 12px; font-weight:500; color: #2979ff;");
                         item_layout->addWidget(op);
                         item_layout->addStretch();
                         layout->addLayout(item_layout);
@@ -517,6 +518,23 @@ namespace tc
             lbl_audio_capture_type_->setText(sdk_stat_->audio_capture_type_.c_str());
 
             lbl_audio_encode_type_->setText(sdk_stat_->audio_encode_type_.c_str());
+
+            auto hardware = Hardware::Instance();
+            std::stringstream ss;
+            if (hardware->gpus_.empty()) {
+                ss << "NO GPU";
+            }
+            else {
+                for (const auto &gpu: hardware->gpus_) {
+                    ss << gpu.name_ << ";";
+                }
+            }
+            lbl_local_computer_info_->setText(std::format("{} / {} / {}", hardware->hw_cpu_.name_, NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str()).c_str());
+            lbl_local_computer_info_->setToolTip(lbl_local_computer_info_->text());
+
+            lbl_remote_computer_info_->setText(sdk_stat_->remote_pc_info_.c_str());
+            lbl_remote_computer_info_->setToolTip(lbl_remote_computer_info_->text());
+
         }
 
         {

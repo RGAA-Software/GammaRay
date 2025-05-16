@@ -7,6 +7,7 @@
 #include "tc_common_new/data.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/key_helper.h"
+#include "tc_common_new/hardware.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/plugin_ids.h"
 #include "render/rd_app.h"
@@ -14,6 +15,7 @@
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
+#include "tc_common_new/num_formatter.h"
 
 namespace tc
 {
@@ -62,6 +64,19 @@ namespace tc
         hb->set_video_capture_type("DXGI");
         hb->set_audio_capture_type("WASAPI");
         hb->set_audio_encode_type("OPUS");
+
+        auto hardware = Hardware::Instance();
+        std::stringstream ss;
+        if (hardware->gpus_.empty()) {
+            ss << "NO GPU";
+        }
+        else {
+            for (const auto &gpu: hardware->gpus_) {
+                ss << gpu.name_ << ";";
+            }
+        }
+        auto pc_info = std::format("{} / {} / {}", hardware->hw_cpu_.name_, NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str());
+        hb->set_pc_info(pc_info);
 
         //
         auto video_capture_plugin = app->GetWorkingMonitorCapturePlugin();

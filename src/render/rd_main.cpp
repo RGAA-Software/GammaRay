@@ -7,6 +7,7 @@
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/base64.h"
 #include "tc_common_new/folder_util.h"
+#include "tc_common_new/hardware.h"
 #include "gflags/gflags.h"
 
 #include <QLockFile>
@@ -241,5 +242,11 @@ int main(int argc, char** argv) {
     app->Init(argc, argv);
     app->CaptureControlC();
     settings->LoadSettingsFromDatabase();
+
+    // hardware
+    auto hardware = Hardware::Instance();
+    hardware->Detect(false, true, false);
+    hardware->Dump();
+
     return app->Run();
 }
