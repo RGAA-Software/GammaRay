@@ -17,7 +17,7 @@
 namespace tc
 {
 
-    EditRelayStreamDialog::EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    EditRelayStreamDialog::EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
         setFixedSize(375, 475);
@@ -27,7 +27,7 @@ namespace tc
     EditRelayStreamDialog::~EditRelayStreamDialog() = default;
 
     void EditRelayStreamDialog::CreateLayout() {
-        if (stream_item_.IsValid()) {
+        if (stream_item_->IsValid()) {
             setWindowTitle(tr("Edit Device"));
         } else {
             setWindowTitle(tr("Add Device"));
@@ -58,7 +58,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto edit = new QLabel(this);
-            edit->setText(stream_item_.remote_device_id_.c_str());
+            edit->setText(stream_item_->remote_device_id_.c_str());
             edit->setStyleSheet("font-size: 16px; font-weight: 700; color: #2979ff;");
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -83,7 +83,7 @@ namespace tc
 
             auto edit = new TcPasswordInput(this);
             password_input_ = edit;
-            password_input_->SetPassword(stream_item_.remote_device_random_pwd_.c_str());
+            password_input_->SetPassword(stream_item_->remote_device_random_pwd_.c_str());
 
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -108,7 +108,7 @@ namespace tc
             auto validator = new QIntValidator(this);
             edit->setValidator(validator);
             edt_stream_name_ = edit;
-            edt_stream_name_->setText(stream_item_.stream_name_.c_str());
+            edt_stream_name_->setText(stream_item_->stream_name_.c_str());
 
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);

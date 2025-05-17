@@ -18,7 +18,6 @@
 namespace tc
 {
 
-    static std::string kClientDeviceId = "client_device_id";
     static std::string kClientEmbedName = "ui.embed";
 
     ClientContext::ClientContext(const std::string& name, QObject* parent) : QObject(parent) {
@@ -54,10 +53,6 @@ namespace tc
         else {
             // single running
             Logger::InitLog(log_path.toStdString(), true);
-            // client panel
-            if (!render_) {
-                device_id_ = GetValueByKey(kClientDeviceId);
-            }
         }
         LOGI("ClientContext in {}", this->name_);
 
@@ -133,15 +128,6 @@ namespace tc
 
     std::string ClientContext::GetCapturingMonitorName() const {
         return capturing_info_.mon_name_;
-    }
-
-    std::string ClientContext::GetDeviceId() {
-        return device_id_;
-    }
-
-    void ClientContext::SetDeviceId(const std::string& id) {
-        device_id_ = id;
-        SaveKeyValue(kClientDeviceId, id);
     }
 
 }

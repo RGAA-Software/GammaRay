@@ -41,11 +41,14 @@ namespace tc
         void LoadMainSettings();
         void LoadRenderSettings();
 
-        bool IsAudioEnabled() const;
-        bool IsClipboardEnabled() const;
-        bool IsFullColorEnabled() const;
+        [[nodiscard]] bool IsAudioEnabled() const;
+        [[nodiscard]] bool IsClipboardEnabled() const;
+        [[nodiscard]] bool IsFullColorEnabled() const;
         MultiDisplayMode GetMultiDisplayMode();
         VideoRenderType GetVideoRenderType();
+
+        // use IP:PORT to connect directly
+        [[nodiscard]] bool IsDirectConnect();
 
         void SetAudioEnabled(bool enabled);
         // 废弃

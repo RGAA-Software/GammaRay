@@ -8,10 +8,12 @@
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
+#include "tc_client_panel_message.pb.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/transfer/file_transfer.h"
+#include "tc_common_new/url_helper.h"
 
 namespace tc
 {
@@ -172,10 +174,24 @@ namespace tc
                 sess_ptr->ws_stream().binary(true);
                 sess_ptr->set_no_delay(true);
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
+
+                auto query = sess_ptr->get_request().get_query();
+                auto params = UrlHelper::ParseQueryString(std::string(query.data(), query.size()));
+
                 if (path == kUrlPanel) {
+                    for (const auto& [k, v] : params) {
+                        LOGI("query param, k: {}, v: {}", k, v);
+                    }
+                    LOGI("App server {} open, query: {}", path, query);
+                    std::string stream_id;
+                    if (params.contains("stream_id")) {
+                        stream_id = params["stream_id"];
+                    }
+
                     auto ws_sess = std::make_shared<WSSession>();
                     ws_sess->socket_fd_ = socket_fd;
                     ws_sess->session_ = sess_ptr;
+                    ws_sess->stream_id_ = stream_id;
                     this->panel_sessions_.Insert(socket_fd, ws_sess);
                     LOGI("Panel;client connect : {}", socket_fd);
                 }
@@ -248,7 +264,7 @@ namespace tc
 
     void WsPanelServer::PostPanelMessage(const std::string& msg, bool only_inner) {
         panel_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
-            if (only_inner && sess->session_type_ != tc::SessionType::kInnerServer) {
+            if (only_inner && sess->session_type_ != tccp::CpSessionType::kInnerServer) {
                 return;
             }
             if (sess->session_) {
@@ -257,14 +273,13 @@ namespace tc
         });
     }
 
-    void WsPanelServer::ParsePanelMessage(uint64_t socket_fd, std::string_view msg) {
-        auto proto_msg = std::make_shared<tc::Message>();
+    bool WsPanelServer::ParsePanelMessage(uint64_t socket_fd, std::string_view msg) {
+        auto proto_msg = std::make_shared<tccp::CpMessage>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
-            LOGE("Parse binary message failed.");
-            return;
+            return false;
         }
-        if (proto_msg->type() == tc::kUIServerHello) {
-            auto hello = proto_msg->ui_server_hello();
+        if (proto_msg->type() == tccp::CpMessageType::kCpHello) {
+            auto hello = proto_msg->hello();
             panel_sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
                 if (v->socket_fd_ == socket_fd) {
                     v->session_type_ = hello.type();
@@ -272,6 +287,20 @@ namespace tc
                 }
             });
         }
+        else if (proto_msg->type() == tccp::CpMessageType::kCpHeartBeat) {
+            auto hb = proto_msg->heartbeat();
+            LOGI("HB: stream id: {} remote desktop: {} os: {}", proto_msg->stream_id(), hb.remote_device_desktop_name(), hb.remote_os_name());
+            if (proto_msg->stream_id().empty() || hb.remote_device_desktop_name().empty() || hb.remote_os_name().empty()) {
+                return false;
+            }
+
+            context_->SendAppMessage(MsgRemotePeerInfo {
+                .stream_id_ = proto_msg->stream_id(),
+                .desktop_name_ = hb.remote_device_desktop_name(),
+                .os_version_ = hb.remote_os_name(),
+            });
+        }
+        return true;
     }
 
     void WsPanelServer::SyncPanelInfo() {
@@ -309,7 +338,7 @@ namespace tc
             LOGE("Parse binary message failed.");
             return;
         }
-        if (proto_msg->type() == tc::kUIServerHello) {
+        /*if (proto_msg->type() == tc::kUIServerHello) {
             auto hello = proto_msg->ui_server_hello();
             panel_sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
                 if (v->socket_fd_ == socket_fd) {
@@ -318,7 +347,7 @@ namespace tc
                 }
             });
         }
-        else if (proto_msg->type() == tc::kCaptureStatistics) {
+        else */if (proto_msg->type() == tc::kCaptureStatistics) {
             auto statistics = std::make_shared<CaptureStatistics>();
             statistics->CopyFrom(proto_msg->capture_statistics());
             context_->SendAppMessage(MsgCaptureStatistics{

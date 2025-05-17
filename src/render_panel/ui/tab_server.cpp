@@ -198,18 +198,18 @@ namespace tc
 
                     recent_streams_ = stream_db_mgr_->GetStreamsSortByCreatedTime(1, 5, false);
                     for (auto& stream : recent_streams_) {
-                        remote_codes->addItem(stream.remote_device_id_.c_str());
+                        remote_codes->addItem(stream->remote_device_id_.c_str());
                     }
 
                     connect(remote_codes, &QComboBox::currentTextChanged, this, [this](const QString& text) {
                         std::string password = "";
                         for (auto& item : recent_streams_) {
-                            if (item.remote_device_id_ == text.toStdString()) {
-                                if (!item.remote_device_safety_pwd_.empty()) {
-                                    password = item.remote_device_safety_pwd_;
+                            if (item->remote_device_id_ == text.toStdString()) {
+                                if (!item->remote_device_safety_pwd_.empty()) {
+                                    password = item->remote_device_safety_pwd_;
                                 }
-                                else if (!item.remote_device_random_pwd_.empty()) {
-                                    password = item.remote_device_random_pwd_;
+                                else if (!item->remote_device_random_pwd_.empty()) {
+                                    password = item->remote_device_random_pwd_;
                                 }
                             }
                         }
@@ -237,7 +237,7 @@ namespace tc
                     password_input_->setFixedSize(remote_input_width, 35);
                     if (!recent_streams_.empty()) {
                         auto first_item = recent_streams_.at(0);
-                        auto item_pwd = first_item.remote_device_random_pwd_;
+                        auto item_pwd = first_item->remote_device_random_pwd_;
                         password_input_->SetPassword(item_pwd.c_str());
                     }
                     input_layout->addSpacing(5);
@@ -282,8 +282,8 @@ namespace tc
                         if (already_exist_remote_device) {
                             auto remote_device = opt_remote_device.value();
                             // its passwords
-                            random_password = remote_device.remote_device_random_pwd_;
-                            safety_password = remote_device.remote_device_safety_pwd_;
+                            random_password = remote_device->remote_device_random_pwd_;
+                            safety_password = remote_device->remote_device_safety_pwd_;
 
                             // the input password is not equals to random password, neither the safety password
                             // this is a new password, will determine its type
@@ -325,20 +325,20 @@ namespace tc
                             return;
                         }
 
-                        StreamItem item;
-                        item.stream_id_ = "id_" + remote_device_id;
-                        item.stream_name_ = remote_device_id;
-                        item.stream_host_ = relay_device_info.relay_server_ip_;
-                        item.stream_port_ = relay_device_info.relay_server_port_;
-                        item.encode_bps_ = 0;
-                        item.encode_fps_ = 0;
-                        item.network_type_ = kStreamItemNtTypeRelay;
-                        item.remote_device_id_ = remote_device_id;
+                        std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+                        item->stream_id_ = "id_" + remote_device_id;
+                        item->stream_name_ = remote_device_id;
+                        item->stream_host_ = relay_device_info.relay_server_ip_;
+                        item->stream_port_ = relay_device_info.relay_server_port_;
+                        item->encode_bps_ = 0;
+                        item->encode_fps_ = 0;
+                        item->network_type_ = kStreamItemNtTypeRelay;
+                        item->remote_device_id_ = remote_device_id;
                         if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
-                            item.remote_device_random_pwd_ = random_password;
+                            item->remote_device_random_pwd_ = random_password;
                         }
                         else {
-                            item.remote_device_safety_pwd_ = safety_password;
+                            item->remote_device_safety_pwd_ = safety_password;
                         }
                         context_->SendAppMessage(StreamItemAdded {
                             .item_ = item,

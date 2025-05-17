@@ -106,24 +106,33 @@ namespace tc
 
     class StreamItemAdded {
     public:
-        StreamItem item_;
+        std::shared_ptr<StreamItem> item_;
     };
 
     class StreamItemUpdated {
     public:
-        StreamItem item_;
+        std::shared_ptr<StreamItem> item_;
     };
 
     // Close workspace
     class ClearWorkspace {
     public:
-        StreamItem item_;
+        std::shared_ptr<StreamItem> item_;
     };
 
     // reported plugins info
     class MsgPluginsInfo {
     public:
         std::shared_ptr<tc::PtPluginsInfo> plugins_info_;
+    };
+
+    // remote peer info
+    class MsgRemotePeerInfo {
+    public:
+        // from which stream
+        std::string stream_id_;
+        std::string desktop_name_;
+        std::string os_version_;
     };
 
 }

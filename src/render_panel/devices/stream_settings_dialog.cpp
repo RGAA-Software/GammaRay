@@ -20,7 +20,7 @@
 namespace tc
 {
 
-    StreamSettingsDialog::StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    StreamSettingsDialog::StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         db_mgr_ = context_->GetStreamDBManager();
         stream_item_ = item;
@@ -60,7 +60,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_.audio_enabled_);
+            cb->setChecked(stream_item_->audio_enabled_);
             cb_audio_ = cb;
             layout->addWidget(cb);
 
@@ -106,7 +106,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_.clipboard_enabled_);
+            cb->setChecked(stream_item_->clipboard_enabled_);
             cb_clipboard_ = cb;
             layout->addWidget(cb);
 
@@ -151,7 +151,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_.only_viewing_);
+            cb->setChecked(stream_item_->only_viewing_);
             cb_only_viewing_ = cb;
             layout->addWidget(cb);
 
@@ -197,7 +197,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_.show_max_window_);
+            cb->setChecked(stream_item_->show_max_window_);
             cb_show_max_ = cb;
             layout->addWidget(cb);
 
@@ -241,7 +241,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_.split_windows_);
+            cb->setChecked(stream_item_->split_windows_);
             cb_split_windows_ = cb;
             layout->addWidget(cb);
 
@@ -286,7 +286,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_.enable_p2p_);
+            cb->setChecked(stream_item_->enable_p2p_);
             cb_enable_p2p_ = cb;
             layout->addWidget(cb);
 
@@ -332,8 +332,8 @@ namespace tc
             auto edit = new QLineEdit(this);
             ed_remote_device_id_ = edit;
             ed_remote_device_id_->setText("");
-            if (stream_item_.IsValid()) {
-                ed_remote_device_id_->setText(QString::fromStdString(stream_item_.remote_device_id_));
+            if (stream_item_->IsValid()) {
+                ed_remote_device_id_->setText(QString::fromStdString(stream_item_->remote_device_id_));
             }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -382,14 +382,14 @@ namespace tc
             content_layout->addLayout(layout);
 
             //
-            if (stream_item_.IsValid()) {
-                if (stream_item_.network_type_ == kStreamItemNtTypeWebSocket) {
+            if (stream_item_->IsValid()) {
+                if (stream_item_->network_type_ == kStreamItemNtTypeWebSocket) {
                     btn_ws->setChecked(true);
                 }
-                else if (stream_item_.network_type_ == kStreamItemNtTypeRelay) {
+                else if (stream_item_->network_type_ == kStreamItemNtTypeRelay) {
                     btn_relay->setChecked(true);
                 }
-//                else if (stream_item_.network_type_ == kStreamItemNtTypeUdpKcp) {
+//                else if (stream_item_->network_type_ == kStreamItemNtTypeUdpKcp) {
 //                    btn_udp_kcp->setChecked(true);
 //                }
             }
@@ -415,8 +415,8 @@ namespace tc
             auto validator = new QIntValidator(this);
             edit->setValidator(validator);
             ed_bitrate_ = edit;
-            if (stream_item_.IsValid()) {
-                ed_bitrate_->setText(QString::number(stream_item_.encode_bps_));
+            if (stream_item_->IsValid()) {
+                ed_bitrate_->setText(QString::number(stream_item_->encode_bps_));
             }
             else {
                 ed_bitrate_->setText("5");
@@ -450,14 +450,14 @@ namespace tc
             layout->addWidget(cb);
             layout->addStretch();
 
-            if (stream_item_.IsValid()) {
-                if (stream_item_.encode_fps_ == 15) {
+            if (stream_item_->IsValid()) {
+                if (stream_item_->encode_fps_ == 15) {
                     cb_fps_->setCurrentIndex(0);
                 }
-                else if (stream_item_.encode_fps_ == 30) {
+                else if (stream_item_->encode_fps_ == 30) {
                     cb_fps_->setCurrentIndex(1);
                 }
-                else if (stream_item_.encode_fps_ == 60) {
+                else if (stream_item_->encode_fps_ == 60) {
                     cb_fps_->setCurrentIndex(2);
                 }
             }
@@ -471,12 +471,12 @@ namespace tc
             auto layout = new NoMarginVLayout();
             auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-                stream_item_.audio_enabled_ = cb_audio_->isChecked();
-                stream_item_.clipboard_enabled_ = cb_clipboard_->isChecked();
-                stream_item_.only_viewing_ = cb_only_viewing_->isChecked();
-                stream_item_.show_max_window_ = cb_show_max_->isChecked();
-                stream_item_.split_windows_ = cb_split_windows_->isChecked();
-                stream_item_.enable_p2p_ = cb_enable_p2p_->isChecked();
+                stream_item_->audio_enabled_ = cb_audio_->isChecked();
+                stream_item_->clipboard_enabled_ = cb_clipboard_->isChecked();
+                stream_item_->only_viewing_ = cb_only_viewing_->isChecked();
+                stream_item_->show_max_window_ = cb_show_max_->isChecked();
+                stream_item_->split_windows_ = cb_split_windows_->isChecked();
+                stream_item_->enable_p2p_ = cb_enable_p2p_->isChecked();
                 db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });

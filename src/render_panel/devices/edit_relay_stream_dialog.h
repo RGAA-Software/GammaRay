@@ -27,7 +27,7 @@ namespace tc
 
     class EditRelayStreamDialog : public TcCustomTitleBarDialog {
     public:
-        EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
+        EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent = nullptr);
         ~EditRelayStreamDialog() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -38,7 +38,7 @@ namespace tc
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         QLineEdit* edt_stream_name_ = nullptr;
-        StreamItem stream_item_;
+        std::shared_ptr<StreamItem> stream_item_;
         TcPasswordInput* password_input_ = nullptr;
 
     };

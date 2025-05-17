@@ -100,7 +100,7 @@ namespace tc
 
         QObject::connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
             int index = stream_list_->row(item);
-            StreamItem stream_item = streams_.at(index);
+            auto stream_item = streams_.at(index);
             StartStream(stream_item);
         });
 
@@ -115,7 +115,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            auto opt_exist_stream = db_mgr_->GetStream(item.stream_id_);
+            auto opt_exist_stream = db_mgr_->GetStream(item->stream_id_);
             if (!opt_exist_stream.has_value()) {
                 db_mgr_->AddStream(item);
             }
@@ -124,13 +124,13 @@ namespace tc
                 // todo: Check stream info.
                 // check password type: random / safety
                 // then update it in database
-                exist_stream.stream_host_ = item.stream_host_;
-                exist_stream.stream_port_ = item.stream_port_;
-                if (exist_stream.remote_device_random_pwd_ != item.remote_device_random_pwd_ && !item.remote_device_random_pwd_.empty()) {
-                    exist_stream.remote_device_random_pwd_ = item.remote_device_random_pwd_;
+                exist_stream->stream_host_ = item->stream_host_;
+                exist_stream->stream_port_ = item->stream_port_;
+                if (exist_stream->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
+                    exist_stream->remote_device_random_pwd_ = item->remote_device_random_pwd_;
                 }
-                if (exist_stream.remote_device_safety_pwd_ != item.remote_device_safety_pwd_ && !item.remote_device_safety_pwd_.empty()) {
-                    exist_stream.remote_device_safety_pwd_ = item.remote_device_safety_pwd_;
+                if (exist_stream->remote_device_safety_pwd_ != item->remote_device_safety_pwd_ && !item->remote_device_safety_pwd_.empty()) {
+                    exist_stream->remote_device_safety_pwd_ = item->remote_device_safety_pwd_;
                 }
                 db_mgr_->UpdateStream(exist_stream);
             }
@@ -140,7 +140,25 @@ namespace tc
         msg_listener_->Listen<StreamItemUpdated>([=, this](const StreamItemUpdated& msg) {
             db_mgr_->UpdateStream(msg.item_);
             LoadStreamItems();
-            LOGI("Update stream : {}", msg.item_.stream_id_);
+            LOGI("Update stream : {}", msg.item_->stream_id_);
+        });
+
+        msg_listener_->Listen<MsgRemotePeerInfo>([=, this](const MsgRemotePeerInfo& msg) {
+            for (auto& stream : streams_) {
+                if (stream->stream_id_ == msg.stream_id_) {
+                    if (stream->desktop_name_ != msg.desktop_name_ || stream->os_version_ != msg.os_version_) {
+                        // update it
+                        stream->desktop_name_ = msg.desktop_name_;
+                        stream->os_version_ = msg.os_version_;
+                        db_mgr_->UpdateStream(stream);
+
+                        context_->PostUITask([=, this]() {
+
+                        });
+                    }
+                    break;
+                }
+            }
         });
     }
 
@@ -172,7 +190,7 @@ namespace tc
         delete menu;
     }
 
-    void AppStreamList::ProcessAction(int index, const StreamItem& item) {
+    void AppStreamList::ProcessAction(int index, const std::shared_ptr<StreamItem>& item) {
         if (index == 0) {
             // start
             StartStream(item);
@@ -196,17 +214,17 @@ namespace tc
         }
     }
 
-    void AppStreamList::StartStream(const StreamItem& item) {
-        auto si = db_mgr_->GetStream(item.stream_id_);
+    void AppStreamList::StartStream(const std::shared_ptr<StreamItem>& item) {
+        auto si = db_mgr_->GetStream(item->stream_id_);
         if (!si.has_value()) {
-            LOGE("read stream item from db failed: {}", item.stream_id_);
+            LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
         }
 
         auto target_item = si.value();
 
         // verify in profile server
-        if (target_item.IsRelay()) {
+        if (target_item->IsRelay()) {
             // verify my self
             if (!grApp->CheckLocalDeviceInfoWithPopup()) {
                 return;
@@ -214,7 +232,7 @@ namespace tc
 
             // verify remote
             auto verify_result
-                = DeviceApi::VerifyDeviceInfo(target_item.remote_device_id_, target_item.remote_device_random_pwd_, target_item.remote_device_safety_pwd_);
+                = DeviceApi::VerifyDeviceInfo(target_item->remote_device_id_, target_item->remote_device_random_pwd_, target_item->remote_device_safety_pwd_);
             if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
                 TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
                 dialog.exec();
@@ -231,22 +249,22 @@ namespace tc
         running_stream_mgr_->StartStream(target_item);
     }
 
-    void AppStreamList::StopStream(const StreamItem& item) {
-        auto si = db_mgr_->GetStream(item.stream_id_);
+    void AppStreamList::StopStream(const std::shared_ptr<StreamItem>& item) {
+        auto si = db_mgr_->GetStream(item->stream_id_);
         if (!si.has_value()) {
-            LOGE("read stream item from db failed: {}", item.stream_id_);
+            LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
         }
         running_stream_mgr_->StopStream(si.value());
     }
 
-    void AppStreamList::EditStream(const StreamItem& item) {
-        auto si = db_mgr_->GetStream(item.stream_id_);
+    void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {
+        auto si = db_mgr_->GetStream(item->stream_id_);
         if (!si.has_value()) {
-            LOGE("read stream item from db failed: {}", item.stream_id_);
+            LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
         }
-        if (item.IsRelay()) {
+        if (item->IsRelay()) {
             auto dialog = new EditRelayStreamDialog(context_, si.value(), grWorkspace.get());
             dialog->exec();
         }
@@ -256,29 +274,30 @@ namespace tc
         }
     }
 
-    void AppStreamList::DeleteStream(const StreamItem& item) {
+    void AppStreamList::DeleteStream(const std::shared_ptr<StreamItem>& item) {
         TcDialog dialog(tr("Warning"), tr("Do you want to delete the remote control?"), grWorkspace.get());
         if (dialog.exec() == kDoneOk) {
             auto mgr = context_->GetStreamDBManager();
-            mgr->DeleteStream(item._id);
+            mgr->DeleteStream(item->_id);
             LoadStreamItems();
         }
     }
 
-    void AppStreamList::ShowSettings(const StreamItem& item) {
-        auto si = db_mgr_->GetStream(item.stream_id_);
+    void AppStreamList::ShowSettings(const std::shared_ptr<StreamItem>& item) {
+        auto si = db_mgr_->GetStream(item->stream_id_);
         if (!si.has_value()) {
-            LOGE("read stream item from db failed: {}", item.stream_id_);
+            LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
         }
         auto dialog = new StreamSettingsDialog(context_, si.value(), grWorkspace.get());
         dialog->exec();
     }
 
-    QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream, int index) {
+    QListWidgetItem* AppStreamList::AddItem(const std::shared_ptr<StreamItem>& stream, int index) {
         auto item = new QListWidgetItem(stream_list_);
         item->setSizeHint(QSize(230, 150));
-        auto widget = new StreamItemWidget(stream, stream.bg_color_, stream_list_);
+        auto widget = new StreamItemWidget(stream, stream->bg_color_, stream_list_);
+        widget->setObjectName(stream->stream_id_.c_str());
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
         widget->SetOnConnectListener([=, this]() {
             StartStream(stream);
@@ -302,8 +321,8 @@ namespace tc
         auto name = new QLabel(stream_list_);
         name->hide();
         name->setObjectName("st_name");
-        auto stream_name = stream.stream_name_;
-        if (stream.IsRelay()) {
+        auto stream_name = stream->stream_name_;
+        if (stream->IsRelay()) {
             stream_name = tc::SpaceId(stream_name);
         }
         name->setText(stream_name.c_str());
@@ -314,7 +333,7 @@ namespace tc
         auto host = new QLabel(stream_list_);
         host->hide();
         host->setObjectName("st_host");
-        host->setText(stream.stream_host_.c_str());
+        host->setText(stream->stream_host_.c_str());
         host->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
         layout->addWidget(host);
@@ -323,7 +342,7 @@ namespace tc
         auto port = new QLabel(stream_list_);
         port->hide();
         port->setObjectName("st_port");
-        port->setText(std::to_string(stream.stream_port_).c_str());
+        port->setText(std::to_string(stream->stream_port_).c_str());
         port->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
         layout->addWidget(port);
@@ -332,7 +351,7 @@ namespace tc
         auto bitrate = new QLabel(stream_list_);
         bitrate->hide();
         bitrate->setObjectName("st_bitrate");
-        std::string bt_str = std::to_string(stream.encode_bps_) + " Mbps";
+        std::string bt_str = std::to_string(stream->encode_bps_) + " Mbps";
         bitrate->setText(bt_str.c_str());
         bitrate->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
@@ -341,7 +360,7 @@ namespace tc
         auto fps = new QLabel(stream_list_);
         fps->hide();
         fps->setObjectName("st_fps");
-        std::string fps_str = std::to_string(stream.encode_fps_) + " FPS";
+        std::string fps_str = std::to_string(stream->encode_fps_) + " FPS";
         fps->setText(fps_str.c_str());
         fps->setStyleSheet(R"(color:#386487; font-size:14px; )");
         layout->addSpacing(gap);
@@ -354,6 +373,18 @@ namespace tc
         widget->setLayout(root_layout);
         stream_list_->setItemWidget(item, widget);
         return item;
+    }
+
+    QWidget* AppStreamList::GetItemByStreamId(const std::string& stream_id) {
+        int count = stream_list_->count();
+        for (int i = 0; i < count; i++) {
+            auto item = stream_list_->item(i);
+            auto widget = stream_list_->itemWidget(item);
+            if (widget->objectName().toStdString() == stream_id) {
+                return widget;
+            }
+        }
+        return nullptr;
     }
 
     void AppStreamList::LoadStreamItems() {
@@ -369,7 +400,7 @@ namespace tc
 
             int index = 0;
             for (auto& stream : streams_) {
-                stream.device_id_ = settings_->device_id_;
+                stream->device_id_ = settings_->device_id_;
                 AddItem(stream, index++);
             }
 

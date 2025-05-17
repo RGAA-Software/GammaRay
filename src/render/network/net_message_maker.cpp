@@ -3,7 +3,6 @@
 //
 
 #include "net_message_maker.h"
-
 #include "tc_common_new/data.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/key_helper.h"
@@ -16,6 +15,8 @@
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "tc_common_new/num_formatter.h"
+
+#include <QSysInfo>
 
 namespace tc
 {
@@ -78,6 +79,61 @@ namespace tc
         auto cpu_name = QString::fromStdString(hardware->hw_cpu_.name_).trimmed();
         auto pc_info = std::format("{} / {} / {}", cpu_name.toStdString(), NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str());
         hb->set_pc_info(pc_info);
+
+        // total hardware info
+        auto device_info = hb->mutable_device_info();
+        // cpu
+        {
+            auto cpu = device_info->mutable_cpu();
+            cpu->set_name(hardware->hw_cpu_.name_);
+            cpu->set_id(hardware->hw_cpu_.id_);
+            cpu->set_num_cores(hardware->hw_cpu_.num_cores_);
+            cpu->set_max_clock_speed(hardware->hw_cpu_.max_clock_speed_);
+        }
+
+        // memory
+        {
+            auto memory = device_info->mutable_memory();
+            memory->set_total_size(hardware->memory_size_);
+        }
+
+        // gpu
+        {
+            auto gpus = device_info->mutable_gpus();
+            for (const auto& item : hardware->gpus_) {
+                auto gpu = gpus->Add();
+                gpu->set_name(item.name_);
+                gpu->set_size_in_bytes(item.size_);
+                gpu->set_size_str(item.size_str_);
+                gpu->set_driver_version(item.driver_version_);
+                gpu->set_pnp_device_id(item.pnp_device_id_);
+            }
+        }
+
+        // disks
+        {
+            auto disks = device_info->mutable_disks();
+            for (const auto& item : hardware->hw_disks_) {
+                auto disk = disks->Add();
+                disk->set_name(item.name_);
+                disk->set_model(item.model_);
+                disk->set_status(item.status_);
+                disk->set_serial_number(item.serial_number_);
+                disk->set_interface_type(item.interface_type_);
+            }
+        }
+
+        // desktop name
+        hb->set_desktop_name(hardware->desktop_name_);
+
+        // os name
+        static QString os_name;
+        if (os_name.isEmpty()) {
+            auto product_type = QSysInfo::productType();
+            auto product_version = QSysInfo::productVersion();
+            os_name = product_type + " " + product_version;
+        }
+        hb->set_os_name(os_name.toStdString());
 
         //
         auto video_capture_plugin = app->GetWorkingMonitorCapturePlugin();

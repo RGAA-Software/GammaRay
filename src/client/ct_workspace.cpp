@@ -41,6 +41,7 @@
 #include "ct_const_def.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/qwidget_helper.h"
+#include "network/ct_panel_client.h"
 
 namespace tc
 {
@@ -212,6 +213,10 @@ namespace tc
             //file_transfer_ = std::make_shared<FileTransferChannel>(context_);
             //file_transfer_->Start();
         });
+
+        // connect to GammaRay Panel
+        panel_client_ = std::make_shared<CtPanelClient>(context_);
+        panel_client_->Start();
     }
 
     Workspace::~Workspace() {

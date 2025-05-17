@@ -54,7 +54,7 @@ namespace tc
         QComboBox* remote_devices_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<StreamDBManager> stream_db_mgr_ = nullptr;
-        std::vector<StreamItem> recent_streams_;
+        std::vector<std::shared_ptr<StreamItem>> recent_streams_;
     };
 }
 

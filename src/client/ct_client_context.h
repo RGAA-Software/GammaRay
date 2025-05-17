@@ -33,8 +33,7 @@ namespace tc
         void UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info);
         SdkCaptureMonitorInfo GetCapturingMonitorInfo();
         std::string GetCapturingMonitorName() const;
-        std::string GetDeviceId();
-        void SetDeviceId(const std::string& id);
+
         template<class T>
         void SendAppMessage(const T& msg) {
             msg_notifier_->SendAppMessage(msg);
@@ -53,7 +52,6 @@ namespace tc
         int capturing_width_ = 0;
         int capturing_height_ = 0;
         SdkCaptureMonitorInfo capturing_info_;
-        std::string device_id_;
     };
 
 }

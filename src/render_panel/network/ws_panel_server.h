@@ -23,6 +23,7 @@ namespace tc
         uint64_t socket_fd_;
         int session_type_;
         std::shared_ptr<asio2::http_session> session_ = nullptr;
+        std::string stream_id_;
     };
 
     class FtSession : public WSSession {
@@ -44,7 +45,7 @@ namespace tc
         void PostPanelMessage(const std::string& msg, bool only_inner = false);
 
         // parse /panel socket
-        void ParsePanelMessage(uint64_t socket_fd, std::string_view msg);
+        bool ParsePanelMessage(uint64_t socket_fd, std::string_view msg);
 
         // to /panel/renderer socket
         void PostRendererMessage(const std::string& msg);

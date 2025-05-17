@@ -57,7 +57,9 @@ namespace tc
             make_column("remote_device_safety_pwd", &StreamItem::remote_device_safety_pwd_),
             make_column("created_timestamp", &StreamItem::created_timestamp_, default_value(0)),
             make_column("updated_timestamp", &StreamItem::updated_timestamp_, default_value(0)),
-            make_column("enable_p2p", &StreamItem::enable_p2p_, default_value(0))
+            make_column("enable_p2p", &StreamItem::enable_p2p_, default_value(0)),
+            make_column("desktop_name", &StreamItem::desktop_name_),
+            make_column("os_version", &StreamItem::os_version_)
         ));
         if (!name.empty()) {
             auto r = st.sync_schema(true);
@@ -73,7 +75,7 @@ namespace tc
     }
 
     void StreamDBManager::CreateTables() {
-        auto db_path = qApp->applicationDirPath() + "/gr_data/stream.db";
+        auto db_path = qApp->applicationDirPath() + "/gr_data/gr_streams.db";
         // 2. bind
         db_storage_ = BindAppDatabase(db_path.toStdString());
 //        using Storage = decltype(GetStorageTypeValue());
@@ -81,17 +83,17 @@ namespace tc
 //        storage.sync_schema(true);
     }
 
-    void StreamDBManager::AddStream(StreamItem &stream) {
-        if (stream.stream_id_.empty()) {
-            stream.stream_id_ = GenUUID();
+    void StreamDBManager::AddStream(const std::shared_ptr<StreamItem>& stream) {
+        if (stream->stream_id_.empty()) {
+            stream->stream_id_ = GenUUID();
         }
         //stream.stream_id = MD5::Hex(stream.stream_id);
-        stream.bg_color_ = RandomColor();
-        stream.created_timestamp_ = TimeUtil::GetCurrentTimestamp();
-        stream.updated_timestamp_ = stream.created_timestamp_;
+        stream->bg_color_ = RandomColor();
+        stream->created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        stream->updated_timestamp_ = stream->created_timestamp_;
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        storage.insert(stream);
+        storage.insert(*stream);
     }
 
     bool StreamDBManager::HasStream(const std::string& stream_id) {
@@ -101,14 +103,13 @@ namespace tc
         return !streams.empty();
     }
 
-    bool StreamDBManager::UpdateStream(const StreamItem &stream) {
-        auto ts = stream;
-        ts.updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
+    bool StreamDBManager::UpdateStream(std::shared_ptr<StreamItem> stream) {
+        stream->updated_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == ts.stream_id_));
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream->stream_id_));
         if (streams.size() == 1) {
-            storage.update(ts);
+            storage.update(*stream);
         }
         return true;
     }
@@ -119,65 +120,79 @@ namespace tc
             return false;
         }
         auto stream = opt_stream.value();
-        stream.updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
-        stream.remote_device_random_pwd_ = random_pwd;
+        stream->updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
+        stream->remote_device_random_pwd_ = random_pwd;
 
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
         auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
         if (streams.size() == 1) {
-            storage.update(stream);
+            storage.update(*stream);
         }
         return true;
     }
 
-    std::optional<StreamItem> StreamDBManager::GetStream(const std::string& stream_id) {
+    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStream(const std::string& stream_id) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
         if (streams.empty()) {
             return std::nullopt;
         }
-        return streams[0];
+        auto target_stream = std::move(streams[0]);
+        return target_stream;
     }
 
-    std::optional<StreamItem> StreamDBManager::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
+    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::remote_device_id_) == remote_device_id));
+        auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::remote_device_id_) == remote_device_id));
         if (streams.empty()) {
             return std::nullopt;
         }
-        return streams[0];
+        std::shared_ptr<StreamItem> target_stream = std::move(streams[0]);
+        return target_stream;
     }
 
-    std::vector<StreamItem> StreamDBManager::GetAllStreams() {
-        using Storage = decltype(GetStorageTypeValue());
-        auto storage = std::any_cast<Storage>(db_storage_);
-        return storage.get_all<StreamItem>();
-    }
+//    std::vector<StreamItem> StreamDBManager::GetAllStreams() {
+//        using Storage = decltype(GetStorageTypeValue());
+//        auto storage = std::any_cast<Storage>(db_storage_);
+//        return storage.get_all<StreamItem>();
+//    }
 
-    std::vector<StreamItem> StreamDBManager::GetAllStreamsSortByCreatedTime(bool increase) {
+    std::vector<std::shared_ptr<StreamItem>> StreamDBManager::GetAllStreamsSortByCreatedTime(bool increase) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
-        return storage.get_all<StreamItem>([=]() -> auto {
+        auto unique_streams = storage.get_all_pointer<StreamItem>([=]() -> auto {
             if (increase) {
                 return order_by(&StreamItem::created_timestamp_);
             } else {
                 return order_by(&StreamItem::created_timestamp_).desc();
             }
         }());
+
+        std::vector<std::shared_ptr<StreamItem>> streams;
+        for (auto& st : unique_streams) {
+            streams.push_back(std::move(st));
+        }
+        return streams;
     }
 
-    std::vector<StreamItem> StreamDBManager::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
+    std::vector<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
         int offset_size = (page - 1) * page_size;
-        return storage.get_all<StreamItem>(
+        auto unique_streams = storage.get_all_pointer<StreamItem>(
             where(c(&StreamItem::network_type_) == "relay"),
             order_by(&StreamItem::created_timestamp_).desc(),
             limit(page_size, offset(offset_size))
         );
+
+        std::vector<std::shared_ptr<StreamItem>> streams;
+        for (auto& ust : unique_streams) {
+            streams.push_back(std::move(ust));
+        }
+        return streams;
     }
 
     void StreamDBManager::DeleteStream(int id) {

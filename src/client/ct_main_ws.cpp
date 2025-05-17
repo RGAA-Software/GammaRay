@@ -128,19 +128,6 @@ void ParseCommandLine(QApplication& app) {
         }
     }();
 
-//    g_conn_type_ = parser.value(opt_conn_type).toStdString();
-//    settings->conn_type_ = [=]() -> ClientConnectType {
-//        if (g_conn_type_ == kStreamItemConnTypeDirect) {
-//            return ClientConnectType::kDirect;
-//        }
-//        else if (g_conn_type_ == kStreamItemConnTypeSignaling) {
-//            return ClientConnectType::kSignaling;
-//        }
-//        else {
-//            return ClientConnectType::kSignaling;
-//        }
-//    }();
-
     settings->stream_name_ = parser.value(opt_stream_name).toStdString();
     if (!settings->stream_name_.empty()) {
         settings->stream_name_ = Base64::Base64Decode(settings->stream_name_);
@@ -231,7 +218,6 @@ int main(int argc, char** argv) {
     }
 
     auto settings = tc::Settings::Instance();
-    // auto name = g_host_ + "_" + MD5::Hex(settings->stream_id_).substr(0, 10);
     auto name = [=]() -> std::string {
         if (settings->network_type_ == ClientNetworkType::kRelay || settings->network_type_ == ClientNetworkType::kWebRtc) {
             return settings->remote_device_id_;

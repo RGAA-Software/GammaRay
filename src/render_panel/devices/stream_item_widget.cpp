@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
+#include "stream_item.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_font_manager.h"
@@ -15,12 +16,12 @@
 namespace tc
 {
 
-    StreamItemWidget::StreamItemWidget(const StreamItem& item, int bg_color, QWidget* parent) : QWidget(parent) {
+    StreamItemWidget::StreamItemWidget(const std::shared_ptr<StreamItem>& item, int bg_color, QWidget* parent) : QWidget(parent) {
         this->item_ = item;
         this->bg_color_ = bg_color;
         this->setStyleSheet("background:#00000000;");
         if (icon_.isNull()) {
-            if (item.IsRelay()) {
+            if (item->IsRelay()) {
                 icon_ = QPixmap::fromImage(QImage(":/resources/image/ic_windows_relay.svg"));
             } else {
                 icon_ = QPixmap::fromImage(QImage(":/resources/image/ic_windows_direct.svg"));
@@ -107,6 +108,7 @@ namespace tc
         }
 
         int border_width = 2;
+        // stream name
         {
             QFont font(tcFontMgr()->font_name_);
             font.setBold(true);
@@ -114,11 +116,39 @@ namespace tc
             font.setPointSize(13);
             painter.setFont(font);
             painter.setPen(QPen(QColor(0x555555)));
-            auto stream_name = item_.stream_name_;
-            if (item_.IsRelay()) {
+            auto stream_name = item_->stream_name_;
+            if (item_->IsRelay()) {
                 stream_name = tc::SpaceId(stream_name);
             }
             painter.drawText(QRect(15, 0, this->width(), 40), Qt::AlignVCenter, stream_name.c_str());
+        }
+
+        // desktop name
+        {
+            QFont font(tcFontMgr()->font_name_);
+            font.setBold(false);
+            font.setStyleStrategy(QFont::PreferAntialias);
+            font.setPointSize(10);
+            painter.setFont(font);
+            painter.setPen(QPen(QColor(0x77777777)));
+            auto stream_name = item_->desktop_name_;
+            if (item_->IsRelay()) {
+                stream_name = tc::SpaceId(stream_name);
+            }
+            painter.drawText(QRect(15, 35, this->width(), 20), Qt::AlignVCenter, stream_name.c_str());
+        }
+
+        // os version
+        {
+            QFont font(tcFontMgr()->font_name_);
+            font.setBold(false);
+            font.setStyleStrategy(QFont::PreferAntialias);
+            font.setPointSize(10);
+            painter.setFont(font);
+            painter.setPen(QPen(QColor(0x77777777)));
+            auto os_version = QString::fromStdString(item_->os_version_);
+            os_version = os_version.toUpper();
+            painter.drawText(QRect(15, 55, this->width(), 20), Qt::AlignVCenter, os_version);
         }
 
         QPen pen;

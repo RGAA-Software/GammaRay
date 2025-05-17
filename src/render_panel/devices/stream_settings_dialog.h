@@ -28,7 +28,7 @@ namespace tc
 
     class StreamSettingsDialog : public TcCustomTitleBarDialog {
     public:
-        StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const StreamItem& item, QWidget* parent = nullptr);
+        StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent = nullptr);
         ~StreamSettingsDialog() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -50,7 +50,7 @@ namespace tc
         QComboBox* cb_fps_ = nullptr;
         QRadioButton* rb_ws_ = nullptr;
         QRadioButton* rb_relay_ = nullptr;
-        StreamItem stream_item_;
+        std::shared_ptr<StreamItem> stream_item_;
 
     };
 

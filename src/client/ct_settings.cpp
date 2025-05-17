@@ -68,6 +68,10 @@ namespace tc
         return full_color_on_;
     }
 
+    bool Settings::IsDirectConnect() {
+        return remote_device_id_.empty() && !remote_address_.empty();
+    }
+
     MultiDisplayMode Settings::GetMultiDisplayMode() {
         return display_mode_;
     }

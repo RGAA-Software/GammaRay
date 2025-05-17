@@ -87,6 +87,12 @@ namespace tc
 
         // update timestamp
         int64_t updated_timestamp_ {0};
+
+        // desktop name
+        std::string desktop_name_;
+
+        // os version
+        std::string os_version_;
     };
 
 }

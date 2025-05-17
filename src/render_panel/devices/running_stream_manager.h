@@ -21,8 +21,8 @@ namespace tc
     class RunningStreamManager {
     public:
         explicit RunningStreamManager(const std::shared_ptr<GrContext>& ctx);
-        void StartStream(const StreamItem& item);
-        void StopStream(const StreamItem& item);
+        void StartStream(const std::shared_ptr<StreamItem>& item);
+        void StopStream(const std::shared_ptr<StreamItem>& item);
 
     private:
         GrSettings* settings_ = nullptr;

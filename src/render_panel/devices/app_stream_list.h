@@ -32,7 +32,7 @@ namespace tc
     class MessageListener;
     class RunningStreamManager;
 
-    using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
+    using OnItemDoubleClickedCallback = std::function<void(const std::shared_ptr<StreamItem>&)>;
 
     class AppStreamList : public QWidget {
     public:
@@ -42,24 +42,25 @@ namespace tc
         void LoadStreamItems();
 
     private:
-        QListWidgetItem* AddItem(const StreamItem& item, int index);
+        QListWidgetItem* AddItem(const std::shared_ptr<StreamItem>& item, int index);
+        QWidget* GetItemByStreamId(const std::string& stream_id);
         void RegisterActions(int index);
-        void ProcessAction(int index, const StreamItem& item);
+        void ProcessAction(int index, const std::shared_ptr<StreamItem>& item);
 
         void CreateLayout();
         void Init();
 
-        void DeleteStream(const StreamItem& item);
-        void StartStream(const StreamItem& item);
-        void StopStream(const StreamItem& item);
-        void EditStream(const StreamItem& item);
-        void ShowSettings(const StreamItem& item);
+        void DeleteStream(const std::shared_ptr<StreamItem>& item);
+        void StartStream(const std::shared_ptr<StreamItem>& item);
+        void StopStream(const std::shared_ptr<StreamItem>& item);
+        void EditStream(const std::shared_ptr<StreamItem>& item);
+        void ShowSettings(const std::shared_ptr<StreamItem>& item);
 
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
-        std::vector<StreamItem> streams_;
+        std::vector<std::shared_ptr<StreamItem>> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;
         StreamContent* stream_content_ = nullptr;

@@ -71,6 +71,8 @@ set(SRCS_WS
         transfer/file_writer.cpp
         transfer/fs_file.cpp
         transfer/fs_folder.cpp
+        network/ct_dashboard_client.cpp
+        network/ct_panel_client.cpp
 )
 
 if(TC_USE_FILE_TRANSMISSION)
@@ -104,7 +106,7 @@ if (APPLE)
 endif()
 
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg Qt6::Charts
-        tc_common_new tc_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
+        tc_common_new tc_message tc_cp_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> QWindowKit::Widgets TC_WidgetFrame Winmm.lib
         tc_rtc_client
 )

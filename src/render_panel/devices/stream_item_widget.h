@@ -13,11 +13,12 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QLabel>
-#include "stream_item.h"
+#include <memory>
 
 namespace tc
 {
 
+    class StreamItem;
     class TcPushButton;
 
     using OnConnectListener = std::function<void()>;
@@ -26,7 +27,7 @@ namespace tc
     class StreamItemWidget : public QWidget {
     public:
 
-        explicit StreamItemWidget(const StreamItem& item,  int bg_color, QWidget* parent = nullptr);
+        explicit StreamItemWidget(const std::shared_ptr<StreamItem>& item, int bg_color, QWidget* parent = nullptr);
         ~StreamItemWidget() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -38,7 +39,7 @@ namespace tc
         void SetOnMenuListener(OnMenuListener&& listener);
 
     private:
-        StreamItem item_;
+        std::shared_ptr<StreamItem> item_;
         int bg_color_ = 0;
         QPixmap icon_;
         QPixmap bg_pixmap_;

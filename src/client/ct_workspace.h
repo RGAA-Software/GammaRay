@@ -36,6 +36,7 @@ namespace tc
     class MainProgress;
     class GameView;
     class RtcClientInterface;
+    class CtPanelClient;
 
     class Workspace : public QMainWindow, public std::enable_shared_from_this<Workspace> {
     public:
@@ -111,6 +112,9 @@ namespace tc
         int title_bar_height_ = 0; //35;
 
         bool full_screen_ = false;
+
+        //
+        std::shared_ptr<CtPanelClient> panel_client_ = nullptr;
 
     private:
         // 扩展屏
