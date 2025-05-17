@@ -75,7 +75,8 @@ namespace tc
                 ss << gpu.name_ << ";";
             }
         }
-        auto pc_info = std::format("{} / {} / {}", hardware->hw_cpu_.name_, NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str());
+        auto cpu_name = QString::fromStdString(hardware->hw_cpu_.name_).trimmed();
+        auto pc_info = std::format("{} / {} / {}", cpu_name.toStdString(), NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str());
         hb->set_pc_info(pc_info);
 
         //

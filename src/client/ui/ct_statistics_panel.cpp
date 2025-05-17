@@ -529,7 +529,8 @@ namespace tc
                     ss << gpu.name_ << ";";
                 }
             }
-            lbl_local_computer_info_->setText(std::format("{} / {} / {}", hardware->hw_cpu_.name_, NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str()).c_str());
+            auto cpu_name = QString::fromStdString(hardware->hw_cpu_.name_).trimmed();
+            lbl_local_computer_info_->setText(std::format("{} / {} / {}", cpu_name.toStdString(), NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str()).c_str());
             lbl_local_computer_info_->setToolTip(lbl_local_computer_info_->text());
 
             lbl_remote_computer_info_->setText(sdk_stat_->remote_pc_info_.c_str());
