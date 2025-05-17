@@ -196,6 +196,14 @@ namespace tc
         return nullptr;
     }
 
+    GrMonitorCapturePlugin* PluginManager::GetGdiCapturePlugin() {
+        auto plugin = GetPluginById(kGdiCapturePluginId);
+        if (plugin) {
+            return (GrMonitorCapturePlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     GrDataProviderPlugin* PluginManager::GetMockVideoStreamPlugin() {
         auto plugin = GetPluginById(kMockVideoStreamPluginId);
         if (plugin) {

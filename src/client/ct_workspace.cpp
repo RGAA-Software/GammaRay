@@ -314,6 +314,9 @@ namespace tc
                 });
                 ++monitor_index;
             }
+
+            LOGI("capturing monitors count: {}", monitor_index);
+
             context_->SendAppMessage(msg);
 
             int monitors_count = config.monitors_info().size();
@@ -804,6 +807,7 @@ namespace tc
     }
 
     void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {
+        LOGI("OnGetCaptureMonitorName monitor_name: {}", monitor_name);
         for (const auto& index_name : monitor_index_map_name_) {
             if (game_views_.size() > index_name.first) {
                 if (game_views_[index_name.first]) {

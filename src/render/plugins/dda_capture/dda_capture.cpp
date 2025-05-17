@@ -23,7 +23,8 @@ namespace tc
 {
 
     DDACapture::DDACapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info)
-        : DesktopCapture(plugin, my_monitor_info) {
+        : PluginDesktopCapture(/*plugin, */my_monitor_info) {
+        plugin_ = plugin;
         fps_stat_ = std::make_shared<FpsStat>();
         LOGI("DDACapture my monitor info: {}", my_monitor_info.Dump());
     }
@@ -512,7 +513,7 @@ namespace tc
     }
 
     void DDACapture::RefreshScreen() {
-        DesktopCapture::RefreshScreen();
+        PluginDesktopCapture::RefreshScreen();
         used_cache_times_ = 0;
     }
 

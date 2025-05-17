@@ -7,6 +7,7 @@
 #include "settings/rd_settings.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc
 {
@@ -199,6 +200,12 @@ namespace tc
     }
 
     void WinEventReplayer::ReplayMouseEvent(const std::string& monitor_name, float x_ratio, float y_ratio, int buttons, int data) {
+
+        if (kVirtualDesktopNameSign == monitor_name) {
+            ReplayVirtualDesktopMouseEvent(x_ratio, y_ratio, buttons, data);
+            return;
+        }
+
         if (monitors_.empty()) {
             LOGE("Don't have capturing monitor info.");
             return;
@@ -220,8 +227,6 @@ namespace tc
         // LOGI("monitor idx: {}, left: {}, bottom: {}, v-left: {}, v-bottom: {}",
         //      monitor_index, target_monitor.left_, target_monitor.bottom_,
         //      target_monitor.virtual_left_, target_monitor.virtual_bottom_);
-
-        //  to do 尚未测试0显示器的时候
         int x = (
             x_ratio * target_monitor.Width()
             +
@@ -238,6 +243,23 @@ namespace tc
             /
             (virtual_desktop_bound_rectangle_info_.far_bottom_ - virtual_desktop_bound_rectangle_info_.far_top_ - 1);
 
+        
+        SendMouseEvent(x, y, buttons, data);
+    }
+
+    void WinEventReplayer::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
+        monitors_ = msg.monitors_;
+        virtual_desktop_bound_rectangle_info_ = msg.virtual_desktop_bound_rectangle_info_;
+        //LOGI("UpdateCaptureMonitorInfo, monitor count: {}", monitors_.size());
+    }
+
+    void WinEventReplayer::ReplayVirtualDesktopMouseEvent(float x_ratio, float y_ratio, int buttons, int data) {
+        int x = x_ratio * 65535;
+        int y = y_ratio * 65535;
+        SendMouseEvent(x, y, buttons, data);
+    }
+
+    void WinEventReplayer::SendMouseEvent(int x, int y, int buttons, int data) {
         INPUT evt;
         evt.type = INPUT_MOUSE;
         evt.mi.dx = x;
@@ -276,11 +298,5 @@ namespace tc
         evt.mi.mouseData = data;
         evt.mi.time = 0;
         WinSendEvent(&evt);
-    }
-
-    void WinEventReplayer::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
-        monitors_ = msg.monitors_;
-        virtual_desktop_bound_rectangle_info_ = msg.virtual_desktop_bound_rectangle_info_;
-        //LOGI("UpdateCaptureMonitorInfo, monitor count: {}", monitors_.size());
     }
 }

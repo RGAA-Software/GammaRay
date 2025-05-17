@@ -46,6 +46,10 @@ namespace tc
                            std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
 
         ID3D11Texture2D* CopyTexture(uint64_t handle, uint64_t frame_index);
+
+
+        bool HandleRawImage(const std::shared_ptr<Image> image, std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk, std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
+
         void Exit();
 
         bool IsResizeFrameSize();

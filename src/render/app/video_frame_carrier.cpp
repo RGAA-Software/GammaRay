@@ -194,6 +194,14 @@ namespace tc
         }
     }
 
+    bool VideoFrameCarrier::HandleRawImage(const std::shared_ptr<Image> image, std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk, std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
+        raw_image_rgba_ = image;
+        rgba_cbk(raw_image_rgba_);
+		// to do 判断yuv444还是420, 再明确下gdi原图的像素布局
+        ConvertToYuv420(std::move(yuv_cbk));
+        return true;
+    }
+
     bool VideoFrameCarrier::MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
                                           std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                                           std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {

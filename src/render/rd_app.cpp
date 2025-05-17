@@ -133,8 +133,15 @@ namespace tc
                 LOGI("Use hook.");
             }
             else {
-                LOGI("Use dda capture plugin.");
                 monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+                if (monitor_capture_plugin_->IsPluginEnabled()) {
+                    LOGI("Use dda capture plugin.");
+                }
+                else {
+                    monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
+                    LOGI("Use gdi capture plugin.");
+                }
+               
             }
         }
 

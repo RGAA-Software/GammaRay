@@ -25,7 +25,8 @@ namespace tc
         void ResetKey();
         void ReplayKeyEvent(uint16_t scancode, bool extend, const tc::KeyEvent& event);
         void MockKeyEvent(uint16_t scancode);
-
+        void ReplayVirtualDesktopMouseEvent(float x_ratio, float y_ratio, int buttons, int data);
+        void SendMouseEvent(int x, int y, int buttons, int data);
     private:
         // capturing monitors
         std::vector<CaptureMonitorInfo> monitors_;

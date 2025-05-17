@@ -4,13 +4,24 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
+#include "tc_common_new/math_helper.h"
 #include "render/plugins/plugin_ids.h"
+#include "gdi_capture.h"
+
+void* GetInstance() {
+    static tc::GdiCapturePlugin plugin;
+    return (void*)&plugin;
+}
 
 namespace tc
 {
 
+    GdiCapturePlugin::GdiCapturePlugin() : GrMonitorCapturePlugin() {
+
+    }
+
     std::string GdiCapturePlugin::GetPluginId() {
-        return kNetObjDetectorPluginId;
+        return kGdiCapturePluginId;
     }
 
     std::string GdiCapturePlugin::GetPluginName() {
@@ -31,38 +42,100 @@ namespace tc
     }
     
     bool GdiCapturePlugin::OnCreate(const tc::GrPluginParam &param) {
-        GrPluginInterface::OnCreate(param);
-        plugin_type_ = GrPluginType::kStream;
+        GrMonitorCapturePlugin::OnCreate(param);
+        LOGI("GdiCapturePlugin OnCreate");
+      /*  InitVideoCaptures();
+        InitCursorCapture();*/
+       // LOGI("DDA Capture audio device: {}", capture_audio_device_id_);
 
-        if (!IsPluginEnabled()) {
-            return true;
-        }
-        root_widget_->hide();
-        //root_widget_->show();
+
+        CreateCapture();
+
         return true;
     }
 
-    void GdiCapturePlugin::OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image) {
-        if (!IsPluginEnabled()) {
-            return;
-        }
-        QMetaObject::invokeMethod(this, [=, this]() {
-            QImage img((uint8_t*)image->GetData()->DataAddr(), image->width, image->height, QImage::Format_RGBA8888);
-            QPixmap pixmap = QPixmap::fromImage(img);
-            pixmap = pixmap.scaled(root_widget_->size().width(), root_widget_->size().height());
-            if (!previewers_.contains(name)) {
-                previewers_[name] = new QLabel();
-                previewers_[name]->setWindowTitle(name.c_str());
-                previewers_[name]->resize(960, 540);
-                previewers_[name]->show();
+
+    std::optional<int> GdiCapturePlugin::GetMonIndexByName(const std::string& name) {
+       /* int mon_index = 0;
+        for (auto monitor : sorted_monitors_) {
+            if (name == monitor.name_) {
+                return { mon_index };
             }
-            previewers_[name]->setPixmap(pixmap);
-            previewers_[name]->repaint();
-        });
+            ++mon_index;
+        }*/
+        return { std::nullopt };
     }
 
-    void GdiCapturePlugin::OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image) {
+    void GdiCapturePlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
+        LOGI("GdiCapturePlugin DispatchAppEvent type: {}", static_cast<int>(event->type_));
+        if (!event) {
+            return;
+        }
+        switch (event->type_)
+        {
+        case AppBaseEvent::EType::kDisplayDeviceChange: {
+            LOGI("GdiCapturePlugin DispatchAppEvent is kDisplayDeviceChange");
+            //HandleDisplayDeviceChangeEvent();
+            break;
+        }
+        default:
+            break;
+        }
+    }
 
+
+    std::map<std::string, WorkingCaptureInfoPtr> GdiCapturePlugin::GetWorkingCapturesInfo() {
+        std::map<std::string, WorkingCaptureInfoPtr> result;
+        /*for (const auto& [name, capture] : captures_) {
+            if (capture->IsPausing()) {
+                continue;
+            }
+            const auto& my_monitor = capture->GetMyMonitorInfo();
+            result.insert({ name, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
+                .target_name_ = name,
+                .fps_ = capture->GetCapturingFps(),
+                .capture_type_ = kCaptureTypeDXGI,
+                .capture_frame_width_ = my_monitor.Width(),
+                .capture_frame_height_ = my_monitor.Height(),
+                .capture_gaps_ = capture->GetCaptureGaps(),
+            }) });
+        }*/
+        return result;
+    }
+
+
+    std::string GdiCapturePlugin::GetCapturingMonitorName() {
+        return kVirtualDesktopNameSign;
+    }
+    
+
+    bool GdiCapturePlugin::StartCapturing() {
+        
+      /*  if (!gdi_capture_->Init()) {
+            return false;
+        }*/
+
+        gdi_capture_->StartCapture();
+
+
+
+
+
+
+
+        
+        return true;
+    }
+
+    void GdiCapturePlugin::CreateCapture() {
+        CaptureMonitorInfo cap_mon_info;
+        cap_mon_info.virtual_desktop_left_ = GetSystemMetrics(SM_XVIRTUALSCREEN);
+        cap_mon_info.virtual_desktop_top_ = GetSystemMetrics(SM_YVIRTUALSCREEN);
+        cap_mon_info.virtual_desktop_width_ = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+        cap_mon_info.virtual_desktop_height_ = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+        cap_mon_info.virtual_desktop_width_ = MathHelper::AlignTo4Bytes(cap_mon_info.virtual_desktop_width_); // 直接4字节对齐, 方便后面直接进行内存copy,不然还得进行 '行' 内存拷贝
+        cap_mon_info.name_ = kVirtualDesktopNameSign;
+        gdi_capture_ = GdiCapture::Make(this, cap_mon_info);
     }
 
 }

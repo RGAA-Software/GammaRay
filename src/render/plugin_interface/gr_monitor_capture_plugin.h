@@ -12,6 +12,7 @@
 namespace tc
 {
     const std::string kAllMonitorsNameSign = "all";
+    const std::string kVirtualDesktopNameSign = "virtual_desktop"; // 目前此常量用于 GDI采集时候,创建DC设备时候,是根据显示器设备名来创建DC设备, 还是直接GetDC,如果直接GetDC,那采集的就是整个虚拟桌面
     const std::string kCaptureTypeDXGI = "DXGI";
     const std::string kCaptureTypeGDI = "GDI";
     const std::string kCaptureTypeHook = "INNER";

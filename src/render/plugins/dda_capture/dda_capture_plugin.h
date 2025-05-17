@@ -11,8 +11,9 @@ namespace tc
 {
 
     class Thread;
-    class DesktopCapture;
+    /*class DesktopCapture;*/
     class CursorCapture;
+    class PluginDesktopCapture;
 
     class DDACapturePlugin : public GrMonitorCapturePlugin {
     public:
@@ -58,7 +59,7 @@ namespace tc
 
     private:
         std::map<std::string, CaptureMonitorInfo> monitors_;
-        std::map<std::string, std::shared_ptr<DesktopCapture>> captures_;
+        std::map<std::string, std::shared_ptr<PluginDesktopCapture>> captures_;
         std::vector<CaptureMonitorInfo> sorted_monitors_;
         std::shared_ptr<CursorCapture> cursor_capture_ = nullptr;
         std::shared_ptr<Thread> cursor_capture_thread_ = nullptr;

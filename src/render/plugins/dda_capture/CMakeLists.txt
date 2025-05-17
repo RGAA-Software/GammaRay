@@ -7,7 +7,9 @@ set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/dda_capture_plugin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cursor_capture.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dda_capture.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/desktop_capture.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/desktop_capture.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin_desktop_capture.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})

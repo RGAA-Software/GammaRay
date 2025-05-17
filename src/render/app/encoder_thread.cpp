@@ -406,6 +406,7 @@ namespace tc
                 //RdStatistics::Instance()->AppendEncodeDuration(diff);
             }
             else {
+#if 0
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
                         plugin->OnRawVideoFrameRgba(monitor_name, cap_video_msg.raw_image_);
@@ -418,6 +419,42 @@ namespace tc
                 if (target_encoder_plugin) {
                     target_encoder_plugin->Encode(cap_video_msg.raw_image_, frame_index, cap_video_msg);
                 }
+#endif
+
+                auto beg_map_texture = TimeUtil::GetCurrentTimestamp();
+
+                auto rgba_cbk = [=, this](const std::shared_ptr<Image>& image) {
+                    // callback in Enc thread
+                    context_->PostStreamPluginTask([=, this]() {
+                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin* plugin) {
+                            plugin->OnRawVideoFrameRgba(monitor_name, image);
+                            });
+                        });
+                };
+
+                auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
+                    // calculate used time
+                    auto end_map_cvt_texture = TimeUtil::GetCurrentTimestamp();
+                    auto diff_map_cvt_texture = end_map_cvt_texture - beg_map_texture;
+                    stat_->CaptureInfo(monitor_name)->AppendMapCvtTextureDuration((int32_t)diff_map_cvt_texture);
+
+                    // callback in YUV converter thread
+                    if (target_encoder_plugin) {
+                        PostEncTask([=, this]() {
+                            target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                            });
+                    }
+                    context_->PostStreamPluginTask([=, this]() {
+                        plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin* plugin) {
+                            plugin->OnRawVideoFrameYuv(monitor_name, image);
+                            });
+                    });
+                };
+
+
+                frame_carrier->HandleRawImage(cap_video_msg.raw_image_, rgba_cbk, yuv_cbk);
+
+
             }
         });
     }

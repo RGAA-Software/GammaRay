@@ -44,6 +44,7 @@ namespace tc
         GrVideoEncoderPlugin* GetNvencEncoderPlugin();
         GrVideoEncoderPlugin* GetAmfEncoderPlugin();
         GrMonitorCapturePlugin* GetDDACapturePlugin();
+        GrMonitorCapturePlugin* GetGdiCapturePlugin();
         GrDataProviderPlugin* GetMockVideoStreamPlugin();
         GrDataProviderPlugin* GetAudioCapturePlugin();
         GrAudioEncoderPlugin* GetAudioEncoderPlugin();

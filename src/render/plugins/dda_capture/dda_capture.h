@@ -13,9 +13,11 @@
 #include <map>
 #include <functional>
 
-#include "desktop_capture.h"
+//#include "desktop_capture.h"
 #include "tc_common_new/monitors.h"
 #include "tc_common_new/fps_stat.h"
+
+#include "plugins/plugin_desktop_capture.h"
 
 using namespace Microsoft::WRL;
 
@@ -23,7 +25,7 @@ namespace tc
 {
     class DDACapturePlugin;
 
-    class DDACapture : public DesktopCapture  {
+    class DDACapture : public PluginDesktopCapture  {
     public:
 
         class DXGIOutputDuplication {
@@ -68,9 +70,11 @@ namespace tc
         void OnCaptureFrame(ID3D11Texture2D *texture, bool is_cached);
         void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
         int GetFrameIndex();
-        std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
+       // std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
 
     private:
+        DDACapturePlugin* plugin_ = nullptr;
+
         std::atomic<bool> stop_flag_ = false;
         std::thread capture_thread_;
         int64_t monitor_frame_index_ = 0;

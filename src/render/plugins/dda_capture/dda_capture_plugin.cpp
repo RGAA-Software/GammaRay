@@ -393,7 +393,7 @@ namespace tc
                 far_bottom = info.bottom_;
             }
 
-            info.virtual_width_ = info.Width() * 1.0f / total_width * max_virtual_coord;
+            /*info.virtual_width_ = info.Width() * 1.0f / total_width * max_virtual_coord;
             info.virtual_left_ = left_monitor_virtual_size;
             info.virtual_right_ = info.virtual_left_ + info.virtual_width_;
             left_monitor_virtual_size = info.virtual_right_;
@@ -406,7 +406,9 @@ namespace tc
                  "virtual width: {}, virtual height: {}, virtual left: {}, virtual right: {}, virtual top: {}, virtual bottom: {}, virtual h diff: {}",
                  info.name_, info.left_, info.right_, info.top_, info.bottom_,
                  info.virtual_width_, info.virtual_height_, info.virtual_left_, info.virtual_right_, info.virtual_top_, info.virtual_bottom_,
-                 info.virtual_bottom_ - info.virtual_top_);
+                 info.virtual_bottom_ - info.virtual_top_);*/
+            
+
         }
         virtual_desktop_bound_rectangle_info_.far_left_ = far_left;
         virtual_desktop_bound_rectangle_info_.far_top_ = far_top;

@@ -14,6 +14,7 @@ namespace tc
 
     const std::string kAmfEncoderPluginId = "a159a600-9a12-46a1-8e79-cba9645600d2";
     const std::string kDdaCapturePluginId = "0f00e864-a7dd-4b83-8921-220fbed78cc5";
+    const std::string kGdiCapturePluginId = "6c926697-5511-b138-a35b-c6ffa9cee66d";
     const std::string kFFmpegEncoderPluginId = "cbc9690d-456a-4f74-b594-44468637f3c3";
     const std::string kFrameDebuggerPluginId = "bfb3fadc-6f37-401c-a927-88c3ae2d1e95";
     const std::string kMediaRecorderPluginId = "21d1c305-e68c-4079-8a4a-d00735be609b";

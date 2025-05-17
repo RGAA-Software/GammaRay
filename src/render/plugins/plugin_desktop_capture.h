@@ -1,9 +1,4 @@
-//
-// Created by RGAA  on 2024/1/18.
-//
-
-#ifndef TC_APPLICATION_DESKTOP_CAPTURE_H
-#define TC_APPLICATION_DESKTOP_CAPTURE_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -14,11 +9,11 @@
 
 namespace tc
 {
-    class DDACapturePlugin;
+    //class DDACapturePlugin;
 
-    class DesktopCapture {
+    class PluginDesktopCapture {
     public:
-        explicit DesktopCapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info);
+        explicit PluginDesktopCapture(/*DDACapturePlugin* plugin,*/ const CaptureMonitorInfo& my_monitor_info);
         virtual bool Init() = 0;
         virtual bool StartCapture() = 0;
         virtual bool PauseCapture() = 0;
@@ -37,14 +32,13 @@ namespace tc
     private:
 
     protected:
-        DDACapturePlugin* plugin_ = nullptr;
+        //DDACapturePlugin* plugin_ = nullptr;
         int capture_fps_ = 60;
         bool refresh_screen_ = false;
-        std::atomic_bool pausing_ = true;
+        std::atomic_bool pausing_ = false;
         CaptureMonitorInfo my_monitor_info_;
         bool is_primary_monitor_ = false;
         std::deque<int32_t> capture_gaps_;
     };
 }
 
-#endif //TC_APPLICATION_DESKTOP_CAPTURE_H
