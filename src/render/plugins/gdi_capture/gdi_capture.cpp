@@ -35,10 +35,7 @@ namespace tc
     }
 
     bool GdiCapture::Init() {
-
         LOGI("----GdiCapture Init 0");
-
-
         init_success_ = false;     
         screen_dc_ = GetDC(NULL); // 整个虚拟屏幕的设备上下文, GetDC 是采集整个虚拟屏幕的画面,GDI 作为托底采集,就采集整个虚拟桌面就可以
         //screen_dc_ = CreateDC(NULL, R"(\\.\DISPLAY1)", NULL, NULL); // CreateDC 可以采集特定屏幕的画面
@@ -84,7 +81,6 @@ namespace tc
     }
 
     bool GdiCapture::Exit() {
-
         init_success_ = false;
 
         DeleteObject(bit_map_);
@@ -225,50 +221,10 @@ namespace tc
 
             CaptureNextFrame();
 
-            //if (texture) {
-            //    OnCaptureFrame(texture, is_cached);
-            //}
         }
     }
 
-    void GdiCapture::OnCaptureFrame() {
-      
-
-        //SendTextureHandle(last_list_texture_.shared_handle_, input_width, input_height, input_format);
-    }
-
-    void GdiCapture::SendTextureHandle(/*const HANDLE& shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format*/) {
-        /*CaptureVideoFrame cap_video_frame{};
-        cap_video_frame.type_ = kCaptureVideoFrame;
-        cap_video_frame.capture_type_ = kCaptureVideoByHandle;
-        cap_video_frame.data_length = 0;
-        cap_video_frame.frame_width_ = width;
-        cap_video_frame.frame_height_ = height;
-        cap_video_frame.frame_index_ = GetFrameIndex();
-        cap_video_frame.handle_ = reinterpret_cast<uint64_t>(shared_handle);
-        cap_video_frame.frame_format_ = format;
-        cap_video_frame.adapter_uid_ = my_monitor_info_.adapter_uid_;
-        auto mon_index_res = plugin_->GetMonIndexByName(my_monitor_info_.name_);
-        if (mon_index_res.has_value()) {
-            cap_video_frame.monitor_index_ = mon_index_res.value();
-        }
-        else {
-            LOGE("desktop capture get mon index by name failed!");
-        }
-        auto mon_win_info = dxgi_output_duplication_.monitor_win_info_;
-        if (mon_win_info.Valid()) {
-            memset(cap_video_frame.display_name_, 0, sizeof(cap_video_frame.display_name_));
-            memcpy(cap_video_frame.display_name_, mon_win_info.name_.c_str(), mon_win_info.name_.size());
-            cap_video_frame.left_ = mon_win_info.left_;
-            cap_video_frame.top_ = mon_win_info.top_;
-            cap_video_frame.right_ = mon_win_info.right_;
-            cap_video_frame.bottom_ = mon_win_info.bottom_;
-        }
-        auto event = std::make_shared<GrPluginCapturedVideoFrameEvent>();
-        event->frame_ = cap_video_frame;
-        this->plugin_->CallbackEvent(event);*/
-
-    }
+    
 
     int GdiCapture::GetFrameIndex() {
         monitor_frame_index_++;

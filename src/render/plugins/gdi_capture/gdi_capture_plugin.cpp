@@ -56,14 +56,8 @@ namespace tc
 
 
     std::optional<int> GdiCapturePlugin::GetMonIndexByName(const std::string& name) {
-       /* int mon_index = 0;
-        for (auto monitor : sorted_monitors_) {
-            if (name == monitor.name_) {
-                return { mon_index };
-            }
-            ++mon_index;
-        }*/
-        return { std::nullopt };
+        // gdi 采集整个虚拟桌面,所以返回0即可
+        return { 0 };
     }
 
     void GdiCapturePlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
@@ -75,7 +69,7 @@ namespace tc
         {
         case AppBaseEvent::EType::kDisplayDeviceChange: {
             LOGI("GdiCapturePlugin DispatchAppEvent is kDisplayDeviceChange");
-            //HandleDisplayDeviceChangeEvent();
+            HandleDisplayDeviceChangeEvent();
             break;
         }
         default:
@@ -86,20 +80,23 @@ namespace tc
 
     std::map<std::string, WorkingCaptureInfoPtr> GdiCapturePlugin::GetWorkingCapturesInfo() {
         std::map<std::string, WorkingCaptureInfoPtr> result;
-        /*for (const auto& [name, capture] : captures_) {
-            if (capture->IsPausing()) {
-                continue;
-            }
-            const auto& my_monitor = capture->GetMyMonitorInfo();
-            result.insert({ name, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
-                .target_name_ = name,
-                .fps_ = capture->GetCapturingFps(),
-                .capture_type_ = kCaptureTypeDXGI,
-                .capture_frame_width_ = my_monitor.Width(),
-                .capture_frame_height_ = my_monitor.Height(),
-                .capture_gaps_ = capture->GetCaptureGaps(),
-            }) });
-        }*/
+        if(!gdi_capture_){
+            return result;
+        }
+        if (gdi_capture_->IsPausing()) {
+            return result;
+        }
+
+        const auto& my_monitor = gdi_capture_->GetMyMonitorInfo();
+        result.insert({ kVirtualDesktopNameSign, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
+            .target_name_ = kVirtualDesktopNameSign,
+            .fps_ = gdi_capture_->GetCapturingFps(), // to do 检查
+            .capture_type_ = kCaptureTypeGDI,
+            .capture_frame_width_ = my_monitor.VirtualDesktopWidth(),
+            .capture_frame_height_ = my_monitor.VirtualDesktopHeight(),
+            .capture_gaps_ = gdi_capture_->GetCaptureGaps(), // to do 检查
+        }) });
+
         return result;
     }
 
@@ -111,10 +108,7 @@ namespace tc
 
     bool GdiCapturePlugin::StartCapturing() {
         
-      /*  if (!gdi_capture_->Init()) {
-            return false;
-        }*/
-
+    
         gdi_capture_->StartCapture();
 
 
@@ -136,6 +130,25 @@ namespace tc
         cap_mon_info.virtual_desktop_width_ = MathHelper::AlignTo4Bytes(cap_mon_info.virtual_desktop_width_); // 直接4字节对齐, 方便后面直接进行内存copy,不然还得进行 '行' 内存拷贝
         cap_mon_info.name_ = kVirtualDesktopNameSign;
         gdi_capture_ = GdiCapture::Make(this, cap_mon_info);
+    }
+
+    void GdiCapturePlugin::HandleDisplayDeviceChangeEvent() {
+        RestartCapturing();
+    }
+
+    void GdiCapturePlugin::RestartCapturing() {
+        LOGI("GdiCapturePlugin RestartCapturing");
+        // to do  考虑加锁
+        StopCapturing();
+        gdi_capture_ = nullptr;
+        CreateCapture();
+        StartCapturing();
+    }
+
+    void GdiCapturePlugin::StopCapturing() {
+        if (!gdi_capture_) {
+            gdi_capture_->StopCapture();
+        }
     }
 
 }

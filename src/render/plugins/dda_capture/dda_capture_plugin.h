@@ -53,7 +53,7 @@ namespace tc
 
         void RestartCapturing();
 
-        void HandleDisplayDeviceChangeEvent();
+        void HandleDisplayDeviceChangeEvent() override;
 
         bool ExistCaptureMonitor(const std::string& name);
 

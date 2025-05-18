@@ -40,16 +40,13 @@ namespace tc
         void Start();
         bool Exit();
         void Capture();
-        //HRESULT CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex);
-        //void OnCaptureFrame(ID3D11Texture2D* texture, bool is_cached);
+    
 
-        bool CaptureNextFrame();
-        void OnCaptureFrame();
-
-
-        void SendTextureHandle(/*const HANDLE& shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format*/);
+        bool CaptureNextFrame();       
         int GetFrameIndex();
         std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
+
+
 
     private:
         bool init_success_ = false;
@@ -64,14 +61,8 @@ namespace tc
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
         int64_t last_captured_timestamp_ = 0;
 
-        //std::shared_ptr<Data> data_ptr_ = nullptr;
-
-        
-
         HBITMAP bit_map_ = nullptr;
         HDC screen_dc_ = nullptr;
         HDC memory_dc_ = nullptr;
-
-
     };
 }

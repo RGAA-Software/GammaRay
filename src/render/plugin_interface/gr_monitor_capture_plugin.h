@@ -61,6 +61,7 @@ namespace tc
 
         void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override {};
 
+        virtual void HandleDisplayDeviceChangeEvent() = 0;
     protected:
         int capture_fps_ = 60;
         std::string capturing_monitor_name_;

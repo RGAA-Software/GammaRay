@@ -139,6 +139,7 @@ namespace tc
                 }
                 else {
                     monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
+                    monitor_capture_plugin_->EnablePlugin();
                     LOGI("Use gdi capture plugin.");
                 }
                

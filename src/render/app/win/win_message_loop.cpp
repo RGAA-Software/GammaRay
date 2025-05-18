@@ -62,9 +62,20 @@ void WinMessageLoop::OnWinSessionChange(uint32_t message) {
 
 void WinMessageLoop::OnDisplayDeviceChange() {
 	if (auto plugin = plugin_mgr_->GetDDACapturePlugin(); plugin) {
-		auto event = std::make_shared<MsgDisplayDeviceChange>();
-		LOGI("OnDisplayDeviceChange, DispatchAppEvent is MsgDisplayDeviceChange");
-		plugin->DispatchAppEvent(event);
+		if (plugin->IsPluginEnabled()) {
+			auto event = std::make_shared<MsgDisplayDeviceChange>();
+			LOGI("OnDisplayDeviceChange, DispatchAppEvent is MsgDisplayDeviceChange");
+			plugin->DispatchAppEvent(event);
+			return;
+		}
+	}
+	if (auto plugin = plugin_mgr_->GetGdiCapturePlugin(); plugin) {
+		if (plugin->IsPluginEnabled()) {
+			auto event = std::make_shared<MsgDisplayDeviceChange>();
+			LOGI("OnDisplayDeviceChange, DispatchAppEvent is MsgDisplayDeviceChange");
+			plugin->DispatchAppEvent(event);
+			return;
+		}
 	}
 }
 

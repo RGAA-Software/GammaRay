@@ -34,9 +34,12 @@ namespace tc
 
 
         bool StartCapturing() override;
-
+        void StopCapturing() override;
     private:
         void CreateCapture();
+        void HandleDisplayDeviceChangeEvent() override;
+
+        void RestartCapturing();
 
     private:
         std::map<std::string, QLabel*> previewers_;
