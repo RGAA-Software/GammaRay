@@ -17,6 +17,8 @@
   "id_tab_profile": "用户",
 
   "id_this_device": "此设备",
+  "id_connect_information": "连接信息",
+  "id_detailed_information": "详细连接信息",
   "id_remote_devices": "设备列表",
   "id_device_id": "设备ID",
   "id_temporary_password": "临时密码",

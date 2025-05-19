@@ -16,6 +16,8 @@
   "id_tab_profile": "Profile",
 
   "id_this_device": "This Device",
+  "id_connect_information": "Connect Information",
+  "id_detailed_information": "Detailed Information",
   "id_remote_devices": "Device List",
   "id_device_id": "Device ID",
   "id_temporary_password": "Temporary Password",

@@ -163,6 +163,52 @@ namespace tc
 
             }
 
+            // Connect Information
+            {
+                auto title = new TcLabel(this);
+                title->setFixedWidth(item_width+50);
+                title->SetTextId("id_connect_information");
+                title->setAlignment(Qt::AlignLeft);
+                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                left_root->addSpacing(20);
+                left_root->addWidget(title, 0, Qt::AlignLeft);
+            }
+
+            // Temporary Password
+            {
+                left_root->addSpacing(18);
+
+                auto title = new TcLabel(this);
+                title->setFixedWidth(230);
+                title->SetTextId("id_detailed_information");
+                title->setAlignment(Qt::AlignLeft);
+                title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
+                //layout->addSpacing(2);
+                left_root->addWidget(title, 0, Qt::AlignLeft);
+
+                auto layout = new NoMarginHLayout();
+                auto msg = new QLineEdit(this);
+                msg->setAlignment(Qt::AlignLeft);
+                msg->setFixedWidth(330);
+                msg->setFixedHeight(35);
+                msg->setText("***TextSelectableByMouseTextSelectableByMouseTextSelectableByMouseTextSelectableByMouseTextSelectableByMouse*****");
+                msg->setCursorPosition(0);
+                msg->setStyleSheet(R"(font-size: 14px; font-weight: 500; color: #2979ff;)");
+                msg->setEnabled(false);
+                layout->addWidget(msg);
+
+                layout->addSpacing(8);
+
+                auto btn_conn = new TcPushButton();
+                btn_conn->setText("Copy");
+                btn_conn->setFixedWidth(80);
+                btn_conn->setFixedHeight(35);
+                layout->addWidget(btn_conn);
+
+                left_root->addSpacing(5);
+                left_root->addLayout(layout);
+            }
+
             // Remote Device
             {
                 auto title = new TcLabel(this);
