@@ -18,32 +18,12 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     WidgetHelper::SetTitleBarColor(this);
     msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
 
-    auto main_vbox_layout = new NoMarginVLayout();
-    main_vbox_layout->setAlignment(Qt::AlignCenter);
-    main_vbox_layout->setSpacing(0);
-    setLayout(main_vbox_layout);
-
     video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
-    //video_widget_->setMouseTracking(true);
-    //video_widget_->setFocusPolicy(Qt::StrongFocus);
-    //video_widget_->setFocus();
-    //video_widget_->setAttribute(Qt::WA_AcceptTouchEvents);
-    //video_widget_->setAttribute(Qt::WA_Hover);
-    //video_widget_->setAttribute(Qt::WA_InputMethodEnabled);
-    //video_widget_->setAttribute(Qt::WA_KeyCompression);
-    //video_widget_->setAttribute(Qt::WA_NoSystemBackground);
-    
+
     auto size_policy = video_widget_->sizePolicy();
     size_policy.setHorizontalPolicy(QSizePolicy::Expanding);
     size_policy.setVerticalPolicy(QSizePolicy::Expanding);
     video_widget_->setSizePolicy(size_policy);
-
-    main_vbox_layout->addWidget(video_widget_);
-
-    auto cur_size_policy = this->sizePolicy();
-    cur_size_policy.setHorizontalPolicy(QSizePolicy::Expanding);
-    cur_size_policy.setVerticalPolicy(QSizePolicy::Expanding);
-    this->setSizePolicy(cur_size_policy);
 
     InitFloatController();
 }
