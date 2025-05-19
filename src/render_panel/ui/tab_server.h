@@ -48,6 +48,7 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QLabel* lbl_machine_code_ = nullptr;
         QLabel* lbl_machine_random_pwd_ = nullptr;
+        QLineEdit* lbl_detailed_info_ = nullptr;
         TcQRWidget* lbl_qr_code_ = nullptr;
         StreamContent* stream_content_ = nullptr;
         TcPasswordInput* password_input_ = nullptr;

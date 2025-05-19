@@ -16,6 +16,8 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QRegExp>
+#include <QTextEdit>
+#include <QPlainTextEdit>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
@@ -188,12 +190,14 @@ namespace tc
 
                 auto layout = new NoMarginHLayout();
                 auto msg = new QLineEdit(this);
+                lbl_detailed_info_ = msg;
                 msg->setAlignment(Qt::AlignLeft);
                 msg->setFixedWidth(330);
                 msg->setFixedHeight(35);
-                msg->setText("***TextSelectableByMouseTextSelectableByMouseTextSelectableByMouseTextSelectableByMouseTextSelectableByMouse*****");
+                auto info = std::format("gammaray://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
+                msg->setText(info.c_str());
                 msg->setCursorPosition(0);
-                msg->setStyleSheet(R"(font-size: 14px; font-weight: 500; color: #2979ff;)");
+                msg->setStyleSheet(R"(font-size: 12px; padding-left: 5px; font-weight: 500; color: #2979ff;)");
                 msg->setEnabled(false);
                 layout->addWidget(msg);
 
@@ -447,6 +451,11 @@ namespace tc
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), -1);
         if (lbl_qr_code_) {
             lbl_qr_code_->SetQRPixmap(qr_pixmap_);
+        }
+
+        if (lbl_detailed_info_) {
+            auto info = std::format("gammaray://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
+            lbl_detailed_info_->setText(info.c_str());
         }
     }
 

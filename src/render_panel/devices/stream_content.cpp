@@ -10,6 +10,7 @@
 #include "create_stream_dialog.h"
 #include "tc_qt_widget/tc_label.h"
 #include "render_panel/gr_context.h"
+#include "select_stream_type_dialog.h"
 
 #include <QPainter>
 #include <QPen>
@@ -126,8 +127,19 @@ namespace tc
 
         add_btn_ = new AddButton(this);
         add_btn_->SetOnClickCallback([=, this]() {
-            CreateStreamDialog dialog(ctx, this);
-            dialog.exec();
+
+            SelectStreamTypeDialog select_stream_dialog(ctx, this);
+            auto r = select_stream_dialog.exec();
+            if (r == 1) {
+                // create by gammaray://
+                CreateStreamDialog dialog(ctx, this);
+                dialog.exec();
+            }
+            else if (r == 2) {
+                // create by host/port
+                CreateStreamDialog dialog(ctx, this);
+                dialog.exec();
+            }
         });
 
         empty_tip_ = new QLabel(this);

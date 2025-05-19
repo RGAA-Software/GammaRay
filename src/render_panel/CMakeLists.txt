@@ -53,6 +53,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/edit_relay_stream_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_settings_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/device_api.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/select_stream_type_dialog.cpp
 
         PARENT_SCOPE
 )
