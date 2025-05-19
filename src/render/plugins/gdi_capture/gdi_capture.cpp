@@ -193,7 +193,7 @@ namespace tc
 
     void GdiCapture::Start() {
         capture_thread_ = std::thread([this] {
-            for (;;) {
+            while (!stop_flag_) {
                 if (!this->Init()) {
                     LOGE("gdi capture init failed for target: {}, will try again.", my_monitor_info_.name_);
                     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -218,13 +218,9 @@ namespace tc
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
             }
-
             CaptureNextFrame();
-
         }
     }
-
-    
 
     int GdiCapture::GetFrameIndex() {
         monitor_frame_index_++;
