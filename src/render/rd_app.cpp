@@ -56,6 +56,8 @@
 namespace tc
 {
 
+    std::shared_ptr<RdApplication> rdApp;
+
     std::shared_ptr<RdApplication> RdApplication::Make(const AppParams& args) {
         // By OS
         // Windows
@@ -163,6 +165,8 @@ namespace tc
 
         // desktop manager
         desktop_mgr_ = WinDesktopManager::Make(context_);
+
+        rdApp = shared_from_this();
 
         return qapp_->exec();
     }

@@ -11,12 +11,11 @@
 #include "tc_common_new/log.h"
 #include "client/ct_settings.h"
 
-
 namespace tc {
 	
 GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent)
     : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
-
+    WidgetHelper::SetTitleBarColor(this);
     msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
 
     auto main_vbox_layout = new NoMarginVLayout();

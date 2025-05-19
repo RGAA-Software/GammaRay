@@ -64,6 +64,9 @@ namespace tc
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
 
+        // title margin
+        root_layout->addSpacing(kTabContentMarginTop);
+
         // content layout
         auto content_layout = new QHBoxLayout();
         WidgetHelper::ClearMargins(content_layout);

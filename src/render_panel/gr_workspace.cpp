@@ -11,6 +11,7 @@
 #include <QStackedWidget>
 #include <QApplication>
 #include <QMenu>
+#include <dwmapi.h>
 
 #include "tc_qt_widget/custom_tab_btn.h"
 #include "tc_qt_widget/widget_helper.h"
@@ -38,7 +39,8 @@ namespace tc
         setWindowTitle(tr("GammaRay"));
         settings_ = GrSettings::Instance();
 
-        setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+        //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+        WidgetHelper::SetTitleBarColor(this);
 
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);

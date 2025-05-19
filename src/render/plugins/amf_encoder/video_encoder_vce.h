@@ -24,6 +24,7 @@ namespace tc
         AMFTextureEncoder(const amf::AMFContextPtr &amfContext, EncoderConfig config,
                           amf::AMF_SURFACE_FORMAT inputFormat, AMFTextureReceiver receiver);
         ~AMFTextureEncoder();
+        bool Init();
         void Start();
         void Shutdown();
         void Submit(amf::AMFData *data);
@@ -34,6 +35,9 @@ namespace tc
         std::thread* thread_ = nullptr;
         AMFTextureReceiver receiver_;
         EVideoCodecType codec_;
+        amf::AMFContextPtr amf_context_ = nullptr;
+        EncoderConfig encoder_config_;
+        amf::AMF_SURFACE_FORMAT input_format_;
     };
 
     class AMFTextureConverter {

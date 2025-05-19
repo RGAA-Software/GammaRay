@@ -54,6 +54,8 @@ namespace tc
         steam_mgr_ = context_->GetSteamManager();
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
+        // title margin
+        root_layout->addSpacing(kTabContentMarginTop);
 
         // operators
         auto op_layout = new NoMarginHLayout();

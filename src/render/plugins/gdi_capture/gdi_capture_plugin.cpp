@@ -25,7 +25,7 @@ namespace tc
     }
 
     std::string GdiCapturePlugin::GetPluginName() {
-        return "Gdi Capture";
+        return "GDI";
     }
 
     std::string GdiCapturePlugin::GetVersionName() {

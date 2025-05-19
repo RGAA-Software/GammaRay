@@ -165,6 +165,8 @@ namespace tc
         std::shared_ptr<WinDesktopManager> desktop_mgr_ = nullptr;
     };
 
+    extern std::shared_ptr<RdApplication> rdApp;
+
     // Windows
     class WinApplication : public RdApplication {
     public:

@@ -30,7 +30,7 @@ namespace tc
     }
 
     std::string DDACapturePlugin::GetPluginName() {
-        return "DDA Capture Plugin";
+        return "DXGI";
     }
 
     std::string DDACapturePlugin::GetVersionName() {

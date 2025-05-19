@@ -25,7 +25,7 @@ namespace tc
 
         void resizeEvent(QResizeEvent *event) override;
         void paintEvent(QPaintEvent *event) override;
-
+        bool eventFilter(QObject* object, QEvent* event) override;
         void UpdateOnHeartBeat(const OnHeartBeat& hb);
     private:
         void UpdateDataSpeedChart();

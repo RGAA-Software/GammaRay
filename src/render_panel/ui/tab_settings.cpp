@@ -19,6 +19,9 @@ namespace tc
         auto root_layout = new NoMarginHLayout();
 
         auto left_button_layout = new NoMarginVLayout();
+        // title margin
+        left_button_layout->addSpacing(kTabContentMarginTop);
+
         root_layout->addSpacing(20);
         root_layout->addLayout(left_button_layout);
         auto left_area_width = 180;
@@ -104,6 +107,9 @@ namespace tc
             tabs_[StTabName::kStAboutMe]->SetAttach(btn_about_me_);
 
             auto layout = new NoMarginVLayout();
+            // title margin
+            //layout->addSpacing(kTabContentMarginTop);
+
             auto stack_widget = new QStackedWidget(this);
             stack_widget->addWidget(tabs_[StTabName::kStGeneral]);
             stack_widget->addWidget(tabs_[StTabName::kStNetwork]);

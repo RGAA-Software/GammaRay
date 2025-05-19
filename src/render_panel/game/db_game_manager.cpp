@@ -36,7 +36,7 @@ namespace tc
     }
 
     void DBGameManager::Init() {
-        auto db_path = qApp->applicationDirPath() + "/gr_data/game.db";
+        auto db_path = qApp->applicationDirPath() + "/gr_data/gr_game.db";
         auto storage = InitAppDatabase(db_path.toStdString());
         db_storage_ = storage;
         storage.sync_schema();

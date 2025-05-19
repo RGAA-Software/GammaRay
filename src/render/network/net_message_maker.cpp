@@ -61,8 +61,15 @@ namespace tc
         hb->set_win_pressed(KeyHelper::IsWinPressed());
         hb->set_shift_pressed(KeyHelper::IsShiftPressed());
         hb->set_timestamp(timestamp);
+
+        if (auto capture_plugin = app->GetWorkingMonitorCapturePlugin(); capture_plugin) {
+            hb->set_video_capture_type(capture_plugin->GetPluginName());
+        }
+        else {
+            hb->set_video_capture_type("UnKnown");
+        }
+
         // TODO::
-        hb->set_video_capture_type("DXGI");
         hb->set_audio_capture_type("WASAPI");
         hb->set_audio_encode_type("OPUS");
 

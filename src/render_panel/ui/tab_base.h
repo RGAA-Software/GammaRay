@@ -10,6 +10,8 @@
 
 namespace tc
 {
+    constexpr int kTabContentMarginTop = 3;
+
     class GrContext;
     class GrSettings;
     class GrApplication;

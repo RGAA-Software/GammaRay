@@ -58,6 +58,9 @@ namespace tc
         int margin_left = 20;
         {
             auto layout = new NoMarginVLayout();
+            // title margin
+            layout->addSpacing(kTabContentMarginTop);
+
             content_root->addLayout(layout);
             // Server Status
             {
@@ -440,6 +443,8 @@ namespace tc
         // Server Status
         {
             auto layout = new NoMarginVLayout();
+            // title margin
+            layout->addSpacing(kTabContentMarginTop);
 
             auto item_layout = new NoMarginHLayout();
             auto title = new QLabel(this);

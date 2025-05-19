@@ -9,6 +9,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QTimer>
+#include <dwmapi.h>
 #include "client/ct_workspace.h"
 #include "thunder_sdk.h"
 #include "ct_opengl_video_widget.h"
@@ -51,6 +52,8 @@ namespace tc
         this->settings_ = Settings::Instance();
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+
+        WidgetHelper::SetTitleBarColor(this);
 
         //auto test = new QPushButton("ExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHint", this);
         //test->setFixedWidth(500);

@@ -35,13 +35,25 @@ namespace tc
     AMFTextureEncoder::AMFTextureEncoder(const amf::AMFContextPtr &amfContext, EncoderConfig config,
                                          amf::AMF_SURFACE_FORMAT inputFormat, AMFTextureReceiver receiver)
                                          : receiver_(std::move(receiver)) {
+        amf_context_ = amfContext;
+        encoder_config_ = config;
+        input_format_ = inputFormat;
         codec_ = config.codec_type;
+    }
+
+    AMFTextureEncoder::~AMFTextureEncoder() {
+        if (amf_encoder_) {
+            amf_encoder_->Terminate();
+        }
+    }
+
+    bool AMFTextureEncoder::Init() {
         const wchar_t* pCodec = L"";
 
-        amf_int32 frameRateIn = config.fps;
+        amf_int32 frameRateIn = encoder_config_.fps;
         //5Mbits : 5*1000000
-        amf_int64 bitRateIn = config.bitrate;
-        LOGI("Amf encoder bitrate: {}, fps: {}", bitRateIn, config.fps);
+        amf_int64 bitRateIn = encoder_config_.bitrate;
+        LOGI("Amf encoder bitrate: {}, fps: {}", bitRateIn, encoder_config_.fps);
 
         switch (codec_) {
             case EVideoCodecType::kH264:
@@ -55,10 +67,28 @@ namespace tc
         }
 
         // Create encoder component.
-        auto ret = g_AMFFactory.GetFactory()->CreateComponent(amfContext, pCodec, &amf_encoder_);
+        auto ret = g_AMFFactory.GetFactory()->CreateComponent(amf_context_, pCodec, &amf_encoder_);
         if (ret != AMF_OK) {
             LOGE("CreateComponent failed: {}", ret);
-            return;
+            return false;
+        }
+
+        amf::AMFCapsPtr pCaps;
+        ret = amf_encoder_->GetCaps(&pCaps);
+        if (ret != AMF_OK) {
+            LOGE("Failed to get encoder caps!");
+            return false;
+        }
+
+        amf::AMFIOCaps* iocaps = nullptr;
+        if (auto r = pCaps->GetInputCaps(&iocaps); r == AMF_OK && iocaps) {
+            amf_int32 min_width{0};
+            amf_int32 max_width{0};
+            iocaps->GetWidthRange(&min_width, &max_width);
+            LOGI("supported min width: {}, max width: {}", min_width, max_width);
+        }
+        else {
+            LOGW("can't get encoder supported caps.");
         }
 
         if (codec_ == EVideoCodecType::kH264) {
@@ -69,7 +99,7 @@ namespace tc
             //amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_QUALITY_PRESET, AMF_VIDEO_ENCODER_QUALITY_PRESET_QUALITY);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_QUALITY_PRESET, AMF_VIDEO_ENCODER_QUALITY_PRESET_BALANCED);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_TARGET_BITRATE, bitRateIn);
-            amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_FRAMESIZE, ::AMFConstructSize(config.width, config.height));
+            amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_FRAMESIZE, ::AMFConstructSize(encoder_config_.width, encoder_config_.height));
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_FRAMERATE, ::AMFConstructRate(frameRateIn, 1));
 
             //m_amfEncoder->SetProperty(AMF_VIDEO_ENCODER_PROFILE, AMF_VIDEO_ENCODER_PROFILE_HIGH);
@@ -78,26 +108,21 @@ namespace tc
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_HEVC_USAGE, AMF_VIDEO_ENCODER_HEVC_USAGE_ULTRA_LOW_LATENCY);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_HEVC_QUALITY_PRESET, AMF_VIDEO_ENCODER_HEVC_QUALITY_PRESET_QUALITY);
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_HEVC_TARGET_BITRATE, bitRateIn);
-            amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_HEVC_FRAMESIZE, ::AMFConstructSize(config.width, config.height));
+            amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_HEVC_FRAMESIZE, ::AMFConstructSize(encoder_config_.width, encoder_config_.height));
             amf_encoder_->SetProperty(AMF_VIDEO_ENCODER_HEVC_FRAMERATE, ::AMFConstructRate(frameRateIn, 1));
 
             //m_amfEncoder->SetProperty(AMF_VIDEO_ENCODER_HEVC_TIER, AMF_VIDEO_ENCODER_HEVC_TIER_HIGH);
             //m_amfEncoder->SetProperty(AMF_VIDEO_ENCODER_HEVC_PROFILE_LEVEL, AMF_LEVEL_5);
         }
 
-        ret = amf_encoder_->Init(inputFormat, config.width, config.height);
+        ret = amf_encoder_->Init(input_format_, encoder_config_.width, encoder_config_.height);
         if (ret != AMF_OK) {
-            LOGE("!!! AMF encoder init failed: {}, {}x{}, format: {}", ret, config.width, config.height, inputFormat);
-            return;
+            LOGE("!!! AMF encoder init failed: {}, {}x{}, format: {}", ret, encoder_config_.width, encoder_config_.height, input_format_);
+            return false;
         }
 
-        LOGI("Initialized AMFTextureEncoder.");
-    }
-
-    AMFTextureEncoder::~AMFTextureEncoder() {
-        if (amf_encoder_) {
-            amf_encoder_->Terminate();
-        }
+        LOGI("Initialized AMFTextureEncoder success");
+        return true;
     }
 
     void AMFTextureEncoder::Start() {
@@ -245,6 +270,9 @@ namespace tc
         encoder_input_format_ = DXGI_FORMAT_to_AMF_FORMAT(format);
         encoder_ = std::make_shared<AMFTextureEncoder>(amf_context_, config, encoder_input_format_,
                                                        std::bind(&VideoEncoderVCE::Receive, this, std::placeholders::_1));
+        if (!encoder_->Init()) {
+            return false;
+        }
         converter_ = std::make_shared<AMFTextureConverter>(amf_context_, config.width, config.height,
                                                            convert_input_format_, encoder_input_format_,
                                                            std::bind(&AMFTextureEncoder::Submit, encoder_.get(), std::placeholders::_1));

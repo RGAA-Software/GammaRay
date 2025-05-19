@@ -13,6 +13,7 @@
 #include "tc_common_new/num_formatter.h"
 #include "tc_common_new/hardware.h"
 #include "ct_stat_frame_info_item.h"
+#include "tc_qt_widget/widget_helper.h"
 #include <QLabel>
 
 namespace tc
@@ -26,7 +27,7 @@ namespace tc
 
     CtStatisticsPanel::CtStatisticsPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         setWindowTitle("Statistics");
-
+        installEventFilter(this);
         sdk_stat_ = SdkStatistics::Instance();
 
         auto root_layout = new NoMarginHLayout();
@@ -471,6 +472,13 @@ namespace tc
         painter.setBrush(QBrush(0xffffff));
         painter.setPen(Qt::NoPen);
         painter.drawRoundedRect(this->rect(), 7, 7);
+    }
+
+    bool CtStatisticsPanel::eventFilter(QObject* object, QEvent* event) {
+        if (event->type() == QEvent::Show && object == this) {
+            WidgetHelper::SetTitleBarColor(this);
+        }
+        return QObject::eventFilter(object, event);
     }
 
     void CtStatisticsPanel::UpdateOnHeartBeat(const OnHeartBeat& hb) {
