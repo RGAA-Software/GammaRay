@@ -122,7 +122,7 @@ namespace tc
         // @deprecated
         int udp_listen_port_{0};
 
-        int panel_listen_port_{0};
+        int panel_srv_port_{0};
 
         std::string log_file_;
         std::string encoder_select_type_;
@@ -140,7 +140,7 @@ namespace tc
         std::string capture_video_type_;
         std::string capture_audio_device_;
 
-        int network_listening_port_{};
+        int render_srv_port_{};
         std::string network_listening_ip_{};
         std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;

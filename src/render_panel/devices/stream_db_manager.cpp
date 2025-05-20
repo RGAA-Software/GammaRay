@@ -143,6 +143,17 @@ namespace tc
         return target_stream;
     }
 
+    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStream(const std::string& host, int port) {
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_host_) == host and c(&StreamItem::stream_port_) == port));
+        if (streams.empty()) {
+            return std::nullopt;
+        }
+        auto target_stream = std::move(streams[0]);
+        return target_stream;
+    }
+
     std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);

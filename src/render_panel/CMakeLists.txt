@@ -54,6 +54,9 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_settings_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/device_api.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/select_stream_type_dialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/create_stream_conn_info_dialog.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
 
         PARENT_SCOPE
 )

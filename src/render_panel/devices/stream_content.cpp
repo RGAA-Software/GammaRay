@@ -11,6 +11,7 @@
 #include "tc_qt_widget/tc_label.h"
 #include "render_panel/gr_context.h"
 #include "select_stream_type_dialog.h"
+#include "create_stream_conn_info_dialog.h"
 
 #include <QPainter>
 #include <QPen>
@@ -132,7 +133,7 @@ namespace tc
             auto r = select_stream_dialog.exec();
             if (r == 1) {
                 // create by gammaray://
-                CreateStreamDialog dialog(ctx, this);
+                CreateStreamConnInfoDialog dialog(ctx, this);
                 dialog.exec();
             }
             else if (r == 2) {

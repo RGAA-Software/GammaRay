@@ -90,7 +90,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edt_websocket_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->network_listening_port_).c_str());
+                edit->setText(std::to_string(settings_->render_srv_port_).c_str());
                 edit->setEnabled(settings_->websocket_enabled_ == kStTrue);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -211,7 +211,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edt_panel_port_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->panel_listen_port_).c_str());
+                edit->setText(std::to_string(settings_->panel_srv_port_).c_str());
                 edit->setEnabled(true);
                 layout->addWidget(edit);
                 layout->addStretch();

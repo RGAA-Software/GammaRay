@@ -115,26 +115,44 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            auto opt_exist_stream = db_mgr_->GetStream(item->stream_id_);
-            if (!opt_exist_stream.has_value()) {
+            std::shared_ptr<StreamItem> exist_stream_item = nullptr;
+            {
+                auto opt_stream = db_mgr_->GetStream(item->stream_id_);
+                if (opt_stream.has_value()) {
+                    exist_stream_item = opt_stream.value();
+                }
+            }
+            {
+                auto opt_stream = db_mgr_->GetStream(item->stream_host_, item->stream_port_);
+                if (opt_stream.has_value()) {
+                    exist_stream_item = opt_stream.value();
+                }
+            }
+
+            if (!exist_stream_item) {
                 db_mgr_->AddStream(item);
+                exist_stream_item = item;
             }
             else {
-                auto exist_stream = opt_exist_stream.value();
                 // todo: Check stream info.
                 // check password type: random / safety
                 // then update it in database
-                exist_stream->stream_host_ = item->stream_host_;
-                exist_stream->stream_port_ = item->stream_port_;
-                if (exist_stream->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
-                    exist_stream->remote_device_random_pwd_ = item->remote_device_random_pwd_;
+                exist_stream_item->stream_host_ = item->stream_host_;
+                exist_stream_item->stream_port_ = item->stream_port_;
+                if (exist_stream_item->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
+                    exist_stream_item->remote_device_random_pwd_ = item->remote_device_random_pwd_;
                 }
-                if (exist_stream->remote_device_safety_pwd_ != item->remote_device_safety_pwd_ && !item->remote_device_safety_pwd_.empty()) {
-                    exist_stream->remote_device_safety_pwd_ = item->remote_device_safety_pwd_;
+                if (exist_stream_item->remote_device_safety_pwd_ != item->remote_device_safety_pwd_ && !item->remote_device_safety_pwd_.empty()) {
+                    exist_stream_item->remote_device_safety_pwd_ = item->remote_device_safety_pwd_;
                 }
-                db_mgr_->UpdateStream(exist_stream);
+                db_mgr_->UpdateStream(exist_stream_item);
             }
             LoadStreamItems();
+
+            LOGI("Auto start stream: {}", msg.auto_start_);
+            if (msg.auto_start_) {
+                StartStream(exist_stream_item);
+            }
         });
 
         msg_listener_->Listen<StreamItemUpdated>([=, this](const StreamItemUpdated& msg) {

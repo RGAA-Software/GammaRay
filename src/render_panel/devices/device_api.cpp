@@ -25,7 +25,7 @@ namespace tc
             return DeviceVerifyResult::kVfEmptyServerHost;
         }
         auto client =
-                HttpClient::Make(std::format("{}:{}", settings->profile_server_host_, settings->profile_server_port_), "/verify/device/info", 2);
+                HttpClient::Make(std::format("{}:{}", settings->profile_server_host_, settings->profile_server_port_), "/verify/device/info", 2000);
         auto resp = client->Request({
             {"device_id", device_id},
             {"random_pwd_md5", random_pwd.empty() ? "" : MD5::Hex(random_pwd)},

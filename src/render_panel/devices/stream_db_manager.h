@@ -29,6 +29,7 @@ namespace tc
         std::vector<std::shared_ptr<StreamItem>> GetAllStreamsSortByCreatedTime(bool increase = false);
         std::vector<std::shared_ptr<StreamItem>> GetStreamsSortByCreatedTime(int page, int page_size, bool increase = false);
         std::optional<std::shared_ptr<StreamItem>> GetStream(const std::string& stream_id);
+        std::optional<std::shared_ptr<StreamItem>> GetStream(const std::string& host, int port);
         std::optional<std::shared_ptr<StreamItem>> GetStreamByRemoteDeviceId(const std::string& remote_device_id);
         void DeleteStream(int id);
         int RandomColor();

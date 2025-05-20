@@ -107,6 +107,7 @@ namespace tc
     class StreamItemAdded {
     public:
         std::shared_ptr<StreamItem> item_;
+        bool auto_start_ = false;
     };
 
     class StreamItemUpdated {

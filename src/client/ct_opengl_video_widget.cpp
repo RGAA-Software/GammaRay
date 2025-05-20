@@ -33,6 +33,7 @@ namespace tc
 	OpenGLVideoWidget::OpenGLVideoWidget(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx, RawImageFormat format, QWidget* parent)
 		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, sdk, dup_idx) {
 
+        TimeDuration dr("OpenGLVideoWidget");
         context_ = ctx;
         raw_image_format_ = format;
 //		statistics = Statistics::Instance();
@@ -53,6 +54,8 @@ namespace tc
 
 	void OpenGLVideoWidget::initializeGL() {
 		initializeOpenGLFunctions();
+
+        TimeDuration duration("initializeGL");
 
 		auto functions = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
 		functions->initializeOpenGLFunctions();

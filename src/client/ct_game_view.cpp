@@ -1,6 +1,7 @@
 #include "ct_game_view.h"
 #include <qsizepolicy.h>
 #include <qpalette.h>
+#include <QTimer>
 #include "ct_opengl_video_widget.h"
 #include "tc_dialog.h"
 #include "no_margin_layout.h"
@@ -10,6 +11,7 @@
 #include "ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "client/ct_settings.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc {
 	
@@ -18,7 +20,10 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     WidgetHelper::SetTitleBarColor(this);
     msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
 
+    auto beg = TimeUtil::GetCurrentTimestamp();
     video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
+    auto end = TimeUtil::GetCurrentTimestamp();
+    LOGI("Create OpenGLWidget used: {}ms", (end-beg));
 
     auto size_policy = video_widget_->sizePolicy();
     size_policy.setHorizontalPolicy(QSizePolicy::Expanding);

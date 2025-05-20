@@ -34,8 +34,10 @@ namespace tc
             layout->addWidget(lbl_title);
 
             auto lbl_eg = new QLabel(this);
-            lbl_eg->setStyleSheet("font-size: 12px; font-weight: 700; color: #2979ff; padding-left: 32px;");
-            lbl_eg->setText("For example:\ngammaray://6e4e6296\n68e87b2f4f0803b...");
+            lbl_eg->setFixedWidth(widget->width());
+            lbl_eg->setAlignment(Qt::AlignCenter);
+            lbl_eg->setStyleSheet("font-size: 12px; font-weight: 700; color: #2979ff;");
+            lbl_eg->setText("For example:\ngammaray://6e4e6296\n68e87ab2f4f08d03b...");
             layout->addSpacing(8);
             layout->addWidget(lbl_eg);
 
@@ -67,8 +69,10 @@ namespace tc
             layout->addWidget(lbl_title);
 
             auto lbl_eg = new QLabel(this);
-            lbl_eg->setStyleSheet("font-size: 12px; font-weight: 700; color: #2979ff; padding-left: 47px;");
-            lbl_eg->setText("For example:\nHost: 192.168.1.5\nPort: 20371");
+            lbl_eg->setFixedWidth(widget->width());
+            lbl_eg->setAlignment(Qt::AlignCenter);
+            lbl_eg->setStyleSheet("font-size: 12px; font-weight: 700; color: #2979ff;");
+            lbl_eg->setText("For example:\nHost: 192.168.1.5\nPort: 20371       ");
             layout->addSpacing(8);
             layout->addWidget(lbl_eg);
 

@@ -18,6 +18,8 @@
 #include <QRegExp>
 #include <QTextEdit>
 #include <QPlainTextEdit>
+#include <QClipboard>
+#include <QApplication>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
@@ -208,6 +210,12 @@ namespace tc
                 btn_conn->setFixedWidth(80);
                 btn_conn->setFixedHeight(35);
                 layout->addWidget(btn_conn);
+                connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
+                    QClipboard* clipboard = QApplication::clipboard();
+                    clipboard->setText(msg->text());
+                    TcDialog dlg("Tips", "Connection info has been written to the clipboard.");
+                    dlg.exec();
+                });
 
                 left_root->addSpacing(5);
                 left_root->addLayout(layout);

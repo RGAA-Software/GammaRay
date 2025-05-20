@@ -43,6 +43,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/qwidget_helper.h"
 #include "network/ct_panel_client.h"
+#include "tc_common_new/time_util.h"
 
 namespace tc
 {
@@ -53,18 +54,13 @@ namespace tc
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
 
-        WidgetHelper::SetTitleBarColor(this);
+        auto beg = TimeUtil::GetCurrentTimestamp();
 
-        //auto test = new QPushButton("ExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHintExpandedClientAreaHint", this);
-        //test->setFixedWidth(500);
-        //test->setFixedHeight(200);
-        //connect(test, &QPushButton::clicked, this, [=, this]() {
-        //});
+        WidgetHelper::SetTitleBarColor(this);
 
         origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params->stream_name_.c_str() + "]";
         setWindowTitle(origin_title_name_);
         auto notifier = this->context_->GetMessageNotifier();
-        //(new MainWindowWrapper(notifier, this))->Setup(title_name);
 
         setAcceptDrops(true);
         QString app_dir = qApp->applicationDirPath();
@@ -82,8 +78,12 @@ namespace tc
         sdk_->Init(params, nullptr, DecoderRenderType::kFFmpegI420);
 
         // init game views
-        InitGameViews(params);
-        
+        {
+            auto beg = TimeUtil::GetCurrentTimestamp();
+            InitGameViews(params);
+            auto end = TimeUtil::GetCurrentTimestamp();
+            LOGI("Init game views used: {}ms", (end-beg));
+        }
         main_progress_ = new MainProgress(sdk_, context_, this);
         main_progress_->show();
 
@@ -220,6 +220,11 @@ namespace tc
         // connect to GammaRay Panel
         panel_client_ = std::make_shared<CtPanelClient>(context_);
         panel_client_->Start();
+
+        {
+            auto end = TimeUtil::GetCurrentTimestamp();
+            LOGI("Init .3 used: {}ms", (end-beg));
+        }
     }
 
     Workspace::~Workspace() {

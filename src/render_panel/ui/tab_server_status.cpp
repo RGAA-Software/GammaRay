@@ -228,18 +228,9 @@ namespace tc
                 layout->addLayout(item_layout);
             }
 
-            auto ips = context_->GetIps();
-            EthernetInfo et_info;
-            if (!ips.empty()) {
-                et_info = ips.at(0);
-            }
             // IPs
+            auto ips = context_->GetIps();
             for (auto& item : ips) {
-                if (!settings_->network_listening_ip_.empty() && item.ip_addr_ == settings_->network_listening_ip_) {
-                    et_info = item;
-                }
-            }
-            {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
                 auto icon = new QLabel(this);
@@ -255,13 +246,13 @@ namespace tc
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(et_info.ip_addr_.c_str());
+                value->setText(item.ip_addr_.c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
 
                 auto nt_type = new QLabel(this);
                 nt_type->setFixedSize(80, 40);
-                nt_type->setText(et_info.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
+                nt_type->setText(item.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
                 nt_type->setStyleSheet("font-size: 14px;");
                 item_layout->addSpacing(10);
                 item_layout->addWidget(nt_type);
@@ -281,7 +272,7 @@ namespace tc
 
                 auto label = new QLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Panel Listening Port"));
+                label->setText(tr("Panel TCP Port"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
@@ -311,7 +302,7 @@ namespace tc
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(std::to_string(settings_->panel_listen_port_).c_str());
+                value->setText(std::to_string(settings_->panel_srv_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();
@@ -335,7 +326,7 @@ namespace tc
 
                 auto value = new QLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(std::to_string(settings_->network_listening_port_).c_str());
+                value->setText(std::to_string(settings_->render_srv_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();
@@ -404,7 +395,7 @@ namespace tc
             }
 
             // Running apps
-            {
+            if (0) {
                 auto label_size = QSize(220, 35);
                 auto wrap_layout = new NoMarginHLayout();
                 auto running_layout = new NoMarginVLayout();
@@ -503,6 +494,9 @@ namespace tc
         });
 
        msg_listener_->Listen<MsgRunningGameIds>([=, this](const MsgRunningGameIds& msg) {
+           if (!lbl_running_games_) {
+               return;
+           }
             this->context_->PostUITask([=, this]() {
                 auto rgm = this->context_->GetRunGameManager();
                 auto running_games = rgm->GetRunningGames();

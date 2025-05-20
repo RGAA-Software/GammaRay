@@ -9,7 +9,7 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QDebug>
-
+#include <QOpenGLWidget>
 #include "thunder_sdk.h"
 #include "client/ct_client_context.h"
 #include "client/ct_workspace.h"
@@ -27,6 +27,7 @@
 #include "translator/tc_translator.h"
 #include "ct_stream_item_net_type.h"
 #include "tc_common_new/dump_helper.h"
+#include "tc_common_new/time_util.h"
 
 using namespace tc;
 
@@ -192,7 +193,13 @@ int main(int argc, char** argv) {
     QSurfaceFormat::setDefaultFormat(fmt);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
-    QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+    //QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+    QSurfaceFormat myFormat;
+    myFormat.setDepthBufferSize(24);
+    myFormat.setSwapInterval(0);
+    QSurfaceFormat::setDefaultFormat(myFormat);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     QApplication app(argc, argv);
     ParseCommandLine(app);
 
@@ -288,6 +295,7 @@ int main(int argc, char** argv) {
         .display_remote_name_ = settings->display_remote_name_,
     });
 
+    auto beg = TimeUtil::GetCurrentTimestamp();
     static auto ws = std::make_shared<Workspace>(ctx, params);
     ws->Init();
     ws->resize(1366, 768);
@@ -295,6 +303,8 @@ int main(int argc, char** argv) {
         ws->showMaximized();
     }
     ws->show();
+    auto end = TimeUtil::GetCurrentTimestamp();
+    LOGI("Init used: {}ms", (end-beg));
 
     HHOOK keyboardHook = SetWindowsHookExA(WH_KEYBOARD_LL, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
         auto kbd_struct = (KBDLLHOOKSTRUCT *)lParam;

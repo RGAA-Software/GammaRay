@@ -9,7 +9,7 @@
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
 #include "client/ct_settings.h"
-
+#include "tc_common_new/time_util.h"
 #ifdef WIN32
 #include <Windows.h>
 #endif
@@ -19,6 +19,7 @@ namespace tc
 {
 
 	VideoWidgetEvent::VideoWidgetEvent(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx) {
+        TimeDuration dr("VideoWidgetEvent");
 		this->context_ = ctx;
         this->dup_idx_ = dup_idx;
         this->key_converter_ = std::make_shared<QtKeyConverter>();

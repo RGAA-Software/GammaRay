@@ -135,7 +135,7 @@ namespace tc
             this->SyncPanelInfo();
         });
 
-        bool ret = http_server_->start("0.0.0.0", settings_->panel_listen_port_);
+        bool ret = http_server_->start("0.0.0.0", settings_->panel_srv_port_);
         LOGI("App server start result: {}", ret);
     }
 
