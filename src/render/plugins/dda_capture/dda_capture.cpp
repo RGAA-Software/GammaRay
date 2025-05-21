@@ -248,8 +248,14 @@ namespace tc
 
     void DDACapture::Start() {
         capture_thread_ = std::thread([this] {
-            for (;;) {
-                if (!this->Init()) {
+            const int kInitTryMaxCount = 6;
+            int try_count = -1;
+            bool dda_init_res = false;
+
+            do  { 
+                ++try_count;
+                dda_init_res = this->Init();
+                if (!dda_init_res) {
                     LOGE("dda capture init failed for target: {}, will try again.", my_monitor_info_.name_);
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                     continue;
@@ -257,14 +263,20 @@ namespace tc
                 else {
                     break;
                 }
+
+            } while (try_count < kInitTryMaxCount);
+
+            if (dda_init_callback_) {
+                dda_init_callback_(dda_init_res);
             }
 
-            if (dda_init_success_callback_) {
-                dda_init_success_callback_();
+            if (dda_init_res) {
+                LOGI("DDA Init success, will start capturing.");
+                Capture();
             }
-
-            LOGI("DDA Init success, will start capturing.");
-            Capture();
+            else {
+                LOGI("DDA Init failed, will use gdi capturing.");
+            }
         });
     }
 

@@ -118,6 +118,8 @@ namespace tc
         void SendConfigurationBack();
         void RequestRestartMe();
 
+        void SwitchGdiCapture();
+
     protected:
         RdSettings* settings_ = nullptr;
         std::shared_ptr<WsPanelClient> ws_panel_client_ = nullptr;

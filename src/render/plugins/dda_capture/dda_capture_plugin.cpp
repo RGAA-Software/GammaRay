@@ -176,6 +176,7 @@ namespace tc
     }
 
     bool DDACapturePlugin::StartCapturing() {
+        StopCapturing();
         if (capturing_monitor_name_ != kAllMonitorsNameSign && !capturing_monitor_name_.empty()) {
             if (!ExistCaptureMonitor(capturing_monitor_name_)) {
                 capturing_monitor_name_ = "";
@@ -185,7 +186,14 @@ namespace tc
         for(const auto&[dev_name, monitor_info] : monitors_) {
             auto capture = std::make_shared<DDACapture>(this, monitor_info);
             capture->StartCapture();
-            capture->SetDDAInitSuccessCallback([=, this]() {
+            capture->SetDDAInitCallback([=, this](bool init_res) {
+                if (!init_res) {
+                    if (capture_init_failed_cbk_) {
+                        capture_init_failed_cbk_();
+                    }
+                    return;
+                }
+
                 if (kAllMonitorsNameSign == capturing_monitor_name_) {
                     capture->ResumeCapture();
                 }
@@ -201,6 +209,7 @@ namespace tc
                 SetCaptureMonitor(capturing_monitor_name_);
                 NotifyCaptureMonitorInfo();
             });
+
             captures_.insert({dev_name, capture});
         }
         return true;
@@ -212,10 +221,8 @@ namespace tc
         }
     }
 
-
     void DDACapturePlugin::RestartCapturing() {
         LOGI("DDACapturePlugin RestartCapturing");
-        // to do  考虑加锁
         StopCapturing();
         captures_.clear();
         monitors_.clear();
@@ -392,23 +399,6 @@ namespace tc
             if (info.bottom_ > far_bottom) {
                 far_bottom = info.bottom_;
             }
-
-            /*info.virtual_width_ = info.Width() * 1.0f / total_width * max_virtual_coord;
-            info.virtual_left_ = left_monitor_virtual_size;
-            info.virtual_right_ = info.virtual_left_ + info.virtual_width_;
-            left_monitor_virtual_size = info.virtual_right_;
-
-            info.virtual_height_ = info.Height() * 1.0f / max_height * max_virtual_coord;
-            info.virtual_top_ = info.top_ * 1.0f / max_height * max_virtual_coord;
-            info.virtual_bottom_ = info.bottom_ * 1.0f / max_height * max_virtual_coord;
-
-            LOGI("SORTED {}, left: {}, right: {}, top: {}, bottom: {}, \n "
-                 "virtual width: {}, virtual height: {}, virtual left: {}, virtual right: {}, virtual top: {}, virtual bottom: {}, virtual h diff: {}",
-                 info.name_, info.left_, info.right_, info.top_, info.bottom_,
-                 info.virtual_width_, info.virtual_height_, info.virtual_left_, info.virtual_right_, info.virtual_top_, info.virtual_bottom_,
-                 info.virtual_bottom_ - info.virtual_top_);*/
-            
-
         }
         virtual_desktop_bound_rectangle_info_.far_left_ = far_left;
         virtual_desktop_bound_rectangle_info_.far_top_ = far_top;

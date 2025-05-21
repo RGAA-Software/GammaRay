@@ -38,19 +38,12 @@ namespace tc
 
     void GdiCapturePlugin::On1Second() {
         GrPluginInterface::On1Second();
-
     }
     
     bool GdiCapturePlugin::OnCreate(const tc::GrPluginParam &param) {
         GrMonitorCapturePlugin::OnCreate(param);
         LOGI("GdiCapturePlugin OnCreate");
-      /*  InitVideoCaptures();
-        InitCursorCapture();*/
-       // LOGI("DDA Capture audio device: {}", capture_audio_device_id_);
-
-
         CreateCapture();
-
         return true;
     }
 
@@ -90,34 +83,25 @@ namespace tc
         const auto& my_monitor = gdi_capture_->GetMyMonitorInfo();
         result.insert({ kVirtualDesktopNameSign, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
             .target_name_ = kVirtualDesktopNameSign,
-            .fps_ = gdi_capture_->GetCapturingFps(), // to do 检查
+            .fps_ = gdi_capture_->GetCapturingFps(),
             .capture_type_ = kCaptureTypeGDI,
             .capture_frame_width_ = my_monitor.VirtualDesktopWidth(),
             .capture_frame_height_ = my_monitor.VirtualDesktopHeight(),
-            .capture_gaps_ = gdi_capture_->GetCaptureGaps(), // to do 检查
+            .capture_gaps_ = gdi_capture_->GetCaptureGaps(),
         }) });
 
         return result;
     }
 
-
     std::string GdiCapturePlugin::GetCapturingMonitorName() {
         return kVirtualDesktopNameSign;
     }
     
-
     bool GdiCapturePlugin::StartCapturing() {
-        
-    
+        StopCapturing();
+        capturing_monitor_name_ = kVirtualDesktopNameSign;
         gdi_capture_->StartCapture();
-
-
-
-
-
-
-
-        
+        NotifyCaptureMonitorInfo();
         return true;
     }
 
@@ -138,7 +122,6 @@ namespace tc
 
     void GdiCapturePlugin::RestartCapturing() {
         LOGI("GdiCapturePlugin RestartCapturing");
-        // to do  考虑加锁
         StopCapturing();
         gdi_capture_ = nullptr;
         CreateCapture();
@@ -149,6 +132,11 @@ namespace tc
         if (!gdi_capture_) {
             gdi_capture_->StopCapture();
         }
+    }
+
+    void GdiCapturePlugin::NotifyCaptureMonitorInfo() {
+        auto event = std::make_shared<GrPluginCapturingMonitorInfoEvent>();
+        this->CallbackEvent(event);
     }
 
 }

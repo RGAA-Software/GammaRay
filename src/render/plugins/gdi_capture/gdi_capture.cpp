@@ -35,7 +35,6 @@ namespace tc
     }
 
     bool GdiCapture::Init() {
-        LOGI("----GdiCapture Init 0");
         init_success_ = false;     
         screen_dc_ = GetDC(NULL); // 整个虚拟屏幕的设备上下文, GetDC 是采集整个虚拟屏幕的画面,GDI 作为托底采集,就采集整个虚拟桌面就可以
         //screen_dc_ = CreateDC(NULL, R"(\\.\DISPLAY1)", NULL, NULL); // CreateDC 可以采集特定屏幕的画面
@@ -44,21 +43,15 @@ namespace tc
             return false;
         }
 
-        LOGI("----GdiCapture Init 1");
-
         memory_dc_ = CreateCompatibleDC(screen_dc_);
         if (!memory_dc_) {
             LOGW("GdiCapture CreateCompatibleDC failed.");
             return false;
         }
 
-        LOGI("----GdiCapture Init 2");
-
         if (SetStretchBltMode(memory_dc_, COLORONCOLOR) == 0) { // 使用 COLORONCOLOR 可以提高图像缩放的速度，适合在不需要透明效果的情况下使用。
             LOGW("SetStretchBltMode failed.");
         }
-
-        LOGI("----GdiCapture Init 3");
 
         // 创建兼容位图
         bit_map_ = CreateCompatibleBitmap(screen_dc_, my_monitor_info_.virtual_desktop_width_, my_monitor_info_.virtual_desktop_height_);
@@ -67,12 +60,10 @@ namespace tc
             return false;
         }
 
-
-        LOGI("----GdiCapture Init 4");
-
         // 选择位图到内存 DC 中
         SelectObject(memory_dc_, bit_map_);
         init_success_ = true;
+        LOGI("GdiCapture Init OK.");
         return true;
     }
 
@@ -96,10 +87,6 @@ namespace tc
     }
 
     bool GdiCapture::CaptureNextFrame() {
-
-
-        LOGI("CaptureNextFrame 0");
-
         // 复制整个虚拟屏幕的内容到内存 DC
         BitBlt(memory_dc_, 0, 0, my_monitor_info_.virtual_desktop_width_, my_monitor_info_.virtual_desktop_height_, screen_dc_, my_monitor_info_.virtual_desktop_left_, 
             my_monitor_info_.virtual_desktop_top_, SRCCOPY);
@@ -119,8 +106,6 @@ namespace tc
         bi.biClrUsed = 0;
         bi.biClrImportant = 0;
 
-        LOGI("CaptureNextFrame 1");
-
         if (bmp.bmWidthBytes != bmp.bmWidth * 4) {
             LOGW("bmp.bmWidthBytes != bmp.bmWidth * 4. bmp.bmWidthBytes: {}, bmp.bmWidth: {}", bmp.bmWidthBytes, bmp.bmWidth);
         }
@@ -133,15 +118,11 @@ namespace tc
             return false;
         }
 
-        LOGI("CaptureNextFrame 2");
-
         int ret = GetDIBits(memory_dc_, bit_map_, 0, (UINT)bmp.bmHeight, data_ptr->DataAddr(), (BITMAPINFO*)&bi, DIB_RGB_COLORS);
         if (ret == 0) {
             LOGW("GetDIBits failed.");
             return false;
         }
-
-        LOGI("CaptureNextFrame 2");
 
         CaptureVideoFrame cap_video_frame{};
         cap_video_frame.type_ = kCaptureVideoFrame;
@@ -152,30 +133,25 @@ namespace tc
         cap_video_frame.frame_index_ = GetFrameIndex();
         cap_video_frame.raw_image_ = Image::Make(data_ptr, bmp.bmWidth, bmp.bmHeight, RawImageType::kBGRA);
         memcpy(cap_video_frame.display_name_, kVirtualDesktopNameSign.c_str(), kVirtualDesktopNameSign.size());
-       /* cap_video_frame.frame_format_ = format;
-        cap_video_frame.adapter_uid_ = my_monitor_info_.adapter_uid_;
-        auto mon_index_res = plugin_->GetMonIndexByName(my_monitor_info_.name_);
-        if (mon_index_res.has_value()) {
-            cap_video_frame.monitor_index_ = mon_index_res.value();
-        }
-        else {
-            LOGE("desktop capture get mon index by name failed!");
-        }
-        auto mon_win_info = dxgi_output_duplication_.monitor_win_info_;
-        if (mon_win_info.Valid()) {
-            memset(cap_video_frame.display_name_, 0, sizeof(cap_video_frame.display_name_));
-            memcpy(cap_video_frame.display_name_, mon_win_info.name_.c_str(), mon_win_info.name_.size());
-            cap_video_frame.left_ = mon_win_info.left_;
-            cap_video_frame.top_ = mon_win_info.top_;
-            cap_video_frame.right_ = mon_win_info.right_;
-            cap_video_frame.bottom_ = mon_win_info.bottom_;
-        }*/
         
-        LOGI("CaptureNextFrame 3");
-
         auto event = std::make_shared<GrPluginCapturedVideoFrameEvent>();
         event->frame_ = cap_video_frame;
         this->plugin_->CallbackEvent(event);
+
+        // fps tick
+        fps_stat_->Tick();
+
+        // capture gaps
+        auto curr_timestamp = (int64_t)TimeUtil::GetCurrentTimestamp();
+        if (last_captured_timestamp_ == 0) {
+            last_captured_timestamp_ = curr_timestamp;
+        }
+        auto diff = curr_timestamp - last_captured_timestamp_;
+        if (capture_gaps_.size() >= 180) {
+            capture_gaps_.pop_front();
+        }
+        capture_gaps_.push_back((int32_t)diff);
+        last_captured_timestamp_ = curr_timestamp;
 
 #if 0   // save rgb to file
         static int frame_index_ = -1;
@@ -185,8 +161,6 @@ namespace tc
         DWORD dwBytesWritten;
         WriteFile(hFile, data_ptr->DataAddr(), dwBmpSize, &dwBytesWritten, NULL);
 #endif
-
-        LOGI("CaptureNextFrame 4");
 
         return true;
     }
