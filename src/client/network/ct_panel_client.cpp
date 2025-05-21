@@ -29,15 +29,15 @@ namespace tc
             client_->ws_stream().binary(true);
             client_->set_no_delay(true);
 
-        }).bind_connect([&]() {
+        }).bind_connect([=, this]() {
             if (asio2::get_last_error()) {
                 LOGE("connect failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }
 
-            context_->PostTask([=, this]() {
-                //context_->SendAppMessage(MsgConnectedToService{});
+            client_->post_queued_event([=, this]() {
+                this->Hello();
             });
 
         }).bind_upgrade([&]() {
@@ -63,6 +63,22 @@ namespace tc
 
     void CtPanelClient::ParseMessage(std::string_view data) {
 
+    }
+
+    void CtPanelClient::Hello() {
+        if (!IsAlive()) {
+            return;
+        }
+        auto settings = Settings::Instance();
+
+        tccp::CpMessage cp_msg;
+        cp_msg.set_type(tccp::CpMessageType::kCpHello);
+        cp_msg.set_stream_id(settings->stream_id_);
+        auto sub = cp_msg.mutable_hello();
+#ifdef WIN32
+        sub->set_type(tccp::CpSessionType::kWindowsClient);
+#endif
+        client_->async_send(cp_msg.SerializeAsString());
     }
 
     void CtPanelClient::HeartBeat() {

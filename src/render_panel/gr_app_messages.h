@@ -136,6 +136,14 @@ namespace tc
         std::string os_version_;
     };
 
+    // client connected to panel
+    class MsgClientConnectedPanel {
+    public:
+        std::string stream_id_;
+        //tccp::CpSessionType
+        int sess_type_{-1};
+    };
+
 }
 
 #endif // APP_MESSAGES_H

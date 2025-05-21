@@ -21,6 +21,7 @@ namespace tc
     private:
         bool IsAlive();
         void ParseMessage(std::string_view data);
+        void Hello();
         void HeartBeat();
 
     private:

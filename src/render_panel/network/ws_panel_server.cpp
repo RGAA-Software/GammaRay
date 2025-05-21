@@ -286,6 +286,11 @@ namespace tc
                     LOGI("Update session type: {} for socket: {}", v->session_type_, socket_fd);
                 }
             });
+
+            context_->SendAppMessage(MsgClientConnectedPanel {
+                .stream_id_ = proto_msg->stream_id(),
+                .sess_type_ = hello.type(),
+            });
         }
         else if (proto_msg->type() == tccp::CpMessageType::kCpHeartBeat) {
             auto hb = proto_msg->heartbeat();
