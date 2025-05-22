@@ -66,14 +66,15 @@ set(SRCS_WS
         ui/float_3rd_resolution_panel.cpp
         ui/float_button_state_indicator.cpp
         ui/computer_icon.cpp
-        transfer/file_transfer.cpp
-        transfer/fs_object.cpp
-        transfer/file_writer.cpp
-        transfer/fs_file.cpp
-        transfer/fs_folder.cpp
         network/ct_dashboard_client.cpp
         network/ct_panel_client.cpp
 )
+
+#transfer/file_transfer.cpp
+#transfer/fs_object.cpp
+#transfer/file_writer.cpp
+#transfer/fs_file.cpp
+#transfer/fs_folder.cpp
 
 if(TC_USE_FILE_TRANSMISSION)
     message(STATUS "file transmission is enabled.")

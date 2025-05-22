@@ -55,8 +55,9 @@ namespace tc
                 else {
                     return item->stream_name_.empty() ? item->stream_host_ : item->stream_name_;
                 }
-            } ()).c_str();
-        ;
+            } ()).c_str()
+            << std::format("--panel_server_port={}", settings_->panel_srv_port_).c_str()
+            ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {
             LOGI("{}", arg.toStdString());

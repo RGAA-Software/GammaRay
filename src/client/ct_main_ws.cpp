@@ -99,6 +99,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_display_remote_name("display_remote_name", "display remote name", "value", "");
     parser.addOption(opt_display_remote_name);
 
+    QCommandLineOption opt_panel_server_port("panel_server_port", "panel server port", "value", "");
+    parser.addOption(opt_panel_server_port);
+
     parser.process(app);
 
     g_host_ = parser.value(opt_host).toStdString();
@@ -158,6 +161,16 @@ void ParseCommandLine(QApplication& app) {
 
     settings->display_name_ = parser.value(opt_display_name).toStdString();
     settings->display_remote_name_ = parser.value(opt_display_remote_name).toStdString();
+
+    {
+        auto value = parser.value(opt_panel_server_port);
+        if (!value.isEmpty()) {
+            settings->panel_server_port_ = value.toInt();
+        }
+        else {
+            settings->panel_server_port_ = 20369;
+        }
+    }
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -252,6 +265,7 @@ int main(int argc, char** argv) {
     LOGI("enable p2p: {}", (int)settings->enable_p2p_);
     LOGI("display name: {}", settings->display_name_);
     LOGI("display remote name: {}", settings->display_remote_name_);
+    LOGI("panel server port: {}", settings->panel_server_port_);
 
     // WebSocket only
     auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",

@@ -69,8 +69,9 @@ namespace tc
         VideoRenderType render_type_ = VideoRenderType::kOpenGL;
         SharedPreference* sp_ = nullptr;
         std::string remote_address_;
-        int file_transfer_port_ = 20369;
-        std::string file_transfer_path_ = "/file/transfer";
+        //deprecated
+        //int file_transfer_port_ = 20369;
+        //std::string file_transfer_path_ = "/file/transfer";
         bool ignore_mouse_event_ = false;
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;
         ScaleMode scale_mode_ = ScaleMode::kFullWindow;
@@ -101,6 +102,8 @@ namespace tc
         bool show_max_window_ = false;
         std::string display_name_;
         std::string display_remote_name_;
+        // panel ws server port
+        int panel_server_port_ = 0;
     };
 
 }

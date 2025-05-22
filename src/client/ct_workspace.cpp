@@ -24,7 +24,6 @@
 #include "client/ct_settings.h"
 #include "ui/float_notification_handle.h"
 #include "ui/notification_panel.h"
-#include "transfer/file_transfer.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "ui/ct_statistics_panel.h"
 #include "client/clipboard/ct_clipboard_manager.h"
@@ -493,9 +492,9 @@ namespace tc
         for (const auto& url : urls) {
             files.push_back(url.toLocalFile());
         }
-        if (file_transfer_) {
-            file_transfer_->SendFiles(files);
-        }
+        //if (file_transfer_) {
+        //    file_transfer_->SendFiles(files);
+        //}
     }
 
     void Workspace::SendWindowsKey(unsigned long vk, bool down) {
@@ -728,9 +727,9 @@ namespace tc
             context_->Exit();
             context_ = nullptr;
         }
-        if (file_transfer_) {
-            file_transfer_->Exit();
-        }
+        //if (file_transfer_) {
+        //   file_transfer_->Exit();
+        //}
         if (file_trans_interface_) {
             file_trans_interface_->Exit();
         }
