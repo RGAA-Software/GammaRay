@@ -12,7 +12,7 @@
 namespace tc
 {
     const std::string kAllMonitorsNameSign = "all";
-    const std::string kVirtualDesktopNameSign = "virtual_desktop"; // 目前此常量用于 GDI采集时候,创建DC设备时候,是根据显示器设备名来创建DC设备, 还是直接GetDC,如果直接GetDC,那采集的就是整个虚拟桌面
+    const std::string kVirtualDesktopNameSign = "Virtual_Desktop"; // 目前此常量用于 GDI采集时候,创建DC设备时候,是根据显示器设备名来创建DC设备, 还是直接GetDC,如果直接GetDC,那采集的就是整个虚拟桌面
     const std::string kCaptureTypeDXGI = "DXGI";
     const std::string kCaptureTypeGDI = "GDI";
     const std::string kCaptureTypeHook = "INNER";
@@ -42,6 +42,12 @@ namespace tc
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
 
+        using CaptureInitFailedCallback = std::function<void()>;
+        CaptureInitFailedCallback capture_init_failed_cbk_;
+        void SetCaptureInitFailedCallback(CaptureInitFailedCallback&& cbk) {
+            capture_init_failed_cbk_ = std::move(cbk);
+        }
+        
         // target: monitor
         virtual bool StartCapturing();
         virtual void StopCapturing();

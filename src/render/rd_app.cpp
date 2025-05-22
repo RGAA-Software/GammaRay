@@ -138,13 +138,16 @@ namespace tc
                 monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
                 if (monitor_capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
+                    monitor_capture_plugin_->SetCaptureInitFailedCallback([=]() { // 当DDA初始化有异常发生时候, 切换为GDI
+                        monitor_capture_plugin_->StopCapturing();
+                        monitor_capture_plugin_->DisablePlugin();
+                        SwitchGdiCapture();
+                        monitor_capture_plugin_->StartCapturing();
+                    });
                 }
                 else {
-                    monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
-                    monitor_capture_plugin_->EnablePlugin();
-                    LOGI("Use gdi capture plugin.");
+                    SwitchGdiCapture();
                 }
-               
             }
         }
 
@@ -706,6 +709,15 @@ namespace tc
 
     std::shared_ptr<WinDesktopManager> RdApplication::GetDesktopManager() {
         return desktop_mgr_;
+    }
+
+    void RdApplication::SwitchGdiCapture() {
+        if (monitor_capture_plugin_) {
+            monitor_capture_plugin_->StopCapturing();
+        }
+        monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
+        monitor_capture_plugin_->EnablePlugin();
+        LOGI("Use gdi capture plugin.");
     }
 
     void RdApplication::Exit() {

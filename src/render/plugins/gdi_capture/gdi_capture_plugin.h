@@ -38,8 +38,9 @@ namespace tc
     private:
         void CreateCapture();
         void HandleDisplayDeviceChangeEvent() override;
-
         void RestartCapturing();
+
+        void NotifyCaptureMonitorInfo();
 
     private:
         std::map<std::string, QLabel*> previewers_;

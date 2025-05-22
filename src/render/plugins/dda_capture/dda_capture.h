@@ -57,10 +57,10 @@ namespace tc
         bool IsInitSuccess() override;
         int GetCapturingFps() override;
 
-        using DDAInitSuccessCallback = std::function<void()>;
-        DDAInitSuccessCallback dda_init_success_callback_ = nullptr;
-        void SetDDAInitSuccessCallback(DDAInitSuccessCallback&& cbk){
-            dda_init_success_callback_ = std::move(cbk);
+        using DDAInitCallback = std::function<void(bool)>;
+        DDAInitCallback dda_init_callback_ = nullptr;
+        void SetDDAInitCallback(DDAInitCallback&& cbk){
+            dda_init_callback_ = std::move(cbk);
         }
     private:
         void Start();
@@ -70,8 +70,6 @@ namespace tc
         void OnCaptureFrame(ID3D11Texture2D *texture, bool is_cached);
         void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
         int GetFrameIndex();
-       // std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
-
     private:
         DDACapturePlugin* plugin_ = nullptr;
 
@@ -90,5 +88,6 @@ namespace tc
         CComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
         CComPtr<ID3D11Texture2D> shared_texture_ = nullptr;
 
+        
     };
 }
