@@ -33,7 +33,7 @@ namespace tc
             auto lbl_icon = new QLabel(this);
             lbl_icon->setFixedSize(size, size);
             lbl_icon->setPixmap(pixmap);
-            root_layout->addSpacing(30);
+            root_layout->addSpacing(50);
 
             auto layout = new NoMarginHLayout();
             layout->addStretch();
@@ -89,7 +89,7 @@ namespace tc
             layout->addWidget(h_loading_widget_);
             layout->addStretch();
 
-            root_layout->addSpacing(30);
+            root_layout->addSpacing(15);
             root_layout->addLayout(layout);
             root_layout->addStretch();
         }
