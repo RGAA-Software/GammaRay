@@ -37,6 +37,7 @@ namespace tc
     class GameView;
     class RtcClientInterface;
     class CtPanelClient;
+    class ClientPluginManager;
 
     class Workspace : public QMainWindow, public std::enable_shared_from_this<Workspace> {
     public:
@@ -115,6 +116,9 @@ namespace tc
 
         //
         std::shared_ptr<CtPanelClient> panel_client_ = nullptr;
+
+        // plugin manager
+        std::shared_ptr<ClientPluginManager> plugin_manager_ = nullptr;
 
     private:
         // 扩展屏

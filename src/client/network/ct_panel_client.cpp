@@ -52,7 +52,7 @@ namespace tc
         // the /ws is the websocket upgraged target
         auto settings = Settings::Instance();
         auto path = std::format("/panel?stream_id={}", settings->stream_id_);
-        if (!client_->async_start("127.0.0.1", 20369, path)) {
+        if (!client_->async_start("127.0.0.1", settings->panel_server_port_, path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }

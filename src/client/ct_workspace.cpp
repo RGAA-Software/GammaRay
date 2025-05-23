@@ -43,6 +43,9 @@
 #include "tc_common_new/qwidget_helper.h"
 #include "network/ct_panel_client.h"
 #include "tc_common_new/time_util.h"
+#include "plugins/ct_plugin_manager.h"
+#include "plugins/ct_app_events.h"
+#include "plugin_interface/ct_plugin_interface.h"
 
 namespace tc
 {
@@ -52,6 +55,13 @@ namespace tc
         this->settings_ = Settings::Instance();
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+
+        // plugins
+        plugin_manager_ = ClientPluginManager::Make(ctx);
+        context_->SetPluginManager(plugin_manager_);
+        plugin_manager_->LoadAllPlugins();
+        plugin_manager_->RegisterPluginEventsCallback();
+        plugin_manager_->DumpPluginInfo();
 
         auto beg = TimeUtil::GetCurrentTimestamp();
 
@@ -362,6 +372,10 @@ namespace tc
             }
             // test end //
 
+            plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
+                plugin->OnMessage(msg);
+            });
+
         });
 
         msg_listener_->Listen<SdkMsgChangeMonitorResolutionResult>([=, this](const SdkMsgChangeMonitorResolutionResult& msg) {
@@ -388,6 +402,14 @@ namespace tc
 
         msg_listener_->Listen<SdkMsgTimer1000>([=, this](const SdkMsgTimer1000& msg) {
             force_update_cursor_ = true;
+
+            plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
+                plugin->On1Second();
+
+                // test begin
+                plugin->DispatchAppEvent(std::make_shared<ClientAppTestEvent>());
+                // test end
+            });
         });
 
         msg_listener_->Listen<SdkMsgClipboardReqBuffer>([=, this](const SdkMsgClipboardReqBuffer& buffer) {

@@ -18,6 +18,7 @@ namespace tc
     class Thread;
     class StreamDBManager;
     class SharedPreference;
+    class ClientPluginManager;
 
     class ClientContext : public QObject, public std::enable_shared_from_this<ClientContext> {
     public:
@@ -33,6 +34,8 @@ namespace tc
         void UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info);
         SdkCaptureMonitorInfo GetCapturingMonitorInfo();
         std::string GetCapturingMonitorName() const;
+
+        void SetPluginManager(const std::shared_ptr<ClientPluginManager>& mgr);
 
         template<class T>
         void SendAppMessage(const T& msg) {
@@ -52,6 +55,8 @@ namespace tc
         int capturing_width_ = 0;
         int capturing_height_ = 0;
         SdkCaptureMonitorInfo capturing_info_;
+        // plugin manager
+        std::shared_ptr<ClientPluginManager> plugin_mgr_ = nullptr;
     };
 
 }

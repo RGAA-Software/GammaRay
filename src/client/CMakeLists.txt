@@ -68,6 +68,8 @@ set(SRCS_WS
         ui/computer_icon.cpp
         network/ct_dashboard_client.cpp
         network/ct_panel_client.cpp
+        plugins/ct_plugin_manager.cpp
+        plugins/ct_plugin_event_router.cpp
 )
 
 #transfer/file_transfer.cpp
@@ -86,6 +88,8 @@ else()
 endif()
 
 add_subdirectory(clipboard)
+add_subdirectory(plugin_interface)
+add_subdirectory(plugins)
 add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS} ${CLIPBOARD_WIN_SRCS}) #WIN32 MANUAL_FINALIZATION
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
@@ -109,7 +113,7 @@ endif()
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg Qt6::Charts
         tc_common_new tc_message tc_cp_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> QWindowKit::Widgets TC_WidgetFrame Winmm.lib
-        tc_rtc_client Dwmapi.lib
+        tc_rtc_client Dwmapi.lib tc_client_plugin
 )
 
 if(TC_USE_FILE_TRANSMISSION) #file_transfer

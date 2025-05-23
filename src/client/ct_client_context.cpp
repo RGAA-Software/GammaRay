@@ -130,4 +130,8 @@ namespace tc
         return capturing_info_.mon_name_;
     }
 
+    void ClientContext::SetPluginManager(const std::shared_ptr<ClientPluginManager>& mgr) {
+        plugin_mgr_ = mgr;
+    }
+
 }

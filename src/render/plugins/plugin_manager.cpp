@@ -47,8 +47,12 @@ namespace tc
             auto target_plugin_path = base_path + R"(/gr_plugins/)" + info.fileName();
             LOGI("Will load: {}", target_plugin_path.toStdString());
 
-            HMODULE module = LoadLibraryW(target_plugin_path.toStdWString().c_str());
-            auto fn_get_instance = GetProcAddress(module, "GetInstance");
+            //HMODULE module = LoadLibraryW(target_plugin_path.toStdWString().c_str());
+            //auto fn_get_instance = GetProcAddress(module, "GetInstance");
+
+            auto library = new QLibrary(target_plugin_path);
+            library->load();
+            auto fn_get_instance = (FnGetInstance)library->resolve("GetInstance");
 
             auto func = (FnGetInstance) fn_get_instance;
             if (func) {

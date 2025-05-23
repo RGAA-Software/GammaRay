@@ -170,7 +170,8 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
         tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib tc_signaling_sdk #lib_GammaRayClient
-        tc_relay_client tc_manager_client QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client Dwmapi.lib tc_widget_loadings)
+        tc_relay_client tc_manager_client QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client Dwmapi.lib tc_widget_loadings tc_client_plugin
+)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins
@@ -231,6 +232,8 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_clipboard
 )
 
+add_dependencies(tc_build_all plugin_multi_screens)
+
 add_custom_target(tc_build_client ALL COMMENT "Build client")
 add_dependencies(tc_build_client GammaRayClientInner)#GammaRayClient
 
@@ -258,6 +261,8 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${OpenCV_ROOT}/x64/vc16/bin/opencv_world4100.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}tc_rtc_client.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_client/tc_rtc_client.dll"
+
+        ###### Renderer Plugins ######
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_net_udp.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_udp.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/net_udp/plugin_net_udp.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_udp.dll.toml"
@@ -312,6 +317,11 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_gdi_capture.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_gdi_capture.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/gdi_capture/plugin_gdi_capture.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_gdi_capture.dll.toml"
+
+        ###### Client Plugins ######
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_multi_screens.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/multi_screens/plugin_multi_screens.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll.toml"
+
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
