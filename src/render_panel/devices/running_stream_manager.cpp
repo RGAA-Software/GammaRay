@@ -10,6 +10,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "device_api.h"
 #include "tc_qt_widget/tc_dialog.h"
+#include "start_stream_loading.h"
 
 namespace tc
 {
@@ -17,9 +18,31 @@ namespace tc
     RunningStreamManager::RunningStreamManager(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
         settings_ = GrSettings::Instance();
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgClientConnectedPanel>([=, this](const MsgClientConnectedPanel& msg) {
+            // clear loading dialog
+            context_->PostUIDelayTask([=, this]() {
+                if (loading_dialogs_.contains(msg.stream_id_)) {
+                    loading_dialogs_[msg.stream_id_]->hide();
+                }
+            }, 200);
+        });
     }
 
     void RunningStreamManager::StartStream(const std::shared_ptr<StreamItem>& item) {
+        // loading dialog
+        auto loading = std::make_shared<StartStreamLoading>(context_, item);
+        loading->setWindowFlag(Qt::WindowStaysOnTopHint, true);
+        loading->show();
+        auto stream_id = item->stream_id_;
+        loading_dialogs_.insert({stream_id, loading});
+        QTimer::singleShot(5000, [=, this]() {
+            if (loading_dialogs_.contains(stream_id)) {
+                loading_dialogs_[stream_id]->hide();
+                loading_dialogs_.erase(stream_id);
+            }
+        });
+
         // start it
         auto process = std::make_shared<QProcess>();
         QStringList arguments;

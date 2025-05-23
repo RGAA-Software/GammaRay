@@ -12,7 +12,7 @@ namespace tc
     }
 
     bool StreamItem::IsRelay() const {
-        return network_type_ == "relay";
+        return network_type_ == "relay" || !remote_device_id_.empty();
     }
 
 }

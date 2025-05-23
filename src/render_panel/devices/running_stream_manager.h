@@ -17,6 +17,8 @@ namespace tc
 
     class GrContext;
     class GrSettings;
+    class StartStreamLoading;
+    class MessageListener;
 
     class RunningStreamManager {
     public:
@@ -27,7 +29,9 @@ namespace tc
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::map<std::string, std::shared_ptr<QProcess>> running_processes_;
+        std::map<std::string, std::shared_ptr<StartStreamLoading>> loading_dialogs_;
     };
 
 }

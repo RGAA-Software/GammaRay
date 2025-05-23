@@ -156,7 +156,8 @@ namespace tc
         }
 
         auto func_update_stream = [&](std::shared_ptr<StreamItem>& item) {
-            item->stream_name_ = name.empty() ? std::format("{}", conn_host.ip_) : name;
+            item->remote_device_id_ = conn_info->device_id_;
+            item->stream_name_ = name.empty() ? (item->remote_device_id_.empty() ? std::format("{}", conn_host.ip_) : item->remote_device_id_) : name;
             item->stream_host_ = conn_host.ip_;
             item->stream_port_ = conn_info->render_srv_port_;
             item->encode_bps_ = 0;

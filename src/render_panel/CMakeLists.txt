@@ -56,6 +56,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/select_stream_type_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/create_stream_conn_info_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/start_stream_loading.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/input_remote_pwd_dialog.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
 

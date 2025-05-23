@@ -131,11 +131,11 @@ namespace tc
             font.setPointSize(10);
             painter.setFont(font);
             painter.setPen(QPen(QColor(0x77777777)));
-            auto stream_name = item_->desktop_name_;
+            auto desktop_name = item_->desktop_name_;
             if (item_->IsRelay()) {
-                stream_name = tc::SpaceId(stream_name);
+                desktop_name = tc::SpaceId(desktop_name);
             }
-            painter.drawText(QRect(15, 35, this->width(), 20), Qt::AlignVCenter, stream_name.c_str());
+            painter.drawText(QRect(15, 35, this->width(), 20), Qt::AlignVCenter, desktop_name.c_str());
         }
 
         // os version

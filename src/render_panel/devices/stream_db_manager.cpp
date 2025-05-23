@@ -115,12 +115,12 @@ namespace tc
     }
 
     bool StreamDBManager::UpdateStreamRandomPwd(const std::string& stream_id, const std::string& random_pwd) {
-        auto opt_stream = GetStream(stream_id);
+        auto opt_stream = GetStreamByStreamId(stream_id);
         if (!opt_stream.has_value()) {
             return false;
         }
         auto stream = opt_stream.value();
-        stream->updated_timestamp_ = TimeUtil::GetCurrentTimestamp();
+        stream->updated_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         stream->remote_device_random_pwd_ = random_pwd;
 
         using Storage = decltype(GetStorageTypeValue());
@@ -132,7 +132,25 @@ namespace tc
         return true;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStream(const std::string& stream_id) {
+    bool StreamDBManager::UpdateStreamSafetyPwd(const std::string& stream_id, const std::string& safety_pwd) {
+        auto opt_stream = GetStreamByStreamId(stream_id);
+        if (!opt_stream.has_value()) {
+            return false;
+        }
+        auto stream = opt_stream.value();
+        stream->updated_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        stream->remote_device_safety_pwd_ = safety_pwd;
+
+        using Storage = decltype(GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_storage_);
+        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        if (streams.size() == 1) {
+            storage.update(*stream);
+        }
+        return true;
+    }
+
+    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByStreamId(const std::string& stream_id) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
         auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
@@ -143,7 +161,7 @@ namespace tc
         return target_stream;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStream(const std::string& host, int port) {
+    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByHostPort(const std::string& host, int port) {
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage_);
         auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_host_) == host and c(&StreamItem::stream_port_) == port));

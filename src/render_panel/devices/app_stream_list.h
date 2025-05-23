@@ -31,7 +31,6 @@ namespace tc
     class StreamContent;
     class MessageListener;
     class RunningStreamManager;
-    class StartStreamLoading;
 
     using OnItemDoubleClickedCallback = std::function<void(const std::shared_ptr<StreamItem>&)>;
 
@@ -66,7 +65,6 @@ namespace tc
         QListWidget* stream_list_ = nullptr;
         StreamContent* stream_content_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
-        std::map<std::string, std::shared_ptr<StartStreamLoading>> loading_dialogs_;
     };
 
 }

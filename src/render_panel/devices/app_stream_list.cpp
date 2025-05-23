@@ -30,6 +30,7 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
 #include "start_stream_loading.h"
+#include "input_remote_pwd_dialog.h"
 
 namespace tc
 {
@@ -117,14 +118,23 @@ namespace tc
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
             std::shared_ptr<StreamItem> exist_stream_item = nullptr;
+            // by stream id
             {
-                auto opt_stream = db_mgr_->GetStream(item->stream_id_);
+                auto opt_stream = db_mgr_->GetStreamByStreamId(item->stream_id_);
                 if (opt_stream.has_value()) {
                     exist_stream_item = opt_stream.value();
                 }
             }
+            // by host & port
             {
-                auto opt_stream = db_mgr_->GetStream(item->stream_host_, item->stream_port_);
+                auto opt_stream = db_mgr_->GetStreamByHostPort(item->stream_host_, item->stream_port_);
+                if (opt_stream.has_value()) {
+                    exist_stream_item = opt_stream.value();
+                }
+            }
+            // by remote device id
+            if (!item->remote_device_id_.empty()) {
+                auto opt_stream = db_mgr_->GetStreamByRemoteDeviceId(item->remote_device_id_);
                 if (opt_stream.has_value()) {
                     exist_stream_item = opt_stream.value();
                 }
@@ -138,6 +148,9 @@ namespace tc
                 // todo: Check stream info.
                 // check password type: random / safety
                 // then update it in database
+                if (!item->remote_device_id_.empty()) {
+                    exist_stream_item->remote_device_id_ = item->remote_device_id_;
+                }
                 exist_stream_item->stream_host_ = item->stream_host_;
                 exist_stream_item->stream_port_ = item->stream_port_;
                 if (exist_stream_item->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
@@ -151,9 +164,11 @@ namespace tc
             LoadStreamItems();
 
             LOGI("Auto start stream: {}", msg.auto_start_);
-            if (msg.auto_start_) {
-                StartStream(exist_stream_item);
-            }
+            context_->PostUITask([=, this]() {
+                if (msg.auto_start_) {
+                    StartStream(exist_stream_item);
+                }
+            });
         });
 
         msg_listener_->Listen<StreamItemUpdated>([=, this](const StreamItemUpdated& msg) {
@@ -181,12 +196,7 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgClientConnectedPanel>([=, this](const MsgClientConnectedPanel& msg) {
-            // clear loading dialog
-            context_->PostUIDelayTask([=, this]() {
-                if (loading_dialogs_.contains(msg.stream_id_)) {
-                    loading_dialogs_[msg.stream_id_]->hide();
-                }
-            }, 200);
+
         });
     }
 
@@ -243,21 +253,7 @@ namespace tc
     }
 
     void AppStreamList::StartStream(const std::shared_ptr<StreamItem>& item) {
-
-        // loading dialog
-        auto loading = std::make_shared<StartStreamLoading>(context_, item);
-        loading->setWindowFlag(Qt::WindowStaysOnTopHint, true);
-        loading->show();
-        auto stream_id = item->stream_id_;
-        loading_dialogs_.insert({stream_id, loading});
-        QTimer::singleShot(5000, [=, this]() {
-            if (loading_dialogs_.contains(stream_id)) {
-                loading_dialogs_[stream_id]->hide();
-                loading_dialogs_.erase(stream_id);
-            }
-        });
-
-        auto si = db_mgr_->GetStream(item->stream_id_);
+        auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
@@ -272,14 +268,39 @@ namespace tc
                 return;
             }
 
+            // NO password, just input one
+            QString input_password;
+            if (target_item->remote_device_random_pwd_.empty() && target_item->remote_device_safety_pwd_.empty()) {
+                InputRemotePwdDialog dlg_input_pwd(context_);
+                dlg_input_pwd.exec();
+                input_password = dlg_input_pwd.GetInputPassword();
+            }
+
+            auto remote_random_pwd = target_item->remote_device_random_pwd_;
+            auto remote_safety_pwd = target_item->remote_device_safety_pwd_;
+            if (!input_password.isEmpty() && remote_random_pwd.empty() && remote_safety_pwd.empty()) {
+                remote_random_pwd = input_password.toStdString();
+                remote_safety_pwd = input_password.toStdString();
+            }
+
             // verify remote
             auto verify_result
-                = DeviceApi::VerifyDeviceInfo(target_item->remote_device_id_, target_item->remote_device_random_pwd_, target_item->remote_device_safety_pwd_);
+                = DeviceApi::VerifyDeviceInfo(target_item->remote_device_id_, remote_random_pwd, remote_safety_pwd);
             if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
                 TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
                 dialog.exec();
                 return;
             }
+
+            LOGI("Verify success, the password type: {}", (int)verify_result);
+            // update to database
+            if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
+                db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
+            }
+            else if (verify_result == DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
+            }
+
             if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
                 verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
                 TcDialog dialog("Connect Failed", "Password is invalid, please check it.", grWorkspace.get());
@@ -292,7 +313,7 @@ namespace tc
     }
 
     void AppStreamList::StopStream(const std::shared_ptr<StreamItem>& item) {
-        auto si = db_mgr_->GetStream(item->stream_id_);
+        auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
@@ -301,7 +322,7 @@ namespace tc
     }
 
     void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {
-        auto si = db_mgr_->GetStream(item->stream_id_);
+        auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
@@ -326,7 +347,7 @@ namespace tc
     }
 
     void AppStreamList::ShowSettings(const std::shared_ptr<StreamItem>& item) {
-        auto si = db_mgr_->GetStream(item->stream_id_);
+        auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
