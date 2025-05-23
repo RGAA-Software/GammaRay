@@ -306,7 +306,7 @@ namespace tc
         stat_chat_stack_->setCurrentIndex(0);
 
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-        msg_listener_->Listen<MsgGrTimer100>([=, this](const MsgGrTimer100& msg) {
+        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& msg) {
             this->UpdateUI();
         });
     }

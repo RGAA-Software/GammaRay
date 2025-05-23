@@ -38,7 +38,7 @@ namespace tc
         }
 
         chart_view_ = new QChartView(this);
-        //chart_view_->setRenderHint(QPainter::Antialiasing);
+        chart_view_->setRenderHint(QPainter::Antialiasing);
         chart_view_->setChart(chart_);
         layout->addWidget(chart_view_);
 
