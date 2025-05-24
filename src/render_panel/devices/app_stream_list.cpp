@@ -31,6 +31,7 @@
 #include "render_panel/gr_workspace.h"
 #include "start_stream_loading.h"
 #include "input_remote_pwd_dialog.h"
+#include "stream_state_checker.h"
 
 namespace tc
 {
@@ -57,6 +58,31 @@ namespace tc
         Init();
 
         setStyleSheet("background-color: #ffffff;");
+
+        //
+        state_checker_ = std::make_shared<StreamStateChecker>(context_);
+        state_checker_->SetOnCheckedCallback([=, this](const std::vector<std::shared_ptr<StreamItem>>& stream_items) {
+            context_->PostUITask([=, this]() {
+                int count = stream_list_->count();
+                for (int i = 0; i < count; i++) {
+                    auto item = stream_list_->item(i);
+                    auto widget = (StreamItemWidget*)stream_list_->itemWidget(item);
+                    auto stream_id_for_widget = widget->GetStreamId();
+                    for (const auto& update_item : stream_items) {
+                        if (update_item->stream_id_ == stream_id_for_widget) {
+                            widget->SetConnectedState(update_item->online_);
+                            break;
+                        }
+                    }
+                }
+            });
+        });
+        state_checker_->Start();
+        context_->PostUIDelayTask([=, this]() {
+            context_->PostTask([=, this]() {
+                state_checker_->CheckState();
+            });
+        }, 2200);
     }
 
     AppStreamList::~AppStreamList() = default;
@@ -473,6 +499,9 @@ namespace tc
             else {
                 stream_content_->ShowEmptyTip();
             }
+
+            // update to stream state checker
+            state_checker_->UpdateCurrentStreamItems(streams_);
         });
     }
 

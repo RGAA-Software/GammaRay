@@ -31,6 +31,7 @@ namespace tc
     class StreamContent;
     class MessageListener;
     class RunningStreamManager;
+    class StreamStateChecker;
 
     using OnItemDoubleClickedCallback = std::function<void(const std::shared_ptr<StreamItem>&)>;
 
@@ -65,6 +66,9 @@ namespace tc
         QListWidget* stream_list_ = nullptr;
         StreamContent* stream_content_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
+        // online state checker
+        std::shared_ptr<StreamStateChecker> state_checker_ = nullptr;
+
     };
 
 }

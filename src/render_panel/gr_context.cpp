@@ -156,6 +156,10 @@ namespace tc
         return msg_notifier_;
     }
 
+    std::shared_ptr<MessageListener> GrContext::ObtainMessageListener() {
+        return msg_notifier_->CreateListener();
+    }
+
     std::shared_ptr<GrRenderController> GrContext::GetRenderController() {
         return srv_manager_;
     }

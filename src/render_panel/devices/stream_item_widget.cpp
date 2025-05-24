@@ -162,8 +162,23 @@ namespace tc
         painter.setBrush(Qt::NoBrush);
         painter.drawRoundedRect(border_width/2, border_width/2, width() - border_width, height() - border_width, radius_-2, radius_-2);
 
-        int margin = 20;
-        painter.drawPixmap(QWidget::width() - icon_.width() - margin, 10, icon_);
+        int margin_right = 20;
+        int margin_top = 30;
+        painter.drawPixmap(QWidget::width() - icon_.width() - margin_right, margin_top, icon_);
+
+        {
+            QPen pen(QColor(0x999999));
+            pen.setWidth(1);
+            painter.setPen(pen);
+            if (connected_) {
+                painter.setBrush(QBrush(0x00ff00));
+            }
+            else {
+                painter.setBrush(QBrush(0xbbbbbb));
+            }
+            int indicator_size = 12;
+            painter.drawRoundedRect(this->width() - indicator_size - margin_right, 10, indicator_size, indicator_size, indicator_size/2, indicator_size);
+        }
     }
 
     void StreamItemWidget::enterEvent(QEnterEvent *event) {
@@ -189,6 +204,15 @@ namespace tc
 
     void StreamItemWidget::SetOnMenuListener(OnMenuListener&& listener) {
         menu_listener_ = listener;
+    }
+
+    void StreamItemWidget::SetConnectedState(bool connected) {
+        connected_ = connected;
+        update();
+    }
+
+    std::string StreamItemWidget::GetStreamId() {
+        return item_->stream_id_;
     }
 
 }

@@ -37,6 +37,9 @@ namespace tc
 
         void SetOnConnectListener(OnConnectListener&& listener);
         void SetOnMenuListener(OnMenuListener&& listener);
+        void SetConnectedState(bool connected);
+
+        std::string GetStreamId();
 
     private:
         std::shared_ptr<StreamItem> item_;
@@ -50,6 +53,7 @@ namespace tc
         QWidget* btn_option_ = nullptr;
         OnConnectListener conn_listener_;
         OnMenuListener menu_listener_;
+        bool connected_ = false;
     };
 
 }

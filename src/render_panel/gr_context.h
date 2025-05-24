@@ -58,6 +58,7 @@ namespace tc
             }
         }
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
+        std::shared_ptr<MessageListener> ObtainMessageListener();
         std::shared_ptr<GrRenderController> GetRenderController();
         std::shared_ptr<GrRunGameManager> GetRunGameManager();
         static std::string GetCurrentExeFolder();

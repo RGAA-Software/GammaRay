@@ -93,6 +93,13 @@ namespace tc
 
         // os version
         std::string os_version_;
+
+        //
+
+
+        // Extra
+        ///// NOT in database
+        bool online_ = false;
     };
 
 }
