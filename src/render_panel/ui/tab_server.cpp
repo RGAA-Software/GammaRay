@@ -213,8 +213,10 @@ namespace tc
                 connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
                     QClipboard* clipboard = QApplication::clipboard();
                     clipboard->setText(msg->text());
-                    TcDialog dlg("Tips", "Connection info has been written to the clipboard.");
-                    dlg.exec();
+//                    TcDialog dlg("Tips", "Connection info has been written to the clipboard.");
+//                    dlg.exec();
+
+                    context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
                 });
 
                 left_root->addSpacing(5);

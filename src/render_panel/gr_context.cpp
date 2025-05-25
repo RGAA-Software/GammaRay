@@ -25,6 +25,7 @@
 #include "devices/stream_db_manager.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "devices/running_stream_manager.h"
+#include "tc_qt_widget/notify/notifymanager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -32,8 +33,8 @@ using namespace nlohmann;
 namespace tc
 {
 
-    GrContext::GrContext() : QObject(nullptr) {
-
+    GrContext::GrContext(QWidget* main_window) : QObject(nullptr) {
+        main_window_ = main_window;
     }
 
     void GrContext::Init(const std::shared_ptr<GrApplication>& app) {
@@ -86,6 +87,8 @@ namespace tc
         spvr_mgr_->SetHostPort(settings_->spvr_server_host_, std::atoi(settings_->spvr_server_port_.c_str()));
 
         running_stream_mgr_ = std::make_shared<RunningStreamManager>(shared_from_this());
+
+        notify_mgr_ = std::make_shared<NotifyManager>(main_window_);
 
         StartTimers();
     }
@@ -201,6 +204,18 @@ namespace tc
 
     std::shared_ptr<RunningStreamManager> GrContext::GetRunningStreamManager() {
         return running_stream_mgr_;
+    }
+
+    std::shared_ptr<NotifyManager> GrContext::GetNotifyManager() {
+        return notify_mgr_;
+    }
+
+    void GrContext::NotifyAppMessage(const QString& title, const QString& msg) {
+        QMetaObject::invokeMethod(this, [=, this]() {
+            if (notify_mgr_) {
+                notify_mgr_->notify(title, msg);
+            }
+        });
     }
 
 }

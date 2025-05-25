@@ -38,8 +38,8 @@ namespace tc
 
     std::shared_ptr<GrApplication> grApp;
 
-    GrApplication::GrApplication() : QObject(nullptr) {
-
+    GrApplication::GrApplication(QWidget* main_window) : QObject(main_window) {
+        main_window_ = main_window;
     }
 
     GrApplication::~GrApplication() = default;
@@ -59,7 +59,7 @@ namespace tc
         FolderUtil::CreateDir(std::format("{}/clients/windows", exeDir));
         FolderUtil::CreateDir(std::format("{}/clients/android", exeDir));
 
-        context_ = std::make_shared<GrContext>();
+        context_ = std::make_shared<GrContext>(main_window_);
         context_->Init(shared_from_this());
         auto ctx_init_diff = TimeUtil::GetCurrentTimestamp() - begin_ctx_init_ts;
         LOGI("** Context init used: {}ms", ctx_init_diff);

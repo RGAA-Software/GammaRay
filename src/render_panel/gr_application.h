@@ -28,7 +28,7 @@ namespace tc
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
     public:
 
-        GrApplication();
+        explicit GrApplication(QWidget* main_window);
         ~GrApplication() override;
 
         void Init();
@@ -53,6 +53,7 @@ namespace tc
         void RegisterFirewall();
 
     private:
+        QWidget* main_window_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<WsPanelServer> ws_panel_server_ = nullptr;
         //std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;

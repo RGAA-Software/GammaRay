@@ -94,7 +94,7 @@ namespace tc
         setWindowIcon(theme_->AdvancedStyleSheet->styleIcon());
         qApp->setStyleSheet(theme_->AdvancedStyleSheet->styleSheet());
 
-        app_ = std::make_shared<GrApplication>();
+        app_ = std::make_shared<GrApplication>(this);
         app_->Init();
 
         // window

@@ -26,6 +26,7 @@ namespace tc
     class GrRunGameManager;
     class ServiceManager;
     class GrApplication;
+    class NotifyManager;
     // Device list
     class StreamDBManager;
     class TaskRuntime;
@@ -34,7 +35,7 @@ namespace tc
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
     public:
-        GrContext();
+        explicit GrContext(QWidget* main_window);
 
         void Init(const std::shared_ptr<GrApplication>& app);
         void Exit();
@@ -66,10 +67,15 @@ namespace tc
         std::shared_ptr<SpvrManager> GetSpvrManager();
         std::shared_ptr<RunningStreamManager> GetRunningStreamManager();
 
+        // Display a message on right-bottom
+        std::shared_ptr<NotifyManager> GetNotifyManager();
+        void NotifyAppMessage(const QString& title, const QString& msg);
+
     private:
         void StartTimers();
 
     private:
+        QWidget* main_window_ = nullptr;
         GrSettings* settings_ = nullptr;
         SharedPreference* sp_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
@@ -86,6 +92,7 @@ namespace tc
         std::shared_ptr<StreamDBManager> stream_db_mgr_ = nullptr;
         std::shared_ptr<SpvrManager> spvr_mgr_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
+        std::shared_ptr<NotifyManager> notify_mgr_ = nullptr;
     };
 
 }
