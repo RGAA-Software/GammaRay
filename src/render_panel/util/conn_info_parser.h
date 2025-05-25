@@ -27,6 +27,7 @@ namespace tc
 
     public:
         std::string device_id_;
+        std::string random_pwd_;
         int icon_idx_{0};
         std::vector<GrConnectionHost> hosts_;
         int panel_srv_port_{0};

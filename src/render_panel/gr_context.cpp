@@ -26,6 +26,8 @@
 #include "tc_spvr_client/spvr_manager.h"
 #include "devices/running_stream_manager.h"
 #include "tc_qt_widget/notify/notifymanager.h"
+#include "tc_dialog.h"
+#include "gr_workspace.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -217,6 +219,23 @@ namespace tc
                 notify_mgr_->notify(title, msg);
             }
         });
+    }
+
+    std::shared_ptr<SpvrDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id) {
+        auto srv_remote_device_id = "server_" + device_id;
+        auto spvr_mgr = this->GetSpvrManager();
+        auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
+        if (!relay_result) {
+            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
+            TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
+            dialog.exec();
+            return nullptr;
+        }
+        auto relay_device_info = relay_result.value();
+        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
+             srv_remote_device_id, relay_device_info->relay_server_ip_, relay_device_info->relay_server_port_);
+        return relay_device_info;
+
     }
 
 }

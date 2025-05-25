@@ -136,9 +136,9 @@ namespace tc
             }
             else {
                 monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
-                if (monitor_capture_plugin_->IsPluginEnabled()) {
+                if (monitor_capture_plugin_ && monitor_capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
-                    monitor_capture_plugin_->SetCaptureInitFailedCallback([=]() { // 当DDA初始化有异常发生时候, 切换为GDI
+                    monitor_capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
                         monitor_capture_plugin_->StopCapturing();
                         monitor_capture_plugin_->DisablePlugin();
                         SwitchGdiCapture();
@@ -146,6 +146,7 @@ namespace tc
                     });
                 }
                 else {
+                    LOGI("Don't use DDA, will switch to GDI.");
                     SwitchGdiCapture();
                 }
             }

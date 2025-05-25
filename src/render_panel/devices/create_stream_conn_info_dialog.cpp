@@ -13,10 +13,12 @@
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "render_panel/gr_context.h"
+#include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/util/conn_info_parser.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_client.h"
+#include "tc_spvr_client/spvr_device_info.h"
 
 namespace tc
 {
@@ -134,35 +136,61 @@ namespace tc
         }
 
         // check a valid one
-        GrConnectionInfo::GrConnectionHost conn_host;
-        if (conn_info->hosts_.size() > 1) {
-            for (const auto& host : conn_info->hosts_) {
-                auto client = HttpClient::Make(std::format("{}:{}", host.ip_, conn_info->render_srv_port_), "/api/ping", 500);
-                auto r = client->Request();
-                if (r.status == 200) {
-                    conn_host = host;
-                    LOGI("THIS Worked: {}:{}", host.ip_, conn_info->render_srv_port_);
-                    break;
+        GrConnectionInfo::GrConnectionHost conn_host{};
+        bool has_device_id = !conn_info->device_id_.empty();
+        // websocket mode: remote device host
+        // relay mode: relay server ip
+        std::string stream_host;
+        // websocket mode: remote device port
+        // relay mode: relay server port
+        int stream_port = 0;
+
+        if (!has_device_id) {
+            if (conn_info->hosts_.size() > 1) {
+                for (const auto &host: conn_info->hosts_) {
+                    auto client = HttpClient::Make(std::format("{}:{}", host.ip_, conn_info->render_srv_port_),
+                                                   "/api/ping", 500);
+                    auto r = client->Request();
+                    if (r.status == 200) {
+                        conn_host = host;
+                        LOGI("THIS Worked: {}:{}", host.ip_, conn_info->render_srv_port_);
+                        break;
+                    }
                 }
+            } else {
+                conn_host = conn_info->hosts_[0];
             }
+
+            if (conn_host.ip_.empty()) {
+                fn_invalid_dialog();
+                return false;
+            }
+
+            // websocket mode
+            stream_host = conn_host.ip_;
+            stream_port = conn_info->render_srv_port_;
         }
         else {
-            conn_host = conn_info->hosts_[0];
+            auto relay_device_info = context_->GetRelayServerSideDeviceInfo(conn_info->device_id_);
+            if (relay_device_info == nullptr) {
+                return false;
+            }
+
+            // relay mode
+            stream_host = relay_device_info->relay_server_ip_;
+            stream_port = relay_device_info->relay_server_port_;
         }
 
-        if (conn_host.ip_.empty()) {
-            fn_invalid_dialog();
-            return false;
-        }
-
+        auto settings = Settings::Instance();
         auto func_update_stream = [&](std::shared_ptr<StreamItem>& item) {
             item->remote_device_id_ = conn_info->device_id_;
+            item->remote_device_random_pwd_ = conn_info->random_pwd_;
             item->stream_name_ = name.empty() ? (item->remote_device_id_.empty() ? std::format("{}", conn_host.ip_) : item->remote_device_id_) : name;
-            item->stream_host_ = conn_host.ip_;
-            item->stream_port_ = conn_info->render_srv_port_;
+            item->stream_host_ = stream_host;
+            item->stream_port_ = stream_port;
             item->encode_bps_ = 0;
             item->encode_fps_ = 0;
-            item->network_type_ = kStreamItemNtTypeWebSocket;
+            item->network_type_ = has_device_id ? kStreamItemNtTypeRelay : kStreamItemNtTypeWebSocket;
         };
 
         std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();

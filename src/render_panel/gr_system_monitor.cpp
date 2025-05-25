@@ -273,13 +273,14 @@ namespace tc
 
     void GrSystemMonitor::CheckOnlineServers() {
         if (!this->VerifyOnlineServers()) {
-            auto online_servers = spvr_mgr_->GetOnlineServers();
-            if (!online_servers) {
-                SpvrError err = online_servers.error();
+            auto ret_online_servers = spvr_mgr_->GetOnlineServers();
+            if (!ret_online_servers) {
+                SpvrError err = ret_online_servers.error();
                 LOGE("Can't request online servers: {}:{}, err: {}",
                      settings_->spvr_server_host_, settings_->spvr_server_port_, SpvrError2String(err));
                 return;
             }
+            auto online_servers = ret_online_servers.value();
             bool settings_changed = false;
             if (!online_servers->relay_servers_.empty()) {
                 auto srv = online_servers->relay_servers_.at(0);

@@ -10,6 +10,7 @@
 #include "tc_common_new/ip_util.h"
 #include "tc_common_new/message_notifier.h"
 #include <asio2/asio2.hpp>
+#include "expt/expected.h"
 
 #include <QObject>
 #include <QTimer>
@@ -27,6 +28,8 @@ namespace tc
     class ServiceManager;
     class GrApplication;
     class NotifyManager;
+    class SpvrDeviceInfo;
+
     // Device list
     class StreamDBManager;
     class TaskRuntime;
@@ -70,6 +73,11 @@ namespace tc
         // Display a message on right-bottom
         std::shared_ptr<NotifyManager> GetNotifyManager();
         void NotifyAppMessage(const QString& title, const QString& msg);
+
+        // spvr
+        // will add prefix: server
+        // id ==> server_111333444
+        std::shared_ptr<SpvrDeviceInfo> GetRelayServerSideDeviceInfo(const std::string& device_id);
 
     private:
         void StartTimers();

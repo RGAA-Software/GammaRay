@@ -26,6 +26,7 @@ namespace tc
             auto obj = json::parse(target_info);
 
             conn_info->device_id_ = obj["device_id"].get<std::string>();
+            conn_info->random_pwd_ = obj["random_pwd"].get<std::string>();
             conn_info->icon_idx_ = obj["icon_idx"].get<int>();
             auto ips_array = obj["ips"];
             if (ips_array.is_array()) {

@@ -223,10 +223,11 @@ int main(int argc, char** argv) {
     // init language
     tcTrMgr()->InitLanguage(LanguageKind::kEnglish);
 
+    auto settings = tc::Settings::Instance();
     auto host = g_host_;
     auto port = g_port_;
     if (host.empty() || port <= 0 || port >= 65535) {
-        auto msg_box = SizedMessageBox::MakeOkBox("Error Params", "You must give valid HOST & PORT");
+        auto msg_box = SizedMessageBox::MakeOkBox("Error Params", "You must give valid (HOST & PORT) or Remote device ID.");
         msg_box->exec();
         return -1;
     }
@@ -237,7 +238,6 @@ int main(int argc, char** argv) {
 #endif
     }
 
-    auto settings = tc::Settings::Instance();
     auto name = [=]() -> std::string {
         if (settings->network_type_ == ClientNetworkType::kRelay || settings->network_type_ == ClientNetworkType::kWebRtc) {
             return settings->remote_device_id_;

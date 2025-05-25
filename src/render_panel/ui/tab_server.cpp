@@ -374,18 +374,23 @@ namespace tc
                         }
 
                         // get device's relay server info
-                        auto srv_remote_device_id = "server_" + remote_device_id;
-                        auto spvr_mgr = context_->GetSpvrManager();
-                        auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
-                        if (!relay_result) {
-                            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
-                            TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
-                            dialog.exec();
+//                        auto srv_remote_device_id = "server_" + remote_device_id;
+//                        auto spvr_mgr = context_->GetSpvrManager();
+//                        auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
+//                        if (!relay_result) {
+//                            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
+//                            TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
+//                            dialog.exec();
+//                            return;
+//                        }
+//                        auto relay_device_info = relay_result.value();
+//                        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
+//                             srv_remote_device_id, relay_device_info->relay_server_ip_, relay_device_info->relay_server_port_);
+
+                        auto relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
+                        if (relay_device_info == nullptr) {
                             return;
                         }
-                        auto relay_device_info = relay_result.value();
-                        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
-                             srv_remote_device_id, relay_device_info.relay_server_ip_, relay_device_info.relay_server_port_);
 
                         // verify in profile server
                         auto verify_result = DeviceApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
@@ -403,8 +408,8 @@ namespace tc
                         std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
                         item->stream_id_ = "id_" + remote_device_id;
                         item->stream_name_ = remote_device_id;
-                        item->stream_host_ = relay_device_info.relay_server_ip_;
-                        item->stream_port_ = relay_device_info.relay_server_port_;
+                        item->stream_host_ = relay_device_info->relay_server_ip_;
+                        item->stream_port_ = relay_device_info->relay_server_port_;
                         item->encode_bps_ = 0;
                         item->encode_fps_ = 0;
                         item->network_type_ = kStreamItemNtTypeRelay;
