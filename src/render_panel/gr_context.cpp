@@ -221,14 +221,16 @@ namespace tc
         });
     }
 
-    std::shared_ptr<SpvrDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id) {
+    std::shared_ptr<SpvrDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {
         auto srv_remote_device_id = "server_" + device_id;
         auto spvr_mgr = this->GetSpvrManager();
         auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
         if (!relay_result) {
             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
-            TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
-            dialog.exec();
+            if (show_dialog) {
+                TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
+                dialog.exec();
+            }
             return nullptr;
         }
         auto relay_device_info = relay_result.value();

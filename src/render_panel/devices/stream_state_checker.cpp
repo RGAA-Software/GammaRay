@@ -9,6 +9,7 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "stream_item.h"
+#include "tc_spvr_client/spvr_device_info.h"
 
 namespace tc
 {
@@ -53,6 +54,10 @@ namespace tc
             bool online = false;
             if (item->IsRelay()) {
                 // to check in server
+                auto device_info = context_->GetRelayServerSideDeviceInfo(item->remote_device_id_, false);
+                if (device_info && device_info->IsValid()) {
+                    online = true;
+                }
             }
             else {
                 // host & port mode

@@ -77,7 +77,7 @@ namespace tc
         // spvr
         // will add prefix: server
         // id ==> server_111333444
-        std::shared_ptr<SpvrDeviceInfo> GetRelayServerSideDeviceInfo(const std::string& device_id);
+        std::shared_ptr<SpvrDeviceInfo> GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog = true);
 
     private:
         void StartTimers();
