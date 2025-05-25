@@ -131,6 +131,7 @@ namespace tc
         json obj;
         // device
         obj["device_id"] = settings_->device_id_;
+        obj["random_pwd"] = settings_->device_random_pwd_;
         obj["icon_idx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();

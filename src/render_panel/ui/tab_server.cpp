@@ -20,6 +20,7 @@
 #include <QPlainTextEdit>
 #include <QClipboard>
 #include <QApplication>
+#include <QCheckBox>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
@@ -182,13 +183,24 @@ namespace tc
             {
                 left_root->addSpacing(18);
 
-                auto title = new TcLabel(this);
-                title->setFixedWidth(230);
-                title->SetTextId("id_detailed_information");
-                title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
-                //layout->addSpacing(2);
-                left_root->addWidget(title, 0, Qt::AlignLeft);
+                {
+                    auto layout = new NoMarginHLayout();
+                    layout->setAlignment(Qt::AlignVCenter);
+
+                    auto title = new TcLabel(this);
+                    title->setFixedWidth(160);
+                    title->SetTextId("id_detailed_information");
+                    title->setAlignment(Qt::AlignLeft);
+                    title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
+                    layout->addWidget(title, 0, Qt::AlignLeft);
+
+//                    auto cb_pwd = new QCheckBox();
+//                    cb_pwd->setText("With Temporary Password");
+//                    layout->addWidget(cb_pwd);
+//                    layout->addStretch();
+
+                    left_root->addLayout(layout);
+                }
 
                 auto layout = new NoMarginHLayout();
                 auto msg = new QLineEdit(this);
