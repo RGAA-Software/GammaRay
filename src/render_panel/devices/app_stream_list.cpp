@@ -298,8 +298,13 @@ namespace tc
             QString input_password;
             if (target_item->remote_device_random_pwd_.empty() && target_item->remote_device_safety_pwd_.empty()) {
                 InputRemotePwdDialog dlg_input_pwd(context_);
-                dlg_input_pwd.exec();
+                if (dlg_input_pwd.exec() == 1) {
+                    return;
+                }
                 input_password = dlg_input_pwd.GetInputPassword();
+                if (input_password.isEmpty()) {
+                    return;
+                }
             }
 
             auto remote_random_pwd = target_item->remote_device_random_pwd_;
@@ -312,26 +317,40 @@ namespace tc
             // verify remote
             auto verify_result
                 = DeviceApi::VerifyDeviceInfo(target_item->remote_device_id_, remote_random_pwd, remote_safety_pwd);
-            if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
-                TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
-                dialog.exec();
-                return;
-            }
-
-            LOGI("Verify success, the password type: {}", (int)verify_result);
-            // update to database
-            if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
-                db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
-            }
-            else if (verify_result == DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
-            }
+//            if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
+//                TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
+//                dialog.exec();
+//                return;
+//            }
 
             if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
                 verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                TcDialog dialog("Connect Failed", "Password is invalid, please check it.", grWorkspace.get());
+                // tell user, password is invalid
+                TcDialog dialog("Password Invalid", "Your password is invalid, please input new password.", grWorkspace.get());
                 dialog.exec();
+
+                // clear the password and restart stream, then you need to input a password
+                // clear the memory
+                item->remote_device_random_pwd_ = "";
+                item->remote_device_safety_pwd_ = "";
+                // clear the database
+                db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, "");
+                db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, "");
+                context_->PostUIDelayTask([=, this]() {
+                    StartStream(item);
+                }, 100);
                 return;
+            }
+
+            LOGI("Verify result, the password type: {}", (int)verify_result);
+            // update to database
+            if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
+                db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
+                target_item->remote_device_random_pwd_ = remote_random_pwd;
+            }
+            else if (verify_result == DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
+                target_item->remote_device_safety_pwd_ = remote_safety_pwd;
             }
         }
 

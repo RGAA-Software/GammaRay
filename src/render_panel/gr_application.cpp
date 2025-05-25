@@ -221,4 +221,13 @@ namespace tc
         dialog.exec();
         return false;
     }
+
+    std::shared_ptr<MgrClientSdk> GrApplication::GetManagerClient() {
+        return mgr_client_sdk_;
+    }
+
+    std::shared_ptr<MgrDeviceOperator> GrApplication::GetDeviceOperator() {
+        return mgr_client_sdk_->GetDeviceOperator();
+    }
+
 }

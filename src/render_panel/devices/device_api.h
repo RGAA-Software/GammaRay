@@ -11,6 +11,9 @@ namespace tc
 {
 
     enum class DeviceVerifyResult {
+        kVfParamInvalid,
+        kVfServerInternalError,
+        kVfDeviceNotFound,
         kVfEmptyDeviceId,
         kVfEmptyServerHost,
         kVfNetworkFailed,
@@ -20,6 +23,13 @@ namespace tc
         kVfSuccessSafetyPwd,
         kVfPasswordFailed,
     };
+
+    // HTTP CODE
+    // see pr_error.rs
+    constexpr int kERR_PARAM_INVALID = 600;
+    constexpr int kERR_OPERATE_DB_FAILED = 601;
+    constexpr int kERR_DEVICE_NOT_FOUND = 602;
+    constexpr int kERR_PASSWORD_FAILED = 603;
 
     class DeviceApi {
     public:

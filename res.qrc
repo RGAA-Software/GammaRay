@@ -61,6 +61,7 @@
         <file>resources/image/ic_question.svg</file>
         <file>resources/image/ic_plugin.svg</file>
         <file>resources/image/ic_notify.png</file>
+        <file>resources/image/ic_refresh.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

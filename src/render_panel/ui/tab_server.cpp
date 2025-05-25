@@ -49,6 +49,8 @@
 #include "tc_qt_widget/tc_password_input.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "tc_common_new/base64.h"
+#include "tc_manager_client/mgr_device_operator.h"
+#include "tc_manager_client/mgr_device.h"
 #include "tc_dialog.h"
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/devices/stream_db_manager.h"
@@ -137,15 +139,51 @@ namespace tc
                     //layout->addSpacing(2);
                     layout->addWidget(title, 0, Qt::AlignLeft);
 
+                    auto pwd_layout = new NoMarginHLayout();
                     auto msg = new QLabel(this);
+                    msg->setFixedWidth(130);
                     lbl_machine_random_pwd_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     msg->setText("********");
                     msg->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
+                    pwd_layout->addWidget(msg);
+
+                    auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(20, 20));
+                    btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+                    btn_refresh->SetRoundRadius(15);
+                    btn_refresh->setFixedSize(30, 30);
+                    pwd_layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
+                    pwd_layout->addStretch();
+
                     layout->addSpacing(5);
-                    layout->addWidget(msg, 0, Qt::AlignLeft);
+                    //layout->addWidget(msg, 0, Qt::AlignLeft);
+                    layout->addLayout(pwd_layout);
                     layout->addStretch();
                     machine_code_qr_layout->addLayout(layout);
+
+                    // event
+                    btn_refresh->SetOnImageButtonClicked([=, this]() {
+                        if (settings_->device_id_.empty()) {
+                            return;
+                        }
+                        context_->PostTask([=, this]() {
+                            auto dev_opt = grApp->GetDeviceOperator();
+                            auto device = dev_opt->RefreshRandomPwd(settings_->device_id_);
+                            if (!device) {
+                                LOGE("Refresh random password failed.");
+                                return;
+                            }
+                            settings_->SetDeviceId(device->device_id_);
+                            settings_->SetDeviceRandomPwd(device->random_pwd_);
+
+                            context_->SendAppMessage(MsgRandomPasswordUpdated {
+                                .device_id_ = device->device_id_,
+                                .device_random_pwd_ = device->random_pwd_,
+                            });
+
+                            context_->SendAppMessage(MsgSyncSettingsToRender{});
+                        });
+                    });
                 }
             }
 
@@ -179,7 +217,7 @@ namespace tc
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 
-            // Temporary Password
+            // gammaray:// information
             {
                 left_root->addSpacing(18);
 
@@ -225,9 +263,6 @@ namespace tc
                 connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
                     QClipboard* clipboard = QApplication::clipboard();
                     clipboard->setText(msg->text());
-//                    TcDialog dlg("Tips", "Connection info has been written to the clipboard.");
-//                    dlg.exec();
-
                     context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
                 });
 
@@ -374,19 +409,6 @@ namespace tc
                         }
 
                         // get device's relay server info
-//                        auto srv_remote_device_id = "server_" + remote_device_id;
-//                        auto spvr_mgr = context_->GetSpvrManager();
-//                        auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
-//                        if (!relay_result) {
-//                            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
-//                            TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
-//                            dialog.exec();
-//                            return;
-//                        }
-//                        auto relay_device_info = relay_result.value();
-//                        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
-//                             srv_remote_device_id, relay_device_info->relay_server_ip_, relay_device_info->relay_server_port_);
-
                         auto relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
                         if (relay_device_info == nullptr) {
                             return;
@@ -464,7 +486,18 @@ namespace tc
 
     void TabServer::RegisterMessageListener() {
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+
+        // new device created
         msg_listener_->Listen<MsgRequestedNewDevice>([=, this](const MsgRequestedNewDevice& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
+                lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                this->UpdateQRCode();
+            });
+        });
+
+        // random password updated
+        msg_listener_->Listen<MsgRandomPasswordUpdated>([=, this](const MsgRandomPasswordUpdated& msg) {
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
                 lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());

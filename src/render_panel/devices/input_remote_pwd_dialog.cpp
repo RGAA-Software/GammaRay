@@ -73,7 +73,7 @@ namespace tc
             auto layout = new NoMarginVLayout();
             auto btn_sure = new QPushButton(tr("OK"));
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-                this->close();
+                done(0);
             });
 
             layout->addWidget(btn_sure);
@@ -91,6 +91,10 @@ namespace tc
 
     QString InputRemotePwdDialog::GetInputPassword() {
         return pwd_input_->GetPassword();
+    }
+
+    void InputRemotePwdDialog::closeEvent(QCloseEvent* ) {
+        done(1);
     }
 
 }

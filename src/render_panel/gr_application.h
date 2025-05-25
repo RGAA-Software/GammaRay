@@ -24,6 +24,7 @@ namespace tc
     class MgrClientSdk;
     class MessageListener;
     class GrAccountManager;
+    class MgrDeviceOperator;
 
     class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -42,6 +43,12 @@ namespace tc
         bool PostMessage2Renderer(const std::string& msg);
         void RequestNewClientId(bool force_update);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
+
+        // manager client
+        std::shared_ptr<MgrClientSdk> GetManagerClient();
+        // device operator
+        std::shared_ptr<MgrDeviceOperator> GetDeviceOperator();
+
 
         // 1. device id is empty ?
         // 2. device id & password paired ?

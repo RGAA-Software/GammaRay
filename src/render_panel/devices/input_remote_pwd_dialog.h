@@ -30,7 +30,7 @@ namespace tc
         explicit InputRemotePwdDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~InputRemotePwdDialog() override;
         void paintEvent(QPaintEvent *event) override;
-
+        void closeEvent(QCloseEvent *) override;
         QString GetInputPassword();
 
     private:

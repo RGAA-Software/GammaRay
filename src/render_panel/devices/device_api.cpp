@@ -39,8 +39,21 @@ namespace tc
         try {
             //LOGI("Verify resp: {}", resp.body);
             auto obj = json::parse(resp.body);
-            if (obj["code"].get<int>() != 200) {
-                return DeviceVerifyResult::kVfResponseFailed;
+            auto code = obj["code"].get<int>();
+            if (code == kERR_PARAM_INVALID) {
+                return DeviceVerifyResult::kVfParamInvalid;
+            }
+            else if (code == kERR_OPERATE_DB_FAILED) {
+                return DeviceVerifyResult::kVfServerInternalError;
+            }
+            else if (code == kERR_DEVICE_NOT_FOUND) {
+                return DeviceVerifyResult::kVfDeviceNotFound;
+            }
+            else if (code == kERR_PASSWORD_FAILED) {
+                return DeviceVerifyResult::kVfPasswordFailed;
+            }
+            else if (code != 200) {
+                return DeviceVerifyResult::kVfPasswordFailed;
             }
 
             auto data = obj["data"];
