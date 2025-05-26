@@ -33,7 +33,7 @@ namespace tc
         root_layout->addLayout(column1_layout);
 
         auto column2_layout = new NoMarginVLayout();
-        root_layout->addSpacing(40);
+        root_layout->addSpacing(10);
         root_layout->addLayout(column2_layout);
 
         root_layout->addStretch();
@@ -51,7 +51,7 @@ namespace tc
                 auto label = new QLabel(this);
                 label->setText(tr("Network Settings"));
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
+                segment_layout->addSpacing(0);
                 segment_layout->addWidget(label);
             }
             // Network type
