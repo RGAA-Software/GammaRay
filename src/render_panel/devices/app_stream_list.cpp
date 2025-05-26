@@ -317,11 +317,11 @@ namespace tc
             // verify remote
             auto verify_result
                 = DeviceApi::VerifyDeviceInfo(target_item->remote_device_id_, remote_random_pwd, remote_safety_pwd);
-//            if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
-//                TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
-//                dialog.exec();
-//                return;
-//            }
+            if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
+                TcDialog dialog("Connect Failed", "Can't access Profile server.", grWorkspace.get());
+                dialog.exec();
+                return;
+            }
 
             if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
                 verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
