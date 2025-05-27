@@ -9,6 +9,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/monitors.h"
 #include "tc_common_new/image.h"
+#include "tc_common_new/win32/win_helper.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_common_new/math_helper.h"
 #include "plugin_interface/gr_plugin_events.h"
@@ -191,6 +192,16 @@ namespace tc
             if (pausing_ ) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
+            }
+
+            if (!WinHelper::InputDesktopSelected()) {
+                if (!WinHelper::SelectInputDesktop()) {
+                    LOGE("GDI capture SelectInputDesktop error.");
+                }
+                // 切换桌面后，需要重新初始化 GDI相关
+                this->Exit();
+                this->Init();
+                plugin_->InsertIdr();
             }
             CaptureNextFrame();
         }

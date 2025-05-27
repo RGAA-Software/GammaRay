@@ -407,7 +407,7 @@ namespace tc
                 plugin->On1Second();
 
                 // test begin
-                plugin->DispatchAppEvent(std::make_shared<ClientAppTestEvent>());
+                // plugin->DispatchAppEvent(std::make_shared<ClientAppTestEvent>());
                 // test end
             });
         });
