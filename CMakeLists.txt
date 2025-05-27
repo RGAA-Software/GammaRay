@@ -322,6 +322,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_multi_screens.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/multi_screens/plugin_multi_screens.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll.toml"
 
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_media_record.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_media_record.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/media_record/plugin_media_record.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_media_record.dll.toml"
+
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

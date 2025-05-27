@@ -2,7 +2,7 @@
 // Created RGAA on 15/11/2024.
 //
 
-#include "multi_screens_plugin.h"
+#include "media_record_plugin.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
@@ -14,23 +14,23 @@
 namespace tc
 {
 
-    std::string MultiScreensPlugin::GetPluginId() {
-        return kMultiScreenCtPluginId;
+    std::string MediaRecordPlugin::GetPluginId() {
+        return kMediaRecordPluginId;
     }
 
-    std::string MultiScreensPlugin::GetPluginName() {
-        return "Multi Screen";
+    std::string MediaRecordPlugin::GetPluginName() {
+        return "Media Record";
     }
 
-    std::string MultiScreensPlugin::GetVersionName() {
+    std::string MediaRecordPlugin::GetVersionName() {
         return "1.1.0";
     }
 
-    uint32_t MultiScreensPlugin::GetVersionCode() {
+    uint32_t MediaRecordPlugin::GetVersionCode() {
         return 110;
     }
 
-    void MultiScreensPlugin::On1Second() {
+    void MediaRecordPlugin::On1Second() {
         ClientPluginInterface::On1Second();
 
         auto event = std::make_shared<ClientPluginTestEvent>();
@@ -38,24 +38,24 @@ namespace tc
         CallbackEvent(event);
     }
     
-    bool MultiScreensPlugin::OnCreate(const tc::ClientPluginParam& param) {
+    bool MediaRecordPlugin::OnCreate(const tc::ClientPluginParam& param) {
         ClientPluginInterface::OnCreate(param);
         plugin_type_ = ClientPluginType::kUtil;
 
         if (!IsPluginEnabled()) {
             return true;
         }
-        root_widget_->hide();
-        //root_widget_->show();
+        //root_widget_->hide();
+        root_widget_->show();
         return true;
     }
 
-    void MultiScreensPlugin::OnMessage(std::shared_ptr<Message> msg) {
+    void MediaRecordPlugin::OnMessage(std::shared_ptr<Message> msg) {
         ClientPluginInterface::OnMessage(msg);
         //LOGI("OnMessage: {}", (int)msg->type());
     }
 
-    void MultiScreensPlugin::DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) {
+    void MediaRecordPlugin::DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) {
         ClientPluginInterface::DispatchAppEvent(event);
         LOGI("AppEvent: {}", (int)event->evt_type_);
     }
