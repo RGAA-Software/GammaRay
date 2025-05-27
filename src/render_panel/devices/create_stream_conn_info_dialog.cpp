@@ -148,8 +148,7 @@ namespace tc
         if (!has_device_id) {
             if (conn_info->hosts_.size() > 1) {
                 for (const auto &host: conn_info->hosts_) {
-                    auto client = HttpClient::Make(std::format("{}:{}", host.ip_, conn_info->render_srv_port_),
-                                                   "/api/ping", 500);
+                    auto client = HttpClient::Make(host.ip_, conn_info->render_srv_port_, "/api/ping", 500);
                     auto r = client->Request();
                     if (r.status == 200) {
                         conn_host = host;

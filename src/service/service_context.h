@@ -22,6 +22,7 @@ namespace tc
         std::shared_ptr<MessageListener> CreateMessageListener();
         SharedPreference* GetSp() { return sp_; }
         int GetListeningPort() {return listening_port_;}
+        std::string GetAppExeFolderPath();
 
         template<typename T>
         void SendAppMessage(const T& m) {

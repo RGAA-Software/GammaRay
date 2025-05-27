@@ -38,7 +38,7 @@ namespace tc
     }
 
     void SteamGame::RequestSteamGames() {
-        auto client = HttpClient::Make("127.0.0.1:20368", "/v1/apps");
+        auto client = HttpClient::Make("127.0.0.1", 20368, "/v1/apps");
         auto resp = client->Request();
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request for steam games failed.");

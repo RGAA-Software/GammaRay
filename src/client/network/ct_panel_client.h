@@ -6,7 +6,7 @@
 #define GAMMARAY_CT_PANEL_CLIENT_H
 
 #include <memory>
-#include <asio2/websocket/ws_client.hpp>
+#include <asio2/websocket/wss_client.hpp>
 
 namespace tc
 {
@@ -26,7 +26,7 @@ namespace tc
 
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
-        std::shared_ptr<asio2::ws_client> client_ = nullptr;
+        std::shared_ptr<asio2::wss_client> client_ = nullptr;
     };
 
 }

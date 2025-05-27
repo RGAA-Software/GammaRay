@@ -41,7 +41,7 @@ namespace tc
         AppManager::Init();
 
         steam_game_ = std::make_shared<SteamGame>(context_);
-        steam_game_->RequestSteamGames();
+        //steam_game_->RequestSteamGames();
 
         if (settings_->capture_.IsVideoHook()) {
             msg_listener_->Listen<MsgTimer100>([=, this](const auto &msg) {

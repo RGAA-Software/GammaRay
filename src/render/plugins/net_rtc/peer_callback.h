@@ -6,11 +6,9 @@
 #define PEER_CALLBACK_H
 
 #include "tc_common_new/webrtc_helper.h"
-#include "http/httplib.h"
 #include "json/json.hpp"
 #include "video_source_mock.h"
 
-using namespace httplib;
 using namespace nlohmann;
 
 namespace tc

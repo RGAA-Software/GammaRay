@@ -14,6 +14,7 @@ else ()
 endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Svg Charts)
+find_package(OpenSSL REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -111,7 +112,7 @@ if (APPLE)
 endif()
 
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg Qt6::Charts
-        tc_common_new tc_message tc_cp_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm libssl64MT.lib libcrypto64MT.lib
+        tc_common_new tc_message tc_cp_message tc_sdk tc_qt_widget sqlite_orm::sqlite_orm OpenSSL::SSL OpenSSL::Crypto #libssl64MT.lib libcrypto64MT.lib
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> QWindowKit::Widgets TC_WidgetFrame Winmm.lib
         tc_rtc_client Dwmapi.lib tc_client_plugin
 )

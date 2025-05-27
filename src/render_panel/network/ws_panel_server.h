@@ -5,6 +5,10 @@
 #ifndef TC_SERVER_STEAM_WS_SERVER_H
 #define TC_SERVER_STEAM_WS_SERVER_H
 
+#ifndef ASIO2_ENABLE_SSL
+#define ASIO2_ENABLE_SSL
+#endif
+
 #include <memory>
 #include <asio2/asio2.hpp>
 #include "tc_common_new/concurrent_hashmap.h"
@@ -22,7 +26,7 @@ namespace tc
     public:
         uint64_t socket_fd_;
         int session_type_;
-        std::shared_ptr<asio2::http_session> session_ = nullptr;
+        std::shared_ptr<asio2::https_session> session_ = nullptr;
         std::string stream_id_;
     };
 
@@ -56,8 +60,7 @@ namespace tc
         void ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg);
 
     private:
-        template<typename Server>
-        void AddWebsocketRouter(const std::string& path, const Server& s);
+        void AddWebsocketRouter(const std::string& path);
 
         void AddHttpGetRouter(const std::string& path,
            std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk);
@@ -68,7 +71,8 @@ namespace tc
         void SyncPanelInfo();
 
     private:
-        std::shared_ptr<asio2::http_server> http_server_ = nullptr;
+        //std::shared_ptr<asio2::http_server> http_server_ = nullptr;
+        std::shared_ptr<asio2::https_server> server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;

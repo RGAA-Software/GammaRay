@@ -34,8 +34,7 @@ namespace tc
         int64_t GetQueuingFtMsgCount();
 
     private:
-        template<typename Server>
-        void AddWebsocketRouter(const std::string& path, const Server& s);
+        void AddWebsocketRouter(const std::string& path);
 
         void AddHttpRouter(const std::string& path,
                            std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback);
@@ -46,7 +45,7 @@ namespace tc
     private:
         tc::WsPlugin* plugin_ = nullptr;
         uint16_t listen_port_ = 0;
-        std::shared_ptr<asio2::http_server> http_server_ = nullptr;
+        std::shared_ptr<asio2::https_server> server_ = nullptr;
 
         WsDataPtr ws_data_ = nullptr;
         tc::ConcurrentHashMap<uint64_t, std::shared_ptr<WsStreamRouter>> stream_routers_;

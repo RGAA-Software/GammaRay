@@ -3,10 +3,11 @@
 //
 
 #include "service_msg_server.h"
+#include "service.h"
 #include "tc_common_new/log.h"
 #include "render_manager.h"
-#include "service.h"
 #include "tc_common_new/url_helper.h"
+#include "tc_common_new/file.h"
 #include "tc_service_message.pb.h"
 #include "service_context.h"
 
@@ -22,14 +23,33 @@ namespace tc
     }
 
     void ServiceMsgServer::Start() {
-        ws_server_ = std::make_shared<asio2::ws_server>();
+        server_ = std::make_shared<asio2::wss_server>();
 
-        auto fn_get_socket_fd = [](std::shared_ptr<asio2::ws_session> &sess_ptr) -> uint64_t {
+        auto exe_dir = context_->GetAppExeFolderPath();
+        auto pwd_file = std::format("{}/certs/password", exe_dir);
+        auto pwd = tc::File::OpenForRead(pwd_file)->ReadAllAsString();
+        server_->set_cert_file(
+                "",
+                std::format("{}/certs/server.crt", exe_dir),
+                std::format("{}/certs/server.key", exe_dir),
+                pwd);
+
+        if (asio2::get_last_error()) {
+            LOGE("load cert files failed: {}", asio2::last_error_msg());
+        }
+        else {
+            LOGE("set cert files success.");
+        }
+
+        //  | asio::ssl::verify_fail_if_no_peer_cert
+        server_->set_verify_mode(asio::ssl::verify_peer);
+
+        auto fn_get_socket_fd = [](std::shared_ptr<asio2::wss_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
             return (uint64_t)s.native_handle();
         };
 
-        ws_server_->bind_accept([&](std::shared_ptr<asio2::ws_session>& session_ptr) {
+        server_->bind_accept([&](std::shared_ptr<asio2::wss_session>& session_ptr) {
            // accept callback maybe has error like "Too many open files", etc...
            if (!asio2::get_last_error()) {
                // Set the binary message write option.
@@ -68,7 +88,7 @@ namespace tc
                this->ParseMessage(sw, data);
            }
        })
-       .bind_connect([=, this](std::shared_ptr<asio2::ws_session>& sess_ptr) {
+       .bind_connect([=, this](std::shared_ptr<asio2::wss_session>& sess_ptr) {
            sess_ptr->set_disconnect_timeout((std::chrono::steady_clock::duration::max)());
            sess_ptr->set_no_delay(true);
            auto socket_fd = fn_get_socket_fd(sess_ptr);
@@ -83,7 +103,7 @@ namespace tc
            sessions_.Remove(socket_fd);
        });
 
-        bool ret = ws_server_->start("0.0.0.0", context_->GetListeningPort());
+        bool ret = server_->start("0.0.0.0", context_->GetListeningPort());
         LOGI("service start at: 0.0.0.0:{}/service/message, result: {}", context_->GetListeningPort(), ret);
     }
 
@@ -156,7 +176,7 @@ namespace tc
     }
 
     void ServiceMsgServer::PostBinaryMessage(const std::string& msg) {
-        if (ws_server_ && ws_server_->is_started()) {
+        if (server_ && server_->is_started()) {
             sessions_.VisitAll([=](auto k, std::shared_ptr<SessionWrapper>& sw) {
                 if (sw->session_) {
                     sw->session_->async_send(msg);

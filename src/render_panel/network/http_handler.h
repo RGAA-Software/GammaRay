@@ -5,7 +5,6 @@
 #ifndef TC_APPLICATION_HTTP_HANDLER_H
 #define TC_APPLICATION_HTTP_HANDLER_H
 
-#include "http/httplib.h"
 #include "tc_3rdparty/json/json.hpp"
 #include <asio2/asio2.hpp>
 

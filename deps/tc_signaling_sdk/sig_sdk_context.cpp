@@ -95,7 +95,7 @@ namespace tc
         if (hardware_desc.empty()) {
             return {};
         }
-        auto client = HttpClient::Make(std::format("{}:{}", rtc_ctx_param_.sig_host_, rtc_ctx_param_.sig_port_), kSigApiReqClientId);
+        auto client = HttpClient::Make(rtc_ctx_param_.sig_host_, rtc_ctx_param_.sig_port_, kSigApiReqClientId);
         auto resp = client->Request({
 #ifdef WIN32
             {"platform", "windows"},

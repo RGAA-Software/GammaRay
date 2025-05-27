@@ -8,6 +8,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/data.h"
+#include "tc_common_new/file.h"
 #include "render/network/ws_media_router.h"
 #include "ws_stream_router.h"
 #include "ws_filetransfer_router.h"
@@ -15,6 +16,7 @@
 #include "ws_plugin.h"
 #include "tc_common_new/url_helper.h"
 #include "http_handler.h"
+#include <QApplication>
 
 static std::string kUrlMedia = "/media";
 static std::string kUrlFileTransfer = "/file/transfer";
@@ -29,8 +31,8 @@ namespace tc
             return true;
         }
 
-        bool after(std::shared_ptr<asio2::http_session> &session_ptr, http::web_request &req, http::web_response &rep) {
-            ASIO2_ASSERT(asio2::get_current_caller<std::shared_ptr<asio2::http_session>>().get() == session_ptr.get());
+        bool after(std::shared_ptr<asio2::https_session> &session_ptr, http::web_request &req, http::web_response &rep) {
+            ASIO2_ASSERT(asio2::get_current_caller<std::shared_ptr<asio2::https_session>>().get() == session_ptr.get());
             asio2::ignore_unused(session_ptr, req, rep);
             return true;
         }
@@ -43,8 +45,8 @@ namespace tc
     }
 
     void WsPluginServer::Start() {
-        http_server_ = std::make_shared<asio2::http_server>();
-        http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
+        server_ = std::make_shared<asio2::https_server>();
+        server_->bind_disconnect([=, this](std::shared_ptr<asio2::https_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             LOGI("client disconnected: {}", socket_fd);
             if (stream_routers_.HasKey(socket_fd)) {
@@ -58,15 +60,34 @@ namespace tc
             }
         });
 
-        http_server_->support_websocket(true);
+        server_->support_websocket(true);
         ws_data_ = std::make_shared<WsData>(WsData{
             .vars_ = {
                 {"plugin",  this->plugin_},
             }
         });
+
+        auto exe_dir = qApp->applicationDirPath().toStdString();
+        auto pwd_file = std::format("{}/certs/password", exe_dir);
+        auto pwd = (File::OpenForRead(pwd_file))->ReadAllAsString();
+        server_->set_cert_file(
+            "",
+            std::format("{}/certs/server.crt", exe_dir),
+            std::format("{}/certs/server.key", exe_dir),
+            pwd);
+
+        if (asio2::get_last_error()) {
+            LOGE("load cert files failed: {}", asio2::last_error_msg());
+        }
+        else {
+            LOGE("set cert files success.");
+        }
+
+        server_->set_verify_mode(asio::ssl::verify_peer);
+
         // media websocket
-        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlMedia, http_server_);
-        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlFileTransfer, http_server_);
+        AddWebsocketRouter(kUrlMedia);
+        AddWebsocketRouter(kUrlFileTransfer);
 
         // ping
         AddHttpRouter(kApiPing, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
@@ -76,8 +97,8 @@ namespace tc
         if (listen_port_ <= 0) {
             LOGE("Listen port invalid: {}", listen_port_);
         }
-        bool ret = http_server_->start("0.0.0.0", std::to_string(listen_port_));
-        LOGI("App server start result: {}", ret);
+        bool ret = server_->start("0.0.0.0", std::to_string(listen_port_));
+        LOGI("App server start result: {}, listen port: {}", ret, listen_port_);
     }
 
     void WsPluginServer::Exit() {
@@ -131,31 +152,30 @@ namespace tc
         return only_audio_client;
     }
 
-    template<typename Server>
-    void WsPluginServer::AddWebsocketRouter(const std::string &path, const Server &s) {
-        auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
+    void WsPluginServer::AddWebsocketRouter(const std::string &path) {
+        auto fn_get_socket_fd = [](std::shared_ptr<asio2::https_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
             return (uint64_t)s.native_handle();
         };
-        s->bind(path, websocket::listener<asio2::http_session>{}
-            .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
+        server_->bind(path, websocket::listener<asio2::https_session>{}
+            .on("message", [=, this](std::shared_ptr<asio2::https_session> &sess_ptr, std::string_view data) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlMedia) {
-                    stream_routers_.VisitAll([=](auto k, auto &v) mutable {
+                    stream_routers_.VisitAll([=](auto k, std::shared_ptr<WsStreamRouter>& router) mutable {
                         if (socket_fd == k) {
-                            v->OnMessage(sess_ptr, socket_fd, data);
+                            router->OnMessage(sess_ptr, socket_fd, data);
                         }
                     });
                 }
                 else if (path == kUrlFileTransfer) {
-                    ft_routers_.VisitAll([=](auto k, auto &v) mutable {
+                    ft_routers_.VisitAll([=](auto k, auto &router) mutable {
                         if (socket_fd == k) {
-                            v->OnMessage(sess_ptr, socket_fd, data);
+                            router->OnMessage(sess_ptr, socket_fd, data);
                         }
                     });
                 }
             })
-            .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
+            .on("open", [=, this](std::shared_ptr<asio2::https_session> &sess_ptr) {
                 auto query = sess_ptr->get_request().get_query();
                 auto params = UrlHelper::ParseQueryString(std::string(query.data(), query.size()));
                 for (const auto& [k, v] : params) {
@@ -189,7 +209,7 @@ namespace tc
                 }
 
             })
-            .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
+            .on("close", [=, this](std::shared_ptr<asio2::https_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 LOGI("client closed: {}", socket_fd);
                 if (path == kUrlMedia) {
@@ -213,7 +233,7 @@ namespace tc
     void WsPluginServer::AddHttpRouter(const std::string &path,
        std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback) {
         // bind it
-        http_server_->bind<http::verb::get, http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
+        server_->bind<http::verb::get, http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
             callback(path, req, rep);
         }, aop_log{}, http::enable_cache);
     }

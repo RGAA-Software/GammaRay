@@ -12,29 +12,29 @@
 namespace tc
 {
 
-    void WsFileTransferRouter::OnOpen(std::shared_ptr<asio2::http_session> &sess_ptr) {
-        WsRouter::OnOpen(sess_ptr);
+    void WsFileTransferRouter::OnOpen(std::shared_ptr<asio2::https_session> &sess_ptr) {
+        WssRouter::OnOpen(sess_ptr);
         LOGI("FileTransfer OnOpen.");
     }
 
-    void WsFileTransferRouter::OnClose(std::shared_ptr<asio2::http_session> &sess_ptr) {
-        WsRouter::OnClose(sess_ptr);
+    void WsFileTransferRouter::OnClose(std::shared_ptr<asio2::https_session> &sess_ptr) {
+        WssRouter::OnClose(sess_ptr);
         LOGI("FileTransfer OnClose.");
     }
 
-    void WsFileTransferRouter::OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
-        WsRouter::OnMessage(sess_ptr, socket_fd, data);
+    void WsFileTransferRouter::OnMessage(std::shared_ptr<asio2::https_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
+        WssRouter::OnMessage(sess_ptr, socket_fd, data);
         auto plugin = Get<WsPlugin*>("plugin");
         auto msg = std::string(data.data(), data.size());
         plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, msg);
     }
 
-    void WsFileTransferRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {
-        WsRouter::OnPing(sess_ptr);
+    void WsFileTransferRouter::OnPing(std::shared_ptr<asio2::https_session> &sess_ptr) {
+        WssRouter::OnPing(sess_ptr);
     }
 
-    void WsFileTransferRouter::OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) {
-        WsRouter::OnPong(sess_ptr);
+    void WsFileTransferRouter::OnPong(std::shared_ptr<asio2::https_session> &sess_ptr) {
+        WssRouter::OnPong(sess_ptr);
     }
 
     void WsFileTransferRouter::PostBinaryMessage(const std::string &data) {

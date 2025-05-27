@@ -14,7 +14,7 @@
 namespace tc
 {
 
-    FileTransferChannel::FileTransferChannel(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<asio2::http_session>& sess) {
+    FileTransferChannel::FileTransferChannel(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<asio2::https_session>& sess) {
         context_ = ctx;
         sess_ = sess;
         settings_ = GrSettings::Instance();

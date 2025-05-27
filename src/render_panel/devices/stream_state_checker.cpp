@@ -62,7 +62,7 @@ namespace tc
             else {
                 // host & port mode
                 // /api/ping
-                auto client = HttpClient::Make(std::format("{}:{}", item->stream_host_, item->stream_port_), "/api/ping", 200);
+                auto client = HttpClient::MakeSSL(item->stream_host_, item->stream_port_, "/api/ping", 300);
                 auto res = client->Request();
                 if (res.status == 200) {
                     online = true;

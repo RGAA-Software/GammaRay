@@ -2,8 +2,8 @@
 // Created by RGAA on 2024/3/5.
 //
 
-#ifndef TC_APPLICATION_WS_ROUTER_H
-#define TC_APPLICATION_WS_ROUTER_H
+#ifndef TC_APPLICATION_WSS_ROUTER_H
+#define TC_APPLICATION_WSS_ROUTER_H
 
 #include <map>
 #include <any>
@@ -17,30 +17,30 @@ namespace tc
 {
     class Data;
 
-    class WsRouter {
+    class WssRouter {
     public:
 
-        explicit WsRouter(const WsDataPtr& ws_data) {
+        explicit WssRouter(const WsDataPtr& ws_data) {
             ws_data_ = ws_data;
         }
 
-        virtual void OnOpen(std::shared_ptr<asio2::http_session>& sess_ptr) {
+        virtual void OnOpen(std::shared_ptr<asio2::https_session>& sess_ptr) {
             session_ = sess_ptr;
         }
 
-        virtual void OnClose(std::shared_ptr<asio2::http_session>& sess_ptr) {
+        virtual void OnClose(std::shared_ptr<asio2::https_session>& sess_ptr) {
             session_ = nullptr;
         }
 
-        virtual void OnMessage(std::shared_ptr<asio2::http_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
+        virtual void OnMessage(std::shared_ptr<asio2::https_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
 
         }
 
-        virtual void OnPing(std::shared_ptr<asio2::http_session>& sess_ptr) {
+        virtual void OnPing(std::shared_ptr<asio2::https_session>& sess_ptr) {
 
         }
 
-        virtual void OnPong(std::shared_ptr<asio2::http_session>& sess_ptr) {
+        virtual void OnPong(std::shared_ptr<asio2::https_session>& sess_ptr) {
 
         }
 
@@ -70,7 +70,7 @@ namespace tc
 
     protected:
         std::shared_ptr<WsData> ws_data_ = nullptr;
-        std::shared_ptr<asio2::http_session> session_ = nullptr;
+        std::shared_ptr<asio2::https_session> session_ = nullptr;
         std::atomic_int64_t queuing_message_count_ = 0;
 
     public:
@@ -79,7 +79,7 @@ namespace tc
 
     };
 
-    using WsRouterPtr = std::shared_ptr<WsRouter>;
+    using WssRouterPtr = std::shared_ptr<WssRouter>;
 
 }
 

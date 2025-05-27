@@ -54,4 +54,9 @@ namespace tc
         return msg_notifier_->CreateListener();
     }
 
+    std::string ServiceContext::GetAppExeFolderPath() {
+        auto exe_path = QString::fromStdWString(FolderUtil::GetCurrentFilePath()).toStdString();
+        return FileUtil::GetFileFolder(exe_path);
+    }
+
 }

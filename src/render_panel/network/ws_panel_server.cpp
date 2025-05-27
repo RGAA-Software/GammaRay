@@ -7,6 +7,7 @@
 #include "http_handler.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/file.h"
 #include "tc_message.pb.h"
 #include "tc_client_panel_message.pb.h"
 #include "render_panel/gr_context.h"
@@ -14,6 +15,7 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/transfer/file_transfer.h"
 #include "tc_common_new/url_helper.h"
+#include <QApplication>
 
 namespace tc
 {
@@ -28,8 +30,8 @@ namespace tc
             return true;
         }
 
-        bool after(std::shared_ptr<asio2::http_session> &session_ptr, http::web_request &req, http::web_response &rep) {
-                    ASIO2_ASSERT(asio2::get_current_caller<std::shared_ptr<asio2::http_session>>().get() == session_ptr.get());
+        bool after(std::shared_ptr<asio2::https_session> &session_ptr, http::web_request &req, http::web_response &rep) {
+                    ASIO2_ASSERT(asio2::get_current_caller<std::shared_ptr<asio2::https_session>>().get() == session_ptr.get());
             asio2::ignore_unused(session_ptr, req, rep);
             return true;
         }
@@ -47,8 +49,8 @@ namespace tc
     }
 
     void WsPanelServer::Start() {
-        http_server_ = std::make_shared<asio2::http_server>();
-        http_server_->bind_disconnect([=, this](std::shared_ptr<asio2::http_session>& sess_ptr) {
+        server_ = std::make_shared<asio2::https_server>();
+        server_->bind_disconnect([=, this](std::shared_ptr<asio2::https_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             if (panel_sessions_.HasKey(socket_fd)) {
                 panel_sessions_.Remove(socket_fd);
@@ -62,12 +64,36 @@ namespace tc
             }
         });
 
-        http_server_->support_websocket(true);
+        server_->support_websocket(true);
         ws_data_ = std::make_shared<WsData>(WsData{
             .vars_ = {
                 {"app",  this->app_},
             }
         });
+
+        auto exe_dir = qApp->applicationDirPath().toStdString();
+        auto pwd_file = std::format("{}/certs/password", exe_dir);
+        auto pwd = tc::File::OpenForRead(pwd_file)->ReadAllAsString();
+        server_->set_cert_file(
+                "",
+                std::format("{}/certs/server.crt", exe_dir),
+                std::format("{}/certs/server.key", exe_dir),
+                pwd);
+
+        if (asio2::get_last_error()) {
+            LOGE("load cert files failed: {}", asio2::last_error_msg());
+        }
+        else {
+            LOGE("set cert files success.");
+        }
+
+        //  | asio::ssl::verify_fail_if_no_peer_cert
+        server_->set_verify_mode(asio::ssl::verify_peer);
+
+        // server_->set_dh_file(std::format("{}/certs/dh1024.pem", exe_dir));
+        // if (asio2::get_last_error()) {
+        //     LOGE("load dh files failed: ", asio2::last_error_msg());
+        // }
 
         // response a "Pong" for checking server state
         AddHttpGetRouter(kPathPing, [=, this](const auto& path, auto& req, auto& rep) {
@@ -125,18 +151,18 @@ namespace tc
         });
 
         // panel
-        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanel, http_server_);
+        AddWebsocketRouter(kUrlPanel);
         // panel/renderer
-        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlPanelRenderer, http_server_);
+        AddWebsocketRouter(kUrlPanelRenderer);
         // file transfer
-        AddWebsocketRouter<std::shared_ptr<asio2::http_server>>(kUrlFileTransfer, http_server_);
+        AddWebsocketRouter(kUrlFileTransfer);
 
-        http_server_->start_timer("id.sync.info", 1000, [=, this]() {
+        server_->start_timer("id.sync.info", 1000, [=, this]() {
             this->SyncPanelInfo();
         });
 
-        bool ret = http_server_->start("0.0.0.0", settings_->panel_srv_port_);
-        LOGI("App server start result: {}", ret);
+        bool ret = server_->start("0.0.0.0", settings_->panel_srv_port_);
+        LOGI("App server start result: {}, port: {}", ret, settings_->panel_srv_port_);
     }
 
     void WsPanelServer::Exit() {
@@ -144,20 +170,19 @@ namespace tc
     }
 
     WsPanelServer::~WsPanelServer() {
-        if (http_server_) {
-            http_server_->stop_all_timers();
-            http_server_->stop();
+        if (server_) {
+            server_->stop_all_timers();
+            server_->stop();
         }
     }
 
-    template<typename Server>
-    void WsPanelServer::AddWebsocketRouter(const std::string &path, const Server &s) {
-        auto fn_get_socket_fd = [](std::shared_ptr<asio2::http_session> &sess_ptr) -> uint64_t {
+    void WsPanelServer::AddWebsocketRouter(const std::string &path) {
+        auto fn_get_socket_fd = [](std::shared_ptr<asio2::https_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
             return (uint64_t)s.native_handle();
         };
-        s->bind(path, websocket::listener<asio2::http_session>{}
-            .on("message", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr, std::string_view data) {
+        server_->bind(path, websocket::listener<asio2::https_session>{}
+            .on("message", [=, this](std::shared_ptr<asio2::https_session> &sess_ptr, std::string_view data) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlPanel) {
                     this->ParsePanelMessage(socket_fd, data);
@@ -169,7 +194,7 @@ namespace tc
                     this->ParseFtBinaryMessage(socket_fd, data);
                 }
             })
-            .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
+            .on("open", [=, this](std::shared_ptr<asio2::https_session> &sess_ptr) {
                 LOGI("App server {} open", path);
                 sess_ptr->ws_stream().binary(true);
                 sess_ptr->set_no_delay(true);
@@ -215,7 +240,7 @@ namespace tc
                     ft_sess->ch_->OnConnected();
                 }
             })
-            .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
+            .on("close", [=, this](std::shared_ptr<asio2::https_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 if (path == kUrlPanel) {
                     if (panel_sessions_.HasKey(socket_fd)) {
@@ -245,19 +270,19 @@ namespace tc
     }
 
     bool WsPanelServer::IsAlive() {
-        return http_server_ && http_server_->is_started();
+        return server_ && server_->is_started();
     }
 
     void WsPanelServer::AddHttpGetRouter(const std::string &path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
-        http_server_->bind<http::verb::get>(path, [=, this](http::web_request &req, http::web_response &rep) {
+        server_->bind<http::verb::get>(path, [=, this](http::web_request &req, http::web_response &rep) {
             cbk(path, req, rep);
         }, aop_log{});
     }
 
     void WsPanelServer::AddHttpPostRouter(const std::string& path,
         std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk) {
-        http_server_->bind<http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
+        server_->bind<http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
             cbk(path, req, rep);
         }, aop_log{});
     }
