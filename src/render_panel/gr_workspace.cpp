@@ -201,6 +201,21 @@ namespace tc
 
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_settings_security_selected.svg", ":/resources/image/ic_settings_security_normal.svg", 20, 20);
+                btn_security_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetTextId("id_tab_security");
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    //ChangeTab(TabName::kTabSettings);
+                });
+                layout->addSpacing(10);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
+            {
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn->AddIcon(":/resources/image/ic_avatar_selected.svg", ":/resources/image/ic_avatar_normal.svg", 20, 20);
                 btn_tab_profile_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
@@ -248,12 +263,14 @@ namespace tc
             tabs_.insert({TabName::kTabServerStatus, new TabServerStatus(app_, this)});
             tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
+            tabs_.insert({TabName::kTabSecurity, new TabProfile(app_, this)});
             tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
             tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
+            tabs_[TabName::kTabSecurity]->SetAttach(btn_security_);
             tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
 
             auto layout = new QVBoxLayout();
@@ -263,6 +280,7 @@ namespace tc
             stack_widget->addWidget(tabs_[TabName::kTabServerStatus]);
             stack_widget->addWidget(tabs_[TabName::kTabGames]);
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
+            stack_widget->addWidget(tabs_[TabName::kTabSecurity]);
             stack_widget->addWidget(tabs_[TabName::kTabProfile]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);

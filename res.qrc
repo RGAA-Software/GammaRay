@@ -55,6 +55,8 @@
         <file>resources/image/ic_avatar_selected.svg</file>
         <file>resources/image/ic_settings_outline_normal.svg</file>
         <file>resources/image/ic_settings_outline_selected.svg</file>
+        <file>resources/image/ic_settings_security_normal.svg</file>
+        <file>resources/image/ic_settings_security_selected.svg</file>
         <file>resources/image/ic_info.svg</file>
         <file>resources/image/ic_warning.svg</file>
         <file>resources/image/ic_key.svg</file>
