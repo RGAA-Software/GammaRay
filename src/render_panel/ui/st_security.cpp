@@ -3,7 +3,16 @@
 //
 
 #include "st_security.h"
+#include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QDebug>
+#include <QFileDialog>
+#include "tc_dialog.h"
 #include "tc_qt_widget/no_margin_layout.h"
+#include "tc_qt_widget/tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_settings.h"
@@ -14,15 +23,8 @@
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/ip_util.h"
-#include "tc_dialog.h"
 #include "tc_spvr_client/spvr_manager.h"
-#include <QLabel>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QDebug>
-#include <QFileDialog>
+#include "input_safety_pwd_dialog.h"
 
 namespace tc
 {
@@ -39,7 +41,7 @@ namespace tc
         root_layout->addStretch();
 
         // segment encoder
-        auto tips_label_width = 220;
+        auto tips_label_width = 250;
         auto tips_label_height = 35;
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
         auto input_size = QSize(240, tips_label_height);
@@ -54,7 +56,31 @@ namespace tc
                 segment_layout->addSpacing(0);
                 segment_layout->addWidget(label);
             }
-            // Network type
+
+            // Security password
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Security Password(Long-term)"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new TcPushButton(this);
+                edit->SetTextId("id_set");
+                edit->setFixedSize(QSize(80, 30));
+                edit->setEnabled(true);
+                layout->addWidget(edit, 0, Qt::AlignVCenter);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                connect(edit, &QPushButton::clicked, this, [=, this]() {
+                    InputSafetyPwdDialog dialog(app_, this);
+                    dialog.exec();
+                });
+            }
+
+            // Mouse&Keyboard
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);

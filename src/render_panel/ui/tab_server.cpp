@@ -168,7 +168,7 @@ namespace tc
                         }
                         context_->PostTask([=, this]() {
                             auto dev_opt = grApp->GetDeviceOperator();
-                            auto device = dev_opt->RefreshRandomPwd(settings_->device_id_);
+                            auto device = dev_opt->UpdateRandomPwd(settings_->device_id_);
                             if (!device) {
                                 LOGE("Refresh random password failed.");
                                 return;
@@ -381,15 +381,15 @@ namespace tc
 
                         auto remote_device_id = remote_devices_->currentText().replace(" ", "").trimmed().toStdString();
                         auto input_password = password_input_->GetPassword().toStdString();
-
+                        std::string random_password;
+                        std::string safety_password;
+#if 0
                         // query device in database
                         auto opt_remote_device = stream_db_mgr_->GetStreamByRemoteDeviceId(remote_device_id);
                         auto already_exist_remote_device = opt_remote_device.has_value();
 
-                        std::string random_password;
-                        std::string safety_password;
                         // this device is already in database
-                        if (already_exist_remote_device) {
+                        if (false/*already_exist_remote_device*/) {
                             auto remote_device = opt_remote_device.value();
                             // its passwords
                             random_password = remote_device->remote_device_random_pwd_;
@@ -407,6 +407,9 @@ namespace tc
                             random_password = input_password;
                             safety_password = input_password;
                         }
+#endif
+                        random_password = input_password;
+                        safety_password = input_password;
 
                         // get device's relay server info
                         auto relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
@@ -439,7 +442,7 @@ namespace tc
                         if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
                             item->remote_device_random_pwd_ = random_password;
                         }
-                        else {
+                        else if (verify_result == DeviceVerifyResult::kVfSuccessSafetyPwd) {
                             item->remote_device_safety_pwd_ = safety_password;
                         }
                         context_->SendAppMessage(StreamItemAdded {

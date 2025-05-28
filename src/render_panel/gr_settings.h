@@ -45,6 +45,7 @@ namespace tc
     static const std::string kStCoturnPort = "coturn_server_port";
     static const std::string kStDeviceId = "device_id";
     static const std::string kStDeviceRandomPwd = "device_random_pwd";
+    static const std::string kStDeviceSafetyPwd = "device_safety_pwd";
     static const std::string kStProfileServerHost = "profile_server_host";
     static const std::string kStProfileServerPort = "profile_server_port";
     static const std::string kStRelayServerHost = "relay_server_host";
@@ -101,6 +102,7 @@ namespace tc
         void SetCoturnServerPort(const std::string& port);
         void SetDeviceId(const std::string& id);
         void SetDeviceRandomPwd(const std::string& pwd);
+        void SetDeviceSafetyPwd(const std::string& pwd);
         void SetPanelListeningPort(int port);
         void SetProfileServerHost(const std::string& host);
         void SetProfileServerPort(const std::string& port);

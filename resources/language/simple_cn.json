@@ -40,5 +40,7 @@
   "id_capture_audio_device": "采集音频设备",
 
   "id_cancel": "取消",
-  "id_ok": "确定"
+  "id_ok": "确定",
+
+  "id_set" : "设置"
 }

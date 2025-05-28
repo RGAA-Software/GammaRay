@@ -39,5 +39,7 @@
   "id_capture_audio_device": "Capture Audio Device",
 
   "id_cancel": "Cancel",
-  "id_ok": "Ok"
+  "id_ok": "Ok",
+
+  "id_set" : "Set"
 }

@@ -58,6 +58,7 @@ DEFINE_bool(mock_video, false, "use mocking video plugin");
 
 DEFINE_string(device_id, "", "device id");
 DEFINE_string(device_random_pwd, "", "device random pwd");
+DEFINE_string(device_safety_pwd, "", "device safety pwd");
 
 DEFINE_string(relay_server_host, "", "relay host");
 DEFINE_string(relay_server_port, "", "relay port");
@@ -138,6 +139,7 @@ void UpdateSettings(RdSettings* settings) {
 
     settings->device_id_ = FLAGS_device_id;
     settings->device_random_pwd_ = FLAGS_device_random_pwd;
+    settings->device_safety_pwd_ = FLAGS_device_safety_pwd;
 
     settings->relay_host_ = FLAGS_relay_server_host;
     settings->relay_port_ = FLAGS_relay_server_port;

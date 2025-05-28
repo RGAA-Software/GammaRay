@@ -86,6 +86,7 @@ namespace tc
 
         device_id_ = sp_->Get(kStDeviceId, "");
         device_random_pwd_ = sp_->Get(kStDeviceRandomPwd, "");
+        device_safety_pwd_ = sp_->Get(kStDeviceSafetyPwd, "");
     }
 
     void GrSettings::Dump() {
@@ -115,6 +116,7 @@ namespace tc
         ss << "coturn_server_port_: " << coturn_server_port_ << std::endl;
         ss << "device_id_: " << device_id_ << std::endl;
         ss << "device_random_pwd_: " << device_random_pwd_ << std::endl;
+        ss << "device_safety_pwd_: " << device_safety_pwd_ << std::endl;
         ss << "udp_listen_port_:" << udp_listen_port_ << std::endl;
         ss << "relay host: " << relay_server_host_ << std::endl;
         ss << "relay port: " << relay_server_port_ << std::endl;
@@ -157,6 +159,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCoturnPort, coturn_server_port_));
         args.push_back(std::format("--{}={}", kStDeviceId, device_id_));
         args.push_back(std::format("--{}={}", kStDeviceRandomPwd, device_random_pwd_));
+        args.push_back(std::format("--{}={}", kStDeviceSafetyPwd, device_safety_pwd_));
         args.push_back(std::format("--panel_server_port={}", this->http_server_port_));
         args.push_back(std::format("--{}={}", kStRelayServerHost, relay_server_host_));
         args.push_back(std::format("--{}={}", kStRelayServerPort, relay_server_port_));
@@ -277,6 +280,11 @@ namespace tc
     void GrSettings::SetDeviceRandomPwd(const std::string& pwd) {
         device_random_pwd_ = pwd;
         sp_->Put(kStDeviceRandomPwd, pwd);
+    }
+
+    void GrSettings::SetDeviceSafetyPwd(const std::string& pwd) {
+        device_safety_pwd_ = pwd;
+        sp_->Put(kStDeviceSafetyPwd, pwd);
     }
 
     void GrSettings::SetPanelListeningPort(int port) {
