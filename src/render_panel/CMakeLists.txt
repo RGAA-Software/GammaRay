@@ -13,6 +13,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_settings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server_status.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_security_internals.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_general.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_about_me.cpp
@@ -30,6 +31,8 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_profile.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/stat_capture_info_item.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/input_safety_pwd_dialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_visitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_file_transfer.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp

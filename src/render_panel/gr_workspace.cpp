@@ -19,6 +19,7 @@
 #include "render_panel/ui/tab_server.h"
 #include "render_panel/ui/tab_settings.h"
 #include "render_panel/ui/tab_profile.h"
+#include "render_panel/ui/tab_security_internals.h"
 #include "gr_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "gr_context.h"
@@ -208,7 +209,7 @@ namespace tc
                 btn->SetSelectedFontColor(btn_font_color);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
-                    //ChangeTab(TabName::kTabSettings);
+                    ChangeTab(TabName::kTabSecurity);
                 });
                 layout->addSpacing(10);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
@@ -263,7 +264,7 @@ namespace tc
             tabs_.insert({TabName::kTabServerStatus, new TabServerStatus(app_, this)});
             tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
-            tabs_.insert({TabName::kTabSecurity, new TabProfile(app_, this)});
+            tabs_.insert({TabName::kTabSecurity, new TabSecurityInternals(app_, this)});
             tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);

@@ -18,6 +18,9 @@
   "id_tab_security": "安全审计",
   "id_tab_profile": "用户",
 
+  "id_security_visitor": "访问记录",
+  "id_security_file_transfer": "文件传输",
+
   "id_this_device": "此设备",
   "id_connect_information": "连接信息",
   "id_detailed_information": "详细连接信息",

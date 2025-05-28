@@ -17,6 +17,9 @@
   "id_tab_security": "Security Internals",
   "id_tab_profile": "Profile",
 
+  "id_security_visitor": "Visit Record",
+  "id_security_file_transfer": "File Transfer",
+
   "id_this_device": "This Device",
   "id_connect_information": "Connect Information",
   "id_detailed_information": "Detailed Information",
