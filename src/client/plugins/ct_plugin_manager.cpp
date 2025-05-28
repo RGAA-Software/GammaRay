@@ -11,6 +11,8 @@
 #include "ct_client_context.h"
 #include "ct_plugin_event_router.h"
 #include "plugin_interface/ct_plugin_interface.h"
+#include "ct_plugin_ids.h"
+//#include "media_record/media_record_plugin.h"
 
 typedef void *(*FnGetInstance)();
 
@@ -174,4 +176,11 @@ namespace tc
         });
     }
 
+    MediaRecordPluginClient* ClientPluginManager::GetMediaRecordPlugin() {
+        auto plugin = GetPluginById(kMediaRecordPluginId);
+        if (plugin) {
+            return (MediaRecordPluginClient*)plugin;
+        }
+        return nullptr;
+    }
 }

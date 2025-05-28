@@ -17,6 +17,7 @@ namespace tc
     class ClientContext;
     class ClientPluginInterface;
     class ClientPluginEventRouter;
+    class MediaRecordPluginClient;
 
     class ClientPluginManager {
     public:
@@ -30,6 +31,8 @@ namespace tc
         void ReleasePlugin(const std::string& name);
 
         ClientPluginInterface* GetPluginById(const std::string& id);
+
+        MediaRecordPluginClient* GetMediaRecordPlugin();
 
         void VisitAllPlugins(const std::function<void(ClientPluginInterface*)>&& visitor);
         void DumpPluginInfo();

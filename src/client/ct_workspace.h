@@ -38,6 +38,7 @@ namespace tc
     class RtcClientInterface;
     class CtPanelClient;
     class ClientPluginManager;
+    class MediaRecordPluginClientInterface;
 
     class Workspace : public QMainWindow, public std::enable_shared_from_this<Workspace> {
     public:
@@ -120,6 +121,8 @@ namespace tc
         // plugin manager
         std::shared_ptr<ClientPluginManager> plugin_manager_ = nullptr;
 
+        MediaRecordPluginClientInterface* media_record_plugin_ = nullptr;
+
     private:
         // 扩展屏
         // to do:
@@ -143,7 +146,7 @@ namespace tc
         // 18.不知道为什么会闪烁(已解决)
         // 19.如果对端第一次启动,好像配置信息没有正确传递过来
         // 20.文件传输加接口 控制速度等
-        // 21.game_view上的小球，点击后，会full window,需要找下原因
+        // 21.game_view上的小球，点击后，会full window,需要找下原因(已完成)
         // 22.刷新 参考 vnc
         QString origin_title_name_;
         std::vector<GameView*> game_views_;  

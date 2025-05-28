@@ -46,6 +46,8 @@
 #include "plugins/ct_plugin_manager.h"
 #include "plugins/ct_app_events.h"
 #include "plugin_interface/ct_plugin_interface.h"
+#include "plugins/media_record/media_record_plugin.h"
+#include "plugin_interface/ct_media_record_plugin_interface.h"
 
 namespace tc
 {
@@ -378,6 +380,38 @@ namespace tc
 
         });
 
+
+        media_record_plugin_ = plugin_manager_->GetMediaRecordPlugin();
+
+        if (!media_record_plugin_) {
+            LOGE("media_record_plugin_ is nullptr!!!");
+        }
+        else {
+            //media_record_plugin_->StartRecord();
+        }
+
+        
+        
+
+        //sdk_->SetOnAudioFrameMsgCallback([=, this](const AudioFrame& frame) {
+        //
+        //    if (!media_record_plugin_) {
+        //        return;
+        //    }
+        //});
+        //
+        //sdk_->SetOnVideoFrameMsgCallback([=, this](const VideoFrame& frame) {
+        //
+        //    if (!media_record_plugin_) {
+        //        return;
+        //    }
+        //
+        //    media_record_plugin_->RecvVideoFrame(frame);
+        //
+        //
+        //});
+
+
         msg_listener_->Listen<SdkMsgChangeMonitorResolutionResult>([=, this](const SdkMsgChangeMonitorResolutionResult& msg) {
             context_->PostUITask([=, this]() {
                 // to trigger re-layout
@@ -490,6 +524,12 @@ namespace tc
         }
         TcDialog dialog(tr("Stop"), msg, this);
         if (dialog.exec() == kDoneOk) {
+
+
+            if (media_record_plugin_) {
+                media_record_plugin_->EndRecord();
+            }
+
             Exit();
         }
     }
