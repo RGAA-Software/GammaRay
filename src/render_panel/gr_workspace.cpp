@@ -97,6 +97,8 @@ namespace tc
         app_ = std::make_shared<GrApplication>(this);
         app_->Init();
 
+        qApp->installNativeEventFilter(app_.get());
+
         // window
         auto notifier = app_->GetMessageNotifier();
 

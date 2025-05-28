@@ -17,6 +17,10 @@ namespace tc
         void OnTabShow() override;
         void OnTabHide() override;
 
+        void dragEnterEvent(QDragEnterEvent *event) override;
+        void dragMoveEvent(QDragMoveEvent *event) override;
+        void dropEvent(QDropEvent *event) override;
+
     };
 
 }

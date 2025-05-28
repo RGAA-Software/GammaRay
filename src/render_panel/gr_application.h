@@ -8,6 +8,7 @@
 #include <memory>
 #include <QTimer>
 #include <QObject>
+#include <QAbstractNativeEventFilter>
 #include "tc_common_new/message_notifier.h"
 
 namespace tc
@@ -26,11 +27,13 @@ namespace tc
     class GrAccountManager;
     class MgrDeviceOperator;
 
-    class GrApplication : public QObject, public std::enable_shared_from_this<GrApplication> {
+    class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
 
         explicit GrApplication(QWidget* main_window);
         ~GrApplication() override;
+
+        bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) override;
 
         void Init();
         void Exit();

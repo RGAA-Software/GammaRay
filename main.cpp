@@ -42,6 +42,10 @@ bool PrepareDirs(const QString& base_path) {
 std::shared_ptr<GrWorkspace> g_workspace = nullptr;
 
 int main(int argc, char *argv[]) {
+    ::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
+    ::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
+    ::ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);  // WM_COPYGLOBALDATA
+
     QApplication app(argc, argv);
 
     auto base_dir = QApplication::applicationDirPath();
