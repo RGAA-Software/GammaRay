@@ -86,7 +86,7 @@ namespace tc
 
         // event
         void RegisterEventCallback(const ClientPluginEventCallback& cbk);
-        void CallbackEvent(const std::shared_ptr<ClientPluginBaseEvent>& event);
+        void CallbackEvent(const std::shared_ptr<ClientPluginBaseEvent>& event); // dll -> exe
         void CallbackEventDirectly(const std::shared_ptr<ClientPluginBaseEvent>& event);
 
         virtual void On1Second();
@@ -103,7 +103,7 @@ namespace tc
         virtual void OnMessageRaw(const std::any& msg);
 
         // app events
-        virtual void DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent>& event) {};
+        virtual void DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent>& event) {};  // exe -> dll
 
     protected:
         bool HasParam(const std::string& k) {

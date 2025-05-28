@@ -13,6 +13,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core
 set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ct_plugin_interface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ct_plugin_context.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ct_media_record_plugin_interface.cpp
 )
 
 add_library(${PROJECT_NAME} ${PLUGIN_SRCS})
