@@ -2,6 +2,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/frame_common.h"
 #include "media_record_plugin.h"
+#include <QApplication>
 
 namespace tc {
 
@@ -29,7 +30,7 @@ void MediaRecorder::SetFilePath(std::string name) {
 
 bool MediaRecorder::StartRecord() {
 
-	file_name_ = R"(G:\code\yuanqi\GammaRay\out\build\x64-RelDebug\test.mp4)";
+	file_name_ = std::format("{}/test.mp4", qApp->applicationDirPath().toStdString());
 
 	//打开音视频输出封装上下文
 	int result = avformat_alloc_output_context2(&format_ctx_, nullptr, nullptr, file_name_.c_str());
