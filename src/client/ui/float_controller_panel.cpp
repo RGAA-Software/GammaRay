@@ -317,6 +317,48 @@ namespace tc
                 }
             });
         }
+
+        // media record
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setLayout(layout);
+
+            auto icon = new QLabel(this);
+            icon->setFixedSize(icon_size);
+            icon->setStyleSheet(R"( background-image: url(:resources/image/ic_media_record.svg);
+                                    background-repeat:no-repeat;
+                                    background-position: center center;)");
+            layout->addSpacing(item_left_spacing);
+            layout->addWidget(icon);
+
+            auto text = new QLabel();
+            media_record_lab_ = text;
+            text->setText(tr("Picture Recording"));
+            text->setStyleSheet(R"(font-weight: bold;)");
+            layout->addWidget(text);
+
+            layout->addStretch();
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                bool res = context_->GetRecording();
+                context_->SetRecording(!res);
+                if (!res) {
+                    media_record_lab_->setText(tr("Stop Recording"));
+                }
+                else {
+                    media_record_lab_->setText(tr("Picture Recording"));
+                }
+                context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus });
+                context_->SendAppMessage(MediaRecordMsg{});
+                if (media_record_listener_) {
+                    media_record_listener_(widget);
+                }
+            });
+        }
+
         // debug
         {
             auto layout = new NoMarginHLayout();
@@ -536,6 +578,15 @@ namespace tc
             }
             else {
                 audio_btn_->SwitchToNormalState();
+            }
+        }
+        else if (FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus == msg.update_type_) {
+            bool res = context_->GetRecording();
+            if (res) {
+                media_record_lab_->setText(tr("Stop Recording"));
+            }
+            else {
+                media_record_lab_->setText(tr("Picture Recording"));
             }
         }
     }

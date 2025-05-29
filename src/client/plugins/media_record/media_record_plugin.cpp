@@ -12,6 +12,8 @@
 #include "client/plugins/ct_app_events.h"
 #include "media_recorder.h"
 
+#include <qpushbutton.h>
+
 void* GetInstance() {
     static tc::MediaRecordPluginClient plugin;
     return (void*)&plugin;
@@ -52,20 +54,26 @@ namespace tc
         if (!IsPluginEnabled()) {
             return true;
         }
-        //root_widget_->hide();
-
-            
+        //root_widget_->hide();            
         media_recorder_ = MediaRecorder::Make(this);
 
-
-
         root_widget_->show();
+        root_widget_->setWindowTitle("Media Record");
+        auto layout = new QVBoxLayout(root_widget_);
+        auto btn = new QPushButton("Start Record", root_widget_);
+        btn->setFixedSize(80, 40);
+        layout->addWidget(btn);
+        root_widget_->hide();
+
         return true;
     }
 
     void MediaRecordPluginClient::OnMessage(std::shared_ptr<Message> msg) {
         ClientPluginInterface::OnMessage(msg);
         //LOGI("MediaRecordPluginClient OnMessage: {}", (int)msg->type());
+
+        // to do 使用线程 来负责录制
+
 
         if (msg->type() == tc::kVideoFrame) {
             const auto& video_frame = msg->video_frame();

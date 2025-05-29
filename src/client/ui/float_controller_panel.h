@@ -8,6 +8,8 @@
 #include "base_widget.h"
 #include "client/ct_app_message.h"
 
+class QLabel;
+
 namespace tc
 {
 
@@ -29,6 +31,7 @@ namespace tc
 
         void SetOnDebugListener(OnClickListener&& l) { debug_listener_ = l; }
         void SetOnFileTransListener(OnClickListener&& listener) { file_trans_listener_ = listener; }
+        void SetOnMediaRecordListener(OnClickListener&& listener) { media_record_listener_ = listener; }
         void Hide() override;
         void SetMainControl();
         void SetMonitorName(const std::string& mon_name);
@@ -43,6 +46,7 @@ namespace tc
     private:
         OnClickListener debug_listener_;
         OnClickListener file_trans_listener_;
+        OnClickListener media_record_listener_;
         std::map<SubPanelType, BaseWidget*> sub_panels_;
         std::vector<ComputerIcon*> computer_icons_;
         CaptureMonitorMessage capture_monitor_;
@@ -57,6 +61,8 @@ namespace tc
         bool is_main_control_ = false;
 
         std::string monitor_name_;
+
+        QLabel* media_record_lab_ = nullptr;
     };
 
 }
