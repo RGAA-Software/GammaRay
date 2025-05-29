@@ -19,6 +19,8 @@
 
   "id_security_visitor": "Visit Record",
   "id_security_file_transfer": "File Transfer",
+  "id_security_visitor_history_logs": "Visit History Logs",
+  "id_security_file_transfer_history_logs": "File Transfer History Logs",
 
   "id_this_device": "This Device",
   "id_connect_information": "Connect Information",

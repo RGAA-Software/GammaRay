@@ -20,6 +20,8 @@
 
   "id_security_visitor": "访问记录",
   "id_security_file_transfer": "文件传输",
+  "id_security_visitor_history_logs": "访问历史记录",
+  "id_security_file_transfer_history_logs": "文件传输历史记录",
 
   "id_this_device": "此设备",
   "id_connect_information": "连接信息",

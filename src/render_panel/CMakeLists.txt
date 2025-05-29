@@ -8,6 +8,12 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/game/db_game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/game/db_game_manager.cpp
 
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/gr_database.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/visit_record.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/visit_record_operator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/file_transfer_record.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/file_transfer_record_operator.cpp
+
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_base.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_game.cpp
@@ -33,6 +39,8 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/input_safety_pwd_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_visitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_file_transfer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_visitor_item.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_file_transfer_item.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp

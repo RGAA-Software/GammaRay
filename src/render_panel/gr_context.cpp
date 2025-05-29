@@ -28,6 +28,7 @@
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "tc_dialog.h"
 #include "gr_workspace.h"
+#include "database/gr_database.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -43,6 +44,9 @@ namespace tc
         app_ = app;
         settings_ = GrSettings::Instance();
         sp_ = SharedPreference::Instance();
+
+        database_ = std::make_shared<GrDatabase>();
+        database_->Init();
 
         auto hardware = Hardware::Instance();
         auto beg = TimeUtil::GetCurrentTimestamp();
@@ -219,6 +223,10 @@ namespace tc
                 notify_mgr_->notify(title, msg);
             }
         });
+    }
+
+    std::shared_ptr<GrDatabase> GrContext::GetDatabase() {
+        return database_;
     }
 
     std::shared_ptr<SpvrDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {
