@@ -10,6 +10,9 @@
 namespace tc
 {
 
+    class NoMarginHLayout;
+    class NoMarginVLayout;
+
     class TabProfile : public TabBase {
     public:
         TabProfile(const std::shared_ptr<GrApplication>& app, QWidget *parent);
@@ -20,6 +23,13 @@ namespace tc
         void dragEnterEvent(QDragEnterEvent *event) override;
         void dragMoveEvent(QDragMoveEvent *event) override;
         void dropEvent(QDropEvent *event) override;
+
+    private:
+        void AddLeftProfileInfo();
+        void AddRightDetailInfo();
+
+    private:
+        NoMarginHLayout* root_layout_ = nullptr;
 
     };
 

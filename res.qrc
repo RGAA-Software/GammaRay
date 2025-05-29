@@ -64,6 +64,10 @@
         <file>resources/image/ic_plugin.svg</file>
         <file>resources/image/ic_notify.png</file>
         <file>resources/image/ic_refresh.svg</file>
+        <file>resources/image/ic_empty_avatar.svg</file>
+        <file>resources/image/ic_served.svg</file>
+        <file>resources/image/ic_controller_hand.svg</file>
+        <file>resources/image/ic_device_used.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

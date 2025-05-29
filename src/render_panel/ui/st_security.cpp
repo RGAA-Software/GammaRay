@@ -105,82 +105,66 @@ namespace tc
                 });
             }
 
-            // ID Server
-            {
-                // title
-                auto label = new QLabel(this);
-                label->setText(tr("GammaRay Server"));
-                label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
-                segment_layout->addWidget(label);
-            }
+            // SSL Always Enabled
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
-                label->setText(tr("Server Host"));
+                label->setText(tr("SSL Connection(Always Enabled)"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
 
-                auto edit = new QLineEdit(this);
-                //edt_spvr_server_host_ = edit;
+                auto edit = new QCheckBox(this);
                 edit->setFixedSize(input_size);
-                edit->setText(settings_->spvr_server_host_.c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Server Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
+                edit->setChecked(true);
 
-                auto edit = new QLineEdit(this);
-                //edt_spvr_server_port_ = edit;
-                edit->setFixedSize(input_size);
-                edit->setValidator(new QIntValidator);
-                edit->setText(settings_->spvr_server_port_.c_str());
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    if (!enabled) {
+                        context_->PostUIDelayTask([=, this]() {
+                            TcDialog dialog("Tips", "SSL will always be enabled.");
+                            dialog.exec();
+                            edit->setChecked(true);
+                        }, 50);
+                    }
+                });
             }
 
             column1_layout->addLayout(segment_layout);
         }
 
-        {
-            auto func_show_err = [=](const QString& msg) {
-//                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
-//                msg_box->exec();
-
-                TcDialog dialog(tr("Error"), msg, nullptr);
-                dialog.exec();
-            };
-
-            auto layout = new NoMarginHLayout();
-            auto btn = new QPushButton(this);
-            btn->setText(tr("SAVE"));
-            btn->setFixedSize(QSize(150, 35));
-            btn->setStyleSheet("font-size: 14px; font-weight: 700;");
-            layout->addWidget(btn);
-            connect(btn, &QPushButton::clicked, this, [=, this]() {
-
-//                TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
-//                if (dialog.exec() == kDoneOk) {
-//                    this->context_->SendAppMessage(AppMsgRestartServer{});
-//                }
-
-            });
-
-            layout->addStretch();
-            column1_layout->addSpacing(30);
-            column1_layout->addLayout(layout);
-        }
+//        {
+//            auto func_show_err = [=](const QString& msg) {
+////                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
+////                msg_box->exec();
+//
+//                TcDialog dialog(tr("Error"), msg, nullptr);
+//                dialog.exec();
+//            };
+//
+//            auto layout = new NoMarginHLayout();
+//            auto btn = new QPushButton(this);
+//            btn->setText(tr("SAVE"));
+//            btn->setFixedSize(QSize(150, 35));
+//            btn->setStyleSheet("font-size: 14px; font-weight: 700;");
+//            layout->addWidget(btn);
+//            connect(btn, &QPushButton::clicked, this, [=, this]() {
+//
+////                TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
+////                if (dialog.exec() == kDoneOk) {
+////                    this->context_->SendAppMessage(AppMsgRestartServer{});
+////                }
+//
+//            });
+//
+//            layout->addStretch();
+//            column1_layout->addSpacing(30);
+//            column1_layout->addLayout(layout);
+//        }
 
         column1_layout->addStretch();
 
