@@ -109,9 +109,6 @@ bool MediaRecorder::StartRecord() {
 }
 
 void MediaRecorder::EndRecord() {
-	// to do
-	return;
-
 	//mIsInitOk = false;
 	if (format_ctx_) {
 		LOGI(" MediaRecord::End()");

@@ -44,6 +44,8 @@ namespace tc
 
         void Exit();
 
+        void SetRecording(bool recording);
+        bool GetRecording();
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
@@ -57,6 +59,9 @@ namespace tc
         SdkCaptureMonitorInfo capturing_info_;
         // plugin manager
         std::shared_ptr<ClientPluginManager> plugin_mgr_ = nullptr;
+
+        //是否在录制中
+        std::atomic_bool recording_ = false;
     };
 
 }

@@ -2,6 +2,7 @@
 #include <qsizepolicy.h>
 #include <qpalette.h>
 #include <QTimer>
+#include <qlabel.h>
 #include "ct_opengl_video_widget.h"
 #include "tc_dialog.h"
 #include "no_margin_layout.h"
@@ -31,6 +32,25 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     video_widget_->setSizePolicy(size_policy);
 
     InitFloatController();
+
+    recording_sign_lab_ = new QLabel(this);
+    recording_sign_lab_->setFixedSize(80, 40);
+    recording_sign_lab_->setStyleSheet(R"(image: url(:resources/image/recording.svg);
+                                    background-repeat:no-repeat;
+                                    background-position: center center;)");
+    recording_sign_lab_->move(0, this->height() * 0.8);
+    recording_sign_lab_->hide();
+
+
+    msg_listener_->Listen<MediaRecordMsg>([=, this](const MediaRecordMsg& msg) {
+        bool res = ctx_->GetRecording();
+        if(res) {
+            recording_sign_lab_->show();
+        }
+        else {
+            recording_sign_lab_->hide();
+        }
+    });
 }
 
 GameView::~GameView() {
@@ -41,6 +61,9 @@ void GameView::resizeEvent(QResizeEvent* event) {
     if (float_controller_) {
         float_controller_->ReCalculatePosition();
     }
+
+    recording_sign_lab_->move(0, this->height() * 0.8);
+
     QWidget::resizeEvent(event);
 }
 
@@ -174,6 +197,12 @@ void GameView::RegisterControllerPanelListeners() {
             controller_panel_->Hide();
         });
         this->ctx_->SendAppMessage(OpenFiletransMsg{});
+    });
+
+    controller_panel_->SetOnMediaRecordListener([=, this](QWidget* w) {
+        ctx_->PostUITask([=]() {
+            controller_panel_->Hide();
+        });
     });
 }
 

@@ -179,6 +179,7 @@ namespace tc
             kClipboardSharedStatus,
             kAudioStatus,
             kFullColorStatus,
+            kMediaRecordStatus,
         };
         EUpdate update_type_ = EUpdate::kUnknow;
     };
@@ -197,6 +198,10 @@ namespace tc
 #ifdef WIN32
         HWND hwnd_ = nullptr;
 #endif
+    };
+
+    class MediaRecordMsg : public AppMessage {
+    public:
     };
 }
 

@@ -134,4 +134,12 @@ namespace tc
         plugin_mgr_ = mgr;
     }
 
+    void ClientContext::SetRecording(bool recording) {
+        recording_ = recording;
+    }
+
+    bool ClientContext::GetRecording() {
+        return recording_;
+    }
+
 }

@@ -3,6 +3,8 @@
 #include <QWidget>
 #include "thunder_sdk.h"
 
+class QLabel;
+
 namespace tc {
 
 class OpenGLVideoWidget;
@@ -64,6 +66,8 @@ private:
 
 	FloatController* float_controller_ = nullptr;
 	FloatControllerPanel* controller_panel_ = nullptr;
+
+	QLabel* recording_sign_lab_ = nullptr;
 
 private:
 	void InitFloatController();
