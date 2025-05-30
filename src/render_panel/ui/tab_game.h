@@ -7,7 +7,7 @@
 
 #include "tab_base.h"
 #include <functional>
-#include "render_panel/game/db_game.h"
+#include "render_panel/database/db_game.h"
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QProcess>

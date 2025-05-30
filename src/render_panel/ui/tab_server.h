@@ -6,7 +6,7 @@
 #define TC_SERVER_STEAM_TAB_SERVER_H
 
 #include "tab_base.h"
-#include "render_panel/devices/stream_item.h"
+#include "render_panel/database/stream_item.h"
 
 #include <QListWidget>
 #include <QListWidgetItem>

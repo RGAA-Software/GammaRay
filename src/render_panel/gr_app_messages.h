@@ -1,7 +1,7 @@
 #ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
-#include "devices/stream_item.h"
+#include "database/stream_item.h"
 
 namespace tc
 {

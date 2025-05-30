@@ -7,7 +7,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
-#include "stream_item.h"
+#include "render_panel/database/stream_item.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_font_manager.h"

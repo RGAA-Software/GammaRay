@@ -6,7 +6,7 @@
 #include <QResizeEvent>
 #include <QLabel>
 #include <QPainter>
-#include "stream_item.h"
+#include "render_panel/database/stream_item.h"
 #include "no_margin_layout.h"
 #include "widget_helper.h"
 #include "tc_qt_widget/loadings/winstyle/win10circleloadingwidget.h"

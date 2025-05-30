@@ -16,7 +16,7 @@ namespace tc
 
     class GrContext;
     class SteamManager;
-    class DBGameManager;
+    class DBGameOperator;
     class TcDBGame;
     class SteamApp;
     class ProcessInfo;
@@ -56,7 +56,7 @@ namespace tc
     private:
         std::shared_ptr<GrContext> gr_ctx_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
-        std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
+        std::shared_ptr<DBGameOperator> db_game_manager_ = nullptr;
         std::vector<std::shared_ptr<RunningGame>> running_games_;
         QProcess* game_process_ = nullptr;
         std::vector<std::shared_ptr<ProcessInfo>> running_processes_;

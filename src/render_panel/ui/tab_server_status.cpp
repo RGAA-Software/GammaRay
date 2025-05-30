@@ -36,7 +36,7 @@
 #include "service/service_manager.h"
 #include "tc_common_new/uid_spacer.h"
 #include "render_panel/gr_run_game_manager.h"
-#include "render_panel/game/db_game.h"
+#include "render_panel/database/db_game.h"
 #include "tc_qt_widget/tc_dialog.h"
 
 namespace tc

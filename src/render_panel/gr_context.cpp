@@ -12,7 +12,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "gr_settings.h"
-#include "render_panel/game/db_game_manager.h"
+#include "render_panel/database/db_game_operator.h"
 #include "gr_resources.h"
 #include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
@@ -22,7 +22,7 @@
 #include "service/service_manager.h"
 #include "gr_settings.h"
 #include "gr_application.h"
-#include "devices/stream_db_manager.h"
+#include "database/stream_db_manager.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "devices/running_stream_manager.h"
 #include "tc_qt_widget/notify/notifymanager.h"
@@ -65,10 +65,10 @@ namespace tc
 
         msg_notifier_ = app_->GetMessageNotifier();
 
-        stream_db_mgr_ = std::make_shared<StreamDBManager>();
+        stream_db_mgr_ = std::make_shared<StreamDBManager>(database_);
 
         acc_sdk_ = std::make_shared<AccountSdk>(msg_notifier_, std::make_shared<AccountParams>(AccountParams {
-            .host_ = "gammaray.online",
+            .host_ = "rgaa.vip",
             .port_ = 5566,
         }));
 
@@ -80,8 +80,8 @@ namespace tc
             LOGI("IP: {} -> {}", item.ip_addr_, item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
         }
 
-        db_game_manager_ = std::make_shared<DBGameManager>(shared_from_this());
-        db_game_manager_->Init();
+        db_game_manager_ = std::make_shared<DBGameOperator>(shared_from_this(), database_);
+        //db_game_manager_->Init();
 
         res_manager_ = std::make_shared<GrResources>(shared_from_this());
         res_manager_->ExtractIconsIfNeeded();
@@ -164,7 +164,7 @@ namespace tc
         return obj.dump();
     }
 
-    std::shared_ptr<DBGameManager> GrContext::GetDBGameManager() {
+    std::shared_ptr<DBGameOperator> GrContext::GetDBGameManager() {
         return db_game_manager_;
     }
 

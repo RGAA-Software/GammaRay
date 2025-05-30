@@ -4,7 +4,7 @@
 
 #include "conn_info_parser.h"
 #include "tc_3rdparty/json/json.hpp"
-#include "render_panel/devices/stream_item.h"
+#include "render_panel/database/stream_item.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/base64.h"
 

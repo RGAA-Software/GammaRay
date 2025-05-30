@@ -5,6 +5,7 @@
 #include "gr_database.h"
 #include "visit_record.h"
 #include "visit_record_operator.h"
+#include <QApplication>
 
 namespace tc
 {
@@ -14,6 +15,10 @@ namespace tc
     }
 
     bool GrDatabase::Init() {
+        auto db_path = qApp->applicationDirPath() + "/gr_data/gr_data.db";
+        auto storage = InitAppDatabase(db_path.toStdString());
+        db_storage_ = storage;
+        storage.sync_schema();
         return true;
     }
 

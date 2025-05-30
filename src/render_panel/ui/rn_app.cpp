@@ -18,7 +18,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/num_formatter.h"
 #include "render_panel/gr_run_game_manager.h"
-#include "render_panel/game/db_game.h"
+#include "render_panel/database/db_game.h"
 #include "stat_capture_info_item.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";

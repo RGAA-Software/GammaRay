@@ -5,14 +5,15 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/network/gr_service_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ws_sig_client.cpp
 
-        ${CMAKE_CURRENT_SOURCE_DIR}/game/db_game.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/game/db_game_manager.cpp
-
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/db_game.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/db_game_operator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/gr_database.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/visit_record.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/visit_record_operator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/file_transfer_record.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/file_transfer_record_operator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/stream_item.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/stream_db_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_base.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server.cpp
@@ -61,8 +62,6 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/create_stream_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_item_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_content.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_item.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_db_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/running_stream_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/edit_relay_stream_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_settings_dialog.cpp

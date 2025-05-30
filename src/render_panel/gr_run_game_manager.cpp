@@ -6,7 +6,7 @@
 
 #include "tc_message.pb.h"
 #include "gr_context.h"
-#include "render_panel/game/db_game_manager.h"
+#include "render_panel/database/db_game_operator.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/string_ext.h"
 #include "tc_common_new/process_util.h"

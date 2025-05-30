@@ -8,7 +8,7 @@
 #include "tc_common_new/http_client.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
-#include "stream_item.h"
+#include "render_panel/database/stream_item.h"
 #include "tc_spvr_client/spvr_device_info.h"
 
 namespace tc

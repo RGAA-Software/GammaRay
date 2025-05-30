@@ -15,11 +15,12 @@ namespace tc
 {
 
     class StreamItem;
+    class GrDatabase;
 
     class StreamDBManager {
     public:
 
-        StreamDBManager();
+        StreamDBManager(const std::shared_ptr<GrDatabase>& db);
         ~StreamDBManager();
         static std::string GenUUID();
         void AddStream(const std::shared_ptr<StreamItem>& stream);
@@ -37,11 +38,10 @@ namespace tc
         bool HasStream(const std::string& stream_id);
 
     private:
-        void CreateTables();
+        //void CreateTables();
 
     private:
-
-        std::any db_storage_;
+        std::shared_ptr<GrDatabase> db_ = nullptr;
 
     };
 

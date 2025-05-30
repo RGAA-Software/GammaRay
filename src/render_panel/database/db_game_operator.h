@@ -15,11 +15,12 @@ using namespace sqlite_orm;
 namespace tc
 {
     class GrContext;
+    class GrDatabase;
 
-    class DBGameManager {
+    class DBGameOperator {
     public:
-        explicit DBGameManager(const std::shared_ptr<GrContext>& ctx);
-        void Init();
+        explicit DBGameOperator(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<GrDatabase>& db);
+//        void Init();
 
         void SaveOrUpdateGame(const std::shared_ptr<TcDBGame>& game);
         std::shared_ptr<TcDBGame> GetGameByGameId(uint64_t gid);
@@ -30,12 +31,13 @@ namespace tc
         void BatchSaveOrUpdateGames(const std::vector<std::shared_ptr<TcDBGame>>& games);
 
     private:
-        auto GetStorageTypeValue();
-        auto InitAppDatabase(const std::string& name);
+//        auto GetStorageTypeValue();
+//        auto InitAppDatabase(const std::string& name);
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::any db_storage_;
+        std::shared_ptr<GrDatabase> db_ = nullptr;
+        //std::any db_storage_;
     };
 }
 

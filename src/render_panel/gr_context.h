@@ -21,7 +21,7 @@ namespace tc
     class SteamManager;
     class SharedPreference;
     class GrSettings;
-    class DBGameManager;
+    class DBGameOperator;
     class GrResources;
     class GrRenderController;
     class GrRunGameManager;
@@ -54,7 +54,7 @@ namespace tc
 
         std::string MakeBroadcastMessage();
 
-        std::shared_ptr<DBGameManager> GetDBGameManager();
+        std::shared_ptr<DBGameOperator> GetDBGameManager();
         std::shared_ptr<ServiceManager> GetServiceManager();
 
         template<typename T>
@@ -94,7 +94,7 @@ namespace tc
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<TaskRuntime> task_rt_ = nullptr;
         std::vector<EthernetInfo> ips_;
-        std::shared_ptr<DBGameManager> db_game_manager_ = nullptr;
+        std::shared_ptr<DBGameOperator> db_game_manager_ = nullptr;
         std::shared_ptr<GrResources> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<GrRenderController> srv_manager_ = nullptr;

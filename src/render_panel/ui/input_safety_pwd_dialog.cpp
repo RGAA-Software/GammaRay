@@ -8,7 +8,7 @@
 #include <QRadioButton>
 #include <QTextEdit>
 #include "tc_dialog.h"
-#include "render_panel/devices/stream_item.h"
+#include "render_panel/database/stream_item.h"
 #include "client/ct_app_message.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"

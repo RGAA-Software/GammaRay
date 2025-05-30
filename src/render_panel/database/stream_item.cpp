@@ -2,7 +2,7 @@
 // Created by RGAA on 2023/8/14.
 //
 
-#include "stream_item.h"
+#include "render_panel/database/stream_item.h"
 
 namespace tc
 {
