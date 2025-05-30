@@ -2,7 +2,7 @@
 // Created by RGAA on 2023-08-17.
 //
 
-#include "render_panel/database/stream_db_manager.h"
+#include "render_panel/database/stream_db_operator.h"
 
 #include <QUuid>
 #include <QRandomGenerator>
@@ -24,12 +24,12 @@ using namespace sqlite_orm;
 namespace tc
 {
 
-    StreamDBManager::StreamDBManager(const std::shared_ptr<GrDatabase>& db) {
+    StreamDBOperator::StreamDBOperator(const std::shared_ptr<GrDatabase>& db) {
         db_ = db;
         //CreateTables();
     }
 
-    StreamDBManager::~StreamDBManager() {
+    StreamDBOperator::~StreamDBOperator() {
 
     }
 
@@ -85,7 +85,7 @@ namespace tc
 ////        storage.sync_schema(true);
 //    }
 
-    void StreamDBManager::AddStream(const std::shared_ptr<StreamItem>& stream) {
+    void StreamDBOperator::AddStream(const std::shared_ptr<StreamItem>& stream) {
         if (stream->stream_id_.empty()) {
             stream->stream_id_ = GenUUID();
         }
@@ -98,14 +98,14 @@ namespace tc
         storage.insert(*stream);
     }
 
-    bool StreamDBManager::HasStream(const std::string& stream_id) {
+    bool StreamDBOperator::HasStream(const std::string& stream_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
         return !streams.empty();
     }
 
-    bool StreamDBManager::UpdateStream(std::shared_ptr<StreamItem> stream) {
+    bool StreamDBOperator::UpdateStream(std::shared_ptr<StreamItem> stream) {
         stream->updated_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
@@ -116,7 +116,7 @@ namespace tc
         return true;
     }
 
-    bool StreamDBManager::UpdateStreamRandomPwd(const std::string& stream_id, const std::string& random_pwd) {
+    bool StreamDBOperator::UpdateStreamRandomPwd(const std::string& stream_id, const std::string& random_pwd) {
         auto opt_stream = GetStreamByStreamId(stream_id);
         if (!opt_stream.has_value()) {
             return false;
@@ -134,7 +134,7 @@ namespace tc
         return true;
     }
 
-    bool StreamDBManager::UpdateStreamSafetyPwd(const std::string& stream_id, const std::string& safety_pwd) {
+    bool StreamDBOperator::UpdateStreamSafetyPwd(const std::string& stream_id, const std::string& safety_pwd) {
         auto opt_stream = GetStreamByStreamId(stream_id);
         if (!opt_stream.has_value()) {
             return false;
@@ -152,7 +152,7 @@ namespace tc
         return true;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByStreamId(const std::string& stream_id) {
+    std::optional<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamByStreamId(const std::string& stream_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
@@ -163,7 +163,7 @@ namespace tc
         return target_stream;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByHostPort(const std::string& host, int port) {
+    std::optional<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamByHostPort(const std::string& host, int port) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_host_) == host and c(&StreamItem::stream_port_) == port));
@@ -174,7 +174,7 @@ namespace tc
         return target_stream;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
+    std::optional<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::remote_device_id_) == remote_device_id));
@@ -191,7 +191,7 @@ namespace tc
 //        return storage.get_all<StreamItem>();
 //    }
 
-    std::vector<std::shared_ptr<StreamItem>> StreamDBManager::GetAllStreamsSortByCreatedTime(bool increase) {
+    std::vector<std::shared_ptr<StreamItem>> StreamDBOperator::GetAllStreamsSortByCreatedTime(bool increase) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto unique_streams = storage.get_all_pointer<StreamItem>([=]() -> auto {
@@ -209,7 +209,7 @@ namespace tc
         return streams;
     }
 
-    std::vector<std::shared_ptr<StreamItem>> StreamDBManager::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
+    std::vector<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         int offset_size = (page - 1) * page_size;
@@ -226,20 +226,20 @@ namespace tc
         return streams;
     }
 
-    void StreamDBManager::DeleteStream(int id) {
+    void StreamDBOperator::DeleteStream(int id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         storage.remove<StreamItem>(id);
     }
 
-    std::string StreamDBManager::GenUUID() {
+    std::string StreamDBOperator::GenUUID() {
         QUuid id = QUuid::createUuid();
         QString str_id = id.toString();
         str_id.remove("{").remove("}").remove("-");
         return str_id.toStdString();
     }
 
-    int StreamDBManager::RandomColor() {
+    int StreamDBOperator::RandomColor() {
         // Colors form [Claude Monet]'s arts
         static std::vector<int> colors = {
             0xBFC8D7, 0xE2D2D2, 0xE3E2B4, 0xA2B59F,

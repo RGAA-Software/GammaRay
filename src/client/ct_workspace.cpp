@@ -111,20 +111,20 @@ namespace tc
         st_panel_->hide();
 
         // notification handle
-        notification_handler_ = new FloatNotificationHandle(context_, this);
-        notification_handler_->SetPixmap(":resources/image/ic_mail.svg");
-        notification_handler_->SetOnClickListener([=, this](QWidget* w) {
-            if (notification_panel_->isHidden()) {
-                notification_panel_->show();
-            } else {
-                notification_panel_->hide();
-            }
-            UpdateNotificationHandlePosition();
-        });
+        // notification_handler_ = new FloatNotificationHandle(context_, this);
+        // notification_handler_->SetPixmap(":resources/image/ic_mail.svg");
+        // notification_handler_->SetOnClickListener([=, this](QWidget* w) {
+        //     if (notification_panel_->isHidden()) {
+        //         notification_panel_->show();
+        //     } else {
+        //         notification_panel_->hide();
+        //     }
+        //     UpdateNotificationHandlePosition();
+        // });
 
         // notification panel
-        notification_panel_ = new NotificationPanel(ctx, this);
-        notification_panel_->hide();
+        //notification_panel_ = new NotificationPanel(ctx, this);
+        //notification_panel_->hide();
 
         // message listener
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
@@ -544,23 +544,23 @@ namespace tc
 
     void Workspace::resizeEvent(QResizeEvent *event) {
         main_progress_->setGeometry(0, title_bar_height_, event->size().width(), event->size().height());
-        UpdateNotificationHandlePosition();
+        //UpdateNotificationHandlePosition();
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
         UpdateFloatButtonIndicatorPosition();
     }
 
-    void Workspace::UpdateNotificationHandlePosition() {
-        int notification_panel_width = 0;
-        int offset_border = 8;
-        int handle_offset = 0;
-        if (!notification_panel_->isHidden()) {
-            notification_panel_width = notification_panel_->width();
-            handle_offset = offset_border;
-        }
-        notification_panel_->setGeometry(this->width()-notification_panel_->width() - offset_border, offset_border, notification_panel_->width(), this->height() - 2*offset_border);
-        notification_handler_->setGeometry(this->width()-notification_handler_->width()/2 - notification_panel_width-handle_offset, 100, notification_handler_->width(), notification_handler_->height());
-    }
+    // void Workspace::UpdateNotificationHandlePosition() {
+    //     int notification_panel_width = 0;
+    //     int offset_border = 8;
+    //     int handle_offset = 0;
+    //     if (!notification_panel_->isHidden()) {
+    //         notification_panel_width = notification_panel_->width();
+    //         handle_offset = offset_border;
+    //     }
+    //     notification_panel_->setGeometry(this->width()-notification_panel_->width() - offset_border, offset_border, notification_panel_->width(), this->height() - 2*offset_border);
+    //     notification_handler_->setGeometry(this->width()-notification_handler_->width()/2 - notification_panel_width-handle_offset, 100, notification_handler_->width(), notification_handler_->height());
+    // }
 
     void Workspace::UpdateFloatButtonIndicatorPosition() {
         btn_indicator_->setGeometry(0, 0, btn_indicator_->width(), btn_indicator_->height());

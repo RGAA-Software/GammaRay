@@ -64,7 +64,7 @@ namespace tc
     private:
         void RegisterSdkMsgCallbacks();
         void Exit();
-        void UpdateNotificationHandlePosition();
+        //void UpdateNotificationHandlePosition();
         void UpdateLocalCursor(uint32_t type);
         void RegisterControllerPanelListeners();
         void UpdateDebugPanelPosition();
@@ -95,8 +95,8 @@ namespace tc
         acss::QtAdvancedStylesheet* theme_{};
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         Settings* settings_ = nullptr;
-        FloatNotificationHandle* notification_handler_ = nullptr;
-        NotificationPanel* notification_panel_ = nullptr;
+        //FloatNotificationHandle* notification_handler_ = nullptr;
+        //NotificationPanel* notification_panel_ = nullptr;
         std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         uint32_t cursor_type_ = 100000;
         bool force_update_cursor_ = true;

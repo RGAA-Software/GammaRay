@@ -10,7 +10,7 @@
 #include <QWidget>
 #include <QProcess>
 
-#include "render_panel/database/stream_db_manager.h"
+#include "render_panel/database/stream_db_operator.h"
 #include "tc_common_new/log.h"
 #include "widget_helper.h"
 #include "stream_item_widget.h"

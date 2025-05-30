@@ -13,7 +13,7 @@
 #include "tc_dialog.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
-#include "render_panel/database/stream_db_manager.h"
+#include "render_panel/database/stream_db_operator.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_tooltip.h"
 

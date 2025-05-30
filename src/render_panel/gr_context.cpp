@@ -22,7 +22,7 @@
 #include "service/service_manager.h"
 #include "gr_settings.h"
 #include "gr_application.h"
-#include "database/stream_db_manager.h"
+#include "database/stream_db_operator.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "devices/running_stream_manager.h"
 #include "tc_qt_widget/notify/notifymanager.h"
@@ -46,8 +46,10 @@ namespace tc
         settings_ = GrSettings::Instance();
         sp_ = SharedPreference::Instance();
 
-        database_ = std::make_shared<GrDatabase>();
+        database_ = std::make_shared<GrDatabase>(shared_from_this());
         database_->Init();
+        stream_db_mgr_ = database_->GetStreamDBOperator();
+        db_game_manager_ = database_->GetDBGameOperator();
 
         auto hardware = Hardware::Instance();
         auto beg = TimeUtil::GetCurrentTimestamp();
@@ -65,8 +67,6 @@ namespace tc
 
         msg_notifier_ = app_->GetMessageNotifier();
 
-        stream_db_mgr_ = std::make_shared<StreamDBManager>(database_);
-
         acc_sdk_ = std::make_shared<AccountSdk>(msg_notifier_, std::make_shared<AccountParams>(AccountParams {
             .host_ = "rgaa.vip",
             .port_ = 5566,
@@ -79,9 +79,6 @@ namespace tc
         for (auto& item : ips_) {
             LOGI("IP: {} -> {}", item.ip_addr_, item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
         }
-
-        db_game_manager_ = std::make_shared<DBGameOperator>(shared_from_this(), database_);
-        //db_game_manager_->Init();
 
         res_manager_ = std::make_shared<GrResources>(shared_from_this());
         res_manager_->ExtractIconsIfNeeded();
@@ -207,7 +204,7 @@ namespace tc
         return service_manager_;
     }
 
-    std::shared_ptr<StreamDBManager> GrContext::GetStreamDBManager() {
+    std::shared_ptr<StreamDBOperator> GrContext::GetStreamDBManager() {
         return stream_db_mgr_;
     }
 

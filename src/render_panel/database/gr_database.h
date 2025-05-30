@@ -17,12 +17,14 @@ namespace tc
 {
 
     class GrContext;
+    class StreamDBOperator;
+    class DBGameOperator;
     class VisitRecordOperator;
     class FileTransferRecordOperator;
 
     class GrDatabase : public std::enable_shared_from_this<GrDatabase> {
     public:
-        GrDatabase();
+        explicit GrDatabase(const std::shared_ptr<GrContext>& ctx);
         bool Init();
         auto InitAppDatabase(const std::string& name) {
             auto st = make_storage(name,
@@ -79,15 +81,20 @@ namespace tc
             return db_storage_;
         }
 
-    private:
         std::shared_ptr<VisitRecordOperator> GetVisitRecordOp();
         std::shared_ptr<FileTransferRecordOperator> GetFileTransferRecordOp();
+        std::shared_ptr<StreamDBOperator> GetStreamDBOperator();
+        std::shared_ptr<DBGameOperator> GetDBGameOperator();
+
+    private:
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::any db_storage_;
         std::shared_ptr<VisitRecordOperator> visit_record_op_ = nullptr;
         std::shared_ptr<FileTransferRecordOperator> ft_record_op_ = nullptr;
+        std::shared_ptr<StreamDBOperator> stream_operator_ = nullptr;
+        std::shared_ptr<DBGameOperator> db_game_operator_ = nullptr;
     };
 
 }

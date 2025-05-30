@@ -16,7 +16,7 @@ namespace tc
 {
     class AppMessage;
     class Thread;
-    class StreamDBManager;
+    class StreamDBOperator;
     class SharedPreference;
     class ClientPluginManager;
 

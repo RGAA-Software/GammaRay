@@ -53,7 +53,7 @@
 #include "tc_manager_client/mgr_device.h"
 #include "tc_dialog.h"
 #include "render_panel/devices/running_stream_manager.h"
-#include "render_panel/database/stream_db_manager.h"
+#include "render_panel/database/stream_db_operator.h"
 #include "render_panel/devices/device_api.h"
 #include "render_panel/gr_workspace.h"
 

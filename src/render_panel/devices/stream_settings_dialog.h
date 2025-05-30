@@ -24,7 +24,7 @@ namespace tc
 {
 
     class GrContext;
-    class StreamDBManager;
+    class StreamDBOperator;
 
     class StreamSettingsDialog : public TcCustomTitleBarDialog {
     public:
@@ -38,7 +38,7 @@ namespace tc
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
+        std::shared_ptr<StreamDBOperator> db_mgr_ = nullptr;
         QCheckBox* cb_audio_ = nullptr;
         QCheckBox* cb_clipboard_ = nullptr;
         QCheckBox* cb_only_viewing_ = nullptr;

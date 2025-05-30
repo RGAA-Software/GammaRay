@@ -17,11 +17,11 @@ namespace tc
     class StreamItem;
     class GrDatabase;
 
-    class StreamDBManager {
+    class StreamDBOperator {
     public:
 
-        StreamDBManager(const std::shared_ptr<GrDatabase>& db);
-        ~StreamDBManager();
+        StreamDBOperator(const std::shared_ptr<GrDatabase>& db);
+        ~StreamDBOperator();
         static std::string GenUUID();
         void AddStream(const std::shared_ptr<StreamItem>& stream);
         bool UpdateStream(std::shared_ptr<StreamItem> stream);

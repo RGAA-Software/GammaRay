@@ -27,7 +27,7 @@ namespace tc
 
     class GrContext;
     class GrSettings;
-    class StreamDBManager;
+    class StreamDBOperator;
     class StreamContent;
     class MessageListener;
     class RunningStreamManager;
@@ -60,7 +60,7 @@ namespace tc
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
+        std::shared_ptr<StreamDBOperator> db_mgr_ = nullptr;
         std::vector<std::shared_ptr<StreamItem>> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;

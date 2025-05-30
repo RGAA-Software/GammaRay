@@ -13,7 +13,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/database/file_transfer_record.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/file_transfer_record_operator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/stream_item.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/database/stream_db_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/database/stream_db_operator.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_base.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_server.cpp
