@@ -29,6 +29,7 @@
 #include "tc_dialog.h"
 #include "gr_workspace.h"
 #include "database/gr_database.h"
+#include "tc_account_sdk/acc_sdk.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -65,6 +66,11 @@ namespace tc
         msg_notifier_ = app_->GetMessageNotifier();
 
         stream_db_mgr_ = std::make_shared<StreamDBManager>();
+
+        acc_sdk_ = std::make_shared<AccountSdk>(msg_notifier_, std::make_shared<AccountParams>(AccountParams {
+            .host_ = "gammaray.online",
+            .port_ = 5566,
+        }));
 
         // ips
         ips_ = IPUtil::ScanIPs();
@@ -227,6 +233,10 @@ namespace tc
 
     std::shared_ptr<GrDatabase> GrContext::GetDatabase() {
         return database_;
+    }
+
+    std::shared_ptr<AccountSdk> GrContext::GetAccSdk() {
+        return acc_sdk_;
     }
 
     std::shared_ptr<SpvrDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {

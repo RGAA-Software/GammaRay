@@ -15,10 +15,10 @@
 namespace tc
 {
 
-    class PluginInfoItemDelegate : public QStyledItemDelegate {
+    class StSecurityFileTransferItemDelegate : public QStyledItemDelegate {
     public:
-        explicit PluginInfoItemDelegate(QObject* pParent) {}
-        ~PluginInfoItemDelegate() override = default;
+        explicit StSecurityFileTransferItemDelegate(QObject* pParent) {}
+        ~StSecurityFileTransferItemDelegate() override = default;
 
         void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override {
             editor->setGeometry(option.rect);
@@ -36,7 +36,7 @@ namespace tc
         }
 
         {
-            auto delegate = new PluginInfoItemDelegate(this);
+            auto delegate = new StSecurityFileTransferItemDelegate(this);
             list_widget_ = new QListWidget(this);
             list_widget_->setItemDelegate(delegate);
 

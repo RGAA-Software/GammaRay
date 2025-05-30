@@ -215,7 +215,7 @@ namespace tc
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
-            {
+            if (0) {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn->AddIcon(":/resources/image/ic_avatar_selected.svg", ":/resources/image/ic_avatar_normal.svg", 20, 20);
                 btn_tab_profile_ = btn;
@@ -265,14 +265,14 @@ namespace tc
             tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
             tabs_.insert({TabName::kTabSecurity, new TabSecurityInternals(app_, this)});
-            tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
+            //tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
             tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
             tabs_[TabName::kTabSecurity]->SetAttach(btn_security_);
-            tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
+            //tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
 
             auto layout = new QVBoxLayout();
             WidgetHelper::ClearMargins(root_layout);
@@ -282,7 +282,7 @@ namespace tc
             stack_widget->addWidget(tabs_[TabName::kTabGames]);
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
             stack_widget->addWidget(tabs_[TabName::kTabSecurity]);
-            stack_widget->addWidget(tabs_[TabName::kTabProfile]);
+            //stack_widget->addWidget(tabs_[TabName::kTabProfile]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);
             root_layout->addLayout(layout);

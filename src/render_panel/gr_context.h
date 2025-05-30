@@ -30,6 +30,7 @@ namespace tc
     class NotifyManager;
     class SpvrDeviceInfo;
     class GrDatabase;
+    class AccountSdk;
 
     // Device list
     class StreamDBManager;
@@ -71,6 +72,7 @@ namespace tc
         std::shared_ptr<SpvrManager> GetSpvrManager();
         std::shared_ptr<RunningStreamManager> GetRunningStreamManager();
         std::shared_ptr<GrDatabase> GetDatabase();
+        std::shared_ptr<AccountSdk> GetAccSdk();
 
         // Display a message on right-bottom
         std::shared_ptr<NotifyManager> GetNotifyManager();
@@ -104,6 +106,7 @@ namespace tc
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<NotifyManager> notify_mgr_ = nullptr;
         std::shared_ptr<GrDatabase> database_ = nullptr;
+        std::shared_ptr<AccountSdk> acc_sdk_ = nullptr;
     };
 
 }
