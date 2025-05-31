@@ -466,6 +466,34 @@ namespace tc
                 this->UpdateGameViewsStatus();
             });
         });
+
+        msg_listener_->Listen<MediaRecordMsg>([=, this](const MediaRecordMsg& msg) {
+            if (!sdk_) {
+                return;
+            }
+            if (!media_record_plugin_) {
+                return;
+            }
+            tc::Message m;
+            m.set_device_id(settings_->device_id_);
+            m.set_stream_id(settings_->stream_id_);
+            bool res = context_->GetRecording();
+            if (res) {
+                m.set_type(tc::kStartMediaRecordClientSide);
+
+                LOGI("StartRecord");
+
+                media_record_plugin_->StartRecord();
+            }
+            else {
+                m.set_type(tc::kStopMediaRecordClientSide);
+
+
+                LOGI("EndRecord");
+                media_record_plugin_->EndRecord();
+            }
+            sdk_->PostMediaMessage(m.SerializeAsString());
+        });
     }
 
     void Workspace::changeEvent(QEvent* event) {
@@ -756,6 +784,9 @@ namespace tc
             ProcessUtil::KillProcess(QApplication::applicationPid());
         });
         t.detach();
+        if (media_record_plugin_) {
+            media_record_plugin_->EndRecord();
+        }
         if (sdk_) {
             sdk_->Exit();
             sdk_ = nullptr;

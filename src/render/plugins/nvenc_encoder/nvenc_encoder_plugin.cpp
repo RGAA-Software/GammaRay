@@ -33,7 +33,7 @@ namespace tc
     }
 
     void NvencEncoderPlugin::On1Second() {
-
+        GrVideoEncoderPlugin::On1Second();
     }
 
     bool NvencEncoderPlugin::OnCreate(const tc::GrPluginParam& param) {

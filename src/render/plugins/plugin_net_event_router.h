@@ -52,6 +52,10 @@ namespace tc
         // 全彩模式
         void ProcessSwitchFullColorMode(std::shared_ptr<Message>&& msg);
 
+        void ProcessStartMediaRecordClientSide();
+
+        void ProcessStoptMediaRecordClientSide();
+
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
 
     private:

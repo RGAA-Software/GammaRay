@@ -52,6 +52,16 @@ namespace tc
         insert_idr_ = true;
     }
 
+    void GrVideoEncoderPlugin::On1Second() {
+        if (client_side_media_recording_) {
+            InsertIdr();
+        }
+    }
+
+    void GrVideoEncoderPlugin::SetClientSideMediaRecording(bool recording) {
+        client_side_media_recording_ = recording;
+    }
+
     std::optional<EncoderConfig> GrVideoEncoderPlugin::GetEncoderConfig(const std::string& monitor_name) {
 
         if (encoder_configs_.find(monitor_name) != encoder_configs_.end()) {

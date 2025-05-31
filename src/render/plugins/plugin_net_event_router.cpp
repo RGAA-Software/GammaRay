@@ -197,6 +197,14 @@ namespace tc {
                     ProcessSwitchFullColorMode(std::move(msg));
                     break;
                 }
+                case kStartMediaRecordClientSide: {
+                    ProcessStartMediaRecordClientSide();
+                    break;
+                }
+                case kStopMediaRecordClientSide: {
+                    ProcessStoptMediaRecordClientSide();
+                    break;
+                }
                 default: {
                    
                 }
@@ -381,6 +389,25 @@ namespace tc {
     void PluginNetEventRouter::ProcessSwitchFullColorMode(std::shared_ptr<Message>&& msg) {
         auto sw = msg->switch_full_color_mode();
         this->settings_->SetFullColorMode(sw.enable());
+    }
+
+    void PluginNetEventRouter::ProcessStartMediaRecordClientSide() {
+        auto encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
+        for (const auto& [k, encoder_plugin] : encoder_plugins) {
+            if (encoder_plugin) {
+                encoder_plugin->InsertIdr();
+                encoder_plugin->SetClientSideMediaRecording(true);
+            }
+        }
+    }
+
+    void PluginNetEventRouter::ProcessStoptMediaRecordClientSide() {
+        auto encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
+        for (const auto& [k, encoder_plugin] : encoder_plugins) {
+            if (encoder_plugin) {
+                encoder_plugin->SetClientSideMediaRecording(false);
+            }
+        }
     }
 
     void PluginNetEventRouter::ProcessChangeMonitorResolution(std::shared_ptr<Message>&& msg) {

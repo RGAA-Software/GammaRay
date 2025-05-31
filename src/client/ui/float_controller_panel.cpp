@@ -5,6 +5,7 @@
 #include "float_controller_panel.h"
 #include "float_icon.h"
 #include "tc_common_new/message_notifier.h"
+#include "tc_qt_widget/tc_dialog.h"
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
 #include "sized_msg_box.h"
@@ -25,7 +26,7 @@ namespace tc
 
     FloatControllerPanel::FloatControllerPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
-        this->setFixedSize(kInitialWidth, 285);
+        this->setFixedSize(kInitialWidth, 320);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
@@ -46,6 +47,16 @@ namespace tc
                 computer_icons_.push_back(ci);
 
                 ci->SetOnClickListener([=, this](auto w) {
+                    bool recording = context_->GetRecording();
+                    if (recording) {
+                        TcDialog dialog(tr("Tips"), tr("Currently, screen recording is in progress. Switching display is prohibited. If you want to switch displays, please stop the screen recording.."), nullptr);
+                        auto pos = mapToGlobal(this->parentWidget()->pos()); 
+                        pos.setX(pos.x() + this->parentWidget()->width() / 2 - dialog.width() / 2);
+                        pos.setY(pos.y() + this->parentWidget()->height() / 2 - dialog.height() / 2);
+                        dialog.move(pos);
+                        dialog.exec();
+                        return;
+                    }
                     HideAllSubPanels();
                     SwitchMonitor(ci);
                 });
@@ -59,6 +70,16 @@ namespace tc
                 layout->addWidget(split_screen_btn);
 
                 split_screen_btn->SetOnClickListener([=, this](QWidget* w) {
+                    bool recording = context_->GetRecording();
+                    if (recording) {
+                        TcDialog dialog(tr("Tips"), tr("Currently, screen recording is in progress. Switching display is prohibited. If you want to switch displays, please stop the screen recording.."), nullptr);
+                        auto pos = mapToGlobal(this->parentWidget()->pos());
+                        pos.setX(pos.x() + this->parentWidget()->width() / 2 - dialog.width() / 2);
+                        pos.setY(pos.y() + this->parentWidget()->height() / 2 - dialog.height() / 2);
+                        dialog.move(pos);
+                        dialog.exec();
+                        return;
+                    }
                     CaptureAllMonitor();
                 });
             }
@@ -335,7 +356,7 @@ namespace tc
 
             auto text = new QLabel();
             media_record_lab_ = text;
-            text->setText(tr("Picture Recording"));
+            text->setText(tr("Screen Recording"));
             text->setStyleSheet(R"(font-weight: bold;)");
             layout->addWidget(text);
 
@@ -349,7 +370,7 @@ namespace tc
                     media_record_lab_->setText(tr("Stop Recording"));
                 }
                 else {
-                    media_record_lab_->setText(tr("Picture Recording"));
+                    media_record_lab_->setText(tr("Screen Recording"));
                 }
                 context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus });
                 context_->SendAppMessage(MediaRecordMsg{});
@@ -586,7 +607,7 @@ namespace tc
                 media_record_lab_->setText(tr("Stop Recording"));
             }
             else {
-                media_record_lab_->setText(tr("Picture Recording"));
+                media_record_lab_->setText(tr("Screen Recording"));
             }
         }
     }

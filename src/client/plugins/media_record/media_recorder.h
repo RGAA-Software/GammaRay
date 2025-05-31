@@ -42,7 +42,11 @@ public:
     ~MediaRecorder();
 
 	void SetFilePath(std::string name);
-	bool StartRecord();
+
+	bool InitFFmpeg();
+
+	void InitByVideoFrame(const VideoFrame& frame);
+	
 	void EndRecord();
 
 	void RecvVideoFrame(const VideoFrame& frame);
@@ -51,6 +55,8 @@ public:
 
 	void RecvAudioFrame(const AudioFrame& frame);
 
+
+	void SetIndex(int idx);
 
 	AVFormatContext* format_ctx_ = nullptr;
 	//AVCodecContext* mAudioCodecContext = nullptr;
@@ -71,6 +77,14 @@ public:
 	int last_height_ = -1;
 
 	MediaRecordPluginClient* plugin_ = nullptr;
+
+	tc::VideoType video_codec_ =  tc::VideoType::kNetH264;
+
+	std::atomic<bool> init_ok_ = false;
+
+	int index_ = 0;
+
+	
 };
 
 }

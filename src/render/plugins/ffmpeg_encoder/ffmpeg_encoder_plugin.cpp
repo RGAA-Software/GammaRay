@@ -47,7 +47,7 @@ namespace tc
     }
 
     void FFmpegEncoderPlugin::On1Second() {
-
+        GrVideoEncoderPlugin::On1Second();
     }
 
     bool FFmpegEncoderPlugin::OnCreate(const tc::GrPluginParam& plugin_param) {

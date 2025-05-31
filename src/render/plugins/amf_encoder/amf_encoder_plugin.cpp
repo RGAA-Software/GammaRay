@@ -38,7 +38,7 @@ namespace tc
     }
 
     void AmfEncoderPlugin::On1Second() {
-
+        GrVideoEncoderPlugin::On1Second();
     }
 
     bool AmfEncoderPlugin::OnCreate(const tc::GrPluginParam& param) {

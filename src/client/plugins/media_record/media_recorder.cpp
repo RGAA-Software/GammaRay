@@ -1,6 +1,7 @@
 #include "media_recorder.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/frame_common.h"
+#include "tc_common_new/time_util.h"
 #include "media_record_plugin.h"
 #include <QApplication>
 
@@ -28,9 +29,9 @@ void MediaRecorder::SetFilePath(std::string name) {
 
 }
 
-bool MediaRecorder::StartRecord() {
-
-	file_name_ = std::format("{}/test.mp4", qApp->applicationDirPath().toStdString());
+bool MediaRecorder::InitFFmpeg() {
+	
+	file_name_ = std::format("{}/GammaRay_meida_record_{}_{}.mp4", qApp->applicationDirPath().toStdString(), index_, TimeUtil::GetCurrentTimestamp());
 
 	//打开音视频输出封装上下文
 	int result = avformat_alloc_output_context2(&format_ctx_, nullptr, nullptr, file_name_.c_str());
@@ -54,8 +55,13 @@ bool MediaRecorder::StartRecord() {
 
 		// 获取编解码器参数结构体
 	AVCodecParameters* codecpar = video_stream_->codecpar;
+	if (tc::VideoType::kNetH264 == video_codec_) {
+		codecpar->codec_id = AV_CODEC_ID_H264;
+	}
+	else {
+		codecpar->codec_id = AV_CODEC_ID_H265;
+	}
 
-	codecpar->codec_id = AV_CODEC_ID_H264;
 	codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
 	//video_stream_->codec->max_b_frames = 0;
 	codecpar->width = width_;
@@ -105,12 +111,14 @@ bool MediaRecorder::StartRecord() {
 	video_frame_count_ = 0;
 	mIsCanStart = false;
 	mIsInitOk = true;*/
-	
+	video_frame_count_ = 0;
+	init_ok_ = true;
 	return true;
 }
 
 void MediaRecorder::EndRecord() {
 	//mIsInitOk = false;
+	init_ok_ = false;
 	if (format_ctx_) {
 		LOGI(" MediaRecord::End()");
 		av_write_trailer(format_ctx_);
@@ -134,59 +142,92 @@ void MediaRecorder::EndRecord() {
 	audio_stream_index = -1;
 	last_width_ = -1;
 	last_height_ = -1;
+	video_frame_count_ = 0;
 
 	LOGI(" MediaRecord::End() 2");
+}
+
+
+void MediaRecorder::InitByVideoFrame(const VideoFrame& frame) {
+	bool is_config_frame = false;
+	const auto& d = frame.data();
+	uint8_t* data = (uint8_t*)d.data();
+	size_t size = d.size();
+	if (frame.type() == tc::VideoType::kNetH264)
+	{
+		if (H264_TYPE(data[4]) == ENalType::H264_NAL_SPS)
+			is_config_frame = true;
+	}
+	else if (frame.type() == tc::VideoType::kNetHevc)
+	{
+		if (H265_TYPE(data[4]) == ENalType::H265_NAL_VPS)
+			is_config_frame = true;
+	}
+	else { // vp9 ? no supprot
+
+
+	}
+
+
+	LOGI("InitByVideoFrame  is_config_frame: {}, , key: {}", is_config_frame, frame.key());
+
+	if (!is_config_frame) {
+		return;
+	}
+
+	LOGI("InitByVideoFrame 2");
+
+
+	LOGI("RecvVideoFrame is_config_frame");
+
+	height_ = frame.frame_height();
+
+	width_ = frame.frame_width();
+
+	video_codec_ = frame.type();
+
+	//去初始化
+	if (!InitFFmpeg()) {
+		LOGE("media record init error!!!");
+		return;
+	}
+
+	start_time_ = std::chrono::system_clock::now();
+	SaveVideoFrame(frame);
+	return;
+
 }
 
 void MediaRecorder::RecvVideoFrame(const VideoFrame& frame) {
 
 	LOGI("RecvVideoFrame video_frame_count_ : {}", video_frame_count_);
 
-	if (0 == video_frame_count_) { //判断是否是第一帧，如果是则需要关键帧
-		bool is_config_frame = false;
-		const auto& d = frame.data();
-		uint8_t* data = (uint8_t*)d.data();
-		size_t size = d.size();
-		if (frame.type() == tc::VideoType::kNetH264)
-		{
-			if (H264_TYPE(data[4]) == ENalType::H264_NAL_SPS)
-				is_config_frame = true;
-		} 
-		else if (frame.type() == tc::VideoType::kNetHevc)
-		{
-			if (H265_TYPE(data[4]) == ENalType::H265_NAL_VPS)
-				is_config_frame = true;
-		}
-		else { // vp9 ? to do
-			
-			
-		}
+	// 尚未初始化
+	if (!init_ok_) {
 
-		if (is_config_frame) {
+		LOGI("InitByVideoFrame 0");
 
-			LOGI("RecvVideoFrame is_config_frame");
-
-			height_ =  frame.frame_height();
-			width_ = frame.frame_width();
-			StartRecord();
-
-
-		
-
-			start_time_ = std::chrono::system_clock::now();
-
-
-			SaveVideoFrame(frame);
-
-			//RecordVideoPacket(packet, pts, dts);
-		}
+		InitByVideoFrame(frame);
+		return;
 	}
-	else {
-		//RecordVideoPacket(packet, pts, dts);
 
+
+
+	// 已经初始化了
+	const int cur_width = frame.frame_width();
+	const int cu_height = frame.frame_height();
+	const auto cur_video_codec = frame.type();
+
+
+	// 说明没什么变化
+	if (cur_width == width_ && cu_height == height_ && cur_video_codec == video_codec_) {
 		SaveVideoFrame(frame);
+		return;
 	}
 
+	EndRecord();
+
+	InitByVideoFrame(frame);
 }
 
 void MediaRecorder::RecvAudioFrame(const AudioFrame& frame) {
@@ -208,7 +249,7 @@ void MediaRecorder::SaveVideoFrame(const VideoFrame& frame) {
 	avpacket.dts = avpacket.pts;
 	auto& d = frame.data();
 	avpacket.size = d.size();
-#if 1
+#if 0
 	{
 		//将I帧保存为文件 方便分析调试
 		static int i = 0;
@@ -242,6 +283,11 @@ void MediaRecorder::SaveVideoFrame(const VideoFrame& frame) {
 	}
 	av_packet_unref(&avpacket);
 	++video_frame_count_;
+}
+
+
+void MediaRecorder::SetIndex(int idx) {
+	index_ = idx;
 }
 
 }

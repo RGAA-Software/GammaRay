@@ -3,6 +3,8 @@
 #include <qpalette.h>
 #include <QTimer>
 #include <qlabel.h>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
 #include "ct_opengl_video_widget.h"
 #include "tc_dialog.h"
 #include "no_margin_layout.h"
@@ -20,7 +22,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
     WidgetHelper::SetTitleBarColor(this);
     msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
-
+    this->setAttribute(Qt::WA_StyledBackground, true);
     auto beg = TimeUtil::GetCurrentTimestamp();
     video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
     auto end = TimeUtil::GetCurrentTimestamp();
@@ -34,23 +36,39 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     InitFloatController();
 
     recording_sign_lab_ = new QLabel(this);
-    recording_sign_lab_->setFixedSize(80, 40);
+    recording_sign_lab_->setFixedSize(40, 40);
+    recording_sign_lab_->setAttribute(Qt::WA_StyledBackground,true);
     recording_sign_lab_->setStyleSheet(R"(image: url(:resources/image/recording.svg);
                                     background-repeat:no-repeat;
                                     background-position: center center;)");
     recording_sign_lab_->move(0, this->height() * 0.8);
     recording_sign_lab_->hide();
 
+    // 创建透明度效果
+    QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(recording_sign_lab_);
+    recording_sign_lab_->setGraphicsEffect(opacityEffect);
+
+    // 创建动画
+    QPropertyAnimation* animation = new QPropertyAnimation(opacityEffect, "opacity", recording_sign_lab_);
+    animation->setDuration(2000);   // 动画周期1秒
+    animation->setStartValue(1.0);  // 完全不透明
+    animation->setKeyValueAt(0.5, 0.0); // 中间点完全透明
+    animation->setEndValue(1.0); // 结束时不透明
+    animation->setLoopCount(-1); // 无限循环
 
     msg_listener_->Listen<MediaRecordMsg>([=, this](const MediaRecordMsg& msg) {
         bool res = ctx_->GetRecording();
         if(res) {
             recording_sign_lab_->show();
+            animation->start(); // 开始动画
         }
         else {
             recording_sign_lab_->hide();
+            animation->stop(); 
         }
     });
+
+    
 }
 
 GameView::~GameView() {

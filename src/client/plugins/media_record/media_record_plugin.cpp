@@ -7,10 +7,12 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
+#include "plugin_interface/ct_plugin_context.h"
 #include "client/plugins/ct_plugin_ids.h"
 #include "client/plugins/ct_plugin_events.h"
 #include "client/plugins/ct_app_events.h"
 #include "media_recorder.h"
+#include "ct_const_def.h"
 
 #include <qpushbutton.h>
 
@@ -54,8 +56,15 @@ namespace tc
         if (!IsPluginEnabled()) {
             return true;
         }
+
+        for (int index = 0; index < kMaxGameViewCount; ++index) {
+            auto recorder = MediaRecorder::Make(this);
+            recorder->SetIndex(index);
+            media_recorders_.emplace_back(recorder);
+        }
+
         //root_widget_->hide();            
-        media_recorder_ = MediaRecorder::Make(this);
+        //media_recorder_ = MediaRecorder::Make(this);
 
         root_widget_->show();
         root_widget_->setWindowTitle("Media Record");
@@ -70,27 +79,40 @@ namespace tc
 
     void MediaRecordPluginClient::OnMessage(std::shared_ptr<Message> msg) {
         ClientPluginInterface::OnMessage(msg);
-        //LOGI("MediaRecordPluginClient OnMessage: {}", (int)msg->type());
+        //LOGI("MediaRecordPluginClient OnMessage: {}", (int)msg->type());   // 更新此文件后，生成GammaRayClientInner.exe 不会编译 ！！！
+        //                                                                   // 可以录屏视频帧了，但是被控端是nvenc编码就有问题，插入关键帧，会变模糊，编码器应该设置的有问题，这与录屏无关。
+        if (!recording_) {
+            return;
+        }
 
-        // to do ʹ���߳� ������¼��
+        //LOGI("MediaRecordPluginClient xxx");
 
+        plugin_context_->PostWorkTask([this, msg]() {
+            if (msg->type() == tc::kVideoFrame) {
+                const auto& video_frame = msg->video_frame();
+                if (video_frame.key()) {
+                    LOGI("video frame index: {}, {}x{}, key: {}", video_frame.frame_index(),
+                        video_frame.frame_width(), video_frame.frame_height(), video_frame.key());
+                }
 
-        if (msg->type() == tc::kVideoFrame) {
-            const auto& video_frame = msg->video_frame();
-            if (video_frame.key()) {
-                LOGI("video frame index: {}, {}x{}, key: {}", video_frame.frame_index(),
-                     video_frame.frame_width(), video_frame.frame_height(), video_frame.key());
+                int v_idx = video_frame.mon_index();
+                if (media_recorders_.size() > v_idx) {
+
+                    LOGI("video_frame frame_index : {}", video_frame.frame_index());
+
+                    media_recorders_[v_idx]->RecvVideoFrame(video_frame);
+                }
+                else {
+                    LOGW("video_frame index : {}, Exceeded the maximum limit", v_idx);
+                }
             }
-            media_recorder_->RecvVideoFrame(video_frame);
-
-        }
-        else if (msg->type() == tc::kAudioFrame) {
-            const auto& audio_frame = msg->audio_frame();
-            
-        }
-
-
-
+            else if (msg->type() == tc::kAudioFrame) {
+                const auto& audio_frame = msg->audio_frame();
+                for (auto& media_recorder: media_recorders_) {
+                    //media_recorder->RecvAudioFrame(audio_frame);
+                }
+            }
+        });
     }
 
     void MediaRecordPluginClient::DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) {
@@ -99,26 +121,16 @@ namespace tc
     }
 
     void MediaRecordPluginClient::StartRecord() {
-        if (!media_recorder_) {
-            return;
-        }
-
-        media_recorder_->StartRecord();
+        recording_ = true;
     }
 
     void MediaRecordPluginClient::EndRecord() {
-        if (!media_recorder_) {
-            return;
-        }
-
-        media_recorder_->EndRecord();
+        recording_ = false;
+        
+        plugin_context_->PostWorkTask([=, this]() {
+            for (auto& media_recorder : media_recorders_) {
+                media_recorder->EndRecord();
+            } 
+        });
     }
-
-    /*void MediaRecordPluginClient::RecvVideoFrame(const VideoFrame& frame) {
-        if (!media_recorder_) {
-            return;
-        }
-
-        media_recorder_->RecvVideoFrame(frame);
-    }*/
 }

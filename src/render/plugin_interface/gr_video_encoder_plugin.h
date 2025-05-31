@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA on 19/11/2024.
 //
 
@@ -37,6 +37,7 @@ namespace tc
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
         void InsertIdr() override;
+        void On1Second() override;
 
         virtual bool CanEncodeTexture();
         virtual bool HasEncoderForMonitor(const std::string& monitor_name) = 0;
@@ -51,6 +52,9 @@ namespace tc
         
         std::optional<EncoderConfig> GetEncoderConfig(const std::string& monitor_name);
 
+        // 如果客户端开始录屏，则需要设置此参数为true
+        void SetClientSideMediaRecording(bool recording);
+
     public:
         int refresh_rate_ = 60;
         uint32_t out_width_ = 0;
@@ -59,6 +63,9 @@ namespace tc
         int bitrate_ = 10000000; // 10Mbps
         bool insert_idr_ = false;
         std::map<std::string, EncoderConfig> encoder_configs_;
+
+    private:
+        std::atomic<bool> client_side_media_recording_ = false;
     };
 
 }
