@@ -41,7 +41,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     recording_sign_lab_->setStyleSheet(R"(image: url(:resources/image/recording.svg);
                                     background-repeat:no-repeat;
                                     background-position: center center;)");
-    recording_sign_lab_->move(0, this->height() * 0.8);
+    recording_sign_lab_->move(this->width() * 0.85, 0);
     recording_sign_lab_->hide();
 
     // 创建透明度效果
@@ -50,7 +50,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
 
     // 创建动画
     QPropertyAnimation* animation = new QPropertyAnimation(opacityEffect, "opacity", recording_sign_lab_);
-    animation->setDuration(2000);   // 动画周期1秒
+    animation->setDuration(1500);   
     animation->setStartValue(1.0);  // 完全不透明
     animation->setKeyValueAt(0.5, 0.0); // 中间点完全透明
     animation->setEndValue(1.0); // 结束时不透明
@@ -80,7 +80,7 @@ void GameView::resizeEvent(QResizeEvent* event) {
         float_controller_->ReCalculatePosition();
     }
 
-    recording_sign_lab_->move(0, this->height() * 0.8);
+    recording_sign_lab_->move(this->width() * 0.85, 0);
 
     QWidget::resizeEvent(event);
 }
