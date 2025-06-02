@@ -109,7 +109,7 @@ namespace tc
             else if (msg->type() == tc::kAudioFrame) {
                 const auto& audio_frame = msg->audio_frame();
                 for (auto& media_recorder: media_recorders_) {
-                    //media_recorder->RecvAudioFrame(audio_frame);
+                    media_recorder->RecvAudioFrame(audio_frame);
                 }
             }
         });

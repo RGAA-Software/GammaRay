@@ -59,22 +59,22 @@ public:
 	void SetIndex(int idx);
 
 	AVFormatContext* format_ctx_ = nullptr;
-	//AVCodecContext* mAudioCodecContext = nullptr;
 	AVStream* video_stream_ = nullptr;
 	AVStream* audio_stream_ = nullptr;
 	AVPixelFormat pix_fmt_ = AV_PIX_FMT_NONE;
 	std::string file_name_;
-	int width_ = 3840;
-	int height_ = 2160;
+	int width_ = -1;
+	int height_ = -1;
 	int video_stream_index_ = -1;
-	int audio_stream_index = -1;
+	int audio_stream_index_ = -1;
 
 	int video_frame_count_ = 0;
+	int audio_frame_count_ = 0;
 
 	std::chrono::system_clock::time_point start_time_;
 
-	int last_width_ = -1;
-	int last_height_ = -1;
+	//int last_width_ = -1;
+	//int last_height_ = -1;
 
 	MediaRecordPluginClient* plugin_ = nullptr;
 
