@@ -10,6 +10,7 @@
 #include "st_security_file_transfer_item.h"
 #include "render_panel/database/file_transfer_record.h"
 #include "render_panel/gr_context.h"
+#include "tc_image_button.h"
 #include <QStyledItemDelegate>
 
 namespace tc
@@ -29,10 +30,23 @@ namespace tc
         auto root_layout = new NoMarginVLayout();
         {
             // title
+            auto layout = new NoMarginHLayout();
+
             auto label = new TcLabel(this);
+            label->setFixedWidth(220);
             label->SetTextId("id_security_file_transfer_history_logs");
             label->setStyleSheet("font-size: 16px; font-weight: 700; padding-left: 7px;");
-            root_layout->addWidget(label);
+            layout->addWidget(label);
+
+            auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(16, 16));
+            btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+            btn_refresh->SetRoundRadius(13);
+            btn_refresh->setFixedSize(26, 26);
+            layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
+
+            layout->addStretch();
+
+            root_layout->addLayout(layout);
         }
 
         {

@@ -8,6 +8,7 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/database/visit_record.h"
+#include "tc_common_new/time_util.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -53,23 +54,36 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            //lbl->setFixedWidth(item_width);
-            lbl->setText("Start");
+            if (item_info_->IsValid()) {
+                lbl->setText(TimeUtil::FormatTimestamp(item_info_->begin_).c_str());
+            }
+            else {
+                lbl->setText("Start");
+            }
             content_layout->addWidget(lbl, 1);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            //lbl->setFixedWidth(item_width);
-            lbl->setText("End");
+            if (item_info_->IsValid()) {
+                lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
+            }
+            else {
+                lbl->setText("End");
+            }
             content_layout->addWidget(lbl, 1);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Duration");
+            if (item_info_->IsValid()) {
+                lbl->setText(TimeUtil::FormatSecondsToDHMS(item_info_->duration_).c_str());
+            }
+            else {
+                lbl->setText("Duration");
+            }
             //lbl->setFixedWidth(item_width);
             content_layout->addWidget(lbl, 1);
 
@@ -78,7 +92,12 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Account");
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->account_.c_str());
+            }
+            else {
+                lbl->setText("Account");
+            }
             //lbl->setFixedWidth(item_width);
             content_layout->addWidget(lbl, 1);
         }
@@ -86,7 +105,12 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Controller Device");
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->controller_device_.c_str());
+            }
+            else {
+                lbl->setText("Controller Device");
+            }
             //lbl->setFixedWidth(item_width);
             content_layout->addWidget(lbl, 1);
         }
@@ -94,8 +118,12 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Controlled Device");
-            //lbl->setFixedWidth(item_width);
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->controlled_device_.c_str());
+            }
+            else {
+                lbl->setText("Controlled Device");
+            }
             content_layout->addWidget(lbl, 1);
         }
 

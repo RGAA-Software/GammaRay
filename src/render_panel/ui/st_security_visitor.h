@@ -15,18 +15,24 @@ namespace tc
     class PageWidget;
     class GrApplication;
     class VisitRecord;
+    class VisitRecordOperator;
 
     class StSecurityVisitor : public TabBase {
     public:
         StSecurityVisitor(const std::shared_ptr<GrApplication>& app, QWidget *parent);
 
     private:
-        QListWidgetItem* AddItem(const std::shared_ptr<VisitRecord>& item_info);
+        QListWidgetItem* AddItem(const std::shared_ptr<VisitRecord>& record);
         void LoadPage(int page);
+        void RegisterActions(int index);
+        void ProcessCopy(const std::shared_ptr<VisitRecord>& record);
+        void ProcessCopyAsJson(const std::shared_ptr<VisitRecord>& record);
+        void ProcessDelete(const std::shared_ptr<VisitRecord>& record);
 
     private:
         PageWidget* page_widget_ = nullptr;
         QListWidget* list_widget_ = nullptr;
+        std::shared_ptr<VisitRecordOperator> visit_op_ = nullptr;
         std::vector<std::shared_ptr<VisitRecord>> records_;
     };
 

@@ -9,6 +9,8 @@
 #include <memory>
 #include <sqlite_orm/sqlite_orm.h>
 #include "db_game.h"
+#include "visit_record.h"
+#include "file_transfer_record.h"
 #include "render_panel/database/stream_item.h"
 
 using namespace sqlite_orm;
@@ -69,7 +71,27 @@ namespace tc
                   make_column("enable_p2p", &StreamItem::enable_p2p_, default_value(0)),
                   make_column("desktop_name", &StreamItem::desktop_name_),
                   make_column("os_version", &StreamItem::os_version_)
-               )
+               ),
+                make_table("visit_record",
+                  make_column("id", &VisitRecord::id_, primary_key()),
+                  make_column("conn_type", &VisitRecord::conn_type_),
+                  make_column("begin", &VisitRecord::begin_),
+                  make_column("end", &VisitRecord::end_),
+                  make_column("duration", &VisitRecord::duration_),
+                  make_column("account", &VisitRecord::account_),
+                  make_column("controller_device", &VisitRecord::controller_device_),
+                  make_column("controlled_device", &VisitRecord::controlled_device_)
+                  ),
+                make_table("file_transfer_record",
+                  make_column("id", &FileTransferRecord::id_, primary_key()),
+                     make_column("conn_type", &FileTransferRecord::conn_type_),
+                     make_column("begin", &FileTransferRecord::begin_),
+                     make_column("end", &FileTransferRecord::end_),
+                     make_column("controller_device", &FileTransferRecord::controller_device_),
+                     make_column("controlled_device", &FileTransferRecord::controlled_device_),
+                     make_column("direction", &FileTransferRecord::direction_),
+                     make_column("file_detail", &FileTransferRecord::file_detail_)
+                  )
             );
             return st;
         }

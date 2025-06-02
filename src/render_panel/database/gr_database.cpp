@@ -24,6 +24,7 @@ namespace tc
 
         stream_operator_ = std::make_shared<StreamDBOperator>(shared_from_this());
         db_game_operator_ = std::make_shared<DBGameOperator>(context_, shared_from_this());
+        visit_record_op_ = std::make_shared<VisitRecordOperator>(context_, shared_from_this());
 
         return true;
     }
