@@ -69,6 +69,7 @@ bool MediaRecorder::InitFFmpeg() {
 		LOGE("MediaRecord avformat_new_stream(audio) - faild");
 		return false;
 	}
+
 	AVCodecParameters* audio_codecpar = audio_stream_->codecpar;
 	audio_codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 	audio_codecpar->codec_id = AV_CODEC_ID_OPUS;
@@ -76,6 +77,31 @@ bool MediaRecorder::InitFFmpeg() {
     audio_codecpar->channels = 2;
 	audio_codecpar->channel_layout = AV_CH_LAYOUT_STEREO;
 	audio_codecpar->format = AV_SAMPLE_FMT_S16;
+
+	/*
+	* 添加 OPUS 音频的 extradata(重要), 否则无法播放, 会提示：
+	* invalid size 0 in stsd
+	* [mov,mp4,m4a,3gp,3g2,mj2 @ 000001f97ecd3180] error reading header
+	* .\GammaRay_meida_record_0_1748862598989.mp4: Invalid data found when processing input
+	*/
+	uint8_t opus_header[19] = {
+		'O', 'p', 'u', 's', 'H', 'e', 'a', 'd', // Magic signature
+		0x01,                                   // Version
+		0x02,                                   // Channel count
+		0x38, 0x01,                             // Pre-skip (312 in little-endian)
+		0x80, 0xBB, 0x00, 0x00,                 // Sample rate (48000)
+		0x00, 0x00,                             // Output gain
+		0x00                                    // Channel mapping family
+	};
+
+	audio_codecpar->extradata = (uint8_t*)av_malloc(sizeof(opus_header) + AV_INPUT_BUFFER_PADDING_SIZE);
+	if (!audio_codecpar->extradata) {
+		LOGE("Failed to allocate extradata for OPUS");
+		return false;
+	}
+
+	memcpy(audio_codecpar->extradata, opus_header, sizeof(opus_header));
+	audio_codecpar->extradata_size = sizeof(opus_header);
 	audio_stream_index_ = audio_stream_->index;
 
 	result = avio_open(&format_ctx_->pb, file_name_.c_str(), AVIO_FLAG_WRITE);
@@ -92,13 +118,6 @@ bool MediaRecorder::InitFFmpeg() {
 		LOGE("MediaRecord avformat_write_header - faild %s", GetFFmpegError(result).c_str());
 		return false;
 	}
-	/*if (!ReInitMixAudioFifo()) {
-		return false;
-	}
-	mAudioPacketNumOfTimes = 0;
-	video_frame_count_ = 0;
-	mIsCanStart = false;
-	mIsInitOk = true;*/
 	video_frame_count_ = 0;
 	audio_frame_count_ = 0;
 	init_ok_ = true;
@@ -106,37 +125,31 @@ bool MediaRecorder::InitFFmpeg() {
 }
 
 void MediaRecorder::EndRecord() {
-	//mIsInitOk = false;
 	init_ok_ = false;
 	if (format_ctx_) {
-		LOGI(" MediaRecord::End()");
 		av_write_trailer(format_ctx_);
 		if (video_stream_index_ > -1) {
-			//avcodec_close(format_ctx_->streams[video_stream_index_]->codec);
-			//av_freep(&format_ctx_->streams[video_stream_index_]->codec);
 			av_freep(&format_ctx_->streams[video_stream_index_]);
 		}
 
 		if (audio_stream_index_ > -1) {
-			//avcodec_close(format_ctx_->streams[audio_stream_index_]->codec);
-			//av_freep(&format_ctx_->streams[audio_stream_index_]->codec);
+			if (audio_stream_ && audio_stream_->codecpar && audio_stream_->codecpar->extradata) {
+				av_freep(&audio_stream_->codecpar->extradata);
+			}
 			av_freep(&format_ctx_->streams[audio_stream_index_]);
 		}
 		avio_close(format_ctx_->pb);
 		av_free(format_ctx_);
 		format_ctx_ = nullptr;
 	}
-	//mIsCanStart = true;
+
 	video_stream_index_ = -1;
 	audio_stream_index_ = -1;
 	width_ = -1;
 	height_ = -1;
 	video_frame_count_ = 0;
 	audio_frame_count_ = 0;
-
-	LOGI(" MediaRecord::End() 2");
 }
-
 
 void MediaRecorder::InitByVideoFrame(const VideoFrame& frame) {
 	bool is_config_frame = false;
@@ -153,27 +166,17 @@ void MediaRecorder::InitByVideoFrame(const VideoFrame& frame) {
 		if (H265_TYPE(data[4]) == ENalType::H265_NAL_VPS)
 			is_config_frame = true;
 	}
-	else { // vp9 ? no supprot
-
-
+	else { // vp9, no support
+		LOGW("video codec type: {}, has not support", (int)frame.type());
+		return;
 	}
-
-
-	LOGI("InitByVideoFrame  is_config_frame: {}, , key: {}", is_config_frame, frame.key());
 
 	if (!is_config_frame) {
 		return;
 	}
 
-	LOGI("InitByVideoFrame 2");
-
-
-	LOGI("RecvVideoFrame is_config_frame");
-
 	height_ = frame.frame_height();
-
 	width_ = frame.frame_width();
-
 	video_codec_ = frame.type();
 
 	//去初始化
@@ -185,11 +188,9 @@ void MediaRecorder::InitByVideoFrame(const VideoFrame& frame) {
 	start_time_ = std::chrono::system_clock::now();
 	SaveVideoFrame(frame);
 	return;
-
 }
 
 void MediaRecorder::RecvVideoFrame(const VideoFrame& frame) {
-	LOGI("RecvVideoFrame video_frame_count_ : {}", video_frame_count_);
 	// 尚未初始化
 	if (!init_ok_) {
 		LOGI("InitByVideoFrame 0");
@@ -212,7 +213,6 @@ void MediaRecorder::RecvVideoFrame(const VideoFrame& frame) {
 }
 
 void MediaRecorder::RecvAudioFrame(const AudioFrame& frame) {
-	return;
 	if (0 == video_frame_count_) {
 		return;
 	}
@@ -229,30 +229,9 @@ void MediaRecorder::RecvAudioFrame(const AudioFrame& frame) {
 	}
 	av_packet_unref(&packet);
 	++audio_frame_count_;
-
-
-	static FILE* opus_file = fopen(".\\test.opus", "wb");
-	fwrite(d.data(), 1, d.size(), opus_file);
-	fflush(opus_file);
-
-
-	/*
-	message AudioFrame {
-		  int32 samples = 1;
-		  int32 channels = 2;
-		  int32 bits = 3;
-		  int32 frame_size = 4;
-		  bytes data = 5;
-		  string extra = 6;
-	}
-	
-	*/
-
-	LOGE("RecvAudioFrame size : {}", d.size());
 }
 
 void MediaRecorder::SaveVideoFrame(const VideoFrame& frame) {
-
 	auto& d = frame.data();
 	if (0 == d.size()) {
 		return;

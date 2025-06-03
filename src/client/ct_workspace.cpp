@@ -280,6 +280,14 @@ namespace tc
 
         sdk_->SetOnAudioFrameDecodedCallback([=, this](const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
             //LOGI("data size: {}, samples: {}, channel: {}, bits: {}, audio on: {}", data->Size(), samples, channels, bits, settings_->IsAudioEnabled());
+
+#if 0       // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm 
+            std::string pcm_file_name_ = std::format(".\\audio_{}_{}.pcm", samples, channels);
+            static FILE* pcm_file = fopen(pcm_file_name_.c_str(), "wb");
+            fwrite(data->DataAddr(), 1, data->Size(), pcm_file);
+            fflush(pcm_file);
+#endif
+
             if (!settings_->IsAudioEnabled()) {
                 return;
             }
