@@ -79,13 +79,9 @@ namespace tc
 
     void MediaRecordPluginClient::OnMessage(std::shared_ptr<Message> msg) {
         ClientPluginInterface::OnMessage(msg);
-        //LOGI("MediaRecordPluginClient OnMessage: {}", (int)msg->type());   // 更新此文件后，生成GammaRayClientInner.exe 不会编译 ！！！
-        //                                                                   // 可以录屏视频帧了，但是被控端是nvenc编码就有问题，插入关键帧，会变模糊，编码器应该设置的有问题，这与录屏无关。
         if (!recording_) {
             return;
         }
-
-        //LOGI("MediaRecordPluginClient xxx");
 
         plugin_context_->PostWorkTask([this, msg]() {
             if (msg->type() == tc::kVideoFrame) {
@@ -97,9 +93,6 @@ namespace tc
 
                 int v_idx = video_frame.mon_index();
                 if (media_recorders_.size() > v_idx) {
-
-                    LOGI("video_frame frame_index : {}", video_frame.frame_index());
-
                     media_recorders_[v_idx]->RecvVideoFrame(video_frame);
                 }
                 else {
@@ -126,7 +119,6 @@ namespace tc
 
     void MediaRecordPluginClient::EndRecord() {
         recording_ = false;
-        
         plugin_context_->PostWorkTask([=, this]() {
             for (auto& media_recorder : media_recorders_) {
                 media_recorder->EndRecord();

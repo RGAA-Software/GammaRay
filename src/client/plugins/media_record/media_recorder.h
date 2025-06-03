@@ -50,13 +50,13 @@ public:
 	void EndRecord();
 
 	void RecvVideoFrame(const VideoFrame& frame);
-	void SaveVideoFrame(const VideoFrame& frame);
 
+	void SaveVideoFrame(const VideoFrame& frame);
 
 	void RecvAudioFrame(const AudioFrame& frame);
 
-
 	void SetIndex(int idx);
+private:
 
 	AVFormatContext* format_ctx_ = nullptr;
 	AVStream* video_stream_ = nullptr;
@@ -73,18 +73,14 @@ public:
 
 	std::chrono::system_clock::time_point start_time_;
 
-	//int last_width_ = -1;
-	//int last_height_ = -1;
-
 	MediaRecordPluginClient* plugin_ = nullptr;
 
 	tc::VideoType video_codec_ =  tc::VideoType::kNetH264;
 
 	std::atomic<bool> init_ok_ = false;
 
+	//录屏器索引
 	int index_ = 0;
-
-	
 };
 
 }

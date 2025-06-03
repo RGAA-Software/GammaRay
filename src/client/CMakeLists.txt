@@ -67,6 +67,7 @@ set(SRCS_WS
         ui/float_3rd_resolution_panel.cpp
         ui/float_button_state_indicator.cpp
         ui/computer_icon.cpp
+        ui/svg_lable.cpp
         network/ct_dashboard_client.cpp
         network/ct_panel_client.cpp
         plugins/ct_plugin_manager.cpp

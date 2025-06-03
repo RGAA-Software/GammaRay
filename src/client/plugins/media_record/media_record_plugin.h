@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 #include <vector>
-//#include "tc_message.pb.h"
 
 namespace tc
 {
@@ -29,23 +28,14 @@ namespace tc
 
         void StartRecord() override;
         void EndRecord() override;
-
-       
-
     private:
         std::map<std::string, QLabel*> previewers_;
-        //std::shared_ptr<MediaRecorder> media_recorder_ = nullptr;
-
-
+        
         //因为要同时录制多个屏幕的视频，所以要创建多个MediaRecorder
         std::vector<std::shared_ptr<MediaRecorder>> media_recorders_;
 
-
         std::atomic<bool> recording_ = false;
-
-        
     };
-
 }
 
 extern "C" __declspec(dllexport) void* GetInstance();
