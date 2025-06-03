@@ -925,13 +925,14 @@ namespace tc
             GameView* game_view = nullptr;
             if (0 == index) {
                 game_view = new GameView(context_, sdk_, params, this);    // main view
+                game_view->resize(1080, 680);
                 game_view->show();
                 game_view->SetMainView(true);
                 setCentralWidget(game_view);
             }
             else {
                 game_view = new GameView(context_, sdk_, params, nullptr); // extend view
-                game_view->resize(1280, 768);
+                game_view->resize(1080, 680);
                 game_view->hide();
                 game_view->SetMainView(false);
                 game_view->installEventFilter(this);
@@ -941,9 +942,17 @@ namespace tc
             game_views_.push_back(game_view);
         }
         QTimer::singleShot(200, this, [=, this]() {
+            {
+                QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
+                int x = (screenGeometry.width() - this->width()) / 2;
+                int y = (screenGeometry.height() - this->height()) / 2;
+                this->resize(1080, 680);
+                this->move(x-60, y-40);
+            }
+
             QPoint ws_pos = this->pos();
-            const int x_offset = 100;
-            const int y_offset = 50;
+            const int x_offset = 80;
+            const int y_offset = 40;
             const int start_x = ws_pos.x();
             const int start_y = ws_pos.y();
             int index = 0;
