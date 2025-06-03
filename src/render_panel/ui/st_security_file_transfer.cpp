@@ -9,13 +9,22 @@
 #include "tc_qt_widget/pagination/page_widget.h"
 #include "st_security_file_transfer_item.h"
 #include "render_panel/database/file_transfer_record.h"
+#include "render_panel/database/file_transfer_record_operator.h"
+#include "render_panel/database/gr_database.h"
 #include "render_panel/gr_context.h"
 #include "tc_image_button.h"
+#include "tc_dialog.h"
 #include <QStyledItemDelegate>
+#include <QMenu>
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
 
 namespace tc
 {
 
+    constexpr int kPageSize = 20;
+    
     class StSecurityFileTransferItemDelegate : public QStyledItemDelegate {
     public:
         explicit StSecurityFileTransferItemDelegate(QObject* pParent) {}
@@ -27,25 +36,69 @@ namespace tc
     };
 
     StSecurityFileTransfer::StSecurityFileTransfer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
+        ft_record_op_ = context_->GetDatabase()->GetFileTransferRecordOp();
         auto root_layout = new NoMarginVLayout();
+//        {
+//            // title
+//            auto layout = new NoMarginHLayout();
+//
+//            auto label = new TcLabel(this);
+//            label->setFixedWidth(235);
+//            label->SetTextId("id_security_file_transfer_history_logs");
+//            label->setStyleSheet("font-size: 16px; font-weight: 700; padding-left: 7px;");
+//            layout->addWidget(label);
+//
+//            auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(16, 16));
+//            btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+//            btn_refresh->SetRoundRadius(13);
+//            btn_refresh->setFixedSize(26, 26);
+//            layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
+//
+//            layout->addStretch();
+//
+//            root_layout->addLayout(layout);
+//        }
+
         {
             // title
             auto layout = new NoMarginHLayout();
 
             auto label = new TcLabel(this);
-            label->setFixedWidth(220);
+            label->setFixedWidth(235);
             label->SetTextId("id_security_file_transfer_history_logs");
             label->setStyleSheet("font-size: 16px; font-weight: 700; padding-left: 7px;");
             layout->addWidget(label);
 
-            auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(16, 16));
-            btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
-            btn_refresh->SetRoundRadius(13);
-            btn_refresh->setFixedSize(26, 26);
-            layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
+            {
+                auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(16, 16));
+                btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+                btn_refresh->SetRoundRadius(13);
+                btn_refresh->setFixedSize(26, 26);
+                layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
+                btn_refresh->SetOnImageButtonClicked([=, this]() {
+                    LoadPage(page_widget_->getCurrentPage());
+                });
+            }
+
+            {
+                auto btn_clear_all = new TcImageButton(":/resources/image/ic_clear.svg", QSize(16, 16));
+                btn_clear_all->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+                btn_clear_all->SetRoundRadius(13);
+                btn_clear_all->setFixedSize(26, 26);
+                layout->addSpacing(10);
+                layout->addWidget(btn_clear_all, 0, Qt::AlignVCenter);
+                btn_clear_all->SetOnImageButtonClicked([=, this]() {
+                    TcDialog dialog("Warning", "Do you want to delete ALL records?");
+                    if (dialog.exec() == kDoneOk) {
+                        context_->PostTask([=, this]() {
+                            ft_record_op_->DeleteAll();
+                            LoadPage(page_widget_->getCurrentPage());
+                        });
+                    }
+                });
+            }
 
             layout->addStretch();
-
             root_layout->addLayout(layout);
         }
 
@@ -86,13 +139,13 @@ namespace tc
                 QListWidgetItem* cur_item = list_widget_->itemAt(pos);
                 if (cur_item == nullptr) { return; }
                 int index = list_widget_->row(cur_item);
-
+                RegisterActions(index);
             });
 
             QObject::connect(list_widget_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
                 int index = list_widget_->row(item);
-                auto item_info = records_.at(index);
-
+                auto record = records_.at(index);
+                ProcessCopy(record);
             });
 
             root_layout->addWidget(list_widget_);
@@ -100,7 +153,7 @@ namespace tc
         }
 
         page_widget_ = new PageWidget();
-        page_widget_->setMaxPage(5550);
+        page_widget_->setMaxPage(1);
 
         root_layout->addSpacing(10);
         root_layout->addWidget(page_widget_);
@@ -111,13 +164,36 @@ namespace tc
         setObjectName("StSecurityFileTransfer");
         setStyleSheet("#StSecurityFileTransfer {background-color: #ffffff;}");
 
+        page_widget_->setSelectedCallback([=, this](int page) {
+            LOGI("Will load page: {}", page);
+            LoadPage(page);
+        });
+
+        // test beg //
+        context_->PostDBTask([=, this]() {
+            for (int i = 0; i < 26; i++) {
+                auto record = std::make_shared<FileTransferRecord>(FileTransferRecord {
+                    .conn_type_ = "TT",
+                    .begin_ = 1 + i,
+                    .end_ = 1 * i,
+                    .account_ = std::format("acc: {}", i),
+                    .controller_device_ = "bbbbb",
+                    .controlled_device_ = "Jack Sparrow",
+                    .direction_ = "UP",
+                    .file_detail_ = "D://xxx/xxx.jpg"
+                });
+                ft_record_op_->InsertFileTransferRecord(record);
+            }
+        });
+        // test end //
+
         // Load Page 1
         LoadPage(1);
     }
 
     QListWidgetItem* StSecurityFileTransfer::AddItem(const std::shared_ptr<FileTransferRecord>& item_info) {
         auto item = new QListWidgetItem(list_widget_);
-        auto item_size = QSize(995, 40);
+        auto item_size = QSize(995, 45);
         item->setSizeHint(item_size);
         auto widget = new StSecurityFileTransferItemWidget(app_, item_info, list_widget_);
         widget->setFixedSize(item_size);
@@ -130,32 +206,28 @@ namespace tc
             return;
         }
 
-        context_->PostTask([=, this]() {
-            // TEST
+        context_->PostDBTask([=, this]() {
+            records_.clear();
+            auto total_count = ft_record_op_->GetTotalCounts();
+
             records_.push_back(std::make_shared<FileTransferRecord>(FileTransferRecord {
-                    .conn_type_ = "",
-                    .begin_ = 1,
-                    .end_ = 1,
-                    .account_ = "11188889999",
-                    .controller_device_ = "",
-                    .controlled_device_ = "",
-                    .direction_ = "upload",
-                    .file_detail_ = "D://jsdfasdjf/fdasf/aaa.txt"
+                .conn_type_ = "",
+                .begin_ = 1,
+                .end_ = 1,
+                .account_ = "",
+                .controller_device_ = "",
+                .controlled_device_ = "",
             }));
-            for (int i = 0; i < 20; i++) {
-                records_.push_back(std::make_shared<FileTransferRecord>(FileTransferRecord {
-                    .conn_type_ = "TCP",
-                    .begin_ = 1,
-                    .end_ = 1,
-                    .account_ = "11188889999",
-                    .controller_device_ = "hkjfkjdskfj",
-                    .controlled_device_ = "ddooppop",
-                    .direction_ = "upload",
-                    .file_detail_ = "D://jsdfasdjf/fdasf/aaa.txt"
-                }));
+
+            auto records = ft_record_op_->QueryFileTransferRecords(page, kPageSize);
+            for (const auto& r : records) {
+                records_.push_back(r);
             }
 
             context_->PostUITask([=, this]() {
+
+                page_widget_->setMaxPage(total_count/kPageSize+1);
+
                 auto index = 0;
                 int count = list_widget_->count();
                 for (int i = 0; i < count; i++) {
@@ -170,4 +242,61 @@ namespace tc
         });
     }
 
+    void StSecurityFileTransfer::RegisterActions(int index) {
+        auto record = records_.at(index);
+        std::vector<QString> actions = {
+                tr("Copy"),
+                tr("Copy As Json"),
+                "",
+                tr("Delete"),
+        };
+        QMenu* menu = new QMenu();
+        for (int i = 0; i < actions.size(); i++) {
+            QString action_name = actions.at(i);
+            if (action_name.isEmpty()) {
+                menu->addSeparator();
+                continue;
+            }
+
+            QAction* action = new QAction(action_name, menu);
+            menu->addAction(action);
+            QObject::connect(action, &QAction::triggered, this, [=, this]() {
+                if (i == 0) {
+                    ProcessCopy(record);
+                }
+                else if (i == 1) {
+                    ProcessCopyAsJson(record);
+                }
+                else if (i == 3) {
+                    ProcessDelete(record);
+                }
+            });
+        }
+        menu->exec(QCursor::pos());
+        delete menu;
+    }
+
+    void StSecurityFileTransfer::ProcessCopy(const std::shared_ptr<FileTransferRecord>& record) {
+        auto msg = record->AsString();
+        QClipboard* clipboard = QApplication::clipboard();
+        clipboard->setText(QString::fromStdString(msg));
+        context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
+    }
+
+    void StSecurityFileTransfer::ProcessCopyAsJson(const std::shared_ptr<FileTransferRecord>& record) {
+        auto msg = record->AsJson();
+        QClipboard* clipboard = QApplication::clipboard();
+        clipboard->setText(QString::fromStdString(msg));
+        context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
+    }
+
+    void StSecurityFileTransfer::ProcessDelete(const std::shared_ptr<FileTransferRecord>& record) {
+        TcDialog dialog("Delete", "Do you want to delete this record?");
+        if (dialog.exec() == kDoneOk) {
+            ft_record_op_->Delete(record->id_);
+            auto current_page = page_widget_->getCurrentPage();
+            LoadPage(current_page);
+        }
+    }
+    
 }

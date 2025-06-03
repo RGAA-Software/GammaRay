@@ -16,6 +16,7 @@ namespace tc
     class PageWidget;
     class GrApplication;
     class FileTransferRecord;
+    class FileTransferRecordOperator;
 
     class StSecurityFileTransfer : public TabBase {
     public:
@@ -24,10 +25,15 @@ namespace tc
     private:
         QListWidgetItem* AddItem(const std::shared_ptr<FileTransferRecord>& item_info);
         void LoadPage(int page);
+        void RegisterActions(int index);
+        void ProcessCopy(const std::shared_ptr<FileTransferRecord>& record);
+        void ProcessCopyAsJson(const std::shared_ptr<FileTransferRecord>& record);
+        void ProcessDelete(const std::shared_ptr<FileTransferRecord>& record);
 
     private:
         PageWidget* page_widget_ = nullptr;
         QListWidget* list_widget_ = nullptr;
+        std::shared_ptr<FileTransferRecordOperator> ft_record_op_ = nullptr;
         std::vector<std::shared_ptr<FileTransferRecord>> records_;
     };
 

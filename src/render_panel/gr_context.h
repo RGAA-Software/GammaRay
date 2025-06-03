@@ -45,9 +45,26 @@ namespace tc
         void Init(const std::shared_ptr<GrApplication>& app);
         void Exit();
         std::shared_ptr<SteamManager> GetSteamManager();
+        // Post task in runtime
         void PostTask(std::function<void()>&& task);
+
+        // Post task in runtime and receive returned value
+        // like:
+        // auto ret = exec_task();
+        // ckb_task(ret);
+        void PostTask(std::function<std::any()>&& exec_task, std::function<void(std::any)>&& cbk_task);
+
+        // Post in Qt UI Thread(Windows messages looping thread)
         void PostUITask(std::function<void()>&& task);
+
+        // Post in Qt UI Thread(Windows messages looping thread), task will exec after specific milliseconds
         void PostUIDelayTask(std::function<void()>&& task, int ms);
+
+        // Like PostTask, but always in a fixed thread
+        void PostDBTask(std::function<void()>&& task);
+
+        // Like PostTask, but always in a fixed thread
+        void PostDBTask(std::function<std::any()>&& exec_task, std::function<void(std::any)>&& cbk_task);
 
         int GetIndexByUniqueId();
         std::vector<EthernetInfo> GetIps();

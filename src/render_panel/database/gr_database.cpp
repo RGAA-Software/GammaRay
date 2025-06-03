@@ -5,6 +5,7 @@
 #include "gr_database.h"
 #include "visit_record.h"
 #include "visit_record_operator.h"
+#include "file_transfer_record_operator.h"
 #include "stream_db_operator.h"
 #include "db_game_operator.h"
 #include <QApplication>
@@ -19,13 +20,13 @@ namespace tc
     bool GrDatabase::Init() {
         auto db_path = qApp->applicationDirPath() + "/gr_data/gr_data.db";
         auto storage = InitAppDatabase(db_path.toStdString());
-        db_storage_ = storage;
         storage.sync_schema();
+        db_storage_ = storage;
 
         stream_operator_ = std::make_shared<StreamDBOperator>(shared_from_this());
         db_game_operator_ = std::make_shared<DBGameOperator>(context_, shared_from_this());
         visit_record_op_ = std::make_shared<VisitRecordOperator>(context_, shared_from_this());
-
+        ft_record_op_ = std::make_shared<FileTransferRecordOperator>(context_, shared_from_this());
         return true;
     }
 

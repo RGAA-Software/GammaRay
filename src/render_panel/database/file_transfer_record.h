@@ -15,6 +15,10 @@ namespace tc
         [[nodiscard]] bool IsValid() const {
             return !controller_device_.empty() && !controlled_device_.empty();
         }
+
+        std::string AsString();
+        std::string AsJson();
+
     public:
         int id_{0};
         std::string conn_type_;

@@ -114,6 +114,12 @@ namespace tc
         task_rt_->Post(SimpleThreadTask::Make(std::move(task)));
     }
 
+    void GrContext::PostTask(std::function<std::any()>&& exec_task, std::function<void(std::any)>&& cbk_task) {
+        task_rt_->Post(
+            ReturnThreadTask<ExecFunc, CallbackFunc>::Make(std::move(exec_task), std::move(cbk_task))
+        );
+    }
+
     void GrContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [=]() {
             task();
@@ -126,6 +132,16 @@ namespace tc
                 t();
             });
         });
+    }
+
+    void GrContext::PostDBTask(std::function<void()>&& task) {
+        task_rt_->GetLastThread()->Post(SimpleThreadTask::Make(std::move(task)));
+    }
+
+    void GrContext::PostDBTask(std::function<std::any()>&& exec_task, std::function<void(std::any)>&& cbk_task) {
+        task_rt_->GetLastThread()->Post(
+                ReturnThreadTask<ExecFunc, CallbackFunc>::Make(std::move(exec_task), std::move(cbk_task))
+        );
     }
 
     int GrContext::GetIndexByUniqueId() {

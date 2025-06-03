@@ -3,3 +3,32 @@
 //
 
 #include "file_transfer_record.h"
+#include "tc_common_new/time_util.h"
+#include "tc_3rdparty/json/json.hpp"
+#include <format>
+
+using namespace nlohmann;
+
+namespace tc
+{
+
+    std::string FileTransferRecord::AsString() {
+        return std::format("Conn Type: {}, Begin: {}, End: {}, Account: {}, Controller device: {}, Controlled device: {}, direction: {}, file detail: {}",
+                           conn_type_, TimeUtil::FormatTimestamp(begin_), TimeUtil::FormatTimestamp(end_), account_, controller_device_,
+                           controlled_device_, direction_, file_detail_);
+    }
+
+    std::string FileTransferRecord::AsJson() {
+        nlohmann::json obj;
+        obj["conn_type"] = conn_type_;
+        obj["begin"] = TimeUtil::FormatTimestamp(begin_);
+        obj["end"] = TimeUtil::FormatTimestamp(end_);
+        obj["account"] = account_;
+        obj["controller_device"] = controller_device_;
+        obj["controlled_device"] = controlled_device_;
+        obj["direction"] = direction_;
+        obj["file_detail"] = file_detail_;
+        return obj.dump(2);
+    }
+
+}

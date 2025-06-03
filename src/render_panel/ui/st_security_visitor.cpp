@@ -43,7 +43,7 @@ namespace tc
             auto layout = new NoMarginHLayout();
 
             auto label = new TcLabel(this);
-            label->setFixedWidth(220);
+            label->setFixedWidth(235);
             label->SetTextId("id_security_visitor_history_logs");
             label->setStyleSheet("font-size: 16px; font-weight: 700; padding-left: 7px;");
             layout->addWidget(label);
@@ -132,7 +132,7 @@ namespace tc
         }
 
         page_widget_ = new PageWidget();
-        page_widget_->setMaxPage(5550);
+        page_widget_->setMaxPage(1);
 
         root_layout->addSpacing(10);
         root_layout->addWidget(page_widget_);
@@ -149,19 +149,21 @@ namespace tc
         });
 
         // test beg //
-        for (int i = 0; i < 26; i++) {
-            auto record = std::make_shared<VisitRecord>(VisitRecord {
-                .conn_type_ = "TT",
-                .begin_ = 1 + i,
-                .end_ = 1 * i,
-                .duration_ = 10,
-                .account_ = std::format("acc: {}", i),
-                .controller_device_ = "xxxx",
-                .controlled_device_ = "aaaa",
-            });
+        context_->PostDBTask([=, this]() {
+            for (int i = 0; i < 26; i++) {
+                auto record = std::make_shared<VisitRecord>(VisitRecord {
+                    .conn_type_ = "TT",
+                    .begin_ = 1 + i,
+                    .end_ = 1 * i,
+                    .duration_ = 10,
+                    .account_ = std::format("acc: {}", i),
+                    .controller_device_ = "xxxx",
+                    .controlled_device_ = "aaaa",
+                });
 
-            visit_op_->InsertVisitRecord(record);
-        }
+                visit_op_->InsertVisitRecord(record);
+            }
+        });
         // test end //
 
         // Load Page 1
@@ -183,7 +185,7 @@ namespace tc
             return;
         }
 
-        context_->PostTask([=, this]() {
+        context_->PostDBTask([=, this]() {
             records_.clear();
             auto total_count = visit_op_->GetTotalCounts();
 

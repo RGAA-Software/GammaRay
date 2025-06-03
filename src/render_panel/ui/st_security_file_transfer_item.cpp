@@ -8,6 +8,7 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/database/file_transfer_record.h"
+#include "tc_common_new/time_util.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -42,7 +43,7 @@ namespace tc
 
         {
             auto lbl = new QLabel(this);
-            lbl->setStyleSheet(target_style);
+            lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
             if (item_info_->IsValid()) {
                 lbl->setText(item_info_->conn_type_.c_str());
             }
@@ -57,7 +58,7 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText("1");
+                lbl->setText(TimeUtil::FormatTimestamp(item_info_->begin_).c_str());
             }
             else {
                 lbl->setText("Start");
@@ -68,8 +69,12 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            //lbl->setFixedWidth(item_width);
-            lbl->setText("End");
+            if (item_info_->IsValid()) {
+                lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
+            }
+            else {
+                lbl->setText("End");
+            }
             content_layout->addWidget(lbl, 1);
         }
 
@@ -89,32 +94,48 @@ namespace tc
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Controller Device");
-            //lbl->setFixedWidth(item_width);
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->controller_device_.c_str());
+            }
+            else {
+                lbl->setText("Controller Device");
+            }
             content_layout->addWidget(lbl, 1);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Controlled Device");
-            //lbl->setFixedWidth(item_width);
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->controlled_device_.c_str());
+            }
+            else {
+                lbl->setText("Controlled Device");
+            }
             content_layout->addWidget(lbl, 1);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("Direction");
-            //lbl->setFixedWidth(item_width);
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->direction_.c_str());
+            }
+            else {
+                lbl->setText("Direction");
+            }
             content_layout->addWidget(lbl, 1);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
-            lbl->setText("File Detail");
-            //lbl->setFixedWidth(item_width);
+            if (item_info_->IsValid()) {
+                lbl->setText(item_info_->file_detail_.c_str());
+            }
+            else {
+                lbl->setText("File Detail");
+            }
             content_layout->addWidget(lbl, 1);
         }
 

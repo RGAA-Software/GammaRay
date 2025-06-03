@@ -41,7 +41,7 @@ namespace tc
 
         {
             auto lbl = new QLabel(this);
-            lbl->setStyleSheet(target_style);
+            lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
             if (item_info_->IsValid()) {
                 lbl->setText(item_info_->conn_type_.c_str());
             }
