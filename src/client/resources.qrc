@@ -51,6 +51,8 @@
         <file>resources/image/ic_statistics.svg</file>
 		<file>resources/image/ic_media_record.svg</file>
 		<file>resources/image/recording.svg</file>
+		<file>resources/image/recording.png</file>
+		<file>resources/image/recording2.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

@@ -13,6 +13,7 @@ class ThunderSdk;
 class FloatController;
 class FloatControllerPanel;
 class MessageListener;
+class SvgLable;
 
 class GameView : public QWidget {
 public:
@@ -67,7 +68,9 @@ private:
 	FloatController* float_controller_ = nullptr;
 	FloatControllerPanel* controller_panel_ = nullptr;
 
-	QLabel* recording_sign_lab_ = nullptr;
+	//QLabel* recording_sign_lab_ = nullptr;
+
+	SvgLable* recording_sign_lab_ = nullptr;
 
 private:
 	void InitFloatController();

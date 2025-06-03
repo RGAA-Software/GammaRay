@@ -3,6 +3,8 @@
 #include <qpalette.h>
 #include <QTimer>
 #include <qlabel.h>
+#include <qicon.h>
+#include <qpixmap.h>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include "ct_opengl_video_widget.h"
@@ -11,6 +13,7 @@
 #include "ct_const_def.h"
 #include "ui/float_controller.h"
 #include "ui/float_controller_panel.h"
+#include "ui/svg_lable.h"
 #include "ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "client/ct_settings.h"
@@ -35,13 +38,11 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
 
     InitFloatController();
 
-    recording_sign_lab_ = new QLabel(this);
-    recording_sign_lab_->setFixedSize(40, 40);
+    recording_sign_lab_ = new SvgLable(":/resources/image/recording.svg",  this);
+    recording_sign_lab_->setFixedSize(36, 28);
     recording_sign_lab_->setAttribute(Qt::WA_StyledBackground,true);
-    recording_sign_lab_->setStyleSheet(R"(image: url(:resources/image/recording.svg);
-                                    background-repeat:no-repeat;
-                                    background-position: center center;)");
-    recording_sign_lab_->move(this->width() * 0.85, 0);
+    recording_sign_lab_->setAlignment(Qt::AlignCenter);
+    recording_sign_lab_->move(this->width() * 0.85, 20);
     recording_sign_lab_->hide();
 
     // 创建透明度效果
@@ -67,8 +68,6 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
             animation->stop(); 
         }
     });
-
-    
 }
 
 GameView::~GameView() {
@@ -79,9 +78,7 @@ void GameView::resizeEvent(QResizeEvent* event) {
     if (float_controller_) {
         float_controller_->ReCalculatePosition();
     }
-
-    recording_sign_lab_->move(this->width() * 0.85, 0);
-
+    recording_sign_lab_->move(this->width() * 0.85, 20);
     QWidget::resizeEvent(event);
 }
 
