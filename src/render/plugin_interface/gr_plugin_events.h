@@ -39,6 +39,8 @@ namespace tc
         kPluginRtcAnswerSdpEvent,
         kPluginRtcIceEvent,
         kPluginRtcReportEvent,
+        kPluginFileTransferBegin,
+        kPluginFileTransferEnd,
     };
 
     class GrPluginBaseEvent {
@@ -259,6 +261,26 @@ namespace tc
         std::string evt_name_;
         std::string msg_;
         std::string data_channel_name_;
+    };
+
+    // file transfer begin
+    class GrPluginFileTransferBegin : public GrPluginBaseEvent {
+    public:
+        GrPluginFileTransferBegin() {
+            event_type_ = GrPluginEventType::kPluginFileTransferBegin;
+        }
+    public:
+
+    };
+
+    // file transfer end
+    class GrPluginFileTransferEnd : public GrPluginBaseEvent {
+    public:
+        GrPluginFileTransferEnd() {
+            event_type_ = GrPluginEventType::kPluginFileTransferEnd;
+        }
+    public:
+        bool success_ = false;
     };
 }
 
