@@ -301,7 +301,7 @@ namespace tc
             audio_player_->Write(data);
         });
 
-        sdk_->SetOnAudioSpectrumCallback([=](const tc::ServerAudioSpectrum& spectrum) {
+        sdk_->SetOnAudioSpectrumCallback([=](const tc::RendererAudioSpectrum& spectrum) {
 
         });
 

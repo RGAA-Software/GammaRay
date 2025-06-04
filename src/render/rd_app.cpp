@@ -530,8 +530,8 @@ namespace tc
     void RdApplication::ReportAudioSpectrum() {
         auto st = RdStatistics::Instance();
         auto msg = std::make_shared<Message>();
-        msg->set_type(tc::kServerAudioSpectrum);
-        auto sas = msg->mutable_server_audio_spectrum();
+        msg->set_type(tc::kRendererAudioSpectrum);
+        auto sas = msg->mutable_renderer_audio_spectrum();
         sas->set_samples(st->audio_samples_);
         sas->set_bits(st->audio_bits_);
         sas->set_channels(st->audio_channels_);

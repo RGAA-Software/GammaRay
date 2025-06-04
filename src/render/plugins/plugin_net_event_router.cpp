@@ -149,7 +149,7 @@ namespace tc {
                     break;
                 }
                 // file transmit start
-                case MessageType::kFileOperateionsEvent:
+                case MessageType::kFileOperationEvent:
                 case MessageType::kFileTransDataPacket:
                 case MessageType::kFileTransSaveFileException: {
                     auto file_trans_plugin = plugin_manager_->GetFileTransferPlugin();

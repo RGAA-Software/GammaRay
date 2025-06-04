@@ -386,9 +386,9 @@ namespace tc
             });
         }
         else if (proto_msg->type() == tcrp::kRpServerAudioSpectrum) {
-            //auto spectrum = proto_msg->server_audio_spectrum();
+            //auto spectrum = proto_msg->renderer_audio_spectrum();
             auto spectrum = std::make_shared<tcrp::RpServerAudioSpectrum>();
-            spectrum->CopyFrom(proto_msg->server_audio_spectrum());
+            spectrum->CopyFrom(proto_msg->renderer_audio_spectrum());
             context_->SendAppMessage(MsgServerAudioSpectrum {
                     .msg_ = proto_msg,
                     .spectrum_ = spectrum,
