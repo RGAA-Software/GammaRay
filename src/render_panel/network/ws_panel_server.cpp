@@ -14,6 +14,11 @@
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/transfer/file_transfer.h"
+#include "render_panel/database/gr_database.h"
+#include "render_panel/database/visit_record.h"
+#include "render_panel/database/visit_record_operator.h"
+#include "render_panel/database/file_transfer_record.h"
+#include "render_panel/database/file_transfer_record_operator.h"
 #include "tc_common_new/url_helper.h"
 #include <QApplication>
 
@@ -46,6 +51,8 @@ namespace tc
         context_ = app_->GetContext();
         http_handler_ = std::make_shared<HttpHandler>(app_);
         settings_ = GrSettings::Instance();
+        visit_record_op_ = context_->GetDatabase()->GetVisitRecordOp();
+        ft_record_op_ = context_->GetDatabase()->GetFileTransferRecordOp();
     }
 
     void WsPanelServer::Start() {
@@ -368,16 +375,7 @@ namespace tc
             LOGE("Parse binary message failed.");
             return;
         }
-        /*if (proto_msg->type() == tc::kUIServerHello) {
-            auto hello = proto_msg->ui_server_hello();
-            panel_sessions_.VisitAll([=](uint64_t k, std::shared_ptr<WSSession>& v) {
-                if (v->socket_fd_ == socket_fd) {
-                    v->session_type_ = hello.type();
-                    LOGI("Update session type: {} for socket: {}", v->session_type_, socket_fd);
-                }
-            });
-        }
-        else */if (proto_msg->type() == tcrp::kRpCaptureStatistics) {
+        if (proto_msg->type() == tcrp::kRpCaptureStatistics) {
             auto statistics = std::make_shared<tcrp::RpCaptureStatistics>();
             statistics->CopyFrom(proto_msg->capture_statistics());
             context_->SendAppMessage(MsgCaptureStatistics{
@@ -402,6 +400,26 @@ namespace tc
             plugins_info->CopyFrom(proto_msg->plugins_info());
             context_->SendAppMessage(MsgPluginsInfo {
                 .plugins_info_ = plugins_info,
+            });
+        }
+        else if (proto_msg->type() == tcrp::kRpClientConnected) {
+            context_->PostDBTask([=, this]() {
+                auto sub = proto_msg->client_connected();
+                visit_record_op_->InsertVisitRecord(std::make_shared<VisitRecord>(VisitRecord {
+                    .the_conn_id_ = sub.the_conn_id(),
+                    .conn_type_ = sub.conn_type(),
+                    .begin_ = sub.begin_timestamp(),
+                    .end_ = 0,
+                    .duration_ = 0,
+                    .visitor_device_ = sub.device_id(),
+                    .target_device_ = settings_->device_id_,
+                }));
+            });
+        }
+        else if (proto_msg->type() == tcrp::kRpClientDisConnected) {
+            context_->PostDBTask([=, this]() {
+                auto sub = proto_msg->client_disconnected();
+                visit_record_op_->UpdateVisitRecord(sub.the_conn_id(), sub.end_timestamp(), sub.duration());
             });
         }
     }

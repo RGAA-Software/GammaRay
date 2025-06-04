@@ -79,12 +79,11 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(TimeUtil::FormatSecondsToDHMS(item_info_->duration_).c_str());
+                lbl->setText(TimeUtil::FormatSecondsToDHMS(item_info_->duration_/1000).c_str());
             }
             else {
                 lbl->setText("Duration");
             }
-            //lbl->setFixedWidth(item_width);
             content_layout->addWidget(lbl, 1);
 
         }
@@ -93,12 +92,11 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->account_.c_str());
+                lbl->setText(item_info_->visitor_device_.c_str());
             }
             else {
-                lbl->setText("Account");
+                lbl->setText("Visitor Device");
             }
-            //lbl->setFixedWidth(item_width);
             content_layout->addWidget(lbl, 1);
         }
 
@@ -106,23 +104,10 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->controller_device_.c_str());
+                lbl->setText(item_info_->target_device_.c_str());
             }
             else {
-                lbl->setText("Controller Device");
-            }
-            //lbl->setFixedWidth(item_width);
-            content_layout->addWidget(lbl, 1);
-        }
-
-        {
-            auto lbl = new QLabel(this);
-            lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
-                lbl->setText(item_info_->controlled_device_.c_str());
-            }
-            else {
-                lbl->setText("Controlled Device");
+                lbl->setText("Target Device");
             }
             content_layout->addWidget(lbl, 1);
         }

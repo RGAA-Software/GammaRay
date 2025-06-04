@@ -13,9 +13,8 @@ namespace tc
 {
 
     std::string FileTransferRecord::AsString() {
-        return std::format("Conn Type: {}, Begin: {}, End: {}, Account: {}, Controller device: {}, Controlled device: {}, direction: {}, file detail: {}",
-                           conn_type_, TimeUtil::FormatTimestamp(begin_), TimeUtil::FormatTimestamp(end_), account_, controller_device_,
-                           controlled_device_, direction_, file_detail_);
+        return std::format("Conn Type: {}, Begin: {}, End: {}, Controller device: {}, Controlled device: {}, direction: {}, file detail: {}",
+                           conn_type_, TimeUtil::FormatTimestamp(begin_), TimeUtil::FormatTimestamp(end_), visitor_device_,target_device_, direction_, file_detail_);
     }
 
     std::string FileTransferRecord::AsJson() {
@@ -23,9 +22,8 @@ namespace tc
         obj["conn_type"] = conn_type_;
         obj["begin"] = TimeUtil::FormatTimestamp(begin_);
         obj["end"] = TimeUtil::FormatTimestamp(end_);
-        obj["account"] = account_;
-        obj["controller_device"] = controller_device_;
-        obj["controlled_device"] = controlled_device_;
+        obj["visitor_device"] = visitor_device_;
+        obj["target_device"] = target_device_;
         obj["direction"] = direction_;
         obj["file_detail"] = file_detail_;
         return obj.dump(2);

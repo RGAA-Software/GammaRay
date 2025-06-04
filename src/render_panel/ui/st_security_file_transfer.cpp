@@ -170,21 +170,21 @@ namespace tc
         });
 
         // test beg //
-        context_->PostDBTask([=, this]() {
-            for (int i = 0; i < 26; i++) {
-                auto record = std::make_shared<FileTransferRecord>(FileTransferRecord {
-                    .conn_type_ = "TT",
-                    .begin_ = 1 + i,
-                    .end_ = 1 * i,
-                    .account_ = std::format("acc: {}", i),
-                    .controller_device_ = "bbbbb",
-                    .controlled_device_ = "Jack Sparrow",
-                    .direction_ = "UP",
-                    .file_detail_ = "D://xxx/xxx.jpg"
-                });
-                ft_record_op_->InsertFileTransferRecord(record);
-            }
-        });
+        //context_->PostDBTask([=, this]() {
+        //    for (int i = 0; i < 26; i++) {
+        //        auto record = std::make_shared<FileTransferRecord>(FileTransferRecord {
+        //            .conn_type_ = "TT",
+        //            .begin_ = 1 + i,
+        //            .end_ = 1 * i,
+        //            .account_ = std::format("acc: {}", i),
+        //            .controller_device_ = "bbbbb",
+        //            .controlled_device_ = "Jack Sparrow",
+        //            .direction_ = "UP",
+        //            .file_detail_ = "D://xxx/xxx.jpg"
+        //        });
+        //        ft_record_op_->InsertFileTransferRecord(record);
+        //    }
+        //});
         // test end //
 
         // Load Page 1
@@ -214,9 +214,8 @@ namespace tc
                 .conn_type_ = "",
                 .begin_ = 1,
                 .end_ = 1,
-                .account_ = "",
-                .controller_device_ = "",
-                .controlled_device_ = "",
+                .visitor_device_ = "",
+                .target_device_ = "",
             }));
 
             auto records = ft_record_op_->QueryFileTransferRecords(page, kPageSize);

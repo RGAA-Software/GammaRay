@@ -215,9 +215,7 @@ namespace tc
 
         msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {
             this->PostGlobalTask([=, this]() {
-                if (msg.client_size_ == 1) {
-                    //
-                }
+
             });
         });
 
@@ -720,6 +718,12 @@ namespace tc
         monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
         monitor_capture_plugin_->EnablePlugin();
         LOGI("Use gdi capture plugin.");
+    }
+
+    void RdApplication::PostPanelMessage(const std::string& msg) {
+        if (ws_panel_client_) {
+            ws_panel_client_->PostNetMessage(msg);
+        }
     }
 
     void RdApplication::Exit() {

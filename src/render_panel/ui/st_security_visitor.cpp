@@ -149,21 +149,20 @@ namespace tc
         });
 
         // test beg //
-        context_->PostDBTask([=, this]() {
-            for (int i = 0; i < 26; i++) {
-                auto record = std::make_shared<VisitRecord>(VisitRecord {
-                    .conn_type_ = "TT",
-                    .begin_ = 1 + i,
-                    .end_ = 1 * i,
-                    .duration_ = 10,
-                    .account_ = std::format("acc: {}", i),
-                    .controller_device_ = "xxxx",
-                    .controlled_device_ = "aaaa",
-                });
-
-                visit_op_->InsertVisitRecord(record);
-            }
-        });
+        //context_->PostDBTask([=, this]() {
+        //    for (int i = 0; i < 26; i++) {
+        //        auto record = std::make_shared<VisitRecord>(VisitRecord {
+        //            .conn_type_ = "TT",
+        //            .begin_ = 1 + i,
+        //            .end_ = 1 * i,
+        //            .duration_ = 10,
+        //            .account_ = std::format("acc: {}", i),
+        //            .controller_device_ = "xxxx",
+        //            .controlled_device_ = "aaaa",
+        //        });
+        //        visit_op_->InsertVisitRecord(record);
+        //    }
+        //});
         // test end //
 
         // Load Page 1
@@ -172,7 +171,7 @@ namespace tc
 
     QListWidgetItem* StSecurityVisitor::AddItem(const std::shared_ptr<VisitRecord>& item_info) {
         auto item = new QListWidgetItem(list_widget_);
-        auto item_size = QSize(995, 40);
+        auto item_size = QSize(995, 45);
         item->setSizeHint(item_size);
         auto widget = new StSecurityVisitorItemWidget(app_, item_info, list_widget_);
         widget->setFixedSize(item_size);
@@ -194,9 +193,8 @@ namespace tc
                 .begin_ = 1,
                 .end_ = 1,
                 .duration_ = 10,
-                .account_ = "",
-                .controller_device_ = "",
-                .controlled_device_ = "",
+                .visitor_device_ = "",
+                .target_device_ = "",
             }));
 
             auto records = visit_op_->QueryVisitRecords(page, kPageSize);

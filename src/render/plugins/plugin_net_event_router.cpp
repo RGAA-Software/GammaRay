@@ -27,6 +27,7 @@
 #include "app/win/win_desktop_manager.h"
 #include "plugins/net_rtc/rtc_messages.h"
 #include "net_rtc/rtc_report_event.h"
+#include "tc_render_panel_message.pb.h"
 
 namespace tc {
 
@@ -56,12 +57,27 @@ namespace tc {
         plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
             plugin->InsertIdr();
         });
+
+        // notify
+        context_->SendAppMessage(MsgClientConnected {
+            .conn_type_ = event->conn_type_,
+            .device_id_ = event->device_id_,
+            .begin_timestamp_ = event->begin_timestamp_,
+        });
+
+        // report it
+        ReportClientConnected(event);
     }
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
-        app_->GetContext()->SendAppMessage(MsgClientDisconnected {
-
+        context_->SendAppMessage(MsgClientDisconnected {
+            .device_id_ = event->device_id_,
+            .end_timestamp_ = event->end_timestamp_,
+            .duration_ = event->duration_,
         });
+
+        // report it
+        ReportClientDisConnected(event);
     }
 
     void PluginNetEventRouter::ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) {
@@ -202,7 +218,7 @@ namespace tc {
                     break;
                 }
                 case kStopMediaRecordClientSide: {
-                    ProcessStoptMediaRecordClientSide();
+                    ProcessStopMediaRecordClientSide();
                     break;
                 }
                 default: {
@@ -401,7 +417,7 @@ namespace tc {
         }
     }
 
-    void PluginNetEventRouter::ProcessStoptMediaRecordClientSide() {
+    void PluginNetEventRouter::ProcessStopMediaRecordClientSide() {
         auto encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
         for (const auto& [k, encoder_plugin] : encoder_plugins) {
             if (encoder_plugin) {
@@ -466,5 +482,31 @@ namespace tc {
         else if (event->evt_name_ == kDataChannelRecvError) {
 
         }
+    }
+
+    void PluginNetEventRouter::ReportClientConnected(const std::shared_ptr<GrPluginClientConnectedEvent>& event) {
+        app_->PostGlobalTask([=, this]() {
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpClientConnected);
+            auto sub = msg.mutable_client_connected();
+            sub->set_the_conn_id(event->the_conn_id_);
+            sub->set_conn_type(event->conn_type_);
+            sub->set_device_id(event->device_id_);
+            sub->set_begin_timestamp(event->begin_timestamp_);
+            app_->PostPanelMessage(msg.SerializeAsString());
+        });
+    }
+
+    void PluginNetEventRouter::ReportClientDisConnected(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
+        app_->PostGlobalTask([=, this]() {
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpClientDisConnected);
+            auto sub = msg.mutable_client_disconnected();
+            sub->set_the_conn_id(event->the_conn_id_);
+            sub->set_device_id(event->device_id_);
+            sub->set_end_timestamp(event->end_timestamp_);
+            sub->set_duration(event->duration_);
+            app_->PostPanelMessage(msg.SerializeAsString());
+        });
     }
 }

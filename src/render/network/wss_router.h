@@ -12,6 +12,8 @@
 #include <functional>
 #include <asio2/asio2.hpp>
 #include "ws_data.h"
+#include "tc_common_new/time_util.h"
+#include "tc_common_new/uuid.h"
 
 namespace tc
 {
@@ -22,6 +24,8 @@ namespace tc
 
         explicit WssRouter(const WsDataPtr& ws_data) {
             ws_data_ = ws_data;
+            created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+            the_conn_id_ = tc::GetUUID();
         }
 
         virtual void OnOpen(std::shared_ptr<asio2::https_session>& sess_ptr) {
@@ -76,7 +80,8 @@ namespace tc
     public:
         bool enable_audio_ = false;
         bool enable_video_ = false;
-
+        int64_t created_timestamp_ = 0;
+        std::string the_conn_id_;
     };
 
     using WssRouterPtr = std::shared_ptr<WssRouter>;

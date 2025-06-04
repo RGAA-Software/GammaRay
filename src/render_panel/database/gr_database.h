@@ -74,22 +74,22 @@ namespace tc
                 ),
                 make_table("visit_record",
                     make_column("id", &VisitRecord::id_, primary_key()),
+                    make_column("the_conn_id", &VisitRecord::the_conn_id_),
                     make_column("conn_type", &VisitRecord::conn_type_),
                     make_column("begin", &VisitRecord::begin_),
                     make_column("end", &VisitRecord::end_),
                     make_column("duration", &VisitRecord::duration_),
-                    make_column("account", &VisitRecord::account_),
-                    make_column("controller_device", &VisitRecord::controller_device_),
-                    make_column("controlled_device", &VisitRecord::controlled_device_)
+                    make_column("visitor_device", &VisitRecord::visitor_device_),
+                    make_column("target_device", &VisitRecord::target_device_)
                 ),
                 make_table("file_transfer_record",
                     make_column("id", &FileTransferRecord::id_, primary_key()),
+                    make_column("the_file_id", &FileTransferRecord::the_file_id_),
                     make_column("conn_type", &FileTransferRecord::conn_type_),
                     make_column("begin", &FileTransferRecord::begin_),
                     make_column("end", &FileTransferRecord::end_),
-                    make_column("account", &FileTransferRecord::account_),
-                    make_column("controller_device", &FileTransferRecord::controller_device_),
-                    make_column("controlled_device", &FileTransferRecord::controlled_device_),
+                    make_column("visitor_device", &FileTransferRecord::visitor_device_),
+                    make_column("target_device", &FileTransferRecord::target_device_),
                     make_column("direction", &FileTransferRecord::direction_),
                     make_column("file_detail", &FileTransferRecord::file_detail_)
                 )

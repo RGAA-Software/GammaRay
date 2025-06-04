@@ -21,6 +21,8 @@ namespace tc
     class HttpHandler;
     class GrSettings;
     class FileTransferChannel;
+    class VisitRecordOperator;
+    class FileTransferRecordOperator;
 
     class WSSession {
     public:
@@ -81,6 +83,8 @@ namespace tc
         ConcurrentHashMap<uint64_t, std::shared_ptr<FtSession>> ft_sessions_;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
         GrSettings* settings_ = nullptr;
+        std::shared_ptr<VisitRecordOperator> visit_record_op_ = nullptr;
+        std::shared_ptr<FileTransferRecordOperator> ft_record_op_ = nullptr;
     };
 }
 

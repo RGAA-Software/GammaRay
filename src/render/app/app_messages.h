@@ -102,13 +102,17 @@ namespace tc
     //
     class MsgClientConnected {
     public:
-        int client_size_ = -1;
+        std::string conn_type_;
+        std::string device_id_;
+        int64_t begin_timestamp_{0};
     };
 
     //
     class MsgClientDisconnected {
     public:
-        int client_size_ = -1;
+        std::string device_id_;
+        int64_t end_timestamp_{0};
+        int64_t duration_{0};
     };
 
     // Hello message

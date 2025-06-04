@@ -75,7 +75,12 @@ namespace tc
         GrPluginClientConnectedEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginClientConnectedEvent;
         }
-
+    public:
+        // a random id
+        std::string the_conn_id_;
+        std::string conn_type_;
+        std::string device_id_;
+        int64_t begin_timestamp_ = 0;
     };
 
     // GrClientDisConnectedEvent
@@ -84,7 +89,12 @@ namespace tc
         GrPluginClientDisConnectedEvent() : GrPluginBaseEvent() {
             event_type_ = GrPluginEventType::kPluginClientDisConnectedEvent;
         }
-
+    public:
+        // a random id
+        std::string the_conn_id_;
+        std::string device_id_;
+        int64_t end_timestamp_ = 0;
+        int64_t duration_ = 0;
     };
 
     // GrPluginInsertIdrEvent

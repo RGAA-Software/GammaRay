@@ -50,13 +50,15 @@ namespace tc
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
             LOGI("client disconnected: {}", socket_fd);
             if (stream_routers_.HasKey(socket_fd)) {
-                stream_routers_.Remove(socket_fd);
-                NotifyMediaClientDisConnected();
+                if (auto opt_val = stream_routers_.Remove(socket_fd); opt_val.has_value()) {
+                    const auto& val = opt_val.value();
+                    NotifyMediaClientDisConnected(val->the_conn_id_, val->device_id_, val->created_timestamp_);
+                    LOGI("client session removed: {}", val->device_id_);
+                }
                 LOGI("App server media close, media router size: {}", stream_routers_.Size());
             }
             else if (ft_routers_.HasKey(socket_fd)) {
                 ft_routers_.Remove(socket_fd);
-                NotifyMediaClientDisConnected();
             }
         });
 
@@ -198,13 +200,12 @@ namespace tc
                 if (path == kUrlMedia) {
                     auto router = WsStreamRouter::Make(ws_data_, only_audio, device_id, stream_id);
                     stream_routers_.Insert(socket_fd, router);
-                    NotifyMediaClientConnected();
+                    NotifyMediaClientConnected(router->the_conn_id_, device_id);
                     router->OnOpen(sess_ptr);
                 }
                 else if (path == kUrlFileTransfer) {
                     auto router = WsFileTransferRouter::Make(ws_data_, only_audio, device_id, stream_id);
                     ft_routers_.Insert(socket_fd, router);
-                    NotifyMediaClientConnected();
                     router->OnOpen(sess_ptr);
                 }
 
@@ -213,12 +214,15 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
                 LOGI("client closed: {}", socket_fd);
                 if (path == kUrlMedia) {
-                    stream_routers_.Remove(socket_fd);
-                    NotifyMediaClientDisConnected();
+                    if (auto opt_val = stream_routers_.Remove(socket_fd); opt_val.has_value()) {
+                        const auto& val = opt_val.value();
+                        NotifyMediaClientDisConnected(val->the_conn_id_, val->device_id_, val->created_timestamp_);
+                        LOGI("client session removed: {}", val->device_id_);
+                    }
                 }
                 else if (path == kUrlFileTransfer) {
                     ft_routers_.Remove(socket_fd);
-                    NotifyMediaClientDisConnected();
+                    //NotifyMediaClientDisConnected();
                 }
             })
             .on_ping([=, this](auto &sess_ptr) {
@@ -238,13 +242,22 @@ namespace tc
         }, aop_log{}, http::enable_cache);
     }
 
-    void WsPluginServer::NotifyMediaClientConnected() {
+    void WsPluginServer::NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& device_id) {
         auto event = std::make_shared<GrPluginClientConnectedEvent>();
+        event->the_conn_id_ = the_conn_id;
+        event->conn_type_ = "Direct";
+        event->device_id_ = device_id;
+        event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         this->plugin_->CallbackEvent(event);
+        LOGI("Conn id: {},", the_conn_id);
     }
 
-    void WsPluginServer::NotifyMediaClientDisConnected() {
+    void WsPluginServer::NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& device_id, int64_t begin_timestamp) {
         auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
+        event->the_conn_id_ = the_conn_id;
+        event->device_id_ = device_id;
+        event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        event->duration_ = event->end_timestamp_ - begin_timestamp;
         this->plugin_->CallbackEvent(event);
     }
 

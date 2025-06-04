@@ -54,9 +54,13 @@ namespace tc
 
         void ProcessStartMediaRecordClientSide();
 
-        void ProcessStoptMediaRecordClientSide();
+        void ProcessStopMediaRecordClientSide();
 
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
+
+        // report client connect/disconnect state
+        void ReportClientConnected(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
+        void ReportClientDisConnected(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
 
     private:
         RdSettings* settings_ = nullptr;

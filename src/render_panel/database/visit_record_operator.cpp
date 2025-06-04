@@ -20,6 +20,34 @@ namespace tc
         storage.insert(*record);
     }
 
+    void VisitRecordOperator::UpdateVisitRecord(const std::string& the_conn_id, int64_t end_timestamp, int64_t duration) {
+        auto opt_record = GetVisitRecordByConnId(the_conn_id);
+        if (!opt_record.has_value()) {
+            return;
+        }
+
+        auto record = opt_record.value();
+        record->end_ = end_timestamp;
+        record->duration_ = duration;
+        using Storage = decltype(db_->GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_->GetDbStorage());
+        auto streams = storage.get_all<VisitRecord>(where(c(&VisitRecord::the_conn_id_) == the_conn_id));
+        if (streams.size() == 1) {
+            storage.update(*record);
+        }
+    }
+
+    std::optional<std::shared_ptr<VisitRecord>> VisitRecordOperator::GetVisitRecordByConnId(const std::string& the_conn_id) {
+        using Storage = decltype(db_->GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_->GetDbStorage());
+        auto streams = storage.get_all_pointer<VisitRecord>(where(c(&VisitRecord::the_conn_id_) == the_conn_id));
+        if (streams.empty()) {
+            return std::nullopt;
+        }
+        auto target_stream = std::move(streams[0]);
+        return target_stream;
+    }
+
     std::vector<std::shared_ptr<VisitRecord>> VisitRecordOperator::QueryVisitRecords(int page, int page_size) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());

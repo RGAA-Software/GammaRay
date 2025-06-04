@@ -11,14 +11,13 @@ namespace tc
 {
 
     std::string VisitRecord::AsString() {
-        return std::format("Conn Type: {}, Begin: {}, End: {}, Duration: {}, Account: {}, Controller device: {}, Controlled device: {}",
+        return std::format("Conn Type: {}, Begin: {}, End: {}, Duration: {}, Visitor device: {}, Target device: {}",
                            conn_type_,
                            TimeUtil::FormatTimestamp(begin_),
                            TimeUtil::FormatTimestamp(end_),
                            TimeUtil::FormatSecondsToDHMS(duration_),
-                           account_,
-                           controller_device_,
-                           controlled_device_);
+                           visitor_device_,
+                           target_device_);
     }
 
     std::string VisitRecord::AsJson() {
@@ -27,9 +26,8 @@ namespace tc
         obj["begin"] = TimeUtil::FormatTimestamp(begin_);
         obj["end"] = TimeUtil::FormatTimestamp(end_);
         obj["duration"] = TimeUtil::FormatSecondsToDHMS(duration_);
-        obj["account"] = account_;
-        obj["controller_device"] = controller_device_;
-        obj["controlled_device"] = controlled_device_;
+        obj["visitor_device"] = visitor_device_;
+        obj["target_device"] = target_device_;
         return obj.dump(2);
     }
 

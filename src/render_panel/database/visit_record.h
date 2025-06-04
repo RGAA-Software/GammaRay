@@ -13,7 +13,7 @@ namespace tc
     class VisitRecord {
     public:
         [[nodiscard]] bool IsValid() const {
-            return !controller_device_.empty() && !controlled_device_.empty();
+            return !visitor_device_.empty() && !target_device_.empty();
         }
 
         std::string AsString();
@@ -21,6 +21,7 @@ namespace tc
 
     public:
         int id_{};
+        std::string the_conn_id_;
         std::string conn_type_;
         // unit: ms
         int64_t begin_{0};
@@ -28,9 +29,8 @@ namespace tc
         int64_t end_{0};
         // unit: S
         int64_t duration_{0};
-        std::string account_;
-        std::string controller_device_;
-        std::string controlled_device_;
+        std::string visitor_device_;
+        std::string target_device_;
     };
 
 }

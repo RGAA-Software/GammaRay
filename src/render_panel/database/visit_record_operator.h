@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace tc
 {
@@ -21,6 +22,8 @@ namespace tc
         VisitRecordOperator(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<GrDatabase>& db);
 
         void InsertVisitRecord(const std::shared_ptr<VisitRecord>& record);
+        void UpdateVisitRecord(const std::string& the_conn_id, int64_t end_timestamp, int64_t duration);
+        std::optional<std::shared_ptr<VisitRecord>> GetVisitRecordByConnId(const std::string& the_conn_id);
         std::vector<std::shared_ptr<VisitRecord>> QueryVisitRecords(int page, int page_size);
         void Delete(int id);
         void DeleteAll();
