@@ -8,7 +8,7 @@
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
-#include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "tc_client_panel_message.pb.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
@@ -158,7 +158,7 @@ namespace tc
         AddWebsocketRouter(kUrlFileTransfer);
 
         server_->start_timer("id.sync.info", 1000, [=, this]() {
-            this->SyncPanelInfo();
+            this->RpSyncPanelInfo();
         });
 
         bool ret = server_->start("0.0.0.0", settings_->panel_srv_port_);
@@ -228,7 +228,7 @@ namespace tc
                     LOGI("Renderer;client connect : {}", socket_fd);
 
                     sess_ptr->post_queued_event([=, this]() {
-                        this->SyncPanelInfo();
+                        this->RpSyncPanelInfo();
                     });
                 }
                 else if (path == kUrlFileTransfer) {
@@ -333,9 +333,9 @@ namespace tc
         return true;
     }
 
-    void WsPanelServer::SyncPanelInfo() {
-        tc::Message m;
-        m.set_type(MessageType::kSyncPanelInfo);
+    void WsPanelServer::RpSyncPanelInfo() {
+        tcrp::RpMessage m;
+        m.set_type(tcrp::RpMessageType::kSyncPanelInfo);
         auto sub = m.mutable_sync_panel_info();
         sub->set_device_id(settings_->device_id_);
         sub->set_device_random_pwd(settings_->device_random_pwd_);
@@ -363,7 +363,7 @@ namespace tc
 
     // parse /panel/renderer socket
     void WsPanelServer::ParseRendererMessage(uint64_t socket_fd, std::string_view msg) {
-        auto proto_msg = std::make_shared<tc::Message>();
+        auto proto_msg = std::make_shared<tcrp::RpMessage>();
         if (!proto_msg->ParseFromArray(msg.data(), msg.size())) {
             LOGE("Parse binary message failed.");
             return;
@@ -377,28 +377,28 @@ namespace tc
                 }
             });
         }
-        else */if (proto_msg->type() == tc::kCaptureStatistics) {
-            auto statistics = std::make_shared<CaptureStatistics>();
+        else */if (proto_msg->type() == tcrp::kRpCaptureStatistics) {
+            auto statistics = std::make_shared<tcrp::RpCaptureStatistics>();
             statistics->CopyFrom(proto_msg->capture_statistics());
             context_->SendAppMessage(MsgCaptureStatistics{
-                    .msg_ = proto_msg,
-                    .statistics_ = statistics,
+                .msg_ = proto_msg,
+                .statistics_ = statistics,
             });
         }
-        else if (proto_msg->type() == tc::kServerAudioSpectrum) {
+        else if (proto_msg->type() == tcrp::kRpServerAudioSpectrum) {
             //auto spectrum = proto_msg->server_audio_spectrum();
-            auto spectrum = std::make_shared<ServerAudioSpectrum>();
+            auto spectrum = std::make_shared<tcrp::RpServerAudioSpectrum>();
             spectrum->CopyFrom(proto_msg->server_audio_spectrum());
             context_->SendAppMessage(MsgServerAudioSpectrum {
                     .msg_ = proto_msg,
                     .spectrum_ = spectrum,
             });
         }
-        else if (proto_msg->type() == tc::kRestartServer) {
+        else if (proto_msg->type() == tcrp::kRpRestartServer) {
             context_->SendAppMessage(AppMsgRestartServer {});
         }
-        else if (proto_msg->type() == tc::kPluginsInfo) {
-            auto plugins_info = std::make_shared<PtPluginsInfo>();
+        else if (proto_msg->type() == tcrp::kRpPluginsInfo) {
+            auto plugins_info = std::make_shared<tcrp::RpPluginsInfo>();
             plugins_info->CopyFrom(proto_msg->plugins_info());
             context_->SendAppMessage(MsgPluginsInfo {
                 .plugins_info_ = plugins_info,

@@ -10,8 +10,8 @@
 #include <vector>
 #include <cstdint>
 #include <string>
-#include "tc_message.pb.h"
 #include "gr_app_messages.h"
+#include "tc_render_panel_message.pb.h"
 
 namespace tc
 {
@@ -58,7 +58,7 @@ namespace tc
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;
 
-        std::vector<tc::PtMsgWorkingCaptureInfo> captures_info_;
+        std::vector<tcrp::RpMsgWorkingCaptureInfo> captures_info_;
         int32_t connected_clients_ = 0;
         std::string video_capture_type_;
         std::string video_encode_type_;

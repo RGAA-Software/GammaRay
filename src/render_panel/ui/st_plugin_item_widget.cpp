@@ -5,7 +5,7 @@
 #include "st_plugin_item_widget.h"
 #include "no_margin_layout.h"
 #include "st_plugins.h"
-#include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_app_messages.h"
@@ -164,10 +164,10 @@ namespace tc
     }
 
     void StPluginItemWidget::SwitchPluginStatusInner(bool enabled) {
-        tc::Message pt_msg;
-        pt_msg.set_type(MessageType::kCommandRenderer);
+        tcrp::RpMessage pt_msg;
+        pt_msg.set_type(tcrp::RpMessageType::kRpCommandRenderer);
         auto sub = pt_msg.mutable_command_renderer();
-        sub->set_command(enabled ? PtPanelCommand::kEnablePlugin : PtPanelCommand::kDisablePlugin);
+        sub->set_command(enabled ? tcrp::RpPanelCommand::kEnablePlugin : tcrp::RpPanelCommand::kDisablePlugin);
         sub->set_plugin_id(item_info_->id_);
         app_->PostMessage2Renderer(pt_msg.SerializeAsString());
     }

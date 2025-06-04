@@ -32,7 +32,7 @@ namespace tc
         void OnTabHide() override;
 
     private:
-        void RestartServer();
+        void RpRestartServer();
         void RefreshVigemState(bool ok);
         void RefreshServerState(bool ok);
         void RefreshServiceState(bool ok);

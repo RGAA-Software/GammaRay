@@ -3,7 +3,7 @@
 //
 
 #include "gr_statistics.h"
-#include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "gr_app_messages.h"
 #include "gr_context.h"
 #include "tc_common_new/log.h"
@@ -47,7 +47,7 @@ namespace tc
             int size = msg.statistics_->working_captures_info_size();
             for (int i = 0; i < size; i++) {
                 auto info = msg.statistics_->working_captures_info(i);
-                PtMsgWorkingCaptureInfo cpy_info;
+                tcrp::RpMsgWorkingCaptureInfo cpy_info;
                 cpy_info.CopyFrom(info);
                 captures_info_.push_back(cpy_info);
 
@@ -91,13 +91,13 @@ namespace tc
 
         {
             auto type = msg.statistics_->video_encode_type();
-            if (type == VideoType::kNetH264) {
+            if (type == tcrp::VideoType::kNetH264) {
                 video_encode_type_ = "H264";
             }
-            else if (type == VideoType::kNetHevc) {
+            else if (type == tcrp::VideoType::kNetHevc) {
                 video_encode_type_ = "HEVC";
             }
-            else if (type == VideoType::kNetVp9) {
+            else if (type == tcrp::VideoType::kNetVp9) {
                 video_encode_type_ = "VP9";
             }
             else {

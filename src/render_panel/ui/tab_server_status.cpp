@@ -162,7 +162,7 @@ namespace tc
                     TcDialog dialog(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->PostTask([=, this]() {
-                            RestartServer();
+                            RpRestartServer();
                         });
                     }
                 });
@@ -489,7 +489,7 @@ namespace tc
 
         msg_listener_->Listen<AppMsgRestartServer>([=, this](const AppMsgRestartServer& msg) {
             context_->PostTask([=, this]() {
-                RestartServer();
+                RpRestartServer();
             });
         });
 
@@ -527,7 +527,7 @@ namespace tc
 
     }
 
-    void TabServerStatus::RestartServer() {
+    void TabServerStatus::RpRestartServer() {
         auto srv_mgr = this->context_->GetRenderController();
         //srv_mgr->StopServer();
         srv_mgr->ReStart();

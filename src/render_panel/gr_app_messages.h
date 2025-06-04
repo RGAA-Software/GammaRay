@@ -3,13 +3,18 @@
 
 #include "database/stream_item.h"
 
+namespace tcrp
+{
+    class RpMessage;
+    class RpCaptureStatistics;
+    class RpPluginsInfo;
+    class RpServerAudioSpectrum;
+}
+
 namespace tc
 {
     class Message;
-    class CaptureStatistics;
-    class ServerAudioSpectrum;
     class GrSettings;
-    class PtPluginsInfo;
 
     // can't connect or not installed
     class MsgViGEmState {
@@ -38,14 +43,14 @@ namespace tc
     // capture statistics
     class MsgCaptureStatistics {
     public:
-        std::shared_ptr<tc::Message> msg_ = nullptr;
-        std::shared_ptr<tc::CaptureStatistics> statistics_ = nullptr;
+        std::shared_ptr<tcrp::RpMessage> msg_ = nullptr;
+        std::shared_ptr<tcrp::RpCaptureStatistics> statistics_ = nullptr;
     };
 
     class MsgServerAudioSpectrum {
     public:
-        std::shared_ptr<tc::Message> msg_ = nullptr;
-        std::shared_ptr<tc::ServerAudioSpectrum> spectrum_ = nullptr;
+        std::shared_ptr<tcrp::RpMessage> msg_ = nullptr;
+        std::shared_ptr<tcrp::RpServerAudioSpectrum> spectrum_ = nullptr;
     };
 
     // timer 100ms
@@ -131,7 +136,7 @@ namespace tc
     // reported plugins info
     class MsgPluginsInfo {
     public:
-        std::shared_ptr<tc::PtPluginsInfo> plugins_info_;
+        std::shared_ptr<tcrp::RpPluginsInfo> plugins_info_;
     };
 
     // remote peer info

@@ -68,7 +68,7 @@ namespace tc
         void AddHttpPostRouter(const std::string& path,
            std::function<void(const std::string& path, http::web_request &req, http::web_response &rep)>&& cbk);
 
-        void SyncPanelInfo();
+        void RpSyncPanelInfo();
 
     private:
         //std::shared_ptr<asio2::http_server> http_server_ = nullptr;

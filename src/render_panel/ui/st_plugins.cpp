@@ -8,7 +8,7 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/message_notifier.h"
-#include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "tc_common_new/log.h"
 #include "st_plugin_item_widget.h"
 #include "no_margin_layout.h"
@@ -80,7 +80,7 @@ namespace tc
             auto plugins_info = m_info.plugins_info_->plugins_info();
             if (items_info_.empty()) {
                 for (const auto& new_info : plugins_info) {
-                    auto plugin_info = std::make_shared<PtPluginInfo>();
+                    auto plugin_info = std::make_shared<tcrp::RpPluginInfo>();
                     plugin_info->CopyFrom(new_info);
                     items_info_.push_back(std::make_shared<PluginItemInfo>(PluginItemInfo{
                         .id_ = new_info.id(),

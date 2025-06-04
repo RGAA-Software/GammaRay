@@ -29,6 +29,7 @@
 #include "app/encoder_thread.h"
 #include "network/net_message_maker.h"
 #include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "app/app_timer.h"
 #include "tc_opus_codec_new/opus_codec.h"
 #include "network/ws_panel_client.h"
@@ -583,8 +584,8 @@ namespace tc
     }
 
     void RdApplication::RequestRestartMe() {
-        tc::Message m;
-        m.set_type(tc::kRestartServer);
+        tcrp::RpMessage m;
+        m.set_type(tcrp::kRpRestartServer);
         m.mutable_restart_server()->set_reason("restart");
         ws_panel_client_->PostNetMessage(m.SerializeAsString());
     }

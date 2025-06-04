@@ -3,7 +3,7 @@
 //
 
 #include "rd_statistics.h"
-#include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/fps_stat.h"
 #include "app/app_messages.h"
@@ -99,8 +99,8 @@ namespace tc
     }
 
     std::string RdStatistics::AsProtoMessage() {
-        tc::Message msg;
-        msg.set_type(tc::MessageType::kCaptureStatistics);
+        tcrp::RpMessage msg;
+        msg.set_type(tcrp::RpMessageType::kRpCaptureStatistics);
 
         auto cst = msg.mutable_capture_statistics();
         cst->mutable_audio_frame_gaps()->Add(audio_frame_gaps_.begin(), audio_frame_gaps_.end());
@@ -205,15 +205,15 @@ namespace tc
         //
         cst->set_video_encode_type([=, this]() {
             if (video_encoder_format_ == Encoder::EncoderFormat::kH264) {
-                return VideoType::kNetH264;
+                return tcrp::VideoType::kNetH264;
             }
             else if (video_encoder_format_ == Encoder::EncoderFormat::kHEVC) {
-                return VideoType::kNetHevc;
+                return tcrp::VideoType::kNetHevc;
             }
-            return VideoType::kNetH264;
+            return tcrp::VideoType::kNetH264;
         } ());
 
-        cst->set_audio_encode_type(AudioEncodeType::kNetOpus);
+        cst->set_audio_encode_type(tcrp::AudioEncodeType::kNetOpus);
 
         return msg.SerializeAsString();
     }

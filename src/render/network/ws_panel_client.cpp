@@ -9,7 +9,7 @@
 #include "render/settings/rd_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
-#include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_plugin_interface.h"
 
@@ -75,8 +75,8 @@ namespace tc
     }
 
     void WsPanelClient::SendPluginsInfo() {
-        tc::Message msg;
-        msg.set_type(kPluginsInfo);
+        tcrp::RpMessage msg;
+        msg.set_type(tcrp::kRpPluginsInfo);
         auto m_info = msg.mutable_plugins_info();
         auto plugins_info = m_info->mutable_plugins_info();
         plugin_mgr_->VisitAllPlugins([&](GrPluginInterface* plugin) {
@@ -108,9 +108,9 @@ namespace tc
     void WsPanelClient::ParseNetMessage(std::string_view _msg) {
         try {
             std::string msg = std::string(_msg);
-            tc::Message m;
+            tcrp::RpMessage m;
             m.ParseFromString(msg);
-            if (m.type() == MessageType::kSyncPanelInfo) {
+            if (m.type() == tcrp::RpMessageType::kSyncPanelInfo) {
                 const auto& sub = m.sync_panel_info();
                 settings_->device_id_ = sub.device_id();
                 settings_->device_random_pwd_ = sub.device_random_pwd();
@@ -124,16 +124,16 @@ namespace tc
                     .relay_port_ = settings_->relay_port_,
                 });
             }
-            else if (m.type() == MessageType::kCommandRenderer) {
+            else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {
                 LOGI("====> CommandRenderer <====");
                 const auto& sub = m.command_renderer();
                 int ws_port = sub.ws_port();
                 const auto& plugin_id = sub.plugin_id();
                 LOGI("Plugin id: {}", plugin_id);
-                if (sub.command() == tc::PtPanelCommand::kEnablePlugin) {
+                if (sub.command() == tcrp::RpPanelCommand::kEnablePlugin) {
                     ProcessCommandEnablePlugin(plugin_id);
                 }
-                else if (sub.command() == tc::PtPanelCommand::kDisablePlugin) {
+                else if (sub.command() == tcrp::RpPanelCommand::kDisablePlugin) {
                     ProcessCommandDisablePlugin(plugin_id);
                 }
             }
