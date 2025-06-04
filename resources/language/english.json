@@ -44,6 +44,10 @@
   "id_capture_audio": "Capture Audio",
   "id_capture_audio_device": "Capture Audio Device",
 
+  "id_screen_recording_settings": "Screen Recording Settings",
+
+  "id_screen_recording_path": "Save Path",
+
   "id_cancel": "Cancel",
   "id_ok": "Ok",
 

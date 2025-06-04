@@ -3,6 +3,7 @@
 //
 
 #include "running_stream_manager.h"
+#include <qstandardpaths.h>
 #include "tc_common_new/base64.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_context.h"
@@ -43,6 +44,14 @@ namespace tc
             }
         });
 
+
+        std::string screen_recording_path = settings_->GetScreenRecordingPath();
+        if (screen_recording_path.empty()) {
+            QString movies_path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+            screen_recording_path = movies_path.toStdString();
+            settings_->SetScreenRecordingPath(screen_recording_path);
+        }
+
         // start it
         auto process = std::make_shared<QProcess>();
         QStringList arguments;
@@ -80,6 +89,7 @@ namespace tc
                 }
             } ()).c_str()
             << std::format("--panel_server_port={}", settings_->panel_srv_port_).c_str()
+            << std::format("--screen_recording_path={}", screen_recording_path).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

@@ -10,6 +10,7 @@
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QOpenGLWidget>
+#include <qstandardpaths.h>
 #include "thunder_sdk.h"
 #include "client/ct_client_context.h"
 #include "client/ct_workspace.h"
@@ -102,6 +103,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_panel_server_port("panel_server_port", "panel server port", "value", "");
     parser.addOption(opt_panel_server_port);
 
+    QCommandLineOption opt_screen_recording_path("screen_recording_path", "screen recording path", "value", "");
+    parser.addOption(opt_screen_recording_path);
+
     parser.process(app);
 
     g_host_ = parser.value(opt_host).toStdString();
@@ -169,6 +173,16 @@ void ParseCommandLine(QApplication& app) {
         }
         else {
             settings->panel_server_port_ = 20369;
+        }
+    }
+
+    {
+        auto value = parser.value(opt_screen_recording_path);
+        if (!value.isEmpty()) {
+            settings->screen_recording_path_ = value.toStdString();
+        }
+        else {
+            settings->screen_recording_path_ = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).toStdString();
         }
     }
 }
@@ -266,6 +280,7 @@ int main(int argc, char** argv) {
     LOGI("display name: {}", settings->display_name_);
     LOGI("display remote name: {}", settings->display_remote_name_);
     LOGI("panel server port: {}", settings->panel_server_port_);
+    LOGI("screen recording path: {}", settings->screen_recording_path_);
 
     // WebSocket only
     auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",

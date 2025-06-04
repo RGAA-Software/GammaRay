@@ -125,4 +125,8 @@ namespace tc
             } 
         });
     }
+
+    std::string MediaRecordPluginClient::GetScreenRecordingPath() const {
+        return screen_recording_path_;
+    }
 }

@@ -4,6 +4,8 @@
 #include "tc_common_new/time_util.h"
 #include "media_record_plugin.h"
 #include <QApplication>
+#include <qstandardpaths.h>
+#include <qdir.h>
 
 namespace tc {
 
@@ -31,7 +33,23 @@ void MediaRecorder::SetFilePath(std::string name) {
 
 bool MediaRecorder::InitFFmpeg() {
 	
-	file_name_ = std::format("{}/GammaRay_meida_record_{}_{}.mp4", qApp->applicationDirPath().toStdString(), index_, TimeUtil::GetCurrentTimestamp());
+	std::string record_path;
+	if (plugin_) {
+		record_path = plugin_->GetScreenRecordingPath();
+	}
+	if (record_path.empty()) {
+		record_path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).toStdString();
+	}
+
+	QDir qdir{QString::fromStdString(record_path)};
+    if (!qdir.exists()) {
+        qdir.mkpath(".");
+    }
+	if (!qdir.exists()) {
+		record_path = qApp->applicationDirPath().toStdString();
+	}
+
+	file_name_ = std::format("{}/GammaRay_screen_record_{}_{}.mp4", record_path, index_, TimeUtil::FormatTimestamp2(TimeUtil::GetCurrentTimestamp()));
 
 	//打开音视频输出封装上下文
 	int result = avformat_alloc_output_context2(&format_ctx_, nullptr, nullptr, file_name_.c_str());

@@ -104,6 +104,9 @@ namespace tc
         std::string display_remote_name_;
         // panel ws server port
         int panel_server_port_ = 0;
+
+        //  screen recording path
+        std::string screen_recording_path_;
     };
 
 }

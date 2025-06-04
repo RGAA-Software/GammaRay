@@ -53,6 +53,8 @@ namespace tc
     static const std::string kStSpvrServerHost = "spvr_server_host";
     static const std::string kStSpvrServerPort = "spvr_server_port";
 
+    static const std::string kStScreenRecordingPath = "screen_recording_path";
+
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
     static const std::string kEncFormatH264 = "h264";
@@ -110,9 +112,11 @@ namespace tc
         void SetRelayServerPort(const std::string& port);
         void SetSpvrServerHost(const std::string& host);
         void SetSpvrServerPort(const std::string& port);
+        void SetScreenRecordingPath(const std::string& path);
 
         [[nodiscard]] std::string GetCaptureMonitor() const;
 
+        [[nodiscard]] std::string GetScreenRecordingPath() const;
     private:
 
     public:
@@ -170,6 +174,9 @@ namespace tc
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
+
+        // screen recording path
+        std::string screen_recording_path_;
     };
 
 }

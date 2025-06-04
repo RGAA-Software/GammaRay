@@ -45,6 +45,10 @@
   "id_capture_audio": "采集音频",
   "id_capture_audio_device": "采集音频设备",
 
+  "id_screen_recording_settings": "录屏设置",
+
+  "id_screen_recording_path": "保存路径",
+
   "id_cancel": "取消",
   "id_ok": "确定",
 

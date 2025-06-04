@@ -75,6 +75,8 @@ namespace tc
 
         capture_audio_device_id_ = GetConfigParam<std::string>("capture_audio_device_id");
 
+        screen_recording_path_ = GetConfigParam<std::string>("screen_recording_path");
+
         // print params
         LOGI("Input params size : {}", param.cluster_.size());
         for (const auto& [key, value]: param.cluster_) {

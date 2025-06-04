@@ -12,6 +12,7 @@
 #include "ct_plugin_event_router.h"
 #include "plugin_interface/ct_plugin_interface.h"
 #include "ct_plugin_ids.h"
+#include "ct_settings.h"
 //#include "media_record/media_record_plugin.h"
 
 typedef void *(*FnGetInstance)();
@@ -57,13 +58,15 @@ namespace tc
                         continue;
                     }
 
+                    auto settings = tc::Settings::Instance();
+
                     // create it
                     auto filename = info.fileName();
                     auto param = ClientPluginParam {
                         .cluster_ = {
                             {"name", filename.toStdString()},
                             {"base_path", base_path.toStdString()},
-                            //{"device_id", settings_->device_id_}
+                            {"screen_recording_path", settings->screen_recording_path_}
                         },
                     };
 

@@ -17,6 +17,7 @@
 #include "gr_app_messages.h"
 #include <sstream>
 #include <QApplication>
+#include <qstandardpaths.h>
 
 namespace tc
 {
@@ -320,5 +321,14 @@ namespace tc
     void GrSettings::SetSpvrServerPort(const std::string& port) {
         spvr_server_port_ = port;
         sp_->Put(kStSpvrServerPort, port);
+    }
+
+    void GrSettings::SetScreenRecordingPath(const std::string& path) {
+        screen_recording_path_ = path;
+        sp_->Put(kStScreenRecordingPath, path);
+    }
+
+    std::string GrSettings::GetScreenRecordingPath() const {
+        return sp_->Get(kStScreenRecordingPath, "");
     }
 }

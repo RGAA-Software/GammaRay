@@ -144,6 +144,7 @@ namespace tc
         bool plugin_enabled_ = true;
         std::string base_path_;
         std::string capture_audio_device_id_;
+        std::string screen_recording_path_;
     };
 
 

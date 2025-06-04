@@ -23,6 +23,7 @@
 #include <QCheckBox>
 #include <QDebug>
 #include <QFileDialog>
+#include <qstandardpaths.h>
 #include <Windows.h>
 #include <Mmsystem.h>
 #include <SetupAPI.h>
@@ -401,6 +402,65 @@ namespace tc
                 connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
                     auto target_device_id = devices.at(idx).id_;
                     settings_->SetCaptureAudioDeviceId(target_device_id);
+                });
+            }
+            column1_layout->addLayout(segment_layout);
+        }
+
+
+        // screen recording 录屏设置
+        {
+            auto segment_layout = new NoMarginVLayout();
+            {
+                // title
+                auto label = new TcLabel(this);
+                label->SetTextId("id_screen_recording_settings");
+                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+                segment_layout->addSpacing(0);
+                segment_layout->addWidget(label);
+            }
+            // save path
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_screen_recording_path");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                et_screen_recording_path_ = edit;
+                auto size = input_size;
+                size.setWidth(size.width() - 40);
+                edit->setFixedSize(size);
+                edit->setReadOnly(true);
+
+                std::string record_path = settings_->GetScreenRecordingPath();
+                if (record_path.empty()) {
+                    QString movies_path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+                    record_path = movies_path.toStdString();
+                    settings_->SetScreenRecordingPath(record_path);
+                }
+                edit->setText(QString::fromStdString(record_path));
+                
+                layout->addWidget(edit);
+                layout->addStretch();
+
+                auto btn = new QPushButton("...", this);
+                btn_select_screen_recording_path_ = btn;
+                btn->setFixedSize(30, 30);
+                btn->setToolTip(tr("Select screen recording save folder"));
+                layout->addWidget(btn);
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+
+                connect(btn, &QPushButton::clicked, this, [=]() {
+                    QString dir = QFileDialog::getExistingDirectory();
+                    if (dir.isEmpty()) {
+                        return;
+                    }
+                    edit->setText(dir);
+                    settings_->SetScreenRecordingPath(dir.toStdString());
                 });
             }
             column1_layout->addLayout(segment_layout);
