@@ -427,6 +427,32 @@ namespace tc
                 visit_record_op_->UpdateVisitRecord(sub.the_conn_id(), sub.end_timestamp(), sub.duration());
             });
         }
+        else if (proto_msg->type() == tcrp::kRpFileTransferBegin) {
+            context_->PostDBTask([=, this]() {
+                auto sub = proto_msg->ft_begin();
+                auto ips = context_->GetIps();
+                std::string ip_address;
+                if (!ips.empty()) {
+                    ip_address = ips[0].ip_addr_;
+                }
+
+                ft_record_op_->InsertFileTransferRecord(std::make_shared<FileTransferRecord>(FileTransferRecord {
+                    .the_file_id_ = sub.the_file_id(),
+                    .begin_ = sub.begin_timestamp(),
+                    .end_ = 0,
+                    .visitor_device_ = sub.device_id(),
+                    .target_device_ = settings_->device_id_.empty() ? ip_address : settings_->device_id_,
+                    .direction_ = sub.direction(),
+                    .file_detail_ = sub.file_detail(),
+                }));
+            });
+        }
+        else if (proto_msg->type() == tcrp::kRpFileTransferEnd) {
+            context_->PostDBTask([=, this]() {
+                auto sub = proto_msg->ft_end();
+                ft_record_op_->UpdateVisitRecord(sub.the_file_id(), sub.end_timestamp());
+            });
+        }
     }
 
 }

@@ -20,6 +20,33 @@ namespace tc
         storage.insert(*record);
     }
 
+    void FileTransferRecordOperator::UpdateVisitRecord(const std::string& the_file_id, int64_t end_timestamp) {
+        auto opt_record = GetFileTransferRecordByFileId(the_file_id);
+        if (!opt_record.has_value()) {
+            return;
+        }
+
+        const auto& record = opt_record.value();
+        record->end_ = end_timestamp;
+        using Storage = decltype(db_->GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_->GetDbStorage());
+        auto streams = storage.get_all<FileTransferRecord>(where(c(&FileTransferRecord::the_file_id_) == the_file_id));
+        if (!streams.empty()) {
+            storage.update(*record);
+        }
+    }
+
+    std::optional<std::shared_ptr<FileTransferRecord>> FileTransferRecordOperator::GetFileTransferRecordByFileId(const std::string& the_file_id) {
+        using Storage = decltype(db_->GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_->GetDbStorage());
+        auto records = storage.get_all_pointer<FileTransferRecord>(where(c(&FileTransferRecord::the_file_id_) == the_file_id));
+        if (records.empty()) {
+            return std::nullopt;
+        }
+        auto record = std::move(records[0]);
+        return record;
+    }
+
     std::vector<std::shared_ptr<FileTransferRecord>> FileTransferRecordOperator::QueryFileTransferRecords(int page, int page_size) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace tc
 {
@@ -21,6 +22,8 @@ namespace tc
         FileTransferRecordOperator(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<GrDatabase>& db);
 
         void InsertFileTransferRecord(const std::shared_ptr<FileTransferRecord>& record);
+        void UpdateVisitRecord(const std::string& the_file_id, int64_t end_timestamp);
+        std::optional<std::shared_ptr<FileTransferRecord>> GetFileTransferRecordByFileId(const std::string& the_file_id);
         std::vector<std::shared_ptr<FileTransferRecord>> QueryFileTransferRecords(int page, int page_size);
         void Delete(int id);
         void DeleteAll();

@@ -17,6 +17,7 @@
 #include <fstream>
 #include "rd_app.h"
 #include "tc_message.pb.h"
+#include "tc_render_panel_message.pb.h"
 
 namespace tc
 {
@@ -124,6 +125,14 @@ namespace tc
             auto target_event = std::dynamic_pointer_cast<GrPluginRtcReportEvent>(event);
             net_event_router_->ProcessRtcReportEvent(target_event);
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginFileTransferBegin) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginFileTransferBegin>(event);
+            ReportFileTransferBegin(target_event);
+        }
+        else if (event->event_type_ == GrPluginEventType::kPluginFileTransferEnd) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginFileTransferEnd>(event);
+            ReportFileTransferEnd(target_event);
+        }
     }
 
     void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
@@ -171,6 +180,26 @@ namespace tc
                 }
                 LOGI("Send ICE by relay: {}", target_event->ice_);
             }
+        });
+    }
+
+    void PluginEventRouter::ReportFileTransferBegin(const std::shared_ptr<GrPluginFileTransferBegin>& event) {
+        app_->PostGlobalTask([=, this]() {
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpFileTransferBegin);
+            auto sub = msg.mutable_ft_begin();
+            sub->set_the_file_id(event->the_file_id_);
+            sub->set_begin_timestamp(event->begin_timestamp_);
+            sub->set_direction(event->direction_);
+            sub->set_file_detail(event->file_detail_);
+            sub->set_device_id(event->device_id_);
+            app_->PostPanelMessage(msg.SerializeAsString());
+        });
+    }
+
+    void PluginEventRouter::ReportFileTransferEnd(const std::shared_ptr<GrPluginFileTransferEnd>& event) {
+        app_->PostGlobalTask([]() {
+
         });
     }
 

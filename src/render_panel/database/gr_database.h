@@ -85,7 +85,6 @@ namespace tc
                 make_table("file_transfer_record",
                     make_column("id", &FileTransferRecord::id_, primary_key()),
                     make_column("the_file_id", &FileTransferRecord::the_file_id_),
-                    make_column("conn_type", &FileTransferRecord::conn_type_),
                     make_column("begin", &FileTransferRecord::begin_),
                     make_column("end", &FileTransferRecord::end_),
                     make_column("visitor_device", &FileTransferRecord::visitor_device_),

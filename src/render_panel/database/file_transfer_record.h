@@ -22,7 +22,6 @@ namespace tc
     public:
         int id_{0};
         std::string the_file_id_;
-        std::string conn_type_;
         int64_t begin_{0};
         int64_t end_{0};
         std::string visitor_device_;

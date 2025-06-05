@@ -41,18 +41,18 @@ namespace tc
         auto item_style = R"(font-weight: 500; padding-left: 3px; color: #555555;)";
         auto target_style = item_info_->IsValid() ? item_style : header_style;
 
-        {
-            auto lbl = new QLabel(this);
-            lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
-            if (item_info_->IsValid()) {
-                lbl->setText(item_info_->conn_type_.c_str());
-            }
-            else {
-                lbl->setText("Connection Type");
-            }
-
-            content_layout->addWidget(lbl, 1);
-        }
+//        {
+//            auto lbl = new QLabel(this);
+//            lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
+//            if (item_info_->IsValid()) {
+//                lbl->setText(item_info_->conn_type_.c_str());
+//            }
+//            else {
+//                lbl->setText("Connection Type");
+//            }
+//
+//            content_layout->addWidget(lbl, 1);
+//        }
 
         {
             auto lbl = new QLabel(this);

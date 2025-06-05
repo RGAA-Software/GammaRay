@@ -17,6 +17,8 @@ namespace tc
     class PluginStreamEventRouter;
     class PluginNetEventRouter;
     class MessageNotifier;
+    class GrPluginFileTransferBegin;
+    class GrPluginFileTransferEnd;
 
     class PluginEventRouter {
     public:
@@ -26,6 +28,8 @@ namespace tc
     private:
         void SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event);
         void SendIceToRemote(const std::shared_ptr<GrPluginBaseEvent>& event);
+        void ReportFileTransferBegin(const std::shared_ptr<GrPluginFileTransferBegin>& event);
+        void ReportFileTransferEnd(const std::shared_ptr<GrPluginFileTransferEnd>& event);
 
     private:
         std::shared_ptr<RdApplication> app_ = nullptr;

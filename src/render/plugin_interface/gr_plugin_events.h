@@ -284,6 +284,7 @@ namespace tc
         int64_t begin_timestamp_ = 0;
         std::string device_id_;
         std::string direction_;
+        std::string file_detail_;
     };
 
     // file transfer end
