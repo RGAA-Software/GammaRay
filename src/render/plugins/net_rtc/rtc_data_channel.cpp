@@ -8,7 +8,10 @@
 #include "tc_common_new/net_tlv_header.h"
 #include "tc_common_new/time_util.h"
 #include "plugin_interface/gr_plugin_context.h"
+#include "plugin_interface/gr_plugin_events.h"
 #include "rtc_plugin.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/uuid.h"
 
 namespace tc
 {
@@ -20,6 +23,8 @@ namespace tc
         this->plugin_ctx_ = this->plugin_->GetPluginContext();
         this->data_channel_ = ch;
         this->data_channel_->RegisterObserver(this);
+        this->the_conn_id_ = MD5::Hex(tc::GetUUID());
+        this->created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
     }
 
     RtcDataChannel::~RtcDataChannel() {
@@ -29,12 +34,19 @@ namespace tc
     void RtcDataChannel::OnStateChange() {
         if (data_channel_->state() == webrtc::DataChannelInterface::kOpen) {
             connected_ = true;
-            //context_->SendAppMessage(ClientEvtDataChannelReady{});
+
+            // notify
+            if (this->name_ == "media_data_channel") {
+                auto event = std::make_shared<GrPluginClientConnectedEvent>();
+                event->the_conn_id_ = this->the_conn_id_;
+                event->device_id_ = name_;
+                event->conn_type_ = "P2P";
+                event->begin_timestamp_ = created_timestamp_;
+                this->plugin_->CallbackEvent(event);
+            }
 
         } else if (data_channel_->state() == webrtc::DataChannelInterface::kClosed) {
             connected_ = false;
-            //context_->SendAppMessage(ClientEvtDataChannelClosed{});
-
         }
 
         LOGI("DataChannel[ {} ] state changed: {}, connected: {}", name_, (int)data_channel_->state(), connected_);

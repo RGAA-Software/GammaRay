@@ -13,7 +13,7 @@ namespace tc
     class FileTransferRecord {
     public:
         [[nodiscard]] bool IsValid() const {
-            return !visitor_device_.empty() && !target_device_.empty();
+            return !visitor_device_.empty();
         }
 
         std::string AsString();

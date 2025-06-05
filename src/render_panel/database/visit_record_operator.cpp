@@ -26,7 +26,7 @@ namespace tc
             return;
         }
 
-        auto record = opt_record.value();
+        const auto& record = opt_record.value();
         record->end_ = end_timestamp;
         record->duration_ = duration;
         using Storage = decltype(db_->GetStorageTypeValue());

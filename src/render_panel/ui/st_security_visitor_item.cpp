@@ -67,7 +67,12 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
+                if (item_info_->end_ > 0) {
+                    lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
+                }
+                else {
+                    lbl->setText("- - -");
+                }
             }
             else {
                 lbl->setText("End");

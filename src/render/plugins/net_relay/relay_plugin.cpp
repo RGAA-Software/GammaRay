@@ -8,9 +8,11 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/ip_util.h"
+#include "tc_common_new/string_ext.h"
 #include "render/plugins/plugin_ids.h"
 #include "tc_relay_client/relay_server_sdk.h"
 #include "tc_relay_client/relay_server_sdk_param.h"
+#include "tc_relay_client/relay_room.h"
 #include "relay_message.pb.h"
 
 using namespace relay;
@@ -90,19 +92,51 @@ namespace tc
 
                 relay_media_sdk_->SetOnConnectedCallback([=, this]() {
                     this->sdk_init_ = true;
-                    this->NotifyMediaClientConnected();
+                    //this->NotifyMediaClientConnected();
                 });
 
                 relay_media_sdk_->SetOnDisConnectedCallback([=, this]() {
-                    this->NotifyMediaClientDisConnected();
+                    //this->NotifyMediaClientDisConnected();
                 });
 
-                relay_media_sdk_->SetOnRoomPreparedCallback([this]() {
-                    this->NotifyMediaClientConnected();
+                relay_media_sdk_->SetOnRoomPreparedCallback([this](const std::shared_ptr<relay::RelayMessage>& msg) {
+                    auto sub = msg->room_prepared();
+                    const auto& room_id = sub.room_id();
+
+                    auto room = relay_media_sdk_->GetRoomById(room_id);
+                    if (!room) {
+                        return;
+                    }
+
+                    const auto& device_id = sub.device_id();
+                    std::string visitor_device_id = device_id;
+                    std::vector<std::string> result;
+                    StringExt::Split(device_id, result, "_");
+                    if (result.size() > 1) {
+                        visitor_device_id = result[1];
+                    }
+
+                    this->NotifyMediaClientConnected(room->the_conn_id_, visitor_device_id);
                 });
 
-                relay_media_sdk_->SetOnRoomDestroyedCallback([this]() {
-                    this->NotifyMediaClientDisConnected();
+                relay_media_sdk_->SetOnRoomDestroyedCallback([this](const std::shared_ptr<relay::RelayMessage>& msg) {
+                    auto sub = msg->room_destroyed();
+                    const auto& room_id = sub.room_id();
+                    auto room = relay_media_sdk_->GetRoomById(room_id);
+                    if (!room) {
+                        return;
+                    }
+
+                    const auto& device_id = sub.device_id();
+                    std::string visitor_device_id = device_id;
+                    std::vector<std::string> result;
+                    StringExt::Split(device_id, result, "_");
+                    if (result.size() > 1) {
+                        visitor_device_id = result[1];
+                    }
+
+                    auto begin_timestamp = room ? room->created_timestamp_ : 0;
+                    this->NotifyMediaClientDisConnected(room->the_conn_id_, visitor_device_id, begin_timestamp);
                     if (!relay_media_sdk_->HasRelayRooms()) {
                         paused_stream = true;
                         LOGW("No active rooms, paused stream.");
@@ -230,14 +264,24 @@ namespace tc
         GrNetPlugin::SyncInfo(info);
     }
 
-    void RelayPlugin::NotifyMediaClientConnected() {
+    void RelayPlugin::NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& visitor_device_id) {
         auto event = std::make_shared<GrPluginClientConnectedEvent>();
+        event->the_conn_id_ = the_conn_id;
+        event->conn_type_ = "Relay";
+        event->device_id_ = visitor_device_id;
+        event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         this->CallbackEvent(event);
+        LOGI("Conn id: {}, visitor device id: {}", the_conn_id, visitor_device_id);
     }
 
-    void RelayPlugin::NotifyMediaClientDisConnected() {
+    void RelayPlugin::NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& visitor_device_id, int64_t begin_timestamp) {
         auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
+        event->the_conn_id_ = the_conn_id;
+        event->device_id_ = visitor_device_id;
+        event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        event->duration_ = event->end_timestamp_ - begin_timestamp;
         this->CallbackEvent(event);
+        LOGI("DisConn id: {}, visitor device id: {}, duration: {}, begin ts: {}", the_conn_id, visitor_device_id, event->duration_, begin_timestamp);
     }
 
     void RelayPlugin::OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) {

@@ -57,6 +57,10 @@ namespace tc
 
         std::mutex cached_messages_mtx_;
         std::map<uint64_t, std::string> cached_ft_messages_;
+
+    public:
+        std::string the_conn_id_;
+        int64_t created_timestamp_{0};
     };
 
 } // namespace dl

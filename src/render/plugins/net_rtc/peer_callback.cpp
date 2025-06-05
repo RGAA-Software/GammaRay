@@ -51,7 +51,19 @@ namespace tc
         PeerConnectionObserver::OnIceConnectionChange(new_state);
         if (new_state == webrtc::PeerConnectionInterface::IceConnectionState::kIceConnectionConnected) {
             LOGI("ICE -- Connected.");
+            if (ice_conn_cbk_) {
+                ice_conn_cbk_();
+            }
         }
+        else if (new_state == webrtc::PeerConnectionInterface::IceConnectionState::kIceConnectionFailed
+            || new_state == webrtc::PeerConnectionInterface::IceConnectionState::kIceConnectionDisconnected
+            || new_state == webrtc::PeerConnectionInterface::IceConnectionState::kIceConnectionClosed) {
+            LOGI("ICE -- Closed.");
+            if (ice_disconn_cbk_) {
+                ice_disconn_cbk_();
+            }
+        }
+
         LOGI("OnIceConnectionChange ==> state: {}", (int)new_state);
     }
 

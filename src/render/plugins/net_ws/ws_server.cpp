@@ -249,7 +249,7 @@ namespace tc
         event->device_id_ = device_id;
         event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         this->plugin_->CallbackEvent(event);
-        LOGI("Conn id: {},", the_conn_id);
+        LOGI("Conn id: {}, device id: {}", the_conn_id, device_id);
     }
 
     void WsPluginServer::NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& device_id, int64_t begin_timestamp) {

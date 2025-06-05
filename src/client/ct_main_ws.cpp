@@ -283,10 +283,11 @@ int main(int argc, char** argv) {
     LOGI("screen recording path: {}", settings->screen_recording_path_);
 
     // WebSocket only
+    auto target_device_id = settings->device_id_.empty() ? g_host_ : settings->device_id_;
     auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
-                                settings->device_id_, settings->stream_id_);
+                                  target_device_id, settings->stream_id_);
     auto ft_path = std::format("/file/transfer?device_id={}&stream_id={}",
-                                  settings->device_id_, settings->stream_id_);
+                                  target_device_id, settings->stream_id_);
     auto device_id = "client_" + settings->device_id_ + "_" + MD5::Hex(settings->remote_device_id_);
     auto remote_device_id = "server_" + settings->remote_device_id_;
     auto ft_device_id = "ft_" + device_id;

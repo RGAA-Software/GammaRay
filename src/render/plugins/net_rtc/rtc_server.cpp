@@ -85,12 +85,8 @@ namespace tc
                 // data callback
                 media_data_channel_->SetOnDataCallback([=, this](const std::string& data) {
                     auto payload_msg = std::string(data.data(), data.size());
-                    plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
+                    plugin_->OnClientEventCame(true, 0, NetPluginType::kWebRtc, payload_msg);
                 });
-
-                // notify
-                auto event = std::make_shared<GrPluginClientConnectedEvent>();
-                this->plugin_->CallbackEvent(event);
             }
             else if (name == "ft_data_channel") {
                 ft_data_channel_ = std::make_shared<RtcDataChannel>(name, shared_from_this(), ch);
@@ -98,9 +94,23 @@ namespace tc
                 // data callback
                 ft_data_channel_->SetOnDataCallback([=, this](const std::string& data) {
                     auto payload_msg = std::string(data.data(), data.size());
-                    plugin_->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
+                    plugin_->OnClientEventCame(true, 0, NetPluginType::kWebRtc, payload_msg);
                 });
             }
+        });
+
+        // network state
+        peer_callback_->SetOnIceConnectedCallback([=, this]() {
+
+        });
+
+        peer_callback_->SetOnIceDisConnectedCallback([=, this]() {
+            if (!media_data_channel_) {return;}
+            auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
+            event->the_conn_id_ = media_data_channel_->the_conn_id_;
+            event->end_timestamp_ = (int64_t) TimeUtil::GetCurrentTimestamp();
+            event->duration_ =   event->end_timestamp_ - media_data_channel_->created_timestamp_;
+            this->plugin_->CallbackEvent(event);
         });
 
         CreatePeerConnectionFactory();

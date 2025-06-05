@@ -20,6 +20,8 @@ namespace tc
     using OnSetSdpFailedCallback = std::function<void(const std::string&)>;
     using OnIceCallback = std::function<void(const std::string& ice, const std::string& mid, int sdp_mline_index)>;
     using OnDataChannelCallback = std::function<void(const std::string& name, rtc::scoped_refptr<webrtc::DataChannelInterface> ch)>;
+    using OnIceConnectedCallback = std::function<void()>;
+    using OnIceDisConnectedCallback = std::function<void()>;
 
     class RtcServer;
 
@@ -62,10 +64,19 @@ namespace tc
             ch_callback_ = cbk;
         }
 
+        void SetOnIceConnectedCallback(OnIceConnectedCallback&& cbk) {
+            ice_conn_cbk_ = cbk;
+        }
+
+        void SetOnIceDisConnectedCallback(OnIceDisConnectedCallback&& cbk) {
+            ice_disconn_cbk_ = cbk;
+        }
+
     private:
         OnIceCallback ice_callback_;
         OnDataChannelCallback ch_callback_;
-
+        OnIceConnectedCallback  ice_conn_cbk_;
+        OnIceDisConnectedCallback ice_disconn_cbk_;
     };
 
     class CreateSessCallback : public webrtc::CreateSessionDescriptionObserver {

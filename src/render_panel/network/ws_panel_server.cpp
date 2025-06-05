@@ -404,6 +404,11 @@ namespace tc
         }
         else if (proto_msg->type() == tcrp::kRpClientConnected) {
             context_->PostDBTask([=, this]() {
+                auto ips = context_->GetIps();
+                std::string ip_address;
+                if (!ips.empty()) {
+                    ip_address = ips[0].ip_addr_;
+                }
                 auto sub = proto_msg->client_connected();
                 visit_record_op_->InsertVisitRecord(std::make_shared<VisitRecord>(VisitRecord {
                     .the_conn_id_ = sub.the_conn_id(),
@@ -412,7 +417,7 @@ namespace tc
                     .end_ = 0,
                     .duration_ = 0,
                     .visitor_device_ = sub.device_id(),
-                    .target_device_ = settings_->device_id_,
+                    .target_device_ = settings_->device_id_.empty() ? ip_address : settings_->device_id_,
                 }));
             });
         }
