@@ -280,7 +280,10 @@ namespace tc
             event_type_ = GrPluginEventType::kPluginFileTransferBegin;
         }
     public:
-
+        std::string the_file_id_;
+        int64_t begin_timestamp_ = 0;
+        std::string device_id_;
+        std::string direction_;
     };
 
     // file transfer end
@@ -291,6 +294,9 @@ namespace tc
         }
     public:
         bool success_ = false;
+        std::string the_file_id_;
+        int64_t end_timestamp_ = 0;
+        int64_t duration_ = 0;
     };
 }
 

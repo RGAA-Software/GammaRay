@@ -288,7 +288,7 @@ int main(int argc, char** argv) {
                                   target_device_id, settings->stream_id_);
     auto ft_path = std::format("/file/transfer?device_id={}&stream_id={}",
                                   target_device_id, settings->stream_id_);
-    auto device_id = "client_" + settings->device_id_ + "_" + MD5::Hex(settings->remote_device_id_);
+    auto device_id = "client_" + target_device_id + "_" + MD5::Hex(settings->remote_device_id_);
     auto remote_device_id = "server_" + settings->remote_device_id_;
     auto ft_device_id = "ft_" + device_id;
     auto ft_remote_device_id = "ft_" + remote_device_id;
