@@ -849,14 +849,15 @@ namespace tc
                         if (game_view->IsMainView()) {
                             WidgetSelectMonitor(this, screens);
                             this->showFullScreen();
+                            this->raise();
                             game_view->showFullScreen();
                             tc::QWidgetHelper::SetBorderInFullScreen(this, true);
                         }
                         else {
                             WidgetSelectMonitor(game_view, screens);
                             game_view->showFullScreen();
-                            tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
                         }
+                        tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
                     }
                     else {
                         if (game_view->isMaximized()) {

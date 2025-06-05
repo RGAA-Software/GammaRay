@@ -75,6 +75,7 @@ GameView::~GameView() {
 }
 
 void GameView::resizeEvent(QResizeEvent* event) {
+    video_widget_->resize(this->width(), this->height());
     if (float_controller_) {
         float_controller_->ReCalculatePosition();
     }
