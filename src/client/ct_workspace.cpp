@@ -923,7 +923,7 @@ namespace tc
     }
 
     void Workspace::InitGameViews(const std::shared_ptr<ThunderSdkParams>& params) {
-        
+        this->resize(1080, 680);
         for (int index = 0; index < kMaxGameViewCount; ++index) {
             GameView* game_view = nullptr;
             if (0 == index) {
@@ -944,12 +944,11 @@ namespace tc
             game_view->SetMonitorIndex(index);
             game_views_.push_back(game_view);
         }
-        QTimer::singleShot(200, this, [=, this]() {
+        QTimer::singleShot(1, this, [=, this]() {
             {
                 QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
                 int x = (screenGeometry.width() - this->width()) / 2;
                 int y = (screenGeometry.height() - this->height()) / 2;
-                this->resize(1080, 680);
                 this->move(x, y);
             }
 
