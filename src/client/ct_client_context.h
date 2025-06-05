@@ -19,6 +19,7 @@ namespace tc
     class StreamDBOperator;
     class SharedPreference;
     class ClientPluginManager;
+    class NotifyManager;
 
     class ClientContext : public QObject, public std::enable_shared_from_this<ClientContext> {
     public:
@@ -46,6 +47,10 @@ namespace tc
 
         void SetRecording(bool recording);
         bool GetRecording();
+
+        void InitNotifyManager(QWidget* parent);
+        std::shared_ptr<NotifyManager> GetNotifyManager() const;
+        void NotifyAppMessage(const QString& title, const QString& msg);
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
@@ -62,6 +67,8 @@ namespace tc
 
         //是否在录制中
         std::atomic_bool recording_ = false;
+
+        std::shared_ptr<NotifyManager> notify_manager_ = nullptr;
     };
 
 }

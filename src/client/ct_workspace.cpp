@@ -48,12 +48,14 @@
 #include "plugin_interface/ct_plugin_interface.h"
 #include "plugins/media_record/media_record_plugin.h"
 #include "plugin_interface/ct_media_record_plugin_interface.h"
+#include "tc_qt_widget/notify/notifymanager.h"
 
 namespace tc
 {
 
     Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent) : QMainWindow(parent) {
         this->context_ = ctx;
+        this->context_->InitNotifyManager(this);
         this->settings_ = Settings::Instance();
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
@@ -947,7 +949,7 @@ namespace tc
                 int x = (screenGeometry.width() - this->width()) / 2;
                 int y = (screenGeometry.height() - this->height()) / 2;
                 this->resize(1080, 680);
-                this->move(x-60, y-40);
+                this->move(x, y);
             }
 
             QPoint ws_pos = this->pos();
