@@ -455,7 +455,7 @@ namespace tc
                 segment_layout->addLayout(layout);
 
                 connect(btn, &QPushButton::clicked, this, [=]() {
-                    QString dir = QFileDialog::getExistingDirectory();
+                    QString dir = QFileDialog::getExistingDirectory(nullptr, "select folder", QString::fromStdString(record_path));
                     if (dir.isEmpty()) {
                         return;
                     }

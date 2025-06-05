@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include <any>
 #include "tc_common_new/time_util.h"
 
 // from plugins ---> exe
@@ -21,8 +22,11 @@ namespace tc
         kPluginUnknownType,
 
         // test begin
-        kPluginTestEvent
+        kPluginTestEvent,
         // test end
+
+        // 显示通知消息
+        kPluginNotifyMsgEvent,
     };
 
     class ClientPluginBaseEvent {
@@ -48,6 +52,16 @@ namespace tc
         std::string message_;
     };
 
+
+    class ClientPluginNotifyMsgEvent : public ClientPluginBaseEvent {
+    public:
+        ClientPluginNotifyMsgEvent() : ClientPluginBaseEvent() {
+            event_type_ = ClientPluginEventType::kPluginNotifyMsgEvent;
+        }
+    public:
+        std::string title_;
+        std::string message_;
+    };
 
 }
 

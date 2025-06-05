@@ -11,6 +11,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/hardware.h"
+#include "tc_qt_widget/notify/notifymanager.h"
 #include "client/ct_app_message.h"
 #include <QTimer>
 #include <QApplication>
@@ -142,4 +143,19 @@ namespace tc
         return recording_;
     }
 
+    void ClientContext::InitNotifyManager(QWidget* parent) {
+        notify_manager_ = std::make_shared<NotifyManager>(parent);
+    }
+
+    std::shared_ptr<NotifyManager> ClientContext::GetNotifyManager() const {
+        return notify_manager_;
+    }
+
+    void ClientContext::NotifyAppMessage(const QString& title, const QString& msg) {
+        QMetaObject::invokeMethod(this, [=, this]() {
+            if (notify_manager_) {
+                notify_manager_->notify(title, msg);
+            }
+        });
+    }
 }

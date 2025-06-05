@@ -15,9 +15,16 @@ namespace tc
     }
 
     void ClientPluginEventRouter::ProcessPluginEvent(const std::shared_ptr<ClientPluginBaseEvent>& event) {
-        if (event->event_type_ == ClientPluginEventType::kPluginTestEvent) {
+        if (ClientPluginEventType::kPluginTestEvent == event->event_type_) {
             auto target_event = std::dynamic_pointer_cast<ClientPluginTestEvent>(event);
             LOGI("test event, callback: {}", target_event->message_);
+        }
+        else if (ClientPluginEventType::kPluginNotifyMsgEvent == event->event_type_) {
+            auto target_event = std::dynamic_pointer_cast<ClientPluginNotifyMsgEvent>(event);
+            if (!this->context_) {
+                return;
+            }
+            this->context_->NotifyAppMessage(QString::fromStdString(target_event->title_), QString::fromStdString(target_event->message_));
         }
     }
 

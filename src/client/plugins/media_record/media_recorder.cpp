@@ -2,6 +2,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/frame_common.h"
 #include "tc_common_new/time_util.h"
+#include "plugins/ct_plugin_events.h"
 #include "media_record_plugin.h"
 #include <QApplication>
 #include <qstandardpaths.h>
@@ -143,6 +144,16 @@ bool MediaRecorder::InitFFmpeg() {
 }
 
 void MediaRecorder::EndRecord() {
+
+	if (plugin_) {
+		if (file_name_.size() > 0) {
+			std::shared_ptr<ClientPluginNotifyMsgEvent> event = std::make_shared<ClientPluginNotifyMsgEvent>();
+			event->title_ = "A screen recording has ended";
+			event->message_ = file_name_;
+			plugin_->CallbackEvent(event);
+		}
+	}
+
 	init_ok_ = false;
 	if (format_ctx_) {
 		av_write_trailer(format_ctx_);
@@ -167,6 +178,7 @@ void MediaRecorder::EndRecord() {
 	height_ = -1;
 	video_frame_count_ = 0;
 	audio_frame_count_ = 0;
+	file_name_ = "";
 }
 
 void MediaRecorder::InitByVideoFrame(const VideoFrame& frame) {
