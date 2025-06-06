@@ -151,21 +151,21 @@ namespace tc
                     exist_stream_item = opt_stream.value();
                 }
             }
-            // by host & port
-            {
-                auto opt_stream = db_mgr_->GetStreamByHostPort(item->stream_host_, item->stream_port_);
-                if (opt_stream.has_value()) {
-                    exist_stream_item = opt_stream.value();
-                }
-            }
-            // by remote device id
+
             if (!item->remote_device_id_.empty()) {
+                // by remote device id
                 auto opt_stream = db_mgr_->GetStreamByRemoteDeviceId(item->remote_device_id_);
                 if (opt_stream.has_value()) {
                     exist_stream_item = opt_stream.value();
                 }
             }
-
+            else {
+                // by host & port
+                auto opt_stream = db_mgr_->GetStreamByHostPort(item->stream_host_, item->stream_port_);
+                if (opt_stream.has_value()) {
+                    exist_stream_item = opt_stream.value();
+                }
+            }
             if (!exist_stream_item) {
                 db_mgr_->AddStream(item);
                 exist_stream_item = item;
