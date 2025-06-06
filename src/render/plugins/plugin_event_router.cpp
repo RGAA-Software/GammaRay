@@ -198,8 +198,14 @@ namespace tc
     }
 
     void PluginEventRouter::ReportFileTransferEnd(const std::shared_ptr<GrPluginFileTransferEnd>& event) {
-        app_->PostGlobalTask([]() {
-
+        app_->PostGlobalTask([=, this]() {
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpFileTransferEnd);
+            auto sub = msg.mutable_ft_end();
+            sub->set_the_file_id(event->the_file_id_);
+            sub->set_end_timestamp(event->end_timestamp_);
+            sub->set_success(event->success_);
+            app_->PostPanelMessage(msg.SerializeAsString());
         });
     }
 

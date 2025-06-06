@@ -450,7 +450,7 @@ namespace tc
         else if (proto_msg->type() == tcrp::kRpFileTransferEnd) {
             context_->PostDBTask([=, this]() {
                 auto sub = proto_msg->ft_end();
-                ft_record_op_->UpdateVisitRecord(sub.the_file_id(), sub.end_timestamp());
+                ft_record_op_->UpdateVisitRecord(sub.the_file_id(), sub.end_timestamp(), sub.success());
             });
         }
     }

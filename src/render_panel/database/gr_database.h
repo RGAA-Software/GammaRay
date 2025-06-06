@@ -90,7 +90,8 @@ namespace tc
                     make_column("visitor_device", &FileTransferRecord::visitor_device_),
                     make_column("target_device", &FileTransferRecord::target_device_),
                     make_column("direction", &FileTransferRecord::direction_),
-                    make_column("file_detail", &FileTransferRecord::file_detail_)
+                    make_column("file_detail", &FileTransferRecord::file_detail_),
+                    make_column("success", &FileTransferRecord::success_)
                 )
             );
             return st;

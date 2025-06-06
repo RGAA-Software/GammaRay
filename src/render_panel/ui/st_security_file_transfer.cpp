@@ -36,7 +36,6 @@ namespace tc
     };
 
     StSecurityFileTransfer::StSecurityFileTransfer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
-        ft_record_op_ = context_->GetDatabase()->GetFileTransferRecordOp();
         auto root_layout = new NoMarginVLayout();
 //        {
 //            // title
@@ -188,7 +187,9 @@ namespace tc
         // test end //
 
         // Load Page 1
-        LoadPage(1);
+        context_->PostUIDelayTask([=, this]() {
+            LoadPage(1);
+        }, 550);
     }
 
     QListWidgetItem* StSecurityFileTransfer::AddItem(const std::shared_ptr<FileTransferRecord>& item_info) {
@@ -207,6 +208,9 @@ namespace tc
         }
 
         context_->PostDBTask([=, this]() {
+            if (!ft_record_op_) {
+                ft_record_op_ = context_->GetDatabase()->GetFileTransferRecordOp();
+            }
             records_.clear();
             auto total_count = ft_record_op_->GetTotalCounts();
 

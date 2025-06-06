@@ -20,7 +20,7 @@ namespace tc
         storage.insert(*record);
     }
 
-    void FileTransferRecordOperator::UpdateVisitRecord(const std::string& the_file_id, int64_t end_timestamp) {
+    void FileTransferRecordOperator::UpdateVisitRecord(const std::string& the_file_id, int64_t end_timestamp, bool success) {
         auto opt_record = GetFileTransferRecordByFileId(the_file_id);
         if (!opt_record.has_value()) {
             return;
@@ -28,6 +28,7 @@ namespace tc
 
         const auto& record = opt_record.value();
         record->end_ = end_timestamp;
+        record->success_ = success;
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto streams = storage.get_all<FileTransferRecord>(where(c(&FileTransferRecord::the_file_id_) == the_file_id));

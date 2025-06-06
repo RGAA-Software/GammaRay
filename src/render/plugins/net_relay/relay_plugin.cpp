@@ -9,6 +9,7 @@
 #include "tc_common_new/image.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/client_id_extractor.h"
 #include "render/plugins/plugin_ids.h"
 #include "tc_relay_client/relay_server_sdk.h"
 #include "tc_relay_client/relay_server_sdk_param.h"
@@ -109,12 +110,7 @@ namespace tc
                     }
 
                     const auto& device_id = sub.device_id();
-                    std::string visitor_device_id = device_id;
-                    std::vector<std::string> result;
-                    StringExt::Split(device_id, result, "_");
-                    if (result.size() > 1) {
-                        visitor_device_id = result[1];
-                    }
+                    std::string visitor_device_id = ExtractClientId(device_id);
 
                     this->NotifyMediaClientConnected(room->the_conn_id_, visitor_device_id);
                 });
@@ -128,12 +124,7 @@ namespace tc
                     }
 
                     const auto& device_id = sub.device_id();
-                    std::string visitor_device_id = device_id;
-                    std::vector<std::string> result;
-                    StringExt::Split(device_id, result, "_");
-                    if (result.size() > 1) {
-                        visitor_device_id = result[1];
-                    }
+                    std::string visitor_device_id = ExtractClientId(device_id);
 
                     auto begin_timestamp = room ? room->created_timestamp_ : 0;
                     this->NotifyMediaClientDisConnected(room->the_conn_id_, visitor_device_id, begin_timestamp);

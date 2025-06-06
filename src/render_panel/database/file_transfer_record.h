@@ -28,6 +28,7 @@ namespace tc
         std::string target_device_;
         std::string direction_;
         std::string file_detail_;
+        bool success_ = false;
     };
 
 }

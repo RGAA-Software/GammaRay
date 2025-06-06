@@ -9,6 +9,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/database/visit_record.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/uid_spacer.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -97,7 +98,7 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->visitor_device_.c_str());
+                lbl->setText(SpaceId(item_info_->visitor_device_).c_str());
             }
             else {
                 lbl->setText("Visitor Device");
@@ -109,7 +110,7 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->target_device_.c_str());
+                lbl->setText(SpaceId(item_info_->target_device_).c_str());
             }
             else {
                 lbl->setText("Target Device");

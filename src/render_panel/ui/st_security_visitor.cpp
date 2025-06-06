@@ -35,7 +35,6 @@ namespace tc
     };
 
     StSecurityVisitor::StSecurityVisitor(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
-        visit_op_ = context_->GetDatabase()->GetVisitRecordOp();
         auto root_layout = new NoMarginVLayout();
 
         {
@@ -166,7 +165,9 @@ namespace tc
         // test end //
 
         // Load Page 1
-        LoadPage(1);
+        context_->PostUIDelayTask([=, this]() {
+            LoadPage(1);
+        }, 500);
     }
 
     QListWidgetItem* StSecurityVisitor::AddItem(const std::shared_ptr<VisitRecord>& item_info) {
@@ -185,6 +186,9 @@ namespace tc
         }
 
         context_->PostDBTask([=, this]() {
+            if (!visit_op_) {
+                visit_op_ = context_->GetDatabase()->GetVisitRecordOp();
+            }
             records_.clear();
             auto total_count = visit_op_->GetTotalCounts();
 

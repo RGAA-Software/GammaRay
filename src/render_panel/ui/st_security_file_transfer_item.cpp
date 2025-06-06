@@ -8,7 +8,9 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/database/file_transfer_record.h"
+#include "tc_common_new/client_id_extractor.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/uid_spacer.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -35,24 +37,29 @@ namespace tc
         root_layout->addLayout(content_layout);
         root_layout->addStretch();
 
-        //content_layout->addSpacing(20);
-
         auto header_style = R"(font-weight: 500; padding-left: 3px; color: #333333;)";
         auto item_style = R"(font-weight: 500; padding-left: 3px; color: #555555;)";
         auto target_style = item_info_->IsValid() ? item_style : header_style;
 
-//        {
-//            auto lbl = new QLabel(this);
-//            lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
-//            if (item_info_->IsValid()) {
-//                lbl->setText(item_info_->conn_type_.c_str());
-//            }
-//            else {
-//                lbl->setText("Connection Type");
-//            }
-//
-//            content_layout->addWidget(lbl, 1);
-//        }
+        {
+            auto lbl = new QLabel(this);
+            if (item_info_->IsValid()) {
+                if (item_info_->success_) {
+                    lbl->setStyleSheet(R"(font-weight: 700; padding-left: 8px; color: #33FF33;)");
+                }
+                else {
+                    lbl->setStyleSheet(R"(font-weight: 700; padding-left: 8px; color: #FF3333;)");
+                }
+                lbl->setText(item_info_->success_ ? "Success" : "Failed");
+            }
+            else {
+                lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
+                lbl->setText("Result");
+            }
+
+            lbl->setFixedWidth(100);
+            content_layout->addWidget(lbl);
+        }
 
         {
             auto lbl = new QLabel(this);
@@ -63,30 +70,39 @@ namespace tc
             else {
                 lbl->setText("Start");
             }
-            content_layout->addWidget(lbl, 1);
+            lbl->setFixedWidth(130);
+            content_layout->addWidget(lbl);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
+                if (item_info_->end_ <= 0) {
+                    lbl->setText("- - -");
+                }
+                else {
+                    lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
+                }
             }
             else {
                 lbl->setText("End");
             }
-            content_layout->addWidget(lbl, 1);
+            lbl->setFixedWidth(130);
+            content_layout->addWidget(lbl);
         }
 
         {
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->visitor_device_.c_str());
+                std::string visitor_device_id = ExtractClientId(item_info_->visitor_device_);
+                lbl->setText(SpaceId(visitor_device_id).c_str());
             }
             else {
                 lbl->setText("Visitor Device");
             }
+            lbl->setFixedWidth(130);
             content_layout->addWidget(lbl, 1);
         }
 
@@ -94,11 +110,12 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->target_device_.c_str());
+                lbl->setText(SpaceId(item_info_->target_device_).c_str());
             }
             else {
                 lbl->setText("Target Device");
             }
+            lbl->setFixedWidth(130);
             content_layout->addWidget(lbl, 1);
         }
 
@@ -111,6 +128,7 @@ namespace tc
             else {
                 lbl->setText("Direction");
             }
+            lbl->setFixedWidth(100);
             content_layout->addWidget(lbl, 1);
         }
 
@@ -123,9 +141,9 @@ namespace tc
             else {
                 lbl->setText("File Detail");
             }
-            content_layout->addWidget(lbl, 1);
+            lbl->setFixedWidth(250);
+            content_layout->addWidget(lbl);
         }
-
 
         content_layout->addSpacing(10);
 
