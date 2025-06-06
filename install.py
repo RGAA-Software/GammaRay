@@ -42,7 +42,9 @@ def collceion_program_files(type, force_update, publish, in_target_path):
         "plugin_obj_detector.dll",
         "plugin_opus_encoder.dll",
         "plugin_was_audio_capture.dll",
-        "plugin_vr_manager.dll"
+        "plugin_vr_manager.dll",
+        "tc_rtc_client.dll",
+        "protoc.exe"
     ]
 
     files_with_ref_path = []
@@ -96,7 +98,9 @@ def collceion_program_files(type, force_update, publish, in_target_path):
     folders_path.append(base_path + "qml")
     folders_path.append(base_path + "qmltooling")
     folders_path.append(base_path + "gr_plugins")
+    folders_path.append(base_path + "gr_plugins_client")
     folders_path.append(base_path + "gr_client")
+    folders_path.append(base_path + "certs")
 
     target_path = base_path + "package/packages/com.rgaa.gammaray/data"#+ "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:
