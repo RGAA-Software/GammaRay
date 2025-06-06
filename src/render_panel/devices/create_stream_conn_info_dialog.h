@@ -24,6 +24,7 @@ namespace tc
 
     class GrContext;
 
+    // Paste gammaray://xxx
     class CreateStreamConnInfoDialog : public TcCustomTitleBarDialog {
     public:
         explicit CreateStreamConnInfoDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);

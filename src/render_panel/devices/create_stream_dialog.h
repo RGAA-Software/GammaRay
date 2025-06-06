@@ -24,6 +24,7 @@ namespace tc
 
     class GrContext;
 
+    // Create with host & port
     class CreateStreamDialog : public TcCustomTitleBarDialog {
     public:
         explicit CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
