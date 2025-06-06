@@ -43,7 +43,7 @@ namespace tc
     }
 
     std::string FFmpegEncoderPlugin::GetPluginDescription() {
-        return plugin_desc_;
+        return "Encoders by software";
     }
 
     void FFmpegEncoderPlugin::On1Second() {

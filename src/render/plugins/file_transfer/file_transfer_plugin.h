@@ -19,6 +19,7 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
+        std::string GetPluginDescription() override;
 
         bool OnCreate(const GrPluginParam& param) override;
         void OnMessage(const std::shared_ptr<tc::Message>& msg) override;

@@ -9,7 +9,7 @@
 
 namespace tc
 {
-    static const std::string kAmfPluginName = "Amf Encoder Plugin";
+    static const std::string kAmfPluginName = "AMF Encoder";
 }
 
 #endif //GAMMARAY_FFMPEG_ENCODER_DEFS_H

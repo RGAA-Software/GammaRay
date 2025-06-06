@@ -27,7 +27,7 @@ namespace tc
     }
 
     std::string ClipboardPlugin::GetPluginName() {
-        return "Clipboard Plugin";
+        return "Clipboard";
     }
 
     std::string ClipboardPlugin::GetVersionName() {
@@ -36,6 +36,10 @@ namespace tc
 
     uint32_t ClipboardPlugin::GetVersionCode() {
         return 110;
+    }
+
+    std::string ClipboardPlugin::GetPluginDescription() {
+        return "Share clipboard between devices";
     }
 
     void ClipboardPlugin::On1Second() {

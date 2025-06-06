@@ -35,6 +35,10 @@ namespace tc
         return 110;
     }
 
+    std::string FrameResizerPlugin::GetPluginDescription() {
+        return "Resize frame to target size before encoding";
+    }
+
     void FrameResizerPlugin::On1Second() {
 
     }

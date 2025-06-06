@@ -11,6 +11,7 @@
 #include "tc_common_new/client_id_extractor.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/uid_spacer.h"
+#include "tc_common_new/file_util.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -136,10 +137,11 @@ namespace tc
             auto lbl = new QLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
-                lbl->setText(item_info_->file_detail_.c_str());
+                auto filename = FileUtil::GetFileNameFromPath(item_info_->file_detail_);
+                lbl->setText(filename.c_str());
             }
             else {
-                lbl->setText("File Detail");
+                lbl->setText("File Name");
             }
             lbl->setFixedWidth(250);
             content_layout->addWidget(lbl);

@@ -223,7 +223,7 @@ namespace tc
             {
                 // title
                 auto label = new QLabel(this);
-                label->setText(tr("GammaRay Server"));
+                label->setText(tr("Gr Supervisor Server*"));
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
@@ -413,7 +413,7 @@ namespace tc
             auto layout = new NoMarginHLayout();
             auto btn = new QPushButton(this);
             btn->setText(tr("SAVE"));
-            btn->setFixedSize(QSize(150, 35));
+            btn->setFixedSize(QSize(220, 35));
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {

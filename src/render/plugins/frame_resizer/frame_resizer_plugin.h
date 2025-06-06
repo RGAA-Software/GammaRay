@@ -18,6 +18,7 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
+        std::string GetPluginDescription() override;
         void On1Second() override;
         ComPtr<ID3D11Texture2D> Process(ID3D11Texture2D* input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) override;
 

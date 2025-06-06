@@ -28,6 +28,10 @@ namespace tc
         return 110;
     }
 
+    std::string ObjDetectorPlugin::GetPluginDescription() {
+        return "Object detector";
+    }
+
     void ObjDetectorPlugin::On1Second() {
         GrPluginInterface::On1Second();
 

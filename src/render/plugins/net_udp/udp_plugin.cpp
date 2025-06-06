@@ -16,7 +16,7 @@ namespace tc
     }
 
     std::string UdpPlugin::GetPluginName() {
-        return "UDP Plugin";
+        return "Net UDP";
     }
 
     std::string UdpPlugin::GetVersionName() {
@@ -25,6 +25,10 @@ namespace tc
 
     uint32_t UdpPlugin::GetVersionCode() {
         return 110;
+    }
+
+    std::string UdpPlugin::GetPluginDescription() {
+        return "Network via UDP";
     }
 
     bool UdpPlugin::OnCreate(const tc::GrPluginParam &param) {

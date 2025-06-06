@@ -41,6 +41,10 @@ namespace tc
         return 110;
     }
 
+    std::string DDACapturePlugin::GetPluginDescription() {
+        return "DXGI desktop duplication";
+    }
+
     bool DDACapturePlugin::OnCreate(const tc::GrPluginParam& param) {
         GrMonitorCapturePlugin::OnCreate(param);
         InitVideoCaptures();

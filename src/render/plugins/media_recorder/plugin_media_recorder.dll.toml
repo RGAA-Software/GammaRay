@@ -11,4 +11,4 @@ version_name = "1.2.0"
 version_code = 120
 
 #
-enabled = true
+enabled = false

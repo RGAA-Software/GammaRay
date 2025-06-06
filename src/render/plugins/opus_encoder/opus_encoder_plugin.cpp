@@ -18,7 +18,7 @@ namespace tc
     }
 
     std::string OpusEncoderPlugin::GetPluginName() {
-        return "Opus Encoder Plugin";
+        return "OPUS Encoder";
     }
 
     std::string OpusEncoderPlugin::GetVersionName() {
@@ -27,6 +27,10 @@ namespace tc
 
     uint32_t OpusEncoderPlugin::GetVersionCode() {
         return 110;
+    }
+
+    std::string OpusEncoderPlugin::GetPluginDescription() {
+        return "OPUS audio encoder";
     }
 
     void OpusEncoderPlugin::On1Second() {

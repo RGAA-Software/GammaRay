@@ -19,7 +19,7 @@ namespace tc
     }
 
     std::string RtcPlugin::GetPluginName() {
-        return "RTC Plugin";
+        return "Net RTC";
     }
 
     std::string RtcPlugin::GetVersionName() {
@@ -28,6 +28,10 @@ namespace tc
 
     uint32_t RtcPlugin::GetVersionCode() {
         return 102;
+    }
+
+    std::string RtcPlugin::GetPluginDescription() {
+        return "Network via RTC";
     }
 
     bool RtcPlugin::OnCreate(const tc::GrPluginParam &param) {

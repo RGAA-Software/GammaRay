@@ -22,6 +22,7 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
+        std::string GetPluginDescription() override;
         bool IsWorking() override;
         bool OnCreate(const tc::GrPluginParam& param) override;
         bool OnDestroy() override;

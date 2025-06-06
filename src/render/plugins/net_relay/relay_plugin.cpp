@@ -31,7 +31,7 @@ namespace tc
     }
 
     std::string RelayPlugin::GetPluginName() {
-        return "Relay Plugin";
+        return "Net Relay";
     }
 
     std::string RelayPlugin::GetVersionName() {
@@ -40,6 +40,10 @@ namespace tc
 
     uint32_t RelayPlugin::GetVersionCode() {
         return 110;
+    }
+
+    std::string RelayPlugin::GetPluginDescription() {
+        return "Network via relay server";
     }
 
     void RelayPlugin::On1Second() {

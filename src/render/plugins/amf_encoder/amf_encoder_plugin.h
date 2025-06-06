@@ -20,6 +20,7 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
+        std::string GetPluginDescription() override;
 
         bool CanEncodeTexture() override;
         void On1Second() override;

@@ -18,7 +18,7 @@ namespace tc
     }
 
     std::string MockVideoStreamPlugin::GetPluginName() {
-        return "Mock Video Frame Plugin";
+        return "Mock Video Frame";
     }
 
     std::string MockVideoStreamPlugin::GetVersionName() {
@@ -27,6 +27,10 @@ namespace tc
 
     uint32_t MockVideoStreamPlugin::GetVersionCode() {
         return 110;
+    }
+
+    std::string MockVideoStreamPlugin::GetPluginDescription() {
+        return "Mock video frame for testing";
     }
 
     bool MockVideoStreamPlugin::OnCreate(const tc::GrPluginParam& param) {

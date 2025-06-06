@@ -9,7 +9,7 @@
 
 namespace tc
 {
-    static const std::string kNvencPluginName = "NVENC Encoder Plugin";
+    static const std::string kNvencPluginName = "NVENC Encoder";
 }
 
 #endif //GAMMARAY_FFMPEG_ENCODER_DEFS_H

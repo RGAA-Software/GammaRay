@@ -33,6 +33,10 @@ namespace tc
         return 110;
     }
 
+    std::string AmfEncoderPlugin::GetPluginDescription() {
+        return "AMD hardware encoder";
+    }
+
     bool AmfEncoderPlugin::CanEncodeTexture() {
         return true;
     }

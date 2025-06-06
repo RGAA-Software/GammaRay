@@ -27,7 +27,7 @@ namespace tc
     }
 
     std::string FrameDebuggerPlugin::GetPluginDescription() {
-        return plugin_desc_;
+        return "Frame debuggers";
     }
 
     void FrameDebuggerPlugin::On1Second() {

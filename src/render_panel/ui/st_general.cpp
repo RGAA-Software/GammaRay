@@ -263,7 +263,7 @@ namespace tc
                 auto label = new TcLabel(this);
                 label->SetTextId("id_capture_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(0);
+                segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
             }
             // capture video
@@ -416,7 +416,7 @@ namespace tc
                 auto label = new TcLabel(this);
                 label->SetTextId("id_screen_recording_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(0);
+                segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
             }
             // save path
@@ -627,7 +627,7 @@ namespace tc
             auto layout = new NoMarginHLayout();
             auto btn = new QPushButton(this);
             btn->setText(tr("SAVE"));
-            btn->setFixedSize(QSize(150, 35));
+            btn->setFixedSize(QSize(220, 35));
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
@@ -713,13 +713,14 @@ namespace tc
             {
                 // title
                 auto label = new QLabel(this);
-                label->setText(tr("File Transfer"));
+                //label->setText(tr("File Transfer"));
+                label->setFixedWidth(800);
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(0);
                 segment_layout->addWidget(label);
             }
             // default transfer folder
-            {
+            if (0) {
                 auto layout = new NoMarginHLayout();
                 auto label = new QLabel(this);
                 label->setText(tr("Drag&Drop Receive Folder"));

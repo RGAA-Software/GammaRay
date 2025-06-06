@@ -21,7 +21,7 @@ namespace tc
     }
 
     std::string FileTransferPlugin::GetPluginName() {
-        return "File Transfer Plugin";
+        return "File Transfer";
     }
 
     std::string FileTransferPlugin::GetVersionName() {
@@ -30,6 +30,10 @@ namespace tc
 
     uint32_t FileTransferPlugin::GetVersionCode() {
         return 102;
+    }
+
+    std::string FileTransferPlugin::GetPluginDescription() {
+        return "Full featured file transferring";
     }
 
     void FileTransferPlugin::OnMessage(const std::shared_ptr<tc::Message>& msg) {

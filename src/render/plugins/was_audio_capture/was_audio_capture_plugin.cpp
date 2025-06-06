@@ -15,7 +15,7 @@ namespace tc
     }
 
     std::string WasAudioCapturePlugin::GetPluginName() {
-        return "Was Audio Capture Plugin";
+        return "WASAPI";
     }
 
     std::string WasAudioCapturePlugin::GetVersionName() {
@@ -28,6 +28,10 @@ namespace tc
 
     void WasAudioCapturePlugin::On1Second() {
 
+    }
+
+    std::string WasAudioCapturePlugin::GetPluginDescription() {
+        return "WASAPI audio capture";
     }
 
     bool WasAudioCapturePlugin::OnCreate(const tc::GrPluginParam& param) {

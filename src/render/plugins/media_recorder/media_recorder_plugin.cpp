@@ -13,7 +13,7 @@ namespace tc
     }
 
     std::string MediaRecorderPlugin::GetPluginName() {
-        return "Media Recorder Plugin";
+        return "Media Recorder(Server)";
     }
 
     std::string MediaRecorderPlugin::GetVersionName() {
@@ -26,6 +26,10 @@ namespace tc
 
     void MediaRecorderPlugin::On1Second() {
 
+    }
+
+    std::string MediaRecorderPlugin::GetPluginDescription() {
+        return "Media recorder in server side";
     }
 
 }

@@ -36,6 +36,10 @@ namespace tc
         return 110;
     }
 
+    std::string GdiCapturePlugin::GetPluginDescription() {
+        return "GDI desktop capture";
+    }
+
     void GdiCapturePlugin::On1Second() {
         GrPluginInterface::On1Second();
     }

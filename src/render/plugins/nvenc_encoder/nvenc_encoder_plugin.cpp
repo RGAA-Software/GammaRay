@@ -32,6 +32,10 @@ namespace tc
         return 110;
     }
 
+    std::string NvencEncoderPlugin::GetPluginDescription() {
+        return "Nvidia hardware encoder";
+    }
+
     void NvencEncoderPlugin::On1Second() {
         GrVideoEncoderPlugin::On1Second();
     }
