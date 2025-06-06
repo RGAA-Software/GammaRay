@@ -4,7 +4,7 @@
 
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
-#include "ct_workspace.h"
+#include "ct_base_workspace.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
 #include "ct_settings.h"
 

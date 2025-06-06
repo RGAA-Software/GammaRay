@@ -28,7 +28,8 @@ set(SRCS_MAIN ct_main.cpp)
 set(SRCS_WS
         ct_main_ws.cpp
         ct_client_context.cpp
-        ct_workspace.cpp
+        ct_base_workspace.cpp
+        #ct_workspace.cpp
         ct_director.cpp
         ct_video_widget_event.cpp
         ct_shader_program.cpp

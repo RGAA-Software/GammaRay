@@ -13,14 +13,14 @@
 #include <QFileInfo>
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
-#include "ct_workspace.h"
+#include "ct_base_workspace.h"
 
 #pragma comment(lib, "Wininet.lib")
 
 namespace tc
 {
 
-    CpVirtualFile::CpVirtualFile(const std::shared_ptr<Workspace>& ws) {
+    CpVirtualFile::CpVirtualFile(const std::shared_ptr<BaseWorkspace>& ws) {
         workspace_ = ws;
     }
 
@@ -197,7 +197,7 @@ namespace tc
         }
     }
 
-    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<Workspace>& ws) {
+    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<BaseWorkspace>& ws) {
         *ppv = nullptr;
         auto p = new CpVirtualFile(ws);
         p->Init();

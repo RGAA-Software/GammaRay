@@ -21,12 +21,12 @@
 #include "tc_common_new/file_util.h"
 #include "win/win_message_loop.h"
 #include "clipboard/win/cp_virtual_file.h"
-#include "client/ct_workspace.h"
+#include "client/ct_base_workspace.h"
 
 namespace tc
 {
 
-    ClipboardManager::ClipboardManager(const std::shared_ptr<Workspace>& ws) : QObject(nullptr) {
+    ClipboardManager::ClipboardManager(const std::shared_ptr<BaseWorkspace>& ws) : QObject(nullptr) {
         ws_ = ws;
         context_ = ws_->GetContext();
 

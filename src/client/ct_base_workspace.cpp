@@ -1,7 +1,7 @@
 //
 // Created by RGAA on 2023-12-27.
 //
-
+#include "client/ct_base_workspace.h"
 #include <QHBoxLayout>
 #include <QApplication>
 #include <QGraphicsDropShadowEffect>
@@ -10,7 +10,6 @@
 #include <QMimeData>
 #include <QTimer>
 #include <dwmapi.h>
-#include "client/ct_workspace.h"
 #include "thunder_sdk.h"
 #include "ct_opengl_video_widget.h"
 #include "client/ct_client_context.h"
@@ -53,7 +52,7 @@
 namespace tc
 {
 
-    Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent) : QMainWindow(parent) {
+    BaseWorkspace::BaseWorkspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent) : QMainWindow(parent) {
         this->context_ = ctx;
         this->context_->InitNotifyManager(this);
         this->settings_ = Settings::Instance();
@@ -240,17 +239,17 @@ namespace tc
         }
     }
 
-    Workspace::~Workspace() {
+    BaseWorkspace::~BaseWorkspace() {
 
     }
 
-    void Workspace::Init() {
+    void BaseWorkspace::Init() {
         // clipboard manager
         clipboard_mgr_ = std::make_shared<ClipboardManager>(shared_from_this());
         clipboard_mgr_->Start();
     }
 
-    void Workspace::RegisterSdkMsgCallbacks() {
+    void BaseWorkspace::RegisterSdkMsgCallbacks() {
         sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
             if (!has_frame_arrived_) {
                 has_frame_arrived_ = true;
@@ -506,16 +505,16 @@ namespace tc
         });
     }
 
-    void Workspace::changeEvent(QEvent* event) {
+    void BaseWorkspace::changeEvent(QEvent* event) {
         is_window_active_ = isActiveWindow() && !(windowState() & Qt::WindowMinimized);
         qDebug() << "window state: " << is_window_active_;
     }
 
-    bool Workspace::IsActiveNow() const {
+    bool BaseWorkspace::IsActiveNow() const {
         return is_window_active_;
     }
 
-    void Workspace::closeEvent(QCloseEvent *event) {
+    void BaseWorkspace::closeEvent(QCloseEvent *event) {
         this->raise();             
         this->activateWindow();    
         this->showNormal();
@@ -528,7 +527,7 @@ namespace tc
         close_event_occurred_widget_ = nullptr;
     }
 
-    void Workspace::ExitClientWithDialog() {
+    void BaseWorkspace::ExitClientWithDialog() {
         QString msg = "Do you want to stop controlling of remote PC ?";
         if (file_trans_interface_) {
             if (file_trans_interface_->HasTransTask()) {
@@ -547,18 +546,18 @@ namespace tc
         }
     }
 
-    void Workspace::dragEnterEvent(QDragEnterEvent *event) {
+    void BaseWorkspace::dragEnterEvent(QDragEnterEvent *event) {
         event->accept();
         if (event->mimeData()->hasUrls()) {
             event->acceptProposedAction();
         }
     }
 
-    void Workspace::dragMoveEvent(QDragMoveEvent *event) {
+    void BaseWorkspace::dragMoveEvent(QDragMoveEvent *event) {
         event->accept();
     }
 
-    void Workspace::dropEvent(QDropEvent *event) {
+    void BaseWorkspace::dropEvent(QDropEvent *event) {
         QList<QUrl> urls = event->mimeData()->urls();
         if (urls.isEmpty()) {
             return;
@@ -572,7 +571,7 @@ namespace tc
         //}
     }
 
-    void Workspace::SendWindowsKey(unsigned long vk, bool down) {
+    void BaseWorkspace::SendWindowsKey(unsigned long vk, bool down) {
         if (game_views_.size() > 0) {
             if (game_views_[kMainGameViewIndex]) {
                 game_views_[kMainGameViewIndex]->SendKeyEvent(vk, down);
@@ -580,7 +579,7 @@ namespace tc
         }
     }
 
-    void Workspace::resizeEvent(QResizeEvent *event) {
+    void BaseWorkspace::resizeEvent(QResizeEvent *event) {
         main_progress_->setGeometry(0, title_bar_height_, event->size().width(), event->size().height());
         //UpdateNotificationHandlePosition();
         UpdateDebugPanelPosition();
@@ -588,7 +587,7 @@ namespace tc
         UpdateFloatButtonIndicatorPosition();
     }
 
-    // void Workspace::UpdateNotificationHandlePosition() {
+    // void BaseWorkspace::UpdateNotificationHandlePosition() {
     //     int notification_panel_width = 0;
     //     int offset_border = 8;
     //     int handle_offset = 0;
@@ -600,11 +599,11 @@ namespace tc
     //     notification_handler_->setGeometry(this->width()-notification_handler_->width()/2 - notification_panel_width-handle_offset, 100, notification_handler_->width(), notification_handler_->height());
     // }
 
-    void Workspace::UpdateFloatButtonIndicatorPosition() {
+    void BaseWorkspace::UpdateFloatButtonIndicatorPosition() {
         btn_indicator_->setGeometry(0, 0, btn_indicator_->width(), btn_indicator_->height());
     }
 
-    void Workspace::UpdateLocalCursor(uint32_t type) {
+    void BaseWorkspace::UpdateLocalCursor(uint32_t type) {
         if (cursor_type_ == type && !force_update_cursor_) {
             return;
         }
@@ -645,7 +644,7 @@ namespace tc
         });
     }
 
-    void Workspace::RegisterControllerPanelListeners() {
+    void BaseWorkspace::RegisterControllerPanelListeners() {
 
         msg_listener_->Listen<OpenFiletransMsg>([=, this](const OpenFiletransMsg& msg) {
             context_->PostUITask([=, this]() {
@@ -661,13 +660,13 @@ namespace tc
         });
     }
 
-    void Workspace::UpdateDebugPanelPosition() {
+    void BaseWorkspace::UpdateDebugPanelPosition() {
 //        int offset = 120;
 //        st_panel_->resize(this->width()-offset, this->height()-offset);
 //        st_panel_->move(offset/2, offset/2);
     }
 
-    void Workspace::SendClipboardMessage(const ClipboardMessage& msg) {
+    void BaseWorkspace::SendClipboardMessage(const ClipboardMessage& msg) {
         if (!sdk_) {
             return;
         }
@@ -692,7 +691,7 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
-    void Workspace::SendSwitchMonitorMessage(const std::string& name) {
+    void BaseWorkspace::SendSwitchMonitorMessage(const std::string& name) {
         if (!sdk_) {
             return;
         }
@@ -704,7 +703,7 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
-    void Workspace::SendUpdateDesktopMessage() {
+    void BaseWorkspace::SendUpdateDesktopMessage() {
         if (!sdk_) {
             return;
         }
@@ -713,7 +712,7 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
-    void Workspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
+    void BaseWorkspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
         if (!sdk_) {
             return;
         }
@@ -727,7 +726,7 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
-    void Workspace::SendSwitchFullColorMessage(bool enable) {
+    void BaseWorkspace::SendSwitchFullColorMessage(bool enable) {
         if (!sdk_) {
             return;
         }
@@ -740,7 +739,7 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
-    void Workspace::SwitchScaleMode(const tc::ScaleMode& mode) {
+    void BaseWorkspace::SwitchScaleMode(const tc::ScaleMode& mode) {
         settings_->SetScaleMode(mode);
         if (mode == ScaleMode::kFullWindow) {
             SwitchToFullWindow();
@@ -750,7 +749,7 @@ namespace tc
         }
     }
 
-    void Workspace::CalculateAspectRatio() {
+    void BaseWorkspace::CalculateAspectRatio() {
         for (auto game_view : game_views_) {
             if (game_view) {
                 game_view->CalculateAspectRatio();
@@ -758,7 +757,7 @@ namespace tc
         }
     }
 
-    void Workspace::SwitchToFullWindow() {
+    void BaseWorkspace::SwitchToFullWindow() {
         for (auto game_view : game_views_) {
             if (game_view) {
                 game_view->SwitchToFullWindow();
@@ -766,7 +765,7 @@ namespace tc
         }
     }
 
-    void Workspace::SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg) {
+    void BaseWorkspace::SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg) {
         if (!sdk_) {
             return;
         }
@@ -781,14 +780,14 @@ namespace tc
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
-    void Workspace::UpdateVideoWidgetSize() {
+    void BaseWorkspace::UpdateVideoWidgetSize() {
         context_->PostUITask([=, this]() {
             auto scale_mode = settings_->scale_mode_;
             SwitchScaleMode(scale_mode);
         });
     }
 
-    void Workspace::Exit() {
+    void BaseWorkspace::Exit() {
         std::thread t([]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             ProcessUtil::KillProcess(QApplication::applicationPid());
@@ -815,7 +814,7 @@ namespace tc
         qApp->exit(0);
     }
 
-    void Workspace::UpdateGameViewsStatus() {
+    void BaseWorkspace::UpdateGameViewsStatus() {
         QList<QScreen*> screens = QGuiApplication::screens();
         if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
             for (auto game_view : game_views_) {
@@ -882,7 +881,7 @@ namespace tc
         }
     }
 
-    void Workspace::OnGetCaptureMonitorsCount(int monitors_count) {
+    void BaseWorkspace::OnGetCaptureMonitorsCount(int monitors_count) {
         monitors_count_ = monitors_count;
         if (monitors_count <= 1) {
             setWindowTitle(origin_title_name_);
@@ -898,7 +897,7 @@ namespace tc
         UpdateGameViewsStatus();
     }
 
-    void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {
+    void BaseWorkspace::OnGetCaptureMonitorName(std::string monitor_name) {
         LOGI("OnGetCaptureMonitorName monitor_name: {}", monitor_name);
         for (const auto& index_name : monitor_index_map_name_) {
             if (game_views_.size() > index_name.first) {
@@ -923,7 +922,7 @@ namespace tc
         }
     }
 
-    void Workspace::InitGameViews(const std::shared_ptr<ThunderSdkParams>& params) {
+    void BaseWorkspace::InitGameViews(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(1080, 680);
         for (int index = 0; index < kMaxGameViewCount; ++index) {
             GameView* game_view = nullptr;
@@ -974,7 +973,7 @@ namespace tc
         });
     }
 
-    bool Workspace::eventFilter(QObject* watched, QEvent* event) {
+    bool BaseWorkspace::eventFilter(QObject* watched, QEvent* event) {
         for (const auto game_view : game_views_) {
             if (!game_view) {
                 continue;
@@ -995,15 +994,15 @@ namespace tc
         return QMainWindow::eventFilter(watched, event);
     }
 
-    std::shared_ptr<ThunderSdk> Workspace::GetThunderSdk() {
+    std::shared_ptr<ThunderSdk> BaseWorkspace::GetThunderSdk() {
         return sdk_;
     }
 
-    std::shared_ptr<ClientContext> Workspace::GetContext() {
+    std::shared_ptr<ClientContext> BaseWorkspace::GetContext() {
         return context_;
     }
 
-    void Workspace::WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens) {
+    void BaseWorkspace::WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens) {
         QRect widget_geometry = widget->geometry();
         int max_widget_with_screen_visible_area = 0;
         QScreen* target_screen = nullptr;

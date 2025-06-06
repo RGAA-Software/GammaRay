@@ -14,6 +14,7 @@
 #include "thunder_sdk.h"
 #include "client/ct_client_context.h"
 #include "client/ct_workspace.h"
+#include "client/ct_base_workspace.h"
 #include "client/ct_application.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
@@ -326,9 +327,11 @@ int main(int argc, char** argv) {
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();
-    static auto ws = std::make_shared<Workspace>(ctx, params);
+    //static auto ws = std::make_shared<Workspace>(ctx, params);
+
+    static auto ws = std::make_shared<BaseWorkspace>(ctx, params);
+
     ws->Init();
-    ws->resize(1366, 768);
     if (settings->show_max_window_) {
         ws->showMaximized();
     }

@@ -17,11 +17,11 @@ namespace tc
     class WinMessageLoop;
     class MessageListener;
     class CpVirtualFile;
-    class Workspace;
+    class BaseWorkspace;
 
     class ClipboardManager : public QObject {
     public:
-        explicit ClipboardManager(const std::shared_ptr<Workspace>& ws);
+        explicit ClipboardManager(const std::shared_ptr<BaseWorkspace>& ws);
         void Start();
         void Stop();
         void OnRemoteClipboardMessage(std::shared_ptr<tc::Message> msg);
@@ -31,7 +31,7 @@ namespace tc
 
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
-        std::shared_ptr<Workspace> ws_ = nullptr;
+        std::shared_ptr<BaseWorkspace> ws_ = nullptr;
         QString remote_info_;
         std::shared_ptr<WinMessageLoop> msg_loop_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
