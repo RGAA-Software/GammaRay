@@ -134,6 +134,63 @@ namespace tc
                 });
             }
 
+            // record visitor
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Record Visiting"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(true);
+
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    if (!enabled) {
+                        context_->PostUIDelayTask([=, this]() {
+                            TcDialog dialog("Tips", "Recording is always on.");
+                            dialog.exec();
+                            edit->setChecked(true);
+                        }, 50);
+                    }
+                });
+            }
+
+            // record file transfer
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new QLabel(this);
+                label->setText(tr("Record File Transferring"));
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(true);
+
+                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
+                    bool enabled = state == 2;
+                    if (!enabled) {
+                        context_->PostUIDelayTask([=, this]() {
+                            TcDialog dialog("Tips", "Recording is always on.");
+                            dialog.exec();
+                            edit->setChecked(true);
+                        }, 50);
+                    }
+                });
+            }
             column1_layout->addLayout(segment_layout);
         }
 
