@@ -14,6 +14,7 @@
 #include "tc_common_new/hardware.h"
 #include "ct_stat_frame_info_item.h"
 #include "tc_qt_widget/widget_helper.h"
+#include "client/ct_settings.h"
 #include <QLabel>
 
 namespace tc
@@ -29,6 +30,7 @@ namespace tc
         setWindowTitle("Statistics");
         installEventFilter(this);
         sdk_stat_ = SdkStatistics::Instance();
+        settings_ = Settings::Instance();
 
         auto root_layout = new NoMarginHLayout();
         root_layout->addSpacing(20);
@@ -280,13 +282,29 @@ namespace tc
                         auto item_layout = new NoMarginHLayout();
                         auto label = new QLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("");
+                        label->setText("Connection Type");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
                         auto op = new QLabel(this);
-                        //lbl_capture_type_ = op;
-                        op->setText("");
+                        lbl_conn_type_ = op;
+                        op->setText([=, this]() -> QString {
+                            if (settings_->network_type_ == ClientNetworkType::kRelay) {
+                                return "Relay";
+                            }
+                            else if (settings_->network_type_ == ClientNetworkType::kWebsocket) {
+                                return "WSS";
+                            }
+                            else if (settings_->network_type_ == ClientNetworkType::kWebRtc) {
+                                return "RTC";
+                            }
+                            else if (settings_->network_type_ == ClientNetworkType::kUdpKcp) {
+                                return "UDP";
+                            }
+                            else {
+                                return "";
+                            }
+                         }());
                         op->setFixedSize(value_size);
                         op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
                         item_layout->addWidget(op);
