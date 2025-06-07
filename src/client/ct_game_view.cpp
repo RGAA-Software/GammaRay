@@ -24,6 +24,7 @@ namespace tc {
 GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent)
     : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
     WidgetHelper::SetTitleBarColor(this);
+    settings_ = Settings::Instance();
     msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
     this->setAttribute(Qt::WA_StyledBackground, true);
     auto beg = TimeUtil::GetCurrentTimestamp();
@@ -68,6 +69,12 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
             animation->stop(); 
         }
     });
+
+    msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
+        if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_ && !isHidden()) {
+            need_recalculate_aspect_ = true;
+        }
+    });
 }
 
 GameView::~GameView() {
@@ -96,8 +103,8 @@ void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
     }
 
     if (is_main_view_) {
-        if (Settings::Instance()->IsFullColorEnabled() != enable_full_color) {
-            Settings::Instance()->SetFullColorEnabled(enable_full_color);
+        if (settings_->IsFullColorEnabled() != enable_full_color) {
+            settings_->SetFullColorEnabled(enable_full_color);
             ctx_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus });
         }
     }
@@ -119,6 +126,17 @@ void GameView::RefreshI444Image(const std::shared_ptr<RawImage>& image) {
 }
 
 void GameView::RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info) {
+    // 若按比例缩放的情况下，切换了屏幕，屏幕分辨率未必一致，如一个4K,一个2K，故重新计算
+    if (need_recalculate_aspect_) {
+        const auto& exist_mon_info = video_widget_->GetCaptureMonitorInfo();
+        if (mon_info.mon_name_ != exist_mon_info.mon_name_) {
+            ctx_->PostDelayUITask([=, this]() {
+                this->CalculateAspectRatio();
+            }, 100);
+            need_recalculate_aspect_ = false;
+        }
+    }
+
     video_widget_->RefreshCapturedMonitorInfo(mon_info);
 }
 

@@ -14,6 +14,7 @@ class FloatController;
 class FloatControllerPanel;
 class MessageListener;
 class SvgLable;
+class Settings;
 
 class GameView : public QWidget {
 public:
@@ -55,6 +56,7 @@ public:
 		return is_main_view_;
 	}
 private:
+    Settings* settings_ = nullptr;
 	OpenGLVideoWidget* video_widget_ = nullptr;
 	std::shared_ptr<ClientContext> ctx_ = nullptr;
 	std::shared_ptr<ThunderSdk> sdk_ = nullptr;
@@ -71,6 +73,8 @@ private:
 	//QLabel* recording_sign_lab_ = nullptr;
 
 	SvgLable* recording_sign_lab_ = nullptr;
+
+    bool need_recalculate_aspect_ = true;
 
 private:
 	void InitFloatController();

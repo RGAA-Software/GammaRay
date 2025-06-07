@@ -257,7 +257,7 @@ namespace tc
             }
             //LOGI("SdkCaptureMonitorInfo mon_index_: {}, w: {}, h: {}", info.mon_index_, image->img_width, image->img_height);
             if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
-                if (game_views_.size() > 0) {
+                if (!game_views_.empty()) {
                     if (game_views_[kMainGameViewIndex]) {
                         game_views_[kMainGameViewIndex]->RefreshCapturedMonitorInfo(info);
                         game_views_[kMainGameViewIndex]->RefreshImage(image);

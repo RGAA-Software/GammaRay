@@ -28,6 +28,7 @@ namespace tc
         void Init(bool render);
         void PostTask(std::function<void()>&& task);
         void PostUITask(std::function<void()>&& task);
+        void PostDelayUITask(std::function<void()>&& task, int ms);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
         std::shared_ptr<MessageListener> ObtainMessageListener();
         void SaveKeyValue(const std::string& k, const std::string& v);

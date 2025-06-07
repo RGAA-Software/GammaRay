@@ -480,6 +480,10 @@ namespace tc
         return cap_mon_info_.frame_height_;
     }
 
+    SdkCaptureMonitorInfo OpenGLVideoWidget::GetCaptureMonitorInfo() {
+        return cap_mon_info_;
+    }
+
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
 		VideoWidgetEvent::OnWidgetResize(width, height);
 		glViewport(0, 0, width, height);

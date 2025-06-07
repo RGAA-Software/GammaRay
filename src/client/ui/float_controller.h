@@ -11,6 +11,7 @@ namespace tc
 {
     class ClientContext;
 
+    // Circle Controller
     class FloatController : public BaseWidget {
     public:
         explicit FloatController(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);

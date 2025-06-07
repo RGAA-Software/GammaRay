@@ -49,6 +49,7 @@ namespace tc
         int GetCapturingMonitorHeight();
         RawImageFormat GetDisplayImageFormat();
         void SetDisplayImageFormat(RawImageFormat format);
+        SdkCaptureMonitorInfo GetCaptureMonitorInfo();
 
     protected:
         void resizeEvent(QResizeEvent *event) override;

@@ -49,7 +49,7 @@ namespace tc
                 ci->SetOnClickListener([=, this](auto w) {
                     bool recording = context_->GetRecording();
                     if (recording) {
-                        TcDialog dialog(tr("Tips"), tr("Currently, screen recording is in progress. Switching display is prohibited. If you want to switch displays, please stop the screen recording.."), nullptr);
+                        TcDialog dialog(tr("Tips"), tr("Currently, screen recording is in progress. Switching display is prohibited. If you want to switch displays, please stop the screen recording..."), nullptr);
                         auto pos = mapToGlobal(this->parentWidget()->pos()); 
                         pos.setX(pos.x() + this->parentWidget()->width() / 2 - dialog.width() / 2);
                         pos.setY(pos.y() + this->parentWidget()->height() / 2 - dialog.height() / 2);

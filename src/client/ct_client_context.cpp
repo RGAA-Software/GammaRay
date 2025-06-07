@@ -87,6 +87,14 @@ namespace tc
         });
     }
 
+    void ClientContext::PostDelayUITask(std::function<void()>&& task, int ms) {
+        this->PostUITask([ms, t = std::move(task)]() {
+            QTimer::singleShot(ms, [=]() {
+                t();
+            });
+        });
+    }
+
     std::shared_ptr<MessageNotifier> ClientContext::GetMessageNotifier() {
         return msg_notifier_;
     }
