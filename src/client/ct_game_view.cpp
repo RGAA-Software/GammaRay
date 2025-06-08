@@ -82,7 +82,15 @@ GameView::~GameView() {
 }
 
 void GameView::resizeEvent(QResizeEvent* event) {
-    video_widget_->resize(this->width(), this->height());
+    auto scale_mode = settings_->scale_mode_;
+    if (scale_mode == ScaleMode::kFullWindow) {
+        SwitchToFullWindow();
+    }
+    else if (scale_mode == ScaleMode::kKeepAspectRatio) {
+        CalculateAspectRatio();
+    }
+
+
     if (float_controller_) {
         float_controller_->ReCalculatePosition();
     }

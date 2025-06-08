@@ -327,9 +327,9 @@ int main(int argc, char** argv) {
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();
-    //static auto ws = std::make_shared<Workspace>(ctx, params);
+    static auto ws = std::make_shared<Workspace>(ctx, params);
 
-    static auto ws = std::make_shared<BaseWorkspace>(ctx, params);
+    //static auto ws = std::make_shared<BaseWorkspace>(ctx, params);
 
     ws->Init();
     if (settings->show_max_window_) {

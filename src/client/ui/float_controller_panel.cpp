@@ -70,6 +70,16 @@ namespace tc
                 layout->addWidget(split_screen_btn);
 
                 split_screen_btn->SetOnClickListener([=, this](QWidget* w) {
+                    if (!context_->full_functionality_) {
+                        TcDialog dialog(tr("Tips"), tr("You need to upgrade to the Super Edition to use the multi-screen display feature."), nullptr);
+                        auto pos = mapToGlobal(this->parentWidget()->pos());
+                        pos.setX(pos.x() + this->parentWidget()->width() / 2 - dialog.width() / 2);
+                        pos.setY(pos.y() + this->parentWidget()->height() / 2 - dialog.height() / 2);
+                        dialog.move(pos);
+                        dialog.exec();
+                        return;
+                    }
+
                     bool recording = context_->GetRecording();
                     if (recording) {
                         TcDialog dialog(tr("Tips"), tr("Currently, screen recording is in progress. Switching display is prohibited. If you want to switch displays, please stop the screen recording.."), nullptr);
