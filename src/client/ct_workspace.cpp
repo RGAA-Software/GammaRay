@@ -114,7 +114,6 @@ namespace tc
 
         auto end = TimeUtil::GetCurrentTimestamp();
         LOGI("Init .3 used: {}ms", (end - beg));
-
     }
 
     void Workspace::InitListener() {

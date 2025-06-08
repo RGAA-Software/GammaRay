@@ -18,6 +18,11 @@
 
 namespace tc
 {
+    /*
+    1. 多屏分离显示的功能，抽象到 ct_workspace.cpp里面了， ct_base_workspace.cpp 就是普通的 多屏切换
+    2. 以后有不想开源的，又不适合做成插件的 高级功能，就加到  ct_workspace.cpp里面，通用的基础功能 就加到  ct_base_workspace.cpp 
+    */
+
     class Workspace : public BaseWorkspace {
     public:
 
@@ -63,6 +68,7 @@ namespace tc
         // 20.文件传输加接口 控制速度等
         // 21.game_view上的小球，点击后，会full window,需要找下原因(已完成)
         // 22.刷新 参考 vnc
+        // 23.流路一开始就执行了UpdateVideoWidgetSize，但流路画面还是没有铺满widget
         //QString origin_title_name_;
         std::vector<GameView*> game_views_;  
   

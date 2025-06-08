@@ -758,6 +758,7 @@ namespace tc
     void BaseWorkspace::UpdateVideoWidgetSize() {
         context_->PostUITask([=, this]() {
             auto scale_mode = settings_->scale_mode_;
+            LOGI("UpdateVideoWidgetSize scale_mode: {}", (int)scale_mode);
             SwitchScaleMode(scale_mode);
         });
     }
