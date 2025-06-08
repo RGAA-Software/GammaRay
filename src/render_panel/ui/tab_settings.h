@@ -17,6 +17,7 @@ namespace tc
         kStNetwork,
         kStSecurity,
         kStPlugins,
+        kStController,
         kStAboutMe,
     };
 
@@ -40,6 +41,7 @@ namespace tc
         QPushButton* btn_security_ = nullptr;
         QPushButton* btn_input_ = nullptr;
         QPushButton* btn_plugins_ = nullptr;
+        QPushButton* btn_controller = nullptr;
         QPushButton* btn_about_me_ = nullptr;
 
     };

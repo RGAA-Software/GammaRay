@@ -10,6 +10,7 @@
   "id_settings_network": "网络",
   "id_settings_security": "安全",
   "id_settings_plugins": "插件",
+  "id_settings_controller": "控制端",
   "id_settings_aboutme": "关于",
 
   "id_tab_remote_control": "远程控制",
@@ -52,5 +53,6 @@
   "id_cancel": "取消",
   "id_ok": "确定",
 
-  "id_set" : "设置"
+  "id_set" : "设置",
+  "id_save": "保存"
 }

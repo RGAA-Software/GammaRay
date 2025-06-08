@@ -16,6 +16,7 @@
 #include "tc_common_new/ip_util.h"
 #include "tc_qt_widget/tc_label.h"
 #include "tc_dialog.h"
+#include "tc_pushbutton.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -46,10 +47,10 @@ namespace tc
         root_layout->addStretch();
 
         // segment encoder
-        auto tips_label_width = 220;
+        auto tips_label_width = 240;
         auto tips_label_height = 35;
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
-        auto input_size = QSize(240, tips_label_height);
+        auto input_size = QSize(280, tips_label_height);
 
         {
             auto segment_layout = new NoMarginVLayout();
@@ -276,6 +277,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QCheckBox(this);
+                edit->setEnabled(false);
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -286,7 +288,7 @@ namespace tc
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetCaptureVideo(enabled);
-                    cb_capture_monitor_->setEnabled(enabled);
+                    //cb_capture_monitor_->setEnabled(enabled);
                 });
             }
             // Capture monitor
@@ -407,226 +409,15 @@ namespace tc
             column1_layout->addLayout(segment_layout);
         }
 
-
-        // screen recording 录屏设置
-        {
-            auto segment_layout = new NoMarginVLayout();
-            {
-                // title
-                auto label = new TcLabel(this);
-                label->SetTextId("id_screen_recording_settings");
-                label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
-                segment_layout->addWidget(label);
-            }
-            // save path
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new TcLabel(this);
-                label->SetTextId("id_screen_recording_path");
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                et_screen_recording_path_ = edit;
-                auto size = input_size;
-                size.setWidth(size.width() - 40);
-                edit->setFixedSize(size);
-                edit->setReadOnly(true);
-
-                std::string record_path = settings_->GetScreenRecordingPath();
-                if (record_path.empty()) {
-                    QString movies_path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
-                    record_path = movies_path.toStdString();
-                    settings_->SetScreenRecordingPath(record_path);
-                }
-                edit->setText(QString::fromStdString(record_path));
-                
-                layout->addWidget(edit);
-                layout->addStretch();
-
-                auto btn = new QPushButton("...", this);
-                btn_select_screen_recording_path_ = btn;
-                btn->setFixedSize(30, 30);
-                btn->setToolTip(tr("Select screen recording save folder"));
-                layout->addWidget(btn);
-                segment_layout->addSpacing(10);
-                segment_layout->addLayout(layout);
-
-                connect(btn, &QPushButton::clicked, this, [=]() {
-                    QString dir = QFileDialog::getExistingDirectory(nullptr, "select folder", QString::fromStdString(record_path));
-                    if (dir.isEmpty()) {
-                        return;
-                    }
-                    edit->setText(dir);
-                    settings_->SetScreenRecordingPath(dir.toStdString());
-                });
-            }
-            column1_layout->addLayout(segment_layout);
-        }
-
-        // moved to Network page
-        if (false) {
-            auto segment_layout = new NoMarginVLayout();
-            {
-                // title
-                auto label = new QLabel(this);
-                label->setText(tr("Network Settings"));
-                label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(20);
-                segment_layout->addWidget(label);
-            }
-            // Network type
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("WebSocket"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QCheckBox(this);
-                edit->setFixedSize(input_size);
-                edit->setEnabled(true);
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-                edit->setChecked(settings_->websocket_enabled_ == kStTrue);
-                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
-                    bool enabled = state == 2;
-                    //settings_->SetCaptureAudio(enabled);
-                });
-            }
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("WebRTC"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QCheckBox(this);
-                edit->setFixedSize(input_size);
-                edit->setEnabled(true);
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-                edit->setChecked(settings_->webrtc_enabled_ == kStTrue);
-                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
-                    bool enabled = state == 2;
-                    //settings_->SetCaptureAudio(enabled);
-                });
-            }
-            // Ethernet adapter
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Ethernet Adapter"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QComboBox(this);
-                edit->setFixedSize(input_size);
-                edit->addItem("Auto");
-                auto all_et_info = context_->GetIps();
-                int index = 0;
-                int target_index_ = -1;
-                for (const auto& et_info : all_et_info) {
-                    if (et_info.ip_addr_ == settings_->network_listening_ip_ && !et_info.ip_addr_.empty()) {
-                        target_index_ = index;
-                    }
-                    edit->addItem(std::format("{} {} {}", et_info.ip_addr_, (et_info.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS"), et_info.human_readable_name_).c_str());
-                    index++;
-                }
-                if (target_index_ != -1) {
-                    edit->setCurrentIndex(target_index_ + 1);
-                }
-                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
-                    if (idx <= 0) {
-                        settings_->SetListeningIp("");
-                        return;
-                    }
-                    auto target_ip = all_et_info.at(idx-1).ip_addr_;
-                    settings_->SetListeningIp(target_ip);
-                });
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            // Http port
-            if (0) {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Http Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->http_server_port_).c_str());
-                edit->setEnabled(false);
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            // Websocket port
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Panel Listening Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->panel_srv_port_).c_str());
-                edit->setEnabled(false);
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            // Streaming port
-            {
-                auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Renderer Streaming Port"));
-                label->setFixedSize(tips_label_size);
-                label->setStyleSheet("font-size: 14px; font-weight: 500;");
-                layout->addWidget(label);
-
-                auto edit = new QLineEdit(this);
-                edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->render_srv_port_).c_str());
-                edit->setEnabled(false);
-                layout->addWidget(edit);
-                layout->addStretch();
-                segment_layout->addSpacing(5);
-                segment_layout->addLayout(layout);
-            }
-            column1_layout->addLayout(segment_layout);
-        }
-
         {
             auto func_show_err = [=](const QString& msg) {
-//                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
-//                msg_box->exec();
-
                 TcDialog dialog(tr("Error"), msg, nullptr);
                 dialog.exec();
             };
 
             auto layout = new NoMarginHLayout();
-            auto btn = new QPushButton(this);
-            btn->setText(tr("SAVE"));
+            auto btn = new TcPushButton(this);
+            btn->SetTextId("id_save");
             btn->setFixedSize(QSize(220, 35));
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
@@ -665,16 +456,6 @@ namespace tc
                     settings_->SetResHeight(res_height);
                 }
 
-#if 0
-                auto monitor_name = cb_capture_monitor_->currentText();
-                auto adapters = DxgiMonitorDetector::Instance()->GetAdapters();
-                for (const auto& adapter : adapters) {
-                    if (monitor_name.contains(QString::fromStdString(adapter.display_name))) {
-                        settings_->SetCaptureMonitor(adapter.display_name);
-                    }
-                }
-#endif
-
                 auto audio_devices = AudioDeviceHelper::DetectAudioDevices();
                 auto audio_device_name = cb_capture_audio_device_name_->currentText().toStdString();
                 for (const auto& dev : audio_devices) {
@@ -685,14 +466,6 @@ namespace tc
 
                 // Load again
                 settings_->Load();
-
-                // Save success dialog
-//                auto msg_box = SizedMessageBox::Make2BtnsBox(tr("Save Success"),
-//                    tr("Save settings success! Do you want to restart Renderer?"), tr("Later"), tr("Restart"));
-//                if (msg_box->exec() == 0) {
-//                    // restart server now
-//                    this->context_->SendAppMessage(AppMsgRestartServer{});
-//                }
 
                 TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
                 if (dialog.exec() == kDoneOk) {
@@ -749,9 +522,6 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-
-            }
-            {
 
             }
             column2_layout->addLayout(segment_layout);
