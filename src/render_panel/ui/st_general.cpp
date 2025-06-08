@@ -138,7 +138,6 @@ namespace tc
                 segment_layout->addLayout(layout);
             }
 
-
             // FPS
             {
                 auto layout = new NoMarginHLayout();
@@ -148,10 +147,35 @@ namespace tc
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
 
-                auto edit = new QLineEdit(this);
-                edit->setValidator(new QIntValidator(0, 1000));
+                //auto edit = new QLineEdit(this);
+                //edit->setValidator(new QIntValidator(0, 1000));
+                auto edit = new QComboBox(this);
+                edit->setFixedSize(input_size);
+                edit->addItem("15");
+                edit->addItem("30");
+                edit->addItem("60");
+                edit->addItem("90");
+                edit->addItem("120");
+                edit->addItem("144");
                 et_fps_ = edit;
-                et_fps_->setText(settings_->encoder_fps_.c_str());
+                if (settings_->encoder_fps_ == "15") {
+                    edit->setCurrentIndex(0);
+                }
+                else if (settings_->encoder_fps_ == "30") {
+                    edit->setCurrentIndex(1);
+                }
+                else if (settings_->encoder_fps_ == "60") {
+                    edit->setCurrentIndex(2);
+                }
+                else if (settings_->encoder_fps_ == "90") {
+                    edit->setCurrentIndex(3);
+                }
+                else if (settings_->encoder_fps_ == "120") {
+                    edit->setCurrentIndex(4);
+                }
+                else if (settings_->encoder_fps_ == "140") {
+                    edit->setCurrentIndex(5);
+                }
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -431,8 +455,8 @@ namespace tc
                 settings_->SetBitrate(bitrate);
 
                 // fps
-                auto fps = et_fps_->text().toInt();
-                if (fps < 15 || fps > 120) {
+                auto fps = et_fps_->currentText().toInt();
+                if (fps < 15 || fps > 144) {
                     func_show_err(tr("FPS between 15 and 120!"));
                     return;
                 }

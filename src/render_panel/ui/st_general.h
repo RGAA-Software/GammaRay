@@ -23,7 +23,7 @@ namespace tc
         void OnTabHide() override;
     private:
         QLineEdit* et_bitrate_ = nullptr;
-        QLineEdit* et_fps_ = nullptr;
+        QComboBox* et_fps_ = nullptr;
         QComboBox* cb_language_ = nullptr;
         QLineEdit* et_res_width_ = nullptr;
         QLineEdit* et_res_height_ = nullptr;
