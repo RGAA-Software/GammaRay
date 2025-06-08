@@ -15,8 +15,9 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include "tc_spvr_client/spvr_manager.h"
-#include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
@@ -48,8 +49,8 @@ namespace tc
             auto segment_layout = new NoMarginVLayout();
             {
                 // title
-                auto label = new QLabel(this);
-                label->setText(tr("Network Settings"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_network_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(0);
                 segment_layout->addWidget(label);
@@ -57,8 +58,8 @@ namespace tc
             // Network type
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("WebSocket"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_websocket");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -81,8 +82,8 @@ namespace tc
             // Streaming WebSocket port
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Streaming WebSocket Port"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_streaming_websocket_port");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -99,8 +100,8 @@ namespace tc
             }
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("UDP"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_udp");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -123,8 +124,8 @@ namespace tc
             // UdpKcp port
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Streaming UDP Port"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_streaming_udp_port");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -141,8 +142,8 @@ namespace tc
             }
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("RTC"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_rtc");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -164,8 +165,8 @@ namespace tc
             // Ethernet adapter
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Ethernet Adapter"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_ethernet_adapter");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -202,8 +203,8 @@ namespace tc
             // Panel listening port
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Panel Listening Port"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_panel_listening_port");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -222,15 +223,15 @@ namespace tc
             // ID Server
             {
                 // title
-                auto label = new QLabel(this);
-                label->setText(tr("Gr Supervisor Server*"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_gr_spvr_server");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
             }
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setText(tr("Server Host"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -247,7 +248,7 @@ namespace tc
             }
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setText(tr("Server Port"));
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -267,7 +268,7 @@ namespace tc
             // Relay Server
 //            {
 //                // title
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Relay Server"));
 //                label->setStyleSheet("font-size: 16px; font-weight: 700;");
 //                segment_layout->addSpacing(20);
@@ -275,7 +276,7 @@ namespace tc
 //            }
 //            {
 //                auto layout = new NoMarginHLayout();
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Server Host"));
 //                label->setFixedSize(tips_label_size);
 //                label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -292,7 +293,7 @@ namespace tc
 //            }
 //            {
 //                auto layout = new NoMarginHLayout();
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Server Port"));
 //                label->setFixedSize(tips_label_size);
 //                label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -312,7 +313,7 @@ namespace tc
 //            // Signaling Server
 //            {
 //                // title
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("RTC Signaling Server"));
 //                label->setStyleSheet("font-size: 16px; font-weight: 700;");
 //                segment_layout->addSpacing(20);
@@ -320,7 +321,7 @@ namespace tc
 //            }
 //            {
 //                auto layout = new NoMarginHLayout();
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Server Host"));
 //                label->setFixedSize(tips_label_size);
 //                label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -337,7 +338,7 @@ namespace tc
 //            }
 //            {
 //                auto layout = new NoMarginHLayout();
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Server Port"));
 //                label->setFixedSize(tips_label_size);
 //                label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -357,7 +358,7 @@ namespace tc
 //            // Coturn Address
 //            {
 //                // title
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("RTC TURN"));
 //                label->setStyleSheet("font-size: 16px; font-weight: 700;");
 //                segment_layout->addSpacing(20);
@@ -365,7 +366,7 @@ namespace tc
 //            }
 //            {
 //                auto layout = new NoMarginHLayout();
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Server Host"));
 //                label->setFixedSize(tips_label_size);
 //                label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -382,7 +383,7 @@ namespace tc
 //            }
 //            {
 //                auto layout = new NoMarginHLayout();
-//                auto label = new QLabel(this);
+//                auto label = new TcLabel(this);
 //                label->setText(tr("Server Port"));
 //                label->setFixedSize(tips_label_size);
 //                label->setStyleSheet("font-size: 14px; font-weight: 500;");
@@ -411,20 +412,12 @@ namespace tc
             };
 
             auto layout = new NoMarginHLayout();
-            auto btn = new QPushButton(this);
-            btn->setText(tr("SAVE"));
+            auto btn = new TcPushButton(this);
+            btn->SetTextId("id_save");
             btn->setFixedSize(QSize(220, 35));
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                //settings_->SetProfileServerHost(edt_id_server_host_->text().toStdString());
-                //settings_->SetProfileServerPort(edt_id_server_port_->text().toStdString());
-                //settings_->SetRelayServerHost(edt_relay_server_host_->text().toStdString());
-                //settings_->SetRelayServerPort(edt_relay_server_port_->text().toStdString());
-                //settings_->SetSigServerAddress(edt_sig_server_host_->text().toStdString());
-                //settings_->SetSigServerPort(edt_sig_server_port_->text().toStdString());
-                //settings_->SetCoturnServerAddress(edt_coturn_server_host_->text().toStdString());
-                //settings_->SetCoturnServerPort(edt_coturn_server_port_->text().toStdString());
                 auto spvr_host = edt_spvr_server_host_->text().toStdString();
                 auto spvr_port = edt_spvr_server_port_->text().toStdString();
                 settings_->SetSpvrServerHost(spvr_host);
@@ -437,14 +430,6 @@ namespace tc
                 this->context_->SendAppMessage(MsgSettingsChanged {
                     .settings_ = settings_,
                 });
-
-                // Save success dialog
-//                auto msg_box = SizedMessageBox::Make2BtnsBox(tr("Save Success"),
-//                                                             tr("Save settings success! Do you want to restart Renderer?"), tr("Later"), tr("Restart"));
-//                if (msg_box->exec() == 0) {
-//                    // restart server now
-//                    this->context_->SendAppMessage(AppMsgRestartServer{});
-//                }
 
                 TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
                 if (dialog.exec() == kDoneOk) {

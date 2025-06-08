@@ -54,5 +54,14 @@
   "id_ok": "确定",
 
   "id_set" : "设置",
-  "id_save": "保存"
+  "id_save": "保存",
+  "id_network_settings": "网络设置",
+  "id_websocket": "WebSocket",
+  "id_streaming_websocket_port": "WebSocket串流端口",
+  "id_udp": "UDP",
+  "id_streaming_udp_port": "UDP串流端口",
+  "id_rtc": "RTC",
+  "id_ethernet_adapter": "网卡",
+  "id_panel_listening_port": "此UI程序监听端口",
+  "id_gr_spvr_server": "中转服务配置"
 }
