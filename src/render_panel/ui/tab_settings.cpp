@@ -10,6 +10,7 @@
 #include "render_panel/ui/st_about_me.h"
 #include "render_panel/ui/st_network.h"
 #include "render_panel/ui/st_plugins.h"
+#include "render_panel/ui/st_controller.h"
 #include "app_colors.h"
 #include "st_security.h"
 
@@ -93,6 +94,22 @@ namespace tc
             left_button_layout->addSpacing(10);
             left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
         }
+        // controller
+        {
+            auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+            btn_controller = btn;
+            btn->SetBorderRadius(border_radius);
+            btn->SetTextId("id_settings_controller");
+
+            btn->SetSelectedFontColor(btn_font_color);
+            btn->setFixedSize(btn_size);
+            //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
+            QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                ChangeTab(StTabName::kStController);
+            });
+            left_button_layout->addSpacing(10);
+            left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
+        }
         // About me
         {
             auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
@@ -117,12 +134,14 @@ namespace tc
             tabs_.insert({StTabName::kStNetwork, new StNetwork(app_, this)});
             tabs_.insert({StTabName::kStSecurity, new StSecurity(app_, this)});
             tabs_.insert({StTabName::kStPlugins, new StPlugins(app_, this)});
+            tabs_.insert({StTabName::kStController, new StController(app_, this)});
             tabs_.insert({StTabName::kStAboutMe, new StAboutMe(app_, this)});
 
             tabs_[StTabName::kStGeneral]->SetAttach(btn_input_);
             tabs_[StTabName::kStNetwork]->SetAttach(btn_network_);
             tabs_[StTabName::kStSecurity]->SetAttach(btn_security_);
             tabs_[StTabName::kStPlugins]->SetAttach(btn_plugins_);
+            tabs_[StTabName::kStController]->SetAttach(btn_controller);
             tabs_[StTabName::kStAboutMe]->SetAttach(btn_about_me_);
 
             auto layout = new NoMarginVLayout();
@@ -134,6 +153,7 @@ namespace tc
             stack_widget->addWidget(tabs_[StTabName::kStNetwork]);
             stack_widget->addWidget(tabs_[StTabName::kStSecurity]);
             stack_widget->addWidget(tabs_[StTabName::kStPlugins]);
+            stack_widget->addWidget(tabs_[StTabName::kStController]);
             stack_widget->addWidget(tabs_[StTabName::kStAboutMe]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);

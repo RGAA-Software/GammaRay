@@ -30,8 +30,6 @@ namespace tc
         QCheckBox* cb_resize_res_ = nullptr;
         QComboBox* cb_capture_monitor_ = nullptr;
         QComboBox* cb_capture_audio_device_name_ = nullptr;
-        QLineEdit* et_screen_recording_path_ = nullptr;
-        QPushButton* btn_select_screen_recording_path_ = nullptr;
     };
 
 }

@@ -9,6 +9,7 @@
   "id_settings_network": "Network",
   "id_settings_security": "Security",
   "id_settings_plugins": "Plugins",
+  "id_settings_controller": "Controller",
   "id_settings_aboutme": "AboutMe",
 
   "id_tab_remote_control": "Remote Control",
@@ -51,5 +52,6 @@
   "id_cancel": "Cancel",
   "id_ok": "Ok",
 
-  "id_set" : "Set"
+  "id_set" : "Set",
+  "id_save": "Save"
 }
