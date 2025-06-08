@@ -14,115 +14,30 @@
 #include "thunder_sdk.h"
 #include "theme/QtAdvancedStylesheet.h"
 #include "client/ct_app_message.h"
+#include "ct_base_workspace.h"
 
 namespace tc
 {
-
-    class ClientContext;
-    class ThunderSdk;
-    class OpenGLVideoWidget;
-    class AudioPlayer;
-    class FloatController;
-    class FloatControllerPanel;
-    class MessageListener;
-    class Settings;
-    class FloatNotificationHandle;
-    class NotificationPanel;
-    class FileTransferChannel;
-    class CtStatisticsPanel;
-    class ClipboardManager;
-    class FloatButtonStateIndicator;
-    class FileTransInterface;
-    class MainProgress;
-    class GameView;
-    class RtcClientInterface;
-    class CtPanelClient;
-    class ClientPluginManager;
-    class MediaRecordPluginClientInterface;
-
-    class Workspace : public QMainWindow, public std::enable_shared_from_this<Workspace> {
+    class Workspace : public BaseWorkspace {
     public:
 
         explicit Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent = nullptr);
         ~Workspace() override;
 
-        void Init();
-
-        void closeEvent(QCloseEvent *event) override;
-        void changeEvent(QEvent* event) override;
-        [[nodiscard]] bool IsActiveNow() const;
-        void resizeEvent(QResizeEvent *event) override;
-        void dragEnterEvent(QDragEnterEvent *event) override;
-        void dragMoveEvent(QDragMoveEvent *event) override;
-        void dropEvent(QDropEvent *event) override;
+        void Init() override;
         bool eventFilter(QObject* watched, QEvent* event) override;
-        void SendWindowsKey(unsigned long vk, bool down);
-
-        std::shared_ptr<ThunderSdk> GetThunderSdk();
-        std::shared_ptr<ClientContext> GetContext();
-
+        void SendWindowsKey(unsigned long vk, bool down) override;
+    protected:
+        void InitGameView(const std::shared_ptr<ThunderSdkParams>& params) override;
+        void InitListener() override;
+        void RegisterBaseListeners() override;
     private:
-        void RegisterSdkMsgCallbacks();
-        void Exit();
-        //void UpdateNotificationHandlePosition();
-        void UpdateLocalCursor(uint32_t type);
-        void RegisterControllerPanelListeners();
-        void UpdateDebugPanelPosition();
-        void SendClipboardMessage(const ClipboardMessage& msg);
-        void SendSwitchMonitorMessage(const std::string& name);
-        void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
-        void SendSwitchFullColorMessage(bool enable);
-        // client->render 发送刷新桌面的消息
-        void SendUpdateDesktopMessage();
-        void SwitchScaleMode(const ScaleMode& mode);
-        void CalculateAspectRatio();
-        void SwitchToFullWindow();
-        void SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg);
-        void UpdateFloatButtonIndicatorPosition();
-        void UpdateVideoWidgetSize();
-        void UpdateGameViewsStatus();
-        void OnGetCaptureMonitorsCount(int monitors_count);
-        void OnGetCaptureMonitorName(std::string monitor_name);
-        void InitGameViews(const std::shared_ptr<ThunderSdkParams>& params);
-        void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
-        void ExitClientWithDialog();
-
-    private:
-        std::shared_ptr<ClientContext> context_ = nullptr;
-        std::shared_ptr<ThunderSdk> sdk_ = nullptr;
-        std::shared_ptr<AudioPlayer> audio_player_ = nullptr;
-        bool is_window_active_ = false;
-        acss::QtAdvancedStylesheet* theme_{};
-        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        Settings* settings_ = nullptr;
-        //FloatNotificationHandle* notification_handler_ = nullptr;
-        //NotificationPanel* notification_panel_ = nullptr;
-        std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
-        uint32_t cursor_type_ = 100000;
-        bool force_update_cursor_ = true;
-        CtStatisticsPanel* st_panel_ = nullptr;
-        std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
-        FloatButtonStateIndicator* btn_indicator_ = nullptr;
-        std::atomic_bool has_frame_arrived_ = false;
-
-        //文件传输:
-        std::shared_ptr<FileTransInterface> file_trans_interface_ = nullptr;
-
-        // progress
-        MainProgress* main_progress_ = nullptr;
-
-        int title_bar_height_ = 0; //35;
-
-        bool full_screen_ = false;
-
-        //
-        std::shared_ptr<CtPanelClient> panel_client_ = nullptr;
-
-        // plugin manager
-        std::shared_ptr<ClientPluginManager> plugin_manager_ = nullptr;
-
-        MediaRecordPluginClientInterface* media_record_plugin_ = nullptr;
-
+        void RegisterSdkMsgCallbacks() override;
+        void CalculateAspectRatio() override;
+        void SwitchToFullWindow() override;
+        void UpdateGameViewsStatus() override;
+        void OnGetCaptureMonitorsCount(int monitors_count) override;
+        void OnGetCaptureMonitorName(std::string monitor_name) override;
     private:
         // 扩展屏
         // to do:
@@ -148,14 +63,12 @@ namespace tc
         // 20.文件传输加接口 控制速度等
         // 21.game_view上的小球，点击后，会full window,需要找下原因(已完成)
         // 22.刷新 参考 vnc
-        QString origin_title_name_;
+        //QString origin_title_name_;
         std::vector<GameView*> game_views_;  
-        std::map<int, std::string> monitor_index_map_name_;
-        
-
-        EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;
-        int monitors_count_ = 0;
-        QWidget* close_event_occurred_widget_ = nullptr;
+  
+        EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;     
+    private:
+        void ListenMultiMonDisplayModeMessage();
     };
 
 }

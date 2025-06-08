@@ -56,60 +56,27 @@ namespace tc
         this->context_ = ctx;
         this->context_->InitNotifyManager(this);
         this->settings_ = Settings::Instance();
-
+        this->params_ = params;
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+    }
 
+    void BaseWorkspace::Init() {
         // plugins
-        plugin_manager_ = ClientPluginManager::Make(ctx);
-        context_->SetPluginManager(plugin_manager_);
-        plugin_manager_->LoadAllPlugins();
-        plugin_manager_->RegisterPluginEventsCallback();
-        plugin_manager_->DumpPluginInfo();
+        InitPluginsManager();
 
         auto beg = TimeUtil::GetCurrentTimestamp();
 
-        WidgetHelper::SetTitleBarColor(this);
+        InitTheme();
 
-        origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + params->stream_name_.c_str() + "]";
-        setWindowTitle(origin_title_name_);
-        auto notifier = this->context_->GetMessageNotifier();
-
-        setAcceptDrops(true);
-        QString app_dir = qApp->applicationDirPath();
-        QString style_dir = app_dir + "/resources/";
-        theme_ = new acss::QtAdvancedStylesheet(this);
-        theme_->setStylesDirPath(style_dir);
-        theme_->setOutputDirPath(app_dir + "/output");
-        theme_->setCurrentStyle("qt_material");
-        theme_->setCurrentTheme("light_blue");
-        theme_->updateStylesheet();
-        setWindowIcon(theme_->styleIcon());
-        qApp->setStyleSheet(theme_->styleSheet());
-
-        sdk_ = ThunderSdk::Make(ctx->GetMessageNotifier());
-        sdk_->Init(params, nullptr, DecoderRenderType::kFFmpegI420);
+        sdk_ = ThunderSdk::Make(this->context_->GetMessageNotifier());
+        sdk_->Init(this->params_, nullptr, DecoderRenderType::kFFmpegI420);
 
         // init game views
-        {
-            auto beg = TimeUtil::GetCurrentTimestamp();
-            InitGameViews(params);
-            auto end = TimeUtil::GetCurrentTimestamp();
-            LOGI("Init game views used: {}ms", (end-beg));
-        }
-        main_progress_ = new MainProgress(sdk_, context_, this);
-        main_progress_->show();
+        InitGameView(this->params_);
 
-        // button indicator
-        int shadow_color = 0x999999;
-        btn_indicator_ = new FloatButtonStateIndicator(ctx, this);
-        btn_indicator_->hide();
-        WidgetHelper::AddShadow(btn_indicator_, shadow_color);
+        InitSampleWidget();
 
-        // debug panel
-        st_panel_ = new CtStatisticsPanel(context_, nullptr);
-        st_panel_->resize(1366, 768);
-        //WidgetHelper::AddShadow(st_panel_, 0x999999);
-        st_panel_->hide();
+        InitClipboardManager();
 
         // notification handle
         // notification_handler_ = new FloatNotificationHandle(context_, this);
@@ -128,38 +95,108 @@ namespace tc
         //notification_panel_->hide();
 
         // message listener
-        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
+        InitListener();
 
-        // sdk
+        InitFileTrans();
+
+        // connect to GammaRay Panel
+        InitPanelClient();
+
+        auto end = TimeUtil::GetCurrentTimestamp();
+        LOGI("Init .3 used: {}ms", (end - beg));
+    }
+
+
+    void BaseWorkspace::InitPluginsManager() {
+        plugin_manager_ = ClientPluginManager::Make(this->context_);
+        context_->SetPluginManager(plugin_manager_);
+        plugin_manager_->LoadAllPlugins();
+        plugin_manager_->RegisterPluginEventsCallback();
+        plugin_manager_->DumpPluginInfo();
+    }
+
+    void BaseWorkspace::InitSampleWidget() {
+        main_progress_ = new MainProgress(sdk_, context_, this);
+        main_progress_->show();
+
+        // button indicator
+        int shadow_color = 0x999999;
+        btn_indicator_ = new FloatButtonStateIndicator(this->context_, this);
+        btn_indicator_->hide();
+        WidgetHelper::AddShadow(btn_indicator_, shadow_color);
+
+        // debug panel
+        st_panel_ = new CtStatisticsPanel(context_, nullptr);
+        st_panel_->resize(1366, 768);
+        st_panel_->hide();
+    }
+
+    void BaseWorkspace::InitTheme() {
+        WidgetHelper::SetTitleBarColor(this);
+
+        origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + this->params_->stream_name_.c_str() + "]";
+        setWindowTitle(origin_title_name_);
+        auto notifier = this->context_->GetMessageNotifier();
+
+        setAcceptDrops(true);
+        QString app_dir = qApp->applicationDirPath();
+        QString style_dir = app_dir + "/resources/";
+        theme_ = new acss::QtAdvancedStylesheet(this);
+        theme_->setStylesDirPath(style_dir);
+        theme_->setOutputDirPath(app_dir + "/output");
+        theme_->setCurrentStyle("qt_material");
+        theme_->setCurrentTheme("light_blue");
+        theme_->updateStylesheet();
+        setWindowIcon(theme_->styleIcon());
+        qApp->setStyleSheet(theme_->styleSheet());
+    }
+
+    void BaseWorkspace::InitListener() {
+        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         RegisterSdkMsgCallbacks();
         sdk_->Start();
+        RegisterBaseListeners();
+        RegisterControllerPanelListeners();
+    }
 
+    void BaseWorkspace::InitFileTrans() {
+#ifdef TC_ENABLE_FILE_TRANSMISSION
+        file_trans_interface_ = FileTransInterface::Make(sdk_);
+#endif // TC_ENABLE_FILE_TRANSMISSION
+    }
+
+    void BaseWorkspace::InitPanelClient() {
+        panel_client_ = std::make_shared<CtPanelClient>(context_);
+        panel_client_->Start();
+    }
+
+    void BaseWorkspace::RegisterBaseListeners() {
         msg_listener_->Listen<ExitAppMessage>([=, this](const ExitAppMessage& msg) {
             context_->PostUITask([=, this]() {
                 this->ExitClientWithDialog();
+                });
             });
-        });
 
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
             this->SendClipboardMessage(msg);
-        });
+            });
 
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
             this->SendSwitchMonitorMessage(msg.name_);
             this->SendUpdateDesktopMessage();
-        });
+            });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
             this->SendSwitchWorkModeMessage(msg.mode_);
-        });
+            });
 
         msg_listener_->Listen<SwitchScaleModeMessage>([=, this](const SwitchScaleModeMessage& msg) {
             this->SwitchScaleMode(msg.mode_);
-        });
+            });
 
         msg_listener_->Listen<SwitchFullColorMessage>([=, this](const SwitchFullColorMessage& msg) {
             this->SendSwitchFullColorMessage(msg.enable_);
-        });
+            });
 
         // step 1
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
@@ -168,27 +205,27 @@ namespace tc
             main_progress_->ResetProgress();
             main_progress_->StepForward();
             LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
-        });
+            });
 
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
 
-        });
+            });
 
         // step 2
         msg_listener_->Listen<SdkMsgFirstConfigInfoCallback>([=, this](const SdkMsgFirstConfigInfoCallback& msg) {
             main_progress_->StepForward();
             LOGI("Step: MsgFirstConfigInfoCallback, at: {}", main_progress_->GetCurrentProgress());
-        });
+            });
 
         // step 3
         msg_listener_->Listen<SdkMsgFirstVideoFrameDecoded>([=, this](const SdkMsgFirstVideoFrameDecoded& msg) {
             main_progress_->CompleteProgress();
             LOGI("Step: MsgFirstVideoFrameDecoded, at: {}", main_progress_->GetCurrentProgress());
-        });
+            });
 
         msg_listener_->Listen<MsgChangeMonitorResolution>([=, this](const MsgChangeMonitorResolution& msg) {
             this->SendChangeMonitorResolutionMessage(msg);
-        });
+            });
 
         msg_listener_->Listen<MsgCtrlAltDelete>([=, this](const MsgCtrlAltDelete& msg) {
             tc::Message m;
@@ -197,85 +234,31 @@ namespace tc
             m.set_stream_id(settings_->stream_id_);
             auto _ = m.mutable_req_ctrl_alt_delete();
             sdk_->PostMediaMessage(m.SerializeAsString());
-        });
-
-        msg_listener_->Listen<MultiMonDisplayModeMessage>([=, this](const MultiMonDisplayModeMessage& msg) {
-            multi_display_mode_ = msg.mode_;
-            context_->PostUITask([=]() {
-                if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
-                    if (monitors_count_ > 1) {
-                        setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
-                    }
-                    else {
-                        setWindowTitle(origin_title_name_);
-                    }
-                }
-                else if(EMultiMonDisplayMode::kTab == multi_display_mode_) {
-                    setWindowTitle(origin_title_name_);
-                }
             });
-            this->SendUpdateDesktopMessage();
-        });
-
-        RegisterControllerPanelListeners();
-
-#ifdef TC_ENABLE_FILE_TRANSMISSION
-        file_trans_interface_ = FileTransInterface::Make(sdk_);
-#endif // TC_ENABLE_FILE_TRANSMISSION
-
-        QTimer::singleShot(100, [=, this](){
-            //原有文件传输,已用file_trans_interface_替代
-            //file_transfer_ = std::make_shared<FileTransferChannel>(context_);
-            //file_transfer_->Start();
-        });
-
-        // connect to GammaRay Panel
-        panel_client_ = std::make_shared<CtPanelClient>(context_);
-        panel_client_->Start();
-
-        {
-            auto end = TimeUtil::GetCurrentTimestamp();
-            LOGI("Init .3 used: {}ms", (end-beg));
-        }
     }
 
     BaseWorkspace::~BaseWorkspace() {
 
     }
 
-    void BaseWorkspace::Init() {
-        // clipboard manager
+    void BaseWorkspace::InitClipboardManager() {
         clipboard_mgr_ = std::make_shared<ClipboardManager>(shared_from_this());
         clipboard_mgr_->Start();
     }
 
     void BaseWorkspace::RegisterSdkMsgCallbacks() {
         sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
+
             if (!has_frame_arrived_) {
                 has_frame_arrived_ = true;
                 UpdateVideoWidgetSize();
             }
-            //LOGI("SdkCaptureMonitorInfo mon_index_: {}, w: {}, h: {}", info.mon_index_, image->img_width, image->img_height);
-            if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
-                if (!game_views_.empty()) {
-                    if (game_views_[kMainGameViewIndex]) {
-                        game_views_[kMainGameViewIndex]->RefreshCapturedMonitorInfo(info);
-                        game_views_[kMainGameViewIndex]->RefreshImage(image);
-                    }
-                }
+
+            if (game_view_) {
+                game_view_->RefreshCapturedMonitorInfo(info);
+                game_view_->RefreshImage(image);
             }
-            else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
-                if (game_views_.size() > info.mon_index_) {
-                    if (game_views_[info.mon_index_]) {
-                        game_views_[info.mon_index_]->RefreshCapturedMonitorInfo(info);
-                        game_views_[info.mon_index_]->RefreshImage(image);
-                        if (!game_views_[info.mon_index_]->GetActiveStatus()) {
-                            game_views_[info.mon_index_]->SetActiveStatus(true);
-                            UpdateGameViewsStatus();
-                        }
-                    }
-                }
-            }
+
             context_->UpdateCapturingMonitorInfo(info);
         });
 
@@ -326,6 +309,9 @@ namespace tc
         });
 
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
+
+            monitor_index_map_name_.clear();
+
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
             //LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
@@ -389,13 +375,11 @@ namespace tc
 
         });
 
-
         media_record_plugin_ = plugin_manager_->GetMediaRecordPlugin();
         if (!media_record_plugin_) {
             LOGE("media_record_plugin_ is nullptr!!!");
         }
         
-
         msg_listener_->Listen<SdkMsgChangeMonitorResolutionResult>([=, this](const SdkMsgChangeMonitorResolutionResult& msg) {
             context_->PostUITask([=, this]() {
                 // to trigger re-layout
@@ -536,12 +520,9 @@ namespace tc
         }
         TcDialog dialog(tr("Stop"), msg, this);
         if (dialog.exec() == kDoneOk) {
-
-
             if (media_record_plugin_) {
                 media_record_plugin_->EndRecord();
             }
-
             Exit();
         }
     }
@@ -572,10 +553,8 @@ namespace tc
     }
 
     void BaseWorkspace::SendWindowsKey(unsigned long vk, bool down) {
-        if (game_views_.size() > 0) {
-            if (game_views_[kMainGameViewIndex]) {
-                game_views_[kMainGameViewIndex]->SendKeyEvent(vk, down);
-            }
+        if (game_view_) {
+            game_view_->SendKeyEvent(vk, down);
         }
     }
 
@@ -750,18 +729,14 @@ namespace tc
     }
 
     void BaseWorkspace::CalculateAspectRatio() {
-        for (auto game_view : game_views_) {
-            if (game_view) {
-                game_view->CalculateAspectRatio();
-            }
+        if (game_view_) {
+            game_view_->CalculateAspectRatio();
         }
     }
 
     void BaseWorkspace::SwitchToFullWindow() {
-        for (auto game_view : game_views_) {
-            if (game_view) {
-                game_view->SwitchToFullWindow();
-            }
+        if (game_view_) {
+            game_view_->SwitchToFullWindow();
         }
     }
 
@@ -804,9 +779,6 @@ namespace tc
             context_->Exit();
             context_ = nullptr;
         }
-        //if (file_transfer_) {
-        //   file_transfer_->Exit();
-        //}
         if (file_trans_interface_) {
             file_trans_interface_->Exit();
         }
@@ -816,181 +788,58 @@ namespace tc
 
     void BaseWorkspace::UpdateGameViewsStatus() {
         QList<QScreen*> screens = QGuiApplication::screens();
-        if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
-            for (auto game_view : game_views_) {
-                if (game_view->IsMainView()) {
-                    if (full_screen_) {
-                        WidgetSelectMonitor(this, screens);
-                        this->showFullScreen();
-                        game_view->showFullScreen();
-                        tc::QWidgetHelper::SetBorderInFullScreen(this, true);
-                        tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
-                    }
-                    else {
-                        if (this->isMaximized()) {
-                            this->showMaximized();
-                            game_view->showMaximized();
-                        }
-                        else {
-                            this->showNormal();
-                            game_view->showNormal();
-                        }
-                    }
-                }
-                else {
-                    game_view->hide();
-                }
-            }
+        if (full_screen_) {
+            WidgetSelectMonitor(this, screens);
+            this->showFullScreen();
+            game_view_->showFullScreen();
+            tc::QWidgetHelper::SetBorderInFullScreen(this, true);
+            tc::QWidgetHelper::SetBorderInFullScreen(game_view_, true);
         }
-        else if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
-            for (auto game_view : game_views_) {
-                if (game_view->GetActiveStatus()) {
-                    if (full_screen_) {
-                        if (game_view->IsMainView()) {
-                            WidgetSelectMonitor(this, screens);
-                            this->showFullScreen();
-                            this->raise();
-                            game_view->showFullScreen();
-                            tc::QWidgetHelper::SetBorderInFullScreen(this, true);
-                        }
-                        else {
-                            WidgetSelectMonitor(game_view, screens);
-                            game_view->showFullScreen();
-                        }
-                        tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
-                    }
-                    else {
-                        if (game_view->isMaximized()) {
-                            game_view->showMaximized();
-                            if (game_view->IsMainView()) {
-                                this->showMaximized();
-                            }
-                        }
-                        else {
-                            game_view->showNormal();
-                            if (game_view->IsMainView()) {
-                                this->showNormal();
-                            }
-                        }
-                    }
-                }
-                else {
-                    game_view->hide();
-                }
+        else {
+            if (this->isMaximized()) {
+                this->showMaximized();
+                game_view_->showMaximized();
+            }
+            else {
+                this->showNormal();
+                game_view_->showNormal();
             }
         }
     }
 
     void BaseWorkspace::OnGetCaptureMonitorsCount(int monitors_count) {
         monitors_count_ = monitors_count;
-        if (monitors_count <= 1) {
-            setWindowTitle(origin_title_name_);
-        }
-        int min_temp = std::min(monitors_count, static_cast<int>(game_views_.size()));
-        for (int index = 0; index < min_temp; ++index) {
-            game_views_[index]->SetActiveStatus(true);
-        }
-
-        for (; min_temp < game_views_.size(); ++min_temp) {
-            game_views_[min_temp]->SetActiveStatus(false);
-        }
-        UpdateGameViewsStatus();
     }
 
     void BaseWorkspace::OnGetCaptureMonitorName(std::string monitor_name) {
         LOGI("OnGetCaptureMonitorName monitor_name: {}", monitor_name);
-        for (const auto& index_name : monitor_index_map_name_) {
-            if (game_views_.size() > index_name.first) {
-                if (game_views_[index_name.first]) {
-                    game_views_[index_name.first]->SetMonitorName(index_name.second);
-                }
-            }
-        }
-
         if (kCaptureAllMonitorsSign == monitor_name) {
-            multi_display_mode_ = EMultiMonDisplayMode::kSeparate;
-            if (monitors_count_ > 1) {
-                setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
+            if (monitor_index_map_name_.size() > 0) {
+                SendSwitchMonitorMessage(monitor_index_map_name_[0]);
             }
-            
+            return;
         }
-        else {
-            multi_display_mode_ = EMultiMonDisplayMode::kTab;
-            if (game_views_[kMainGameViewIndex]) {
-                game_views_[kMainGameViewIndex]->SetMonitorName(monitor_name);
-            }
-        }
+        game_view_->SetMonitorName(monitor_name);
     }
 
-    void BaseWorkspace::InitGameViews(const std::shared_ptr<ThunderSdkParams>& params) {
+    void BaseWorkspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(1080, 680);
-        for (int index = 0; index < kMaxGameViewCount; ++index) {
-            GameView* game_view = nullptr;
-            if (0 == index) {
-                game_view = new GameView(context_, sdk_, params, this);    // main view
-                game_view->resize(1080, 680);
-                game_view->show();
-                game_view->SetMainView(true);
-                setCentralWidget(game_view);
-            }
-            else {
-                game_view = new GameView(context_, sdk_, params, nullptr); // extend view
-                game_view->resize(1080, 680);
-                game_view->hide();
-                game_view->SetMainView(false);
-                game_view->installEventFilter(this);
-                game_view->setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(index + 1)));
-            }
-            game_view->SetMonitorIndex(index);
-            game_views_.push_back(game_view);
-        }
-        QTimer::singleShot(1, this, [=, this]() {
-            {
-                QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
-                int x = (screenGeometry.width() - this->width()) / 2;
-                int y = (screenGeometry.height() - this->height()) / 2;
-                this->move(x, y);
-            }
+        game_view_ = new GameView(context_, sdk_, params, this);
+        game_view_->resize(1080, 680);
+        game_view_->show();
+        game_view_->SetMainView(true);
+        setCentralWidget(game_view_);
 
-            QPoint ws_pos = this->pos();
-            const int x_offset = 80;
-            const int y_offset = 40;
-            const int start_x = ws_pos.x();
-            const int start_y = ws_pos.y();
-            int index = 0;
-            for (auto game_view : game_views_) {
-                if (!game_view) {
-                    ++index;
-                    continue;
-                }
-                if (game_view->IsMainView()) {
-                    ++index;
-                    continue;
-                }
-                game_view->move(start_x + x_offset * index, start_y + y_offset * index);
-                ++index;
-            }
+        QTimer::singleShot(1, this, [=, this]() {
+            QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
+            int x = (screenGeometry.width() - this->width()) / 2;
+            int y = (screenGeometry.height() - this->height()) / 2;
+            this->move(x, y);
         });
     }
 
+
     bool BaseWorkspace::eventFilter(QObject* watched, QEvent* event) {
-        for (const auto game_view : game_views_) {
-            if (!game_view) {
-                continue;
-            }
-            
-            if (game_view == watched) {
-                switch (event->type())
-                {
-                    case QEvent::Close: {
-                        close_event_occurred_widget_ = game_view;
-                        event->ignore();
-                        this->close();
-                        return true;
-                    }
-                }
-            }
-        }
         return QMainWindow::eventFilter(watched, event);
     }
 
