@@ -10,6 +10,7 @@
 #include "render_panel/database/visit_record.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/uid_spacer.h"
+#include "tc_label.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -41,31 +42,31 @@ namespace tc
         auto target_style = item_info_->IsValid() ? item_style : header_style;
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
             if (item_info_->IsValid()) {
                 lbl->setText(item_info_->conn_type_.c_str());
             }
             else {
-                lbl->setText("Connection Type");
+                lbl->SetTextId("id_conn_type");
             }
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(TimeUtil::FormatTimestamp(item_info_->begin_).c_str());
             }
             else {
-                lbl->setText("Start");
+                lbl->SetTextId("id_start_time");
             }
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 if (item_info_->end_ > 0) {
@@ -76,44 +77,44 @@ namespace tc
                 }
             }
             else {
-                lbl->setText("End");
+                lbl->SetTextId("id_end_time");
             }
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(TimeUtil::FormatSecondsToDHMS(item_info_->duration_/1000).c_str());
             }
             else {
-                lbl->setText("Duration");
+                lbl->SetTextId("id_duration");
             }
             content_layout->addWidget(lbl, 1);
 
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(SpaceId(item_info_->visitor_device_).c_str());
             }
             else {
-                lbl->setText("Visitor Device");
+                lbl->SetTextId("id_visitor_device");
             }
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(SpaceId(item_info_->target_device_).c_str());
             }
             else {
-                lbl->setText("Target Device");
+                lbl->SetTextId("id_target_device");
             }
             content_layout->addWidget(lbl, 1);
         }

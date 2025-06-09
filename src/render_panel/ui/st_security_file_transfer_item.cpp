@@ -12,6 +12,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_common_new/file_util.h"
+#include "tc_label.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -43,7 +44,7 @@ namespace tc
         auto target_style = item_info_->IsValid() ? item_style : header_style;
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             if (item_info_->IsValid()) {
                 if (item_info_->success_) {
                     lbl->setStyleSheet(R"(font-weight: 700; padding-left: 8px; color: #33FF33;)");
@@ -55,7 +56,7 @@ namespace tc
             }
             else {
                 lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
-                lbl->setText("Result");
+                lbl->SetTextId("id_result");
             }
 
             lbl->setFixedWidth(100);
@@ -63,20 +64,20 @@ namespace tc
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(TimeUtil::FormatTimestamp(item_info_->begin_).c_str());
             }
             else {
-                lbl->setText("Start");
+                lbl->SetTextId("id_start_time");
             }
             lbl->setFixedWidth(130);
             content_layout->addWidget(lbl);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 if (item_info_->end_ <= 0) {
@@ -87,61 +88,61 @@ namespace tc
                 }
             }
             else {
-                lbl->setText("End");
+                lbl->SetTextId("id_end_time");
             }
             lbl->setFixedWidth(130);
             content_layout->addWidget(lbl);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 std::string visitor_device_id = ExtractClientId(item_info_->visitor_device_);
                 lbl->setText(SpaceId(visitor_device_id).c_str());
             }
             else {
-                lbl->setText("Visitor Device");
+                lbl->SetTextId("id_visitor_device");
             }
             lbl->setFixedWidth(130);
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(SpaceId(item_info_->target_device_).c_str());
             }
             else {
-                lbl->setText("Target Device");
+                lbl->SetTextId("id_target_device");
             }
             lbl->setFixedWidth(130);
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 lbl->setText(item_info_->direction_.c_str());
             }
             else {
-                lbl->setText("Direction");
+                lbl->SetTextId("id_direction");
             }
             lbl->setFixedWidth(100);
             content_layout->addWidget(lbl, 1);
         }
 
         {
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
             if (item_info_->IsValid()) {
                 auto filename = FileUtil::GetFileNameFromPath(item_info_->file_detail_);
                 lbl->setText(filename.c_str());
             }
             else {
-                lbl->setText("File Name");
+                lbl->SetTextId("id_file_name");
             }
             lbl->setFixedWidth(250);
             content_layout->addWidget(lbl);

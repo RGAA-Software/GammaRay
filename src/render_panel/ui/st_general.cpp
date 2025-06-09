@@ -91,17 +91,23 @@ namespace tc
                 segment_layout->addSpacing(10);
                 segment_layout->addLayout(layout);
 
-                connect(edit, &QComboBox::currentIndexChanged, this, [=](int index) {
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int index) {
+                    LanguageKind kind = LanguageKind::kEnglish;
                     if (index == 0) {
-                        tcTrMgr()->LoadLanguage(LanguageKind::kEnglish);
+                        kind = LanguageKind::kEnglish;
                     }
                     else if (index == 1) {
-                        tcTrMgr()->LoadLanguage(LanguageKind::kSimpleCN);
+                        kind = LanguageKind::kSimpleCN;
                     }
                     else if (index == 2) {
-                        tcTrMgr()->LoadLanguage(LanguageKind::kTraditionalCN);
+                        kind = LanguageKind::kTraditionalCN;
                     }
+                    tcTrMgr()->LoadLanguage(kind);
                     tcTrMgr()->Translate();
+
+                    context_->SendAppMessage(MsgLanguageChanged {
+                        .language_kind_ = kind,
+                    });
                 });
             }
 

@@ -24,6 +24,7 @@ namespace tc
         ~TabBase() override;
         virtual void OnTabShow();
         virtual void OnTabHide();
+        virtual void OnTranslate();
 
         void SetAttach(QObject* at) {attach_ = at;}
         QObject* GetAttach() {return attach_;}

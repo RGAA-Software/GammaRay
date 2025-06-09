@@ -156,6 +156,12 @@ namespace tc
         int sess_type_{-1};
     };
 
+    // translate
+    class MsgLanguageChanged {
+    public:
+        // LanguageKind
+        int language_kind_ = 3;
+    };
 }
 
 #endif // APP_MESSAGES_H

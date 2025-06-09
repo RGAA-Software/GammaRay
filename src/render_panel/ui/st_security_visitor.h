@@ -16,10 +16,12 @@ namespace tc
     class GrApplication;
     class VisitRecord;
     class VisitRecordOperator;
+    class StSecurityVisitorItemWidget;
 
     class StSecurityVisitor : public TabBase {
     public:
         StSecurityVisitor(const std::shared_ptr<GrApplication>& app, QWidget *parent);
+        void OnTranslate() override;
 
     private:
         QListWidgetItem* AddItem(const std::shared_ptr<VisitRecord>& record);
@@ -34,6 +36,7 @@ namespace tc
         QListWidget* list_widget_ = nullptr;
         std::shared_ptr<VisitRecordOperator> visit_op_ = nullptr;
         std::vector<std::shared_ptr<VisitRecord>> records_;
+        StSecurityVisitorItemWidget* header_item_ = nullptr;
     };
 
 }

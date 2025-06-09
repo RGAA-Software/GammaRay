@@ -9,6 +9,7 @@
 #include "tc_qt_widget/pagination/page_widget.h"
 #include "st_security_visitor_item.h"
 #include "render_panel/gr_context.h"
+#include "render_panel/gr_app_messages.h"
 #include "render_panel/database/gr_database.h"
 #include "render_panel/database/visit_record.h"
 #include "render_panel/database/visit_record_operator.h"
@@ -147,23 +148,6 @@ namespace tc
             LoadPage(page);
         });
 
-        // test beg //
-        //context_->PostDBTask([=, this]() {
-        //    for (int i = 0; i < 26; i++) {
-        //        auto record = std::make_shared<VisitRecord>(VisitRecord {
-        //            .conn_type_ = "TT",
-        //            .begin_ = 1 + i,
-        //            .end_ = 1 * i,
-        //            .duration_ = 10,
-        //            .account_ = std::format("acc: {}", i),
-        //            .controller_device_ = "xxxx",
-        //            .controlled_device_ = "aaaa",
-        //        });
-        //        visit_op_->InsertVisitRecord(record);
-        //    }
-        //});
-        // test end //
-
         // Load Page 1
         context_->PostUIDelayTask([=, this]() {
             LoadPage(1);
@@ -175,6 +159,9 @@ namespace tc
         auto item_size = QSize(995, 45);
         item->setSizeHint(item_size);
         auto widget = new StSecurityVisitorItemWidget(app_, item_info, list_widget_);
+        if (!item_info->IsValid()) {
+            header_item_ = widget;
+        }
         widget->setFixedSize(item_size);
         list_widget_->setItemWidget(item, widget);
         return item;
@@ -190,6 +177,7 @@ namespace tc
                 visit_op_ = context_->GetDatabase()->GetVisitRecordOp();
             }
             records_.clear();
+            header_item_ = nullptr;
             auto total_count = visit_op_->GetTotalCounts();
 
             records_.push_back(std::make_shared<VisitRecord>(VisitRecord {
@@ -279,6 +267,10 @@ namespace tc
             auto current_page = page_widget_->getCurrentPage();
             LoadPage(current_page);
         }
+    }
+
+    void StSecurityVisitor::OnTranslate() {
+
     }
 
 }

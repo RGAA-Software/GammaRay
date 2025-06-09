@@ -11,8 +11,9 @@
 #include <QDebug>
 #include <QFileDialog>
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include "tc_qt_widget/no_margin_layout.h"
-#include "tc_qt_widget/tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_settings.h"
@@ -50,8 +51,8 @@ namespace tc
             auto segment_layout = new NoMarginVLayout();
             {
                 // title
-                auto label = new QLabel(this);
-                label->setText(tr("Security Settings"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_security_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
                 segment_layout->addSpacing(0);
                 segment_layout->addWidget(label);
@@ -60,8 +61,8 @@ namespace tc
             // Security password
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Security Password(Long-term)"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_long_term_password");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -83,8 +84,8 @@ namespace tc
             // Mouse&Keyboard
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Allowed Mouse&Keyboard"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_allowed_mouse_keyboard");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -108,8 +109,8 @@ namespace tc
             // SSL Always Enabled
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("SSL Connection(Always Enabled)"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_ssl_enabled");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -126,7 +127,7 @@ namespace tc
                     bool enabled = state == 2;
                     if (!enabled) {
                         context_->PostUIDelayTask([=, this]() {
-                            TcDialog dialog("Tips", "SSL will always be enabled.");
+                            TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_ssl_always_on"));
                             dialog.exec();
                             edit->setChecked(true);
                         }, 50);
@@ -137,8 +138,8 @@ namespace tc
             // record visitor
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Record Visiting"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_record_visitor");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -155,7 +156,7 @@ namespace tc
                     bool enabled = state == 2;
                     if (!enabled) {
                         context_->PostUIDelayTask([=, this]() {
-                            TcDialog dialog("Tips", "Recording is always on.");
+                            TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_record_visitor_always_on"));
                             dialog.exec();
                             edit->setChecked(true);
                         }, 50);
@@ -166,8 +167,8 @@ namespace tc
             // record file transfer
             {
                 auto layout = new NoMarginHLayout();
-                auto label = new QLabel(this);
-                label->setText(tr("Record File Transferring"));
+                auto label = new TcLabel(this);
+                label->SetTextId("id_record_file_transfer");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -184,7 +185,7 @@ namespace tc
                     bool enabled = state == 2;
                     if (!enabled) {
                         context_->PostUIDelayTask([=, this]() {
-                            TcDialog dialog("Tips", "Recording is always on.");
+                            TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_record_file_transfer_always_on"));
                             dialog.exec();
                             edit->setChecked(true);
                         }, 50);
@@ -193,36 +194,6 @@ namespace tc
             }
             column1_layout->addLayout(segment_layout);
         }
-
-//        {
-//            auto func_show_err = [=](const QString& msg) {
-////                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
-////                msg_box->exec();
-//
-//                TcDialog dialog(tr("Error"), msg, nullptr);
-//                dialog.exec();
-//            };
-//
-//            auto layout = new NoMarginHLayout();
-//            auto btn = new QPushButton(this);
-//            btn->setText(tr("SAVE"));
-//            btn->setFixedSize(QSize(150, 35));
-//            btn->setStyleSheet("font-size: 14px; font-weight: 700;");
-//            layout->addWidget(btn);
-//            connect(btn, &QPushButton::clicked, this, [=, this]() {
-//
-////                TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
-////                if (dialog.exec() == kDoneOk) {
-////                    this->context_->SendAppMessage(AppMsgRestartServer{});
-////                }
-//
-//            });
-//
-//            layout->addStretch();
-//            column1_layout->addSpacing(30);
-//            column1_layout->addLayout(layout);
-//        }
-
         column1_layout->addStretch();
 
         setLayout(root_layout);

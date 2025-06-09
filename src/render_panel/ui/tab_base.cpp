@@ -8,6 +8,7 @@
 #include "render_panel/gr_application.h"
 #include "tc_common_new/message_notifier.h"
 #include "render_panel/gr_statistics.h"
+#include "render_panel/gr_app_messages.h"
 
 namespace tc
 {
@@ -17,6 +18,10 @@ namespace tc
         settings_ = GrSettings::Instance();
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         statistics_ = GrStatistics::Instance();
+
+        msg_listener_->Listen<MsgLanguageChanged>([=, this](const MsgLanguageChanged& msg) {
+            this->OnTranslate();
+        });
     }
 
     TabBase::~TabBase() {
@@ -28,6 +33,10 @@ namespace tc
     }
 
     void TabBase::OnTabHide() {
+
+    }
+
+    void TabBase::OnTranslate() {
 
     }
 }
