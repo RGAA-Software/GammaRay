@@ -513,7 +513,8 @@ namespace tc
     }
 
     void FloatControllerPanel::UpdateCaptureMonitorInfo() {
-        //LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}", capture_monitor_.capturing_monitor_name_);
+        LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}, monitor size: {}", capture_monitor_.capturing_monitor_name_, capture_monitor_.monitors_.size());
+
         int default_appropriate_icons_count = 3;
         if (capture_monitor_.monitors_.size() <= default_appropriate_icons_count) {
             setFixedWidth(kInitialWidth);

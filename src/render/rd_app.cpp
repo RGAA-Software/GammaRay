@@ -372,7 +372,7 @@ namespace tc
 
     void RdApplication::PostNetMessage(const std::string& msg) {
         plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
-            plugin->PostProtoMessage(msg, false);
+            plugin->PostProtoMessage(msg, true);
         });
     }
 
@@ -563,6 +563,7 @@ namespace tc
         auto monitors_info = config->mutable_monitors_info();
         auto capturing_name = monitor_capture_plugin_->GetCapturingMonitorName();
         auto monitors = monitor_capture_plugin_->GetCaptureMonitorInfo();
+        LOGI("Will send configuration back, monitor size: {}", monitors.size());
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
             MonitorInfo info;

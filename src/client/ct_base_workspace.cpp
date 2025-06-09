@@ -314,7 +314,7 @@ namespace tc
 
             CaptureMonitorMessage msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
-            //LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
+            LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
             int monitor_index = 0;
             for (const auto& item : config.monitors_info()) {
                 std::string monitor_name = item.name();

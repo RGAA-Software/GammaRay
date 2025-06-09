@@ -28,6 +28,7 @@ namespace tc
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
         painter.setBrush(QBrush(QColor(0,0,0,0)));
+        //painter.setBrush(QBrush(QColor(10,10,10)));
         painter.drawRect(0, 0, this->width(), this->height());
     }
 
@@ -40,7 +41,7 @@ namespace tc
         for (const QScreen* screen : screen_list) {
             LOGI("screen name: {}, x: {}, y: {}", screen->name().toStdString(), screen->geometry().x(), screen->geometry().y());
             auto w = new MonitorRefreshWidget(context_, parent);
-            int size = 2;
+            int size = 10;
             w->setFixedSize(size, size);
             w->setGeometry(screen->geometry().x(), screen->geometry().y(), size, size);
             w->show();
