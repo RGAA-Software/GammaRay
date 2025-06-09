@@ -184,6 +184,10 @@ namespace tc
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
             this->SendSwitchMonitorMessage(msg.name_);
             this->SendUpdateDesktopMessage();
+            context_->PostTask([=, this]() {
+                std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                this->SwitchToFullWindow();
+                });
             });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {

@@ -65,6 +65,7 @@ namespace tc
             //分屏按钮
             {
                 auto split_screen_btn = new FloatIcon(ctx, this);
+                split_screen_btn_ = split_screen_btn;
                 split_screen_btn->setFixedSize(btn_size);
                 split_screen_btn->SetIcons(":resources/image/separate_monitor.svg", ":resources/image/separate_monitor.svg");
                 layout->addWidget(split_screen_btn);
@@ -513,7 +514,13 @@ namespace tc
     }
 
     void FloatControllerPanel::UpdateCaptureMonitorInfo() {
-        LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}, monitor size: {}", capture_monitor_.capturing_monitor_name_, capture_monitor_.monitors_.size());
+        //LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}", capture_monitor_.capturing_monitor_name_);
+        if (capture_monitor_.monitors_.size() > 1) {
+            split_screen_btn_->show();
+        }
+        else {
+            split_screen_btn_->hide();
+        }
 
         int default_appropriate_icons_count = 3;
         if (capture_monitor_.monitors_.size() <= default_appropriate_icons_count) {

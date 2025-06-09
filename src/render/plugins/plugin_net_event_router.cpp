@@ -5,6 +5,7 @@
 #include "plugin_net_event_router.h"
 #include <memory>
 #include <iostream>
+#include <thread>
 #include "rd_app.h"
 #include "rd_context.h"
 #include "rd_statistics.h"
@@ -67,6 +68,11 @@ namespace tc {
 
         // report it
         ReportClientConnected(event);
+
+        context_->PostTask([=]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            ProcessUpdateDesktop();
+        });
     }
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {

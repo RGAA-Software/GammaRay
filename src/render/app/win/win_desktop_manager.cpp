@@ -27,6 +27,10 @@ namespace tc
     }
 
     void WinDesktopManager::UpdateDesktop() {
+        LOGI("UpdateDesktop ...");
+        ::PostMessageW(GetDesktopWindow(), WM_KEYDOWN, VK_F5, 0);
+        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, NULL, NULL);
+#if 0
         const int kPathSize = 4096;
         std::wstring wallpaper_path;
         wallpaper_path.resize(kPathSize);
@@ -41,5 +45,6 @@ namespace tc
         }
         // 测试发现 壁纸文件删除后, 使用SHChangeNotify 刷新桌面，桌面背景也会便黑色
         SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+#endif
     }
 }

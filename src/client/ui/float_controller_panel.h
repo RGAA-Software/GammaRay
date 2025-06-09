@@ -53,6 +53,9 @@ namespace tc
 
         const int kInitialWidth = 240;
 
+        // 分屏显示按钮
+        FloatIcon* split_screen_btn_ = nullptr;
+
         FloatIcon* audio_btn_ = nullptr;
 
         FloatIcon* full_screen_btn_ = nullptr;
