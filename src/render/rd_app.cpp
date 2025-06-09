@@ -166,7 +166,7 @@ namespace tc
         service_client_->Start();
 
         // monitor refresher
-        //monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
+        monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
 
         // desktop manager
         desktop_mgr_ = WinDesktopManager::Make(context_);
