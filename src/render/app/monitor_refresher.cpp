@@ -35,8 +35,6 @@ namespace tc
     // Refresher
     MonitorRefresher::MonitorRefresher(const std::shared_ptr<RdContext>& ctx, QWidget* parent) {
         context_ = ctx;
-
-        QList<QWidget*> widgets;
         QList<QScreen*> screen_list = QGuiApplication::screens();
         for (const QScreen* screen : screen_list) {
             LOGI("screen name: {}, x: {}, y: {}", screen->name().toStdString(), screen->geometry().x(), screen->geometry().y());
@@ -45,16 +43,27 @@ namespace tc
             w->setFixedSize(size, size);
             w->setGeometry(screen->geometry().x(), screen->geometry().y(), size, size);
             w->show();
-            widgets.append(w);
+            widgets_.append(w);
         }
 
         msg_listener_ = context_->CreateMessageListener();
         msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
-            context_->PostUITask([=]() {
-                for (QWidget* w : widgets) {
-                    w->update();
-                }
-            });
+            Refresh();
+        });
+
+        msg_listener_->Listen<MsgRefreshScreen>([=, this](const MsgRefreshScreen& msg) {
+            Refresh();
+        });
+    }
+
+    void MonitorRefresher::Refresh() {
+        if (!context_) {
+            return;
+        }
+        context_->PostUITask([=]() {
+            for (QWidget* w : widgets_) {
+                w->update();
+            }
         });
     }
 }

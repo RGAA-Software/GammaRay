@@ -49,7 +49,7 @@ namespace tc {
     void PluginNetEventRouter::ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event) {
         // has no effects in plugin mode
         context_->SendAppMessage(MsgInsertIDR {});
-        context_->SendAppMessage(RefreshScreenMessage {});
+        context_->SendAppMessage(MsgRefreshScreen{});
         LOGI("New connection established!");
         //
         plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
@@ -68,11 +68,6 @@ namespace tc {
 
         // report it
         ReportClientConnected(event);
-
-        context_->PostTask([=]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
-            ProcessUpdateDesktop();
-        });
     }
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
@@ -456,11 +451,16 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessUpdateDesktop() {
+        if (context_) {
+            context_->SendAppMessage(MsgRefreshScreen{});
+        }
+        /*
         auto desk_manager = app_->GetDesktopManager();
         if (!desk_manager) {
             return;
         }
         desk_manager->UpdateDesktop();
+        */
     }
 
     void PluginNetEventRouter::SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id) {

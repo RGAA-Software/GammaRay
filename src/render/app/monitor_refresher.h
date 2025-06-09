@@ -6,6 +6,7 @@
 #define GAMMARAY_MONITOR_REFRESHER_H
 
 #include <QWidget>
+#include <QList>
 #include <memory>
 
 namespace tc
@@ -28,10 +29,12 @@ namespace tc
     class MonitorRefresher  {
     public:
         explicit MonitorRefresher(const std::shared_ptr<RdContext>& ctx, QWidget* parent);
-
+    private:
+        void Refresh();
     private:
         std::shared_ptr<RdContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        QList<QWidget*> widgets_;
     };
 
 }

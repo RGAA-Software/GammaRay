@@ -27,9 +27,11 @@ namespace tc
     }
 
     void WinDesktopManager::UpdateDesktop() {
+#if 0   // 测试刷新时候，会偶尔卡住
         LOGI("UpdateDesktop ...");
         ::PostMessageW(GetDesktopWindow(), WM_KEYDOWN, VK_F5, 0);
         SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, NULL, NULL);
+#endif
 #if 0
         const int kPathSize = 4096;
         std::wstring wallpaper_path;

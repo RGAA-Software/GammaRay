@@ -139,6 +139,13 @@ namespace tc
     public:
     };
 
+    class MsgRefreshScreen {
+    public:
+    };
+
+    class MsgReCreateRefresher {
+    public:
+    };
 
     // public AppBaseEvent
     class MsgClipboardUpdate : public AppBaseEvent {

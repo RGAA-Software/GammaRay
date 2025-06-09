@@ -260,6 +260,12 @@ namespace tc
                 SendConfigurationBack();
             });
         });
+
+        msg_listener_->Listen<MsgReCreateRefresher>([=, this](const MsgReCreateRefresher& msg) {
+            context_->PostUITask([=]() {
+                monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
+            });
+        });
     }
 
     void RdApplication::InitAudioCapture() {

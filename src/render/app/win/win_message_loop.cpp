@@ -77,6 +77,11 @@ void WinMessageLoop::OnDisplayDeviceChange() {
 			return;
 		}
 	}
+
+	{
+		MsgReCreateRefresher msg;
+		context_->SendAppMessage(msg);
+	}
 }
 
 void WinMessageLoop::Start() {
