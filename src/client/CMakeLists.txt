@@ -25,11 +25,14 @@ add_compile_options(/bigobj)
 
 set(SRCS_MAIN ct_main.cpp)
 
+if(${TC_USE_ADVANCED})
+    add_definitions(-DTC_ADVANCED)
+endif()
+
 set(SRCS_WS
         ct_main_ws.cpp
         ct_client_context.cpp
         ct_base_workspace.cpp
-        ct_workspace.cpp
         ct_director.cpp
         ct_video_widget_event.cpp
         ct_shader_program.cpp
@@ -74,6 +77,10 @@ set(SRCS_WS
         plugins/ct_plugin_manager.cpp
         plugins/ct_plugin_event_router.cpp
 )
+
+if(${TC_USE_ADVANCED})
+    list(APPEND SRCS_WS ct_workspace.cpp)
+endif()
 
 #transfer/file_transfer.cpp
 #transfer/fs_object.cpp
