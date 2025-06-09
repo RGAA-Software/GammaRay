@@ -135,9 +135,9 @@ void GameView::RefreshI444Image(const std::shared_ptr<RawImage>& image) {
 
 void GameView::RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info) {
     // 若按比例缩放的情况下，切换了屏幕，屏幕分辨率未必一致，如一个4K,一个2K，故重新计算
-    if (need_recalculate_aspect_) {
+    if (need_recalculate_aspect_ && ScaleMode::kKeepAspectRatio == settings_->scale_mode_) {
         const auto& exist_mon_info = video_widget_->GetCaptureMonitorInfo();
-        if (mon_info.mon_name_ != exist_mon_info.mon_name_) {
+        if (mon_info.mon_name_ != exist_mon_info.mon_name_ && !exist_mon_info.mon_name_.empty()) {
             ctx_->PostDelayUITask([=, this]() {
                 this->CalculateAspectRatio();
             }, 100);
