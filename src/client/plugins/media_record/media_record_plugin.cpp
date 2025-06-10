@@ -63,16 +63,12 @@ namespace tc
             media_recorders_.emplace_back(recorder);
         }
 
-        //root_widget_->hide();            
-        //media_recorder_ = MediaRecorder::Make(this);
-
-        root_widget_->show();
+        root_widget_->hide();
         root_widget_->setWindowTitle("Media Record");
         auto layout = new QVBoxLayout(root_widget_);
         auto btn = new QPushButton("Start Record", root_widget_);
         btn->setFixedSize(80, 40);
         layout->addWidget(btn);
-        root_widget_->hide();
 
         return true;
     }
