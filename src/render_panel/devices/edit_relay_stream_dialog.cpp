@@ -11,6 +11,8 @@
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/tc_password_input.h"
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 
@@ -28,9 +30,9 @@ namespace tc
 
     void EditRelayStreamDialog::CreateLayout() {
         if (stream_item_->IsValid()) {
-            setWindowTitle(tr("Edit Device"));
+            setWindowTitle(tcTr("id_edit_device"));
         } else {
-            setWindowTitle(tr("Add Device"));
+            setWindowTitle(tcTr("id_add_device"));
         }
 
         auto item_width = 320;
@@ -49,9 +51,9 @@ namespace tc
         {
             auto layout = new NoMarginVLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Device ID");
+            label->SetTextId("id_device_id");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -70,13 +72,13 @@ namespace tc
 
         content_layout->addSpacing(25);
 
-        // 1. host
+        // 1. password
         {
             auto layout = new NoMarginVLayout();
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
-            label->setText(tr("Password"));
+            label->SetTextId("id_password");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
@@ -93,20 +95,18 @@ namespace tc
 
         content_layout->addSpacing(25);
 
-        // 2. port
+        // 2. name
         {
             auto layout = new NoMarginVLayout();
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
-            label->setText(tr("Device Name"));
+            label->SetTextId("id_device_name");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
 
             auto edit = new QLineEdit(this);
-            auto validator = new QIntValidator(this);
-            edit->setValidator(validator);
             edt_stream_name_ = edit;
             edt_stream_name_->setText(stream_item_->stream_name_.c_str());
 
@@ -119,9 +119,13 @@ namespace tc
         // sure button
         {
             auto layout = new NoMarginVLayout();
-            auto btn_sure = new QPushButton(tr("OK"));
+            auto btn_sure = new TcPushButton();
+            btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-
+                stream_item_->stream_name_ = edt_stream_name_->text().toStdString();
+                context_->SendAppMessage(StreamItemUpdated {
+                    .item_ = stream_item_,
+                });
                 this->close();
             });
 

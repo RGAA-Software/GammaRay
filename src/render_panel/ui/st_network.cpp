@@ -232,7 +232,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
-                label->setText(tr("Server Host"));
+                label->SetTextId("id_server_host");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -249,7 +249,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
-                label->setText(tr("Server Port"));
+                label->SetTextId("id_server_port");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
@@ -403,14 +403,6 @@ namespace tc
         }
 
         {
-            auto func_show_err = [=](const QString& msg) {
-//                auto msg_box = SizedMessageBox::MakeErrorOkBox(tr("Save Settings Error"), msg);
-//                msg_box->exec();
-
-                TcDialog dialog(tr("Error"), msg, nullptr);
-                dialog.exec();
-            };
-
             auto layout = new NoMarginHLayout();
             auto btn = new TcPushButton(this);
             btn->SetTextId("id_save");
@@ -431,7 +423,7 @@ namespace tc
                     .settings_ = settings_,
                 });
 
-                TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
+                TcDialog dialog(tcTr("id_tips"), tcTr("id_save_settings_restart_renderer"), nullptr);
                 if (dialog.exec() == kDoneOk) {
                     this->context_->SendAppMessage(AppMsgRestartServer{});
                 }

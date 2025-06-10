@@ -8,6 +8,8 @@
 #include <QRadioButton>
 #include <QTextEdit>
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include "render_panel/database/stream_item.h"
 #include "client/ct_app_message.h"
 #include "tc_qt_widget/sized_msg_box.h"
@@ -32,7 +34,7 @@ namespace tc
     CreateStreamConnInfoDialog::~CreateStreamConnInfoDialog() = default;
 
     void CreateStreamConnInfoDialog::CreateLayout() {
-        setWindowTitle(tr("Create a Stream"));
+        setWindowTitle(tcTr("id_create_a_stream"));
 
         auto item_width = 320;
         auto edit_size = QSize(item_width, 35);
@@ -50,9 +52,9 @@ namespace tc
         {
             auto layout = new NoMarginVLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Device Name");
+            label->SetTextId("id_device_name");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -74,10 +76,10 @@ namespace tc
         // 1. host
         {
             auto layout = new NoMarginVLayout();
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
-            label->setText(tr("Connection Info *"));
+            label->SetTextId("id_connection_info");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
@@ -95,7 +97,8 @@ namespace tc
         // sure button
         {
             auto layout = new NoMarginVLayout();
-            auto btn_sure = new QPushButton(tr("OK"));
+            auto btn_sure = new TcPushButton();
+            btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 if (!GenStream()) {
                     return;
@@ -120,13 +123,13 @@ namespace tc
 
         auto conn_info = ConnInfoParser::Parse(info);
         if (!conn_info) {
-            TcDialog dialog(tr("Tips"), tr("Parse address failed, please check the address."), this);
+            TcDialog dialog(tcTr("id_tips"), tcTr("id_parse_conn_info_failed"), this);
             dialog.exec();
             return false;
         }
 
         auto fn_invalid_dialog = [this]() {
-            TcDialog dialog(tr("Tips"), tr("Address is invalid, you may check it or input Host&Port directly."), this);
+            TcDialog dialog(tcTr("id_tips"), tcTr("id_verify_conn_info_failed"), this);
             dialog.exec();
         };
 

@@ -252,7 +252,7 @@ namespace tc
                 layout->addSpacing(8);
 
                 auto btn_conn = new TcPushButton();
-                btn_conn->setText("Copy");
+                btn_conn->SetTextId("id_copy");
                 btn_conn->setFixedWidth(80);
                 btn_conn->setFixedHeight(35);
                 layout->addWidget(btn_conn);
@@ -407,6 +407,9 @@ namespace tc
                         random_password = input_password;
                         safety_password = input_password;
 
+                        if (remote_device_id.empty()) {
+                            return;
+                        }
                         // get device's relay server info
                         auto relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
                         if (relay_device_info == nullptr) {

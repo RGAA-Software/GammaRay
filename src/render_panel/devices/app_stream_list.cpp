@@ -32,6 +32,7 @@
 #include "start_stream_loading.h"
 #include "input_remote_pwd_dialog.h"
 #include "stream_state_checker.h"
+#include "tc_label.h"
 
 namespace tc
 {
@@ -228,13 +229,13 @@ namespace tc
 
     void AppStreamList::RegisterActions(int index) {
         std::vector<QString> actions = {
-            tr("Start"),
-            tr("Stop"),
+            tcTr("id_start"),
+            tcTr("id_stop"),
             "",
-            tr("Edit"),
-            tr("Delete"),
+            tcTr("id_edit"),
+            tcTr("id_delete"),
             "",
-            tr("Settings"),
+            tcTr("id_settings"),
         };
         QMenu* menu = new QMenu();
         for (int i = 0; i < actions.size(); i++) {
@@ -326,7 +327,7 @@ namespace tc
             if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
                 verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
                 // tell user, password is invalid
-                TcDialog dialog("Password Invalid", "Your password is invalid, please input new password.", grWorkspace.get());
+                TcDialog dialog(tcTr("id_password_invalid"), tcTr("id_password_invalid_msg"), grWorkspace.get());
                 dialog.exec();
 
                 // clear the password and restart stream, then you need to input a password

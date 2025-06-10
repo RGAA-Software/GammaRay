@@ -441,7 +441,7 @@ namespace tc
 
         {
             auto func_show_err = [=](const QString& msg) {
-                TcDialog dialog(tr("Error"), msg, nullptr);
+                TcDialog dialog(tcTr("id_error"), msg, nullptr);
                 dialog.exec();
             };
 
@@ -463,7 +463,6 @@ namespace tc
                 // fps
                 auto fps = et_fps_->currentText().toInt();
                 if (fps < 15 || fps > 144) {
-                    func_show_err(tr("FPS between 15 and 120!"));
                     return;
                 }
                 settings_->SetFPS(fps);
@@ -497,7 +496,7 @@ namespace tc
                 // Load again
                 settings_->Load();
 
-                TcDialog dialog(tr("Tips"), tr("Save settings success! Do you want to restart Renderer?"), nullptr);
+                TcDialog dialog(tcTr("id_tips"), tcTr("id_save_settings_restart_renderer"), nullptr);
                 if (dialog.exec() == kDoneOk) {
                     this->context_->SendAppMessage(AppMsgRestartServer{});
                 }

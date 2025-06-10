@@ -324,7 +324,7 @@ namespace tc
 
     void GrWorkspace::closeEvent(QCloseEvent *event) {
         event->ignore();
-        TcDialog dialog(tcTr("id_hide"), tcTr("id_hide_grammar_msg"), this);
+        TcDialog dialog(tcTr("id_hide"), tcTr("id_hide_gammaray_msg"), this);
         if (kDoneOk == dialog.exec()) {
             this->hide();
         }

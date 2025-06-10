@@ -207,7 +207,7 @@ namespace tc
             || lbl_game_exe_name_->text().isEmpty()
             || lbl_game_installed_dir_->text().isEmpty()) {
 
-            TcDialog dialog(tr("Error"), tr("Please input necessary information !"), this);
+            TcDialog dialog(tcTr("id_error"), tcTr("id_input_necessary_info"), this);
             dialog.exec();
 
             return;

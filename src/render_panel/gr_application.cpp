@@ -27,6 +27,7 @@
 #include "gr_account_manager.h"
 #include "tc_dialog.h"
 #include "gr_workspace.h"
+#include "tc_label.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -242,7 +243,8 @@ namespace tc
         }
 
         auto err_msg = GrAccountError2String(r.error());
-        TcDialog dialog(tr("Error"), std::format("Local device info error: {}", err_msg).c_str(), grWorkspace.get());
+        QString pre_msg = tcTr("id_local_device_info_error");
+        TcDialog dialog(tcTr("id_error"), pre_msg + std::format(" {}", err_msg).c_str(), grWorkspace.get());
         dialog.exec();
         return false;
     }

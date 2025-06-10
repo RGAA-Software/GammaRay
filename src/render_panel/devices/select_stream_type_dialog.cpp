@@ -5,12 +5,13 @@
 #include "select_stream_type_dialog.h"
 #include "no_margin_layout.h"
 #include "tc_qt_widget/clickable_widget.h"
+#include "tc_label.h"
 
 namespace tc
 {
 
     SelectStreamTypeDialog::SelectStreamTypeDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
-        setWindowTitle("Create a Stream");
+        setWindowTitle(tcTr("id_create_a_stream"));
         this->setFixedSize(500, 280);
 
         auto root_layout = new NoMarginHLayout();
@@ -25,9 +26,9 @@ namespace tc
             widget->setFixedSize(200, 150);
             widget->setLayout(layout);
             // title
-            auto lbl_title = new QLabel(this);
+            auto lbl_title = new TcLabel(this);
             lbl_title->setFixedSize(widget->width(), 35);
-            lbl_title->setText("By Connection Info");
+            lbl_title->SetTextId("id_by_conn_info");
             lbl_title->setStyleSheet("font-size: 14px; font-weight: 700; color: #333333;");
             lbl_title->setAlignment(Qt::AlignCenter);
             layout->addSpacing(10);
@@ -60,9 +61,9 @@ namespace tc
             widget->SetColors(0xf0f0f0, 0xdddddd, 0xcccccc);
             widget->setLayout(layout);
             // title
-            auto lbl_title = new QLabel(this);
+            auto lbl_title = new TcLabel(this);
             lbl_title->setFixedSize(widget->width(), 35);
-            lbl_title->setText("By Host & Port");
+            lbl_title->SetTextId("id_by_host_port");
             lbl_title->setStyleSheet("font-size: 14px; font-weight: 700; color: #333333;");
             lbl_title->setAlignment(Qt::AlignCenter);
             layout->addSpacing(10);

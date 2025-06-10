@@ -27,6 +27,7 @@
 #include "devices/running_stream_manager.h"
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "tc_dialog.h"
+#include "tc_label.h"
 #include "gr_workspace.h"
 #include "database/gr_database.h"
 #include "tc_account_sdk/acc_sdk.h"
@@ -259,7 +260,7 @@ namespace tc
         if (!relay_result) {
             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
             if (show_dialog) {
-                TcDialog dialog(tr("Error"), tr("Can't get remote device information."), grWorkspace.get());
+                TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
                 dialog.exec();
             }
             return nullptr;
