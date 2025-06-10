@@ -3,11 +3,7 @@
 //
 
 #include "rn_app.h"
-
-#include <QLabel>
 #include <QTimer>
-#include <QPushButton>
-
 #include "tc_qt_widget/no_margin_layout.h"
 #include "stat_chart.h"
 #include "render_panel/gr_statistics.h"
@@ -20,6 +16,8 @@
 #include "render_panel/gr_run_game_manager.h"
 #include "render_panel/database/db_game.h"
 #include "stat_capture_info_item.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 
 constexpr auto kChartVideoFrameGap = "Capture Video Gap";
 constexpr auto kChartAudioFrameGap = "Capture Audio Gap";
@@ -32,7 +30,7 @@ namespace tc
 
     RnApp::RnApp(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         auto root_layout = new NoMarginVLayout();
-        auto place_holder = new QLabel();
+        auto place_holder = new TcLabel();
         place_holder->setFixedWidth(1100);
         place_holder->setFixedHeight(1);
         root_layout->addWidget(place_holder);
@@ -52,13 +50,13 @@ namespace tc
                 // Running time
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Renderer Running");
+                    label->SetTextId("id_renderer_running");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_app_running_time_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -71,13 +69,13 @@ namespace tc
                 // Send media bytes
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Sent Data");
+                    label->SetTextId("id_sent_data");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_send_media_bytes_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -90,13 +88,13 @@ namespace tc
                 // Send media speed
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Send Speed");
+                    label->SetTextId("id_send_speed");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_send_media_speed_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -116,13 +114,13 @@ namespace tc
                 // connected clients
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Connected Clients");
+                    label->SetTextId("id_connected_clients");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_connected_clients_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -135,13 +133,13 @@ namespace tc
                 // video capture type
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Video Capture Type");
+                    label->SetTextId("id_video_capture_type");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_video_capture_type_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -154,13 +152,13 @@ namespace tc
                 // video encode type
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Video Encode Type");
+                    label->SetTextId("id_video_encode_type");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_video_encode_type_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -180,13 +178,13 @@ namespace tc
                 // relay connected
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Relay Connected");
+                    label->SetTextId("id_relay_connected");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_relay_connected_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -199,13 +197,13 @@ namespace tc
                 // audio capture type
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Audio Capture Type");
+                    label->SetTextId("id_audio_capture_type");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_audio_capture_type_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);
@@ -218,13 +216,13 @@ namespace tc
                 // audio encode type
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
-                    label->setText("Audio Encode Type");
+                    label->SetTextId("id_audio_encode_type");
                     label->setStyleSheet("font-size: 13px;");
                     item_layout->addWidget(label);
 
-                    auto op = new QLabel(this);
+                    auto op = new TcLabel(this);
                     lbl_audio_encode_type_ = op;
                     op->setText("");
                     op->setFixedSize(value_size);

@@ -7,10 +7,13 @@
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
 #include "tc_qt_widget/sized_msg_box.h"
+#include "tc_qt_widget/widget_helper.h"
 #include "render_panel/database/db_game.h"
 #include "render_panel/database/db_game_operator.h"
 #include "render_panel/gr_context.h"
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
@@ -24,7 +27,8 @@ namespace tc
 
     AddGamePanel::AddGamePanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QDialog(parent) {
         context_ = ctx;
-        setWindowTitle(tr("Add a game"));
+        WidgetHelper::SetTitleBarColor(this);
+        setWindowTitle(tcTr("id_add_game"));
         setFixedSize(720, 480);
         setModal(true);
 
@@ -39,8 +43,8 @@ namespace tc
         auto edit_size = QSize(300, 30);
         // name
         {
-            auto label = new QLabel(this);
-            label->setText(tr("Game name"));
+            auto label = new TcLabel(this);
+            label->SetTextId("id_game_name");
             label->setFixedSize(label_size);
             item_layout->addWidget(label, 0, 0);
 
@@ -51,8 +55,8 @@ namespace tc
         }
         // exe path
         {
-            auto label = new QLabel(this);
-            label->setText(tr("Game exe path"));
+            auto label = new TcLabel(this);
+            label->SetTextId("id_game_exe_path");
             label->setFixedSize(label_size);
             item_layout->addWidget(label, 1, 0);
 
@@ -61,13 +65,13 @@ namespace tc
             item_layout->addWidget(edit, 1, 1);
             edit_game_exe_path_ = edit;
 
-            auto btn = new QPushButton(this);
+            auto btn = new TcPushButton(this);
             btn->setFixedSize(120, 30);
-            btn->setText(tr("Select"));
+            btn->SetTextId("id_select");
             item_layout->addWidget(btn, 1, 2);
 
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                auto filepath = QFileDialog::getOpenFileName(this, tr("Select game exe"), "/home", tr("exe (*.exe)"));
+                auto filepath = QFileDialog::getOpenFileName(this, tcTr("id_select_game_exe"), "/home", tr("exe (*.exe)"));
                 if (filepath.isEmpty()) {
                     return;
                 }
@@ -87,8 +91,8 @@ namespace tc
         }
 
         {
-            auto label = new QLabel(this);
-            label->setText(tr("Game exe"));
+            auto label = new TcLabel(this);
+            label->SetTextId("id_game_exe");
             label->setFixedSize(label_size);
             item_layout->addWidget(label, 2, 0);
 
@@ -99,8 +103,8 @@ namespace tc
         }
 
         {
-            auto label = new QLabel(this);
-            label->setText(tr("Game installed dir"));
+            auto label = new TcLabel(this);
+            label->SetTextId("id_game_installed_dir");
             label->setFixedSize(label_size);
             item_layout->addWidget(label, 3, 0);
 
@@ -113,8 +117,8 @@ namespace tc
 
         // cover
         {
-            auto label = new QLabel(this);
-            label->setText(tr("Game cover(600x900)"));
+            auto label = new TcLabel(this);
+            label->SetTextId("id_game_cover");
             label->setFixedSize(label_size);
             item_layout->addWidget(label, 4, 0);
 
@@ -124,13 +128,13 @@ namespace tc
             cover_preview_ = edit;
             item_layout->addWidget(edit, 4, 1);
 
-            auto btn = new QPushButton(this);
+            auto btn = new TcPushButton(this);
             btn->setFixedSize(120, 30);
-            btn->setText(tr("Select"));
+            btn->SetTextId("id_select");
             item_layout->addWidget(btn, 4, 2);
 
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                auto filepath = QFileDialog::getOpenFileName(this, tr("Select game exe"), "/home", tr("Images (*.jpg *.png)"));
+                auto filepath = QFileDialog::getOpenFileName(this, tcTr("id_select_game_cover"), "/home", tr("Images (*.jpg *.png)"));
                 if (filepath.isEmpty()) {
                     return;
                 }
@@ -173,8 +177,8 @@ namespace tc
         auto op_layout = new NoMarginHLayout();
         op_layout->addStretch();
         {
-            auto btn = new QPushButton(this);
-            btn->setText(tr("Cancel"));
+            auto btn = new TcPushButton(this);
+            btn->SetTextId("id_cancel");
             btn->setFixedSize(120, 30);
             btn->setProperty("class", "danger");
             op_layout->addWidget(btn);
@@ -183,8 +187,8 @@ namespace tc
             });
         }
         {
-            auto btn = new QPushButton(this);
-            btn->setText(tr("Sure"));
+            auto btn = new TcPushButton(this);
+            btn->SetTextId("id_ok");
             btn->setFixedSize(120, 30);
             op_layout->addSpacing(20);
             op_layout->addWidget(btn);
@@ -229,7 +233,7 @@ namespace tc
         game_mgr->SaveOrUpdateGame(game);
         done(0);
 
-        TcDialog dialog(tr("Tips"), tr("Save game success !"), nullptr);
+        TcDialog dialog(tcTr("id_tips"), tcTr("id_save_game_success"), nullptr);
         dialog.exec();
     }
 }

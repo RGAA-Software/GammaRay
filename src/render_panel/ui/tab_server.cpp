@@ -233,11 +233,6 @@ namespace tc
                     title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
                     layout->addWidget(title, 0, Qt::AlignLeft);
 
-//                    auto cb_pwd = new QCheckBox();
-//                    cb_pwd->setText("With Temporary Password");
-//                    layout->addWidget(cb_pwd);
-//                    layout->addStretch();
-
                     left_root->addLayout(layout);
                 }
 
@@ -264,7 +259,7 @@ namespace tc
                 connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
                     QClipboard* clipboard = QApplication::clipboard();
                     clipboard->setText(msg->text());
-                    context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
+                    context_->NotifyAppMessage(tcTr("id_copy_success"), tcTr("id_copy_success_clipboard"));
                 });
 
                 left_root->addSpacing(5);

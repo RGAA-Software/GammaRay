@@ -36,6 +36,8 @@
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/file_util.h"
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 
 namespace tc
 {
@@ -61,8 +63,8 @@ namespace tc
         auto op_layout = new NoMarginHLayout();
         auto btn_size = QSize(120, 33);
         {
-            auto btn = new QPushButton(this);
-            btn->setText(tr("Add Game"));
+            auto btn = new TcPushButton(this);
+            btn->SetTextId("id_add_game");
             btn->setFixedSize(btn_size);
             op_layout->addSpacing(15);
             op_layout->addWidget(btn);
@@ -71,8 +73,8 @@ namespace tc
             });
         }
         {
-            auto btn = new QPushButton(this);
-            btn->setText(tr("Refresh"));
+            auto btn = new TcPushButton(this);
+            btn->SetTextId("id_refresh");
             btn->setFixedSize(btn_size);
             op_layout->addSpacing(15);
             op_layout->addWidget(btn);
@@ -124,10 +126,10 @@ namespace tc
             auto game = games_.at(index);
 
             std::vector<QString> actions {
-                tr("Game Info"),
-                tr("Start Game"),
-                tr("Stop Game"),
-                tr("Installed Location"),
+                tcTr("id_game_info"),
+                tcTr("id_start_game"),
+                tcTr("id_stop_game"),
+                tcTr("id_installed_location"),
             };
             auto pop_menu = new QMenu();
             for (int i = 0; i < actions.size(); i++) {
@@ -145,20 +147,19 @@ namespace tc
                         if (!game->steam_url_.empty()) {
                             ShellExecuteA(nullptr, nullptr, game->steam_url_.c_str(), nullptr, nullptr, SW_SHOW);
                         } else {
-                            auto func_start_error = [this](const std::string& msg) {
-                                //SizedMessageBox::MakeErrorOkBox(tr("Error"), std::format("Start process failed: {}", msg).c_str())->exec();
-
-                                TcDialog dialog(tr("Error"), std::format("Start process failed: {}", msg).c_str(), nullptr);
+                            auto func_start_error = [this](const QString& msg) {
+                                QString target_msg = tcTr("id_start_process_error") + msg;
+                                TcDialog dialog(tcTr("id_error"), target_msg, nullptr);
                                 dialog.exec();
                             };
 
                             if (game->exes_.empty()) {
-                                func_start_error("Don't have exe");
+                                func_start_error(tcTr("id_dont_have_exe"));
                                 return;
                             }
                             auto exe_path = game->exes_.at(0);
                             if (!QFile::exists(exe_path.c_str())) {
-                                func_start_error(std::format("File not exist: {}", exe_path));
+                                func_start_error(tcTr("id_file_not_exist"));
                                 return;
                             }
 
@@ -166,7 +167,7 @@ namespace tc
                                 LOGI("Will start: {}", exe_path);
                                 auto resp = context_->GetRunGameManager()->StartGame(exe_path, {});
                                 if (!resp.ok_) {
-                                    func_start_error("start error");
+                                    func_start_error(tcTr("id_start_failed"));
                                 }
                             });
                         }

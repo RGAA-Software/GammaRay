@@ -7,14 +7,12 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
 #include <QLineEdit>
 #include <utility>
-#include <QPushButton>
 #include <QComboBox>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
@@ -22,6 +20,8 @@
 #include "tc_qt_widget/widget_helper.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/round_img_display.h"
+#include "tc_qt_widget/tc_label.h"
+#include "tc_qt_widget/tc_pushbutton.h"
 #include "rn_app.h"
 #include "rn_empty.h"
 #include "tc_common_new/message_notifier.h"
@@ -65,8 +65,8 @@ namespace tc
             // Server Status
             {
                 auto item_layout = new NoMarginHLayout();
-                auto title = new QLabel(this);
-                title->setText(tr("Server Status"));
+                auto title = new TcLabel(this);
+                title->SetTextId("id_server_status");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                 item_layout->addSpacing(margin_left + 9);
@@ -80,40 +80,40 @@ namespace tc
             {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_game_controller.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("ViGEm Driver Status"));
+                label->SetTextId("id_joystick_driver");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto status = new QLabel(this);
+                auto status = new TcLabel(this);
                 lbl_vigem_state_ = status;
                 status->setAlignment(Qt::AlignCenter);
                 status->setFixedSize(80, 26);
                 status->setText("OK");
                 item_layout->addWidget(status);
 
-                auto btn_install = new QPushButton(this);
+                auto btn_install = new TcPushButton(this);
                 btn_install->setFixedSize(80, 28);
-                btn_install->setText(tr("INSTALL"));
+                btn_install->SetTextId("id_install");
                 item_layout->addSpacing(40);
                 item_layout->addWidget(btn_install);
 
-                auto btn_remove = new QPushButton(this);
+                auto btn_remove = new TcPushButton(this);
                 btn_remove->hide();
                 btn_remove->setFixedSize(80, 28);
-                btn_remove->setText(tr("REMOVE"));
+                btn_remove->SetTextId("id_remove");
                 item_layout->addSpacing(5);
                 item_layout->addWidget(btn_remove);
                 item_layout->addStretch();
 
-                connect(btn_install, &QPushButton::clicked, this, [=, this]() {
-                    TcDialog dialog(tr("Install ViGEm"), tr("Do you want to install ViGEm?"), this);
+                connect(btn_install, &TcPushButton::clicked, this, [=, this]() {
+                    TcDialog dialog(tcTr("id_install_joystick_driver"), tcTr("id_install_joystick_driver_msg"), this);
                     if (dialog.exec() == kDoneOk) {
                         context_->SendAppMessage(MsgInstallViGEm{});
                     }
@@ -126,31 +126,31 @@ namespace tc
             {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_renderer.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Renderer Status"));
+                label->SetTextId("id_renderer_status");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto status = new QLabel(this);
+                auto status = new TcLabel(this);
                 lbl_renderer_state_ = status;
                 status->setAlignment(Qt::AlignCenter);
                 status->setFixedSize(80, 26);
                 status->setText("OK");
                 item_layout->addWidget(status);
 
-                auto btn_restart = new QPushButton(this);
+                auto btn_restart = new TcPushButton(this);
                 btn_restart->setFixedSize(80, 28);
-                btn_restart->setText(tr("RESTART"));
+                btn_restart->SetTextId("id_restart");
                 item_layout->addSpacing(40);
                 item_layout->addWidget(btn_restart);
 
-                auto btn_remove = new QPushButton(this);
+                auto btn_remove = new TcPushButton(this);
                 btn_remove->hide();
                 btn_remove->setFixedSize(80, 28);
                 btn_remove->setText(tr("REMOVE"));
@@ -158,8 +158,8 @@ namespace tc
                 item_layout->addWidget(btn_remove);
                 item_layout->addStretch();
 
-                connect(btn_restart, &QPushButton::clicked, this, [=, this]() {
-                    TcDialog dialog(tr("Restart Renderer"), tr("Do you want to restart Renderer?"), this);
+                connect(btn_restart, &TcPushButton::clicked, this, [=, this]() {
+                    TcDialog dialog(tcTr("id_restart_renderer"), tcTr("id_restart_renderer_msg"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->PostTask([=, this]() {
                             RpRestartServer();
@@ -174,52 +174,33 @@ namespace tc
             {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_service.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Service Status"));
+                label->SetTextId("id_service_status");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto status = new QLabel(this);
+                auto status = new TcLabel(this);
                 lbl_service_state_ = status;
                 status->setAlignment(Qt::AlignCenter);
                 status->setFixedSize(80, 26);
                 status->setText("OK");
                 item_layout->addWidget(status);
 
-                auto btn_install = new QPushButton(this);
+                auto btn_install = new TcPushButton(this);
                 btn_install->setFixedSize(80, 28);
-                btn_install->setText(tr("INSTALL"));
+                btn_install->SetTextId("id_install");
                 item_layout->addSpacing(40);
                 item_layout->addWidget(btn_install);
-
-                if (0) {
-                    auto btn_remove = new QPushButton(this);
-                    btn_remove->setFixedSize(80, 28);
-                    btn_remove->setText(tr("STOP ALL"));
-                    btn_remove->setProperty("class", "danger");
-                    item_layout->addSpacing(5);
-                    item_layout->addWidget(btn_remove);
-
-                    connect(btn_remove, &QPushButton::clicked, this, [=, this]() {
-//                        auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Remove Service"),
-//                                                                        tr("Do you want to STOP ALL?"));
-//                        if (msg_box->exec() == 0) {
-//                            this->context_->PostTask([=, this]() {
-//                                this->context_->GetServiceManager()->Remove();
-//                            });
-//                        }
-                    });
-                }
                 item_layout->addStretch();
 
-                connect(btn_install, &QPushButton::clicked, this, [=, this]() {
-                    TcDialog dialog(tr("Install Service"), tr("Do you want to install Service?"), this);
+                connect(btn_install, &TcPushButton::clicked, this, [=, this]() {
+                    TcDialog dialog(tcTr("id_install_service"), tcTr("id_install_service_msg"), this);
                     if (dialog.exec() == kDoneOk) {
                         this->context_->GetServiceManager()->Install();
                     }
@@ -233,24 +214,24 @@ namespace tc
             for (auto& item : ips) {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_network.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Host Address"));
+                label->SetTextId("id_host_address");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto value = new QLabel(this);
+                auto value = new TcLabel(this);
                 value->setFixedSize(120, 40);
                 value->setText(item.ip_addr_.c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
 
-                auto nt_type = new QLabel(this);
+                auto nt_type = new TcLabel(this);
                 nt_type->setFixedSize(80, 40);
                 nt_type->setText(item.nt_type_ == IPNetworkType::kWired ? "WIRE" : "WIRELESS");
                 nt_type->setStyleSheet("font-size: 14px;");
@@ -265,44 +246,20 @@ namespace tc
             {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Panel TCP Port"));
+                label->SetTextId("id_panel_tcp_port");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto value = new QLabel(this);
+                auto value = new TcLabel(this);
                 value->setFixedSize(120, 40);
                 value->setText(std::to_string(settings_->http_server_port_).c_str());
-                value->setStyleSheet("font-size: 14px;");
-                item_layout->addWidget(value);
-                item_layout->addStretch();
-                layout->addLayout(item_layout);
-            }
-
-            // ws server port
-            if (0) {
-                auto item_layout = new NoMarginHLayout();
-                item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
-                icon->setFixedSize(38, 38);
-                icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
-                item_layout->addWidget(icon);
-
-                auto label = new QLabel(this);
-                label->setFixedSize(label_width, 40);
-                label->setText(tr("Websocket Port"));
-                label->setStyleSheet("font-size: 14px;");
-                item_layout->addWidget(label);
-
-                auto value = new QLabel(this);
-                value->setFixedSize(120, 40);
-                value->setText(std::to_string(settings_->panel_srv_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();
@@ -313,18 +270,18 @@ namespace tc
             {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Renderer TCP Port"));
+                label->SetTextId("id_renderer_tcp_port");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto value = new QLabel(this);
+                auto value = new TcLabel(this);
                 value->setFixedSize(120, 40);
                 value->setText(std::to_string(settings_->render_srv_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
@@ -334,21 +291,21 @@ namespace tc
             }
 
             // GammaRayRender port
-            {
+            if (0) {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_port.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
                 label->setText(tr("Renderer UDP Port"));
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto value = new QLabel(this);
+                auto value = new TcLabel(this);
                 value->setFixedSize(120, 40);
                 value->setText(std::to_string(settings_->udp_listen_port_).c_str());
                 value->setStyleSheet("font-size: 14px;");
@@ -360,18 +317,18 @@ namespace tc
             {
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
-                auto icon = new QLabel(this);
+                auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_spectrum.svg"));
                 item_layout->addWidget(icon);
 
-                auto label = new QLabel(this);
+                auto label = new TcLabel(this);
                 label->setFixedSize(label_width, 40);
-                label->setText(tr("Audio Spectrum"));
+                label->SetTextId("id_audio_spectrum");
                 label->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(label);
 
-                auto value = new QLabel(this);
+                auto value = new TcLabel(this);
                 value->setFixedSize(label_width, 40);
                 value->setStyleSheet("font-size: 14px;");
                 lbl_audio_format_ = value;
@@ -402,7 +359,7 @@ namespace tc
                 wrap_layout->addSpacing(margin_left + 9);
                 wrap_layout->addLayout(running_layout);
                 {
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     label->setFixedSize(label_size);
                     label->setText("Running Apps");
                     label->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
@@ -410,7 +367,7 @@ namespace tc
                 }
                 {
                     auto item_layout = new NoMarginHLayout();
-                    auto label = new QLabel(this);
+                    auto label = new TcLabel(this);
                     lbl_running_games_ = label;
                     label->setFixedSize(label_size);
                     label->setText("");
@@ -438,8 +395,8 @@ namespace tc
             layout->addSpacing(kTabContentMarginTop);
 
             auto item_layout = new NoMarginHLayout();
-            auto title = new QLabel(this);
-            title->setText(tr("Statistics"));
+            auto title = new TcLabel(this);
+            title->SetTextId("id_statistics");
             title->setAlignment(Qt::AlignLeft);
             title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
             item_layout->addSpacing(30);
@@ -548,7 +505,7 @@ namespace tc
         RefreshIndicatorState(lbl_service_state_, ok);
     }
 
-    void TabServerStatus::RefreshIndicatorState(QLabel* indicator, bool ok) {
+    void TabServerStatus::RefreshIndicatorState(TcLabel* indicator, bool ok) {
         if (ok) {
             indicator->setStyleSheet("font-size: 13px; font-weight: bold; color:#ffffff; background:#00cc00; border-radius:13px");
             indicator->setText("OK");

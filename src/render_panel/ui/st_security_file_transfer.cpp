@@ -87,7 +87,7 @@ namespace tc
                 layout->addSpacing(10);
                 layout->addWidget(btn_clear_all, 0, Qt::AlignVCenter);
                 btn_clear_all->SetOnImageButtonClicked([=, this]() {
-                    TcDialog dialog("Warning", "Do you want to delete ALL records?");
+                    TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_all_records"));
                     if (dialog.exec() == kDoneOk) {
                         context_->PostTask([=, this]() {
                             ft_record_op_->DeleteAll();
@@ -247,10 +247,10 @@ namespace tc
     void StSecurityFileTransfer::RegisterActions(int index) {
         auto record = records_.at(index);
         std::vector<QString> actions = {
-                tr("Copy"),
-                tr("Copy As Json"),
-                "",
-                tr("Delete"),
+            tcTr("id_copy"),
+            tcTr("id_copy_as_json"),
+            "",
+            tcTr("id_delete"),
         };
         QMenu* menu = new QMenu();
         for (int i = 0; i < actions.size(); i++) {
@@ -282,18 +282,18 @@ namespace tc
         auto msg = record->AsString();
         QClipboard* clipboard = QApplication::clipboard();
         clipboard->setText(QString::fromStdString(msg));
-        context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
+        context_->NotifyAppMessage(tcTr("id_copy_success"), tcTr("id_copy_success_clipboard"));
     }
 
     void StSecurityFileTransfer::ProcessCopyAsJson(const std::shared_ptr<FileTransferRecord>& record) {
         auto msg = record->AsJson();
         QClipboard* clipboard = QApplication::clipboard();
         clipboard->setText(QString::fromStdString(msg));
-        context_->NotifyAppMessage("Copy Success", "Information has been written to the Clipboard");
+        context_->NotifyAppMessage(tcTr("id_copy_success"), tcTr("id_copy_success_clipboard"));
     }
 
     void StSecurityFileTransfer::ProcessDelete(const std::shared_ptr<FileTransferRecord>& record) {
-        TcDialog dialog("Delete", "Do you want to delete this record?");
+        TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_this_record"));
         if (dialog.exec() == kDoneOk) {
             ft_record_op_->Delete(record->id_);
             auto current_page = page_widget_->getCurrentPage();

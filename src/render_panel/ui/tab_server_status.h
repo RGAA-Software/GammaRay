@@ -22,6 +22,7 @@ namespace tc
     class QtCircle;
     class QtVertical;
     class GrStatistics;
+    class TcLabel;
 
     class TabServerStatus : public TabBase {
     public:
@@ -36,15 +37,15 @@ namespace tc
         void RefreshVigemState(bool ok);
         void RefreshServerState(bool ok);
         void RefreshServiceState(bool ok);
-        void RefreshIndicatorState(QLabel* indicator, bool ok);
+        void RefreshIndicatorState(TcLabel* indicator, bool ok);
         void RefreshUIEverySecond();
 
     private:
-        QLabel* lbl_vigem_state_ = nullptr;
-        QLabel* lbl_renderer_state_ = nullptr;
-        QLabel* lbl_service_state_ = nullptr;
-        QLabel* lbl_audio_format_ = nullptr;
-        QLabel* lbl_running_games_ = nullptr;
+        TcLabel* lbl_vigem_state_ = nullptr;
+        TcLabel* lbl_renderer_state_ = nullptr;
+        TcLabel* lbl_service_state_ = nullptr;
+        TcLabel* lbl_audio_format_ = nullptr;
+        TcLabel* lbl_running_games_ = nullptr;
         //QtCircle* spectrum_circle_ = nullptr;
         QtVertical* spectrum_vertical_ = nullptr;
         QStackedWidget* rn_stack_ = nullptr;

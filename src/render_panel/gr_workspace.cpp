@@ -48,25 +48,19 @@ namespace tc
         sys_tray_icon_->setIcon(QIcon(":/resources/tc_icon.png"));
         sys_tray_icon_->setToolTip(tr("GammaRay"));
 
-        auto ac_show = new QAction(tr("Show Panel"), this);
-        auto ac_exit = new QAction(tr("Exit All Programs"), this);
+        auto ac_show = new QAction(tcTr("id_show_panel"), this);
+        auto ac_exit = new QAction(tcTr("id_exit_all_programs"), this);
 
         connect(ac_show, &QAction::triggered, this, [=, this](bool) {
             this->showNormal();
         });
 
         auto fun_stop_all = [=, this]() {
-            TcDialog dialog(tr("Exit"), tr("Do you want to exit all programs?"), this);
+            TcDialog dialog(tcTr("id_exit"), tcTr("id_exit_gammaray_msg"), this);
             if (dialog.exec() == kDoneOk) {
                 auto srv_mgr = this->app_->GetContext()->GetServiceManager();
                 srv_mgr->Remove();
             }
-
-//            auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Exit"), tr("Do you want to exit all programs?"));
-//            if (msg_box->exec() == 0) {
-//                auto srv_mgr = this->app_->GetContext()->GetServiceManager();
-//                srv_mgr->Remove();
-//            }
         };
 
         connect(ac_exit, &QAction::triggered, this, [=, this](bool) {
@@ -330,7 +324,7 @@ namespace tc
 
     void GrWorkspace::closeEvent(QCloseEvent *event) {
         event->ignore();
-        TcDialog dialog(tr("Hide"), tr("Do you want to hide GammaRay?"), this);
+        TcDialog dialog(tcTr("id_hide"), tcTr("id_hide_grammar_msg"), this);
         if (kDoneOk == dialog.exec()) {
             this->hide();
         }

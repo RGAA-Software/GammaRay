@@ -4,11 +4,11 @@
 
 #include "start_stream_loading.h"
 #include <QResizeEvent>
-#include <QLabel>
 #include <QPainter>
 #include "render_panel/database/stream_item.h"
 #include "no_margin_layout.h"
 #include "widget_helper.h"
+#include "tc_label.h"
 #include "tc_qt_widget/loadings/winstyle/win10circleloadingwidget.h"
 #include "tc_qt_widget/loadings/winstyle/win10horizontalloadingwidget.h"
 
@@ -59,7 +59,8 @@ namespace tc
                 }
             }();
 
-            auto lbl_title = new QLabel(std::format("Start Streaming <span style=\"color:#2979ff;\">{}</span>", title).c_str());
+            QString pre_msg = tcTr("id_start_streaming");
+            auto lbl_title = new QLabel(pre_msg + std::format(" <span style=\"color:#2979ff;\">{}</span>", title).c_str());
             lbl_title->setFixedWidth(this->width());
             lbl_title->setAlignment(Qt::AlignCenter);
             lbl_title->setStyleSheet("font-size: 15px; font-weight:bold; color: #555555;");
