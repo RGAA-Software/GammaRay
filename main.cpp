@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     // init sp
     auto sp_dir = qApp->applicationDirPath() + "/gr_data";
     if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
-        QMessageBox::critical(nullptr, "Error", "Init failed");
+        QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
         return -1;
     }
 
