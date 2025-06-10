@@ -170,7 +170,7 @@ namespace tc
 
     void Workspace::CalculateAspectRatio() {
         for (auto game_view : game_views_) {
-            if (game_view) {
+            if (game_view && !game_view->isHidden()) {
                 game_view->CalculateAspectRatio();
             }
         }
@@ -178,7 +178,7 @@ namespace tc
 
     void Workspace::SwitchToFullWindow() {
         for (auto game_view : game_views_) {
-            if (game_view) {
+            if (game_view && !game_view->isHidden()) {
                 game_view->SwitchToFullWindow();
             }
         }

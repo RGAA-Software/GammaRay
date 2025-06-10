@@ -186,9 +186,9 @@ namespace tc
             this->SendUpdateDesktopMessage();
             context_->PostTask([=, this]() {
                 std::this_thread::sleep_for(std::chrono::milliseconds(300));
-                this->SwitchToFullWindow();
-                });
+                this->SendUpdateDesktopMessage();
             });
+        });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
             this->SendSwitchWorkModeMessage(msg.mode_);
