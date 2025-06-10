@@ -166,5 +166,6 @@
   "id_input_necessary_info": "Please input necessary information !",
   "id_input_remote_password": "Input remote password",
   "id_password_invalid": "Password Invalid",
-  "id_password_invalid_msg": "Your password is invalid, please input new password."
+  "id_password_invalid_msg": "Your password is invalid, please input new password.",
+  "id_delete_remote_control": "Do you want to delete the remote control ?"
 }

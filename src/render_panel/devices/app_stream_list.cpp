@@ -384,7 +384,7 @@ namespace tc
     }
 
     void AppStreamList::DeleteStream(const std::shared_ptr<StreamItem>& item) {
-        TcDialog dialog(tr("Warning"), tr("Do you want to delete the remote control?"), grWorkspace.get());
+        TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_remote_control"), grWorkspace.get());
         if (dialog.exec() == kDoneOk) {
             auto mgr = context_->GetStreamDBManager();
             mgr->DeleteStream(item->_id);

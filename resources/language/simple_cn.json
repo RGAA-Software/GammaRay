@@ -167,5 +167,6 @@
   "id_input_necessary_info": "请输入必要的信息 !",
   "id_input_remote_password": "输入远程设备密码",
   "id_password_invalid": "密码错误",
-  "id_password_invalid_msg": "您的密码不合法，请重新输入密码."
+  "id_password_invalid_msg": "您的密码不合法，请重新输入密码.",
+  "id_delete_remote_control": "您确定要删除这个远程设备吗 ?"
 }
