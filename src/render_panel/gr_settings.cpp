@@ -34,7 +34,7 @@ namespace tc
         encoder_select_type_ = sp_->Get(kStEncoderSelectType, "auto");
         encoder_name_ = sp_->Get(kStEncoderName, "nvenc");
         encoder_format_ = sp_->Get(kStEncoderFormat, "h264");
-        encoder_bitrate_ = sp_->Get(kStEncoderBitrate, "5");
+        encoder_bitrate_ = sp_->Get(kStEncoderBitrate, "10");
         encoder_fps_ = sp_->Get(kStEncoderFPS, "60");
         encoder_resolution_type_ = sp_->Get(kStEncoderResolutionType, "origin");
         encoder_width_ = sp_->Get(kStEncoderWidth, "1280");
