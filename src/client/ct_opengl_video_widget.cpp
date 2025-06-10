@@ -278,6 +278,7 @@ namespace tc
 
 		glBindVertexArray(vao_);
 		shader_program_->Active();
+		shader_program_->SetUniform1i("haveImage", 1);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);

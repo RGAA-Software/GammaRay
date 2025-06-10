@@ -67,6 +67,8 @@ static const char* kNV12FragmentShader = R"(
 
     out vec4 FragColor;
 
+    uniform int haveImage;
+
     void main()
     {
         vec4 yColor = texture(image1, outTex);
@@ -85,8 +87,14 @@ static const char* kNV12FragmentShader = R"(
         CurResult.y = dot(yuv,matYUVRGB2);
         CurResult.z = dot(yuv,matYUVRGB3);
 
-        FragColor = vec4(CurResult.rgb, 1);
+        //FragColor = vec4(CurResult.rgb, 1);
         //FragColor = vec4(0.2, 0.3, 0.1, 1.0);
+
+        if(1 == haveImage) {
+            FragColor = vec4(CurResult.rgb, 1);
+        } else {
+            FragColor = vec4(0.2, 0.2, 0.3, 1.0);
+        }
     }
 
 )";
@@ -144,6 +152,8 @@ static const char* kI420FragmentShader = R"(
 
     out vec4 FragColor;
 
+    uniform int haveImage;
+
     void main()
     {   
         float y, u, v, r, g, b;
@@ -160,10 +170,16 @@ static const char* kI420FragmentShader = R"(
         b = y + 2.018 * u;
 
         //FragColor = vec4(r, g, b, 1.0); 
-        FragColor = vec4(r, g, b, 1.0);
+        //FragColor = vec4(r, g, b, 1.0);
         //FragColor = vec4(1.0, outColor.r, outTex.g, 1.0);
         //FragColor = vec4(0.2, 0.2, 0.3, 1.0);
         //FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+
+        if(1 == haveImage) {
+            FragColor = vec4(r, g, b, 1.0);
+        } else {
+            FragColor = vec4(0.2, 0.2, 0.3, 1.0);
+        }
     }
 
 )";
@@ -181,6 +197,8 @@ static const char* kI444FragmentShader = R"(
 
     out vec4 FragColor;
 
+    uniform int haveImage;
+
     void main()
     {   
         float y, u, v, r, g, b;
@@ -197,10 +215,16 @@ static const char* kI444FragmentShader = R"(
         b = y + 2.018 * u;
 
         //FragColor = vec4(r, g, b, 1.0); 
-        FragColor = vec4(r, g, b, 1.0);
+        //FragColor = vec4(r, g, b, 1.0);
         //FragColor = vec4(1.0, outColor.r, outTex.g, 1.0);
         //FragColor = vec4(0.2, 0.2, 0.3, 1.0);
         //FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+
+        if(1 == haveImage) {
+            FragColor = vec4(r, g, b, 1.0);
+        } else {
+            FragColor = vec4(0.2, 0.2, 0.3, 1.0);
+        }
     }
 
 )";
