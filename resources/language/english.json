@@ -167,5 +167,14 @@
   "id_input_remote_password": "Input remote password",
   "id_password_invalid": "Password Invalid",
   "id_password_invalid_msg": "Your password is invalid, please input new password.",
-  "id_delete_remote_control": "Do you want to delete the remote control ?"
+  "id_delete_remote_control": "Do you want to delete the remote control ?",
+  "id_device_settings": "Device Info Settings",
+  "id_enable_audio": "Enable Audio",
+  "id_enable_clipboard": "Enable Clipboard",
+  "id_only_viewing": "Only Viewing",
+  "id_split_windows": "Using Multiple Windows",
+  "id_connect_failed": "Connect Failed",
+  "id_connect_failed_pr_server": "Can't access Profile server.",
+  "id_general_settings": "General Settings",
+  "id_start_max_window": "Start with Max Window"
 }

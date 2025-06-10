@@ -11,6 +11,8 @@
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/database/stream_db_operator.h"
@@ -24,14 +26,14 @@ namespace tc
         context_ = ctx;
         db_mgr_ = context_->GetStreamDBManager();
         stream_item_ = item;
-        setFixedSize(375, 475);
+        setFixedSize(375, 380);
         CreateLayout();
     }
 
     StreamSettingsDialog::~StreamSettingsDialog() = default;
 
     void StreamSettingsDialog::CreateLayout() {
-        setWindowTitle(tr("Device Settings"));
+        setWindowTitle(tcTr("id_device_settings"));
 
         auto item_width = 170;
         auto edit_size = QSize(item_width, 35);
@@ -51,9 +53,9 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Enable Audio");
+            label->SetTextId("id_enable_audio");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -97,9 +99,9 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Enable Clipboard");
+            label->SetTextId("id_enable_clipboard");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -142,9 +144,9 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Only Viewing");
+            label->SetTextId("id_only_viewing");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -185,7 +187,7 @@ namespace tc
         content_layout->addSpacing(item_gap);
 
         // show max window
-        {
+        if (0) {
             auto layout = new NoMarginHLayout();
 
             auto label = new QLabel(this);
@@ -226,15 +228,16 @@ namespace tc
             layout->addStretch();
             content_layout->addLayout(layout);
 
+            content_layout->addSpacing(item_gap);
         }
-        content_layout->addSpacing(item_gap);
+
         // Split windows
         {
             auto layout = new NoMarginHLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Split Windows");
+            label->SetTextId("id_split_windows");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -274,7 +277,7 @@ namespace tc
 
         content_layout->addSpacing(item_gap);
         // Enable P2P
-        {
+        if (0) {
             auto layout = new NoMarginHLayout();
 
             auto label = new QLabel(this);
@@ -469,14 +472,15 @@ namespace tc
         // sure button
         {
             auto layout = new NoMarginVLayout();
-            auto btn_sure = new QPushButton(tr("OK"));
+            auto btn_sure = new TcPushButton();
+            btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 stream_item_->audio_enabled_ = cb_audio_->isChecked();
                 stream_item_->clipboard_enabled_ = cb_clipboard_->isChecked();
                 stream_item_->only_viewing_ = cb_only_viewing_->isChecked();
-                stream_item_->show_max_window_ = cb_show_max_->isChecked();
+                //stream_item_->show_max_window_ = cb_show_max_->isChecked();
                 stream_item_->split_windows_ = cb_split_windows_->isChecked();
-                stream_item_->enable_p2p_ = cb_enable_p2p_->isChecked();
+                //stream_item_->enable_p2p_ = cb_enable_p2p_->isChecked();
                 db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });
@@ -484,13 +488,13 @@ namespace tc
             layout->addWidget(btn_sure);
             btn_sure->setFixedSize(QSize(290, 35));
 
-            content_layout->addSpacing(105);
+            //content_layout->addSpacing(70);
             content_layout->addStretch();
             content_layout->addLayout(layout);
-            content_layout->addSpacing(30);
+            content_layout->addSpacing(50);
         }
 
-        root_layout_->addStretch();
+        //root_layout_->addStretch();
     }
 
     void StreamSettingsDialog::paintEvent(QPaintEvent *event) {

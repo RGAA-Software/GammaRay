@@ -48,6 +48,36 @@ namespace tc
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
         auto input_size = QSize(280, tips_label_height);
 
+        // 通用设置
+        {
+            auto segment_layout = new NoMarginVLayout();
+            {
+                // title
+                auto label = new TcLabel(this);
+                label->SetTextId("id_general_settings");
+                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+                segment_layout->addSpacing(0);
+                segment_layout->addWidget(label);
+            }
+
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_start_max_window");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                layout->addWidget(edit);
+
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+            }
+            column1_layout->addLayout(segment_layout);
+        }
+
         // screen recording 录屏设置
         {
             auto segment_layout = new NoMarginVLayout();
@@ -56,7 +86,7 @@ namespace tc
                 auto label = new TcLabel(this);
                 label->SetTextId("id_screen_recording_settings");
                 label->setStyleSheet("font-size: 16px; font-weight: 700;");
-                segment_layout->addSpacing(0);
+                segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
             }
             // save path

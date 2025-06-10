@@ -419,12 +419,12 @@ namespace tc
                         // verify in profile server
                         auto verify_result = DeviceApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
                         if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
-                            TcDialog dialog("Connect Failed", "Can't access server.", grWorkspace.get());
+                            TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                             dialog.exec();
                             return;
                         }
                         if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
-                            TcDialog dialog("Connect Failed", "Password is invalid, please check it.", grWorkspace.get());
+                            TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_password_invalid_msg"), grWorkspace.get());
                             dialog.exec();
                             return;
                         }

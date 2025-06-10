@@ -168,5 +168,14 @@
   "id_input_remote_password": "输入远程设备密码",
   "id_password_invalid": "密码错误",
   "id_password_invalid_msg": "您的密码不合法，请重新输入密码.",
-  "id_delete_remote_control": "您确定要删除这个远程设备吗 ?"
+  "id_delete_remote_control": "您确定要删除这个远程设备吗 ?",
+  "id_device_settings": "设备信息设置",
+  "id_enable_audio": "启用音频",
+  "id_enable_clipboard": "启用剪切板",
+  "id_only_viewing": "仅观看",
+  "id_split_windows": "多窗口同显",
+  "id_connect_failed": "连接失败",
+  "id_connect_failed_pr_server": "无法连接到用户管理服务.",
+  "id_general_settings": "通用设置",
+  "id_start_max_window": "以窗口最大化启动"
 }
