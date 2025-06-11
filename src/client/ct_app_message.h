@@ -163,6 +163,11 @@ namespace tc
     public:
     };
 
+    // request update desktop
+    class MsgHardUpdateDesktop : public AppMessage {
+    public:
+    };
+
     // MultiMonDisplayMode
     class MultiMonDisplayModeMessage : public AppMessage {
     public:

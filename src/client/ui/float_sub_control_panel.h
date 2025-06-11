@@ -19,7 +19,7 @@ namespace tc
     private:
         void RequestCtrlAltDelete();
         void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
-
+        void RequestRefreshDesktop();
     private:
         SwitchButton* clibpboard_btn_ = nullptr;
     };

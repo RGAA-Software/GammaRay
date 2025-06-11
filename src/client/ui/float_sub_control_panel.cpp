@@ -17,12 +17,13 @@ namespace tc
     SubControlPanel::SubControlPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
-        setFixedSize(200, 130);
+        setFixedSize(200, 132);
         auto item_height = 38;
         auto border_spacing = 10;
         auto item_size = QSize(this->width(), item_height);
         auto root_layout = new NoMarginVLayout();
 
+        //Clipboard
         {
             auto layout = new NoMarginHLayout();
             auto widget = new QWidget(this);
@@ -53,6 +54,8 @@ namespace tc
             root_layout->addSpacing(5);
             root_layout->addWidget(widget);
         }
+
+        //Ctrl + Alt + Delete
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
@@ -74,6 +77,31 @@ namespace tc
                 RequestCtrlAltDelete();
             });
         }
+
+        // refresh
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
+
+            auto lbl = new QLabel();
+            lbl->setText(tr("Refresh Desktop"));
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing * 2);
+            layout->addWidget(lbl);
+            layout->addStretch();
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                RequestRefreshDesktop();
+            });
+        
+        }
+
         root_layout->addStretch();
         setLayout(root_layout);
     }
@@ -100,4 +128,7 @@ namespace tc
         }
     }
 
+    void SubControlPanel::RequestRefreshDesktop() {
+        context_->SendAppMessage(MsgHardUpdateDesktop{});
+    }
 }

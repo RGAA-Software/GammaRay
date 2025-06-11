@@ -186,6 +186,10 @@ namespace tc {
                     ProcessUpdateDesktop();
                     break;
                 }
+                case MessageType::kHardUpdateDesktop: {
+                    ProcessHardUpdateDesktop();
+                    break;
+                }
                 // offer sdp / ice
                 case MessageType::kSigOfferSdpMessage: {
                     if (auto plugin = plugin_manager_->GetRtcPlugin(); plugin) {
@@ -454,13 +458,14 @@ namespace tc {
         if (context_) {
             context_->SendAppMessage(MsgRefreshScreen{});
         }
-        /*
+    }
+
+    void PluginNetEventRouter::ProcessHardUpdateDesktop() {
         auto desk_manager = app_->GetDesktopManager();
         if (!desk_manager) {
             return;
         }
         desk_manager->UpdateDesktop();
-        */
     }
 
     void PluginNetEventRouter::SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id) {
