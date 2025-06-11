@@ -14,6 +14,8 @@ namespace tc
     public:
         // this device, device id
         std::string device_id_;
+        std::string device_random_pwd_;
+        std::string device_safety_pwd_;
         // relay host
         std::string relay_host_;
         // relay port

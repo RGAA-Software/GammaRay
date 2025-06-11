@@ -61,6 +61,7 @@ namespace tc
         void RefreshSigServerSettings();
         void RegisterMessageListener();
         void RegisterFirewall();
+        void CheckSecurityPassword();
 
     private:
         QWidget* main_window_ = nullptr;

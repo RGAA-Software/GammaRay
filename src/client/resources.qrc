@@ -54,6 +54,7 @@
 		<file>resources/image/recording.png</file>
 		<file>resources/image/recording2.svg</file>
 		<file>resources/image/ic_notify.png</file>
+        <file>resources/image/ic_notify_err.png</file>
 
 		<file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

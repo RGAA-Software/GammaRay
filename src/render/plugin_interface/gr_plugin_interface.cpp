@@ -281,14 +281,24 @@ namespace tc
         if (!settings.device_id_.empty()) {
             sys_settings_.device_id_ = settings.device_id_;
         }
+        if (!settings.device_random_pwd_.empty()) {
+            sys_settings_.device_random_pwd_ = settings.device_random_pwd_;
+        }
+        if (!settings.device_safety_pwd_.empty()) {
+            sys_settings_.device_safety_pwd_ = settings.device_safety_pwd_;
+        }
         if (!settings.relay_host_.empty()) {
             sys_settings_.relay_host_ = settings.relay_host_;
         }
         if (!settings.relay_port_.empty()) {
             sys_settings_.relay_port_ = settings.relay_port_;
         }
-        //LOGI("OnSyncSettings: device id: {}, relay host: {}, port: {}",
-        //     sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
+        //LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}",
+        //     sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
+    }
+
+    GrPluginSettingsInfo GrPluginInterface::GetSystemSettings() {
+        return sys_settings_;
     }
 
 }

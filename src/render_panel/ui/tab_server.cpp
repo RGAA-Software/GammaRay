@@ -54,7 +54,7 @@
 #include "tc_dialog.h"
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/database/stream_db_operator.h"
-#include "render_panel/devices/device_api.h"
+#include "render_panel/devices/profile_api.h"
 #include "render_panel/gr_workspace.h"
 
 namespace tc
@@ -174,11 +174,11 @@ namespace tc
                                 return;
                             }
                             settings_->SetDeviceId(device->device_id_);
-                            settings_->SetDeviceRandomPwd(device->random_pwd_);
+                            settings_->SetDeviceRandomPwd(device->random_pwd_md5_);
 
                             context_->SendAppMessage(MsgRandomPasswordUpdated {
                                 .device_id_ = device->device_id_,
-                                .device_random_pwd_ = device->random_pwd_,
+                                .device_random_pwd_ = device->random_pwd_md5_,
                             });
 
                             context_->SendAppMessage(MsgSyncSettingsToRender{});
@@ -417,13 +417,13 @@ namespace tc
                         }
 
                         // verify in profile server
-                        auto verify_result = DeviceApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
-                        if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
+                        auto verify_result = ProfileApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
+                        if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                             TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                             dialog.exec();
                             return;
                         }
-                        if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd && verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                        if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd && verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd) {
                             TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_password_invalid_msg"), grWorkspace.get());
                             dialog.exec();
                             return;
@@ -438,10 +438,10 @@ namespace tc
                         item->encode_fps_ = 0;
                         item->network_type_ = kStreamItemNtTypeRelay;
                         item->remote_device_id_ = remote_device_id;
-                        if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
+                        if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd) {
                             item->remote_device_random_pwd_ = random_password;
                         }
-                        else if (verify_result == DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                        else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd) {
                             item->remote_device_safety_pwd_ = safety_password;
                         }
                         context_->SendAppMessage(StreamItemAdded {

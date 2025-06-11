@@ -23,6 +23,7 @@ namespace tc
     class FileTransferChannel;
     class VisitRecordOperator;
     class FileTransferRecordOperator;
+    class MessageListener;
 
     class WSSession {
     public:
@@ -85,6 +86,7 @@ namespace tc
         GrSettings* settings_ = nullptr;
         std::shared_ptr<VisitRecordOperator> visit_record_op_ = nullptr;
         std::shared_ptr<FileTransferRecordOperator> ft_record_op_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 }
 

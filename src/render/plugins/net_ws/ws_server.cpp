@@ -21,6 +21,7 @@
 static std::string kUrlMedia = "/media";
 static std::string kUrlFileTransfer = "/file/transfer";
 static std::string kApiPing = "/api/ping";
+static std::string kApiVerifySafetyPassword = "/verify/safety/password";
 
 namespace tc
 {
@@ -94,6 +95,11 @@ namespace tc
         // ping
         AddHttpRouter(kApiPing, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
             http_handler_->HandlePing(req, rep);
+        });
+
+        // verify safety pwd
+        AddHttpRouter(kApiVerifySafetyPassword, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+            http_handler_->HandleVerifySafetyPassword(req, rep);
         });
 
         if (listen_port_ <= 0) {
@@ -239,7 +245,7 @@ namespace tc
         // bind it
         server_->bind<http::verb::get, http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
             callback(path, req, rep);
-        }, aop_log{}, http::enable_cache);
+        }, aop_log{}); //, http::enable_cache
     }
 
     void WsPluginServer::NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& device_id) {

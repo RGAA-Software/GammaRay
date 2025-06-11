@@ -162,6 +162,12 @@ namespace tc
         // LanguageKind
         int language_kind_ = 3;
     };
+
+    // security password updated
+    class MsgSecurityPasswordUpdated {
+    public:
+        std::string security_password_;
+    };
 }
 
 #endif // APP_MESSAGES_H

@@ -94,6 +94,7 @@ namespace tc
         // Display a message on right-bottom
         std::shared_ptr<NotifyManager> GetNotifyManager();
         void NotifyAppMessage(const QString& title, const QString& msg);
+        void NotifyAppErrMessage(const QString& title, const QString& msg);
 
         // spvr
         // will add prefix: server

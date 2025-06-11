@@ -20,7 +20,7 @@
 #include "service/service_manager.h"
 #include "tc_spvr_client/spvr_manager.h"
 #include "tc_common_new/http_base_op.h"
-#include "devices/device_api.h"
+#include "devices/profile_api.h"
 #include <QApplication>
 
 #pragma comment(lib, "version.lib")
@@ -59,8 +59,8 @@ namespace tc
 
                 // verify device id / pwd
                 context_->PostTask([=, this]() {
-                    auto r = DeviceApi::VerifyDeviceInfo(settings_->device_id_, settings_->device_random_pwd_, settings_->device_safety_pwd_);
-                    if (r != DeviceVerifyResult::kVfSuccessRandomPwd && r != DeviceVerifyResult::kVfSuccessSafetyPwd) {
+                    auto r = ProfileApi::VerifyDeviceInfo(settings_->device_id_, settings_->device_random_pwd_, settings_->device_safety_pwd_);
+                    if (r != ProfileVerifyResult::kVfSuccessRandomPwd && r != ProfileVerifyResult::kVfSuccessSafetyPwd) {
                         LOGE("device id and device random pwd are not pair, will request new pair!");
                         // force update id
                         context_->SendAppMessage(MsgForceRequestDeviceId{});

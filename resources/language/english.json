@@ -180,7 +180,9 @@
   "id_input_security_password": "Input Security Password",
   "id_password_again": "Password Again",
   "id_unmanaged_device": "Your device is NOT managed, your device id is empty. Please input Supervisor server info in Network settings.",
-  "id_update_security_success": "Update Security Success",
-  "id_security_password_updated": "The new security password has updated.",
-  "id_security_password_update_failed": "Update security password failed. Please check your Supervisor server config and try again."
+  "id_update_security_success": "Update Success",
+  "id_local_security_password_updated": "The Local security password has updated.",
+  "id_remote_security_password_updated": "The Remote security password has updated.",
+  "id_security_password_update_failed": "Update security password failed. Please check your Supervisor server config and try again.",
+  "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server."
 }

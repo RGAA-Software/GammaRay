@@ -182,6 +182,8 @@
   "id_password_again": "确认密码",
   "id_unmanaged_device": "您的设备ID是空，设备未被服务管理，请在网络设置中填写Supervisor服务地址.",
   "id_update_security_success": "更新成功",
-  "id_security_password_updated": "新的安全密码已经更新.",
-  "id_security_password_update_failed": "安全密码更新失败，请检查您的Supervisor服务并重试."
+  "id_local_security_password_updated": "本地安全密码已经更新.",
+  "id_remote_security_password_updated": "服务端安全密码已经更新.",
+  "id_security_password_update_failed": "安全密码更新失败，请检查您的Supervisor服务并重试.",
+  "id_security_password_update_local_but_failed_server": "您已更新本地安全密码, 但未成功更新服务端密码. 请检查您的Supervisor服务."
 }

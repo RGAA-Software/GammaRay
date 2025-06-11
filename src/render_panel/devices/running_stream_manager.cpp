@@ -9,7 +9,7 @@
 #include "render_panel/gr_context.h"
 #include "tc_common_new/log.h"
 #include "render_panel/gr_app_messages.h"
-#include "device_api.h"
+#include "profile_api.h"
 #include "tc_qt_widget/tc_dialog.h"
 #include "start_stream_loading.h"
 

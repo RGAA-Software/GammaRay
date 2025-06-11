@@ -245,6 +245,14 @@ namespace tc
         });
     }
 
+    void GrContext::NotifyAppErrMessage(const QString& title, const QString& msg) {
+        QMetaObject::invokeMethod(this, [=, this]() {
+            if (notify_mgr_) {
+                notify_mgr_->notifyErr(title, msg);
+            }
+        });
+    }
+
     std::shared_ptr<GrDatabase> GrContext::GetDatabase() {
         return database_;
     }

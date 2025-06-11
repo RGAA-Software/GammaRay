@@ -25,12 +25,14 @@
 #include "tc_manager_client/mgr_device.h"
 #include "tc_common_new/time_util.h"
 #include "gr_account_manager.h"
+#include "ui/input_safety_pwd_dialog.h"
 #include "tc_dialog.h"
 #include "gr_workspace.h"
 #include "tc_label.h"
 
 #include <QTimer>
 #include <QApplication>
+#include <QScreen>
 #include <shellapi.h>
 
 using namespace nlohmann;
@@ -100,6 +102,9 @@ namespace tc
         RefreshSigServerSettings();
         RegisterMessageListener();
 
+        context_->PostUIDelayTask([=, this]() {
+            CheckSecurityPassword();
+        }, 500);
     }
 
     void GrApplication::Exit() {
@@ -186,11 +191,11 @@ namespace tc
             }
 
             settings_->SetDeviceId(device->device_id_);
-            settings_->SetDeviceRandomPwd(device->random_pwd_);
+            settings_->SetDeviceRandomPwd(device->random_pwd_md5_);
 
             context_->SendAppMessage(MsgRequestedNewDevice {
                 .device_id_ = device->device_id_,
-                .device_random_pwd_ = device->random_pwd_,
+                .device_random_pwd_ = device->random_pwd_md5_,
                 .force_update_ = force_update,
             });
 
@@ -255,6 +260,13 @@ namespace tc
 
     std::shared_ptr<MgrDeviceOperator> GrApplication::GetDeviceOperator() {
         return mgr_client_sdk_->GetDeviceOperator();
+    }
+
+    void GrApplication::CheckSecurityPassword() {
+        if (settings_->device_safety_pwd_.empty()) {
+            InputSafetyPwdDialog dialog(grApp, grWorkspace.get());
+            dialog.exec();
+        }
     }
 
 }

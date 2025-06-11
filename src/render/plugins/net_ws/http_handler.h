@@ -7,6 +7,7 @@
 
 #include <asio2/asio2.hpp>
 #include "tc_3rdparty/json/json.hpp"
+#include "tc_common_new/base_handler.h"
 
 using namespace nlohmann;
 
@@ -15,14 +16,12 @@ namespace tc
 
     class WsPlugin;
 
-    class HttpHandler {
+    class HttpHandler : public BaseHandler {
     public:
         explicit HttpHandler(WsPlugin* plugin);
+        std::string GetErrorMessage(int code) override;
         void HandlePing(http::web_request &req, http::web_response &rep);
-
-    private:
-        std::string WrapBasicInfo(int code, const std::string& msg, const std::string& data);
-        std::string WrapBasicInfo(int code, const std::string& msg, const json& data);
+        void HandleVerifySafetyPassword(http::web_request &req, http::web_response &rep);
 
     private:
         WsPlugin* plugin_ = nullptr;

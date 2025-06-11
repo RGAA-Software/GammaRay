@@ -166,4 +166,12 @@ namespace tc
             }
         });
     }
+
+    void ClientContext::NotifyAppErrMessage(const QString& title, const QString& msg) {
+        QMetaObject::invokeMethod(this, [=, this]() {
+            if (notify_manager_) {
+                notify_manager_->notifyErr(title, msg);
+            }
+        });
+    }
 }

@@ -2,15 +2,15 @@
 // Created by RGAA on 11/04/2025.
 //
 
-#ifndef GAMMARAY_DEVICE_API_H
-#define GAMMARAY_DEVICE_API_H
+#ifndef GAMMARAY_PROFILE_API_H
+#define GAMMARAY_PROFILE_API_H
 
 #include <string>
 
 namespace tc
 {
 
-    enum class DeviceVerifyResult {
+    enum class ProfileVerifyResult {
         kVfParamInvalid,
         kVfServerInternalError,
         kVfDeviceNotFound,
@@ -31,15 +31,15 @@ namespace tc
     constexpr int kERR_DEVICE_NOT_FOUND = 602;
     constexpr int kERR_PASSWORD_FAILED = 603;
 
-    class DeviceApi {
+    class ProfileApi {
     public:
         // verify device_id/random_pwd pair
         // device id
         // random pwd: will be md5 in this func
         // safety pwd: will be md5 in this func
-        static DeviceVerifyResult VerifyDeviceInfo(const std::string& device_id, const std::string& random_pwd, const std::string& safety_pwd);
+        static ProfileVerifyResult VerifyDeviceInfo(const std::string& device_id, const std::string& random_pwd, const std::string& safety_pwd);
     };
 
 }
 
-#endif //GAMMARAY_DEVICE_API_H
+#endif //GAMMARAY_PROFILE_API_H

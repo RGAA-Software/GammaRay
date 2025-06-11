@@ -52,6 +52,7 @@ namespace tc
         void InitNotifyManager(QWidget* parent);
         std::shared_ptr<NotifyManager> GetNotifyManager() const;
         void NotifyAppMessage(const QString& title, const QString& msg);
+        void NotifyAppErrMessage(const QString& title, const QString& msg);
 
         bool full_functionality_ = false;
     private:

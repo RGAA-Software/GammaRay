@@ -159,6 +159,8 @@ namespace tc
         // app events
         virtual void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {};
 
+        GrPluginSettingsInfo GetSystemSettings();
+
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;

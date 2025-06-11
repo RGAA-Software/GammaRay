@@ -12,6 +12,7 @@
 
 #include "render_panel/database/stream_db_operator.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
 #include "widget_helper.h"
 #include "stream_item_widget.h"
 #include "create_stream_dialog.h"
@@ -25,10 +26,11 @@
 #include "tc_common_new/uid_spacer.h"
 #include "edit_relay_stream_dialog.h"
 #include "stream_settings_dialog.h"
-#include "device_api.h"
+#include "profile_api.h"
 #include "render_panel/gr_account_manager.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
+#include "render_panel/network/render_api.h"
 #include "start_stream_loading.h"
 #include "input_remote_pwd_dialog.h"
 #include "stream_state_checker.h"
@@ -317,15 +319,15 @@ namespace tc
 
             // verify remote
             auto verify_result
-                = DeviceApi::VerifyDeviceInfo(target_item->remote_device_id_, remote_random_pwd, remote_safety_pwd);
-            if (verify_result == DeviceVerifyResult::kVfNetworkFailed) {
+                = ProfileApi::VerifyDeviceInfo(target_item->remote_device_id_, remote_random_pwd, remote_safety_pwd);
+            if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                 TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                 dialog.exec();
                 return;
             }
 
-            if (verify_result != DeviceVerifyResult::kVfSuccessRandomPwd &&
-                verify_result != DeviceVerifyResult::kVfSuccessSafetyPwd) {
+            if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd &&
+                verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd) {
                 // tell user, password is invalid
                 TcDialog dialog(tcTr("id_password_invalid"), tcTr("id_password_invalid_msg"), grWorkspace.get());
                 dialog.exec();
@@ -345,13 +347,53 @@ namespace tc
 
             LOGI("Verify result, the password type: {}", (int)verify_result);
             // update to database
-            if (verify_result == DeviceVerifyResult::kVfSuccessRandomPwd) {
+            if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd) {
                 db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
                 target_item->remote_device_random_pwd_ = remote_random_pwd;
             }
-            else if (verify_result == DeviceVerifyResult::kVfSuccessSafetyPwd) {
+            else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd) {
                 db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
                 target_item->remote_device_safety_pwd_ = remote_safety_pwd;
+            }
+        }
+        else {
+            auto r = RenderApi::VerifySafetyPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
+            auto ok = r.value_or(false);
+            for (;;) {
+                LOGI("VerifySafetyPassword result: {}", ok);
+                if (!ok) {
+                    LOGI("VerifySafetyPassword result 1: {}", ok);
+                    InputRemotePwdDialog dlg_input_pwd(context_);
+                    if (dlg_input_pwd.exec() == 1) {
+                        return;
+                    }
+                    auto input_password = dlg_input_pwd.GetInputPassword();
+                    if (input_password.isEmpty()) {
+                        context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_input_necessary_info"));
+                        continue;
+                    }
+
+                    // md5 pwd
+                    auto pwd_md5 = MD5::Hex(input_password.toStdString());
+
+                    r = RenderApi::VerifySafetyPassword(target_item->stream_host_, target_item->stream_port_, pwd_md5);
+                    ok = r.value_or(false);
+                    if (!ok) {
+                        context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
+                    }
+                    else {
+                        // update to database
+                        context_->PostDBTask([=, this]() {
+                            auto mgr = context_->GetStreamDBManager();
+                            mgr->UpdateStreamSafetyPwd(target_item->stream_id_, pwd_md5);
+                            LoadStreamItems();
+                        });
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
             }
         }
 

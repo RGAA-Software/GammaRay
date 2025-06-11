@@ -4,6 +4,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/network/udp_broadcaster.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/gr_service_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/ws_sig_client.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/network/render_api.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/database/db_game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/db_game_operator.cpp
@@ -66,7 +67,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/running_stream_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/edit_relay_stream_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_settings_dialog.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/devices/device_api.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/profile_api.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/select_stream_type_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/create_stream_conn_info_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/start_stream_loading.cpp

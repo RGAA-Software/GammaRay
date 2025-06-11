@@ -120,6 +120,8 @@ namespace tc
 
                 plugin_mgr_->SyncSystemInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
+                    .device_random_pwd_ = settings_->device_random_pwd_,
+                    .device_safety_pwd_ = settings_->device_safety_pwd_,
                     .relay_host_ = settings_->relay_host_,
                     .relay_port_ = settings_->relay_port_,
                 });

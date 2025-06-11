@@ -19,6 +19,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
 #include "tc_common_new/http_client.h"
 #include "tc_qt_widget/tc_password_input.h"
 #include "tc_manager_client/mgr_client_sdk.h"
@@ -33,6 +34,8 @@ namespace tc
         context_ = app_->GetContext();
         setFixedSize(375, 300);
         CreateLayout();
+
+        CenterDialog(this);
     }
 
     InputSafetyPwdDialog::~InputSafetyPwdDialog() = default;
@@ -106,11 +109,11 @@ namespace tc
             auto btn_sure = new TcPushButton();
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-                if (settings->device_id_.empty()) {
-                    TcDialog warn_dialog(tcTr("id_warning"), tcTr("id_unmanaged_device"), this);
-                    warn_dialog.exec();
-                    return;
-                }
+                //if (settings->device_id_.empty()) {
+                //    TcDialog warn_dialog(tcTr("id_warning"), tcTr("id_unmanaged_device"), this);
+                //    warn_dialog.exec();
+                //    return;
+                //}
 
                 auto pwd = pwd_input_->GetPassword();
                 auto pwd_again = pwd_input_again_->GetPassword();
@@ -120,16 +123,33 @@ namespace tc
                     return;
                 }
 
+                // md5 password
+                auto pwd_md5 = MD5::Hex(pwd.toStdString());
+
+                // save to local db
+                settings->SetDeviceSafetyPwd(pwd_md5);
+                context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_local_security_password_updated"));
+
+                // update to renderer
+                context_->SendAppMessage(MsgSecurityPasswordUpdated {
+                    .security_password_ = pwd_md5,
+                });
+
+                // Supervisor server unconfigured
+                if (!app_->GetManagerClient()->IsServerConfigured() || settings->device_id_.empty()) {
+                    done(0);
+                    return;
+                }
+
                 // update safety pwd
                 auto dev_opt = app_->GetDeviceOperator();
-                auto device = dev_opt->UpdateSafetyPwd(settings->device_id_, pwd.toStdString());
-                if (device && device->safety_pwd_ == pwd.toStdString()) {
-                    settings->SetDeviceSafetyPwd(device->safety_pwd_);
-                    context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_security_password_updated"));
+                auto device = dev_opt->UpdateSafetyPwd(settings->device_id_, pwd_md5);
+                if (device && device->safety_pwd_md5_ == pwd_md5) {
+                    context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_remote_security_password_updated"));
                     done(0);
                 }
                 else {
-                    TcDialog warn_dialog(tcTr("id_error"), tcTr("id_security_password_update_failed"), this);
+                    TcDialog warn_dialog(tcTr("id_warning"), tcTr("id_security_password_update_local_but_failed_server"), this);
                     warn_dialog.exec();
                 }
             });

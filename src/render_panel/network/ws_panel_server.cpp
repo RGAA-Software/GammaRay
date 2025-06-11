@@ -20,6 +20,7 @@
 #include "render_panel/database/file_transfer_record.h"
 #include "render_panel/database/file_transfer_record_operator.h"
 #include "tc_common_new/url_helper.h"
+#include "tc_common_new/message_notifier.h"
 #include <QApplication>
 
 namespace tc
@@ -53,6 +54,13 @@ namespace tc
         settings_ = GrSettings::Instance();
         visit_record_op_ = context_->GetDatabase()->GetVisitRecordOp();
         ft_record_op_ = context_->GetDatabase()->GetFileTransferRecordOp();
+
+        msg_listener_ = context_->ObtainMessageListener();
+        msg_listener_->Listen<MsgSecurityPasswordUpdated>([=, this](const MsgSecurityPasswordUpdated& msg) {
+            context_->PostTask([=, this]() {
+                this->RpSyncPanelInfo();
+            });
+        });
     }
 
     void WsPanelServer::Start() {
