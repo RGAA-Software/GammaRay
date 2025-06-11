@@ -27,7 +27,7 @@ namespace tc
     }
 
     void WinDesktopManager::UpdateDesktop() {
-#if 0   // 测试刷新时候，会偶尔卡住
+#if 1   // 测试刷新时候，会偶尔卡住
         LOGI("UpdateDesktop ...");
         ::PostMessageW(GetDesktopWindow(), WM_KEYDOWN, VK_F5, 0);
         SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, NULL, NULL);

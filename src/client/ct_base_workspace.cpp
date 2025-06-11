@@ -238,7 +238,11 @@ namespace tc
             m.set_stream_id(settings_->stream_id_);
             auto _ = m.mutable_req_ctrl_alt_delete();
             sdk_->PostMediaMessage(m.SerializeAsString());
-            });
+        });
+
+        msg_listener_->Listen<MsgHardUpdateDesktop>([=, this](const MsgHardUpdateDesktop& msg) {
+            this->SendHardUpdateDesktopMessage();
+        });
     }
 
     BaseWorkspace::~BaseWorkspace() {
@@ -692,6 +696,15 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kUpdateDesktop);
+        sdk_->PostMediaMessage(m.SerializeAsString());
+    }
+
+    void BaseWorkspace::SendHardUpdateDesktopMessage() {
+        if (!sdk_) {
+            return;
+        }
+        tc::Message m;
+        m.set_type(tc::kHardUpdateDesktop);
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
