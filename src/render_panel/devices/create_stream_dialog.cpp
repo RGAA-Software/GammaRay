@@ -325,7 +325,7 @@ namespace tc
         }
 
         auto func_update_stream = [&](std::shared_ptr<StreamItem>& item) {
-            item->stream_name_ = name;
+            item->stream_name_ = name.empty() ? host : name;
             item->stream_host_ = host;
             item->stream_port_ = port;
             item->encode_bps_ = bitrate;
