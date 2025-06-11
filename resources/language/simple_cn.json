@@ -177,5 +177,11 @@
   "id_connect_failed": "连接失败",
   "id_connect_failed_pr_server": "无法连接到用户管理服务.",
   "id_general_settings": "通用设置",
-  "id_start_max_window": "以窗口最大化启动"
+  "id_start_max_window": "以窗口最大化启动",
+  "id_input_security_password": "输入安全密码",
+  "id_password_again": "确认密码",
+  "id_unmanaged_device": "您的设备ID是空，设备未被服务管理，请在网络设置中填写Supervisor服务地址.",
+  "id_update_security_success": "更新成功",
+  "id_security_password_updated": "新的安全密码已经更新.",
+  "id_security_password_update_failed": "安全密码更新失败，请检查您的Supervisor服务并重试."
 }

@@ -8,6 +8,8 @@
 #include <QRadioButton>
 #include <QTextEdit>
 #include "tc_dialog.h"
+#include "tc_label.h"
+#include "tc_pushbutton.h"
 #include "render_panel/database/stream_item.h"
 #include "client/ct_app_message.h"
 #include "tc_qt_widget/sized_msg_box.h"
@@ -36,7 +38,7 @@ namespace tc
     InputSafetyPwdDialog::~InputSafetyPwdDialog() = default;
 
     void InputSafetyPwdDialog::CreateLayout() {
-        setWindowTitle(tr("Input Security password"));
+        setWindowTitle(tcTr("id_input_security_password"));
         auto settings = GrSettings::Instance();
 
         auto item_width = 320;
@@ -55,9 +57,9 @@ namespace tc
         {
             auto layout = new NoMarginVLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Password");
+            label->SetTextId("id_password");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -79,9 +81,9 @@ namespace tc
         {
             auto layout = new NoMarginVLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Password Again");
+            label->SetTextId("id_password_again");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
@@ -101,10 +103,11 @@ namespace tc
         // sure button
         {
             auto layout = new NoMarginVLayout();
-            auto btn_sure = new QPushButton(tr("OK"));
+            auto btn_sure = new TcPushButton();
+            btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 if (settings->device_id_.empty()) {
-                    TcDialog warn_dialog("Warn", "Your device is NOT managed, your device id is empty.", this);
+                    TcDialog warn_dialog(tcTr("id_warning"), tcTr("id_unmanaged_device"), this);
                     warn_dialog.exec();
                     return;
                 }
@@ -112,7 +115,7 @@ namespace tc
                 auto pwd = pwd_input_->GetPassword();
                 auto pwd_again = pwd_input_again_->GetPassword();
                 if (pwd.isEmpty() || (pwd != pwd_again)) {
-                    TcDialog warn_dialog("Warn", "Password is invalid, please re-input.", this);
+                    TcDialog warn_dialog(tcTr("id_warning"), tcTr("id_password_invalid_msg"), this);
                     warn_dialog.exec();
                     return;
                 }
@@ -122,11 +125,11 @@ namespace tc
                 auto device = dev_opt->UpdateSafetyPwd(settings->device_id_, pwd.toStdString());
                 if (device && device->safety_pwd_ == pwd.toStdString()) {
                     settings->SetDeviceSafetyPwd(device->safety_pwd_);
-                    context_->NotifyAppMessage("Update Security Success", "The new security password has updated.");
+                    context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_security_password_updated"));
                     done(0);
                 }
                 else {
-                    TcDialog warn_dialog("Warn", "Update security password failed, please try again.", this);
+                    TcDialog warn_dialog(tcTr("id_error"), tcTr("id_security_password_update_failed"), this);
                     warn_dialog.exec();
                 }
             });
