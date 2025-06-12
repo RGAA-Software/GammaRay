@@ -12,6 +12,7 @@
 #include "tc_controller/vigem/sdk/ViGEm/Client.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/md5.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "gr_render_controller.h"
 #include "gr_run_game_manager.h"
@@ -21,6 +22,8 @@
 #include "tc_spvr_client/spvr_manager.h"
 #include "tc_common_new/http_base_op.h"
 #include "devices/profile_api.h"
+#include "tc_manager_client/mgr_device.h"
+#include "tc_manager_client/mgr_device_operator.h"
 #include <QApplication>
 
 #pragma comment(lib, "version.lib")
@@ -53,19 +56,12 @@ namespace tc
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
             while (!exit_) {
                 // check system servers
-                context_->PostTask([=, this]() {
-                    this->CheckOnlineServers();
-                });
-
-                // verify device id / pwd
-                context_->PostTask([=, this]() {
-                    auto r = ProfileApi::VerifyDeviceInfo(settings_->device_id_, settings_->device_random_pwd_, settings_->device_safety_pwd_);
-                    if (r != ProfileVerifyResult::kVfSuccessRandomPwd && r != ProfileVerifyResult::kVfSuccessSafetyPwd) {
-                        LOGE("device id and device random pwd are not pair, will request new pair!");
-                        // force update id
-                        context_->SendAppMessage(MsgForceRequestDeviceId{});
-                    }
-                });
+                if (!settings_->spvr_server_host_.empty() && !settings_->spvr_server_port_.empty()) {
+                    context_->PostTask([=, this]() {
+                        this->CheckOnlineServers();
+                        this->CheckThisDeviceInfo();
+                    });
+                }
 
                 // check vigem
                 context_->PostTask([=, this]() {
@@ -333,6 +329,57 @@ namespace tc
         //LOGI("Verify Profile ok, address: {}:{}", settings_->profile_server_host_, settings_->profile_server_port_);
 
         return true;
+    }
+
+    void GrSystemMonitor::CheckThisDeviceInfo() {
+        LOGI("CheckThisDeviceInfo...");
+        auto dev_opt = app_->GetDeviceOperator();
+        if (!dev_opt) {
+            return;
+        }
+
+        // profile server
+        auto has_pr_server = HttpBaseOp::CanPingServer(settings_->profile_server_host_, settings_->profile_server_port_);
+        if (!has_pr_server) {
+            return;
+        }
+
+        // don't have device id, force to update
+        if (settings_->device_id_.empty() && has_pr_server) {
+            context_->SendAppMessage(MsgForceRequestDeviceId{});
+            return;
+        }
+
+        // has a device
+        auto device = dev_opt->QueryDevice(settings_->device_id_);
+        if (!device) {
+            LOGE("Query device for : {} failed.", settings_->device_id_);
+            context_->SendAppMessage(MsgForceRequestDeviceId{});
+            return;
+        }
+
+        auto local_random_pwd_md5 = MD5::Hex(settings_->device_random_pwd_);
+        if (device->random_pwd_md5_ != local_random_pwd_md5) {
+            LOGW("***Random pwd not equals, will refresh, srv: {} => local: {}", device->random_pwd_md5_, local_random_pwd_md5);
+            auto update_device = dev_opt->UpdateRandomPwd(settings_->device_id_);
+            if (update_device && !update_device->gen_random_pwd_.empty()) {
+                settings_->SetDeviceRandomPwd(update_device->gen_random_pwd_);
+                // todo: notify random password updated
+
+            }
+        }
+
+        if (device->safety_pwd_md5_ != settings_->device_safety_pwd_md5_ && !settings_->device_safety_pwd_md5_.empty()) {
+            LOGW("***Safety pwd not equals, will refresh, srv: {} => local: {}", device->safety_pwd_md5_, settings_->device_safety_pwd_md5_);
+            // update safety password
+            auto update_device = dev_opt->UpdateSafetyPwd(settings_->device_id_, settings_->device_safety_pwd_md5_);
+            if (!update_device) {
+                LOGE("***UpdateSafetyPwd failed for : {}, SPWD: {}", settings_->device_id_, settings_->device_safety_pwd_md5_);
+            }
+            else {
+                LOGE("***UpdateSafetyPwd success {}, SPWD: {}", settings_->device_id_, settings_->device_safety_pwd_md5_);
+            }
+        }
     }
 
 }

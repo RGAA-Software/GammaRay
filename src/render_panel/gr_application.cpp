@@ -103,6 +103,7 @@ namespace tc
         RegisterMessageListener();
 
         context_->PostUIDelayTask([=, this]() {
+            this->UpdateServerSecurityPasswordIfNeeded();
             CheckSecurityPassword();
         }, 500);
     }
@@ -162,6 +163,7 @@ namespace tc
     void GrApplication::RegisterMessageListener() {
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgSettingsChanged>([=, this](const MsgSettingsChanged& msg) {
+            LOGI("Settings changed...");
             RefreshSigServerSettings();
             bool force_update = settings_->device_id_.empty();
             RequestNewClientId(force_update);
@@ -184,6 +186,9 @@ namespace tc
         }
 
         context_->PostTask([=, this]() {
+            if (settings_->profile_server_host_.empty()) {
+                return;
+            }
             auto device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
             if (!device) {
                 LOGE("Can't create new device!");
@@ -191,11 +196,11 @@ namespace tc
             }
 
             settings_->SetDeviceId(device->device_id_);
-            settings_->SetDeviceRandomPwd(device->random_pwd_md5_);
+            settings_->SetDeviceRandomPwd(device->gen_random_pwd_);
 
             context_->SendAppMessage(MsgRequestedNewDevice {
                 .device_id_ = device->device_id_,
-                .device_random_pwd_ = device->random_pwd_md5_,
+                .device_random_pwd_ = device->gen_random_pwd_,
                 .force_update_ = force_update,
             });
 
@@ -263,10 +268,21 @@ namespace tc
     }
 
     void GrApplication::CheckSecurityPassword() {
-        if (settings_->device_safety_pwd_.empty()) {
+        if (settings_->device_safety_pwd_md5_.empty()) {
             InputSafetyPwdDialog dialog(grApp, grWorkspace.get());
             dialog.exec();
         }
+    }
+
+    void GrApplication::UpdateServerSecurityPasswordIfNeeded() {
+        context_->PostTask([this]() {
+            if (settings_->device_safety_pwd_md5_.empty()) {
+                return;
+            }
+
+            auto dev_opt = GetDeviceOperator();
+            dev_opt->QueryDevice("");
+        });
     }
 
 }

@@ -354,7 +354,7 @@ namespace tc
         auto sub = m.mutable_sync_panel_info();
         sub->set_device_id(settings_->device_id_);
         sub->set_device_random_pwd(settings_->device_random_pwd_);
-        sub->set_device_safety_pwd(settings_->device_safety_pwd_);
+        sub->set_device_safety_pwd(settings_->device_safety_pwd_md5_);
         sub->set_relay_host(settings_->relay_server_host_);
         sub->set_relay_port(settings_->relay_server_port_);
         PostRendererMessage(m.SerializeAsString());

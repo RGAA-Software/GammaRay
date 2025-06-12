@@ -43,6 +43,9 @@ namespace tc
         bool VerifyOnlineServers();
         void CheckOnlineServers();
 
+        //
+        void CheckThisDeviceInfo();
+
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;

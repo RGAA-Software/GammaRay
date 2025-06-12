@@ -31,6 +31,7 @@
 #include "rn_app.h"
 #include "rn_empty.h"
 #include "tc_common_new/message_notifier.h"
+#include "tc_common_new/md5.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
@@ -174,11 +175,11 @@ namespace tc
                                 return;
                             }
                             settings_->SetDeviceId(device->device_id_);
-                            settings_->SetDeviceRandomPwd(device->random_pwd_md5_);
+                            settings_->SetDeviceRandomPwd(device->gen_random_pwd_);
 
                             context_->SendAppMessage(MsgRandomPasswordUpdated {
                                 .device_id_ = device->device_id_,
-                                .device_random_pwd_ = device->random_pwd_md5_,
+                                .device_random_pwd_ = device->gen_random_pwd_,
                             });
 
                             context_->SendAppMessage(MsgSyncSettingsToRender{});
@@ -379,31 +380,7 @@ namespace tc
                         auto input_password = password_input_->GetPassword().toStdString();
                         std::string random_password;
                         std::string safety_password;
-#if 0
-                        // query device in database
-                        auto opt_remote_device = stream_db_mgr_->GetStreamByRemoteDeviceId(remote_device_id);
-                        auto already_exist_remote_device = opt_remote_device.has_value();
 
-                        // this device is already in database
-                        if (false/*already_exist_remote_device*/) {
-                            auto remote_device = opt_remote_device.value();
-                            // its passwords
-                            random_password = remote_device->remote_device_random_pwd_;
-                            safety_password = remote_device->remote_device_safety_pwd_;
-
-                            // the input password is not equals to random password, neither the safety password
-                            // this is a new password, will determine its type
-                            if (input_password != random_password && input_password != safety_password) {
-                                random_password = input_password;
-                                safety_password = input_password;
-                            }
-                        }
-                        else {
-                            // a new device, 
-                            random_password = input_password;
-                            safety_password = input_password;
-                        }
-#endif
                         random_password = input_password;
                         safety_password = input_password;
 
@@ -417,13 +394,15 @@ namespace tc
                         }
 
                         // verify in profile server
-                        auto verify_result = ProfileApi::VerifyDeviceInfo(remote_device_id, random_password, safety_password);
+                        auto verify_result = ProfileApi::VerifyDeviceInfo(remote_device_id, MD5::Hex(random_password), MD5::Hex(safety_password));
                         if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                             TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                             dialog.exec();
                             return;
                         }
-                        if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd && verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd) {
+                        if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd
+                            && verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd
+                            && verify_result != ProfileVerifyResult::kVfSuccessAllPwd) {
                             TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_password_invalid_msg"), grWorkspace.get());
                             dialog.exec();
                             return;
@@ -438,10 +417,12 @@ namespace tc
                         item->encode_fps_ = 0;
                         item->network_type_ = kStreamItemNtTypeRelay;
                         item->remote_device_id_ = remote_device_id;
-                        if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd) {
+                        if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd
+                            || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                             item->remote_device_random_pwd_ = random_password;
                         }
-                        else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd) {
+                        else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd
+                            || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                             item->remote_device_safety_pwd_ = safety_password;
                         }
                         context_->SendAppMessage(StreamItemAdded {

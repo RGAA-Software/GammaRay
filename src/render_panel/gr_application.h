@@ -57,10 +57,18 @@ namespace tc
         // 2. device id & password paired ?
         bool CheckLocalDeviceInfoWithPopup();
 
+        // compare local safety password and password in pr server
+        // refresh server if they are not equal
+        // 1. when the app starts and has pr server info
+        // 2. when pr server info is obtained
+        void UpdateServerSecurityPasswordIfNeeded();
+
     private:
         void RefreshSigServerSettings();
         void RegisterMessageListener();
         void RegisterFirewall();
+
+        // if there isn't a security password, will pop up a dialog for you to input it
         void CheckSecurityPassword();
 
     private:

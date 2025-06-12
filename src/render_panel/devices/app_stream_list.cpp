@@ -318,8 +318,10 @@ namespace tc
             }
 
             // verify remote
+            // password from inputting
+            // password from database
             auto verify_result
-                = ProfileApi::VerifyDeviceInfo(target_item->remote_device_id_, remote_random_pwd, remote_safety_pwd);
+                = ProfileApi::VerifyDeviceInfo(target_item->remote_device_id_, MD5::Hex(remote_random_pwd), MD5::Hex(remote_safety_pwd));
             if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                 TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                 dialog.exec();
@@ -327,7 +329,8 @@ namespace tc
             }
 
             if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd &&
-                verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd) {
+                verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd &&
+                verify_result != ProfileVerifyResult::kVfSuccessAllPwd) {
                 // tell user, password is invalid
                 TcDialog dialog(tcTr("id_password_invalid"), tcTr("id_password_invalid_msg"), grWorkspace.get());
                 dialog.exec();
@@ -347,11 +350,11 @@ namespace tc
 
             LOGI("Verify result, the password type: {}", (int)verify_result);
             // update to database
-            if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd) {
+            if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                 db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
                 target_item->remote_device_random_pwd_ = remote_random_pwd;
             }
-            else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd) {
+            else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                 db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
                 target_item->remote_device_safety_pwd_ = remote_safety_pwd;
             }

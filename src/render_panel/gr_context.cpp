@@ -274,8 +274,8 @@ namespace tc
             return nullptr;
         }
         auto relay_device_info = relay_result.value();
-        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
-             srv_remote_device_id, relay_device_info->relay_server_ip_, relay_device_info->relay_server_port_);
+        //LOGI("Remote device info: id: {}, relay host: {}, port: {}",
+        //     srv_remote_device_id, relay_device_info->relay_server_ip_, relay_device_info->relay_server_port_);
         return relay_device_info;
 
     }

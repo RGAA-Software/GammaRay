@@ -16,9 +16,9 @@ namespace tc
 {
 
     ///verify/device/info
-    ProfileVerifyResult ProfileApi::VerifyDeviceInfo(const std::string& device_id, const std::string& random_pwd, const std::string& safety_pwd) {
+    ProfileVerifyResult ProfileApi::VerifyDeviceInfo(const std::string& device_id, const std::string& random_pwd_md5, const std::string& safety_pwd_md5) {
         auto settings = GrSettings::Instance();
-        if (device_id.empty() || random_pwd.empty()) {
+        if (device_id.empty()) {
             return ProfileVerifyResult::kVfEmptyDeviceId;
         }
         if (settings->profile_server_host_.empty() || settings->profile_server_port_.empty()) {
@@ -28,8 +28,8 @@ namespace tc
                 HttpClient::Make(settings->profile_server_host_, std::atoi(settings->profile_server_port_.c_str()), "/verify/device/info", 2000);
         auto resp = client->Request({
             {"device_id", device_id},
-            {"random_pwd_md5", random_pwd.empty() ? "" : MD5::Hex(random_pwd)},
-            {"safety_pwd_md5", safety_pwd.empty() ? "" : MD5::Hex(safety_pwd)},
+            {"random_pwd_md5", random_pwd_md5.empty() ? "" : random_pwd_md5},
+            {"safety_pwd_md5", safety_pwd_md5.empty() ? "" : safety_pwd_md5},
         });
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request new device failed.");
@@ -65,6 +65,9 @@ namespace tc
             }
             else if (pwd_type == "safety") {
                 return ProfileVerifyResult::kVfSuccessSafetyPwd;
+            }
+            else if (pwd_type == "all") {
+                return ProfileVerifyResult::kVfSuccessAllPwd;
             }
             else {
                 return ProfileVerifyResult::kVfPasswordFailed;

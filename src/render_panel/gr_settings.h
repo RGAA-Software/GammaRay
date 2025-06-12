@@ -169,7 +169,7 @@ namespace tc
 
         std::string device_id_;
         std::string device_random_pwd_;
-        std::string device_safety_pwd_;
+        std::string device_safety_pwd_md5_;
 
         std::string file_transfer_folder_;
 

@@ -70,7 +70,7 @@ namespace tc
 
             pwd_input_ = new TcPasswordInput(this);
             pwd_input_->setFixedSize(edit_size);
-            pwd_input_->SetPassword(settings->device_safety_pwd_.c_str());
+            pwd_input_->SetPassword(settings->device_safety_pwd_md5_.c_str());
 
             layout->addWidget(pwd_input_);
             layout->addStretch();
@@ -94,7 +94,7 @@ namespace tc
 
             pwd_input_again_ = new TcPasswordInput(this);
             pwd_input_again_->setFixedSize(edit_size);
-            pwd_input_again_->SetPassword(settings->device_safety_pwd_.c_str());
+            pwd_input_again_->SetPassword(settings->device_safety_pwd_md5_.c_str());
             layout->addWidget(pwd_input_again_);
             layout->addStretch();
 

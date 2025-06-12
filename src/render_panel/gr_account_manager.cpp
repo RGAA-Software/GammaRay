@@ -18,7 +18,7 @@ namespace tc
     Result<bool, GrAccountError> GrAccountManager::IsDeviceInfoOk() {
         auto device_id = settings_->device_id_;
         auto device_random_pwd = settings_->device_random_pwd_;
-        auto device_safety_pwd = settings_->device_safety_pwd_;
+        auto device_safety_pwd = settings_->device_safety_pwd_md5_;
 
         if (device_id.empty() || device_random_pwd.empty()) {
             LOGE("Check device info error, device id is empty.");

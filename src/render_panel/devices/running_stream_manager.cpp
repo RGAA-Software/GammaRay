@@ -66,7 +66,7 @@ namespace tc
             << std::format("--stream_name={}", Base64::Base64Encode(item->stream_name_)).c_str()
             << std::format("--device_id={}", settings_->device_id_).c_str()
             << std::format("--device_rp={}", Base64::Base64Encode(settings_->device_random_pwd_)).c_str()
-            << std::format("--device_sp={}", Base64::Base64Encode(settings_->device_safety_pwd_)).c_str()
+            << std::format("--device_sp={}", Base64::Base64Encode(settings_->device_safety_pwd_md5_)).c_str()
             << std::format("--remote_device_id={}", item->remote_device_id_).c_str()
             << std::format("--remote_device_rp={}", Base64::Base64Encode(item->remote_device_random_pwd_)).c_str()
             << std::format("--remote_device_sp={}", Base64::Base64Encode(item->remote_device_safety_pwd_)).c_str()

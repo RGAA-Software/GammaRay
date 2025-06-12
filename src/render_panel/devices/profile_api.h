@@ -21,6 +21,7 @@ namespace tc
         kVfParseJsonFailed,
         kVfSuccessRandomPwd,
         kVfSuccessSafetyPwd,
+        kVfSuccessAllPwd,
         kVfPasswordFailed,
     };
 
@@ -37,7 +38,7 @@ namespace tc
         // device id
         // random pwd: will be md5 in this func
         // safety pwd: will be md5 in this func
-        static ProfileVerifyResult VerifyDeviceInfo(const std::string& device_id, const std::string& random_pwd, const std::string& safety_pwd);
+        static ProfileVerifyResult VerifyDeviceInfo(const std::string& device_id, const std::string& random_pwd_md5, const std::string& safety_pwd_md5);
     };
 
 }
