@@ -102,8 +102,10 @@ namespace tc
     }
     
     bool GdiCapturePlugin::StartCapturing() {
+        GrMonitorCapturePlugin::StartCapturing();
         StopCapturing();
         capturing_monitor_name_ = kVirtualDesktopNameSign;
+        gdi_capture_->SetCaptureFps(capture_fps_);
         gdi_capture_->StartCapture();
         NotifyCaptureMonitorInfo();
         return true;

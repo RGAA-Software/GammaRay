@@ -131,7 +131,10 @@ namespace tc
                 layout->addSpacing(border_spacing);
                 layout->addWidget(btn);
                 btn->SetOnClickListener([=, this](QWidget* w) {
-                    parent->showMinimized();
+                    auto top_widget = this->window();
+                    if (top_widget) {
+                        top_widget->showMinimized();
+                    }
                 });
             }
             {
@@ -142,11 +145,15 @@ namespace tc
                 layout->addSpacing(border_spacing);
                 layout->addWidget(btn);
                 btn->SetOnClickListener([=, this](QWidget* w) {
-                    if (parent->isFullScreen()) {
-                        parent->showNormal();
+                    auto top_widget = this->window();
+                    if (!top_widget) {
+                        return;
+                    }
+                    if (top_widget->isFullScreen()) {
+                        top_widget->showNormal();
                         context_->SendAppMessage(ExitFullscreenMessage{});
                     } else {
-                        parent->showFullScreen();
+                        top_widget->showFullScreen();
                         context_->SendAppMessage(FullscreenMessage{});
                         HideAllSubPanels();
                     }

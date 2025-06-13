@@ -192,7 +192,7 @@ namespace tc
         });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
-            this->SendSwitchWorkModeMessage(msg.mode_);
+            //this->SendSwitchWorkModeMessage(msg.mode_);
             });
 
         msg_listener_->Listen<SwitchScaleModeMessage>([=, this](const SwitchScaleModeMessage& msg) {
@@ -205,7 +205,7 @@ namespace tc
 
         // step 1
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
-            this->SendSwitchWorkModeMessage(settings_->work_mode_);
+            //this->SendSwitchWorkModeMessage(settings_->work_mode_);
             this->SendUpdateDesktopMessage();
             main_progress_->ResetProgress();
             main_progress_->StepForward();
@@ -752,6 +752,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
+        return; // 暂时不启用这种模式切换,改用直接设置帧率
         if (!sdk_) {
             return;
         }

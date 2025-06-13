@@ -180,6 +180,7 @@ namespace tc
     }
 
     bool DDACapturePlugin::StartCapturing() {
+        GrMonitorCapturePlugin::StartCapturing();
         StopCapturing();
         if (capturing_monitor_name_ != kAllMonitorsNameSign && !capturing_monitor_name_.empty()) {
             if (!ExistCaptureMonitor(capturing_monitor_name_)) {
@@ -189,6 +190,8 @@ namespace tc
 
         for(const auto&[dev_name, monitor_info] : monitors_) {
             auto capture = std::make_shared<DDACapture>(this, monitor_info);
+            LOGI("DDACapturePlugin capture_fps_: {}", capture_fps_);
+            capture->SetCaptureFps(capture_fps_);
             capture->StartCapture();
             capture->SetDDAInitCallback([=, this](bool init_res) {
                 if (!init_res) {
