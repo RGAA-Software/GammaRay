@@ -148,6 +148,7 @@ namespace tc
         ss << "  - encoder format: " << encoder_.encoder_format_ << " (0 => H264, 1 => HEVC)" << std::endl;
         ss << "  - bitrate: " << encoder_.bitrate_ << std::endl;
         ss << "  - encode resolution type: " << (int)encoder_.encode_res_type_ << " (0 => origin, 1=> specify) " <<  std::endl;
+        ss << "  - encode fps: " << encoder_.fps_ << std::endl;
         ss << "  - encode width: " << encoder_.encode_width_ << ", height: " << encoder_.encode_height_ << std::endl;
         ss << "Capture: \n";
         ss << "  - enable audio: " << capture_.enable_audio_ << std::endl;

@@ -296,7 +296,10 @@ namespace tc
             }
             // test end
 
+            uint64_t beg_time = TimeUtil::GetCurrentTimestamp();
+
             auto target_duration = 1000 / capture_fps_;
+            //LOGI("target_duration: {}, capture_fps_: {}", target_duration, capture_fps_);
             CComPtr<ID3D11Texture2D> texture = nullptr;
             auto res = CaptureNextFrame(target_duration, texture);
 
@@ -353,6 +356,12 @@ namespace tc
 
             if (texture) {
                 OnCaptureFrame(texture, is_cached);
+                uint64_t end_time = TimeUtil::GetCurrentTimestamp();
+                int cap_use_time = end_time - beg_time;
+                if (target_duration > (cap_use_time + 5)) {
+                    TimeUtil::DelayBySleep(target_duration - cap_use_time -3);
+                    //LOGI("DelayBySleep: {}", target_duration - cap_use_time - 3);
+                }
             }
         }
     }

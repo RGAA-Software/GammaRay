@@ -137,6 +137,8 @@ namespace tc
             }
             else {
                 monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+                LOGI("Use capture fps: {}", settings_->encoder_.fps_);
+                monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
                 if (monitor_capture_plugin_ && monitor_capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
                     monitor_capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
@@ -723,6 +725,7 @@ namespace tc
             monitor_capture_plugin_->StopCapturing();
         }
         monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
+        monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
         monitor_capture_plugin_->EnablePlugin();
         LOGI("Use gdi capture plugin.");
     }

@@ -57,6 +57,7 @@ namespace tc
         this->context_->InitNotifyManager(this);
         this->settings_ = Settings::Instance();
         this->params_ = params;
+        cursor_ = QCursor(Qt::ArrowCursor);
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
     }
 
@@ -191,7 +192,7 @@ namespace tc
         });
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
-            this->SendSwitchWorkModeMessage(msg.mode_);
+            //this->SendSwitchWorkModeMessage(msg.mode_);
             });
 
         msg_listener_->Listen<SwitchScaleModeMessage>([=, this](const SwitchScaleModeMessage& msg) {
@@ -204,7 +205,7 @@ namespace tc
 
         // step 1
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
-            this->SendSwitchWorkModeMessage(settings_->work_mode_);
+            //this->SendSwitchWorkModeMessage(settings_->work_mode_);
             this->SendUpdateDesktopMessage();
             main_progress_->ResetProgress();
             main_progress_->StepForward();
@@ -298,7 +299,28 @@ namespace tc
         });
 
         sdk_->SetOnCursorInfoCallback([=, this](const CursorInfoSync& cursor_info) {
-            this->UpdateLocalCursor(cursor_info.type());
+            auto shape = ToQCursorShape(cursor_info.type());
+            QCursor new_cursor;
+            if (Qt::BitmapCursor == shape) {
+                std::string bitmap_data = cursor_info.bitmap();
+                if (!bitmap_data.empty()) {
+                    QImage image((uchar*)bitmap_data.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
+                    QPixmap pixmap = QPixmap::fromImage(image);
+                    QCursor cursor(pixmap, cursor_info.hotspot_x(), cursor_info.hotspot_y());
+                    new_cursor = cursor;
+                }
+                else {
+                    new_cursor = QCursor(Qt::ArrowCursor);
+                }
+            }
+            else {
+                new_cursor = QCursor(shape);
+            }
+
+            if (new_cursor != cursor_) {
+                cursor_ = new_cursor;
+                this->UpdateLocalCursor();
+            }
         });
 
         sdk_->SetOnHeartBeatCallback([=, this](const OnHeartBeat& hb) {
@@ -590,43 +612,64 @@ namespace tc
         btn_indicator_->setGeometry(0, 0, btn_indicator_->width(), btn_indicator_->height());
     }
 
-    void BaseWorkspace::UpdateLocalCursor(uint32_t type) {
-        if (cursor_type_ == type && !force_update_cursor_) {
-            return;
+    Qt::CursorShape BaseWorkspace::ToQCursorShape(uint32_t cursor_type) {
+        if (cursor_type_ == CursorInfoSync::kIdcArrow) {
+            return Qt::ArrowCursor;
         }
-        force_update_cursor_ = false;
-        cursor_type_ = type;
+        else if (cursor_type_ == CursorInfoSync::kIdcIBeam) {
+            return Qt::IBeamCursor;
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcWait) {
+            this->setCursor(Qt::WaitCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcCross) {
+            this->setCursor(Qt::CrossCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcUpArrow) {
+            this->setCursor(Qt::UpArrowCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcSize) {
+            this->setCursor(Qt::SizeAllCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcIcon) {
+            return Qt::BitmapCursor;
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcSizeNWSE) {
+            this->setCursor(Qt::SizeFDiagCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcSizeNESW) {
+            this->setCursor(Qt::SizeBDiagCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcSizeWE) {
+            this->setCursor(Qt::SizeHorCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcSizeNS) {
+            this->setCursor(Qt::SizeVerCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcSizeAll) {
+            this->setCursor(Qt::SizeAllCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcHand) {
+            this->setCursor(Qt::PointingHandCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcPin) {
+            this->setCursor(Qt::PointingHandCursor);
+        }
+        else if (cursor_type_ == CursorInfoSync::kIdcHelp) {
+            this->setCursor(Qt::WhatsThisCursor);
+        }
+        else {
+            return Qt::BitmapCursor;
+        }
+    }
+
+    void BaseWorkspace::UpdateLocalCursor() {
         context_->PostUITask([=, this]() {
-            if (cursor_type_ == CursorInfoSync::kIdcArrow) {
-                this->setCursor(Qt::ArrowCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcIBeam) {
-                this->setCursor(Qt::IBeamCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcWait) {
-                this->setCursor(Qt::WaitCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcCross) {
-                this->setCursor(Qt::CrossCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcUpArrow) {
-                this->setCursor(Qt::UpArrowCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcSize) {
-                this->setCursor(Qt::SizeAllCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcIcon) {
-                this->setCursor(Qt::ArrowCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcSizeNWSE) {
-                this->setCursor(Qt::SizeFDiagCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcSizeNESW) {
-                this->setCursor(Qt::SizeBDiagCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcSizeWE) {
-                this->setCursor(Qt::SizeHorCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcSizeNS)  {
-                this->setCursor(Qt::SizeVerCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcSizeAll) {
-                this->setCursor(Qt::SizeAllCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcHand) {
-                this->setCursor(Qt::PointingHandCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcPin) {
-                this->setCursor(Qt::PointingHandCursor);
-            } else if (cursor_type_ == CursorInfoSync::kIdcHelp) {
-                this->setCursor(Qt::WhatsThisCursor);
+            if (QApplication::overrideCursor()) {
+                QApplication::changeOverrideCursor(cursor_);
+            }
+            else {
+                QApplication::setOverrideCursor(cursor_);
             }
         });
     }
@@ -709,6 +752,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
+        return; // 暂时不启用这种模式切换,改用直接设置帧率
         if (!sdk_) {
             return;
         }

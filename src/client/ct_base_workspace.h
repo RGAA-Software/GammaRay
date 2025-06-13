@@ -72,7 +72,7 @@ namespace tc
         virtual void RegisterSdkMsgCallbacks();
         void Exit();
         //void UpdateNotificationHandlePosition();
-        void UpdateLocalCursor(uint32_t type);
+        void UpdateLocalCursor();
 
 
         virtual void RegisterBaseListeners();
@@ -98,6 +98,9 @@ namespace tc
         virtual void InitGameView(const std::shared_ptr<ThunderSdkParams>& params);
         void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
         void ExitClientWithDialog();
+
+        // 匹配鼠标形状
+        Qt::CursorShape ToQCursorShape(uint32_t cursor_type);
 
     protected:
         std::shared_ptr<ThunderSdkParams> params_ = nullptr;
@@ -135,6 +138,8 @@ namespace tc
         std::shared_ptr<ClientPluginManager> plugin_manager_ = nullptr;
 
         MediaRecordPluginClientInterface* media_record_plugin_ = nullptr;
+
+        QCursor cursor_;
 
     protected:
         QString origin_title_name_;
