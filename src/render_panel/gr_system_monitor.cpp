@@ -19,9 +19,9 @@
 #include "render_panel/network/ws_panel_server.h"
 #include "gr_settings.h"
 #include "service/service_manager.h"
-#include "tc_spvr_client/spvr_manager.h"
+#include "tc_spvr_client/spvr_api.h"
 #include "tc_common_new/http_base_op.h"
-#include "devices/profile_api.h"
+#include "tc_profile_client/profile_api.h"
 #include "tc_manager_client/mgr_device.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include <QApplication>
@@ -41,7 +41,6 @@ namespace tc
         this->context_ = app->GetContext();
         this->service_manager_ = context_->GetServiceManager();
         this->settings_ = GrSettings::Instance();
-        this->spvr_mgr_ = this->context_->GetSpvrManager();
     }
 
     void GrSystemMonitor::Start() {
@@ -269,9 +268,9 @@ namespace tc
 
     void GrSystemMonitor::CheckOnlineServers() {
         if (!this->VerifyOnlineServers()) {
-            auto ret_online_servers = spvr_mgr_->GetOnlineServers();
+            auto ret_online_servers = spvr::SpvrApi::GetOnlineServers(settings_->spvr_server_host_, std::atoi(settings_->spvr_server_port_.c_str()));
             if (!ret_online_servers) {
-                SpvrError err = ret_online_servers.error();
+                auto err = ret_online_servers.error();
                 LOGE("Can't request online servers: {}:{}, err: {}",
                      settings_->spvr_server_host_, settings_->spvr_server_port_, SpvrError2String(err));
                 return;

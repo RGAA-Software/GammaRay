@@ -17,7 +17,7 @@
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
-#include "tc_spvr_client/spvr_manager.h"
+#include "tc_spvr_client/spvr_api.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
@@ -281,7 +281,7 @@ namespace tc
                 settings_->SetSpvrServerHost(spvr_host);
                 settings_->SetSpvrServerPort(spvr_port);
                 settings_->SetPanelListeningPort(edt_panel_port_->text().toInt());
-                context_->GetSpvrManager()->SetHostPort(spvr_host, std::atoi(spvr_port.c_str()));
+
                 // Load again
                 settings_->Load();
 

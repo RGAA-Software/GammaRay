@@ -58,3 +58,6 @@
 [submodule "deps/tc_account_sdk"]
 	path = deps/tc_account_sdk
 	url = git@github.com:RGAA-Software/tc_account_sdk.git
+[submodule "deps/tc_profile_client"]
+	path = deps/tc_profile_client
+	url = git@github.com:RGAA-Software/tc_profile_client.git

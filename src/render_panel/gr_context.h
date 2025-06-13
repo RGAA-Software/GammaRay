@@ -90,7 +90,6 @@ namespace tc
         std::shared_ptr<GrRunGameManager> GetRunGameManager();
         static std::string GetCurrentExeFolder();
         std::shared_ptr<StreamDBOperator> GetStreamDBManager();
-        std::shared_ptr<SpvrManager> GetSpvrManager();
         std::shared_ptr<RunningStreamManager> GetRunningStreamManager();
         std::shared_ptr<GrDatabase> GetDatabase();
         std::shared_ptr<AccountSdk> GetAccSdk();

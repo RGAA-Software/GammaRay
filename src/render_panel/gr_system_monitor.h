@@ -58,7 +58,6 @@ namespace tc
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ = nullptr;
-        std::shared_ptr<SpvrManager> spvr_mgr_ = nullptr;
     };
 
 }

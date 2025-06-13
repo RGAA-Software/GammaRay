@@ -26,7 +26,7 @@
 #include "tc_common_new/uid_spacer.h"
 #include "edit_relay_stream_dialog.h"
 #include "stream_settings_dialog.h"
-#include "profile_api.h"
+#include "tc_profile_client/profile_api.h"
 #include "render_panel/gr_account_manager.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
@@ -320,8 +320,11 @@ namespace tc
             // verify remote
             // password from inputting
             // password from database
-            auto verify_result
-                = ProfileApi::VerifyDeviceInfo(target_item->remote_device_id_, MD5::Hex(remote_random_pwd), MD5::Hex(remote_safety_pwd));
+            auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->profile_server_host_,
+                                                              std::atoi(settings_->profile_server_port_.c_str()),
+                                                              target_item->remote_device_id_,
+                                                              MD5::Hex(remote_random_pwd),
+                                                              MD5::Hex(remote_safety_pwd));
             if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                 TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                 dialog.exec();

@@ -23,7 +23,7 @@
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/ip_util.h"
-#include "tc_spvr_client/spvr_manager.h"
+#include "tc_spvr_client/spvr_api.h"
 #include "input_safety_pwd_dialog.h"
 #include "tc_label.h"
 #include <QStandardPaths>

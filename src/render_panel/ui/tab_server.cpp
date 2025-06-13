@@ -49,15 +49,15 @@
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_password_input.h"
-#include "tc_spvr_client/spvr_manager.h"
+#include "tc_spvr_client/spvr_api.h"
 #include "tc_common_new/base64.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_manager_client/mgr_device.h"
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/database/stream_db_operator.h"
-#include "render_panel/devices/profile_api.h"
 #include "render_panel/gr_workspace.h"
 #include "relay_message.pb.h"
+#include "tc_profile_client/profile_api.h"
 
 namespace tc
 {
@@ -395,7 +395,11 @@ namespace tc
                         }
 
                         // verify in profile server
-                        auto verify_result = ProfileApi::VerifyDeviceInfo(remote_device_id, MD5::Hex(random_password), MD5::Hex(safety_password));
+                        auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->profile_server_host_,
+                                                                          std::atoi(settings_->profile_server_port_.c_str()),
+                                                                          remote_device_id,
+                                                                          MD5::Hex(random_password),
+                                                                          MD5::Hex(safety_password));
                         if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                             TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
                             dialog.exec();
