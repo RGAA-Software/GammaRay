@@ -109,6 +109,10 @@ namespace tc
         sp_->Put(kKeyScaleMode, std::to_string((int)mode));
     }
 
+    void Settings::SetFps(int fps) {
+        fps_ = fps;
+    }
+
     void Settings::Dump() {
         LOGI("device id: {}", device_id_);
         LOGI("stream id: {}", stream_id_);

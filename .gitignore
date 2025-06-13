@@ -5,3 +5,6 @@ cmake-build-release/*
 .vs/*
 out/*
 .vscode/*
+src/.vscode/*
+src/client/.vscode/*
+src/render/.vscode/*

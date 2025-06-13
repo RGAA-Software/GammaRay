@@ -58,7 +58,7 @@ namespace tc
         void SetWorkMode(SwitchWorkMode::WorkMode mode);
         void SetScaleMode(ScaleMode mode);
         void SetFullColorEnabled(bool enabled);
-
+        void SetFps(int fps);
         void Dump();
     public:
         std::string version_;
@@ -107,6 +107,9 @@ namespace tc
 
         //  screen recording path
         std::string screen_recording_path_;
+
+        // fps 当前流路的帧率
+        int fps_ = 30;
     };
 
 }

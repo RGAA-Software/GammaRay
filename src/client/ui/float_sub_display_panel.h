@@ -16,6 +16,7 @@ namespace tc
     enum SubDisplayType {
         kScale,
         kResolution,
+        kFps,
     };
 
     class MessageListener;

@@ -134,6 +134,12 @@ namespace tc
         SwitchWorkMode::WorkMode mode_;
     };
 
+    // 修改帧率 client->render
+    class ModifyFpsMessage : public AppMessage {
+    public:
+        int fps_ = 30;
+    };
+
     // 切换全彩模式
     class SwitchFullColorMessage : public AppMessage {
     public:
@@ -185,6 +191,7 @@ namespace tc
             kAudioStatus,
             kFullColorStatus,
             kMediaRecordStatus,
+            kFps,
         };
         EUpdate update_type_ = EUpdate::kUnknow;
     };

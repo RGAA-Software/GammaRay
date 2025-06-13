@@ -66,6 +66,7 @@ set(SRCS_WS
         ui/ct_stat_frame_info_item.cpp
         ui/float_sub_control_panel.cpp
         ui/float_sub_mode_panel.cpp
+        ui/float_sub_fps_panel.cpp
         ui/float_sub_display_panel.cpp
         ui/float_3rd_scale_panel.cpp
         ui/float_3rd_resolution_panel.cpp

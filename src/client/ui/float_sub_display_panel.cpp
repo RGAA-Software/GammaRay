@@ -11,6 +11,7 @@
 #include "float_3rd_resolution_panel.h"
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
+#include "float_sub_fps_panel.h"
 #include <QLabel>
 #include <qtimer.h>
 
@@ -20,7 +21,7 @@ namespace tc
     SubDisplayPanel::SubDisplayPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
-        setFixedSize(200, 130);
+        setFixedSize(200, 160);
         auto item_height = 38;
         int border_spacing = 10;
         auto item_size = QSize(this->width(), item_height);
@@ -159,6 +160,48 @@ namespace tc
 
             root_layout->addSpacing(5);
             root_layout->addWidget(widget);
+        }
+
+        // fps set
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
+
+            auto lbl = new QLabel();
+            lbl->setText(tr("Fps"));
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing * 2);
+            layout->addWidget(lbl);
+
+            layout->addStretch();
+
+            auto icon_right = new QLabel(this);
+            icon_right->setFixedSize(icon_size);
+            icon_right->setStyleSheet(R"( background-image: url(:resources/image/ic_arrow_right_2.svg);
+                                    background-repeat:no-repeat;
+                                    background-position: center center;)");
+            layout->addWidget(icon_right);
+            layout->addSpacing(border_spacing);
+            layout->addSpacing(border_spacing);
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](auto w) {
+                auto panel = GetSubPanel(SubDisplayType::kFps);
+                if (!panel) {
+                    panel = (BaseWidget*)(new SubFpsPanel(ctx, (QWidget*)this->parent()));
+                    sub_panels_[SubDisplayType::kFps] = panel;
+                    WidgetHelper::AddShadow(panel, 0xbbbbbb);
+                }
+                auto item_pos = this->mapTo((QWidget*)this->parent(), w->pos());
+                HideAllSubPanels();
+                panel->setGeometry(this->pos().x() + this->width(), item_pos.y(), panel->width(), panel->height());
+                panel->Show();
+            });
         }
 
         root_layout->addStretch();

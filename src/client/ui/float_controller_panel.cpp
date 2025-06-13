@@ -26,7 +26,7 @@ namespace tc
 
     FloatControllerPanel::FloatControllerPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
-        this->setFixedSize(kInitialWidth, 320);
+        this->setFixedSize(kInitialWidth, 280);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
@@ -184,6 +184,7 @@ namespace tc
         auto icon_size = QSize(40, 40);
         int item_left_spacing = border_spacing;
         // work mode
+#if 0   // 暂时不启用 work mode, 改用直接设置帧率
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
@@ -230,6 +231,7 @@ namespace tc
                 panel->show();
             });
         }
+#endif
         // control
         {
             auto layout = new NoMarginHLayout();
