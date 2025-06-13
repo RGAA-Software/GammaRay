@@ -35,6 +35,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
+#include "tc_dialog.h"
 #include "render_panel/gr_statistics.h"
 #include "render_panel/gr_application.h"
 #include "tc_qt_widget/sized_msg_box.h"
@@ -52,11 +53,11 @@
 #include "tc_common_new/base64.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_manager_client/mgr_device.h"
-#include "tc_dialog.h"
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/database/stream_db_operator.h"
 #include "render_panel/devices/profile_api.h"
 #include "render_panel/gr_workspace.h"
+#include "relay_message.pb.h"
 
 namespace tc
 {
@@ -388,7 +389,7 @@ namespace tc
                             return;
                         }
                         // get device's relay server info
-                        auto relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
+                        std::shared_ptr<relay::RelayDeviceInfo> relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
                         if (relay_device_info == nullptr) {
                             return;
                         }
@@ -411,8 +412,8 @@ namespace tc
                         std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
                         item->stream_id_ = "id_" + remote_device_id;
                         item->stream_name_ = remote_device_id;
-                        item->stream_host_ = relay_device_info->relay_server_ip_;
-                        item->stream_port_ = relay_device_info->relay_server_port_;
+                        item->stream_host_ = relay_device_info->relay_server_ip();
+                        item->stream_port_ = relay_device_info->relay_server_port();
                         item->encode_bps_ = 0;
                         item->encode_fps_ = 0;
                         item->network_type_ = kStreamItemNtTypeRelay;
@@ -499,6 +500,7 @@ namespace tc
         if (lbl_detailed_info_) {
             auto info = std::format("gammaray://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
             lbl_detailed_info_->setText(info.c_str());
+            lbl_detailed_info_->setCursorPosition(0);
         }
     }
 

@@ -20,7 +20,7 @@
 #include "render_panel/util/conn_info_parser.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_client.h"
-#include "tc_spvr_client/spvr_device_info.h"
+#include "relay_message.pb.h"
 
 namespace tc
 {
@@ -179,8 +179,8 @@ namespace tc
             }
 
             // relay mode
-            stream_host = relay_device_info->relay_server_ip_;
-            stream_port = relay_device_info->relay_server_port_;
+            stream_host = relay_device_info->relay_server_ip();
+            stream_port = relay_device_info->relay_server_port();
         }
 
         auto settings = Settings::Instance();

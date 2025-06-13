@@ -9,7 +9,8 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/database/stream_item.h"
-#include "tc_spvr_client/spvr_device_info.h"
+#include "relay_message.pb.h"
+#include "tc_relay_client/relay_api.h"
 
 namespace tc
 {
@@ -55,7 +56,7 @@ namespace tc
             if (item->IsRelay()) {
                 // to check in server
                 auto device_info = context_->GetRelayServerSideDeviceInfo(item->remote_device_id_, false);
-                if (device_info && device_info->IsValid()) {
+                if (device_info && relay::RelayApi::IsRelayDeviceValid(device_info)) {
                     online = true;
                 }
             }

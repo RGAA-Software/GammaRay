@@ -163,8 +163,8 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${CMAKE_
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}www)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
-        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib tc_signaling_sdk #lib_GammaRayClient
-        tc_relay_client tc_manager_client QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client Dwmapi.lib tc_widget_loadings tc_client_plugin
+        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib #tc_signaling_sdk #lib_GammaRayClient
+        tc_relay_client tc_manager_client TC_WidgetFrame tc_translator tc_spv_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets
         tc_account_sdk tc_rp_message
 )
 
@@ -222,8 +222,8 @@ endif ()
 # gdi 
 add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder  plugin_ffmpeg_encoder
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
-        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer tc_signaling_sdk #lib_GammaRayClient
-        plugin_mock_video_stream plugin_obj_detector plugin_net_relay plugin_gdi_capture QWindowKit::Widgets TC_WidgetFrame tc_translator tc_spv_client
+        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer #tc_signaling_sdk #lib_GammaRayClient
+        plugin_mock_video_stream plugin_obj_detector plugin_net_relay plugin_gdi_capture TC_WidgetFrame tc_translator tc_spv_client #QWindowKit::Widgets
         plugin_clipboard tc_account_sdk tc_rp_message
 )
 

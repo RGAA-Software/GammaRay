@@ -31,6 +31,8 @@
 #include "gr_workspace.h"
 #include "database/gr_database.h"
 #include "tc_account_sdk/acc_sdk.h"
+#include "tc_relay_client/relay_api.h"
+#include "relay_message.pb.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -261,12 +263,14 @@ namespace tc
         return acc_sdk_;
     }
 
-    std::shared_ptr<SpvrDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {
+    std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {
+        if (settings_->relay_server_host_.empty()) {
+            return nullptr;
+        }
         auto srv_remote_device_id = "server_" + device_id;
-        auto spvr_mgr = this->GetSpvrManager();
-        auto relay_result = spvr_mgr->GetRelayDeviceInfo(srv_remote_device_id);
+        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(settings_->relay_server_host_, std::atoi(settings_->relay_server_port_.c_str()), srv_remote_device_id);
         if (!relay_result) {
-            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, SpvrError2String(relay_result.error()));
+            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, RelayError2String(relay_result.error()));
             if (show_dialog) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
                 dialog.exec();
