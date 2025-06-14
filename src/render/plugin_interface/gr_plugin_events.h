@@ -41,6 +41,7 @@ namespace tc
         kPluginRtcReportEvent,
         kPluginFileTransferBegin,
         kPluginFileTransferEnd,
+        kPluginDataSent,
     };
 
     class GrPluginBaseEvent {
@@ -298,6 +299,16 @@ namespace tc
         std::string the_file_id_;
         int64_t end_timestamp_ = 0;
         int64_t duration_ = 0;
+    };
+
+    // data sent size
+    class GrPluginDataSent : public GrPluginBaseEvent {
+    public:
+        GrPluginDataSent() {
+            event_type_ = GrPluginEventType::kPluginDataSent;
+        }
+    public:
+        int size_ = 0;
     };
 }
 

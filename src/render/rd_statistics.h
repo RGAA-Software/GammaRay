@@ -70,7 +70,7 @@ namespace tc
         std::shared_ptr<PluginManager> plugin_mgr_ = nullptr;
         // unit: S
         int64_t running_time_{};
-        int64_t send_media_bytes_{};
+        std::atomic_int64_t send_media_bytes_{};
 
         Encoder::EncoderFormat video_encoder_format_;
 

@@ -12,6 +12,7 @@ namespace tc
 
     class RdContext;
     class RdApplication;
+    class RdStatistics;
     class GrPluginBaseEvent;
     class PluginManager;
     class PluginStreamEventRouter;
@@ -38,6 +39,7 @@ namespace tc
         std::shared_ptr<PluginStreamEventRouter> stream_event_router_ = nullptr;
         std::shared_ptr<PluginNetEventRouter> net_event_router_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
+        RdStatistics* stat_ = nullptr;
 
     };
 

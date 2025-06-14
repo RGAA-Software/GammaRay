@@ -65,4 +65,10 @@ namespace tc
         return false;
     }
 
+    void GrNetPlugin::ReportSentDataSize(int size) {
+        auto event = std::make_shared<GrPluginDataSent>();
+        event->size_ = size;
+        CallbackEvent(event);
+    }
+
 }

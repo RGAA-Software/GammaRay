@@ -56,6 +56,10 @@ namespace tc
         queuing_message_count_++;
         session_->async_send(data, [=, this](size_t byte_sent) {
             queuing_message_count_--;
+
+            // report data size
+            auto plugin = Get<WsPlugin*>("plugin");
+            plugin->ReportSentDataSize(byte_sent);
         });
     }
 
@@ -80,6 +84,10 @@ namespace tc
         queuing_message_count_++;
         session_->async_send(data, [=, this](size_t byte_sent) {
             queuing_message_count_--;
+
+            // report data size
+            auto plugin = Get<WsPlugin*>("plugin");
+            plugin->ReportSentDataSize(byte_sent);
         });
     }
 }

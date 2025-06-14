@@ -228,6 +228,9 @@ namespace tc
         }
         if (!paused_stream || run_through) {
             relay_media_sdk_->RelayProtoMessage(msg);
+
+            // report sent size
+            ReportSentDataSize(msg.size());
         }
     }
 
@@ -238,6 +241,10 @@ namespace tc
         }
         if (!paused_stream || run_through) {
             relay_media_sdk_->RelayProtoMessage(stream_id, msg);
+
+            // report sent size
+            ReportSentDataSize(msg.size());
+
         }
         return true;
     }
@@ -248,6 +255,9 @@ namespace tc
         }
         if ((relay_ft_sdk_ && !paused_stream) || run_through) {
             relay_ft_sdk_->RelayProtoMessage(stream_id, msg);
+
+            // report sent size
+            ReportSentDataSize(msg.size());
         }
         return true;
     }

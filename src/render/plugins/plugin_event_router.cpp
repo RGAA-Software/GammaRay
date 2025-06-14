@@ -3,6 +3,7 @@
 //
 
 #include "plugin_event_router.h"
+#include <fstream>
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
@@ -14,10 +15,10 @@
 #include "plugin_net_event_router.h"
 #include "tc_capture_new/capture_message.h"
 #include "rd_context.h"
-#include <fstream>
 #include "rd_app.h"
 #include "tc_message.pb.h"
 #include "tc_render_panel_message.pb.h"
+#include "rd_statistics.h"
 
 namespace tc
 {
@@ -29,6 +30,7 @@ namespace tc
         stream_event_router_ = std::make_shared<PluginStreamEventRouter>(app);
         net_event_router_ = std::make_shared<PluginNetEventRouter>(app);
         msg_notifier_ = app_->GetContext()->GetMessageNotifier();
+        stat_ = RdStatistics::Instance();
     }
 
     void PluginEventRouter::ProcessPluginEvent(const std::shared_ptr<GrPluginBaseEvent>& event) {
@@ -132,6 +134,10 @@ namespace tc
         else if (event->event_type_ == GrPluginEventType::kPluginFileTransferEnd) {
             auto target_event = std::dynamic_pointer_cast<GrPluginFileTransferEnd>(event);
             ReportFileTransferEnd(target_event);
+        }
+        else if (event->event_type_ == GrPluginEventType::kPluginDataSent) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginDataSent>(event);
+            stat_->AppendMediaBytes(target_event->size_);
         }
     }
 

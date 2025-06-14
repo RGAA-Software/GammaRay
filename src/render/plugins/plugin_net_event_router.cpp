@@ -446,7 +446,7 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessEncodedAudioFrameEvent(const std::shared_ptr<Data>& data, int samples, int channels, int bits, int frame_size) {
         auto net_msg = NetMessageMaker::MakeAudioFrameMsg(data, samples, channels, bits, frame_size);
-        statistics_->AppendMediaBytes(net_msg.size());
+        //statistics_->AppendMediaBytes(net_msg.size());
         app_->PostNetMessage(net_msg);
     }
 

@@ -87,7 +87,7 @@ namespace tc
                                                           msg.frame_height_, msg.key_frame_, msg.monitor_name_,
                                                           msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_, img_format, last_capture_video_frame_.monitor_index_);
         // statistics
-        RdStatistics::Instance()->AppendMediaBytes(net_msg.size());
+        //RdStatistics::Instance()->AppendMediaBytes(net_msg.size());
 
         // plugins: Frame encoded
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {

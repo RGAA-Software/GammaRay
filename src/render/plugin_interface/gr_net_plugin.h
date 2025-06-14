@@ -68,6 +68,9 @@ namespace tc
         virtual bool HasEnoughBufferForQueuingMediaMessages();
         virtual bool HasEnoughBufferForQueuingFtMessages();
 
+        // sent data statistics
+        void ReportSentDataSize(int size);
+
     protected:
         NetSyncInfo sync_info_{};
 
