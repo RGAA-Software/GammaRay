@@ -174,6 +174,11 @@ namespace tc
         //obj["udp_listen_port"] = settings_->udp_listen_port_;
         obj["render_srv_port"] = settings_->render_srv_port_;
 
+        // device id is empty
+        if (settings_->device_id_.empty() && !ips.empty()) {
+            obj["device_id"] = ips[0].ip_addr_;
+        }
+
         return obj.dump();
     }
 
