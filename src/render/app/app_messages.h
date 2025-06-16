@@ -147,6 +147,11 @@ namespace tc
     public:
     };
 
+    class MsgModifyFps {
+    public:
+        int fps_ = 30;
+    };
+
     // public AppBaseEvent
     class MsgClipboardUpdate : public AppBaseEvent {
     public:

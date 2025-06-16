@@ -268,6 +268,13 @@ namespace tc
                 monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
             });
         });
+
+        msg_listener_->Listen<MsgModifyFps>([=, this](const MsgModifyFps& msg) {
+            if (monitor_capture_plugin_) {
+                settings_->encoder_.fps_ = msg.fps_;
+                monitor_capture_plugin_->SetCaptureFps(msg.fps_);
+            }
+        });
     }
 
     void RdApplication::InitAudioCapture() {
@@ -584,6 +591,8 @@ namespace tc
             }
             monitors_info->Add(std::move(info));
         }
+        LOGI("Will send configuration back, fps: {}", settings_->encoder_.fps_);
+        config->set_fps(settings_->encoder_.fps_);
         config->set_capturing_monitor_name(capturing_name);
 
         //

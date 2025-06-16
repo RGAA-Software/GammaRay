@@ -226,6 +226,10 @@ namespace tc {
                     ProcessStopMediaRecordClientSide();
                     break;
                 }
+                case kModifyFps: {
+                    ProcessModifyFps(std::move(msg));
+                    break;
+                }
                 default: {
                    
                 }
@@ -519,5 +523,14 @@ namespace tc {
             sub->set_duration(event->duration_);
             app_->PostPanelMessage(msg.SerializeAsString());
         });
+    }
+
+    // client -> render ÐÞ¸ÄÖ¡ÂÊ
+    void PluginNetEventRouter::ProcessModifyFps(std::shared_ptr<Message>&& msg) {
+        auto mf = msg->modify_fps();
+        int fps = mf.fps();
+        if (context_) {
+            context_->SendAppMessage(MsgModifyFps{.fps_ = fps});
+        }
     }
 }

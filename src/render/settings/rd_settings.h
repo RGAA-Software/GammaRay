@@ -36,7 +36,7 @@ namespace tc
         ECreateEncoderPolicy encoder_select_type_;
         ECreateEncoderName encoder_name_;
         EncoderFormat encoder_format_;
-        int fps_;
+        int fps_ = 30;
         int bitrate_;
         EncodeResolutionType encode_res_type_;
         int encode_width_;

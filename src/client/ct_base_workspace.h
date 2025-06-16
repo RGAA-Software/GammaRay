@@ -85,6 +85,8 @@ namespace tc
         void SendSwitchFullColorMessage(bool enable);
         // client->render 发送刷新桌面的消息
         void SendUpdateDesktopMessage();
+        // client->render 发送修改帧率的消息
+        void SendModifyFpsMessage();
         void SendHardUpdateDesktopMessage();
         void SwitchScaleMode(const ScaleMode& mode);
         virtual void CalculateAspectRatio();

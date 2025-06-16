@@ -368,6 +368,11 @@ namespace tc
 
             context_->SendAppMessage(msg);
 
+            int fps = config.fps();
+            settings_->SetFps(fps);
+            LOGI("capturing fps: {}", fps);
+            context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFps });
+
             int monitors_count = config.monitors_info().size();
             context_->PostUITask([=, this]() {
                 OnGetCaptureMonitorName(config.capturing_monitor_name());
@@ -516,6 +521,12 @@ namespace tc
                 media_record_plugin_->EndRecord();
             }
             sdk_->PostMediaMessage(m.SerializeAsString());
+        });
+
+        msg_listener_->Listen<ModifyFpsMessage>([=, this](const ModifyFpsMessage& msg) {
+            context_->PostUITask([=, this]() {
+                this->SendModifyFpsMessage();
+            });
         });
     }
 
@@ -739,6 +750,18 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kUpdateDesktop);
+        sdk_->PostMediaMessage(m.SerializeAsString());
+    }
+
+    void BaseWorkspace::SendModifyFpsMessage() {
+        if (!sdk_) {
+            return;
+        }
+        int fps = settings_->fps_;
+        tc::Message m;
+        m.set_type(tc::kModifyFps);
+        auto mf = m.mutable_modify_fps();
+        mf->set_fps(fps);
         sdk_->PostMediaMessage(m.SerializeAsString());
     }
 
