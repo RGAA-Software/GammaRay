@@ -15,6 +15,7 @@
 #include "render_panel/database/visit_record_operator.h"
 #include "tc_dialog.h"
 #include "tc_image_button.h"
+#include "security_password_checker.h"
 #include <QStyledItemDelegate>
 #include <QMenu>
 #include <QClipboard>
@@ -67,12 +68,22 @@ namespace tc
                 layout->addSpacing(10);
                 layout->addWidget(btn_clear_all, 0, Qt::AlignVCenter);
                 btn_clear_all->SetOnImageButtonClicked([=, this]() {
-                    TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_all_records"));
-                    if (dialog.exec() == kDoneOk) {
-                        context_->PostTask([=, this]() {
-                            visit_op_->DeleteAll();
-                            LoadPage(page_widget_->getCurrentPage());
-                        });
+                    //
+                    if (!SecurityPasswordChecker::ShowNoSecurityPasswordDialog()) {
+                        auto input_pwd = SecurityPasswordChecker::GetSecurityPasswordDialog();
+                        if (SecurityPasswordChecker::IsInputSecurityPasswordOk(input_pwd)) {
+                            //
+                            TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_all_records"));
+                            if (dialog.exec() == kDoneOk) {
+                                context_->PostTask([=, this]() {
+                                    visit_op_->DeleteAll();
+                                    LoadPage(page_widget_->getCurrentPage());
+                                });
+                            }
+                        }
+                        else {
+                            SecurityPasswordChecker::ShowSecurityPasswordInvalidDialog();
+                        }
                     }
                 });
             }
@@ -94,25 +105,25 @@ namespace tc
             list_widget_->setContextMenuPolicy(Qt::CustomContextMenu);
             list_widget_->setSpacing(2);
             list_widget_->setStyleSheet(R"(
-            QListWidget {
-                background-color: #ffffff;
-                border: 0px solid #ffffff;
-            }
-            QListWidget::item {
-                color: #ffffff;
-                border: transparent;
-                border-bottom: 0px solid #ffffff;
-            }
+                QListWidget {
+                    background-color: #ffffff;
+                    border: 0px solid #ffffff;
+                }
+                QListWidget::item {
+                    color: #ffffff;
+                    border: transparent;
+                    border-bottom: 0px solid #ffffff;
+                }
 
-            QListWidget::item:hover {
-                background-color: none;
-            }
+                QListWidget::item:hover {
+                    background-color: none;
+                }
 
-            QListWidget::item:selected {
-                border-left: 0px solid #777777;
-                background-color: none;
-            }
-        )");
+                QListWidget::item:selected {
+                    border-left: 0px solid #777777;
+                    background-color: none;
+                }
+            )");
 
             QObject::connect(list_widget_, &QListWidget::customContextMenuRequested, this, [=, this](const QPoint& pos) {
                 QListWidgetItem* cur_item = list_widget_->itemAt(pos);
@@ -238,7 +249,15 @@ namespace tc
                     ProcessCopyAsJson(record);
                 }
                 else if (i == 3) {
-                    ProcessDelete(record);
+                    if (!SecurityPasswordChecker::ShowNoSecurityPasswordDialog()) {
+                        auto input_pwd = SecurityPasswordChecker::GetSecurityPasswordDialog();
+                        if (SecurityPasswordChecker::IsInputSecurityPasswordOk(input_pwd)) {
+                            ProcessDelete(record);
+                        }
+                        else {
+                            SecurityPasswordChecker::ShowSecurityPasswordInvalidDialog();
+                        }
+                    }
                 }
             });
         }

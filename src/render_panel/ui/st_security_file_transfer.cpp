@@ -3,22 +3,25 @@
 //
 
 #include "st_security_file_transfer.h"
-#include "no_margin_layout.h"
-#include "tc_pushbutton.h"
-#include "tc_label.h"
-#include "tc_qt_widget/pagination/page_widget.h"
-#include "st_security_file_transfer_item.h"
-#include "render_panel/database/file_transfer_record.h"
-#include "render_panel/database/file_transfer_record_operator.h"
-#include "render_panel/database/gr_database.h"
-#include "render_panel/gr_context.h"
-#include "tc_image_button.h"
-#include "tc_dialog.h"
-#include <QStyledItemDelegate>
+
 #include <QMenu>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QStyledItemDelegate>
+
+#include "tc_label.h"
+#include "tc_dialog.h"
+#include "tc_pushbutton.h"
+#include "tc_image_button.h"
+#include "no_margin_layout.h"
+#include "security_password_checker.h"
+#include "st_security_file_transfer_item.h"
+#include "tc_qt_widget/pagination/page_widget.h"
+#include "render_panel/gr_context.h"
+#include "render_panel/database/gr_database.h"
+#include "render_panel/database/file_transfer_record.h"
+#include "render_panel/database/file_transfer_record_operator.h"
 
 namespace tc
 {
@@ -87,12 +90,24 @@ namespace tc
                 layout->addSpacing(10);
                 layout->addWidget(btn_clear_all, 0, Qt::AlignVCenter);
                 btn_clear_all->SetOnImageButtonClicked([=, this]() {
-                    TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_all_records"));
-                    if (dialog.exec() == kDoneOk) {
-                        context_->PostTask([=, this]() {
-                            ft_record_op_->DeleteAll();
-                            LoadPage(page_widget_->getCurrentPage());
-                        });
+                    // verify security password
+                    if (!SecurityPasswordChecker::ShowNoSecurityPasswordDialog()) {
+                        auto input_pwd = SecurityPasswordChecker::GetSecurityPasswordDialog();
+                        if (SecurityPasswordChecker::IsInputSecurityPasswordOk(input_pwd)) {
+
+                            // show warn dialog
+                            TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_all_records"));
+                            if (dialog.exec() == kDoneOk) {
+                                context_->PostTask([=, this]() {
+                                    ft_record_op_->DeleteAll();
+                                    LoadPage(page_widget_->getCurrentPage());
+                                });
+                            }
+
+                        }
+                        else {
+                            SecurityPasswordChecker::ShowSecurityPasswordInvalidDialog();
+                        }
                     }
                 });
             }
@@ -114,25 +129,25 @@ namespace tc
             list_widget_->setContextMenuPolicy(Qt::CustomContextMenu);
             list_widget_->setSpacing(2);
             list_widget_->setStyleSheet(R"(
-            QListWidget {
-                background-color: #ffffff;
-                border: 0px solid #ffffff;
-            }
-            QListWidget::item {
-                color: #ffffff;
-                border: transparent;
-                border-bottom: 0px solid #ffffff;
-            }
+                QListWidget {
+                    background-color: #ffffff;
+                    border: 0px solid #ffffff;
+                }
+                QListWidget::item {
+                    color: #ffffff;
+                    border: transparent;
+                    border-bottom: 0px solid #ffffff;
+                }
 
-            QListWidget::item:hover {
-                background-color: none;
-            }
+                QListWidget::item:hover {
+                    background-color: none;
+                }
 
-            QListWidget::item:selected {
-                border-left: 0px solid #777777;
-                background-color: none;
-            }
-        )");
+                QListWidget::item:selected {
+                    border-left: 0px solid #777777;
+                    background-color: none;
+                }
+            )");
 
             QObject::connect(list_widget_, &QListWidget::customContextMenuRequested, this, [=, this](const QPoint& pos) {
                 QListWidgetItem* cur_item = list_widget_->itemAt(pos);
@@ -167,24 +182,6 @@ namespace tc
             LOGI("Will load page: {}", page);
             LoadPage(page);
         });
-
-        // test beg //
-        //context_->PostDBTask([=, this]() {
-        //    for (int i = 0; i < 26; i++) {
-        //        auto record = std::make_shared<FileTransferRecord>(FileTransferRecord {
-        //            .conn_type_ = "TT",
-        //            .begin_ = 1 + i,
-        //            .end_ = 1 * i,
-        //            .account_ = std::format("acc: {}", i),
-        //            .controller_device_ = "bbbbb",
-        //            .controlled_device_ = "Jack Sparrow",
-        //            .direction_ = "UP",
-        //            .file_detail_ = "D://xxx/xxx.jpg"
-        //        });
-        //        ft_record_op_->InsertFileTransferRecord(record);
-        //    }
-        //});
-        // test end //
 
         // Load Page 1
         context_->PostUIDelayTask([=, this]() {
@@ -270,7 +267,15 @@ namespace tc
                     ProcessCopyAsJson(record);
                 }
                 else if (i == 3) {
-                    ProcessDelete(record);
+                    if (!SecurityPasswordChecker::ShowNoSecurityPasswordDialog()) {
+                        auto input_pwd = SecurityPasswordChecker::GetSecurityPasswordDialog();
+                        if (SecurityPasswordChecker::IsInputSecurityPasswordOk(input_pwd)) {
+                            ProcessDelete(record);
+                        }
+                        else {
+                            SecurityPasswordChecker::ShowSecurityPasswordInvalidDialog();
+                        }
+                    }
                 }
             });
         }

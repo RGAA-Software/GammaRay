@@ -33,7 +33,7 @@ namespace tc
     InputRemotePwdDialog::~InputRemotePwdDialog() = default;
 
     void InputRemotePwdDialog::CreateLayout() {
-        setWindowTitle(tcTr("id_input_remote_password"));
+        setWindowTitle(tcTr("id_input_password"));
 
         auto item_width = 320;
         auto edit_size = QSize(item_width, 35);

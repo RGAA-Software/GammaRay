@@ -164,7 +164,7 @@
   "id_host_star": "Host *",
   "id_port_star": "Port *",
   "id_input_necessary_info": "Please input necessary information !",
-  "id_input_remote_password": "Input remote password",
+  "id_input_password": "Input password",
   "id_password_invalid": "Password Invalid",
   "id_password_invalid_msg": "Your password is invalid, please input new password.",
   "id_delete_remote_control": "Do you want to delete the remote control ?",
@@ -184,5 +184,6 @@
   "id_local_security_password_updated": "The Local security password has updated.",
   "id_remote_security_password_updated": "The Remote security password has updated.",
   "id_security_password_update_failed": "Update security password failed. Please check your Supervisor server config and try again.",
-  "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server."
+  "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server.",
+  "id_must_input_security_password": "You must set your security password in Security Settings."
 }
