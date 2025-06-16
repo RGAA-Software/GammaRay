@@ -38,6 +38,9 @@ namespace tc
         bool HasEnoughBufferForQueuingFtMessages() override;
 
     private:
+        bool HasConnectedClients();
+
+    private:
 
         std::shared_ptr<WsPluginServer> ws_server_ = nullptr;
 

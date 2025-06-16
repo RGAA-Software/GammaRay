@@ -262,6 +262,7 @@ namespace tc
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             if (plugin->GetConnectedPeerCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingMediaMsgCount();
+                LOGI("Queuing msg count in [{}] is : {}", plugin_id, plugin->GetQueuingMediaMsgCount());
             }
         }
         return queuing_msg_count;

@@ -264,6 +264,14 @@ namespace tc
         return nullptr;
     }
 
+    GrNetPlugin* PluginManager::GetRelayPlugin() {
+        auto plugin = GetPluginById(kRelayPluginId);
+        if (plugin) {
+            return (GrNetPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

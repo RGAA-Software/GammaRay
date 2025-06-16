@@ -160,6 +160,10 @@ namespace tc
         return only_audio_client;
     }
 
+    bool WsPluginServer::IsWorking() {
+        return server_ && server_->is_started();
+    }
+
     void WsPluginServer::AddWebsocketRouter(const std::string &path) {
         auto fn_get_socket_fd = [](std::shared_ptr<asio2::https_session> &sess_ptr) -> uint64_t {
             auto& s = sess_ptr->socket();
@@ -268,7 +272,7 @@ namespace tc
     }
 
     int64_t WsPluginServer::GetQueuingMediaMsgCount() {
-        int count;
+        int64_t count = 0;
         stream_routers_.ApplyAll([&](const auto&, const auto& r) {
             count += r->GetQueuingMsgCount();
         });

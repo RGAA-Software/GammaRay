@@ -162,6 +162,7 @@ namespace tc
                         const auto &payload = sub.payload();
                         auto payload_msg = std::string(payload.data(), payload.size());
                         this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
+                        //LOGI("Relay in-message size: {}", payload_msg.size());
                     }
                 });
 
@@ -230,7 +231,7 @@ namespace tc
             relay_media_sdk_->RelayProtoMessage(msg);
 
             // report sent size
-            ReportSentDataSize(msg.size());
+            ReportSentDataSize((int)msg.size());
         }
     }
 
@@ -263,6 +264,7 @@ namespace tc
     }
 
     int RelayPlugin::GetConnectedPeerCount() {
+        //LOGI("IsWorking ? {}, ConnectedPeerCount: {}", IsWorking(), relay_media_sdk_->GetConnectedPeerCount());
         return IsWorking() ? relay_media_sdk_->GetConnectedPeerCount() : 0;
     }
 

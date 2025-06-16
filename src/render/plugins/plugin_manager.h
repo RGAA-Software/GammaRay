@@ -52,6 +52,7 @@ namespace tc
         GrPluginInterface* GetClipboardPlugin();
         GrPluginInterface* GetRtcPlugin();
         GrNetPlugin* GetUdpPlugin();
+        GrNetPlugin* GetRelayPlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
         int GetTotalConnectedPeerCount();

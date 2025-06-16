@@ -181,18 +181,12 @@ namespace tc
             }
         }
 
-        int32_t connected_clients = 0;
-        int32_t relay_connected_size = 0;
-        plugin_mgr_->VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->GetPluginId() == kRelayPluginId) {
-                relay_connected_size = plugin->GetConnectedPeerCount();
-                return;
-            }
-            connected_clients += plugin->GetConnectedPeerCount();
-        });
+        int32_t connected_clients = plugin_mgr_->GetTotalConnectedPeerCount();
         cst->set_connected_clients(connected_clients);
 
-        if (relay_connected_size >= 1) {
+        auto relay_plugin = plugin_mgr_->GetRelayPlugin();
+
+        if (relay_plugin->IsWorking()) {
             cst->set_relay_connected(true);
         }
         else {
