@@ -282,7 +282,7 @@ namespace tc
 
     void DDACapture::Capture() {
         while (!stop_flag_) {
-            if (pausing_ || !d3d11_device_ || !d3d11_device_context_ || plugin_->DontHaveConnectedClientsNow()) {
+            if (pausing_ || !d3d11_device_ || !d3d11_device_context_ /*|| plugin_->DontHaveConnectedClientsNow()*/) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
             }

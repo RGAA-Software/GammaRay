@@ -17,7 +17,7 @@ namespace tc
     void ClientPluginEventRouter::ProcessPluginEvent(const std::shared_ptr<ClientPluginBaseEvent>& event) {
         if (ClientPluginEventType::kPluginTestEvent == event->event_type_) {
             auto target_event = std::dynamic_pointer_cast<ClientPluginTestEvent>(event);
-            LOGI("test event, callback: {}", target_event->message_);
+            //LOGI("test event, callback: {}", target_event->message_);
         }
         else if (ClientPluginEventType::kPluginNotifyMsgEvent == event->event_type_) {
             auto target_event = std::dynamic_pointer_cast<ClientPluginNotifyMsgEvent>(event);

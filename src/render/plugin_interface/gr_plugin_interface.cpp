@@ -315,7 +315,9 @@ namespace tc
     }
 
     bool GrPluginInterface::DontHaveConnectedClientsNow() {
-        return no_connected_clients_counter_ > 10;
+        auto dont_have = no_connected_clients_counter_ > 10;
+        //LOGI("dont have: {}, count: {}", dont_have, no_connected_clients_counter_);
+        return dont_have;
     }
 
 }
