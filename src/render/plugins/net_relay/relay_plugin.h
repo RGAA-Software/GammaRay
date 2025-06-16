@@ -25,11 +25,11 @@ namespace tc
         void PostProtoMessage(const std::string &msg, bool run_through) override;
         bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) override;
         bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
-        int ConnectedClientSize() override;
+        int GetConnectedPeerCount() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
         void SyncInfo(const tc::NetSyncInfo& info) override;
-        void OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) override;
+        void OnSyncPluginSettingsInfo(const tc::GrPluginSettingsInfo &settings) override;
         int64_t GetQueuingMediaMsgCount() override;
         int64_t GetQueuingFtMsgCount() override;
         bool HasEnoughBufferForQueuingMediaMessages() override;

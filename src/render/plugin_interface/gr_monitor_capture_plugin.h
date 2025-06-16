@@ -65,8 +65,6 @@ namespace tc
         //根据显示器名字获取排序位置
         virtual std::optional<int> GetMonIndexByName(const std::string& name) = 0;
 
-        void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override {};
-
         virtual void HandleDisplayDeviceChangeEvent() = 0;
     protected:
         int capture_fps_ = 60;

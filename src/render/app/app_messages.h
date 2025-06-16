@@ -23,6 +23,7 @@ namespace tc
             kUnknown,
             kClipboardUpdate,
             kDisplayDeviceChange,
+            kConnectedClientCount,
         };
         EType type_ = EType::kUnknown;
     public:
@@ -162,6 +163,16 @@ namespace tc
         MsgDisplayDeviceChange() {
             type_ = EType::kDisplayDeviceChange;
         }
+    };
+
+    // numbers of connected clients
+    class MsgConnectedClientCount : public AppBaseEvent {
+    public:
+        MsgConnectedClientCount() {
+            type_ = EType::kConnectedClientCount;
+        }
+    public:
+        int connected_client_count_ = 0;
     };
 }
 

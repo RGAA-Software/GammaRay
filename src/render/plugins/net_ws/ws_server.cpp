@@ -144,7 +144,7 @@ namespace tc
         return found_target_stream;
     }
 
-    int WsPluginServer::GetConnectionPeerCount() {
+    int WsPluginServer::GetConnectedPeerCount() {
         return (int)stream_routers_.Size();
     }
 

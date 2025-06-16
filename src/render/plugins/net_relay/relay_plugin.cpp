@@ -262,8 +262,8 @@ namespace tc
         return true;
     }
 
-    int RelayPlugin::ConnectedClientSize() {
-        return IsWorking() ? 1 : 0;
+    int RelayPlugin::GetConnectedPeerCount() {
+        return IsWorking() ? relay_media_sdk_->GetConnectedPeerCount() : 0;
     }
 
     bool RelayPlugin::IsOnlyAudioClients() {
@@ -298,8 +298,8 @@ namespace tc
         LOGI("DisConn id: {}, visitor device id: {}, duration: {}, begin ts: {}", the_conn_id, visitor_device_id, event->duration_, begin_timestamp);
     }
 
-    void RelayPlugin::OnSyncSystemSettings(const tc::GrPluginSettingsInfo &settings) {
-        GrPluginInterface::OnSyncSystemSettings(settings);
+    void RelayPlugin::OnSyncPluginSettingsInfo(const tc::GrPluginSettingsInfo &settings) {
+        GrPluginInterface::OnSyncPluginSettingsInfo(settings);
     }
 
     int64_t RelayPlugin::GetQueuingMediaMsgCount() {

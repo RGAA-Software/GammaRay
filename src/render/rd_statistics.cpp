@@ -185,10 +185,10 @@ namespace tc
         int32_t relay_connected_size = 0;
         plugin_mgr_->VisitNetPlugins([&](GrNetPlugin* plugin) {
             if (plugin->GetPluginId() == kRelayPluginId) {
-                relay_connected_size = plugin->ConnectedClientSize();
+                relay_connected_size = plugin->GetConnectedPeerCount();
                 return;
             }
-            connected_clients += plugin->ConnectedClientSize();
+            connected_clients += plugin->GetConnectedPeerCount();
         });
         cst->set_connected_clients(connected_clients);
 

@@ -305,8 +305,18 @@ namespace tc
     }
 
     void PluginManager::On1Second() {
-        VisitAllPlugins([=, this](GrPluginInterface* plugin) {
-            plugin->On1Second();
+        context_->PostTask([=, this]() {
+            auto connected_client_count = this->GetTotalConnectedPeerCount();
+            VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                plugin->On1Second();
+
+                // connected clients count
+                {
+                    auto event = std::make_shared<MsgConnectedClientCount>();
+                    event->connected_client_count_ = connected_client_count;
+                    plugin->DispatchAppEvent(event);
+                }
+            });
         });
     }
 
@@ -324,16 +334,16 @@ namespace tc
         });
     }
 
-    void PluginManager::SyncSystemInfo(const GrPluginSettingsInfo& info) {
+    void PluginManager::SyncPluginSettingsInfo(const GrPluginSettingsInfo& info) {
         VisitAllPlugins([&](GrPluginInterface* plugin) {
-            plugin->OnSyncSystemSettings(info);
+            plugin->OnSyncPluginSettingsInfo(info);
         });
     }
 
     int64_t PluginManager::GetQueuingMediaMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->ConnectedClientSize() > 0) {
+            if (plugin->GetConnectedPeerCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingMediaMsgCount();
             }
         });
@@ -343,11 +353,19 @@ namespace tc
     int64_t PluginManager::GetQueuingFtMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->ConnectedClientSize() > 0) {
+            if (plugin->GetConnectedPeerCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingFtMsgCount();
             }
         });
         return queuing_msg_count;
+    }
+
+    int PluginManager::GetTotalConnectedPeerCount() {
+        int total_size = 0;
+        VisitNetPlugins([&](GrNetPlugin* plugin) {
+            total_size += plugin->GetConnectedPeerCount();
+        });
+        return total_size;
     }
 
 }

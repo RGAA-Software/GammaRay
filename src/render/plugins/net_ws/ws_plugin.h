@@ -30,7 +30,7 @@ namespace tc
         bool PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) override;
 
         bool IsOnlyAudioClients() override;
-        int ConnectedClientSize() override;
+        int GetConnectedPeerCount() override;
 
         int64_t GetQueuingMediaMsgCount() override;
         int64_t GetQueuingFtMsgCount() override;

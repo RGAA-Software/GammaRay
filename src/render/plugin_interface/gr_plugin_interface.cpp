@@ -192,7 +192,7 @@ namespace tc
     }
 
     void GrPluginInterface::OnNewClientIn() {
-
+        no_connected_clients_counter_ = 0;
     }
 
     QWidget* GrPluginInterface::GetRootWidget() {
@@ -260,7 +260,7 @@ namespace tc
     int64_t GrPluginInterface::GetQueuingMediaMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         for (const auto& [plugin_id, plugin] : net_plugins_) {
-            if (plugin->ConnectedClientSize() > 0) {
+            if (plugin->GetConnectedPeerCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingMediaMsgCount();
             }
         }
@@ -270,14 +270,14 @@ namespace tc
     int64_t GrPluginInterface::GetQueuingFtMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         for (const auto& [plugin_id, plugin] : net_plugins_) {
-            if (plugin->ConnectedClientSize() > 0) {
+            if (plugin->GetConnectedPeerCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingFtMsgCount();
             }
         }
         return queuing_msg_count;
     }
 
-    void GrPluginInterface::OnSyncSystemSettings(const tc::GrPluginSettingsInfo& settings) {
+    void GrPluginInterface::OnSyncPluginSettingsInfo(const tc::GrPluginSettingsInfo& settings) {
         if (!settings.device_id_.empty()) {
             sys_settings_.device_id_ = settings.device_id_;
         }
@@ -297,8 +297,25 @@ namespace tc
         //     sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
     }
 
-    GrPluginSettingsInfo GrPluginInterface::GetSystemSettings() {
+    GrPluginSettingsInfo GrPluginInterface::GetPluginSettingsInfo() {
         return sys_settings_;
+    }
+
+    void GrPluginInterface::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
+        if (event->type_ == AppBaseEvent::EType::kConnectedClientCount) {
+            auto target_evt = std::dynamic_pointer_cast<MsgConnectedClientCount>(event);
+            //LOGI("connected clients count: {}", target_evt->connected_client_count_);
+            if (target_evt->connected_client_count_ <= 0) {
+                no_connected_clients_counter_++;
+            }
+            else {
+                no_connected_clients_counter_ = 0;
+            }
+        }
+    }
+
+    bool GrPluginInterface::DontHaveConnectedClientsNow() {
+        return no_connected_clients_counter_ > 10;
     }
 
 }

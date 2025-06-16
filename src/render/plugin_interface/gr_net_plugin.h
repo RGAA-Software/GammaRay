@@ -55,7 +55,7 @@ namespace tc
 
         virtual bool IsOnlyAudioClients();
 
-        virtual int ConnectedClientSize();
+        virtual int GetConnectedPeerCount();
 
         virtual void SyncInfo(const NetSyncInfo& info);
 

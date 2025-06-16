@@ -54,6 +54,7 @@ namespace tc
         GrNetPlugin* GetUdpPlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
+        int GetTotalConnectedPeerCount();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);
@@ -64,7 +65,8 @@ namespace tc
 
         void On1Second();
 
-        void SyncSystemInfo(const GrPluginSettingsInfo& info);
+        // from render panel -> render
+        void SyncPluginSettingsInfo(const GrPluginSettingsInfo& info);
 
     private:
         RdSettings* settings_ = nullptr;

@@ -41,7 +41,7 @@ namespace tc
         return false;
     }
 
-    int GrNetPlugin::ConnectedClientSize() {
+    int GrNetPlugin::GetConnectedPeerCount() {
         return 0;
     }
 

@@ -118,7 +118,7 @@ namespace tc
                 settings_->relay_host_ = sub.relay_host();
                 settings_->relay_port_ = sub.relay_port();
 
-                plugin_mgr_->SyncSystemInfo(GrPluginSettingsInfo {
+                plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
                     .device_random_pwd_ = settings_->device_random_pwd_,
                     .device_safety_pwd_ = settings_->device_safety_pwd_,

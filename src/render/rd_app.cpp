@@ -490,7 +490,7 @@ namespace tc
     bool RdApplication::HasConnectedPeer() {
         bool has_working_net_plugin = false;
         plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->IsWorking() && plugin->ConnectedClientSize() > 0) {
+            if (plugin->IsWorking() && plugin->GetConnectedPeerCount() > 0) {
                 has_working_net_plugin = true;
             }
         });

@@ -51,14 +51,14 @@ namespace tc
         return true;
     }
 
-
     std::optional<int> GdiCapturePlugin::GetMonIndexByName(const std::string& name) {
         // gdi 采集整个虚拟桌面,所以返回0即可
         return { 0 };
     }
 
     void GdiCapturePlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
-        LOGI("GdiCapturePlugin DispatchAppEvent type: {}", static_cast<int>(event->type_));
+        GrPluginInterface::DispatchAppEvent(event);
+        //LOGI("GdiCapturePlugin DispatchAppEvent type: {}", static_cast<int>(event->type_));
         if (!event) {
             return;
         }
@@ -73,7 +73,6 @@ namespace tc
             break;
         }
     }
-
 
     std::map<std::string, WorkingCaptureInfoPtr> GdiCapturePlugin::GetWorkingCapturesInfo() {
         std::map<std::string, WorkingCaptureInfoPtr> result;

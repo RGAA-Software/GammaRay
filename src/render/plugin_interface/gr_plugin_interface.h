@@ -153,13 +153,17 @@ namespace tc
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
 
-        // app settings
-        virtual void OnSyncSystemSettings(const GrPluginSettingsInfo& settings);
+        // settings from render panel
+        // render panel -> render -> plugins
+        virtual void OnSyncPluginSettingsInfo(const GrPluginSettingsInfo& settings);
 
         // app events
-        virtual void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {};
+        // render -> plugins
+        virtual void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event);
 
-        GrPluginSettingsInfo GetSystemSettings();
+        GrPluginSettingsInfo GetPluginSettingsInfo();
+
+        bool DontHaveConnectedClientsNow();
 
     protected:
         bool HasParam(const std::string& k) {
@@ -204,6 +208,8 @@ namespace tc
         std::map<std::string, GrNetPlugin*> net_plugins_;
         // settings
         GrPluginSettingsInfo sys_settings_{};
+        // no connected clients counter
+        std::atomic_int64_t no_connected_clients_counter_ = 0;
 
     public:
         // adapter uid <==> D3D11Device

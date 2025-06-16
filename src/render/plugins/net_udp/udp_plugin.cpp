@@ -140,7 +140,7 @@ namespace tc
         this->CallbackEvent(event);
     }
 
-    int UdpPlugin::ConnectedClientSize() {
+    int UdpPlugin::GetConnectedPeerCount() {
         return (int)sessions_.Size();
     }
 
@@ -149,7 +149,7 @@ namespace tc
     }
 
     bool UdpPlugin::IsWorking() {
-        return ConnectedClientSize() > 0;
+        return GetConnectedPeerCount() > 0;
     }
 
     void UdpPlugin::SyncInfo(const NetSyncInfo& info) {

@@ -39,7 +39,7 @@ namespace tc
         bool OnDestroy() override;
         void PostProtoMessage(const std::string &msg, bool run_through = false) override;
         bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through = false) override;
-        int ConnectedClientSize() override;
+        int GetConnectedPeerCount() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
         void SyncInfo(const tc::NetSyncInfo &info) override;

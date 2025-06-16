@@ -28,7 +28,7 @@ namespace tc
         void PostNetMessage(const std::string& data);
         bool PostTargetStreamMessage(const std::string& stream_id, const std::string& data);
         bool PostTargetFileTransferMessage(const std::string& stream_id, const std::string& data);
-        int GetConnectionPeerCount();
+        int GetConnectedPeerCount();
         bool IsOnlyAudioClients();
         int64_t GetQueuingMediaMsgCount();
         int64_t GetQueuingFtMsgCount();

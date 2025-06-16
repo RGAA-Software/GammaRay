@@ -421,7 +421,7 @@ namespace tc
 
     std::optional<int> DDACapturePlugin::GetMonIndexByName(const std::string& name) {
         int mon_index = 0;
-        for (auto monitor : sorted_monitors_) {
+        for (const auto& monitor : sorted_monitors_) {
             if (name == monitor.name_) {
                 return { mon_index };
             }
@@ -431,7 +431,8 @@ namespace tc
     }
 
     void DDACapturePlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
-        LOGI("DDACapturePlugin DispatchAppEvent type: {}", static_cast<int>(event->type_));
+        GrPluginInterface::DispatchAppEvent(event);
+        //LOGI("DDACapturePlugin DispatchAppEvent type: {}", static_cast<int>(event->type_));
         if (!event) {
             return;
         }

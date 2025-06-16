@@ -189,7 +189,7 @@ namespace tc
 
     void GdiCapture::Capture() {
         while (!stop_flag_) {
-            if (pausing_ ) {
+            if (pausing_ || plugin_->DontHaveConnectedClientsNow()) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
             }

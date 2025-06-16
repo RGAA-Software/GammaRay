@@ -10,6 +10,7 @@
 namespace tc
 {
 
+    // from render panel -> render
     class GrPluginSettingsInfo {
     public:
         // this device, device id

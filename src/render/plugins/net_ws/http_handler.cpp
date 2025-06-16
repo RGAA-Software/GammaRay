@@ -40,7 +40,7 @@ namespace tc
             return;
         }
 
-        auto settings = plugin_->GetSystemSettings();
+        auto settings = plugin_->GetPluginSettingsInfo();
         const auto& safety_pwd_md5 = value.value();
         if (safety_pwd_md5.empty() && !settings.device_safety_pwd_.empty()) {
             SendErrorJson(resp, kHandlerErrParams);

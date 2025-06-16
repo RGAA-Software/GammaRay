@@ -66,7 +66,7 @@ namespace tc
     }
 
     bool WsPlugin::IsWorking() {
-        return ws_server_ && ws_server_->GetConnectionPeerCount() > 0;
+        return ws_server_ && ws_server_->GetConnectedPeerCount() > 0;
     }
 
     void WsPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
@@ -97,9 +97,9 @@ namespace tc
         }
     }
 
-    int WsPlugin::ConnectedClientSize() {
+    int WsPlugin::GetConnectedPeerCount() {
         if (IsWorking()) {
-            return ws_server_->GetConnectionPeerCount();
+            return ws_server_->GetConnectedPeerCount();
         } else {
             return 0;
         }
