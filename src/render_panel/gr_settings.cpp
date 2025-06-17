@@ -15,6 +15,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/md5.h"
 #include "gr_app_messages.h"
+#include "app_config.h"
 #include <sstream>
 #include <QApplication>
 #include <qstandardpaths.h>
@@ -28,7 +29,7 @@ namespace tc
 
     void GrSettings::Load() {
         sp_ = SharedPreference::Instance();
-        version_ = "V 1.1.9";
+        version_ = std::format("V {}", PROJECT_VERSION);
 
         log_file_ = sp_->Get(kStLogFile, "true");
         encoder_select_type_ = sp_->Get(kStEncoderSelectType, "auto");

@@ -7,6 +7,7 @@
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
+#include "app_config.h"
 
 namespace tc
 {
@@ -20,7 +21,7 @@ namespace tc
     const std::string kKeyDeviceId = "key_device_id";
 
     void Settings::LoadMainSettings() {
-        version_ = "V 1.1.9";
+        version_ = std::format("V {}", PROJECT_VERSION);
         sp_ = SharedPreference::Instance();
         auto init = sp_->Get(kKeyInit);
         if (init.empty()) {
@@ -39,7 +40,7 @@ namespace tc
     }
 
     void Settings::LoadRenderSettings() {
-        version_ = "V 1.1.9";
+        version_ = std::format("V {}", PROJECT_VERSION);
         sp_ = SharedPreference::Instance();
         auto work_mode = sp_->Get(kKeyWorkMode);
         if (!work_mode.empty()) {
