@@ -215,6 +215,14 @@ namespace tc
     class MediaRecordMsg : public AppMessage {
     public:
     };
+
+    class MouseEnterViewMsg : public AppMessage {
+    public:
+    };
+
+    class MouseLeaveViewMsg : public AppMessage {
+    public:
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <qevent.h>
 #include "thunder_sdk.h"
 
 class QLabel;
@@ -21,6 +22,8 @@ public:
 	GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent);
 	~GameView();
 	void resizeEvent(QResizeEvent* event) override;
+	void enterEvent(QEnterEvent* event) override;
+	void leaveEvent(QEvent* event) override;
 	void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info);
 	void RefreshImage(const std::shared_ptr<RawImage>& image);
 	void RefreshI420Image(const std::shared_ptr<RawImage>& image);
@@ -55,6 +58,8 @@ public:
 	bool IsMainView() {
 		return is_main_view_;
 	}
+
+	static bool s_mouse_in_;
 private:
     Settings* settings_ = nullptr;
 	OpenGLVideoWidget* video_widget_ = nullptr;

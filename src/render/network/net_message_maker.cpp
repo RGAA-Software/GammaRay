@@ -224,7 +224,9 @@ namespace tc
         cursor_info->set_y(y);
         cursor_info->set_hotspot_x(hotspot_x);
         cursor_info->set_hotspot_y(hotspot_y);
-        cursor_info->set_bitmap(data->DataAddr(), data->Size());
+        if (data) {
+            cursor_info->set_bitmap(data->DataAddr(), data->Size());
+        }
         cursor_info->set_type((CursorInfoSync::CursorType)type);
         msg->set_allocated_cursor_info_sync(cursor_info);
         return msg->SerializeAsString();

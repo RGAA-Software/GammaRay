@@ -20,7 +20,9 @@
 #include "tc_common_new/time_util.h"
 
 namespace tc {
-	
+
+bool GameView::s_mouse_in_ = false;
+
 GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent)
     : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
     WidgetHelper::SetTitleBarColor(this);
@@ -260,6 +262,16 @@ void GameView::SetMonitorName(const std::string mon_name) {
     controller_panel_->SetMonitorName(mon_name);
 }
 
+void GameView::enterEvent(QEnterEvent* event) {
+    s_mouse_in_ = true;
+    this->ctx_->SendAppMessage(MouseEnterViewMsg{});
+    QWidget::enterEvent(event);
+}
 
+void GameView::leaveEvent(QEvent* event) {
+    s_mouse_in_ = false;
+    this->ctx_->SendAppMessage(MouseLeaveViewMsg{});
+    QWidget::leaveEvent(event);
+}
 
 }

@@ -304,7 +304,10 @@ namespace tc
             if (Qt::BitmapCursor == shape) {
                 std::string bitmap_data = cursor_info.bitmap();
                 if (!bitmap_data.empty()) {
-                    QImage image((uchar*)bitmap_data.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
+                    cursor_bitmap_data_ = bitmap_data;
+                }
+                if (!cursor_bitmap_data_.empty()) {
+                    QImage image((uchar*)cursor_bitmap_data_.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
                     QPixmap pixmap = QPixmap::fromImage(image);
                     QCursor cursor(pixmap, cursor_info.hotspot_x(), cursor_info.hotspot_y());
                     new_cursor = cursor;
@@ -528,6 +531,18 @@ namespace tc
                 this->SendModifyFpsMessage();
             });
         });
+
+        msg_listener_->Listen<MouseEnterViewMsg>([=, this](const MouseEnterViewMsg& msg) {
+            context_->PostUITask([=, this]() {
+                this->UpdateLocalCursor();
+            });
+        });
+
+        msg_listener_->Listen<MouseLeaveViewMsg>([=, this](const MouseLeaveViewMsg& msg) {
+            context_->PostUITask([=, this]() {
+                this->UpdateLocalCursor();
+            });
+        });
     }
 
     void BaseWorkspace::changeEvent(QEvent* event) {
@@ -676,11 +691,17 @@ namespace tc
 
     void BaseWorkspace::UpdateLocalCursor() {
         context_->PostUITask([=, this]() {
-            if (QApplication::overrideCursor()) {
-                QApplication::changeOverrideCursor(cursor_);
+            if (GameView::s_mouse_in_) {
+                if (QApplication::overrideCursor()) {
+                    QApplication::changeOverrideCursor(cursor_);
+                }
+                else {
+                    QApplication::setOverrideCursor(cursor_);
+                }
             }
             else {
-                QApplication::setOverrideCursor(cursor_);
+                QApplication::restoreOverrideCursor();
+            
             }
         });
     }
