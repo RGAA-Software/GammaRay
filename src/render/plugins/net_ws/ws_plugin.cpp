@@ -3,12 +3,15 @@
 //
 
 #include "ws_plugin.h"
-#include "plugin_interface/gr_plugin_events.h"
+
+#include <QFile>
+
 #include "ws_server.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "render/plugins/plugin_ids.h"
-#include <QFile>
+#include "plugin_interface/gr_plugin_events.h"
+#include "plugin_interface/gr_plugin_context.h"
 
 static void* GetInstance() {
     static tc::WsPlugin plugin;
@@ -71,7 +74,9 @@ namespace tc
 
     void WsPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
         if (IsWorking() && HasConnectedClients()) {
-            ws_server_->PostNetMessage(msg);
+            plugin_context_->PostWorkTask([=, this]() {
+                ws_server_->PostNetMessage(msg);
+            });
         }
     }
 

@@ -3,7 +3,6 @@
 //
 
 #include "relay_plugin.h"
-#include "plugin_interface/gr_plugin_events.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
@@ -14,6 +13,8 @@
 #include "tc_relay_client/relay_server_sdk.h"
 #include "tc_relay_client/relay_server_sdk_param.h"
 #include "tc_relay_client/relay_room.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "plugin_interface/gr_plugin_context.h"
 #include "relay_message.pb.h"
 
 using namespace relay;
@@ -228,7 +229,10 @@ namespace tc
             return;
         }
         if (!paused_stream || run_through) {
-            relay_media_sdk_->RelayProtoMessage(msg);
+            // make messages in order
+            plugin_context_->PostWorkTask([=, this]() {
+                relay_media_sdk_->RelayProtoMessage("", msg);
+            });
 
             // report sent size
             ReportSentDataSize((int)msg.size());
@@ -241,8 +245,10 @@ namespace tc
             return false;
         }
         if (!paused_stream || run_through) {
-            relay_media_sdk_->RelayProtoMessage(stream_id, msg);
-
+            // make messages in order
+            plugin_context_->PostWorkTask([=, this]() {
+                relay_media_sdk_->RelayProtoMessage(stream_id, msg);
+            });
             // report sent size
             ReportSentDataSize(msg.size());
 
