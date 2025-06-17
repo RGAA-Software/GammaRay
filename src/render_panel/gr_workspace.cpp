@@ -118,13 +118,17 @@ namespace tc
             // logo
             {
                 auto logo = new QLabel(this);
-                int logo_size = 90;
+                int logo_size = 100;
                 logo->setFixedSize(logo_size, logo_size);
-                QImage image;
-                image.load(":/resources/tc_icon.png");
-                auto pixmap = QPixmap::fromImage(image);
-                pixmap = pixmap.scaled(logo_size, logo_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                logo->setPixmap(pixmap);
+//                QImage image;
+//                image.load(":/resources/tc_icon.png");
+//                auto pixmap = QPixmap::fromImage(image);
+//                pixmap = pixmap.scaled(logo_size, logo_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//                logo->setPixmap(pixmap);
+                logo->setScaledContents(true);
+                logo->setStyleSheet(R"(
+                    border-image: url(:resources/tc_icon.png);
+                )");
                 layout->addSpacing(45);
                 layout->addWidget(logo, 0, Qt::AlignHCenter);
             }
