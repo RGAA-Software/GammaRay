@@ -6,6 +6,7 @@
 #include <iostream>
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/data.h"
+#include "tc_common_new/time_util.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
@@ -158,6 +159,7 @@ namespace tc
 
     CursorCapture::CursorCapture(DDACapturePlugin* plugin) {
         plugin_ = plugin;
+        last_cursor_bitmap_data_ = Data::Make(nullptr, 1);
     }
 
     bool CursorCapture::CaptureCursorIcon(CaptureCursorBitmap *data, HICON icon) {
@@ -262,9 +264,29 @@ namespace tc
             return;
         }
         DestroyIcon(icon);
+        std::string current_data;
+        std::string last_data = last_cursor_bitmap_data_->AsString();
+        if (cursor_bitmap.data_) {
+            current_data = cursor_bitmap.data_->AsString();
+        }
 
         auto event = std::make_shared<GrPluginCursorEvent>();
         event->cursor_info_ = cursor_bitmap;
+
+        if (current_data != last_data && !current_data.empty()) {
+            last_cursor_bitmap_data_ = cursor_bitmap.data_;
+        }
+        else {
+            auto current_time = TimeUtil::GetCurrentTimestamp();
+            if (last_timestamp_ + 1000 > current_time) {
+                event->cursor_info_.data_ = nullptr;
+            }
+        }
+
+        if (event->cursor_info_.data_) {
+            last_timestamp_ = TimeUtil::GetCurrentTimestamp();
+        }
+
         this->plugin_->CallbackEvent(event);
     }
 }

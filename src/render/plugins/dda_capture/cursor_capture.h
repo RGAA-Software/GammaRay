@@ -7,6 +7,7 @@
 
 namespace tc
 {
+    class Data;
     class DDACapturePlugin;
     class CaptureCursorBitmap;
 
@@ -21,6 +22,8 @@ namespace tc
     private:
         DDACapturePlugin* plugin_ = nullptr;
 
+        std::shared_ptr<Data> last_cursor_bitmap_data_ = nullptr;
+        uint64_t last_timestamp_ = 0;
     };
 
 }
