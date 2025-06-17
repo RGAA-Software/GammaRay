@@ -14,9 +14,9 @@ namespace tc
 
     class WsStreamRouter : public WssRouter, public std::enable_shared_from_this<WsStreamRouter> {
     public:
-        static std::shared_ptr<WsStreamRouter> Make(const WsDataPtr& data, bool only_audio, const std::string& device_id, const std::string& stream_id) {
+        static std::shared_ptr<WsStreamRouter> Make(const WsDataPtr& data, bool only_audio, const std::string& visitor_device_id, const std::string& stream_id) {
             auto router = std::make_shared<WsStreamRouter>(data, only_audio);
-            router->device_id_ = device_id;
+            router->visitor_device_id_ = visitor_device_id;
             router->stream_id_ = stream_id;
             return router;
         }
@@ -35,7 +35,7 @@ namespace tc
 
     public:
         bool enable_video_ = true;
-        std::string device_id_;
+        std::string visitor_device_id_;
         std::string stream_id_;
         unsigned int post_thread_id_ = 0;
     };

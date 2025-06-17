@@ -80,7 +80,7 @@ namespace tc
         // a random id
         std::string the_conn_id_;
         std::string conn_type_;
-        std::string device_id_;
+        std::string visitor_device_id_;
         int64_t begin_timestamp_ = 0;
     };
 
@@ -93,7 +93,7 @@ namespace tc
     public:
         // a random id
         std::string the_conn_id_;
-        std::string device_id_;
+        std::string visitor_device_id_;
         int64_t end_timestamp_ = 0;
         int64_t duration_ = 0;
     };
@@ -283,7 +283,7 @@ namespace tc
     public:
         std::string the_file_id_;
         int64_t begin_timestamp_ = 0;
-        std::string device_id_;
+        std::string visitor_device_id_;
         std::string direction_;
         std::string file_detail_;
     };

@@ -424,7 +424,7 @@ namespace tc
                     .begin_ = sub.begin_timestamp(),
                     .end_ = 0,
                     .duration_ = 0,
-                    .visitor_device_ = sub.device_id(),
+                    .visitor_device_ = sub.visitor_device_id(),
                     .target_device_ = settings_->device_id_.empty() ? ip_address : settings_->device_id_,
                 }));
             });
@@ -448,7 +448,7 @@ namespace tc
                     .the_file_id_ = sub.the_file_id(),
                     .begin_ = sub.begin_timestamp(),
                     .end_ = 0,
-                    .visitor_device_ = sub.device_id(),
+                    .visitor_device_ = sub.visitor_device_id(),
                     .target_device_ = settings_->device_id_.empty() ? ip_address : settings_->device_id_,
                     .direction_ = sub.direction(),
                     .file_detail_ = sub.file_detail(),

@@ -110,6 +110,9 @@ namespace tc
 
         // fps 当前流路的帧率
         int fps_ = 30;
+
+        // this device host/ip address
+        std::string my_host_;
     };
 
 }

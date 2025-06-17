@@ -290,7 +290,7 @@ namespace tc
         auto event = std::make_shared<GrPluginClientConnectedEvent>();
         event->the_conn_id_ = the_conn_id;
         event->conn_type_ = "Relay";
-        event->device_id_ = visitor_device_id;
+        event->visitor_device_id_ = visitor_device_id;
         event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         this->CallbackEvent(event);
         LOGI("Conn id: {}, visitor device id: {}", the_conn_id, visitor_device_id);
@@ -299,7 +299,7 @@ namespace tc
     void RelayPlugin::NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& visitor_device_id, int64_t begin_timestamp) {
         auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
         event->the_conn_id_ = the_conn_id;
-        event->device_id_ = visitor_device_id;
+        event->visitor_device_id_ = visitor_device_id;
         event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         event->duration_ = event->end_timestamp_ - begin_timestamp;
         this->CallbackEvent(event);

@@ -53,8 +53,8 @@ namespace tc
             if (stream_routers_.HasKey(socket_fd)) {
                 if (auto opt_val = stream_routers_.Remove(socket_fd); opt_val.has_value()) {
                     const auto& val = opt_val.value();
-                    NotifyMediaClientDisConnected(val->the_conn_id_, val->device_id_, val->created_timestamp_);
-                    LOGI("client session removed: {}", val->device_id_);
+                    NotifyMediaClientDisConnected(val->the_conn_id_, val->visitor_device_id_, val->created_timestamp_);
+                    LOGI("client session removed: {}", val->visitor_device_id_);
                 }
                 LOGI("App server media close, media router size: {}", stream_routers_.Size());
             }
@@ -195,10 +195,14 @@ namespace tc
                 }
                 LOGI("App server {} open, query: {}", path, query);
                 bool only_audio = std::atoi(params["only_audio"].c_str()) == 1;
-                std::string device_id;
+                std::string server_device_id;
+                std::string visitor_device_id;
                 std::string stream_id;
-                if (params.contains("device_id")) {
-                    device_id = params["device_id"];
+                if (params.contains("remote_device_id")) {
+                    server_device_id = params["remote_device_id"];
+                }
+                if (params.contains("visitor_device_id")) {
+                    visitor_device_id = params["visitor_device_id"];
                 }
                 if (params.contains("stream_id")) {
                     stream_id = params["stream_id"];
@@ -208,13 +212,13 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
 
                 if (path == kUrlMedia) {
-                    auto router = WsStreamRouter::Make(ws_data_, only_audio, device_id, stream_id);
+                    auto router = WsStreamRouter::Make(ws_data_, only_audio, server_device_id, stream_id);
                     stream_routers_.Insert(socket_fd, router);
-                    NotifyMediaClientConnected(router->the_conn_id_, device_id);
+                    NotifyMediaClientConnected(router->the_conn_id_, visitor_device_id);
                     router->OnOpen(sess_ptr);
                 }
                 else if (path == kUrlFileTransfer) {
-                    auto router = WsFileTransferRouter::Make(ws_data_, only_audio, device_id, stream_id);
+                    auto router = WsFileTransferRouter::Make(ws_data_, only_audio, server_device_id, stream_id);
                     ft_routers_.Insert(socket_fd, router);
                     router->OnOpen(sess_ptr);
                 }
@@ -226,8 +230,8 @@ namespace tc
                 if (path == kUrlMedia) {
                     if (auto opt_val = stream_routers_.Remove(socket_fd); opt_val.has_value()) {
                         const auto& val = opt_val.value();
-                        NotifyMediaClientDisConnected(val->the_conn_id_, val->device_id_, val->created_timestamp_);
-                        LOGI("client session removed: {}", val->device_id_);
+                        NotifyMediaClientDisConnected(val->the_conn_id_, val->visitor_device_id_, val->created_timestamp_);
+                        LOGI("client session removed: {}", val->visitor_device_id_);
                     }
                 }
                 else if (path == kUrlFileTransfer) {
@@ -252,20 +256,20 @@ namespace tc
         }, aop_log{}); //, http::enable_cache
     }
 
-    void WsPluginServer::NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& device_id) {
+    void WsPluginServer::NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& visitor_device_id) {
         auto event = std::make_shared<GrPluginClientConnectedEvent>();
         event->the_conn_id_ = the_conn_id;
         event->conn_type_ = "Direct";
-        event->device_id_ = device_id;
+        event->visitor_device_id_ = visitor_device_id;
         event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         this->plugin_->CallbackEvent(event);
-        LOGI("Conn id: {}, device id: {}", the_conn_id, device_id);
+        LOGI("Conn id: {}, device id: {}", the_conn_id, visitor_device_id);
     }
 
-    void WsPluginServer::NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& device_id, int64_t begin_timestamp) {
+    void WsPluginServer::NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& visitor_device_id, int64_t begin_timestamp) {
         auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
         event->the_conn_id_ = the_conn_id;
-        event->device_id_ = device_id;
+        event->visitor_device_id_ = visitor_device_id;
         event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         event->duration_ = event->end_timestamp_ - begin_timestamp;
         this->plugin_->CallbackEvent(event);

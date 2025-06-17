@@ -90,6 +90,13 @@ namespace tc
             } ()).c_str()
             << std::format("--panel_server_port={}", settings_->panel_srv_port_).c_str()
             << std::format("--screen_recording_path={}", screen_recording_path).c_str()
+            << std::format("--my_host={}", [=, this]() -> std::string {
+                auto ips = context_->GetIps();
+                if (!ips.empty()) {
+                    return ips[0].ip_addr_;
+                }
+                return "";
+            }()).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

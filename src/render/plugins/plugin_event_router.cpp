@@ -198,7 +198,7 @@ namespace tc
             sub->set_begin_timestamp(event->begin_timestamp_);
             sub->set_direction(event->direction_);
             sub->set_file_detail(event->file_detail_);
-            sub->set_device_id(event->device_id_);
+            sub->set_visitor_device_id(event->visitor_device_id_);
             app_->PostPanelMessage(msg.SerializeAsString());
         });
     }

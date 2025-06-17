@@ -39,10 +39,9 @@
 
 using namespace tc;
 
-std::string g_host_;
-int g_port_ = 0;
+std::string g_remote_host_;
+int g_remote_port_ = 0;
 std::string g_nt_type_;
-std::string g_conn_type_;
 
 void ParseCommandLine(QApplication& app) {
     QCommandLineParser parser;
@@ -113,13 +112,16 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_screen_recording_path("screen_recording_path", "screen recording path", "value", "");
     parser.addOption(opt_screen_recording_path);
 
+    QCommandLineOption opt_my_host("my_host", "my ip address", "value", "");
+    parser.addOption(opt_my_host);
+
     parser.process(app);
 
-    g_host_ = parser.value(opt_host).toStdString();
-    g_port_ = parser.value(opt_port).toInt();
+    g_remote_host_ = parser.value(opt_host).toStdString();
+    g_remote_port_ = parser.value(opt_port).toInt();
 
     auto settings = tc::Settings::Instance();
-    settings->remote_address_ = g_host_;
+    settings->remote_address_ = g_remote_host_;
     auto audio_on = parser.value(opt_audio).toInt();
     settings->audio_on_ = (audio_on == 1);
 
@@ -192,6 +194,14 @@ void ParseCommandLine(QApplication& app) {
             settings->screen_recording_path_ = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).toStdString();
         }
     }
+
+    // my host
+    {
+        auto value = parser.value(opt_my_host);
+        if (!value.isEmpty()) {
+            settings->my_host_ = value.toStdString();
+        }
+    }
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -245,8 +255,8 @@ int main(int argc, char** argv) {
     tcTrMgr()->InitLanguage(LanguageKind::kEnglish);
 
     auto settings = tc::Settings::Instance();
-    auto host = g_host_;
-    auto port = g_port_;
+    auto host = g_remote_host_;
+    auto port = g_remote_port_;
     if (host.empty() || port <= 0 || port >= 65535) {
         auto msg_box = SizedMessageBox::MakeOkBox("Error Params", "You must give valid (HOST & PORT) or Remote device ID.");
         msg_box->exec();
@@ -270,8 +280,8 @@ int main(int argc, char** argv) {
     auto ctx = std::make_shared<ClientContext>(name);
     ctx->Init(true);
 
-    LOGI("host: {}", g_host_);
-    LOGI("port: {}", g_port_);
+    LOGI("host: {}", g_remote_host_);
+    LOGI("port: {}", g_remote_port_);
     LOGI("audio on: {}", settings->audio_on_);
     LOGI("clipboard on: {}", settings->clipboard_on_);
     LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
@@ -281,20 +291,22 @@ int main(int argc, char** argv) {
     LOGI("remote device rdm pwd: {}", settings->remote_device_random_pwd_);
     LOGI("stream id: {}", settings->stream_id_);
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
-    //LOGI("connection type: {} => {}", g_conn_type_, (int)settings->conn_type_);
     LOGI("show max window: {}", (int)settings->show_max_window_);
     LOGI("enable p2p: {}", (int)settings->enable_p2p_);
     LOGI("display name: {}", settings->display_name_);
     LOGI("display remote name: {}", settings->display_remote_name_);
     LOGI("panel server port: {}", settings->panel_server_port_);
     LOGI("screen recording path: {}", settings->screen_recording_path_);
+    LOGI("my host: {}", settings->my_host_);
 
     // WebSocket only
-    auto target_device_id = settings->device_id_.empty() ? g_host_ : settings->device_id_;
-    auto media_path = std::format("/media?only_audio=0&device_id={}&stream_id={}",
-                                  target_device_id, settings->stream_id_);
-    auto ft_path = std::format("/file/transfer?device_id={}&stream_id={}",
-                                  target_device_id, settings->stream_id_);
+    auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
+    auto visitor_device_id = settings->device_id_.empty() ? settings->my_host_ : settings->device_id_;
+    auto media_path = std::format("/media?only_audio=0&remote_device_id={}&stream_id={}&visitor_device_id={}",
+                                  bare_remote_device_id, settings->stream_id_, visitor_device_id);
+    auto ft_path = std::format("/file/transfer?remote_device_id={}&stream_id={}&visitor_device_id={}",
+                                  bare_remote_device_id, settings->stream_id_, visitor_device_id);
+    auto target_device_id = settings->device_id_.empty() ? settings->my_host_ : settings->device_id_;
     auto device_id = "client_" + target_device_id + "_" + MD5::Hex(settings->remote_device_id_);
     auto remote_device_id = "server_" + settings->remote_device_id_;
     auto ft_device_id = "ft_" + device_id;

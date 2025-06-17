@@ -1,4 +1,4 @@
-//
+ï»¿//
 // Created by RGAA on 2024/1/25.
 //
 
@@ -62,7 +62,7 @@ namespace tc {
         // notify
         context_->SendAppMessage(MsgClientConnected {
             .conn_type_ = event->conn_type_,
-            .device_id_ = event->device_id_,
+            .visitor_device_id_ = event->visitor_device_id_,
             .begin_timestamp_ = event->begin_timestamp_,
         });
 
@@ -72,7 +72,7 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
         context_->SendAppMessage(MsgClientDisconnected {
-            .device_id_ = event->device_id_,
+            .visitor_device_id_ = event->visitor_device_id_,
             .end_timestamp_ = event->end_timestamp_,
             .duration_ = event->duration_,
         });
@@ -506,7 +506,7 @@ namespace tc {
             auto sub = msg.mutable_client_connected();
             sub->set_the_conn_id(event->the_conn_id_);
             sub->set_conn_type(event->conn_type_);
-            sub->set_device_id(event->device_id_);
+            sub->set_visitor_device_id(event->visitor_device_id_);
             sub->set_begin_timestamp(event->begin_timestamp_);
             app_->PostPanelMessage(msg.SerializeAsString());
         });
@@ -518,14 +518,14 @@ namespace tc {
             msg.set_type(tcrp::kRpClientDisConnected);
             auto sub = msg.mutable_client_disconnected();
             sub->set_the_conn_id(event->the_conn_id_);
-            sub->set_device_id(event->device_id_);
+            sub->set_visitor_device_id(event->visitor_device_id_);
             sub->set_end_timestamp(event->end_timestamp_);
             sub->set_duration(event->duration_);
             app_->PostPanelMessage(msg.SerializeAsString());
         });
     }
 
-    // client -> render ÐÞ¸ÄÖ¡ÂÊ
+    // client -> render ä¿®æ”¹å¸§çŽ‡
     void PluginNetEventRouter::ProcessModifyFps(std::shared_ptr<Message>&& msg) {
         auto mf = msg->modify_fps();
         int fps = mf.fps();
