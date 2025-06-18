@@ -91,7 +91,10 @@ namespace tc
     }
 
     void GrService::OnConsoleConnect(int id) {
-
+        context_->PostBgTask([=, this]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(150));
+            render_manager_->StopServer();
+        });
     }
 
     void GrService::OnConsoleDisConnect(int id) {

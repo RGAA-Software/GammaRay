@@ -70,37 +70,43 @@ DWORD WINAPI ServiceCtrlHandler(DWORD dwCtrl, DWORD dwEventType, LPVOID lpEventD
             }
 
             if (dwEventType == WTS_CONSOLE_CONNECT) {
+                LOGI("WinService WTS_CONSOLE_CONNECT.");
                 g_service_->OnConsoleConnect(session_id);
             }
             if (dwEventType == WTS_CONSOLE_DISCONNECT) {
+                LOGI("WinService WTS_CONSOLE_DISCONNECT.");
                 g_service_->OnConsoleDisConnect(session_id);
             }
             if (dwEventType == WTS_REMOTE_CONNECT) {
-
+                LOGI("WinService WTS_REMOTE_CONNECT.");
             }
             if (dwEventType == WTS_REMOTE_DISCONNECT) {
-
+                LOGI("WinService WTS_REMOTE_DISCONNECT.");
             }
             if (dwEventType == WTS_SESSION_LOGON) {
+                LOGI("WinService WTS_SESSION_LOGON.");
                 g_service_->OnSessionLogon(session_id);
             }
             if (dwEventType == WTS_SESSION_LOGOFF) {
+                LOGI("WinService WTS_SESSION_LOGOFF.");
                 g_service_->OnSessionLogoff(session_id);
             }
             if (dwEventType == WTS_SESSION_LOCK) {
+                LOGI("WinService WTS_SESSION_LOCK.");
                 g_service_->OnSessionLock(session_id);
             }
             if (dwEventType == WTS_SESSION_UNLOCK) {
+                LOGI("WinService WTS_SESSION_UNLOCK.");
                 g_service_->OnSessionUnlock(session_id);
             }
             if (dwEventType == WTS_SESSION_REMOTE_CONTROL) {
-
+                LOGI("WinService WTS_SESSION_REMOTE_CONTROL.");
             }
             if (dwEventType == WTS_SESSION_CREATE) {
-
+                LOGI("WinService WTS_SESSION_CREATE.");
             }
             if (dwEventType == WTS_SESSION_TERMINATE) {
-
+                LOGI("WinService WTS_SESSION_TERMINATE.");
             }
             break;
         }
