@@ -331,7 +331,7 @@ namespace tc
         lbl_video_encode_type_->setText(stat->video_encode_type_.c_str());
 
         // column 3
-        lbl_relay_connected_->setText(stat->relay_connected_ ? "YES" : "NO");
+        lbl_relay_connected_->setText(stat->relay_connected_ ? "Online" : "Offline");
         lbl_audio_capture_type_->setText(stat->audio_capture_type_.c_str());
         lbl_audio_encode_type_->setText("OPUS");
 

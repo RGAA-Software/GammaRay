@@ -74,7 +74,7 @@ namespace tc
                         for (int i = 0; i < in_v.size(); i++) {
                             points.push_back(QPointF(i, in_v.at(i)));
                         }
-                        s->clear();
+                        ///s->clear();
                         s->replace(points);
                         break;
                     }
