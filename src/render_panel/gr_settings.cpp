@@ -89,6 +89,7 @@ namespace tc
         device_id_ = sp_->Get(kStDeviceId, "");
         device_random_pwd_ = sp_->Get(kStDeviceRandomPwd, "");
         device_safety_pwd_md5_ = sp_->Get(kStDeviceSafetyPwd, "");
+
     }
 
     void GrSettings::Dump() {
@@ -130,7 +131,7 @@ namespace tc
         LOGI("\n {}", ss.str());
     }
 
-    std::vector<std::string> GrSettings::GetArgs() const {
+    std::vector<std::string> GrSettings::GetArgs() {
         std::vector<std::string> args;
         args.push_back(std::format("--{}={}", kStLogFile, log_file_));
         args.push_back(std::format("--{}={}", kStEncoderSelectType, encoder_select_type_));
@@ -165,6 +166,7 @@ namespace tc
         args.push_back(std::format("--panel_server_port={}", this->http_server_port_));
         args.push_back(std::format("--{}={}", kStRelayServerHost, relay_server_host_));
         args.push_back(std::format("--{}={}", kStRelayServerPort, relay_server_port_));
+        args.push_back(std::format("--{}={}", kStCanBeOperated, this->IsBeingOperatedEnabled()));
         return args;
     }
 
@@ -228,10 +230,6 @@ namespace tc
     void GrSettings::SetFileTransferFolder(const std::string& path) {
         file_transfer_folder_ = path;
         sp_->Put(kStFileTransferFolder, path);
-    }
-
-    std::string GrSettings::GetCaptureMonitor() const {
-        return sp_->Get(kStCaptureMonitor, "");
     }
 
     void GrSettings::SetListeningIp(const std::string& ip) {
@@ -331,5 +329,58 @@ namespace tc
 
     std::string GrSettings::GetScreenRecordingPath() const {
         return sp_->Get(kStScreenRecordingPath, "");
+    }
+
+    // show max window
+    void GrSettings::SetShowingMaxWindow(bool enable) {
+        sp_->Put(kStShowMaxWindow, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsMaxWindowEnabled() {
+        return sp_->Get(kStShowMaxWindow) == kStTrue;
+    }
+
+    // can be operated
+    // Settings->Security Settings
+    void GrSettings::SetCanBeOperated(bool enable) {
+        sp_->Put(kStCanBeOperated, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsBeingOperatedEnabled() {
+        auto value = sp_->Get(kStCanBeOperated);
+        return value.empty() || value == kStTrue;
+    }
+
+    // use ssl connection
+    // Settings->Security Settings
+    void GrSettings::SetUsingSSLConnection(bool enable) {
+        sp_->Put(kStSSLConnection, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsSSLConnectionEnabled() {
+        auto value = sp_->Get(kStSSLConnection);
+        return value.empty() || value == kStTrue;
+    }
+
+    // record visit history
+    // Settings->Security Settings
+    void GrSettings::SetRecordingVisitHistory(bool enable) {
+        sp_->Put(kStRecordVisitHistory, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsVisitHistoryEnabled() {
+        auto value = sp_->Get(kStRecordVisitHistory);
+        return value.empty() || value == kStTrue;
+    }
+
+    // record file transfer history
+    // Settings->Security Settings
+    void GrSettings::SetRecordingFileTransferHistory(bool enable) {
+        sp_->Put(kStRecordFileTransferHistory, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsFileTransferHistoryEnabled() {
+        auto value = sp_->Get(kStRecordFileTransferHistory);
+        return value.empty() || value == kStTrue;
     }
 }

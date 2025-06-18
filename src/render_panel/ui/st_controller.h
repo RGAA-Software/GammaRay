@@ -12,6 +12,7 @@
 
 namespace tc
 {
+    class GrSettings;
     class GrApplication;
 
     class StController : public TabBase {
@@ -23,6 +24,7 @@ namespace tc
         void OnTabHide() override;
 
     private:
+        GrSettings* settings_ = nullptr;
         QLineEdit* et_screen_recording_path_ = nullptr;
         QPushButton* btn_select_screen_recording_path_ = nullptr;
     };

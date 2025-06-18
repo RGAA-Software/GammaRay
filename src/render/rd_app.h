@@ -39,7 +39,6 @@ namespace tc
     class IAudioCapture;
     class OpusAudioEncoder;
     class OpusAudioDecoder;
-    class CommandManager;
     class ServerCast;
     class AppSharedInfo;
     class Message;

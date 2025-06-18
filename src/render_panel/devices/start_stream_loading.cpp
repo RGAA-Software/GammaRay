@@ -35,9 +35,12 @@ namespace tc
 //            lbl_icon->setPixmap(pixmap);
             lbl_icon->setScaledContents(true);
             lbl_icon->setStyleSheet(R"(
-                border-image: url(:resources/tc_icon.png);
+                border: none;
+                border-image: url(:/resources/tc_icon.png);
+                background-repeat: no-repeat;
+                background-position: center;
             )");
-            root_layout->addSpacing(50);
+            root_layout->addSpacing(60);
 
             auto layout = new NoMarginHLayout();
             layout->addStretch();

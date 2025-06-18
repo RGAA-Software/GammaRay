@@ -16,7 +16,7 @@ namespace tc
     FloatController::FloatController(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent){
         auto image = new QImage(":resources/image/tc_icon.png");
         pixmap_ = QPixmap::fromImage(*image);
-        pixmap_ = pixmap_.scaled(30, 30);
+        pixmap_ = pixmap_.scaled(22, 22);
         setMouseTracking(true);
         this->setStyleSheet("background:#00000000;");
         QTimer::singleShot(200, [=, this]() {

@@ -26,7 +26,7 @@ namespace tc
 
     FloatControllerPanel::FloatControllerPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
-        this->setFixedSize(kInitialWidth, 280);
+        this->setFixedSize(kInitialWidth, 285);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
@@ -263,6 +263,7 @@ namespace tc
             layout->addWidget(icon_right);
             layout->addSpacing(border_spacing);
 
+            root_layout->addSpacing(border_spacing);
             root_layout->addWidget(widget);
 
             // click

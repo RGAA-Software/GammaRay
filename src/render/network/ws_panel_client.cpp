@@ -117,6 +117,7 @@ namespace tc
                 settings_->device_safety_pwd_ = sub.device_safety_pwd();
                 settings_->relay_host_ = sub.relay_host();
                 settings_->relay_port_ = sub.relay_port();
+                settings_->can_be_operated_ = sub.can_be_operated();
 
                 plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
@@ -124,6 +125,7 @@ namespace tc
                     .device_safety_pwd_ = settings_->device_safety_pwd_,
                     .relay_host_ = settings_->relay_host_,
                     .relay_port_ = settings_->relay_port_,
+                    .can_be_operated_ = settings_->can_be_operated_,
                 });
             }
             else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {

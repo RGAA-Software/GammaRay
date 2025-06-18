@@ -346,7 +346,6 @@ int main(int argc, char** argv) {
 
     auto beg = TimeUtil::GetCurrentTimestamp();
 
-
     static std::shared_ptr<BaseWorkspace> ws = nullptr;
 
 #ifdef TC_ADVANCED
@@ -356,10 +355,12 @@ int main(int argc, char** argv) {
 #endif
 
     ws->Init();
-    if (settings->show_max_window_) {
-        ws->showMaximized();
-    }
     ws->show();
+    ctx->PostDelayUITask([=]() {
+        if (settings->show_max_window_) {
+            ws->showMaximized();
+        }
+    }, 100);
     auto end = TimeUtil::GetCurrentTimestamp();
     LOGI("Init used: {}ms", (end-beg));
 

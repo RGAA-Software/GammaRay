@@ -10,6 +10,9 @@
 #include <QCheckBox>
 #include <QDebug>
 #include <QFileDialog>
+#include <QStandardPaths>
+
+#include "tc_label.h"
 #include "tc_dialog.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/tc_pushbutton.h"
@@ -17,21 +20,21 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
-#include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_ext.h"
+#include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
+#include "render_panel/gr_settings.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_spvr_client/spvr_api.h"
 #include "input_safety_pwd_dialog.h"
-#include "tc_label.h"
-#include <QStandardPaths>
 
 namespace tc
 {
 
     StController::StController(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent){
+        settings_ = GrSettings::Instance();
         auto root_layout = new NoMarginHLayout();
         auto column1_layout = new NoMarginVLayout();
         root_layout->addLayout(column1_layout);
@@ -69,7 +72,16 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QCheckBox(this);
+                edit->setChecked(settings_->IsMaxWindowEnabled());
                 layout->addWidget(edit);
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    if (state == Qt::CheckState::Checked) {
+                        settings_->SetShowingMaxWindow(true);
+                    }
+                    else {
+                        settings_->SetShowingMaxWindow(false);
+                    }
+                });
 
                 layout->addStretch();
                 segment_layout->addSpacing(10);

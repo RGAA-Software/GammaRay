@@ -253,7 +253,9 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessMouseEvent(std::shared_ptr<Message>&& msg) {
         if (settings_->app_.IsGlobalReplayMode()) {
-            win_event_replayer_->HandleMessage(msg);
+            if (settings_->can_be_operated_) {
+                win_event_replayer_->HandleMessage(msg);
+            }
         } else {
             //1. convert to ipc message
             const auto& mouse_event = msg->mouse_event();
@@ -286,7 +288,9 @@ namespace tc {
     void PluginNetEventRouter::ProcessKeyboardEvent(std::shared_ptr<Message>&& msg) {
         bool global_events = settings_->app_.event_replay_mode_ == TargetApplication::EventReplayMode::kGlobal;
         if (global_events) {
-            win_event_replayer_->HandleMessage(msg);
+            if (settings_->can_be_operated_) {
+                win_event_replayer_->HandleMessage(msg);
+            }
         } else {
             // 1. convert to ipc message
             const auto& key_event = msg->key_event();

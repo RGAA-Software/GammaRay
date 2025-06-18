@@ -30,7 +30,8 @@
 namespace tc
 {
 
-    StSecurity::StSecurity(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent){
+    StSecurity::StSecurity(const std::shared_ptr<GrApplication>& app, QWidget* parent) : TabBase(app, parent) {
+        settings_ = GrSettings::Instance();
         auto root_layout = new NoMarginHLayout();
         auto column1_layout = new NoMarginVLayout();
         root_layout->addLayout(column1_layout);
@@ -91,18 +92,14 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QCheckBox(this);
-                //cb_websocket_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setEnabled(true);
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(settings_->websocket_enabled_ == kStTrue);
-                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
-                    bool enabled = state == 2;
-                    settings_->SetWebSocketEnabled(enabled);
-                    //edt_websocket_->setEnabled(enabled);
+                edit->setChecked(settings_->IsBeingOperatedEnabled());
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    settings_->SetCanBeOperated(state == Qt::CheckState::Checked);
                 });
             }
 
@@ -121,7 +118,7 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(true);
+                edit->setChecked(settings_->IsSSLConnectionEnabled());
 
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
@@ -129,7 +126,7 @@ namespace tc
                         context_->PostUIDelayTask([=, this]() {
                             TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_ssl_always_on"));
                             dialog.exec();
-                            edit->setChecked(true);
+                            edit->setChecked(settings_->IsSSLConnectionEnabled());
                         }, 50);
                     }
                 });
@@ -150,7 +147,7 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(true);
+                edit->setChecked(settings_->IsVisitHistoryEnabled());
 
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
@@ -158,7 +155,7 @@ namespace tc
                         context_->PostUIDelayTask([=, this]() {
                             TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_record_visitor_always_on"));
                             dialog.exec();
-                            edit->setChecked(true);
+                            edit->setChecked(settings_->IsVisitHistoryEnabled());
                         }, 50);
                     }
                 });
@@ -179,7 +176,7 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(true);
+                edit->setChecked(settings_->IsFileTransferHistoryEnabled());
 
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
@@ -187,7 +184,7 @@ namespace tc
                         context_->PostUIDelayTask([=, this]() {
                             TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_record_file_transfer_always_on"));
                             dialog.exec();
-                            edit->setChecked(true);
+                            edit->setChecked(settings_->IsFileTransferHistoryEnabled());
                         }, 50);
                     }
                 });

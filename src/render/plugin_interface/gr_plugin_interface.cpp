@@ -294,6 +294,7 @@ namespace tc
         if (!settings.relay_port_.empty()) {
             sys_settings_.relay_port_ = settings.relay_port_;
         }
+        sys_settings_.can_be_operated_ = settings.can_be_operated_;
         //LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}",
         //     sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
     }

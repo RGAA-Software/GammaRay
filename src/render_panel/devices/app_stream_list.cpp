@@ -10,15 +10,14 @@
 #include <QWidget>
 #include <QProcess>
 
-#include "render_panel/database/stream_db_operator.h"
+#include "tc_dialog.h"
+#include "tc_label.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "widget_helper.h"
 #include "stream_item_widget.h"
 #include "create_stream_dialog.h"
 #include "stream_content.h"
-#include "tc_common_new/base64.h"
-#include "tc_dialog.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
@@ -26,15 +25,15 @@
 #include "tc_common_new/uid_spacer.h"
 #include "edit_relay_stream_dialog.h"
 #include "stream_settings_dialog.h"
+#include "start_stream_loading.h"
+#include "input_remote_pwd_dialog.h"
+#include "stream_state_checker.h"
 #include "tc_profile_client/profile_api.h"
 #include "render_panel/gr_account_manager.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
 #include "render_panel/network/render_api.h"
-#include "start_stream_loading.h"
-#include "input_remote_pwd_dialog.h"
-#include "stream_state_checker.h"
-#include "tc_label.h"
+#include "render_panel/database/stream_db_operator.h"
 
 namespace tc
 {

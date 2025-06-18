@@ -29,7 +29,10 @@ namespace tc
 //            label->setPixmap(pixmap);
             label->setScaledContents(true);
             label->setStyleSheet(R"(
-                border-image: url(:resources/tc_icon.png);
+                border: none;
+                border-image: url(:/resources/tc_icon.png);
+                background-repeat: no-repeat;
+                background-position: center;
             )");
             layout->addWidget(label);
             layout->addStretch();

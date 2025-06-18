@@ -357,6 +357,7 @@ namespace tc
         sub->set_device_safety_pwd(settings_->device_safety_pwd_md5_);
         sub->set_relay_host(settings_->relay_server_host_);
         sub->set_relay_port(settings_->relay_server_port_);
+        sub->set_can_be_operated(settings_->IsBeingOperatedEnabled());
         PostRendererMessage(m.SerializeAsString());
     }
 
@@ -396,8 +397,8 @@ namespace tc
             auto spectrum = std::make_shared<tcrp::RpServerAudioSpectrum>();
             spectrum->CopyFrom(proto_msg->renderer_audio_spectrum());
             context_->SendAppMessage(MsgServerAudioSpectrum {
-                    .msg_ = proto_msg,
-                    .spectrum_ = spectrum,
+                .msg_ = proto_msg,
+                .spectrum_ = spectrum,
             });
         }
         else if (proto_msg->type() == tcrp::kRpRestartServer) {

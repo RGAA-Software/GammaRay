@@ -65,6 +65,8 @@ DEFINE_string(relay_server_port, "", "relay port");
 
 DEFINE_int32(panel_server_port, 0, "");
 
+DEFINE_bool(can_be_operated, true, "");
+
 void UpdateSettings(RdSettings* settings) {
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
@@ -146,6 +148,8 @@ void UpdateSettings(RdSettings* settings) {
 
     settings->panel_server_port_ = FLAGS_panel_server_port;
 
+    // can be operated
+    settings->can_be_operated_ = FLAGS_can_be_operated;
 }
 
 void PrintInputArgs() {
@@ -183,6 +187,7 @@ void PrintInputArgs() {
     LOGI("udp listen port: {}", FLAGS_udp_listen_port);
     LOGI("relay host: {}", FLAGS_relay_server_host);
     LOGI("relay port: {}", FLAGS_relay_server_port);
+    LOGI("can be operated: {}", FLAGS_can_be_operated);
     LOGI("--------------In args end----------------");
 }
 

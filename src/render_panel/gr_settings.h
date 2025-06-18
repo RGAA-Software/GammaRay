@@ -35,7 +35,6 @@ namespace tc
     static const std::string kStDebugBlock = "debug_block";
     static const std::string kStMockVideo = "mock_video";
     static const std::string kStPanelListeningPort = "panel_listen_port";
-    static const std::string kStCaptureMonitor = "capture_monitor";
     static const std::string kStCaptureAudioDevice = "capture_audio_device";
     static const std::string kStFileTransferFolder = "file_transfer_folder";
     static const std::string kStListeningIp = "listening_ip";
@@ -52,8 +51,12 @@ namespace tc
     static const std::string kStRelayServerPort = "relay_server_port";
     static const std::string kStSpvrServerHost = "spvr_server_host";
     static const std::string kStSpvrServerPort = "spvr_server_port";
-
     static const std::string kStScreenRecordingPath = "screen_recording_path";
+    static const std::string kStShowMaxWindow = "show_max_window";
+    static const std::string kStCanBeOperated = "can_be_operated";
+    static const std::string kStSSLConnection = "ssl_connection";
+    static const std::string kStRecordVisitHistory = "record_visit_history";
+    static const std::string kStRecordFileTransferHistory = "record_file_transfer_history";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -81,7 +84,7 @@ namespace tc
         void Init(const std::shared_ptr<MessageNotifier>& notifier);
         void Load();
         void Dump();
-        [[nodiscard]] std::vector<std::string> GetArgs() const;
+        [[nodiscard]] std::vector<std::string> GetArgs();
 
         void SetBitrate(int br);
         void SetFPS(int fps);
@@ -114,9 +117,33 @@ namespace tc
         void SetSpvrServerPort(const std::string& port);
         void SetScreenRecordingPath(const std::string& path);
 
-        [[nodiscard]] std::string GetCaptureMonitor() const;
-
         [[nodiscard]] std::string GetScreenRecordingPath() const;
+
+        // show max window
+        // Settings-> Controller Settings
+        void SetShowingMaxWindow(bool enable);
+        bool IsMaxWindowEnabled();
+
+        // can be operated
+        // Settings->Security Settings
+        void SetCanBeOperated(bool enable);
+        bool IsBeingOperatedEnabled();
+
+        // use ssl connection
+        // Settings->Security Settings
+        void SetUsingSSLConnection(bool enable);
+        bool IsSSLConnectionEnabled();
+
+        // record visit history
+        // Settings->Security Settings
+        void SetRecordingVisitHistory(bool enable);
+        bool IsVisitHistoryEnabled();
+
+        // record file transfer history
+        // Settings->Security Settings
+        void SetRecordingFileTransferHistory(bool enable);
+        bool IsFileTransferHistoryEnabled();
+
     private:
 
     public:
@@ -177,6 +204,7 @@ namespace tc
 
         // screen recording path
         std::string screen_recording_path_;
+
     };
 
 }

@@ -21,7 +21,7 @@ namespace tc
     SubDisplayPanel::SubDisplayPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
-        setFixedSize(200, 160);
+        setFixedSize(200, 175);
         auto item_height = 38;
         int border_spacing = 10;
         auto item_size = QSize(this->width(), item_height);
@@ -171,7 +171,7 @@ namespace tc
             layout->addWidget(widget);
 
             auto lbl = new QLabel();
-            lbl->setText(tr("Fps"));
+            lbl->setText(tr("FPS"));
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing * 2);
             layout->addWidget(lbl);

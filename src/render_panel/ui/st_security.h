@@ -10,6 +10,7 @@
 
 namespace tc
 {
+    class GrSettings;
     class GrApplication;
 
     class StSecurity : public TabBase {
@@ -21,7 +22,7 @@ namespace tc
         void OnTabHide() override;
 
     private:
-        QLabel* license_ = nullptr;
+        GrSettings* settings_ = nullptr;
     };
 
 }

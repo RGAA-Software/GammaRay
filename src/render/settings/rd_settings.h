@@ -146,6 +146,8 @@ namespace tc
         std::string relay_port_;
         // capturing multiple monitors together
         bool capturing_multiple_ = false;
+        // can be operated
+        bool can_be_operated_ = true;
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";
         // 是否启用全彩模式: 如果启用全彩模式, 则编码输出的帧可以解码为yuv444, 否则为yuv420
