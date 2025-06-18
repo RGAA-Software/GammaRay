@@ -26,13 +26,17 @@ namespace tc
 
         {
             //
-            QImage image(":/resources/tc_icon.png");
-            auto pixmap = QPixmap::fromImage(image);
+//            QImage image(":/resources/tc_icon.png");
+//            auto pixmap = QPixmap::fromImage(image);
             int size = 80;
-            pixmap = pixmap.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//            pixmap = pixmap.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             auto lbl_icon = new QLabel(this);
             lbl_icon->setFixedSize(size, size);
-            lbl_icon->setPixmap(pixmap);
+//            lbl_icon->setPixmap(pixmap);
+            lbl_icon->setScaledContents(true);
+            lbl_icon->setStyleSheet(R"(
+                border-image: url(:resources/tc_icon.png);
+            )");
             root_layout->addSpacing(50);
 
             auto layout = new NoMarginHLayout();

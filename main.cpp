@@ -46,6 +46,9 @@ int main(int argc, char *argv[]) {
     ::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
     ::ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);  // WM_COPYGLOBALDATA
 
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
     QApplication app(argc, argv);
 
     auto base_dir = QApplication::applicationDirPath();

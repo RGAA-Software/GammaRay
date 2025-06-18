@@ -20,13 +20,17 @@ namespace tc
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto label = new QLabel();
-            QImage image;
-            image.load(":/resources/tc_icon.png");
-            auto pixmap = QPixmap::fromImage(image);
+//            QImage image;
+//            image.load(":/resources/tc_icon.png");
+//            auto pixmap = QPixmap::fromImage(image);
             int size = 120;
-            pixmap = pixmap.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//            pixmap = pixmap.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             label->setFixedSize(size, size);
-            label->setPixmap(pixmap);
+//            label->setPixmap(pixmap);
+            label->setScaledContents(true);
+            label->setStyleSheet(R"(
+                border-image: url(:resources/tc_icon.png);
+            )");
             layout->addWidget(label);
             layout->addStretch();
             root_layout->addLayout(layout);
