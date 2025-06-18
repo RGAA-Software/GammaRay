@@ -173,14 +173,14 @@ namespace tc
 
     void BaseWorkspace::RegisterBaseListeners() {
         msg_listener_->Listen<ExitAppMessage>([=, this](const ExitAppMessage& msg) {
-            context_->PostUITask([=, this]() {
+            context_->PostDelayUITask([=, this]() {
                 this->ExitClientWithDialog();
-                });
-            });
+            }, 10);
+        });
 
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
             this->SendClipboardMessage(msg);
-            });
+        });
 
         msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
             this->SendSwitchMonitorMessage(msg.name_);
@@ -193,15 +193,15 @@ namespace tc
 
         msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
             //this->SendSwitchWorkModeMessage(msg.mode_);
-            });
+        });
 
         msg_listener_->Listen<SwitchScaleModeMessage>([=, this](const SwitchScaleModeMessage& msg) {
             this->SwitchScaleMode(msg.mode_);
-            });
+        });
 
         msg_listener_->Listen<SwitchFullColorMessage>([=, this](const SwitchFullColorMessage& msg) {
             this->SendSwitchFullColorMessage(msg.enable_);
-            });
+        });
 
         // step 1
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
@@ -210,27 +210,27 @@ namespace tc
             main_progress_->ResetProgress();
             main_progress_->StepForward();
             LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
-            });
+        });
 
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
 
-            });
+        });
 
         // step 2
         msg_listener_->Listen<SdkMsgFirstConfigInfoCallback>([=, this](const SdkMsgFirstConfigInfoCallback& msg) {
             main_progress_->StepForward();
             LOGI("Step: MsgFirstConfigInfoCallback, at: {}", main_progress_->GetCurrentProgress());
-            });
+        });
 
         // step 3
         msg_listener_->Listen<SdkMsgFirstVideoFrameDecoded>([=, this](const SdkMsgFirstVideoFrameDecoded& msg) {
             main_progress_->CompleteProgress();
             LOGI("Step: MsgFirstVideoFrameDecoded, at: {}", main_progress_->GetCurrentProgress());
-            });
+        });
 
         msg_listener_->Listen<MsgChangeMonitorResolution>([=, this](const MsgChangeMonitorResolution& msg) {
             this->SendChangeMonitorResolutionMessage(msg);
-            });
+        });
 
         msg_listener_->Listen<MsgCtrlAltDelete>([=, this](const MsgCtrlAltDelete& msg) {
             tc::Message m;

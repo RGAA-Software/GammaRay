@@ -81,9 +81,9 @@ namespace tc
                 else if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
                     setWindowTitle(origin_title_name_);
                 }
-                });
+            });
             this->SendUpdateDesktopMessage();
-         });
+        });
     }
 
     void Workspace::Init() {
@@ -156,8 +156,7 @@ namespace tc
                 }
             }
             context_->UpdateCapturingMonitorInfo(info);
-            });
-
+        });
     }
 
     void Workspace::SendWindowsKey(unsigned long vk, bool down) {

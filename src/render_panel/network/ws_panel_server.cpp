@@ -418,6 +418,9 @@ namespace tc
                     ip_address = ips[0].ip_addr_;
                 }
                 auto sub = proto_msg->client_connected();
+                if (sub.visitor_device_id().empty()) {
+                    return;
+                }
                 visit_record_op_->InsertVisitRecord(std::make_shared<VisitRecord>(VisitRecord {
                     .the_conn_id_ = sub.the_conn_id(),
                     .conn_type_ = sub.conn_type(),
