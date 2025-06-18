@@ -280,7 +280,7 @@ namespace tc
     }
 
     bool RelayPlugin::IsWorking() {
-        return sdk_init_ && relay_media_sdk_ && relay_media_sdk_->IsAlive();
+        return sdk_init_ && relay_media_sdk_ && relay_media_sdk_->IsAlive() && sys_settings_.relay_enabled_;
     }
 
     void RelayPlugin::SyncInfo(const tc::NetSyncInfo &info) {

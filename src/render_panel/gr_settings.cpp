@@ -167,6 +167,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStRelayServerHost, relay_server_host_));
         args.push_back(std::format("--{}={}", kStRelayServerPort, relay_server_port_));
         args.push_back(std::format("--{}={}", kStCanBeOperated, this->IsBeingOperatedEnabled()));
+        args.push_back(std::format("--{}={}", kStRelayEnabled, this->IsRelayEnabled()));
         return args;
     }
 
@@ -383,4 +384,14 @@ namespace tc
         auto value = sp_->Get(kStRecordFileTransferHistory);
         return value.empty() || value == kStTrue;
     }
+
+    void GrSettings::SetRelayEnabled(bool enabled) {
+        sp_->Put(kStRelayEnabled, enabled ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsRelayEnabled() {
+        auto value = sp_->Get(kStRelayEnabled);
+        return value.empty() || value == kStTrue;
+    }
+
 }

@@ -74,6 +74,7 @@ namespace tc
                             {"ws-listen-port", (int64_t)settings_->transmission_.listening_port_},
                             {"udp-listen-port", (int64_t)settings_->transmission_.udp_listen_port_},
                             {"device_id", settings_->device_id_},
+                            {"relay_enabled", settings_->relay_enabled_},
                             {"relay_host", settings_->relay_host_},
                             {"relay_port", settings_->relay_port_}
                         },

@@ -23,6 +23,8 @@ namespace tc
         std::string relay_port_;
         // can be operated by mouse and keyboard
         bool can_be_operated_ = true;
+        // relay enabled
+        bool relay_enabled_ = true;
     };
 
 }

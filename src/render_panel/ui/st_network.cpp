@@ -229,6 +229,48 @@ namespace tc
                 segment_layout->addSpacing(20);
                 segment_layout->addWidget(label);
             }
+            // Relay
+
+            auto fn_set_spvr_input_state = [this](bool enabled) {
+                if (enabled) {
+                    edt_spvr_server_host_->setEnabled(true);
+                    edt_spvr_server_port_->setEnabled(true);
+                }
+                else {
+                    edt_spvr_server_host_->setEnabled(false);
+                    edt_spvr_server_port_->setEnabled(false);
+                }
+            };
+
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_relay");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                cb_websocket_ = edit;
+                edit->setFixedSize(input_size);
+                edit->setEnabled(true);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->IsRelayEnabled());
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    if (state == Qt::CheckState::Checked) {
+                        settings_->SetRelayEnabled(true);
+                    }
+                    else {
+                        settings_->SetRelayEnabled(false);
+                    }
+
+                    fn_set_spvr_input_state(settings_->IsRelayEnabled());
+                });
+            }
+
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
@@ -264,7 +306,8 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
             }
-
+            fn_set_spvr_input_state(settings_->IsRelayEnabled());
+            
             column1_layout->addLayout(segment_layout);
         }
 

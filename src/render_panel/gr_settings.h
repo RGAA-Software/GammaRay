@@ -57,6 +57,7 @@ namespace tc
     static const std::string kStSSLConnection = "ssl_connection";
     static const std::string kStRecordVisitHistory = "record_visit_history";
     static const std::string kStRecordFileTransferHistory = "record_file_transfer_history";
+    static const std::string kStRelayEnabled = "relay_enabled";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -143,6 +144,11 @@ namespace tc
         // Settings->Security Settings
         void SetRecordingFileTransferHistory(bool enable);
         bool IsFileTransferHistoryEnabled();
+
+        // relay enabled
+        // Settings -> Network Settings -> Supervisor Server
+        void SetRelayEnabled(bool enabled);
+        bool IsRelayEnabled();
 
     private:
 

@@ -67,6 +67,8 @@ DEFINE_int32(panel_server_port, 0, "");
 
 DEFINE_bool(can_be_operated, true, "");
 
+DEFINE_bool(relay_enabled, true, "");
+
 void UpdateSettings(RdSettings* settings) {
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
@@ -150,6 +152,8 @@ void UpdateSettings(RdSettings* settings) {
 
     // can be operated
     settings->can_be_operated_ = FLAGS_can_be_operated;
+    // relay enabled
+    settings->relay_enabled_ = FLAGS_relay_enabled;
 }
 
 void PrintInputArgs() {
@@ -188,6 +192,7 @@ void PrintInputArgs() {
     LOGI("relay host: {}", FLAGS_relay_server_host);
     LOGI("relay port: {}", FLAGS_relay_server_port);
     LOGI("can be operated: {}", FLAGS_can_be_operated);
+    LOGI("relay enabled: {}", FLAGS_relay_enabled);
     LOGI("--------------In args end----------------");
 }
 

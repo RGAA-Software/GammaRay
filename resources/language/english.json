@@ -185,5 +185,6 @@
   "id_remote_security_password_updated": "The Remote security password has updated.",
   "id_security_password_update_failed": "Update security password failed. Please check your Supervisor server config and try again.",
   "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server.",
-  "id_must_input_security_password": "You must set your security password in Security Settings."
+  "id_must_input_security_password": "You must set your security password in Security Settings.",
+  "id_relay": "Relay"
 }
