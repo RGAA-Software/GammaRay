@@ -79,13 +79,14 @@ namespace tc
                 if (relay_port != sys_relay_port && sys_relay_port > 0) {
                     relay_port = sys_relay_port;
                 }
-                LOGI("OnCreate try to connect, connect count: {}; device id: {}, relay host: {}, relay port: {}",
-                     connect_count++, srv_device_id, relay_host, relay_port);
 
                 if (sys_settings_.device_id_.empty() || relay_host.empty() || relay_port <= 0) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                     continue;
                 }
+
+                LOGI("OnCreate try to connect, connect count: {}; device id: {}, relay host: {}, relay port: {}",
+                     connect_count++, srv_device_id, relay_host, relay_port);
 
                 // todo: check device id, empty? try to retry
                 relay_media_sdk_ = std::make_shared<RelayServerSdk>(RelayServerSdkParam{

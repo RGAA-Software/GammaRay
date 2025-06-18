@@ -315,7 +315,7 @@ namespace tc
     void PluginManager::On1Second() {
         context_->PostTask([=, this]() {
             auto connected_client_count = this->GetTotalConnectedPeerCount();
-            LOGI("connected_client_count: {}", connected_client_count);
+            //LOGI("connected_client_count: {}", connected_client_count);
             VisitAllPlugins([=, this](GrPluginInterface* plugin) {
                 plugin->On1Second();
 
