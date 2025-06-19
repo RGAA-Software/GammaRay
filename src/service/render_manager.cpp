@@ -4,7 +4,7 @@
 
 #include "render_manager.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/win32/process_helper.h"

@@ -7,7 +7,7 @@
 #include <memory>
 #include "third_party/libyuv/include/libyuv.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/time_util.h"
 
 namespace tc

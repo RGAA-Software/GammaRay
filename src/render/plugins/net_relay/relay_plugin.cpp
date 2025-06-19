@@ -7,7 +7,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/ip_util.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/client_id_extractor.h"
 #include "render/plugins/plugin_ids.h"
 #include "tc_relay_client/relay_server_sdk.h"

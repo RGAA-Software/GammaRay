@@ -3,7 +3,7 @@
 #include <iostream>
 #include <timeapi.h>
 #include <functional>
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
@@ -56,13 +56,13 @@ namespace tc
             D3D_FEATURE_LEVEL feature_level;
             DXGI_ADAPTER_DESC adapter_desc{};
             adapter1->GetDesc(&adapter_desc);
-            LOGI("Adapter Index:{} Name:{}", adapter_index, StringExt::ToUTF8(adapter_desc.Description).c_str());
+            LOGI("Adapter Index:{} Name:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str());
             auto adapter_uid = adapter_desc.AdapterLuid.LowPart;
             res = D3D11CreateDevice(adapter1, D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT,
                                     nullptr, 0, D3D11_SDK_VERSION, &d3d11_device, &feature_level,
                                     &d3d11_device_context);
             if (res != S_OK || !d3d11_device) {
-                LOGE("D3D11CreateDevice failed: {}", StringExt::GetErrorStr(res).c_str());
+                LOGE("D3D11CreateDevice failed: {}", StringUtil::GetErrorStr(res).c_str());
                 break;
             }
             if (feature_level < D3D_FEATURE_LEVEL_11_0) {
@@ -73,7 +73,7 @@ namespace tc
             res = d3d11_device.QueryInterface(&dxgi_device);
             if (res != S_OK || !dxgi_device) {
                 LOGE("ID3D11Device is not an implementation of IDXGIDevice, this usually means the system does not support DirectX 11. Error:{}, code: {}",
-                     StringExt::GetErrorStr(res), res);
+                     StringUtil::GetErrorStr(res), res);
                 break;
             }
 
@@ -91,14 +91,14 @@ namespace tc
                 }
                 if (res != S_OK || !output) {
                     LOGE("IDXGIAdapter::EnumOutputs returns an unexpected result {} with error code {}",
-                         StringExt::GetErrorStr(res).c_str(), res);
+                         StringUtil::GetErrorStr(res).c_str(), res);
                     monitor_index++;
                     continue;
                 }
                 DXGI_OUTPUT_DESC output_desc{};
                 res = output->GetDesc(&output_desc);
                 if (res == S_OK) {
-                    auto dev_name = StringExt::ToUTF8(output_desc.DeviceName);
+                    auto dev_name = StringUtil::ToUTF8(output_desc.DeviceName);
                     if (dev_name != my_monitor_info_.name_) {
                         LOGW("My device name is :{}, but your name is : {}, continue to find.", my_monitor_info_.name_, dev_name);
                         monitor_index++;
@@ -146,7 +146,7 @@ namespace tc
                                     LOGE("!! invalid args !!");
                                 }
                                 LOGE("Failed to duplicate output from IDXGIOutput1, error {} with code {:x}",
-                                     StringExt::GetErrorStr(error).c_str(), (uint32_t) error);
+                                     StringUtil::GetErrorStr(error).c_str(), (uint32_t) error);
                                 continue;
                             } else {
                                 init_dda_success = true;
@@ -236,7 +236,7 @@ namespace tc
         }
         res = resource->QueryInterface(__uuidof(ID3D11Texture2D), (void **) &source);
         if (res != S_OK) {
-            LOGE("QueryInterface failed when capturing: {}", StringExt::GetErrorStr(res));
+            LOGE("QueryInterface failed when capturing: {}", StringUtil::GetErrorStr(res));
             return res;
         }
         if (info.AccumulatedFrames == 0) {
@@ -321,7 +321,7 @@ namespace tc
                 last_captured_timestamp_ = curr_timestamp;
             }
             else if (res == S_FALSE || res == DXGI_ERROR_ACCESS_LOST || res == DXGI_ERROR_INVALID_CALL) {
-                LOGE("CaptureNextFrame reinit, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringExt::GetErrorStr(res));
+                LOGE("CaptureNextFrame reinit, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringUtil::GetErrorStr(res));
                 Exit();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 auto init_ok = Init();
@@ -350,7 +350,7 @@ namespace tc
             }
             else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                LOGE("Unknown error: {:x}", res, StringExt::GetErrorStr(res));
+                LOGE("Unknown error: {:x}", res, StringUtil::GetErrorStr(res));
                 continue;
             }
 
@@ -415,20 +415,20 @@ namespace tc
 
             result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &last_list_texture_.texture2d_);
             if (FAILED(result)) {
-                LOGE("desktop capture create texture failed with:{}", StringExt::GetErrorStr(result).c_str());
+                LOGE("desktop capture create texture failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
 
             ComPtr<IDXGIResource> dxgiResource;
             result = last_list_texture_.texture2d_.As<IDXGIResource>(&dxgiResource);
             if (FAILED(result)) {
-                LOGE("desktop capture as IDXGIResource failed with:{}", StringExt::GetErrorStr(result).c_str());
+                LOGE("desktop capture as IDXGIResource failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
             HANDLE handle;
             result = dxgiResource->GetSharedHandle(&handle);
             if (FAILED(result)) {
-                LOGI("desktop capture get shared handle failed with:{}", StringExt::GetErrorStr(result).c_str());
+                LOGI("desktop capture get shared handle failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
             last_list_texture_.shared_handle_ = handle;
@@ -441,7 +441,7 @@ namespace tc
             CComPtr<ID3D11Texture2D> cached_texture;
             result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &cached_texture);
             if (FAILED(result)) {
-                LOGE("create cached texture failed with:{}", StringExt::GetErrorStr(result).c_str());
+                LOGE("create cached texture failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
             cached_texture_ = cached_texture;
@@ -451,12 +451,12 @@ namespace tc
         ComPtr<IDXGIKeyedMutex> keyMutex;
         result = last_list_texture_.texture2d_.As<IDXGIKeyedMutex>(&keyMutex);
         if (FAILED(result)) {
-            LOGE("desktop frame capture as IDXGIKeyedMutex failed:{}", StringExt::GetErrorStr(result).c_str());
+            LOGE("desktop frame capture as IDXGIKeyedMutex failed:{}", StringUtil::GetErrorStr(result).c_str());
             return;
         }
         result = keyMutex->AcquireSync(0, INFINITE);
         if (FAILED(result)) {
-            LOGE("desktop frame capture texture AcquireSync failed with:{}", StringExt::GetErrorStr(result).c_str());
+            LOGE("desktop frame capture texture AcquireSync failed with:{}", StringUtil::GetErrorStr(result).c_str());
             return;
         }
 

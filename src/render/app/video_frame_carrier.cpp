@@ -4,7 +4,7 @@
 
 #include "video_frame_carrier.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/thread.h"
@@ -127,7 +127,7 @@ namespace tc
             createDesc.Usage = D3D11_USAGE_STAGING;
             res = curDevice->CreateTexture2D(&createDesc, NULL, texture2d_.GetAddressOf());
             if (FAILED(res)) {
-                LOGE("desktop capture create texture failed with:{}", StringExt::GetErrorStr(res).c_str());
+                LOGE("desktop capture create texture failed with:{}", StringUtil::GetErrorStr(res).c_str());
                 return false;
             }
         }

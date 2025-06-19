@@ -6,7 +6,7 @@
 #include "service_context.h"
 #include "service.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include <string>
 #include <Windows.h>
 #include <Shlwapi.h>
@@ -31,7 +31,7 @@ std::wstring GetModulePathW(HMODULE hModule)
 
 std::string GetModulePath(HMODULE hModule)
 {
-    return StringExt::ToUTF8(GetModulePathW(hModule));
+    return StringUtil::ToUTF8(GetModulePathW(hModule));
 }
 
 DWORD WINAPI ServiceCtrlHandler(DWORD dwCtrl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext) {

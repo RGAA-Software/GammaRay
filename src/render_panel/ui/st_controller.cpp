@@ -21,7 +21,7 @@
 #include "render_panel/gr_settings.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"

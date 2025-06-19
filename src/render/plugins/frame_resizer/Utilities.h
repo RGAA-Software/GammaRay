@@ -3,7 +3,7 @@
 #include <locale>
 #include <comdef.h>
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 
 //wprintf(L"RETURN_ON_BAD_HR: hr=0x%08x, error is %ls\n", _hr_, err.ErrorMessage());
 
@@ -13,7 +13,7 @@
     if (FAILED(_hr_)) { \
     {\
         _com_error err(_hr_);\
-        LOGE("HRESULT: {:x}, msg: {}", (uint32_t)_hr_, tc::StringExt::ToUTF8(err.ErrorMessage())); \
+        LOGE("HRESULT: {:x}, msg: {}", (uint32_t)_hr_, tc::StringUtil::ToUTF8(err.ErrorMessage())); \
     }\
         return _hr_; \
     } \

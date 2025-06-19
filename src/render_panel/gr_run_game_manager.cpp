@@ -8,7 +8,7 @@
 #include "gr_context.h"
 #include "render_panel/database/db_game_operator.h"
 #include "tc_steam_manager_new/steam_manager.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/time_util.h"
@@ -88,7 +88,7 @@ namespace tc
     }
 
     bool GrRunGameManager::StartSteamGame(const std::string &game_path, const std::vector<std::string>& args) {
-        const std::wstring& target_exec = StringExt::ToWString(game_path);
+        const std::wstring& target_exec = StringUtil::ToWString(game_path);
         if (game_path.find("bigpicture") != std::string::npos) {
             // steam big picture mode
             // target_exec = "steam.exe steam://open/bigpicture'"
@@ -125,7 +125,7 @@ namespace tc
 
     Response<bool, std::string> GrRunGameManager::StartNormalGame(const std::string& game_path, const std::vector<std::string>& args) {
         auto resp = Response<bool, std::string>::Make(false, "");
-        if (!std::filesystem::exists(StringExt::ToWString(game_path))) {
+        if (!std::filesystem::exists(StringUtil::ToWString(game_path))) {
             resp.value_ = std::format("Exe not exists: {}", game_path);
             LOGE(resp.value_);
             return resp;
@@ -209,10 +209,10 @@ namespace tc
             std::vector<uint32_t> running_pids;
             for (const std::string& exe : game->exes_) {
                 std::string exe_full_path = exe;
-                StringExt::Replace(exe_full_path, "\\", "/");
+                StringUtil::Replace(exe_full_path, "\\", "/");
                 for (const auto& rp : running_processes_) {
                     std::string rp_exe_full_path = rp->exe_full_path_;
-                    StringExt::Replace(rp_exe_full_path, "\\", "/");
+                    StringUtil::Replace(rp_exe_full_path, "\\", "/");
                     if (rp_exe_full_path == exe_full_path) {
                         //LOGI("********Found running game: {}", exe_full_path);
                         running_pids.push_back(rp->pid_);

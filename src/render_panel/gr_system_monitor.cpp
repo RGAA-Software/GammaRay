@@ -11,7 +11,7 @@
 #include "tc_controller/vigem_driver_manager.h"
 #include "tc_controller/vigem/sdk/ViGEm/Client.h"
 #include "tc_common_new/process_util.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "gr_render_controller.h"

@@ -7,7 +7,7 @@
 #include <sstream>
 
 #include "toml/toml.hpp"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/log.h"
 #include "tc_capture_new/win/client_ipc_manager.h"
 #include "tc_common_new/shared_preference.h"
@@ -117,7 +117,7 @@ namespace tc
         }();
         if (app_.IsSteamUrl()) {
             std::vector<std::string> split_value;
-            StringExt::Split(app_.game_path_, split_value, "/");
+            StringUtil::Split(app_.game_path_, split_value, "/");
             if (!split_value.empty()) {
                 auto id = std::atoi(split_value[split_value.size()-1].c_str());
                 app_.steam_app_.app_id_ = id;

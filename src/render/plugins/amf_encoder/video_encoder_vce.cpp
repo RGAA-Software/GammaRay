@@ -8,7 +8,7 @@
 #include "tc_common_new/defer.h"
 #include "d3d_texture_debug.h"
 #include "tc_encoder_new/encoder_config.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "amf_encoder_plugin.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"

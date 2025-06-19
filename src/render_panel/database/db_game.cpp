@@ -3,7 +3,7 @@
 //
 
 #include "db_game.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/log.h"
 #include <algorithm>
 
@@ -44,13 +44,13 @@ namespace tc
 
     void TcDBGame::UnpackExePaths() {
         if (!this->game_exes_.empty()) {
-            StringExt::Split(this->game_exes_, this->exes_, ";");
+            StringUtil::Split(this->game_exes_, this->exes_, ";");
             std::erase_if(this->exes_, [](const std::string &item) -> bool {
                 return item.empty();
             });
         }
         if (!this->game_exe_names_.empty()) {
-            StringExt::Split(this->game_exe_names_, this->exe_names_, ";");
+            StringUtil::Split(this->game_exe_names_, this->exe_names_, ";");
             std::erase_if(this->exe_names_, [](const std::string& item) -> bool {
                 return item.empty();
             });

@@ -4,7 +4,7 @@
 
 #include "gr_render_controller.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "gr_settings.h"
 #include "tc_service_message.pb.h"
 #include "gr_application.h"

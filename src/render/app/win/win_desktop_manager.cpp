@@ -4,7 +4,7 @@
 #include <shlobj.h>
 #include "win_message_loop.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 
 namespace tc
 {
@@ -38,9 +38,9 @@ namespace tc
         wallpaper_path.resize(kPathSize);
         std::fill(wallpaper_path.begin(), wallpaper_path.end(), L'\0');
         if (SystemParametersInfoW(SPI_GETDESKWALLPAPER, kPathSize, wallpaper_path.data(), 0)) {
-            //LOGI("UpdateDesktop wallpaper_path is : {}", StringExt::ToUTF8(wallpaper_path));
+            //LOGI("UpdateDesktop wallpaper_path is : {}", StringUtil::ToUTF8(wallpaper_path));
             if (std::filesystem::exists(wallpaper_path)) {
-                //LOGI("UpdateDesktop wallpaper_path is : {}, exists", StringExt::ToUTF8(wallpaper_path));
+                //LOGI("UpdateDesktop wallpaper_path is : {}, exists", StringUtil::ToUTF8(wallpaper_path));
                 SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, wallpaper_path.data(), SPIF_SENDCHANGE);
                 return;
             }

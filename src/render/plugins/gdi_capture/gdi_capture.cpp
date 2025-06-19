@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <timeapi.h>
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"

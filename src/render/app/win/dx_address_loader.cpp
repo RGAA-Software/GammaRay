@@ -6,7 +6,7 @@
 #include "tc_capture_new/capture_message.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/log.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 
 #include <vector>
 #include <string>
@@ -53,7 +53,7 @@ namespace tc
             }
 
             std::vector<std::string> parsed_line;
-            StringExt::Split(line, parsed_line, "=");
+            StringUtil::Split(line, parsed_line, "=");
             auto address = fn_get_address_number(parsed_line);
 
             if (is_d3d9) {

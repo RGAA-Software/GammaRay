@@ -17,7 +17,7 @@
 #include "render_panel/database/db_game_operator.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/win32/process_helper.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/file_util.h"
@@ -131,7 +131,7 @@ namespace tc
             json item;
             item["pid"] = rp->pid_;
             auto exe_path = rp->exe_full_path_;
-            StringExt::Replace(exe_path, "\\", "/");
+            StringUtil::Replace(exe_path, "\\", "/");
             item["exe_path"] = exe_path;
             item["icon"] = rp->icon_name_;
             obj.push_back(item);

@@ -6,7 +6,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "nvenc_encoder_plugin.h"
 #include "nvEncodeAPI.h"

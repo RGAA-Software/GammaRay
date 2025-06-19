@@ -77,12 +77,12 @@ namespace tc
             DXGI_ADAPTER_DESC adapter_desc{};
             adapter1->GetDesc(&adapter_desc);
             auto adapter_uid = adapter_desc.AdapterLuid.LowPart;
-            LOGI("Adapter Index:{} Name:{}, Uid:{}", adapter_index, StringExt::ToUTF8(adapter_desc.Description).c_str(), adapter_uid);
+            LOGI("Adapter Index:{} Name:{}, Uid:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str(), adapter_uid);
             res = D3D11CreateDevice(adapter1, D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT,
                                     nullptr, 0, D3D11_SDK_VERSION, &d3d11_device, &feature_level,
                                     &d3d11_device_context);
             if (res != S_OK || !d3d11_device) {
-                LOGE("D3D11CreateDevice failed: {}", StringExt::GetErrorStr(res).c_str());
+                LOGE("D3D11CreateDevice failed: {}", StringUtil::GetErrorStr(res).c_str());
                 break;
             }
             if (feature_level < D3D_FEATURE_LEVEL_11_0) {
@@ -93,7 +93,7 @@ namespace tc
             res = d3d11_device.QueryInterface(&dxgi_device);
             if (res != S_OK || !dxgi_device) {
                 LOGE("ID3D11Device is not an implementation of IDXGIDevice, this usually means the system does not support DirectX 11. Error:{}, code: {}",
-                     StringExt::GetErrorStr(res), res);
+                     StringUtil::GetErrorStr(res), res);
                 break;
             }
 
@@ -110,13 +110,13 @@ namespace tc
                     break;
                 }
                 if (res != S_OK || !output) {
-                    LOGE("IDXGIAdapter::EnumOutputs returns an unexpected result {} with error code {}", StringExt::GetErrorStr(res).c_str(), res);
+                    LOGE("IDXGIAdapter::EnumOutputs returns an unexpected result {} with error code {}", StringUtil::GetErrorStr(res).c_str(), res);
                     break;
                 }
                 DXGI_OUTPUT_DESC output_desc{};
                 res = output->GetDesc(&output_desc);
                 if (res == S_OK) {
-                    auto dev_name = StringExt::ToUTF8(output_desc.DeviceName);
+                    auto dev_name = StringUtil::ToUTF8(output_desc.DeviceName);
                     monitors_.insert({dev_name, CaptureMonitorInfo{
                         .name_ = dev_name,
                         .attached_desktop_ = (bool) output_desc.AttachedToDesktop,

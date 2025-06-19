@@ -6,7 +6,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "tc_common_new/process_util.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/file_util.h"
 #include "tc_common_new/log.h"
 #include "rd_context.h"
@@ -72,15 +72,15 @@ namespace tc
     bool AppManagerWinImpl::StartProcessWithHook() {
         auto config_exe_path = settings_->app_.game_path_;
         bool is_steam_url = settings_->app_.IsSteamUrl();
-        //StringExt::ToWString(config_exe_path);
+        //StringUtil::ToWString(config_exe_path);
         //auto exe_path = std::filesystem::u8path(config_exe_path);
-        if (!std::filesystem::exists(StringExt::ToWString(config_exe_path)) && !is_steam_url) {
+        if (!std::filesystem::exists(StringUtil::ToWString(config_exe_path)) && !is_steam_url) {
             LOGE("Exe not exists: {}", config_exe_path);
             return false;
         }
 
-        std::wstring exec = StringExt::ToWString(config_exe_path);
-        std::wstring arguments = StringExt::ToWString(settings_->app_.game_arguments_);
+        std::wstring exec = StringUtil::ToWString(config_exe_path);
+        std::wstring arguments = StringUtil::ToWString(settings_->app_.game_arguments_);
         std::wstring x86_dll;
         std::wstring x64_dll = L"tc_graphics.dll";
 
@@ -119,7 +119,7 @@ namespace tc
         }
 #endif
         std::vector<std::string> args;
-        auto u8_exec = StringExt::ToUTF8(exec);
+        auto u8_exec = StringUtil::ToUTF8(exec);
         auto game_args = QString::fromStdString(settings_->app_.game_arguments_);
         auto split_game_args = game_args.split(' ');
         for (const auto& arg: split_game_args) {
@@ -138,8 +138,8 @@ namespace tc
         BOOL ret = false;
         auto config_exe_path = settings_->app_.game_path_;
         bool is_steam_url = settings_->app_.IsSteamUrl();
-        std::wstring exec = StringExt::ToWString(config_exe_path);
-        std::wstring arguments = StringExt::ToWString(settings_->app_.game_arguments_);
+        std::wstring exec = StringUtil::ToWString(config_exe_path);
+        std::wstring arguments = StringUtil::ToWString(settings_->app_.game_arguments_);
 
         // steam url
         if (is_steam_url) {
@@ -163,13 +163,13 @@ namespace tc
             return true;
         }
 
-        if (!std::filesystem::exists(StringExt::ToWString(config_exe_path)) && !is_steam_url) {
+        if (!std::filesystem::exists(StringUtil::ToWString(config_exe_path)) && !is_steam_url) {
             LOGE("Exe not exists: {}", config_exe_path);
             return false;
         }
 
         std::vector<std::string> args;
-        auto u8_exec = StringExt::ToUTF8(exec);
+        auto u8_exec = StringUtil::ToUTF8(exec);
         auto game_args = QString::fromStdString(settings_->app_.game_arguments_);
         auto split_game_args = game_args.split(' ');
         for (const auto& arg: split_game_args) {
@@ -196,7 +196,7 @@ namespace tc
 
     void AppManagerWinImpl::InjectCaptureDllForSteamApp() {
         std::vector<std::string> split_path;
-        StringExt::Split(settings_->app_.game_path_, split_path, "/");
+        StringUtil::Split(settings_->app_.game_path_, split_path, "/");
         if (split_path.empty()) {
             return;
         }
@@ -368,9 +368,9 @@ namespace tc
         // "C:/xxx/inject-helper64.exe" "C:\ProgramData\obs-studio-hook\graphics-hook64.dll" 1 40780
         auto current_exe_path = std::filesystem::current_path().string();
         auto injector_path = std::format("{}/{}", current_exe_path, kInjectorName);
-        StringExt::Replace(injector_path, "\\", "/");
+        StringUtil::Replace(injector_path, "\\", "/");
         auto target_dll = std::format("{}/{}", current_exe_path, x64_dll);
-        StringExt::Replace(target_dll, "\\", "/");
+        StringUtil::Replace(target_dll, "\\", "/");
 
         LOGI("Inject: {} {} pid: {}, tid: {}", injector_path, target_dll, pid, tid);
 
@@ -402,7 +402,7 @@ namespace tc
         if (!infos.infos.empty()) {
             for (auto& info : infos.infos) {
                 //LOGI("pid : {}, exe : {}, title : {}, class : {}",
-                //         info.pid, StringExt::ToUTF8(info.exe_name).c_str(), StringExt::ToUTF8(info.title).c_str(), info.claxx );
+                //         info.pid, StringUtil::ToUTF8(info.exe_name).c_str(), StringUtil::ToUTF8(info.title).c_str(), info.claxx );
                 auto size = info.GetWindowSize();
             }
         }

@@ -14,7 +14,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/process_util.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "tc_common_new/time_util.h"
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_capture_new/capture_message.h"
@@ -613,7 +613,7 @@ namespace tc
         dm.dmPelsHeight = h;
         dm.dmBitsPerPel = 32;
         dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-        auto deviceName = StringExt::ToWString(name);//L"\\\\.\\DISPLAY1";
+        auto deviceName = StringUtil::ToWString(name);//L"\\\\.\\DISPLAY1";
         LONG result = ChangeDisplaySettingsExW(deviceName.c_str(), &dm, nullptr, CDS_FULLSCREEN, nullptr);
         bool ok = result == DISP_CHANGE_SUCCESSFUL;
 
@@ -676,7 +676,7 @@ namespace tc
 
             adapter->GetDesc(&desc);
             if (adapter_uid == desc.AdapterLuid.LowPart || adapter_uid == -1 /* todo: try to find hardware.*/) {
-                LOGI("Adapter Index:{} Name: {}", adapter_index, StringExt::ToUTF8(desc.Description).c_str());
+                LOGI("Adapter Index:{} Name: {}", adapter_index, StringUtil::ToUTF8(desc.Description).c_str());
                 LOGI("find adapter");
                 break;
             }

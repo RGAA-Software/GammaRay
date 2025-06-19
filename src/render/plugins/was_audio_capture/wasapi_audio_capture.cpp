@@ -1,7 +1,7 @@
 #include "wasapi_audio_capture.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 
 #pragma comment(lib, "Winmm.lib")
 
@@ -55,12 +55,12 @@ namespace tc
         if (device_id_.empty()) {
             hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
         } else {
-            hr = pEnumerator->GetDevice(StringExt::ToWString(device_id_).c_str(), &pDevice);
+            hr = pEnumerator->GetDevice(StringUtil::ToWString(device_id_).c_str(), &pDevice);
             LOGI("Use target audio device id: {}", device_id_);
         }
         EXIT_ON_ERROR(hr)
         pDevice->GetId(&pDeviceID);
-        LOGI("Audio Id: {}", StringExt::ToUTF8(pDeviceID));
+        LOGI("Audio Id: {}", StringUtil::ToUTF8(pDeviceID));
 
         hr = pDevice->Activate(IID_IAudioClient, CLSCTX_ALL, nullptr, (void**)&pAudioClient);
         EXIT_ON_ERROR(hr)

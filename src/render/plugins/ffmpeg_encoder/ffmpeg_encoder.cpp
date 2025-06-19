@@ -9,7 +9,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/defer.h"
-#include "tc_common_new/string_ext.h"
+#include "tc_common_new/string_util.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "ffmpeg_encoder_plugin.h"
 
@@ -207,7 +207,7 @@ namespace tc
                     std::string line;
                     line.resize(4096);
                     av_log_format_line(ptr, level, fmt, vl, line.data(), line.size(), &print_prefix);
-                    line = StringExt::Trim(line);
+                    line = StringUtil::Trim(line);
                     if (level <= AV_LOG_WARNING)
                         LOGI("ffmpeg_wlog:{}", line.c_str());
                 }
