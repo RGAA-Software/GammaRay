@@ -28,7 +28,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto logo = new QLabel(this);
-            logo->setFixedSize(160, 160);
+            logo->setFixedSize(120, 120);
             logo->setStyleSheet(R"(border-image: url(:/resources/image/tc_icon_raw.png)})");
             layout->addStretch();
             layout->addWidget(logo);

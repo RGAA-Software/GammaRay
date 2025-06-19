@@ -358,6 +358,7 @@ namespace tc
         sub->set_relay_host(settings_->relay_server_host_);
         sub->set_relay_port(settings_->relay_server_port_);
         sub->set_can_be_operated(settings_->IsBeingOperatedEnabled());
+        sub->set_relay_enabled(settings_->IsRelayEnabled());
         PostRendererMessage(m.SerializeAsString());
     }
 

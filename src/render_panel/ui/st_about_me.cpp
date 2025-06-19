@@ -6,7 +6,8 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
-#include <QLabel>
+#include "tc_label.h"
+#include "tc_image_button.h"
 #include <QPushButton>
 #include <QDesktopServices>
 
@@ -20,17 +21,12 @@ namespace tc
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto label = new QLabel();
-//            QImage image;
-//            image.load(":/resources/tc_icon.png");
-//            auto pixmap = QPixmap::fromImage(image);
-            int size = 120;
-//            pixmap = pixmap.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            int size = 90;
             label->setFixedSize(size, size);
-//            label->setPixmap(pixmap);
             label->setScaledContents(true);
             label->setStyleSheet(R"(
                 border: none;
-                border-image: url(:/resources/tc_icon.png);
+                border-image: url(:/resources/tc_trans_icon_blue.png);
                 background-repeat: no-repeat;
                 background-position: center;
             )");
@@ -42,90 +38,97 @@ namespace tc
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto label = new QLabel();
-            label->setStyleSheet("font-size:15px; font-weight: 700;");
-            label->setFixedWidth(550);
-            label->setWordWrap(true);
-            label->setText(tr("GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC."));
+            label->setText("Always Online");
+            label->setStyleSheet(R"(
+                color: #555555;
+                font-size: 14px;
+                font-weight: 700;
+            )");
             layout->addWidget(label);
             layout->addStretch();
-            root_layout->addSpacing(20);
+            root_layout->addSpacing(10);
             root_layout->addLayout(layout);
         }
-        // url
-        int url_width = 400;
-        int button_width = 150;
         {
             auto layout = new NoMarginHLayout();
             layout->addStretch();
-            auto label = new QLabel();
-            label->setStyleSheet("font-size:14px; font-weight: 500;");
-            label->setFixedWidth(url_width);
+            auto label = new TcLabel();
+            label->setStyleSheet("font-size:15px; font-weight: 700;");
+            label->setFixedWidth(550);
             label->setWordWrap(true);
-            label->setText(tr("https://github.com/RGAA-Software/GammaRay"));
-            label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+            label->SetTextId("id_about_me_desc");
             layout->addWidget(label);
-
-            auto btn = new QPushButton();
-            btn->setFixedWidth(button_width);
-            btn->setFixedHeight(35);
-            btn->setText(tr("Server Repo"));
-            layout->addWidget(btn);
-            connect(btn, &QPushButton::clicked, this, [=, this]() {
-                QDesktopServices::openUrl(QUrl(label->text()));
-            });
-
             layout->addStretch();
             root_layout->addSpacing(50);
             root_layout->addLayout(layout);
         }
-        // we don't use this repository
-        if (0) {
-            auto layout = new NoMarginHLayout();
-            layout->addStretch();
-            auto label = new QLabel();
-            label->setStyleSheet("font-size:14px; font-weight: 500;");
-            label->setFixedWidth(url_width);
-            label->setWordWrap(true);
-            label->setText(tr("https://github.com/RGAA-Software/GammaRayPC"));
-            label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-            layout->addWidget(label);
 
-            auto btn = new QPushButton();
-            btn->setFixedWidth(button_width);
-            btn->setText(tr("PC Client Repo"));
-            layout->addWidget(btn);
-            connect(btn, &QPushButton::clicked, this, [=, this]() {
-                QDesktopServices::openUrl(QUrl(label->text()));
-            });
-
-            layout->addStretch();
-            root_layout->addSpacing(5);
-            root_layout->addLayout(layout);
-        }
+        // url
         {
             auto layout = new NoMarginHLayout();
             layout->addStretch();
-            auto label = new QLabel();
-            label->setStyleSheet("font-size:14px; font-weight: 500;");
-            label->setFixedWidth(url_width);
-            label->setWordWrap(true);
-            label->setText(tr("https://github.com/RGAA-Software/GammaRayAndroid"));
-            label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-            layout->addWidget(label);
 
-            auto btn = new QPushButton();
-            btn->setText(tr("Android Client Repo"));
-            btn->setFixedWidth(button_width);
-            btn->setFixedHeight(35);
-            layout->addWidget(btn);
-            connect(btn, &QPushButton::clicked, this, [=, this]() {
-                QDesktopServices::openUrl(QUrl(label->text()));
-            });
+            root_layout->addSpacing(50);
+            root_layout->addLayout(layout);
+
+            int size = 50;
+            int normal_color = 0xffffff;
+            int hover_color = 0xeeeeee;
+            int press_color = 0xdddddd;
+            // steam
+            {
+                auto label = new TcImageButton(":/resources/social/ic_steam.svg");
+                label->SetColor(normal_color, hover_color, press_color);
+                label->SetRoundRadius(size/2);
+                label->setFixedSize(size, size);
+                layout->addWidget(label);
+                label->SetOnImageButtonClicked([]() {
+                    QDesktopServices::openUrl(QUrl("https://store.steampowered.com/app/2184340/Rhythm_Master/"));
+                });
+            }
+            // github
+            layout->addSpacing(20);
+            {
+                auto label = new TcImageButton(":/resources/social/ic_github.svg");
+                label->SetColor(normal_color, hover_color, press_color);
+                label->SetRoundRadius(size/2);
+                label->setFixedSize(size, size);
+                layout->addWidget(label);
+                label->SetOnImageButtonClicked([]() {
+                    QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay"));
+                });
+            }
+            // bilibili
+            layout->addSpacing(20);
+            {
+                auto label = new TcImageButton(":/resources/social/ic_bilibili.svg");
+                label->SetColor(normal_color, hover_color, press_color);
+                label->SetRoundRadius(size/2);
+                label->setFixedSize(size, size);
+                layout->addWidget(label);
+            }
+            // youtube
+            layout->addSpacing(20);
+            {
+                auto label = new TcImageButton(":/resources/social/ic_youtube.svg");
+                label->SetColor(normal_color, hover_color, press_color);
+                label->SetRoundRadius(size/2);
+                label->setFixedSize(size, size);
+                layout->addWidget(label);
+            }
+            // tiktok
+            layout->addSpacing(20);
+            {
+                auto label = new TcImageButton(":/resources/social/ic_tiktok.svg");
+                label->SetColor(normal_color, hover_color, press_color);
+                label->SetRoundRadius(size/2);
+                label->setFixedSize(size, size);
+                layout->addWidget(label);
+            }
 
             layout->addStretch();
-            root_layout->addSpacing(5);
-            root_layout->addLayout(layout);
         }
+
         root_layout->addStretch();
 
         root_layout->addSpacing(20);

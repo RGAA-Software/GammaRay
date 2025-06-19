@@ -297,8 +297,10 @@ namespace tc
         }
         sys_settings_.can_be_operated_ = settings.can_be_operated_;
         sys_settings_.relay_enabled_ = settings.relay_enabled_;
-        //LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}",
-        //     sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.device_id_, sys_settings_.relay_host_, sys_settings_.relay_port_);
+
+        //LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}, relay enabled: {}",
+        //     sys_settings_.device_id_, sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.relay_host_,
+        //     sys_settings_.relay_port_, sys_settings_.relay_enabled_);
     }
 
     GrPluginSettingsInfo GrPluginInterface::GetPluginSettingsInfo() {

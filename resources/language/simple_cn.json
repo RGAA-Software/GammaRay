@@ -187,5 +187,6 @@
   "id_security_password_update_failed": "安全密码更新失败，请检查您的Supervisor服务并重试.",
   "id_security_password_update_local_but_failed_server": "您已更新本地安全密码, 但未成功更新服务端密码. 请检查您的Supervisor服务.",
   "id_must_input_security_password": "您必须先在安全设置中，设置安全密码.",
-  "id_relay": "中继"
+  "id_relay": "中继",
+  "id_about_me_desc": "GammaRay是一套工具，它可以将您的桌面，游戏画面，声音等传输到远端其他设备上，并可将远端设备的鼠标，键盘，手柄等操作映射到本机。"
 }
