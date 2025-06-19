@@ -123,7 +123,7 @@ add_subdirectory(src/client)
 message("--==> Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message("--==> Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
 
-set(RES resources/font.qrc resources/main.qrc resources/qss.qrc res.qrc)
+set(RES resources/main.qrc resources/qss.qrc res.qrc)
 add_executable(${PROJECT_NAME} WIN32
         main.cpp
         ${RES}

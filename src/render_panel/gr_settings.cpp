@@ -51,7 +51,6 @@ namespace tc
         http_server_port_ = panel_srv_port_;
         render_srv_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
         network_listening_ip_ = sp_->Get(kStListeningIp, "");
-        websocket_enabled_ = sp_->Get(kStWebSocketEnabled, kStTrue);
         webrtc_enabled_ = sp_->Get(kStWebRTCEnabled, kStTrue);
         udp_listen_port_ = sp_->GetInt(kStUdpListenPort, 20381);
         udp_kcp_enabled_ = sp_->Get(kStUdpKcpEnabled, kStTrue);
@@ -110,7 +109,7 @@ namespace tc
         ss << "http_server_port_: " << http_server_port_ << std::endl;
         ss << "panel_srv_port_: " << panel_srv_port_ << std::endl;
         ss << "render_srv_port_: " << render_srv_port_ << std::endl;
-        ss << "websocket_enabled_:" << websocket_enabled_ << std::endl;
+        ss << "websocket_enabled_:" << IsWebSocketEnabled() << std::endl;
         ss << "webrtc_enabled_:" << webrtc_enabled_ << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
         ss << "sig_server_address_: " << sig_server_address_ << std::endl;
@@ -146,7 +145,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureAudioType, capture_audio_type_));
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
-        args.push_back(std::format("--{}={}", kStWebSocketEnabled, websocket_enabled_));
+        args.push_back(std::format("--{}={}", kStWebSocketEnabled, IsWebSocketEnabled()));
         args.push_back(std::format("--{}={}", kStNetworkListenPort, render_srv_port_));
         args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
         args.push_back(std::format("--{}={}", kStUdpKcpEnabled, udp_kcp_enabled_));
@@ -239,8 +238,12 @@ namespace tc
     }
 
     void GrSettings::SetWebSocketEnabled(bool enabled) {
-        websocket_enabled_ = enabled ? kStTrue : kStFalse;
-        sp_->Put(kStWebSocketEnabled, websocket_enabled_);
+        sp_->Put(kStWebSocketEnabled, enabled ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsWebSocketEnabled() {
+        auto value = sp_->Get(kStWebSocketEnabled);
+        return value.empty() || value == kStTrue;
     }
 
     void GrSettings::SetWebRTCEnabled(bool enabled) {

@@ -55,11 +55,11 @@
   "id_set" : "Set",
   "id_save": "Save",
   "id_network_settings": "Network Settings",
-  "id_websocket": "WebSocket",
-  "id_streaming_websocket_port": "Streaming WebSocket Port",
-  "id_udp": "UDP",
-  "id_streaming_udp_port": "Streaming UDP Port",
-  "id_rtc": "RTC",
+  "id_websocket": "WSS Streaming",
+  "id_streaming_websocket_port": "WSS Streaming Port(TCP)",
+  "id_udp": "UDP Streaming",
+  "id_streaming_udp_port": " UDP Streaming Port",
+  "id_rtc": "RTC Streaming",
   "id_ethernet_adapter": "Ethernet Adapter",
   "id_panel_listening_port": "Panel Listening Port",
   "id_gr_spvr_server": "Supervisor Server Config",
@@ -186,6 +186,7 @@
   "id_security_password_update_failed": "Update security password failed. Please check your Supervisor server config and try again.",
   "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server.",
   "id_must_input_security_password": "You must set your security password in Security Settings.",
-  "id_relay": "Relay",
-  "id_about_me_desc": "GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC."
+  "id_relay": "Relay Streaming",
+  "id_about_me_desc": "GammaRay is a set of tools for streaming your games, desktop, audio to other devices, and replaying gamepad/keyboard/mouse events in the Server. You can also share your files between devices easily.",
+  "id_dialog_ssl_streaming_always_on": "WSS Streaming will always be enabled."
 }

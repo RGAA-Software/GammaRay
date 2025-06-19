@@ -3,13 +3,16 @@
 //
 
 #include "st_about_me.h"
+
+#include <QPushButton>
+#include <QDesktopServices>
+
+#include "tc_label.h"
+#include "app_config.h"
+#include "tc_image_button.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
-#include "tc_label.h"
-#include "tc_image_button.h"
-#include <QPushButton>
-#include <QDesktopServices>
 
 namespace tc
 {
@@ -52,6 +55,20 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             layout->addStretch();
+            auto label = new QLabel();
+            label->setText(PROJECT_VERSION);
+            label->setStyleSheet(R"(
+                color: #777777;
+                font-size: 13px;
+            )");
+            layout->addWidget(label);
+            layout->addStretch();
+            root_layout->addSpacing(10);
+            root_layout->addLayout(layout);
+        }
+        {
+            auto layout = new NoMarginHLayout();
+            layout->addStretch();
             auto label = new TcLabel();
             label->setStyleSheet("font-size:15px; font-weight: 700;");
             label->setFixedWidth(550);
@@ -85,6 +102,12 @@ namespace tc
                 label->SetOnImageButtonClicked([]() {
                     QDesktopServices::openUrl(QUrl("https://store.steampowered.com/app/2184340/Rhythm_Master/"));
                 });
+                label->SetOnImageButtonHovering([=, this](QWidget*) {
+                    this->setCursor(Qt::PointingHandCursor);
+                });
+                label->SetOnImageButtonLeaved([=, this](QWidget*) {
+                    this->setCursor(Qt::ArrowCursor);
+                });
             }
             // github
             layout->addSpacing(20);
@@ -97,6 +120,12 @@ namespace tc
                 label->SetOnImageButtonClicked([]() {
                     QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay"));
                 });
+                label->SetOnImageButtonHovering([=, this](QWidget*) {
+                    this->setCursor(Qt::PointingHandCursor);
+                });
+                label->SetOnImageButtonLeaved([=, this](QWidget*) {
+                    this->setCursor(Qt::ArrowCursor);
+                });
             }
             // bilibili
             layout->addSpacing(20);
@@ -106,6 +135,15 @@ namespace tc
                 label->SetRoundRadius(size/2);
                 label->setFixedSize(size, size);
                 layout->addWidget(label);
+                label->SetOnImageButtonClicked([]() {
+                    QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay"));
+                });
+                label->SetOnImageButtonHovering([=, this](QWidget*) {
+                    this->setCursor(Qt::PointingHandCursor);
+                });
+                label->SetOnImageButtonLeaved([=, this](QWidget*) {
+                    this->setCursor(Qt::ArrowCursor);
+                });
             }
             // youtube
             layout->addSpacing(20);
@@ -115,6 +153,15 @@ namespace tc
                 label->SetRoundRadius(size/2);
                 label->setFixedSize(size, size);
                 layout->addWidget(label);
+                label->SetOnImageButtonClicked([]() {
+                    QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay"));
+                });
+                label->SetOnImageButtonHovering([=, this](QWidget*) {
+                    this->setCursor(Qt::PointingHandCursor);
+                });
+                label->SetOnImageButtonLeaved([=, this](QWidget*) {
+                    this->setCursor(Qt::ArrowCursor);
+                });
             }
             // tiktok
             layout->addSpacing(20);
@@ -124,6 +171,15 @@ namespace tc
                 label->SetRoundRadius(size/2);
                 label->setFixedSize(size, size);
                 layout->addWidget(label);
+                label->SetOnImageButtonClicked([]() {
+                    QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay"));
+                });
+                label->SetOnImageButtonHovering([=, this](QWidget*) {
+                    this->setCursor(Qt::PointingHandCursor);
+                });
+                label->SetOnImageButtonLeaved([=, this](QWidget*) {
+                    this->setCursor(Qt::ArrowCursor);
+                });
             }
 
             layout->addStretch();

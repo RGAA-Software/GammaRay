@@ -99,7 +99,12 @@ namespace tc
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
         void SetListeningIp(const std::string& ip);
+
+        // Settings -> Network Settings
         void SetWebSocketEnabled(bool enabled);
+        // default is enabled
+        bool IsWebSocketEnabled();
+
         void SetWebRTCEnabled(bool enabled);
         void SetUdpKcpEnabled(bool enabled);
         void SetSigServerAddress(const std::string& address);
@@ -181,7 +186,6 @@ namespace tc
 
         int render_srv_port_{};
         std::string network_listening_ip_{};
-        std::string websocket_enabled_ = kStTrue;
         std::string webrtc_enabled_ = kStTrue;
         std::string udp_kcp_enabled_ = kStTrue;
         // Spvr Server

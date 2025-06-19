@@ -127,7 +127,6 @@ void UpdateSettings(RdSettings* settings) {
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
     settings->transmission_.udp_enabled_ = FLAGS_udp_kcp_enabled;
     settings->transmission_.udp_listen_port_ = FLAGS_udp_listen_port;
-    settings->transmission_.websocket_enabled_ = FLAGS_websocket_enabled;
     settings->transmission_.webrtc_enabled_ = FLAGS_webrtc_enabled;
 
     // app

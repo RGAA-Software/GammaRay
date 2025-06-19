@@ -67,16 +67,22 @@ namespace tc
                 auto edit = new QCheckBox(this);
                 cb_websocket_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setEnabled(true);
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(settings_->websocket_enabled_ == kStTrue);
-                connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
-                    bool enabled = state == 2;
-                    settings_->SetWebSocketEnabled(enabled);
-                    edt_websocket_->setEnabled(enabled);
+                edit->setChecked(settings_->IsWebSocketEnabled());
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    bool enabled = state == Qt::CheckState::Checked;
+                    if (!enabled) {
+                        context_->PostUIDelayTask([=, this]() {
+                            TcDialog dialog(tcTr("id_tips"), tcTr("id_dialog_ssl_streaming_always_on"));
+                            dialog.exec();
+
+                            settings_->SetWebSocketEnabled(true);
+                            cb_websocket_->setChecked(true);
+                        }, 50);
+                    }
                 });
             }
             // Streaming WebSocket port
@@ -92,7 +98,7 @@ namespace tc
                 edt_websocket_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setText(std::to_string(settings_->render_srv_port_).c_str());
-                edit->setEnabled(settings_->websocket_enabled_ == kStTrue);
+                edit->setEnabled(settings_->IsWebSocketEnabled());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -251,7 +257,6 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QCheckBox(this);
-                cb_websocket_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setEnabled(true);
                 layout->addWidget(edit);

@@ -183,21 +183,6 @@ namespace tc
 
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
-                btn->AddIcon(":/resources/image/ic_settings_outline_selected.svg", ":/resources/image/ic_settings_outline_normal.svg", 20, 20);
-                btn_tab_settings_ = btn;
-                btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetTextId("id_settings");
-                btn->SetSelectedFontColor(btn_font_color);
-                btn->setFixedSize(btn_size);
-                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
-                    ChangeTab(TabName::kTabSettings);
-                });
-                layout->addSpacing(10);
-                layout->addWidget(btn, 0, Qt::AlignHCenter);
-            }
-
-            {
-                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn->AddIcon(":/resources/image/ic_settings_security_selected.svg", ":/resources/image/ic_settings_security_normal.svg", 20, 20);
                 btn_security_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
@@ -206,6 +191,21 @@ namespace tc
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabSecurity);
+                });
+                layout->addSpacing(10);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
+            {
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_settings_outline_selected.svg", ":/resources/image/ic_settings_outline_normal.svg", 20, 20);
+                btn_tab_settings_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetTextId("id_settings");
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabSettings);
                 });
                 layout->addSpacing(10);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
