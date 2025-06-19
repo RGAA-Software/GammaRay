@@ -123,26 +123,6 @@ add_subdirectory(src/client)
 message("--==> Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message("--==> Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
 
-### Translation
-set(TRANSLATION ON)
-if(TRANSLATION)
-    set(TS_DIR ${CMAKE_SOURCE_DIR}/translation)
-    set(LUPDATE_EXE_PATH ${QT_ROOT}/bin/lupdate.exe)
-    set(LRELEASE_EXE_PATH ${QT_ROOT}/bin/lrelease.exe)
-
-    set(TS_FILES
-        ${TS_DIR}/${PROJECT_NAME}_zh_CN.ts
-        ${TS_DIR}/${PROJECT_NAME}_en_US.ts
-    )
-    foreach(_ts_file ${TS_FILES})
-        execute_process(
-                COMMAND ${LUPDATE_EXE_PATH} -recursive ${CMAKE_SOURCE_DIR}/src/ui -ts ${_ts_file})
-        execute_process(
-                COMMAND ${LUPDATE_EXE_PATH} ${_ts_file})
-    endforeach()
-endif ()
-### Translation
-
 set(RES resources/font.qrc resources/main.qrc resources/qss.qrc res.qrc)
 add_executable(${PROJECT_NAME} WIN32
         main.cpp
