@@ -113,6 +113,9 @@ namespace tc
 
         // this device host/ip address
         std::string my_host_;
+
+        // language
+        int language_ = 3; // default English
     };
 
 }

@@ -115,6 +115,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_my_host("my_host", "my ip address", "value", "");
     parser.addOption(opt_my_host);
 
+    QCommandLineOption opt_language("language", "language", "value", "");
+    parser.addOption(opt_language);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -202,6 +205,14 @@ void ParseCommandLine(QApplication& app) {
             settings->my_host_ = value.toStdString();
         }
     }
+
+    // language
+    {
+        auto value = parser.value(opt_language);
+        if (!value.isEmpty()) {
+            settings->language_ = value.toInt();
+        }
+    }
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -251,9 +262,6 @@ int main(int argc, char** argv) {
 
     PrepareDirs(app.applicationDirPath());
 
-    // init language
-    tcTrMgr()->InitLanguage(LanguageKind::kEnglish);
-
     auto settings = tc::Settings::Instance();
     auto host = g_remote_host_;
     auto port = g_remote_port_;
@@ -262,6 +270,9 @@ int main(int argc, char** argv) {
         msg_box->exec();
         return -1;
     }
+
+    // init language
+    tcTrMgr()->InitLanguage((LanguageKind)settings->language_);
 
     if (false) {
 #ifdef WIN32

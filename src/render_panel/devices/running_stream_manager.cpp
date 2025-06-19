@@ -12,6 +12,7 @@
 #include "tc_profile_client/profile_api.h"
 #include "tc_qt_widget/tc_dialog.h"
 #include "start_stream_loading.h"
+#include "tc_qt_widget/translator/tc_translator.h"
 
 namespace tc
 {
@@ -97,6 +98,7 @@ namespace tc
                 }
                 return "";
             }()).c_str()
+            << std::format("--language={}", (int)tcTrMgr()->GetSelectedLanguage()).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

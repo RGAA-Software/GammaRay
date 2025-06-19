@@ -292,19 +292,20 @@ namespace tc
     }
 
     void Workspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
-        this->resize(1080, 680);
+
+        this->resize(def_window_size_);
         for (int index = 0; index < kMaxGameViewCount; ++index) {
             GameView* game_view = nullptr;
             if (0 == index) {
                 game_view = new GameView(context_, sdk_, params, this);    // main view
-                game_view->resize(1080, 680);
+                game_view->resize(def_window_size_);
                 game_view->show();
                 game_view->SetMainView(true);
                 setCentralWidget(game_view);
             }
             else {
                 game_view = new GameView(context_, sdk_, params, nullptr); // extend view
-                game_view->resize(1080, 680);
+                game_view->resize(def_window_size_);
                 game_view->hide();
                 game_view->SetMainView(false);
                 game_view->installEventFilter(this);

@@ -153,6 +153,9 @@ namespace tc
         QWidget* close_event_occurred_widget_ = nullptr;
 
         std::string cursor_bitmap_data_;
+
+        QSize def_window_size_ = QSize(1366, 768);
+
     private:
         GameView* game_view_ = nullptr;
     };

@@ -15,7 +15,7 @@
 #include "ct_stat_frame_info_item.h"
 #include "tc_qt_widget/widget_helper.h"
 #include "client/ct_settings.h"
-#include <QLabel>
+#include "tc_label.h"
 
 namespace tc
 {
@@ -27,7 +27,7 @@ namespace tc
     const QString kChartVideoFrameFps = "Video Frame FPS";
 
     CtStatisticsPanel::CtStatisticsPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
-        setWindowTitle("Statistics");
+        setWindowTitle(tcTr("id_statistics"));
         installEventFilter(this);
         sdk_stat_ = SdkStatistics::Instance();
         settings_ = Settings::Instance();
@@ -41,9 +41,9 @@ namespace tc
             // Keyboard status
             {
                 layout->addSpacing(20);
-                auto lbl = new QLabel(this);
+                auto lbl = new TcLabel(this);
                 lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
-                lbl->setText(tr("Server Keyboard Status"));
+                lbl->SetTextId("id_server_keyboard_status");
                 layout->addWidget(lbl);
                 layout->addSpacing(10);
 
@@ -56,14 +56,14 @@ namespace tc
             {
                 {
                     layout->addSpacing(20);
-                    auto lbl = new QLabel(this);
+                    auto lbl = new TcLabel(this);
                     lbl_data_speed_ = lbl;
                     lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
-                    lbl->setText(tr("Media Data Speed"));
+                    lbl->SetTextId("id_media_data_speed");
                     layout->addWidget(lbl);
                     layout->addSpacing(10);
 
-                    data_speed_stat_chart_ = new CtStatChart(context_, "Data Speed", {
+                    data_speed_stat_chart_ = new CtStatChart(context_, tcTr("id_data_speed"), {
                             kChartDataSpeed,
                         }, CtStatChartAxisSettings {
                             .count_ = 15,
@@ -84,13 +84,13 @@ namespace tc
             // data speed chart
             {
                 layout->addSpacing(20);
-                auto lbl = new QLabel(this);
+                auto lbl = new TcLabel(this);
                 lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
-                lbl->setText(tr("Network"));
+                lbl->SetTextId("id_network");
                 layout->addWidget(lbl);
                 layout->addSpacing(10);
 
-                durations_stat_chart_ = new CtStatChart(context_, "Network Information", {
+                durations_stat_chart_ = new CtStatChart(context_, tcTr("id_network_info"), {
                         kChartNetworkDelay,
                 }, CtStatChartAxisSettings {
                         .count_ = 15,
@@ -117,9 +117,9 @@ namespace tc
             auto right_layout = new NoMarginVLayout();
             {
 
-                auto lbl = new QLabel(this);
+                auto lbl = new TcLabel(this);
                 lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
-                lbl->setText(tr("Information"));
+                lbl->SetTextId("id_info");
                 right_layout->addSpacing(10);
                 right_layout->addWidget(lbl);
                 right_layout->addSpacing(10);
@@ -134,9 +134,9 @@ namespace tc
                     // received data
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Received Data");
+                        label->SetTextId("id_received_data");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -153,9 +153,9 @@ namespace tc
                     // video format
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Video Format");
+                        label->SetTextId("id_video_format");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -172,9 +172,9 @@ namespace tc
                     // video color
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Video Color Mode");
+                        label->SetTextId("id_video_color_mode");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -198,9 +198,9 @@ namespace tc
                     // video decoder
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Video Decoder");
+                        label->SetTextId("id_video_decoder");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -217,9 +217,9 @@ namespace tc
                     // video capture type
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Video Capture Type");
+                        label->SetTextId("id_video_capture_type");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -236,9 +236,9 @@ namespace tc
                     // audio capture type
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Audio Capture Mode");
+                        label->SetTextId("id_audio_capture_type");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -262,9 +262,9 @@ namespace tc
                     // audio encode type
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Audio Encode Type");
+                        label->SetTextId("id_audio_encode_type");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -280,9 +280,9 @@ namespace tc
 
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Connection Type");
+                        label->SetTextId("id_connection_type");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -340,9 +340,9 @@ namespace tc
                     // remote computer info
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Remote PC Info");
+                        label->SetTextId("id_remote_pc_info");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -366,9 +366,9 @@ namespace tc
                     // remote computer info
                     {
                         auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
+                        auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->setText("Local PC Info");
+                        label->SetTextId("id_local_pc_info");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
@@ -389,9 +389,9 @@ namespace tc
                 {
 
                     // title
-                    auto lbl = new QLabel(this);
+                    auto lbl = new TcLabel(this);
                     lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
-                    lbl->setText(tr("Isolated Monitor Information"));
+                    lbl->SetTextId("id_isolated_monitor_info");
                     right_layout->addSpacing(10);
                     right_layout->addWidget(lbl);
                     right_layout->addSpacing(6);
@@ -523,7 +523,7 @@ namespace tc
             data_speed_stat_chart_->UpdateLines(stat_value);
             if (!sdk_stat_->data_speeds_.empty()) {
                 auto value = sdk_stat_->data_speeds_[sdk_stat_->data_speeds_.size() - 1] * 1024 * 1024;
-                lbl_data_speed_->setText(std::format("Media Data Speed({})", NumFormatter::FormatSpeed(value)).c_str());
+                lbl_data_speed_->setText(tcTr("id_media_data_speed") + std::format("({})", NumFormatter::FormatSpeed(value)).c_str());
             }
         }
 

@@ -9,6 +9,7 @@
 #include "client/ct_settings.h"
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
+#include "tc_label.h"
 #include <QLabel>
 
 namespace tc
@@ -31,8 +32,8 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
-            lbl->setText(tr("Clipboard"));
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_clipboard");
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing*2);
             layout->addWidget(lbl);
@@ -63,7 +64,7 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
+            auto lbl = new TcLabel();
             lbl->setText(tr("Ctrl + Alt + Delete"));
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing*2);
@@ -86,8 +87,8 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
-            lbl->setText(tr("Refresh Desktop"));
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_refresh_screen");
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing * 2);
             layout->addWidget(lbl);

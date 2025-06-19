@@ -146,12 +146,12 @@ namespace tc
 
     void CtStatFrameInfoItem::UpdateInfo(const CtStatItemInfo& info) {
         lbl_target_name_->setText(info.name_.c_str());
-        lbl_render_size_->setText(std::format("Frame Size: {}x{}", info.frame_width_, info.frame_height_).c_str());
-        lbl_received_fps_->setText(std::format("Received FPS: {}", info.received_fps_).c_str());
-        lbl_render_capture_fps_->setText(std::format("Capture FPS: {}", info.render_capture_fps_).c_str());
-        lbl_render_capture_size_->setText(std::format("Capture Size: {}x{}", info.render_capture_frame_width_, info.render_capture_frame_height_).c_str());
-        lbl_render_encoder_name_->setText(std::format("Encoder Name: {}", info.render_encoder_name_).c_str());
-        lbl_render_encode_fps_->setText(std::format("Encoder FPS: {}", info.render_encode_fps_).c_str());
+        lbl_render_size_->setText(tcTr("id_frame_size") + std::format(": {}x{}", info.frame_width_, info.frame_height_).c_str());
+        lbl_received_fps_->setText(tcTr("id_received_fps") + std::format(": {}", info.received_fps_).c_str());
+        lbl_render_capture_fps_->setText(tcTr("id_capture_fps") + std::format(": {}", info.render_capture_fps_).c_str());
+        lbl_render_capture_size_->setText(tcTr("id_capture_size") + std::format(": {}x{}", info.render_capture_frame_width_, info.render_capture_frame_height_).c_str());
+        lbl_render_encoder_name_->setText(tcTr("id_encoder_name") + std::format(": {}", info.render_encoder_name_).c_str());
+        lbl_render_encode_fps_->setText(tcTr("id_encoder_fps") + std::format(": {}", info.render_encode_fps_).c_str());
         update();
     }
 

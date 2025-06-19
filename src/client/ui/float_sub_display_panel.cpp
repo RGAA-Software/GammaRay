@@ -12,6 +12,7 @@
 #include "client/ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "float_sub_fps_panel.h"
+#include "tc_label.h"
 #include <QLabel>
 #include <qtimer.h>
 
@@ -34,8 +35,8 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
-            lbl->setText(tr("Scale"));
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_scale");
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing*2);
             layout->addWidget(lbl);
@@ -74,8 +75,8 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
-            lbl->setText(tr("Resolution"));
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_resolution");
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing*2);
             layout->addWidget(lbl);
@@ -127,8 +128,8 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
-            lbl->setText(tr("Full Color(4:4:4)"));
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_full_color");
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing * 2);
             layout->addWidget(lbl);

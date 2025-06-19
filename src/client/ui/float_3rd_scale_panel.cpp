@@ -10,7 +10,7 @@
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
 #include "single_selected_list.h"
-#include <QLabel>
+#include "tc_label.h"
 #include <memory>
 
 namespace tc
@@ -28,11 +28,11 @@ namespace tc
         listview_->setFixedSize(this->size());
         listview_->UpdateItems({
             std::make_shared<SingleItem>(SingleItem {
-                   .name_ = "Keep Aspect Ratio",
+                   .name_ = tcTr("id_keep_aspect_ratio"),
                    .icon_path_ = "",
             }),
             std::make_shared<SingleItem>(SingleItem {
-                   .name_ = "Full Window",
+                   .name_ = tcTr("id_full_window"),
                    .icon_path_ = "",
             }),
             // std::make_shared<SingleItem>(SingleItem {

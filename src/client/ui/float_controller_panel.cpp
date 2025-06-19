@@ -20,6 +20,7 @@
 #include "ct_app_message.h"
 #include "tc_dialog.h"
 #include "ct_const_def.h"
+#include "tc_label.h"
 
 namespace tc
 {
@@ -247,8 +248,8 @@ namespace tc
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
-            auto text = new QLabel();
-            text->setText(tr("Control"));
+            auto text = new TcLabel();
+            text->SetTextId("id_control");
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);
@@ -295,8 +296,8 @@ namespace tc
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
-            auto text = new QLabel();
-            text->setText(tr("Display"));
+            auto text = new TcLabel();
+            text->SetTextId("id_display");
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);
@@ -344,8 +345,8 @@ namespace tc
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
-            auto text = new QLabel();
-            text->setText(tr("File Transfer"));
+            auto text = new TcLabel();
+            text->SetTextId("id_file_transfer");
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);
@@ -375,9 +376,9 @@ namespace tc
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
-            auto text = new QLabel();
+            auto text = new TcLabel();
+            text->SetTextId("id_screen_recording");
             media_record_lab_ = text;
-            text->setText(tr("Screen Recording"));
             text->setStyleSheet(R"(font-weight: bold;)");
             layout->addWidget(text);
 
@@ -388,10 +389,12 @@ namespace tc
                 bool res = context_->GetRecording();
                 context_->SetRecording(!res);
                 if (!res) {
-                    media_record_lab_->setText(tr("Stop Recording"));
+                    media_record_lab_->setText(tcTr("id_stop_recording"));
+                    text->setStyleSheet(R"(font-weight: bold; color: #dc3545;)");
                 }
                 else {
-                    media_record_lab_->setText(tr("Screen Recording"));
+                    media_record_lab_->setText(tcTr("id_screen_recording"));
+                    text->setStyleSheet(R"(font-weight: bold;)");
                 }
                 context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus });
                 context_->SendAppMessage(MediaRecordMsg{});
@@ -416,8 +419,8 @@ namespace tc
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
-            auto text = new QLabel();
-            text->setText(tr("Statistics"));
+            auto text = new TcLabel();
+            text->SetTextId("id_statistics");
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);
@@ -446,8 +449,8 @@ namespace tc
             layout->addSpacing(item_left_spacing);
             layout->addWidget(icon);
 
-            auto text = new QLabel();
-            text->setText(tr("Exit"));
+            auto text = new TcLabel();
+            text->SetTextId("id_exit");
             text->setStyleSheet(R"(font-weight: bold;)");
             //layout->addSpacing(border_spacing);
             layout->addWidget(text);
@@ -632,10 +635,10 @@ namespace tc
         else if (FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus == msg.update_type_) {
             bool res = context_->GetRecording();
             if (res) {
-                media_record_lab_->setText(tr("Stop Recording"));
+                media_record_lab_->setText(tcTr("id_stop_recording"));
             }
             else {
-                media_record_lab_->setText(tr("Screen Recording"));
+                media_record_lab_->setText(tcTr("id_screen_recording"));
             }
         }
     }

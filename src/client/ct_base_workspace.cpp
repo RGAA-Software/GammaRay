@@ -36,6 +36,7 @@
 #include "core/file_trans_interface.h"
 #endif // TC_ENABLE_FILE_TRANSMISSION
 #include "tc_dialog.h"
+#include "tc_label.h"
 #include "ct_game_view.h"
 #include "ct_const_def.h"
 #include "tc_common_new/file.h"
@@ -128,14 +129,14 @@ namespace tc
 
         // debug panel
         st_panel_ = new CtStatisticsPanel(context_, nullptr);
-        st_panel_->resize(1366, 768);
+        st_panel_->resize(def_window_size_);
         st_panel_->hide();
     }
 
     void BaseWorkspace::InitTheme() {
         WidgetHelper::SetTitleBarColor(this);
 
-        origin_title_name_ = QMainWindow::tr("GammaRay Streamer") + "[" + this->params_->stream_name_.c_str() + "]";
+        origin_title_name_ = tcTr("id_gr_client") + "[" + this->params_->stream_name_.c_str() + "]";
         setWindowTitle(origin_title_name_);
         auto notifier = this->context_->GetMessageNotifier();
 
@@ -423,17 +424,12 @@ namespace tc
                 // to trigger re-layout
                 if (msg.result) {
                     this->move(pos().x()+1, pos().y());
-//                    auto box = SizedMessageBox::MakeInfoOkBox(tr("Info"), tr("Changing resolution success."));
-//                    box->exec();
 
-                    TcDialog dialog(tr("Tips"), tr("Changing resolution success."), this);
+                    TcDialog dialog(tcTr("id_tips"), tcTr("id_change_resolution_success"), this);
                     dialog.exec();
 
                 } else {
-//                    auto box = SizedMessageBox::MakeErrorOkBox(tr("Error"), tr("Changing resolution failed, please check your server's monitor."));
-//                    box->exec();
-
-                    TcDialog dialog(tr("Error"), tr("Changing resolution failed, please check your server's monitor."), this);
+                    TcDialog dialog(tcTr("id_tips"), tcTr("id_change_resolution_failed"), this);
                     dialog.exec();
                 }
             });
@@ -445,10 +441,6 @@ namespace tc
 
             plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
                 plugin->On1Second();
-
-                // test begin
-                // plugin->DispatchAppEvent(std::make_shared<ClientAppTestEvent>());
-                // test end
             });
         });
 
@@ -568,13 +560,13 @@ namespace tc
     }
 
     void BaseWorkspace::ExitClientWithDialog() {
-        QString msg = "Do you want to stop controlling of remote PC ?";
+        QString msg = tcTr("id_exit_client");
         if (file_trans_interface_) {
             if (file_trans_interface_->HasTransTask()) {
-                msg = "File transfers are still in progress." + msg;
+                msg = tcTr("id_file_transfer_busy") + msg;
             }
         }
-        TcDialog dialog(tr("Stop"), msg, this);
+        TcDialog dialog(tcTr("id_exit"), msg, this);
         if (dialog.exec() == kDoneOk) {
             if (media_record_plugin_) {
                 media_record_plugin_->EndRecord();
@@ -929,9 +921,9 @@ namespace tc
     }
 
     void BaseWorkspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
-        this->resize(1080, 680);
+        this->resize(def_window_size_);
         game_view_ = new GameView(context_, sdk_, params, this);
-        game_view_->resize(1080, 680);
+        game_view_->resize(def_window_size_);
         game_view_->show();
         game_view_->SetMainView(true);
         setCentralWidget(game_view_);
