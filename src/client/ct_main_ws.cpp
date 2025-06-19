@@ -368,7 +368,7 @@ int main(int argc, char** argv) {
         auto kbd_struct = (KBDLLHOOKSTRUCT *)lParam;
         if (code >= 0 && ws->IsActiveNow()) {
             bool down = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN);
-            if (kbd_struct->vkCode == VK_LWIN || kbd_struct->vkCode == VK_RWIN) {
+            if (kbd_struct->vkCode == VK_LWIN || kbd_struct->vkCode == VK_RWIN || kbd_struct->vkCode == VK_LMENU || kbd_struct->vkCode == VK_RMENU) {
                 ws->SendWindowsKey(kbd_struct->vkCode, down);
                 return 1; // ignore it , send to remote
             }
