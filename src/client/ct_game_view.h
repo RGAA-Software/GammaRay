@@ -24,6 +24,7 @@ public:
 	void resizeEvent(QResizeEvent* event) override;
 	void enterEvent(QEnterEvent* event) override;
 	void leaveEvent(QEvent* event) override;
+	bool eventFilter(QObject* watched, QEvent* event) override;
 	void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info);
 	void RefreshImage(const std::shared_ptr<RawImage>& image);
 	void RefreshI420Image(const std::shared_ptr<RawImage>& image);
