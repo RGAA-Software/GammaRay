@@ -104,22 +104,22 @@ namespace tc
                 auto btn = new FloatIcon(ctx, this);
                 audio_btn_ = btn;
                 btn->setFixedSize(btn_size);
-                btn->SetIcons(":resources/image/ic_volume_on.svg", ":resources/image/ic_volume_off.svg");
+                btn->SetIcons(":resources/image/ic_volume_off.svg", ":resources/image/ic_volume_on.svg");
                 layout->addWidget(btn);
 
                 auto settings = Settings::Instance();
                 if (settings->IsAudioEnabled()) {
-                    btn->SwitchToNormalState();
-                } else {
                     btn->SwitchToSelectedState();
+                } else {
+                    btn->SwitchToNormalState();
                 }
 
                 btn->SetOnClickListener([=, this](QWidget* w) {
                     if (settings->IsAudioEnabled()) {
-                        btn->SwitchToSelectedState();
+                        btn->SwitchToNormalState();
                         settings->SetAudioEnabled(false);
                     } else {
-                        btn->SwitchToNormalState();
+                        btn->SwitchToSelectedState();
                         settings->SetAudioEnabled(true);
                     }
                     context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kAudioStatus});
