@@ -203,6 +203,7 @@ void GameView::InitFloatController()
     controller_panel_ = new FloatControllerPanel(ctx_, this);
     WidgetHelper::AddShadow(controller_panel_, shadow_color);
     RegisterControllerPanelListeners();
+    controller_panel_->installEventFilter(this);
     controller_panel_->hide();
 
     float_controller_->SetOnClickListener([=, this]() {
@@ -272,6 +273,26 @@ void GameView::leaveEvent(QEvent* event) {
     s_mouse_in_ = false;
     this->ctx_->SendAppMessage(MouseLeaveViewMsg{});
     QWidget::leaveEvent(event);
+}
+
+bool GameView::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == controller_panel_)
+    {
+        switch (event->type())
+        {
+        case QEvent::Enter:
+            s_mouse_in_ = false;
+            this->ctx_->SendAppMessage(MouseLeaveViewMsg{});
+            break;
+        case QEvent::Leave:
+            s_mouse_in_ = true;
+            this->ctx_->SendAppMessage(MouseEnterViewMsg{});
+            break;
+        default:
+            break;
+        }
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 }
