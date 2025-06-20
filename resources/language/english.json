@@ -190,7 +190,8 @@
   "id_about_me_desc": "GammaRay is a set of tools for streaming your games, desktop, audio to other devices, and replaying gamepad/keyboard/mouse events in the Server. You can also share your files between devices easily.",
   "id_dialog_ssl_streaming_always_on": "WSS Streaming will always be enabled.",
   "id_dont_have_server_config": "Don't have server config, please input server information in Settings.",
-
+  "id_application": "Application",
+  "id_developer_mode": "Developer Mode",
 
   "id_gr_client": "GammaRay Client",
   "id_control": "Control",

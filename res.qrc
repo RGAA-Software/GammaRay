@@ -3,6 +3,8 @@
         <file>resources/tc_icon.png</file>
         <file>resources/tc_trans_icon_blue.png</file>
         <file>resources/tc_trans_icon_white.png</file>
+        <file>resources/tc_logo_text_trans_bg.png</file>
+        <file>resources/tc_logo_text_white_bg.png</file>
         <file>src/client/resources/font/ms_yahei.ttf</file>
         <file>resources/image/bc_icon.png</file>
         <file>resources/image/bc_icon_raw.png</file>

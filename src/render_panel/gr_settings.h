@@ -58,6 +58,7 @@ namespace tc
     static const std::string kStRecordVisitHistory = "record_visit_history";
     static const std::string kStRecordFileTransferHistory = "record_file_transfer_history";
     static const std::string kStRelayEnabled = "relay_enabled";
+    static const std::string kStDevelopMode = "develop_mode";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -192,6 +193,11 @@ namespace tc
         // Settings -> Network Settings -> Supervisor Server
         void SetRelayEnabled(bool enabled);
         bool IsRelayEnabled();
+
+        // develop mode
+        // Settings -> Security Settings
+        void SetDevelopModeEnabled(bool enable);
+        bool IsDevelopMode();
 
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;

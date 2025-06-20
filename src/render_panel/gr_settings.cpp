@@ -423,4 +423,13 @@ namespace tc
         return value.empty() || value == kStTrue;
     }
 
+    void GrSettings::SetDevelopModeEnabled(bool enable) {
+        sp_->Put(kStDevelopMode, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsDevelopMode() {
+        auto value = sp_->Get(kStDevelopMode);
+        return value == kStTrue;
+    }
+
 }

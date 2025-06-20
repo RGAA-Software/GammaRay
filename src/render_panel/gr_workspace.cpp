@@ -21,15 +21,16 @@
 #include "render_panel/ui/tab_profile.h"
 #include "render_panel/ui/tab_security_internals.h"
 #include "gr_settings.h"
-#include "tc_qt_widget/sized_msg_box.h"
 #include "gr_context.h"
 #include "gr_render_controller.h"
+#include "gr_app_messages.h"
 #include "service/service_manager.h"
 #include "app_colors.h"
 #include "render_panel/ui/tab_server_status.h"
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 #include "tc_qt_widget/widgetframe/titlebar_messages.h"
 #include "tc_qt_widget/tc_dialog.h"
+#include "app_config.h"
 
 namespace tc
 {
@@ -37,7 +38,7 @@ namespace tc
     std::shared_ptr<GrWorkspace> grWorkspace;
 
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
-        setWindowTitle(tr("GammaRay"));
+        setWindowTitle(std::format("GammaRay(V{})", PROJECT_VERSION).c_str());
         settings_ = GrSettings::Instance();
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
@@ -55,16 +56,8 @@ namespace tc
             this->showNormal();
         });
 
-        auto fun_stop_all = [=, this]() {
-            TcDialog dialog(tcTr("id_exit"), tcTr("id_exit_gammaray_msg"), this);
-            if (dialog.exec() == kDoneOk) {
-                auto srv_mgr = this->app_->GetContext()->GetServiceManager();
-                srv_mgr->Remove();
-            }
-        };
-
         connect(ac_exit, &QAction::triggered, this, [=, this](bool) {
-            fun_stop_all();
+            this->ForceStopAllPrograms();
         });
 
         menu->addAction(ac_show);
@@ -231,23 +224,31 @@ namespace tc
             // stop all
             {
                 auto btn = new QPushButton(this);
-                btn->setText(tr("Exit All Programs"));
+                btn_exit_ = btn;
+                btn->setText(tcTr("id_exit_all_programs"));
                 btn->setProperty("class", "danger");
                 //btn->setProperty("flat", true);
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
-                    fun_stop_all();
+                    this->ForceStopAllPrograms();
                 });
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
                 layout->addSpacing(15);
+
+                btn->setHidden(!settings_->IsDevelopMode());
             }
 
-            // version
             {
-                auto label = new QLabel(this);
-                label->setText(settings_->version_.c_str());
-                layout->addWidget(label, 0, Qt::AlignHCenter);
-                layout->addSpacing(10);
+                auto lbl = new QLabel(this);
+                lbl->setFixedSize(190, 40);
+                lbl->setStyleSheet(R"(
+                    border: none;
+                    border-image: url(:/resources/tc_logo_text_trans_bg.png);
+                    background-repeat: no-repeat;
+                    background-position: center;
+                )");
+                layout->addWidget(lbl, 0, Qt::AlignHCenter);
+                layout->addSpacing(15);
             }
 
             root_layout->addLayout(layout);
@@ -349,6 +350,29 @@ namespace tc
 
             });
         });
+
+        // develop mode update
+        msg_listener_->Listen<MsgDevelopModeUpdated>([=, this](const MsgDevelopModeUpdated& msg) {
+            app_->GetContext()->PostUITask([=, this]() {
+                btn_exit_->setHidden(!msg.enabled_);
+            });
+        });
+
+        // force stop all programs
+        msg_listener_->Listen<MsgForceStopAllPrograms>([=, this](const MsgForceStopAllPrograms& msg) {
+            app_->GetContext()->PostUITask([=, this]() {
+                this->ForceStopAllPrograms();
+            });
+        });
+
+    }
+
+    void GrWorkspace::ForceStopAllPrograms() {
+        TcDialog dialog(tcTr("id_exit"), tcTr("id_exit_gammaray_msg"), this);
+        if (dialog.exec() == kDoneOk) {
+            auto srv_mgr = this->app_->GetContext()->GetServiceManager();
+            srv_mgr->Remove();
+        }
     }
 
 }

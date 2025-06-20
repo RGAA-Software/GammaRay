@@ -168,6 +168,17 @@ namespace tc
     public:
         std::string security_password_;
     };
+
+    // develop mode update
+    class MsgDevelopModeUpdated {
+    public:
+        bool enabled_ = false;
+    };
+
+    // exit all programs
+    class MsgForceStopAllPrograms {
+    public:
+    };
 }
 
 #endif // APP_MESSAGES_H

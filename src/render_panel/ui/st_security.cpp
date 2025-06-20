@@ -189,6 +189,65 @@ namespace tc
                     }
                 });
             }
+
+            ///
+            {
+                // title
+                auto label = new TcLabel(this);
+                label->SetTextId("id_application");
+                label->setStyleSheet("font-size: 16px; font-weight: 700;");
+                segment_layout->addSpacing(20);
+                segment_layout->addWidget(label);
+            }
+
+            // develop mode
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_developer_mode");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->IsDevelopMode());
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    auto enabled = state == Qt::CheckState::Checked;
+                    settings_->SetDevelopModeEnabled(enabled);
+                    context_->SendAppMessage(MsgDevelopModeUpdated {
+                        .enabled_ = enabled,
+                    });
+                });
+            }
+
+            // Exit All Programs
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_exit_all_programs");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new TcPushButton(this);
+                edit->setProperty("class", "danger");
+                edit->SetTextId("id_exit");
+                edit->setFixedSize(QSize(80, 30));
+                edit->setEnabled(true);
+                layout->addWidget(edit, 0, Qt::AlignVCenter);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                connect(edit, &QPushButton::clicked, this, [=, this]() {
+                    context_->SendAppMessage(MsgForceStopAllPrograms{});
+                });
+            }
+
             column1_layout->addLayout(segment_layout);
         }
         column1_layout->addStretch();

@@ -47,10 +47,12 @@ namespace tc
     private:
         void ChangeTab(const TabName& tn);
         void InitListeners();
+        void ForceStopAllPrograms();
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;
         GrSettings* settings_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::map<TabName, TabBase*> tabs_;
         QPushButton* btn_tab_server_ = nullptr;
         QPushButton* btn_tab_server_status_ = nullptr;
@@ -61,7 +63,7 @@ namespace tc
         QStackedWidget* stacked_widget_ = nullptr;
         MainWindowPrivate* theme_ = nullptr;
         QSystemTrayIcon* sys_tray_icon_ = nullptr;
-        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        QPushButton* btn_exit_ = nullptr;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;
