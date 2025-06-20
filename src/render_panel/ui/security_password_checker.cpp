@@ -16,7 +16,7 @@ namespace tc
 
     bool SecurityPasswordChecker::HasSecurityPassword() {
         auto settings = GrSettings::Instance();
-        return !settings->device_safety_pwd_md5_.empty();
+        return !settings->GetDeviceSecurityPwd().empty();
     }
 
     bool SecurityPasswordChecker::ShowNoSecurityPasswordDialog() {
@@ -37,11 +37,11 @@ namespace tc
 
     bool SecurityPasswordChecker::IsInputSecurityPasswordOk(const std::string& pwd) {
         auto settings = GrSettings::Instance();
-        if (settings->device_safety_pwd_md5_.empty()) {
+        if (settings->GetDeviceSecurityPwd().empty()) {
             return true;
         }
         auto pwd_md5 = MD5::Hex(pwd);
-        return pwd_md5 == settings->device_safety_pwd_md5_;
+        return pwd_md5 == settings->GetDeviceSecurityPwd();
     }
 
     void SecurityPasswordChecker::ShowSecurityPasswordInvalidDialog() {

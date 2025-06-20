@@ -20,7 +20,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/client)
 
-qt_add_resources(RES ${CMAKE_SOURCE_DIR}/resources/font.qrc ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
+qt_add_resources(RES ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
 add_compile_options(/bigobj)
 
 set(SRCS_MAIN ct_main.cpp)

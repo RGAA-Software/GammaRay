@@ -70,7 +70,7 @@ namespace tc
 
             pwd_input_ = new TcPasswordInput(this);
             pwd_input_->setFixedSize(edit_size);
-            pwd_input_->SetPassword(settings->device_safety_pwd_md5_.c_str());
+            pwd_input_->SetPassword(settings->GetDeviceSecurityPwd().c_str());
 
             layout->addWidget(pwd_input_);
             layout->addStretch();
@@ -94,7 +94,7 @@ namespace tc
 
             pwd_input_again_ = new TcPasswordInput(this);
             pwd_input_again_->setFixedSize(edit_size);
-            pwd_input_again_->SetPassword(settings->device_safety_pwd_md5_.c_str());
+            pwd_input_again_->SetPassword(settings->GetDeviceSecurityPwd().c_str());
             layout->addWidget(pwd_input_again_);
             layout->addStretch();
 
@@ -127,7 +127,7 @@ namespace tc
                 auto pwd_md5 = MD5::Hex(pwd.toStdString());
 
                 // save to local db
-                settings->SetDeviceSafetyPwd(pwd_md5);
+                settings->SetDeviceSecurityPwd(pwd_md5);
                 context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_local_security_password_updated"));
 
                 // update to renderer
@@ -136,14 +136,14 @@ namespace tc
                 });
 
                 // Supervisor server unconfigured
-                if (!app_->GetManagerClient()->IsServerConfigured() || settings->device_id_.empty()) {
+                if (!app_->GetManagerClient()->IsServerConfigured() || settings->GetDeviceId().empty()) {
                     done(0);
                     return;
                 }
 
                 // update safety pwd
                 auto dev_opt = app_->GetDeviceOperator();
-                auto device = dev_opt->UpdateSafetyPwd(settings->device_id_, pwd_md5);
+                auto device = dev_opt->UpdateSafetyPwd(settings->GetDeviceId(), pwd_md5);
                 if (device && device->safety_pwd_md5_ == pwd_md5) {
                     context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_remote_security_password_updated"));
                     done(0);

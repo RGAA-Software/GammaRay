@@ -259,7 +259,7 @@ namespace tc
 
                 auto value = new TcLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(std::to_string(settings_->http_server_port_).c_str());
+                value->setText(std::to_string(settings_->GetPanelServerPort()).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();
@@ -283,7 +283,7 @@ namespace tc
 
                 auto value = new TcLabel(this);
                 value->setFixedSize(120, 40);
-                value->setText(std::to_string(settings_->render_srv_port_).c_str());
+                value->setText(std::to_string(settings_->GetRenderServerPort()).c_str());
                 value->setStyleSheet("font-size: 14px;");
                 item_layout->addWidget(value);
                 item_layout->addStretch();

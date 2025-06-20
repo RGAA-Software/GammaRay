@@ -65,9 +65,9 @@ namespace tc
             << std::format("--conn_type={}", item->connect_type_).c_str()
             << std::format("--network_type={}", item->network_type_).c_str()
             << std::format("--stream_name={}", Base64::Base64Encode(item->stream_name_)).c_str()
-            << std::format("--device_id={}", settings_->device_id_).c_str()
-            << std::format("--device_rp={}", Base64::Base64Encode(settings_->device_random_pwd_)).c_str()
-            << std::format("--device_sp={}", Base64::Base64Encode(settings_->device_safety_pwd_md5_)).c_str()
+            << std::format("--device_id={}", settings_->GetDeviceId()).c_str()
+            << std::format("--device_rp={}", Base64::Base64Encode(settings_->GetDeviceRandomPwd())).c_str()
+            << std::format("--device_sp={}", Base64::Base64Encode(settings_->GetDeviceSecurityPwd())).c_str()
             << std::format("--remote_device_id={}", item->remote_device_id_).c_str()
             << std::format("--remote_device_rp={}", Base64::Base64Encode(item->remote_device_random_pwd_)).c_str()
             << std::format("--remote_device_sp={}", Base64::Base64Encode(item->remote_device_safety_pwd_)).c_str()
@@ -75,7 +75,7 @@ namespace tc
             << std::format("--show_max_window={}", settings_->IsMaxWindowEnabled() ? 1 : 0).c_str()
             << std::format("--display_name={}", [=, this]() -> std::string {
                 if (item->network_type_ == kStreamItemNtTypeRelay) {
-                    return settings_->device_id_;
+                    return settings_->GetDeviceId();
                 }
                 else {
                     return "My Computer";
@@ -89,7 +89,7 @@ namespace tc
                     return item->stream_name_.empty() ? item->stream_host_ : item->stream_name_;
                 }
             } ()).c_str()
-            << std::format("--panel_server_port={}", settings_->panel_srv_port_).c_str()
+            << std::format("--panel_server_port={}", settings_->GetPanelServerPort()).c_str()
             << std::format("--screen_recording_path={}", screen_recording_path).c_str()
             << std::format("--my_host={}", [=, this]() -> std::string {
                 auto ips = context_->GetIps();

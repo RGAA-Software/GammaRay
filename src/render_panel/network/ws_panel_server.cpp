@@ -176,8 +176,8 @@ namespace tc
             this->RpSyncPanelInfo();
         });
 
-        bool ret = server_->start("0.0.0.0", settings_->panel_srv_port_);
-        LOGI("App server start result: {}, port: {}", ret, settings_->panel_srv_port_);
+        bool ret = server_->start("0.0.0.0", settings_->GetPanelServerPort());
+        LOGI("App server start result: {}, port: {}", ret, settings_->GetPanelServerPort());
     }
 
     void WsPanelServer::Exit() {
@@ -352,11 +352,11 @@ namespace tc
         tcrp::RpMessage m;
         m.set_type(tcrp::RpMessageType::kSyncPanelInfo);
         auto sub = m.mutable_sync_panel_info();
-        sub->set_device_id(settings_->device_id_);
-        sub->set_device_random_pwd(settings_->device_random_pwd_);
-        sub->set_device_safety_pwd(settings_->device_safety_pwd_md5_);
-        sub->set_relay_host(settings_->relay_server_host_);
-        sub->set_relay_port(settings_->relay_server_port_);
+        sub->set_device_id(settings_->GetDeviceId());
+        sub->set_device_random_pwd(settings_->GetDeviceRandomPwd());
+        sub->set_device_safety_pwd(settings_->GetDeviceSecurityPwd());
+        sub->set_relay_host(settings_->GetRelayServerHost());
+        sub->set_relay_port(std::to_string(settings_->GetRelayServerPort()));
         sub->set_can_be_operated(settings_->IsBeingOperatedEnabled());
         sub->set_relay_enabled(settings_->IsRelayEnabled());
         PostRendererMessage(m.SerializeAsString());
@@ -430,7 +430,7 @@ namespace tc
                     .end_ = 0,
                     .duration_ = 0,
                     .visitor_device_ = sub.visitor_device_id(),
-                    .target_device_ = settings_->device_id_.empty() ? ip_address : settings_->device_id_,
+                    .target_device_ = settings_->GetDeviceId().empty() ? ip_address : settings_->GetDeviceId(),
                 }));
             });
         }
@@ -454,7 +454,7 @@ namespace tc
                     .begin_ = sub.begin_timestamp(),
                     .end_ = 0,
                     .visitor_device_ = sub.visitor_device_id(),
-                    .target_device_ = settings_->device_id_.empty() ? ip_address : settings_->device_id_,
+                    .target_device_ = settings_->GetDeviceId().empty() ? ip_address : settings_->GetDeviceId(),
                     .direction_ = sub.direction(),
                     .file_detail_ = sub.file_detail(),
                 }));

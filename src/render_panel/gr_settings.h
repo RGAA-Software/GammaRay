@@ -61,8 +61,6 @@ namespace tc
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
-    static const std::string kEncFormatH264 = "h264";
-    static const std::string kEncFormatH265 = "h265";
     static const std::string kResTypeOrigin = "origin";
     static const std::string kResTypeResize = "resize";
 
@@ -107,22 +105,62 @@ namespace tc
 
         void SetWebRTCEnabled(bool enabled);
         void SetUdpKcpEnabled(bool enabled);
-        void SetSigServerAddress(const std::string& address);
-        void SetSigServerPort(const std::string& port);
-        void SetCoturnServerAddress(const std::string& address);
-        void SetCoturnServerPort(const std::string& port);
-        void SetDeviceId(const std::string& id);
-        void SetDeviceRandomPwd(const std::string& pwd);
-        void SetDeviceSafetyPwd(const std::string& pwd);
-        void SetPanelListeningPort(int port);
-        void SetProfileServerHost(const std::string& host);
-        void SetProfileServerPort(const std::string& port);
-        void SetRelayServerHost(const std::string& host);
-        void SetRelayServerPort(const std::string& port);
-        void SetSpvrServerHost(const std::string& host);
-        void SetSpvrServerPort(const std::string& port);
-        void SetScreenRecordingPath(const std::string& path);
 
+        // Device Id
+        void SetDeviceId(const std::string& id);
+        std::string GetDeviceId();
+
+        // Random PWD
+        void SetDeviceRandomPwd(const std::string& pwd);
+        std::string GetDeviceRandomPwd();
+
+        // Security PWD
+        void SetDeviceSecurityPwd(const std::string& pwd);
+        std::string GetDeviceSecurityPwd();
+
+        // Panel Server Port
+        void SetPanelServerPort(int port);
+        int GetPanelServerPort();
+
+        // Render Server Port
+        void SetRenderServerPort(int port);
+        int GetRenderServerPort();
+
+        // Spvr
+        // Host
+        void SetSpvrServerHost(const std::string& host);
+        std::string GetSpvrServerHost();
+
+        // Port
+        void SetSpvrServerPort(const std::string& port);
+        int GetSpvrServerPort();
+
+        bool HasSpvrServerConfig();
+
+        // Profile
+        // Host
+        void SetProfileServerHost(const std::string& host);
+        std::string GetProfileServerHost();
+
+        // Port
+        void SetProfileServerPort(const std::string& port);
+        int GetProfileServerPort();
+
+        bool HasProfileServerConfig();
+
+        // Relay
+        // Host
+        void SetRelayServerHost(const std::string& host);
+        std::string GetRelayServerHost();
+
+        // Port
+        void SetRelayServerPort(const std::string& port);
+        int GetRelayServerPort();
+
+        bool HasRelayServerConfig();
+
+        // Settings -> Controller
+        void SetScreenRecordingPath(const std::string& path);
         [[nodiscard]] std::string GetScreenRecordingPath() const;
 
         // show max window
@@ -155,18 +193,12 @@ namespace tc
         void SetRelayEnabled(bool enabled);
         bool IsRelayEnabled();
 
-    private:
-
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
         std::string version_;
         // @deprecated
-        int http_server_port_{0};
-        // @deprecated
         int udp_listen_port_{0};
-
-        int panel_srv_port_{0};
 
         std::string log_file_;
         std::string encoder_select_type_;
@@ -184,36 +216,13 @@ namespace tc
         std::string capture_video_type_;
         std::string capture_audio_device_;
 
-        int render_srv_port_{};
         std::string network_listening_ip_{};
         std::string webrtc_enabled_ = kStTrue;
         std::string udp_kcp_enabled_ = kStTrue;
-        // Spvr Server
-        std::string spvr_server_host_;
-        std::string spvr_server_port_;
-        // Profile Server
-        std::string profile_server_host_;
-        std::string profile_server_port_;
-        // Relay Server
-        std::string relay_server_host_;
-        std::string relay_server_port_;
-        // Signaling Server
-        std::string sig_server_address_;
-        std::string sig_server_port_;
-        // Coturn Server
-        std::string coturn_server_address_;
-        std::string coturn_server_port_;
-
-        std::string device_id_;
-        std::string device_random_pwd_;
-        std::string device_safety_pwd_md5_;
 
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
-
-        // screen recording path
-        std::string screen_recording_path_;
 
     };
 

@@ -55,7 +55,7 @@ namespace tc
         monitor_thread_ = std::make_shared<Thread>([=, this]() {
             while (!exit_) {
                 // check system servers
-                if (!settings_->spvr_server_host_.empty() && !settings_->spvr_server_port_.empty()) {
+                if (settings_->HasSpvrServerConfig()) {
                     context_->PostTask([=, this]() {
                         this->CheckOnlineServers();
                         this->CheckThisDeviceInfo();
@@ -268,11 +268,11 @@ namespace tc
 
     void GrSystemMonitor::CheckOnlineServers() {
         if (!this->VerifyOnlineServers()) {
-            auto ret_online_servers = spvr::SpvrApi::GetOnlineServers(settings_->spvr_server_host_, std::atoi(settings_->spvr_server_port_.c_str()));
+            auto ret_online_servers = spvr::SpvrApi::GetOnlineServers(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
             if (!ret_online_servers) {
                 auto err = ret_online_servers.error();
                 LOGE("Can't request online servers: {}:{}, err: {}",
-                     settings_->spvr_server_host_, settings_->spvr_server_port_, SpvrError2String(err));
+                     settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), SpvrError2String(err));
                 return;
             }
             auto online_servers = ret_online_servers.value();
@@ -298,31 +298,31 @@ namespace tc
     }
 
     bool GrSystemMonitor::VerifyOnlineServers() {
-        if (settings_->spvr_server_host_.empty() || settings_->spvr_server_port_.empty()
-            || settings_->relay_server_host_.empty() || settings_->relay_server_port_.empty()
-            || settings_->profile_server_host_.empty() || settings_->profile_server_port_.empty()) {
+        if (!settings_->HasSpvrServerConfig()
+            || !settings_->HasRelayServerConfig()
+            || !settings_->HasProfileServerConfig()) {
             return false;
         }
         // check spvr
-        auto ok = HttpBaseOp::CanPingServer(settings_->spvr_server_host_, settings_->spvr_server_port_);
+        auto ok = HttpBaseOp::CanPingServer(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
         if (!ok) {
-            LOGE("Spvr is not online: {} {} ", settings_->spvr_server_host_, settings_->spvr_server_port_);
+            LOGE("Spvr is not online: {} {} ", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
             return false;
         }
         //LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
 
         // check relay
-        ok = HttpBaseOp::CanPingServer(settings_->relay_server_host_, settings_->relay_server_port_);
+        ok = HttpBaseOp::CanPingServer(settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
         if (!ok) {
-            LOGE("Relay is not online: {} {} ", settings_->relay_server_host_, settings_->relay_server_port_);
+            LOGE("Relay is not online: {} {} ", settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
             return false;
         }
         //LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
 
         // check profile
-        ok = HttpBaseOp::CanPingServer(settings_->profile_server_host_, settings_->profile_server_port_);
+        ok = HttpBaseOp::CanPingServer(settings_->GetProfileServerHost(), settings_->GetProfileServerPort());
         if (!ok) {
-            LOGE("Profile is not online: {} {} ", settings_->profile_server_host_, settings_->profile_server_port_);
+            LOGE("Profile is not online: {} {} ", settings_->GetProfileServerHost(), settings_->GetProfileServerPort());
             return false;
         }
         //LOGI("Verify Profile ok, address: {}:{}", settings_->profile_server_host_, settings_->profile_server_port_);
@@ -338,29 +338,29 @@ namespace tc
         }
 
         // profile server
-        auto has_pr_server = HttpBaseOp::CanPingServer(settings_->profile_server_host_, settings_->profile_server_port_);
+        auto has_pr_server = HttpBaseOp::CanPingServer(settings_->GetProfileServerHost(), settings_->GetProfileServerPort());
         if (!has_pr_server) {
             return;
         }
 
         // don't have device id, force to update
-        if (settings_->device_id_.empty() && has_pr_server) {
+        if (settings_->GetDeviceId().empty() && has_pr_server) {
             context_->SendAppMessage(MsgForceRequestDeviceId{});
             return;
         }
 
         // has a device
-        auto device = dev_opt->QueryDevice(settings_->device_id_);
+        auto device = dev_opt->QueryDevice(settings_->GetDeviceId());
         if (!device) {
-            LOGE("Query device for : {} failed.", settings_->device_id_);
+            LOGE("Query device for : {} failed.", settings_->GetDeviceId());
             context_->SendAppMessage(MsgForceRequestDeviceId{});
             return;
         }
 
-        auto local_random_pwd_md5 = MD5::Hex(settings_->device_random_pwd_);
+        auto local_random_pwd_md5 = MD5::Hex(settings_->GetDeviceRandomPwd());
         if (device->random_pwd_md5_ != local_random_pwd_md5) {
             LOGW("***Random pwd not equals, will refresh, srv: {} => local: {}", device->random_pwd_md5_, local_random_pwd_md5);
-            auto update_device = dev_opt->UpdateRandomPwd(settings_->device_id_);
+            auto update_device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
             if (update_device && !update_device->gen_random_pwd_.empty()) {
                 settings_->SetDeviceRandomPwd(update_device->gen_random_pwd_);
                 // todo: notify random password updated
@@ -368,15 +368,16 @@ namespace tc
             }
         }
 
-        if (device->safety_pwd_md5_ != settings_->device_safety_pwd_md5_ && !settings_->device_safety_pwd_md5_.empty()) {
-            LOGW("***Safety pwd not equals, will refresh, srv: {} => local: {}", device->safety_pwd_md5_, settings_->device_safety_pwd_md5_);
+        auto current_device_security_pwd = settings_->GetDeviceSecurityPwd();
+        if (device->safety_pwd_md5_ != settings_->GetDeviceSecurityPwd() && !current_device_security_pwd.empty()) {
+            LOGW("***Safety pwd not equals, will refresh, srv: {} => local: {}", device->safety_pwd_md5_, current_device_security_pwd);
             // update safety password
-            auto update_device = dev_opt->UpdateSafetyPwd(settings_->device_id_, settings_->device_safety_pwd_md5_);
+            auto update_device = dev_opt->UpdateSafetyPwd(settings_->GetDeviceId(), current_device_security_pwd);
             if (!update_device) {
-                LOGE("***UpdateSafetyPwd failed for : {}, SPWD: {}", settings_->device_id_, settings_->device_safety_pwd_md5_);
+                LOGE("***UpdateSafetyPwd failed for : {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
             }
             else {
-                LOGE("***UpdateSafetyPwd success {}, SPWD: {}", settings_->device_id_, settings_->device_safety_pwd_md5_);
+                LOGE("***UpdateSafetyPwd success {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
             }
         }
     }

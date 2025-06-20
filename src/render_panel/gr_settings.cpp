@@ -47,9 +47,6 @@ namespace tc
         capture_video_type_ = sp_->Get(kStCaptureVideoType, "global");
         capture_audio_device_ = sp_->Get(kStCaptureAudioDevice, "");
 
-        panel_srv_port_ = sp_->GetInt(kStPanelListeningPort, 20369);
-        http_server_port_ = panel_srv_port_;
-        render_srv_port_ = sp_->GetInt(kStNetworkListenPort, 20371);
         network_listening_ip_ = sp_->Get(kStListeningIp, "");
         webrtc_enabled_ = sp_->Get(kStWebRTCEnabled, kStTrue);
         udp_listen_port_ = sp_->GetInt(kStUdpListenPort, 20381);
@@ -68,27 +65,6 @@ namespace tc
                 }
             }
         }
-
-        // spvr server
-        spvr_server_host_ = sp_->Get(kStSpvrServerHost, "");
-        spvr_server_port_ = sp_->Get(kStSpvrServerPort, "");
-        // signaling
-        sig_server_address_ = sp_->Get(kStSigServerAddress, "");
-        sig_server_port_ = sp_->Get(kStSigServerPort, "");
-        // coturn
-        coturn_server_address_ = sp_->Get(kStCoturnAddress, "");
-        coturn_server_port_ = sp_->Get(kStCoturnPort, "");
-        // id server
-        profile_server_host_ = sp_->Get(kStProfileServerHost, "");
-        profile_server_port_ = sp_->Get(kStProfileServerPort, "");
-        // relay server
-        relay_server_host_ = sp_->Get(kStRelayServerHost, "");
-        relay_server_port_ = sp_->Get(kStRelayServerPort, "");
-
-        device_id_ = sp_->Get(kStDeviceId, "");
-        device_random_pwd_ = sp_->Get(kStDeviceRandomPwd, "");
-        device_safety_pwd_md5_ = sp_->Get(kStDeviceSafetyPwd, "");
-
     }
 
     void GrSettings::Dump() {
@@ -106,26 +82,21 @@ namespace tc
         ss << "capture_audio_type_: " << capture_audio_type_ << std::endl;
         ss << "capture_video_: " << capture_video_ << std::endl;
         ss << "capture_video_type: " << capture_video_type_ << std::endl;
-        ss << "http_server_port_: " << http_server_port_ << std::endl;
-        ss << "panel_srv_port_: " << panel_srv_port_ << std::endl;
-        ss << "render_srv_port_: " << render_srv_port_ << std::endl;
+        ss << "panel_srv_port_: " << GetPanelServerPort() << std::endl;
+        ss << "render_srv_port_: " << GetRenderServerPort() << std::endl;
         ss << "websocket_enabled_:" << IsWebSocketEnabled() << std::endl;
         ss << "webrtc_enabled_:" << webrtc_enabled_ << std::endl;
         ss << "capture_audio_device_: " << capture_audio_device_ << std::endl;
-        ss << "sig_server_address_: " << sig_server_address_ << std::endl;
-        ss << "sig_server_port_: " << sig_server_port_ << std::endl;
-        ss << "coturn_server_address_: " << coturn_server_address_ << std::endl;
-        ss << "coturn_server_port_: " << coturn_server_port_ << std::endl;
-        ss << "device_id_: " << device_id_ << std::endl;
-        ss << "device_random_pwd_: " << device_random_pwd_ << std::endl;
-        ss << "device_safety_pwd_md5_: " << device_safety_pwd_md5_ << std::endl;
+        ss << "device_id_: " << GetDeviceId() << std::endl;
+        ss << "device_random_pwd: " << GetDeviceRandomPwd() << std::endl;
+        ss << "device_security_pwd_md5: " << GetDeviceSecurityPwd() << std::endl;
         ss << "udp_listen_port_:" << udp_listen_port_ << std::endl;
-        ss << "relay host: " << relay_server_host_ << std::endl;
-        ss << "relay port: " << relay_server_port_ << std::endl;
-        ss << "spvr server host: " << spvr_server_host_ << std::endl;
-        ss << "spvr server port: " << spvr_server_port_ << std::endl;
-        ss << "pr server host: " << profile_server_host_ << std::endl;
-        ss << "pr server port: " << profile_server_port_ << std::endl;
+        ss << "relay host: " << GetRelayServerHost() << std::endl;
+        ss << "relay port: " << GetRelayServerPort() << std::endl;
+        ss << "spvr server host: " << GetSpvrServerHost() << std::endl;
+        ss << "spvr server port: " << GetSpvrServerPort() << std::endl;
+        ss << "pr server host: " << GetProfileServerHost() << std::endl;
+        ss << "pr server port: " << GetProfileServerPort() << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -146,7 +117,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
         args.push_back(std::format("--{}={}", kStWebSocketEnabled, IsWebSocketEnabled()));
-        args.push_back(std::format("--{}={}", kStNetworkListenPort, render_srv_port_));
+        args.push_back(std::format("--{}={}", kStNetworkListenPort, GetRenderServerPort()));
         args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
         args.push_back(std::format("--{}={}", kStUdpKcpEnabled, udp_kcp_enabled_));
         args.push_back(std::format("--{}={}", kStUdpListenPort, udp_listen_port_));
@@ -155,16 +126,12 @@ namespace tc
         args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
         args.push_back(std::format("--{}={}", kStDebugBlock, false));
         args.push_back(std::format("--{}={}", kStMockVideo, false));
-        args.push_back(std::format("--{}={}", kStSigServerAddress, sig_server_address_));
-        args.push_back(std::format("--{}={}", kStSigServerPort, sig_server_port_));
-        args.push_back(std::format("--{}={}", kStCoturnAddress, coturn_server_address_));
-        args.push_back(std::format("--{}={}", kStCoturnPort, coturn_server_port_));
-        args.push_back(std::format("--{}={}", kStDeviceId, device_id_));
-        args.push_back(std::format("--{}={}", kStDeviceRandomPwd, device_random_pwd_));
-        args.push_back(std::format("--{}={}", kStDeviceSafetyPwd, device_safety_pwd_md5_));
-        args.push_back(std::format("--panel_server_port={}", this->http_server_port_));
-        args.push_back(std::format("--{}={}", kStRelayServerHost, relay_server_host_));
-        args.push_back(std::format("--{}={}", kStRelayServerPort, relay_server_port_));
+        args.push_back(std::format("--{}={}", kStDeviceId, GetDeviceId()));
+        args.push_back(std::format("--{}={}", kStDeviceRandomPwd, GetDeviceRandomPwd()));
+        args.push_back(std::format("--{}={}", kStDeviceSafetyPwd, GetDeviceSecurityPwd()));
+        args.push_back(std::format("--panel_server_port={}", GetPanelServerPort()));
+        args.push_back(std::format("--{}={}", kStRelayServerHost, GetRelayServerHost()));
+        args.push_back(std::format("--{}={}", kStRelayServerPort, GetRelayServerPort()));
         args.push_back(std::format("--{}={}", kStCanBeOperated, this->IsBeingOperatedEnabled()));
         args.push_back(std::format("--{}={}", kStRelayEnabled, this->IsRelayEnabled()));
         return args;
@@ -256,78 +223,137 @@ namespace tc
         sp_->Put(kStUdpKcpEnabled, udp_kcp_enabled_);
     }
 
-    void GrSettings::SetSigServerAddress(const std::string& address) {
-        sig_server_address_ = address;
-        sp_->Put(kStSigServerAddress, address);
-    }
-
-    void GrSettings::SetSigServerPort(const std::string& port) {
-        sig_server_port_ = port;
-        sp_->Put(kStSigServerPort, port);
-    }
-
-    void GrSettings::SetCoturnServerAddress(const std::string& address) {
-        coturn_server_address_ = address;
-        sp_->Put(kStCoturnAddress, address);
-    }
-
-    void GrSettings::SetCoturnServerPort(const std::string& port) {
-        coturn_server_port_ = port;
-        sp_->Put(kStCoturnPort, port);
-    }
-
+    // Device ID // Set
     void GrSettings::SetDeviceId(const std::string& id) {
-        device_id_ = id;
         sp_->Put(kStDeviceId, id);
     }
 
+    // Device ID // Get
+    std::string GrSettings::GetDeviceId() {
+        return sp_->Get(kStDeviceId, "");
+    }
+
+    // Device Random Pwd // Set
     void GrSettings::SetDeviceRandomPwd(const std::string& pwd) {
-        device_random_pwd_ = pwd;
         sp_->Put(kStDeviceRandomPwd, pwd);
     }
 
-    void GrSettings::SetDeviceSafetyPwd(const std::string& pwd) {
-        device_safety_pwd_md5_ = pwd;
+    // Device Random Pwd // Get
+    std::string GrSettings::GetDeviceRandomPwd() {
+        return sp_->Get(kStDeviceRandomPwd, "");
+    }
+
+    // Device Security Pwd // Set
+    void GrSettings::SetDeviceSecurityPwd(const std::string& pwd) {
         sp_->Put(kStDeviceSafetyPwd, pwd);
     }
 
-    void GrSettings::SetPanelListeningPort(int port) {
-        panel_srv_port_ = port;
+    // Device Security Pwd // Set
+    std::string GrSettings::GetDeviceSecurityPwd() {
+        return sp_->Get(kStDeviceSafetyPwd, "");
+    }
+
+    // Panel Server Port // Set
+    void GrSettings::SetPanelServerPort(int port) {
         sp_->Put(kStPanelListeningPort, std::to_string(port));
     }
 
+    // Panel Server Port // Get
+    int GrSettings::GetPanelServerPort() {
+        auto value = std::atoi(sp_->Get(kStPanelListeningPort, "").c_str());
+        return value > 0 ? value : 20369;
+    }
+
+    // Render Server Port // Set
+    void GrSettings::SetRenderServerPort(int port) {
+        sp_->Put(kStNetworkListenPort, std::to_string(port));
+    }
+
+    // Render Server Port // Get
+    int GrSettings::GetRenderServerPort() {
+        auto value = std::atoi(sp_->Get(kStNetworkListenPort, "").c_str());
+        return value > 0 ? value : 20371;
+    }
+
+    // Profile
+    // Host
     void GrSettings::SetProfileServerHost(const std::string& host) {
-        profile_server_host_ = host;
         sp_->Put(kStProfileServerHost, host);
     }
 
+    std::string GrSettings::GetProfileServerHost() {
+        return sp_->Get(kStProfileServerHost, "");
+    }
+
+    // Profile
+    // Port
     void GrSettings::SetProfileServerPort(const std::string& port) {
-        profile_server_port_ = port;
         sp_->Put(kStProfileServerPort, port);
     }
 
+    int GrSettings::GetProfileServerPort() {
+        return std::atoi(sp_->Get(kStProfileServerPort, "").c_str());
+    }
+
+    // Profile
+    bool GrSettings::HasProfileServerConfig() {
+        return !GetProfileServerHost().empty() && GetProfileServerPort() > 0;
+    }
+
+    // Relay
+    // Host
     void GrSettings::SetRelayServerHost(const std::string& host) {
-        relay_server_host_ = host;
         sp_->Put(kStRelayServerHost, host);
     }
 
+    std::string GrSettings::GetRelayServerHost() {
+        return sp_->Get(kStRelayServerHost, "");
+    }
+
+    // Relay
+    // Port
     void GrSettings::SetRelayServerPort(const std::string& port) {
-        relay_server_port_ = port;
         sp_->Put(kStRelayServerPort, port);
     }
 
+    int GrSettings::GetRelayServerPort() {
+        return std::atoi(sp_->Get(kStRelayServerPort, "").c_str());
+    }
+
+    // Relay
+    bool GrSettings::HasRelayServerConfig() {
+        return !GetRelayServerHost().empty() && GetRelayServerPort() > 0;
+    }
+
+    // Spvr
+    // Set Host
     void GrSettings::SetSpvrServerHost(const std::string& host) {
-        spvr_server_host_ = host;
         sp_->Put(kStSpvrServerHost, host);
     }
 
+    // Spvr
+    // Get Host
+    std::string GrSettings::GetSpvrServerHost() {
+        return sp_->Get(kStSpvrServerHost, "");
+    }
+
+    // Spvr
+    // Set Port
     void GrSettings::SetSpvrServerPort(const std::string& port) {
-        spvr_server_port_ = port;
         sp_->Put(kStSpvrServerPort, port);
     }
 
+    // Spvr
+    // Get Port
+    int GrSettings::GetSpvrServerPort() {
+        return std::atoi(sp_->Get(kStSpvrServerPort, "").c_str());
+    }
+
+    bool GrSettings::HasSpvrServerConfig() {
+        return !GetSpvrServerHost().empty() && GetSpvrServerPort() > 0;
+    }
+
     void GrSettings::SetScreenRecordingPath(const std::string& path) {
-        screen_recording_path_ = path;
         sp_->Put(kStScreenRecordingPath, path);
     }
 

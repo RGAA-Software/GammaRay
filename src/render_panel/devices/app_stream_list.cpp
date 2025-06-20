@@ -319,8 +319,8 @@ namespace tc
             // verify remote
             // password from inputting
             // password from database
-            auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->profile_server_host_,
-                                                              std::atoi(settings_->profile_server_port_.c_str()),
+            auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetProfileServerHost(),
+                                                              settings_->GetProfileServerPort(),
                                                               target_item->remote_device_id_,
                                                               MD5::Hex(remote_random_pwd),
                                                               MD5::Hex(remote_safety_pwd));
@@ -556,7 +556,7 @@ namespace tc
 
             int index = 0;
             for (auto& stream : streams_) {
-                stream->device_id_ = settings_->device_id_;
+                stream->device_id_ = settings_->GetDeviceId();
                 AddItem(stream, index++);
             }
 

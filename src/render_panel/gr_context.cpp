@@ -145,7 +145,7 @@ namespace tc
     }
 
     int GrContext::GetIndexByUniqueId() {
-        return std::atoi(settings_->device_id_.c_str())%30+1;
+        return std::atoi(settings_->GetDeviceId().c_str())%30+1;
     }
 
     std::vector<EthernetInfo> GrContext::GetIps() {
@@ -155,8 +155,8 @@ namespace tc
     std::string GrContext::MakeBroadcastMessage() {
         json obj;
         // device
-        obj["device_id"] = settings_->device_id_;
-        obj["random_pwd"] = settings_->device_random_pwd_;
+        obj["device_id"] = settings_->GetDeviceId();
+        obj["random_pwd"] = settings_->GetDeviceRandomPwd();
         obj["icon_idx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();
@@ -168,17 +168,8 @@ namespace tc
             ip_array.push_back(ip_obj);
         }
         obj["ips"] = ip_array;
-        // ports
-        //obj["http_server_port"] = settings_->http_server_port_;
-        obj["panel_srv_port"] = settings_->panel_srv_port_;
-        //obj["udp_listen_port"] = settings_->udp_listen_port_;
-        obj["render_srv_port"] = settings_->render_srv_port_;
-
-        // device id is empty
-        //if (settings_->device_id_.empty() && !ips.empty()) {
-        //    obj["device_id"] = ips[0].ip_addr_;
-        //}
-
+        obj["panel_srv_port"] = settings_->GetPanelServerPort();
+        obj["render_srv_port"] = settings_->GetRenderServerPort();
         return obj.dump();
     }
 
@@ -262,11 +253,11 @@ namespace tc
     }
 
     std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {
-        if (settings_->relay_server_host_.empty()) {
+        if (!settings_->HasRelayServerConfig()) {
             return nullptr;
         }
         auto srv_remote_device_id = "server_" + device_id;
-        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(settings_->relay_server_host_, std::atoi(settings_->relay_server_port_.c_str()), srv_remote_device_id);
+        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(settings_->GetRelayServerHost(), settings_->GetRelayServerPort(), srv_remote_device_id);
         if (!relay_result) {
             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, RelayError2String(relay_result.error()));
             if (show_dialog) {

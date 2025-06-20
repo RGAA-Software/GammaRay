@@ -123,13 +123,13 @@ namespace tc
 
         auto conn_info = ConnInfoParser::Parse(info);
         if (!conn_info) {
-            TcDialog dialog(tcTr("id_tips"), tcTr("id_parse_conn_info_failed"), this);
+            TcDialog dialog(tcTr("id_error"), tcTr("id_parse_conn_info_failed"), this);
             dialog.exec();
             return false;
         }
 
         auto fn_invalid_dialog = [this]() {
-            TcDialog dialog(tcTr("id_tips"), tcTr("id_verify_conn_info_failed"), this);
+            TcDialog dialog(tcTr("id_error"), tcTr("id_verify_conn_info_failed"), this);
             dialog.exec();
         };
 
@@ -173,8 +173,16 @@ namespace tc
             stream_port = conn_info->render_srv_port_;
         }
         else {
+            auto settings = GrSettings::Instance();
+            if (!settings->HasSpvrServerConfig() || !settings->HasRelayServerConfig()) {
+                TcDialog dialog(tcTr("id_error"), tcTr("id_dont_have_server_config"), this);
+                dialog.exec();
+                return false;
+            }
             auto relay_device_info = context_->GetRelayServerSideDeviceInfo(conn_info->device_id_);
             if (relay_device_info == nullptr) {
+                TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), this);
+                dialog.exec();
                 return false;
             }
 

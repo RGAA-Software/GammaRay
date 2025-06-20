@@ -165,12 +165,12 @@ namespace tc
 
                     // event
                     btn_refresh->SetOnImageButtonClicked([=, this]() {
-                        if (settings_->device_id_.empty()) {
+                        if (settings_->GetDeviceId().empty()) {
                             return;
                         }
                         context_->PostTask([=, this]() {
                             auto dev_opt = grApp->GetDeviceOperator();
-                            auto device = dev_opt->UpdateRandomPwd(settings_->device_id_);
+                            auto device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
                             if (!device) {
                                 LOGE("Refresh random password failed.");
                                 return;
@@ -395,8 +395,8 @@ namespace tc
                         }
 
                         // verify in profile server
-                        auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->profile_server_host_,
-                                                                          std::atoi(settings_->profile_server_port_.c_str()),
+                        auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetProfileServerHost(),
+                                                                          settings_->GetProfileServerPort(),
                                                                           remote_device_id,
                                                                           MD5::Hex(random_password),
                                                                           MD5::Hex(safety_password));
@@ -454,9 +454,9 @@ namespace tc
         setLayout(root_layout);
 
         // set client id by settings
-        if (!settings_->device_id_.empty() && !settings_->device_random_pwd_.empty()) {
-            lbl_machine_code_->setText(tc::SpaceId(settings_->device_id_).c_str());
-            lbl_machine_random_pwd_->setText(settings_->device_random_pwd_.c_str());
+        if (!settings_->GetDeviceId().empty() && !settings_->GetDeviceRandomPwd().empty()) {
+            lbl_machine_code_->setText(tc::SpaceId(settings_->GetDeviceId()).c_str());
+            lbl_machine_random_pwd_->setText(settings_->GetDeviceRandomPwd().c_str());
         }
 
         RegisterMessageListener();

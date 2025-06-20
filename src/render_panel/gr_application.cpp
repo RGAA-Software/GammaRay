@@ -154,8 +154,8 @@ namespace tc
 
     void GrApplication::RefreshSigServerSettings() {
         mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
-            .host_ = settings_->profile_server_host_,
-            .port_ = std::atoi(settings_->profile_server_port_.c_str()),
+            .host_ = settings_->GetProfileServerHost(),
+            .port_ = settings_->GetProfileServerPort(),
             .ssl_ = false,
         });
     }
@@ -165,12 +165,12 @@ namespace tc
         msg_listener_->Listen<MsgSettingsChanged>([=, this](const MsgSettingsChanged& msg) {
             LOGI("Settings changed...");
             RefreshSigServerSettings();
-            bool force_update = settings_->device_id_.empty();
+            bool force_update = settings_->GetDeviceId().empty();
             RequestNewClientId(force_update);
         });
 
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
-            if (settings_->device_id_.empty()) {
+            if (settings_->GetDeviceId().empty()) {
                 RequestNewClientId(true);
             }
         });
@@ -181,12 +181,12 @@ namespace tc
     }
 
     void GrApplication::RequestNewClientId(bool force_update) {
-        if (!force_update && !settings_->device_id_.empty() && !settings_->device_random_pwd_.empty()) {
+        if (!force_update && !settings_->GetDeviceId().empty() && !settings_->GetDeviceRandomPwd().empty()) {
             return;
         }
 
         context_->PostTask([=, this]() {
-            if (settings_->profile_server_host_.empty()) {
+            if (!settings_->HasProfileServerConfig()) {
                 return;
             }
             auto device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
@@ -268,7 +268,7 @@ namespace tc
     }
 
     void GrApplication::CheckSecurityPassword() {
-        if (settings_->device_safety_pwd_md5_.empty()) {
+        if (settings_->GetDeviceSecurityPwd().empty()) {
             InputSafetyPwdDialog dialog(grApp, grWorkspace.get());
             dialog.exec();
         }
@@ -276,7 +276,7 @@ namespace tc
 
     void GrApplication::UpdateServerSecurityPasswordIfNeeded() {
         context_->PostTask([this]() {
-            if (settings_->device_safety_pwd_md5_.empty()) {
+            if (settings_->GetDeviceSecurityPwd().empty()) {
                 return;
             }
 

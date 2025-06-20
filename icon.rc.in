@@ -19,7 +19,7 @@ BEGIN
             VALUE "FileDescription", "GammaRay Render Panel"
             VALUE "FileVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
             VALUE "InternalName", "GammaRay.exe"
-            VALUE "LegalCopyright", "Copyright (c) 2022-2025 RGAA <https://github.com/rgaa-software>"
+            VALUE "LegalCopyright", "<https://github.com/rgaa-software> Copyright (c) 2022-2025 RGAA "
             VALUE "OriginalFilename", "GammaRay.exe"
             VALUE "ProductName", "GammaRay"
             VALUE "ProductVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
@@ -35,6 +35,6 @@ END
 //IDR_USB_IDS             RCDATA                  "xxx.ids"
 
 // ICON
-IDI_ICON1 ICON DISCARDABLE "icon.ico"
+IDI_ICON1 ICON "icon.ico"
 
 

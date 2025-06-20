@@ -97,7 +97,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edt_websocket_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->render_srv_port_).c_str());
+                edit->setText(std::to_string(settings_->GetRenderServerPort()).c_str());
                 edit->setEnabled(settings_->IsWebSocketEnabled());
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -218,7 +218,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edt_panel_port_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(std::to_string(settings_->panel_srv_port_).c_str());
+                edit->setText(std::to_string(settings_->GetPanelServerPort()).c_str());
                 edit->setEnabled(true);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -287,7 +287,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edt_spvr_server_host_ = edit;
                 edit->setFixedSize(input_size);
-                edit->setText(settings_->spvr_server_host_.c_str());
+                edit->setText(settings_->GetSpvrServerHost().c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -305,7 +305,7 @@ namespace tc
                 edt_spvr_server_port_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setValidator(new QIntValidator);
-                edit->setText(settings_->spvr_server_port_.c_str());
+                edit->setText(std::to_string(settings_->GetSpvrServerPort()).c_str());
                 layout->addWidget(edit);
                 layout->addStretch();
                 segment_layout->addSpacing(5);
@@ -328,7 +328,7 @@ namespace tc
                 auto spvr_port = edt_spvr_server_port_->text().toStdString();
                 settings_->SetSpvrServerHost(spvr_host);
                 settings_->SetSpvrServerPort(spvr_port);
-                settings_->SetPanelListeningPort(edt_panel_port_->text().toInt());
+                settings_->SetPanelServerPort(edt_panel_port_->text().toInt());
 
                 // Load again
                 settings_->Load();
