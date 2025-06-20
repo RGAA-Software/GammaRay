@@ -198,6 +198,7 @@ void GameView::InitFloatController()
     // float controller
     int shadow_color = 0x999999;
     float_controller_ = new FloatController(ctx_, this);
+    float_controller_->installEventFilter(this);
     float_controller_->setFixedSize(50, 50);
     WidgetHelper::AddShadow(float_controller_, shadow_color);
     controller_panel_ = new FloatControllerPanel(ctx_, this);
@@ -276,7 +277,7 @@ void GameView::leaveEvent(QEvent* event) {
 }
 
 bool GameView::eventFilter(QObject* watched, QEvent* event) {
-    if (watched == controller_panel_)
+    if (watched == controller_panel_ || watched == float_controller_)
     {
         switch (event->type())
         {

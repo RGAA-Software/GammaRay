@@ -278,8 +278,9 @@ namespace tc
         }
         else {
             auto current_time = TimeUtil::GetCurrentTimestamp();
-            if (last_timestamp_ + 1000 > current_time) {
+            if (last_timestamp_ + 2000 > current_time) {
                 event->cursor_info_.data_ = nullptr;
+                //LOGI("event->cursor_info_.data_ = nullptr;");
             }
         }
 

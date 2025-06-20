@@ -300,29 +300,23 @@ namespace tc
         });
 
         sdk_->SetOnCursorInfoCallback([=, this](const CursorInfoSync& cursor_info) {
-            auto shape = ToQCursorShape(cursor_info.type());
-            QCursor new_cursor;
-            if (Qt::BitmapCursor == shape) {
-                std::string bitmap_data = cursor_info.bitmap();
-                if (!bitmap_data.empty()) {
-                    cursor_bitmap_data_ = bitmap_data;
+            //鼠标使用远端的bitmap数据, 因为只有使用远端的bitmap,鼠标的大小才能与远端保持一致
+            std::string bitmap_data = cursor_info.bitmap();
+            bool change = false;
+            if (!bitmap_data.empty()) {
+                cursor_bitmap_data_ = bitmap_data;
+                if (last_cursor_bitmap_data_ != bitmap_data) {
+                    last_cursor_bitmap_data_ = bitmap_data;
+                    change = true;
                 }
-                if (!cursor_bitmap_data_.empty()) {
-                    QImage image((uchar*)cursor_bitmap_data_.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
-                    QPixmap pixmap = QPixmap::fromImage(image);
-                    QCursor cursor(pixmap, cursor_info.hotspot_x(), cursor_info.hotspot_y());
-                    new_cursor = cursor;
-                }
-                else {
-                    new_cursor = QCursor(Qt::ArrowCursor);
-                }
-            }
-            else {
-                new_cursor = QCursor(shape);
             }
 
-            if (new_cursor != cursor_) {
-                cursor_ = new_cursor;
+            if (change) {
+                QImage image((uchar*)cursor_bitmap_data_.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
+                QPixmap pixmap = QPixmap::fromImage(image);
+                QCursor cursor(pixmap, cursor_info.hotspot_x(), cursor_info.hotspot_y());
+                cursor_ = cursor;
+                //LOGI("change UpdateLocalCursor");
                 this->UpdateLocalCursor();
             }
         });
@@ -631,50 +625,50 @@ namespace tc
     }
 
     Qt::CursorShape BaseWorkspace::ToQCursorShape(uint32_t cursor_type) {
-        if (cursor_type_ == CursorInfoSync::kIdcArrow) {
+        if (cursor_type == CursorInfoSync::kIdcArrow) {
             return Qt::ArrowCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcIBeam) {
+        else if (cursor_type == CursorInfoSync::kIdcIBeam) {
             return Qt::IBeamCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcWait) {
-            this->setCursor(Qt::WaitCursor);
+        else if (cursor_type == CursorInfoSync::kIdcWait) {
+            return Qt::WaitCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcCross) {
-            this->setCursor(Qt::CrossCursor);
+        else if (cursor_type == CursorInfoSync::kIdcCross) {
+            return Qt::CrossCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcUpArrow) {
-            this->setCursor(Qt::UpArrowCursor);
+        else if (cursor_type == CursorInfoSync::kIdcUpArrow) {
+            return Qt::UpArrowCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcSize) {
-            this->setCursor(Qt::SizeAllCursor);
+        else if (cursor_type == CursorInfoSync::kIdcSize) {
+            return Qt::SizeAllCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcIcon) {
+        else if (cursor_type == CursorInfoSync::kIdcIcon) {
             return Qt::BitmapCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcSizeNWSE) {
-            this->setCursor(Qt::SizeFDiagCursor);
+        else if (cursor_type == CursorInfoSync::kIdcSizeNWSE) {
+            return Qt::SizeFDiagCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcSizeNESW) {
-            this->setCursor(Qt::SizeBDiagCursor);
+        else if (cursor_type == CursorInfoSync::kIdcSizeNESW) {
+            return Qt::SizeBDiagCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcSizeWE) {
-            this->setCursor(Qt::SizeHorCursor);
+        else if (cursor_type == CursorInfoSync::kIdcSizeWE) {
+            return Qt::SizeHorCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcSizeNS) {
-            this->setCursor(Qt::SizeVerCursor);
+        else if (cursor_type == CursorInfoSync::kIdcSizeNS) {
+            return Qt::SizeVerCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcSizeAll) {
-            this->setCursor(Qt::SizeAllCursor);
+        else if (cursor_type == CursorInfoSync::kIdcSizeAll) {
+            return Qt::SizeAllCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcHand) {
-            this->setCursor(Qt::PointingHandCursor);
+        else if (cursor_type == CursorInfoSync::kIdcHand) {
+            return Qt::PointingHandCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcPin) {
-            this->setCursor(Qt::PointingHandCursor);
+        else if (cursor_type == CursorInfoSync::kIdcPin) {
+            return Qt::PointingHandCursor;
         }
-        else if (cursor_type_ == CursorInfoSync::kIdcHelp) {
-            this->setCursor(Qt::WhatsThisCursor);
+        else if (cursor_type == CursorInfoSync::kIdcHelp) {
+            return Qt::WhatsThisCursor;
         }
         else {
             return Qt::BitmapCursor;
@@ -693,7 +687,6 @@ namespace tc
             }
             else {
                 QApplication::restoreOverrideCursor();
-            
             }
         });
     }
