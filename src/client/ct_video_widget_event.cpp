@@ -145,6 +145,9 @@ namespace tc
     }
 
     void VideoWidgetEvent::SendKeyEvent(quint32 vk, bool down) {
+        if (settings_->only_viewing_) {
+            return;
+        }
         //LOGI("*VK: 0x{:x}, down: {}", vk, down);
         short num_lock_state = -1;
         if (vk >= VK_NUMPAD0 && vk <= VK_DIVIDE || vk == VK_NUMLOCK
@@ -186,11 +189,7 @@ namespace tc
     }
 
     void VideoWidgetEvent::SendMouseEvent(const MouseEventDesc& mouse_event_desc) {
-        if (!sdk_) {
-            return;
-        }
-        // test to ignore events
-        if (Settings::Instance()->ignore_mouse_event_) {
+        if (!sdk_ || settings_->only_viewing_) {
             return;
         }
 

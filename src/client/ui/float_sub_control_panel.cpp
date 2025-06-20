@@ -18,7 +18,7 @@ namespace tc
     SubControlPanel::SubControlPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
-        setFixedSize(200, 132);
+        setFixedSize(200, 170);
         auto item_height = 38;
         auto border_spacing = 10;
         auto item_size = QSize(this->width(), item_height);
@@ -48,6 +48,36 @@ namespace tc
             sb->SetClickCallback([=,this](bool enabled) {
                 Settings::Instance()->SetClipboardEnabled(enabled);
                 this->context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kClipboardSharedStatus});
+            });
+
+            layout->addSpacing(border_spacing);
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+        }
+
+        // Only Viewing
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new QWidget(this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
+
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_only_viewing");
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing*2);
+            layout->addWidget(lbl);
+
+            layout->addStretch();
+
+            auto sb = new SwitchButton(this);
+            sb->setFixedSize(35, 20);
+            sb->SetStatus(Settings::Instance()->only_viewing_);
+            layout->addWidget(sb);
+            sb->SetClickCallback([=,this](bool enabled) {
+                Settings::Instance()->only_viewing_ = enabled;
             });
 
             layout->addSpacing(border_spacing);

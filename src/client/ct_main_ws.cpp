@@ -118,6 +118,12 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_language("language", "language", "value", "");
     parser.addOption(opt_language);
 
+    QCommandLineOption opt_only_viewing("only_viewing", "only viewing", "value", "");
+    parser.addOption(opt_only_viewing);
+
+    QCommandLineOption opt_split_windows("split_windows", "split windows", "value", "");
+    parser.addOption(opt_split_windows);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -130,7 +136,6 @@ void ParseCommandLine(QApplication& app) {
 
     auto clipboard_on = parser.value(opt_clipboard).toInt();
     settings->clipboard_on_ = (clipboard_on == 1);
-    settings->ignore_mouse_event_ = parser.value(opt_ignore_mouse).toInt() == 1;
     settings->stream_id_ = parser.value(opt_stream_id).toStdString();
     g_nt_type_ = parser.value(opt_network_type).toStdString();
     settings->network_type_ = [=]() -> ClientNetworkType {
@@ -211,6 +216,22 @@ void ParseCommandLine(QApplication& app) {
         auto value = parser.value(opt_language);
         if (!value.isEmpty()) {
             settings->language_ = value.toInt();
+        }
+    }
+
+    // only viewing
+    {
+        auto value = parser.value(opt_only_viewing);
+        if (!value.isEmpty()) {
+            settings->only_viewing_ = value.toInt() == 1;
+        }
+    }
+
+    // split windows
+    {
+        auto value = parser.value(opt_split_windows);
+        if (!value.isEmpty()) {
+            settings->split_windows_ = value.toInt() == 1;
         }
     }
 }
@@ -295,7 +316,6 @@ int main(int argc, char** argv) {
     LOGI("port: {}", g_remote_port_);
     LOGI("audio on: {}", settings->audio_on_);
     LOGI("clipboard on: {}", settings->clipboard_on_);
-    LOGI("ignore mouse event: {}", settings->ignore_mouse_event_);
     LOGI("device id: {}", settings->device_id_);
     LOGI("device rdm pwd: {}", settings->device_random_pwd_);
     LOGI("remote device id: {}", settings->remote_device_id_);
@@ -309,6 +329,8 @@ int main(int argc, char** argv) {
     LOGI("panel server port: {}", settings->panel_server_port_);
     LOGI("screen recording path: {}", settings->screen_recording_path_);
     LOGI("my host: {}", settings->my_host_);
+    LOGI("only viewing: {}", settings->only_viewing_);
+    LOGI("split windows: {}", settings->split_windows_);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
@@ -376,6 +398,10 @@ int main(int argc, char** argv) {
     LOGI("Init used: {}ms", (end-beg));
 
     HHOOK keyboardHook = SetWindowsHookExA(WH_KEYBOARD_LL, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
+        if (Settings::Instance()->only_viewing_) {
+            return CallNextHookEx(nullptr, code, wParam, lParam);
+        }
+
         auto kbd_struct = (KBDLLHOOKSTRUCT *)lParam;
         if (code >= 0 && ws->IsActiveNow()) {
             bool down = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN);

@@ -99,6 +99,8 @@ namespace tc
                 return "";
             }()).c_str()
             << std::format("--language={}", (int)tcTrMgr()->GetSelectedLanguage()).c_str()
+            << std::format("--only_viewing={}", item->only_viewing_).c_str()
+            << std::format("--split_windows={}", item->split_windows_).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {
