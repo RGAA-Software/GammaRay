@@ -29,6 +29,7 @@
 #include "input_remote_pwd_dialog.h"
 #include "stream_state_checker.h"
 #include "tc_profile_client/profile_api.h"
+#include "tc_relay_client/relay_api.h"
 #include "render_panel/gr_account_manager.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
@@ -296,6 +297,24 @@ namespace tc
                 return;
             }
 
+            // check relay server
+            auto srv_remote_device_id = "server_" + settings_->GetDeviceId();
+            LOGI("Will check device: {} on relay server: {}:{}", settings_->GetDeviceId(), settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
+            auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(settings_->GetRelayServerHost(), settings_->GetRelayServerPort(), srv_remote_device_id);
+            if (!relay_device_info.has_value()) {
+                if (relay_device_info.error() == relay::RelayError::kRelayRequestFailed) {
+                    // network failed
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_relay_network_unavailable"));
+                    dialog.exec();
+                }
+                else {
+                    //
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"));
+                    dialog.exec();
+                }
+                return;
+            }
+
             // NO password, just input one
             QString input_password;
             if (target_item->remote_device_random_pwd_.empty() && target_item->remote_device_safety_pwd_.empty()) {
@@ -325,7 +344,7 @@ namespace tc
                                                               MD5::Hex(remote_random_pwd),
                                                               MD5::Hex(remote_safety_pwd));
             if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
-                TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
+                TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_profile_network_unavailable"), grWorkspace.get());
                 dialog.exec();
                 return;
             }

@@ -175,7 +175,7 @@
   "id_only_viewing": "僅觀看",
   "id_split_windows": "多窗口同顯",
   "id_connect_failed": "連接失敗",
-  "id_connect_failed_pr_server": "無法連接到用戶管理服務.",
+  "id_profile_network_unavailable": "無法連接到用戶管理服務.",
   "id_general_settings": "通用設置",
   "id_start_max_window": "以窗口最大化啟動",
   "id_input_security_password": "輸入安全密碼",

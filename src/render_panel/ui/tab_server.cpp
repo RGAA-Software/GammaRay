@@ -401,7 +401,7 @@ namespace tc
                                                                           MD5::Hex(random_password),
                                                                           MD5::Hex(safety_password));
                         if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
-                            TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_connect_failed_pr_server"), grWorkspace.get());
+                            TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_profile_network_unavailable"), grWorkspace.get());
                             dialog.exec();
                             return;
                         }

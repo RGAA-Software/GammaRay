@@ -45,7 +45,6 @@ namespace tc
             }
         });
 
-
         std::string screen_recording_path = settings_->GetScreenRecordingPath();
         if (screen_recording_path.empty()) {
             QString movies_path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);

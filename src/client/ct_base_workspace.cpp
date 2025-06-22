@@ -214,7 +214,11 @@ namespace tc
         });
 
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
-
+            //
+            context_->PostUITask([=, this]() {
+                TcDialog dialog(tcTr("id_tips"), tcTr("id_client_network_disconnected"));
+                dialog.exec();
+            });
         });
 
         // step 2
@@ -527,6 +531,14 @@ namespace tc
         msg_listener_->Listen<MouseLeaveViewMsg>([=, this](const MouseLeaveViewMsg& msg) {
             context_->PostUITask([=, this]() {
                 this->UpdateLocalCursor();
+            });
+        });
+
+        // relay error callback
+        msg_listener_->Listen<SdkMsgRelayError>([=, this](const SdkMsgRelayError& msg) {
+            context_->PostUITask([=, this]() {
+                TcDialog dialog(tcTr("id_error"), msg.msg_.c_str());
+                dialog.exec();
             });
         });
     }
