@@ -72,7 +72,7 @@ namespace tc
 
         sdk_ = ThunderSdk::Make(this->context_->GetMessageNotifier());
         sdk_->Init(this->params_, nullptr, DecoderRenderType::kFFmpegI420);
-
+        
         // init game views
         InitGameView(this->params_);
 

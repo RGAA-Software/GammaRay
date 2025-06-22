@@ -375,6 +375,7 @@ int main(int argc, char** argv) {
         .enable_p2p_ = settings->enable_p2p_,
         .display_name_ = settings->display_name_,
         .display_remote_name_ = settings->display_remote_name_,
+        .language_id_ = settings->language_,
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();
