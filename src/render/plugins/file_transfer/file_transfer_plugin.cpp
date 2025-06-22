@@ -3,9 +3,10 @@
 //
 
 #include "file_transfer_plugin.h"
+#include "tc_message.pb.h"
+#include "tc_common_new/log.h"
 #include "render/plugins/plugin_ids.h"
 #include "render/plugin_interface/gr_net_plugin.h"
-#include "tc_message.pb.h"
 #include "file_transmission_server/file_transmit_msg_interface.h"
 
 void* GetInstance() {
@@ -49,7 +50,19 @@ namespace tc
         }
         file_trans_msg_interface_ = FileTransmitMsgInterface::Make(this);
         file_trans_msg_interface_->RegisterFileTransmitCallback();
+
+        // translator
+        LOGI("Init language: {}", (int)GetCurrentLanguage());
+        tcTrMgr()->InitLanguage(GetCurrentLanguage());
         return true;
-    };
+    }
+
+    void FileTransferPlugin::OnSyncPluginSettingsInfo(const GrPluginSettingsInfo& settings) {
+        GrPluginInterface::OnSyncPluginSettingsInfo(settings);
+    }
+
+    LanguageKind FileTransferPlugin::GetCurrentLanguage() {
+        return (LanguageKind)sys_settings_.language_;
+    }
 
 }

@@ -3,21 +3,21 @@
 //
 
 #include "plugin_manager.h"
-#include "tc_common_new/log.h"
 #include <QDir>
 #include <QFile>
 #include <QApplication>
 #include "toml/toml.hpp"
-#include "plugin_interface/gr_plugin_interface.h"
-#include "plugin_interface/gr_video_encoder_plugin.h"
-#include "plugin_interface/gr_stream_plugin.h"
-#include "plugin_interface/gr_net_plugin.h"
-#include "plugin_interface/gr_monitor_capture_plugin.h"
-#include "plugin_event_router.h"
+#include "rd_app.h"
 #include "plugin_ids.h"
 #include "rd_context.h"
-#include "rd_app.h"
+#include "tc_common_new/log.h"
+#include "plugin_event_router.h"
 #include "settings/rd_settings.h"
+#include "plugin_interface/gr_net_plugin.h"
+#include "plugin_interface/gr_stream_plugin.h"
+#include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 typedef void *(*FnGetInstance)();
 
@@ -76,7 +76,8 @@ namespace tc
                             {"device_id", settings_->device_id_},
                             {"relay_enabled", settings_->relay_enabled_},
                             {"relay_host", settings_->relay_host_},
-                            {"relay_port", settings_->relay_port_}
+                            {"relay_port", settings_->relay_port_},
+                            {"language", (int64_t)settings_->language_}
                         },
                     };
 

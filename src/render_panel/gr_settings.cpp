@@ -3,22 +3,22 @@
 //
 
 #include "gr_settings.h"
-#include "tc_common_new/shared_preference.h"
-#include "tc_common_new/log.h"
-#include "tc_common_new/base64.h"
-#include "tc_common_new/md5.h"
-#include "tc_common_new/uuid.h"
-#include "tc_common_new/win32/dxgi_mon_detector.h"
-#include "tc_common_new/win32/audio_device_helper.h"
-#include "tc_common_new/hardware.h"
-#include "tc_common_new/http_client.h"
-#include "tc_common_new/message_notifier.h"
-#include "tc_common_new/md5.h"
-#include "gr_app_messages.h"
-#include "app_config.h"
 #include <sstream>
 #include <QApplication>
-#include <qstandardpaths.h>
+#include "app_config.h"
+#include "gr_app_messages.h"
+#include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/uuid.h"
+#include "tc_common_new/base64.h"
+#include "tc_common_new/hardware.h"
+#include "translator/tc_translator.h"
+#include "tc_common_new/http_client.h"
+#include "tc_common_new/message_notifier.h"
+#include "tc_common_new/shared_preference.h"
+#include "tc_common_new/win32/dxgi_mon_detector.h"
+#include "tc_common_new/win32/audio_device_helper.h"
 
 namespace tc
 {
@@ -134,6 +134,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStRelayServerPort, GetRelayServerPort()));
         args.push_back(std::format("--{}={}", kStCanBeOperated, this->IsBeingOperatedEnabled()));
         args.push_back(std::format("--{}={}", kStRelayEnabled, this->IsRelayEnabled()));
+        args.push_back(std::format("--language={}", (int)tcTrMgr()->GetSelectedLanguage()));
         return args;
     }
 
