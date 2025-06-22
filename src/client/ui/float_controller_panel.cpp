@@ -563,26 +563,10 @@ namespace tc
             ci->Hide();
         }
 
-        // hide extra icons
-//        for (const auto& icon : computer_icons_) {
-//            bool find = false;
-//            for (const auto& mon : capture_monitor_.monitors_) {
-//                if (mon.name_ == icon->GetMonitorName()) {
-//                    find = true;
-//                }
-//            }
-//        }
-//        // update monitor info
-//        for (const auto& item: capture_monitor_.monitors_) {
-//            if (computer_icons_.count(item.index_) > 0) {
-//                bool selected = false;
-//                if (item.index_ == capture_monitor_.capturing_monitor_index_) {
-//                    selected = true;
-//                }
-//                computer_icons_[item.index_]->SetMonitorName(item.name_);
-//                computer_icons_[item.index_]->UpdateSelectedState(selected);
-//            }
-//        }
+        // 当远端只有一个屏幕的时候，屏幕图标始终为选中状态
+        if (1 == capture_monitor_.monitors_.size()) {
+            computer_icons_[0]->UpdateSelectedState(true);
+        }
     }
 
     void FloatControllerPanel::SwitchMonitor(ComputerIcon* w) {

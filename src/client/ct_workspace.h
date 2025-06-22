@@ -75,6 +75,8 @@ namespace tc
         EMultiMonDisplayMode multi_display_mode_ = EMultiMonDisplayMode::kTab;     
     private:
         void ListenMultiMonDisplayModeMessage();
+
+        std::once_flag send_split_windows_flag_;
     };
 
 }

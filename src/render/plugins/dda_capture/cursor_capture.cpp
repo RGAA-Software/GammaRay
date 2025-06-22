@@ -277,6 +277,7 @@ namespace tc
             last_cursor_bitmap_data_ = cursor_bitmap.data_;
         }
         else {
+            //如果采集到的鼠标图标和上次采集的鼠标图标相同,在一定时间内，就不发送鼠标图标
             auto current_time = TimeUtil::GetCurrentTimestamp();
             if (last_timestamp_ + 2000 > current_time) {
                 event->cursor_info_.data_ = nullptr;

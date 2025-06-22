@@ -264,6 +264,12 @@ namespace tc
             game_views_[min_temp]->SetActiveStatus(false);
         }
         UpdateGameViewsStatus();
+
+        std::call_once(send_split_windows_flag_, [this]() {
+            if (monitors_count_ > 1 && settings_->split_windows_) {
+                this->SendSwitchMonitorMessage(kCaptureAllMonitorsSign);
+            }
+        });
     }
 
     void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {
