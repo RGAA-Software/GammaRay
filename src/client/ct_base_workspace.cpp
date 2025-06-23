@@ -166,6 +166,26 @@ namespace tc
     void BaseWorkspace::InitFileTrans() {
 #ifdef TC_ENABLE_FILE_TRANSMISSION
         file_trans_interface_ = FileTransInterface::Make(sdk_);
+        // upload begin callback
+        file_trans_interface_->SetOnFileUploadBeginCallback([=, this](const std::string& task_id, const std::string& file_path) {
+            LOGI("** file upload begin: {}-{}", task_id, file_path);
+        });
+
+        // upload end callback
+        file_trans_interface_->SetOnFileUploadEndCallback([=, this](const std::string& task_id, const std::string& file_path, bool success) {
+            LOGI("** file upload end: {}-{}", task_id, success);
+        });
+
+        // download begin callback
+        file_trans_interface_->SetOnFileDownloadBeginCallback([=, this](const std::string& task_id, const std::string& remote_file_path) {
+            LOGI("** file download begin: {}-{}", task_id, remote_file_path);
+        });
+
+        // download end callback
+        file_trans_interface_->SetOnFileDownloadEndCallback([=, this](const std::string& task_id, const std::string& remote_file_path, bool success) {
+            LOGI("** file download end: {}-{}", task_id, success);
+        });
+
 #endif // TC_ENABLE_FILE_TRANSMISSION
     }
 
