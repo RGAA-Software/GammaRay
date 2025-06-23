@@ -339,5 +339,18 @@
   "id_file_trans_st_down_speed": "Download Speed:",
   "id_file_trans_records": "Transfer Records",
   "id_file_trans_log": " Log ",
-  "id_file_trans_clear_completed": "Clear Completed"
+  "id_file_trans_clear_completed": "Clear Completed",
+  "id_file_trans_get_fil_list": "Get File List",
+  "id_file_trans_create_folder_success": "Folder created successfully",
+  "id_file_trans_create_folder_failed": "Folder creation failed",
+  "id_file_trans_remove_success": "Removal successful",
+  "id_file_trans_remove_failed": "Removal failed",
+  "id_file_trans_new_folder_success": "New folder created successfully",
+  "id_file_trans_new_folder_failed": "Failed to create new folder",
+  "id_file_trans_rename_success": "Rename successful",
+  "id_file_trans_rename_failed": "Rename failed",
+  "id_file_trans_no_exists": "Does not exist",
+  "id_file_trans_target_path_no_exists": "Target path does not exist",
+  "id_file_trans_rename_failed_name_occypy": "Rename failed, the file name is already in use",
+  "id_file_trans_rename_failed_file_occypy": "Rename failed, please check if the file is occupied"
 }
