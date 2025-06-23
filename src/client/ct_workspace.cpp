@@ -124,9 +124,7 @@ namespace tc
         RegisterControllerPanelListeners();
     }
 
-
     void Workspace::RegisterSdkMsgCallbacks() {
-
         BaseWorkspace::RegisterSdkMsgCallbacks();
 
         sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
@@ -298,7 +296,6 @@ namespace tc
     }
 
     void Workspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
-
         this->resize(def_window_size_);
         for (int index = 0; index < kMaxGameViewCount; ++index) {
             GameView* game_view = nullptr;
