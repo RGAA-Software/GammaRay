@@ -28,8 +28,8 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto logo = new QLabel(this);
-            logo->setFixedSize(120, 120);
-            logo->setStyleSheet(R"(border-image: url(:/resources/image/tc_icon_raw.png)})");
+            logo->setFixedSize(100, 100);
+            logo->setStyleSheet(R"(border-image: url(:/resources/tc_trans_icon_blue.png)})");
             layout->addStretch();
             layout->addWidget(logo);
             layout->addStretch();

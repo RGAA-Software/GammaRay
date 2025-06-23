@@ -25,18 +25,13 @@ namespace tc
         auto root_layout = new NoMarginVLayout;
 
         {
-            //
-//            QImage image(":/resources/tc_icon.png");
-//            auto pixmap = QPixmap::fromImage(image);
-            int size = 80;
-//            pixmap = pixmap.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            int size = 70;
             auto lbl_icon = new QLabel(this);
             lbl_icon->setFixedSize(size, size);
-//            lbl_icon->setPixmap(pixmap);
             lbl_icon->setScaledContents(true);
             lbl_icon->setStyleSheet(R"(
                 border: none;
-                border-image: url(:/resources/tc_icon.png);
+                border-image: url(:/resources/tc_trans_icon_blue.png);
                 background-repeat: no-repeat;
                 background-position: center;
             )");

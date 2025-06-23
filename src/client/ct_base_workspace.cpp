@@ -41,6 +41,7 @@
 #include "ct_const_def.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/qwidget_helper.h"
+#include "ui/retry_conn_dialog.h"
 #include "network/ct_panel_client.h"
 #include "tc_common_new/time_util.h"
 #include "plugins/ct_plugin_manager.h"
@@ -211,13 +212,23 @@ namespace tc
             main_progress_->ResetProgress();
             main_progress_->StepForward();
             LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
+
+            // dismiss dialog
+            if (dis_conn_dialog_ && !dis_conn_dialog_->isHidden()) {
+                dis_conn_dialog_->Done();
+            }
         });
 
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
             //
             context_->PostUITask([=, this]() {
-                TcDialog dialog(tcTr("id_tips"), tcTr("id_client_network_disconnected"));
-                dialog.exec();
+                if (!dis_conn_dialog_) {
+                    dis_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_tips"));
+                }
+                if (dis_conn_dialog_->isHidden()) {
+                    WidgetHelper::SetTitleBarColor((QWidget*)(dis_conn_dialog_.get()));
+                    dis_conn_dialog_->Exec();
+                }
             });
         });
 

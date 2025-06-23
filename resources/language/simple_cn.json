@@ -197,7 +197,7 @@
   "id_spvr_network_unavailable": "无法访问管理服务.",
   "id_cant_get_local_device_info": "无法获取设备信息,请检查您的服务是否已经连接.",
 
-  "id_client_network_disconnected": "客户端已经离线, 正在尝试连接...",
+  "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",
   "id_control": "控制",
   "id_display": "显示",

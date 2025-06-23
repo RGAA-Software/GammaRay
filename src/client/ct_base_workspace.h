@@ -37,6 +37,7 @@ namespace tc
     class CtPanelClient;
     class ClientPluginManager;
     class MediaRecordPluginClientInterface;
+    class RetryConnDialog;
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -143,7 +144,6 @@ namespace tc
 
         QCursor cursor_;
 
-    protected:
         QString origin_title_name_;
      
         std::map<int, std::string> monitor_index_map_name_;
@@ -156,6 +156,9 @@ namespace tc
         std::string cursor_bitmap_data_;
 
         QSize def_window_size_ = QSize(1366, 768);
+
+        // disconnected dialog
+        std::shared_ptr<RetryConnDialog> dis_conn_dialog_ = nullptr;
 
     private:
         GameView* game_view_ = nullptr;
