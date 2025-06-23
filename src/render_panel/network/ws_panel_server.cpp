@@ -21,6 +21,7 @@
 #include "render_panel/database/file_transfer_record_operator.h"
 #include "tc_common_new/url_helper.h"
 #include "tc_common_new/message_notifier.h"
+#include "tc_qt_widget/translator/tc_translator.h"
 #include <QApplication>
 
 namespace tc
@@ -359,6 +360,7 @@ namespace tc
         sub->set_relay_port(std::to_string(settings_->GetRelayServerPort()));
         sub->set_can_be_operated(settings_->IsBeingOperatedEnabled());
         sub->set_relay_enabled(settings_->IsRelayEnabled());
+        sub->set_language((int)tcTrMgr()->GetSelectedLanguage());
         PostRendererMessage(m.SerializeAsString());
     }
 

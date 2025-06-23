@@ -119,6 +119,7 @@ namespace tc
                 settings_->relay_port_ = sub.relay_port();
                 settings_->can_be_operated_ = sub.can_be_operated();
                 settings_->relay_enabled_ = sub.relay_enabled();
+                settings_->language_ = sub.language();
 
                 plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
@@ -128,6 +129,7 @@ namespace tc
                     .relay_port_ = settings_->relay_port_,
                     .can_be_operated_ = settings_->can_be_operated_,
                     .relay_enabled_ = settings_->relay_enabled_,
+                    .language_ = settings_->language_,
                 });
             }
             else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {

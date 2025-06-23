@@ -81,6 +81,7 @@ namespace tc
         capture_audio_device_id_ = GetConfigParam<std::string>("capture_audio_device_id");
         sys_settings_.device_id_ = GetConfigParam<std::string>("device_id");
         sys_settings_.relay_enabled_ = GetConfigBoolParam("relay_enabled");
+        sys_settings_.language_ = (int)GetConfigIntParam("language");
 
         // print params
         LOGI("Input params size : {}", param.cluster_.size());
@@ -297,10 +298,11 @@ namespace tc
         }
         sys_settings_.can_be_operated_ = settings.can_be_operated_;
         sys_settings_.relay_enabled_ = settings.relay_enabled_;
+        sys_settings_.language_ = settings.language_;
 
-        //LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}, relay enabled: {}",
-        //     sys_settings_.device_id_, sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.relay_host_,
-        //     sys_settings_.relay_port_, sys_settings_.relay_enabled_);
+        // LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}, relay enabled: {}, language: {}",
+        //      sys_settings_.device_id_, sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.relay_host_,
+        //      sys_settings_.relay_port_, sys_settings_.relay_enabled_, sys_settings_.language_);
     }
 
     GrPluginSettingsInfo GrPluginInterface::GetPluginSettingsInfo() {

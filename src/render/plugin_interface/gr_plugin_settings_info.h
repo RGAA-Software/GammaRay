@@ -25,6 +25,8 @@ namespace tc
         bool can_be_operated_ = true;
         // relay enabled
         bool relay_enabled_ = true;
+        // language // default is English
+        int language_ = 1;
     };
 
 }

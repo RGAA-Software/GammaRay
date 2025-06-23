@@ -6,6 +6,7 @@
 #define GAMMARAY_RTC_PLUGIN_H
 #include <memory>
 #include "plugin_interface/gr_plugin_interface.h"
+#include "tc_qt_widget/translator/tc_translator.h"
 
 namespace tc
 {
@@ -23,6 +24,8 @@ namespace tc
 
         bool OnCreate(const GrPluginParam& param) override;
         void OnMessage(const std::shared_ptr<tc::Message>& msg) override;
+        void OnSyncPluginSettingsInfo(const GrPluginSettingsInfo& settings) override;
+        LanguageKind GetCurrentLanguage();
 
     private:
 

@@ -5,9 +5,8 @@
 #ifndef TC_APPLICATION_SETTINGS_H
 #define TC_APPLICATION_SETTINGS_H
 
-#include <string>
 #include <map>
-
+#include <string>
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_steam_manager_new/steam_entities.h"
 
@@ -149,6 +148,8 @@ namespace tc
         bool can_be_operated_ = true;
         // relay enabled
         bool relay_enabled_ = true;
+        // language
+        int language_ = 1;
 
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";
