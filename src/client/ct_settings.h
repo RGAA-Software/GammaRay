@@ -12,16 +12,6 @@
 namespace tc
 {
 
-    enum class VideoRenderType {
-        kOpenGL,
-        kTestQPixmap,
-    };
-
-    enum class MultiDisplayMode {
-        kSeparated,
-        kCombined,
-    };
-
     enum class ScaleMode {
         kKeepAspectRatio,
         kFullWindow,
@@ -40,54 +30,55 @@ namespace tc
 
         void LoadMainSettings();
         void LoadRenderSettings();
-
-        [[nodiscard]] bool IsAudioEnabled() const;
-        [[nodiscard]] bool IsClipboardEnabled() const;
-        [[nodiscard]] bool IsFullColorEnabled() const;
-        MultiDisplayMode GetMultiDisplayMode();
-        VideoRenderType GetVideoRenderType();
-
-        // use IP:PORT to connect directly
-        [[nodiscard]] bool IsDirectConnect();
-
+        bool IsAudioEnabled() const;
+        bool IsFullColorEnabled() const;
         void SetAudioEnabled(bool enabled);
-        // 废弃
-        void SetTempAudioEnabled(bool enabled);
         void SetClipboardEnabled(bool enabled);
-        void SetMultiDisplayMode(MultiDisplayMode mode);
         void SetWorkMode(SwitchWorkMode::WorkMode mode);
         void SetScaleMode(ScaleMode mode);
         void SetFullColorEnabled(bool enabled);
         void SetFps(int fps);
+        bool IsRelayMode();
+        bool IsDirectMode();
         void Dump();
+
     public:
+        // 1. direct mode
+        // host: remote device ip address
+        // port: remote device port
+        // 2. relay mode
+        // host: relay server address
+        // port: relay server port
+        std::string host_;
+        int port_{0};
+
         std::string version_;
         bool audio_on_ = false;
         bool clipboard_on_ = false;
         bool full_color_on_ = false;
-        MultiDisplayMode display_mode_ = MultiDisplayMode::kSeparated;
-        VideoRenderType render_type_ = VideoRenderType::kOpenGL;
         SharedPreference* sp_ = nullptr;
-        std::string remote_address_;
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;
         ScaleMode scale_mode_ = ScaleMode::kFullWindow;
         // for client render process --- below
         std::string stream_id_;
-        // conn type
-        // deprecated !
-        // ClientConnectType conn_type_;
         // network type
         ClientNetworkType network_type_;
         // stream name
         std::string stream_name_;
         // device id
         std::string device_id_;
+        // full device id
+        // client_xxx_xxx
+        std::string full_device_id_;
         // device random pwd
         std::string device_random_pwd_;
         // device safety pwd
         std::string device_safety_pwd_;
         // remote device
         std::string remote_device_id_;
+        // full remote device id
+        // server_xxx_xxx
+        std::string full_remote_device_id_;
         // remote device random pwd
         std::string remote_device_random_pwd_;
         // remote device safety pwd

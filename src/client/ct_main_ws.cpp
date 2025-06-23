@@ -2,23 +2,22 @@
 // Created by RGAA on 2023-12-26.
 //
 
+#include <QDir>
+#include <memory>
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QFontDatabase>
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QCommandLineParser>
-#include <QDebug>
 #include <QOpenGLWidget>
 #include <qstandardpaths.h>
 #include "thunder_sdk.h"
 #include "client/ct_client_context.h"
-
 #include "ct_base_workspace.h"
 #ifdef TC_ADVANCED
 #include "ct_workspace.h"
 #endif
-
 #include "client/ct_workspace.h"
 #include "client/ct_base_workspace.h"
 #include "client/ct_application.h"
@@ -26,10 +25,6 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/base64.h"
 #include "client/ct_settings.h"
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <QDir>
-#include <memory>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "translator/tc_translator.h"
@@ -130,7 +125,9 @@ void ParseCommandLine(QApplication& app) {
     g_remote_port_ = parser.value(opt_port).toInt();
 
     auto settings = tc::Settings::Instance();
-    settings->remote_address_ = g_remote_host_;
+    settings->host_ = g_remote_host_;
+    settings->port_ = g_remote_port_;
+
     auto audio_on = parser.value(opt_audio).toInt();
     settings->audio_on_ = (audio_on == 1);
 
@@ -306,7 +303,7 @@ int main(int argc, char** argv) {
             return settings->remote_device_id_;
         }
         else {
-            return settings->remote_address_;
+            return settings->host_;
         }
     } ();
     auto ctx = std::make_shared<ClientContext>(name);
@@ -341,9 +338,14 @@ int main(int argc, char** argv) {
                                   bare_remote_device_id, settings->stream_id_, visitor_device_id);
     auto target_device_id = settings->device_id_.empty() ? settings->my_host_ : settings->device_id_;
     auto device_id = "client_" + target_device_id + "_" + MD5::Hex(settings->remote_device_id_);
+    settings->full_device_id_ = device_id;
     auto remote_device_id = "server_" + settings->remote_device_id_;
+    settings->full_remote_device_id_ = remote_device_id;
     auto ft_device_id = "ft_" + device_id;
     auto ft_remote_device_id = "ft_" + remote_device_id;
+
+    LOGI("full device id: {}", settings->full_device_id_);
+    LOGI("full remote device id: {}", settings->full_remote_device_id_);
 
     auto client_type = []() {
 #if defined(WIN32)

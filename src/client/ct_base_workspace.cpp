@@ -50,6 +50,7 @@
 #include "plugins/media_record/media_record_plugin.h"
 #include "plugin_interface/ct_media_record_plugin_interface.h"
 #include "tc_qt_widget/notify/notifymanager.h"
+#include "tc_relay_client/relay_api.h"
 
 namespace tc
 {
@@ -60,7 +61,7 @@ namespace tc
         this->settings_ = Settings::Instance();
         this->params_ = params;
         cursor_ = QCursor(Qt::ArrowCursor);
-        //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+        dis_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_tips"));
     }
 
     void BaseWorkspace::Init() {
@@ -214,17 +215,12 @@ namespace tc
             LOGI("Step: MsgNetworkConnected, at: {}", main_progress_->GetCurrentProgress());
 
             // dismiss dialog
-            if (dis_conn_dialog_ && !dis_conn_dialog_->isHidden()) {
-                dis_conn_dialog_->Done();
-            }
+            DismissConnectingDialog();
         });
 
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
             //
             context_->PostUITask([=, this]() {
-                if (!dis_conn_dialog_) {
-                    dis_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_tips"));
-                }
                 if (dis_conn_dialog_->isHidden()) {
                     WidgetHelper::SetTitleBarColor((QWidget*)(dis_conn_dialog_.get()));
                     dis_conn_dialog_->Exec();
@@ -242,6 +238,8 @@ namespace tc
         msg_listener_->Listen<SdkMsgFirstVideoFrameDecoded>([=, this](const SdkMsgFirstVideoFrameDecoded& msg) {
             main_progress_->CompleteProgress();
             LOGI("Step: MsgFirstVideoFrameDecoded, at: {}", main_progress_->GetCurrentProgress());
+
+            DismissConnectingDialog();
         });
 
         msg_listener_->Listen<MsgChangeMonitorResolution>([=, this](const MsgChangeMonitorResolution& msg) {
@@ -550,6 +548,18 @@ namespace tc
             context_->PostUITask([=, this]() {
                 TcDialog dialog(tcTr("id_error"), msg.msg_.c_str());
                 dialog.exec();
+            });
+        });
+
+        // remote device offline
+        msg_listener_->Listen<SdkMsgRelayRemoteDeviceOffline>([=, this](const SdkMsgRelayRemoteDeviceOffline& msg) {
+            context_->PostUITask([=, this]() {
+                TcDialog dialog(tcTr("id_error"), tcTr("id_remote_device_offline"));
+                if (dialog.exec() == kDoneOk) {
+                    context_->PostTask([=, this]() {
+                        ReconnectInRelayMode();
+                    });
+                }
             });
         });
     }
@@ -980,5 +990,57 @@ namespace tc
         if (target_screen) {
             widget->windowHandle()->setScreen(target_screen);
         }
+    }
+
+    void BaseWorkspace::ReconnectInRelayMode() {
+        if (!settings_->IsRelayMode()) {
+            return;
+        }
+        // Reconnect
+        // 1. Can I connect relay server?
+        {
+            LOGI("will get device info in {}:{} for id: {}", settings_->host_, settings_->port_, settings_->full_device_id_);
+            auto r = relay::RelayApi::GetRelayDeviceInfo(settings_->host_, settings_->port_, settings_->full_device_id_);
+            if (!r.has_value()) {
+                context_->PostUITask([=, this]() {
+                    TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_get_local_device_info"), this);
+                    dialog.exec();
+                });
+                return;
+            }
+        }
+
+        // 2. Can I get remote device info ?
+        {
+            LOGI("will get remote device info in {}:{} for id: {}", settings_->host_, settings_->port_, settings_->full_remote_device_id_);
+            auto r = relay::RelayApi::GetRelayDeviceInfo(settings_->host_, settings_->port_, settings_->full_remote_device_id_);
+            if (!r.has_value()) {
+                context_->PostUITask([=, this]() {
+                    TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_get_remote_device_info"), this);
+                    dialog.exec();
+                });
+                return;
+            }
+        }
+
+        // 3. Start reconnecting
+        sdk_->RetryConnection();
+
+        // show dialog
+        context_->PostUITask([=, this]() {
+            if (dis_conn_dialog_->isHidden()) {
+                WidgetHelper::SetTitleBarColor((QWidget*)(dis_conn_dialog_.get()));
+                dis_conn_dialog_->Exec();
+            }
+        });
+    }
+
+    void BaseWorkspace::DismissConnectingDialog() {
+        context_->PostUITask([=, this]() {
+            // dismiss dialog
+            if (dis_conn_dialog_ && !dis_conn_dialog_->isHidden()) {
+                dis_conn_dialog_->Done();
+            }
+        });
     }
 }

@@ -61,7 +61,6 @@ namespace tc
         std::shared_ptr<ClientContext> GetContext();
 
     protected:
-        
         void InitPluginsManager();
         void InitTheme();
         void InitSampleWidget();
@@ -74,7 +73,6 @@ namespace tc
         void Exit();
         //void UpdateNotificationHandlePosition();
         void UpdateLocalCursor();
-
 
         virtual void RegisterBaseListeners();
         void RegisterControllerPanelListeners();
@@ -104,6 +102,11 @@ namespace tc
 
         // 匹配鼠标形状
         Qt::CursorShape ToQCursorShape(uint32_t cursor_type);
+
+        // reconnect when the remote device was in relay mode
+        void ReconnectInRelayMode();
+        // dismiss connecting dialog
+        void DismissConnectingDialog();
 
     protected:
         std::shared_ptr<ThunderSdkParams> params_ = nullptr;

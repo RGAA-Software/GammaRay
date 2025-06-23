@@ -13,7 +13,6 @@ namespace tc
 {
 
     const std::string kKeyInit = "key_init";
-    const std::string kKeyDisplayMode = "key_display_mode";
     const std::string kKeyAudioStatus = "key_audio_status";
     const std::string kKeyClipboardStatus = "key_clipboard_status";
     const std::string kKeyWorkMode = "key_work_mode";
@@ -28,12 +27,10 @@ namespace tc
             sp_->Put(kKeyInit, "inited");
             sp_->Put(kKeyAudioStatus, std::to_string(audio_on_));
             sp_->Put(kKeyClipboardStatus, std::to_string(clipboard_on_));
-            sp_->Put(kKeyDisplayMode, std::to_string((int)display_mode_));
             sp_->Put(kKeyWorkMode, std::to_string((int)work_mode_));
         } else {
             audio_on_ = std::atoi(sp_->Get(kKeyAudioStatus).c_str());
             clipboard_on_ = std::atoi(sp_->Get(kKeyClipboardStatus).c_str());
-            display_mode_ = (MultiDisplayMode)std::atoi(sp_->Get(kKeyDisplayMode).c_str());
         }
 
         device_id_ = sp_->Get(kKeyDeviceId, "");
@@ -53,37 +50,17 @@ namespace tc
         }
     }
 
-    VideoRenderType Settings::GetVideoRenderType() {
-        return render_type_;
-    }
-
     bool Settings::IsAudioEnabled() const {
         return audio_on_;
-    }
-
-    bool Settings::IsClipboardEnabled() const {
-        return clipboard_on_;
     }
 
     bool Settings::IsFullColorEnabled() const {
         return full_color_on_;
     }
 
-    bool Settings::IsDirectConnect() {
-        return remote_device_id_.empty() && !remote_address_.empty();
-    }
-
-    MultiDisplayMode Settings::GetMultiDisplayMode() {
-        return display_mode_;
-    }
-
     void Settings::SetAudioEnabled(bool enabled) {
         audio_on_ = enabled;
         sp_->Put(kKeyAudioStatus, std::to_string(enabled));
-    }
-
-    void Settings::SetTempAudioEnabled(bool enabled) {
-        audio_on_ = enabled;
     }
 
     void Settings::SetClipboardEnabled(bool enabled) {
@@ -93,11 +70,6 @@ namespace tc
 
     void Settings::SetFullColorEnabled(bool enabled) {
         full_color_on_ = enabled;
-    }
-
-    void Settings::SetMultiDisplayMode(MultiDisplayMode mode) {
-        display_mode_ = mode;
-        sp_->Put(kKeyDisplayMode, std::to_string((int)mode));
     }
 
     void Settings::SetWorkMode(SwitchWorkMode::WorkMode mode) {
@@ -112,6 +84,14 @@ namespace tc
 
     void Settings::SetFps(int fps) {
         fps_ = fps;
+    }
+
+    bool Settings::IsRelayMode() {
+        return network_type_ == ClientNetworkType::kRelay;
+    }
+
+    bool Settings::IsDirectMode() {
+        return network_type_ == ClientNetworkType::kWebsocket;
     }
 
     void Settings::Dump() {
