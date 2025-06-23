@@ -277,7 +277,7 @@ namespace tc
             last_cursor_bitmap_data_ = cursor_bitmap.data_;
         }
         else {
-            //Èç¹û²É¼¯µ½µÄÊó±êÍ¼±êºÍÉÏ´Î²É¼¯µÄÊó±êÍ¼±êÏàÍ¬,ÔÚÒ»¶¨Ê±¼äÄÚ£¬¾Í²»·¢ËÍÊó±êÍ¼±ê
+            //å¦‚æžœé‡‡é›†åˆ°çš„é¼ æ ‡å›¾æ ‡å’Œä¸Šæ¬¡é‡‡é›†çš„é¼ æ ‡å›¾æ ‡ç›¸åŒ,åœ¨ä¸€å®šæ—¶é—´å†…ï¼Œå°±ä¸å‘é€é¼ æ ‡å›¾æ ‡
             auto current_time = TimeUtil::GetCurrentTimestamp();
             if (last_timestamp_ + 2000 > current_time) {
                 event->cursor_info_.data_ = nullptr;
