@@ -195,17 +195,17 @@ namespace tc
     }
 
     void BaseWorkspace::RegisterBaseListeners() {
-        msg_listener_->Listen<ExitAppMessage>([=, this](const ExitAppMessage& msg) {
+        msg_listener_->Listen<MsgClientExitApp>([=, this](const MsgClientExitApp& msg) {
             context_->PostDelayUITask([=, this]() {
                 this->ExitClientWithDialog();
             }, 10);
         });
 
-        msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
+        msg_listener_->Listen<MsgClientClipboard>([=, this](const MsgClientClipboard& msg) {
             this->SendClipboardMessage(msg);
         });
 
-        msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
+        msg_listener_->Listen<MsgClientSwitchMonitor>([=, this](const MsgClientSwitchMonitor& msg) {
             this->SendSwitchMonitorMessage(msg.name_);
             this->SendUpdateDesktopMessage();
             context_->PostTask([=, this]() {
@@ -214,15 +214,15 @@ namespace tc
             });
         });
 
-        msg_listener_->Listen<SwitchWorkModeMessage>([=, this](const SwitchWorkModeMessage& msg) {
+        msg_listener_->Listen<MsgClientSwitchWorkMode>([=, this](const MsgClientSwitchWorkMode& msg) {
             //this->SendSwitchWorkModeMessage(msg.mode_);
         });
 
-        msg_listener_->Listen<SwitchScaleModeMessage>([=, this](const SwitchScaleModeMessage& msg) {
+        msg_listener_->Listen<MsgClientSwitchScaleMode>([=, this](const MsgClientSwitchScaleMode& msg) {
             this->SwitchScaleMode(msg.mode_);
         });
 
-        msg_listener_->Listen<SwitchFullColorMessage>([=, this](const SwitchFullColorMessage& msg) {
+        msg_listener_->Listen<MsgClientSwitchFullColor>([=, this](const MsgClientSwitchFullColor& msg) {
             this->SendSwitchFullColorMessage(msg.enable_);
         });
 
@@ -270,11 +270,11 @@ namespace tc
             DismissConnectingDialog();
         });
 
-        msg_listener_->Listen<MsgChangeMonitorResolution>([=, this](const MsgChangeMonitorResolution& msg) {
+        msg_listener_->Listen<MsgClientChangeMonitorResolution>([=, this](const MsgClientChangeMonitorResolution& msg) {
             this->SendChangeMonitorResolutionMessage(msg);
         });
 
-        msg_listener_->Listen<MsgCtrlAltDelete>([=, this](const MsgCtrlAltDelete& msg) {
+        msg_listener_->Listen<MsgClientCtrlAltDelete>([=, this](const MsgClientCtrlAltDelete& msg) {
             tc::Message m;
             m.set_type(tc::kReqCtrlAltDelete);
             m.set_device_id(settings_->device_id_);
@@ -283,7 +283,7 @@ namespace tc
             sdk_->PostMediaMessage(m.SerializeAsString());
         });
 
-        msg_listener_->Listen<MsgHardUpdateDesktop>([=, this](const MsgHardUpdateDesktop& msg) {
+        msg_listener_->Listen<MsgClientHardUpdateDesktop>([=, this](const MsgClientHardUpdateDesktop& msg) {
             this->SendHardUpdateDesktopMessage();
         });
     }
@@ -381,7 +381,7 @@ namespace tc
 
             monitor_index_map_name_.clear();
 
-            CaptureMonitorMessage msg;
+            MsgClientCaptureMonitor msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
             LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
             int monitor_index = 0;
@@ -389,14 +389,14 @@ namespace tc
                 std::string monitor_name = item.name();
                 //LOGI("monitor name: {}", item.name());
                 monitor_index_map_name_[monitor_index] = monitor_name;
-                std::vector<CaptureMonitorMessage::Resolution> resolutions;
+                std::vector<MsgClientCaptureMonitor::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
-                    resolutions.push_back(CaptureMonitorMessage::Resolution {
+                    resolutions.push_back(MsgClientCaptureMonitor::Resolution {
                         .width_ = res.width(),
                         .height_ = res.height(),
                     });
                 }
-                msg.monitors_.push_back(CaptureMonitorMessage::CaptureMonitor {
+                msg.monitors_.push_back(MsgClientCaptureMonitor::CaptureMonitor {
                     .name_ = item.name(),
                     .resolutions_ = resolutions,
                 });
@@ -410,7 +410,7 @@ namespace tc
             int fps = config.fps();
             settings_->SetFps(fps);
             LOGI("capturing fps: {}", fps);
-            context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFps });
+            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFps });
 
             int monitors_count = config.monitors_info().size();
             context_->PostUITask([=, this]() {
@@ -420,7 +420,7 @@ namespace tc
         });
 
         sdk_->SetOnMonitorSwitchedCallback([=, this](const MonitorSwitched& ms) {
-            context_->SendAppMessage(MonitorSwitchedMessage {
+            context_->SendAppMessage(MsgClientMonitorSwitched {
                 .name_ = ms.name(),
                 .index_ = ms.index()
             });
@@ -511,21 +511,21 @@ namespace tc
             //LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
         });
 
-        msg_listener_->Listen<FullscreenMessage>([=, this](const FullscreenMessage& msg) {
+        msg_listener_->Listen<MsgClientFullscreen>([=, this](const MsgClientFullscreen& msg) {
             context_->PostUITask([=, this]() {
                 full_screen_ = true;
                 this->UpdateGameViewsStatus();
             });
         });
 
-        msg_listener_->Listen<ExitFullscreenMessage>([=, this](const ExitFullscreenMessage& msg) {
+        msg_listener_->Listen<MsgClientExitFullscreen>([=, this](const MsgClientExitFullscreen& msg) {
             context_->PostUITask([=, this]() {
                 full_screen_ = false;
                 this->UpdateGameViewsStatus();
             });
         });
 
-        msg_listener_->Listen<MediaRecordMsg>([=, this](const MediaRecordMsg& msg) {
+        msg_listener_->Listen<MsgClientMediaRecord>([=, this](const MsgClientMediaRecord& msg) {
             if (!sdk_) {
                 return;
             }
@@ -553,19 +553,19 @@ namespace tc
             sdk_->PostMediaMessage(m.SerializeAsString());
         });
 
-        msg_listener_->Listen<ModifyFpsMessage>([=, this](const ModifyFpsMessage& msg) {
+        msg_listener_->Listen<MsgClientModifyFps>([=, this](const MsgClientModifyFps& msg) {
             context_->PostUITask([=, this]() {
                 this->SendModifyFpsMessage();
             });
         });
 
-        msg_listener_->Listen<MouseEnterViewMsg>([=, this](const MouseEnterViewMsg& msg) {
+        msg_listener_->Listen<MsgClientMouseEnterView>([=, this](const MsgClientMouseEnterView& msg) {
             context_->PostUITask([=, this]() {
                 this->UpdateLocalCursor();
             });
         });
 
-        msg_listener_->Listen<MouseLeaveViewMsg>([=, this](const MouseLeaveViewMsg& msg) {
+        msg_listener_->Listen<MsgClientMouseLeaveView>([=, this](const MsgClientMouseLeaveView& msg) {
             context_->PostUITask([=, this]() {
                 this->UpdateLocalCursor();
             });
@@ -754,13 +754,13 @@ namespace tc
 
     void BaseWorkspace::RegisterControllerPanelListeners() {
 
-        msg_listener_->Listen<OpenFiletransMsg>([=, this](const OpenFiletransMsg& msg) {
+        msg_listener_->Listen<MsgClientOpenFiletrans>([=, this](const MsgClientOpenFiletrans& msg) {
             context_->PostUITask([=, this]() {
                 file_trans_interface_->OnClickedFileTrans();
             });
         });
 
-        msg_listener_->Listen<OpenDebugPanelMsg>([=, this](const OpenDebugPanelMsg& msg) {
+        msg_listener_->Listen<MsgClientOpenDebugPanel>([=, this](const MsgClientOpenDebugPanel& msg) {
             context_->PostUITask([=, this]() {
                 //st_panel_->setHidden(!st_panel_->isHidden());
                 st_panel_->setHidden(false);
@@ -774,7 +774,7 @@ namespace tc
 //        st_panel_->move(offset/2, offset/2);
     }
 
-    void BaseWorkspace::SendClipboardMessage(const ClipboardMessage& msg) {
+    void BaseWorkspace::SendClipboardMessage(const MsgClientClipboard& msg) {
         if (!sdk_) {
             return;
         }
@@ -891,7 +891,7 @@ namespace tc
         }
     }
 
-    void BaseWorkspace::SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg) {
+    void BaseWorkspace::SendChangeMonitorResolutionMessage(const MsgClientChangeMonitorResolution& msg) {
         if (!sdk_) {
             return;
         }

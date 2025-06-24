@@ -218,7 +218,7 @@ namespace tc
     }
 
     void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        context_->SendAppMessage(ClipboardUpdatedMsg {
+        context_->SendAppMessage(MsgClientClipboardUpdated {
             .hwnd_ = hwnd,
         });
     }

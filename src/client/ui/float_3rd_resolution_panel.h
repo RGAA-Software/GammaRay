@@ -22,14 +22,14 @@ namespace tc
         void paintEvent(QPaintEvent *event) override;
         void Hide() override;
         void Show() override;
-        void UpdateMonitor(const CaptureMonitorMessage::CaptureMonitor& m);
+        void UpdateMonitor(const MsgClientCaptureMonitor::CaptureMonitor& m);
     private:
         void SelectCapturingMonitorSize();
 
     private:
         Settings* settings_ = nullptr;
         SingleSelectedList* listview_ = nullptr;
-        CaptureMonitorMessage::CaptureMonitor monitor_;
+        MsgClientCaptureMonitor::CaptureMonitor monitor_;
     };
 
 }

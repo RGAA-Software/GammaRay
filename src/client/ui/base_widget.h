@@ -35,7 +35,7 @@ namespace tc
         virtual void Hide();
         virtual void Show();
 
-        virtual void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {};
+        virtual void UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {};
     protected:
         std::shared_ptr<ClientContext> context_ = nullptr;
         OnClickListener click_listener_;

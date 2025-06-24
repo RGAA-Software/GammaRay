@@ -152,7 +152,7 @@ namespace tc
             sb->SetClickCallback([=, this](bool enabled) {
                 sb->setEnabled(false);
                 timer->start();
-                context_->SendAppMessage(SwitchFullColorMessage {
+                context_->SendAppMessage(MsgClientSwitchFullColor {
                   .enable_ = enabled,
                 });
             });
@@ -209,7 +209,7 @@ namespace tc
         setLayout(root_layout);
 
         msg_listener_ = context_->ObtainMessageListener();
-        msg_listener_->Listen<FullscreenMessage>([=, this](const FullscreenMessage& msg) {
+        msg_listener_->Listen<MsgClientFullscreen>([=, this](const MsgClientFullscreen& msg) {
             HideAllSubPanels();
         });
     }
@@ -248,7 +248,7 @@ namespace tc
         HideAllSubPanels();
     }
 
-    void SubDisplayPanel::UpdateMonitorInfo(const CaptureMonitorMessage& m) {
+    void SubDisplayPanel::UpdateMonitorInfo(const MsgClientCaptureMonitor& m) {
         cap_monitors_info_ = m;
         // sort it
         for (auto& monitor : cap_monitors_info_.monitors_) {
@@ -262,8 +262,8 @@ namespace tc
         capture_monitor_name_ = name;
     }
 
-    void SubDisplayPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
-        if (FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus == msg.update_type_) {
+    void SubDisplayPanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
+        if (MsgClientFloatControllerPanelUpdate::EUpdate::kFullColorStatus == msg.update_type_) {
             full_color_btn_->SetStatus(Settings::Instance()->IsFullColorEnabled());
         }
     }

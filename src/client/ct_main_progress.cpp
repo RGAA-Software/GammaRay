@@ -97,7 +97,7 @@ namespace tc
             root_layout->addLayout(layout);
 
             connect(lbl, &QPushButton::clicked, this, [=, this]() {
-                context_->SendAppMessage(ExitAppMessage{});
+                context_->SendAppMessage(MsgClientExitApp{});
             });
         }
 

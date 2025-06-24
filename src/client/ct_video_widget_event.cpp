@@ -75,7 +75,7 @@ namespace tc
         mouse_event_desc.y_ratio = ((float)curr_pos.y()) / ((float)(widget_height));
         SendMouseEvent(mouse_event_desc);
 
-        context_->SendAppMessage(MousePressedMessage {
+        context_->SendAppMessage(MsgClientMousePressed {
 
         });
 	}

@@ -42,14 +42,14 @@ namespace tc
         void SwitchMonitor(ComputerIcon* w);
         void CaptureAllMonitor();
         void UpdateCapturingMonitor(const std::string& name, int cur_cap_mon_index);
-        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
+        void UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) override;
     private:
         OnClickListener debug_listener_;
         OnClickListener file_trans_listener_;
         OnClickListener media_record_listener_;
         std::map<SubPanelType, BaseWidget*> sub_panels_;
         std::vector<ComputerIcon*> computer_icons_;
-        CaptureMonitorMessage capture_monitor_;
+        MsgClientCaptureMonitor capture_monitor_;
 
         const int kInitialWidth = 240;
 

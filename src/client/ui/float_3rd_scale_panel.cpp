@@ -42,7 +42,7 @@ namespace tc
         });
         root_layout->addWidget(listview_);
         setLayout(root_layout);
-        UpdateStatus(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kImageScaleMode });
+        UpdateStatus(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kImageScaleMode });
         listview_->SetOnItemClickListener([=, this](int idx, QWidget* w) {
             ScaleMode mode = ScaleMode::kFullWindow;
             if (idx == 0) { 
@@ -53,9 +53,9 @@ namespace tc
                 mode = ScaleMode::kOriginSize; 
             }
             UpdateScaleMode(mode);
-            SwitchScaleModeMessage scale_mode_msg{.mode_ = mode};
+            MsgClientSwitchScaleMode scale_mode_msg{.mode_ = mode};
             context_->SendAppMessage(scale_mode_msg);
-            context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage ::EUpdate::kImageScaleMode});
+            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{.update_type_ = MsgClientFloatControllerPanelUpdate ::EUpdate::kImageScaleMode});
         });
     }
 
@@ -75,8 +75,8 @@ namespace tc
         settings_->SetScaleMode(mode);
     }
 
-    void ThirdScalePanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
-        if (FloatControllerPanelUpdateMessage::EUpdate::kImageScaleMode == msg.update_type_) {
+    void ThirdScalePanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
+        if (MsgClientFloatControllerPanelUpdate::EUpdate::kImageScaleMode == msg.update_type_) {
             int target_index = 0;
             if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_) {
                 target_index = 0;

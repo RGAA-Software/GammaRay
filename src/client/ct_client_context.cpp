@@ -120,12 +120,12 @@ namespace tc
     void ClientContext::UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info) {
         bool new_monitor = info.mon_name_ != capturing_info_.mon_name_;
         if (new_monitor) {
-            SendAppMessage(MsgMonitorChanged{});
+            SendAppMessage(MsgClientMonitorChanged{});
         }
         else {
             bool size_changed = capturing_info_.frame_width_ != info.frame_width_ || capturing_info_.frame_height_ != info.frame_height_;
             if (size_changed) {
-                SendAppMessage(MsgMonitorChanged{});
+                SendAppMessage(MsgClientMonitorChanged{});
             }
         }
         capturing_info_ = info;

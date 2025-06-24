@@ -29,7 +29,7 @@ namespace tc
     public:
         explicit SubFpsPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent *event) override;
-        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
+        void UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) override;
     private:
         Settings* settings_ = nullptr;
         SwitchButton* sb_15_fps_ = nullptr;

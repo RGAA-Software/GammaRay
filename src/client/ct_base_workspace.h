@@ -78,7 +78,7 @@ namespace tc
         void RegisterControllerPanelListeners();
 
         void UpdateDebugPanelPosition();
-        void SendClipboardMessage(const ClipboardMessage& msg);
+        void SendClipboardMessage(const MsgClientClipboard& msg);
         void SendSwitchMonitorMessage(const std::string& name);
         void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
         void SendSwitchFullColorMessage(bool enable);
@@ -90,7 +90,7 @@ namespace tc
         void SwitchScaleMode(const ScaleMode& mode);
         virtual void CalculateAspectRatio();
         virtual void SwitchToFullWindow();
-        void SendChangeMonitorResolutionMessage(const MsgChangeMonitorResolution& msg);
+        void SendChangeMonitorResolutionMessage(const MsgClientChangeMonitorResolution& msg);
         void UpdateFloatButtonIndicatorPosition();
         void UpdateVideoWidgetSize();
         virtual void UpdateGameViewsStatus();

@@ -66,7 +66,7 @@ namespace tc
         listview_->Select(target_index);
         root_layout->addWidget(listview_);
         setLayout(root_layout);
-        UpdateStatus(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kImageScaleMode });
+        UpdateStatus(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kImageScaleMode });
         listview_->SetOnItemClickListener([=, this](int idx, QWidget* w) {
             EFps efps = static_cast<EFps>(idx);
             int fps = 30;
@@ -74,10 +74,10 @@ namespace tc
                 fps = fps_info_[efps];
             }
             settings_->SetFps(fps);
-            context_->SendAppMessage(ModifyFpsMessage{
+            context_->SendAppMessage(MsgClientModifyFps{
                 .fps_ = fps,
             });
-            context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFps });
+            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFps });
         });
 
     }
@@ -94,8 +94,8 @@ namespace tc
         BaseWidget::paintEvent(event);
     }
 
-    void SubFpsPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
-        if (FloatControllerPanelUpdateMessage::EUpdate::kFps == msg.update_type_) {
+    void SubFpsPanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
+        if (MsgClientFloatControllerPanelUpdate::EUpdate::kFps == msg.update_type_) {
             int fps = settings_->fps_;
             int list_index = GetFpsIndex(fps);
             listview_->Select(list_index);

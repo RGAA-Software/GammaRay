@@ -60,7 +60,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     animation->setEndValue(1.0); // 结束时不透明
     animation->setLoopCount(-1); // 无限循环
 
-    msg_listener_->Listen<MediaRecordMsg>([=, this](const MediaRecordMsg& msg) {
+    msg_listener_->Listen<MsgClientMediaRecord>([=, this](const MsgClientMediaRecord& msg) {
         bool res = ctx_->GetRecording();
         if(res) {
             recording_sign_lab_->show();
@@ -72,7 +72,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
         }
     });
 
-    msg_listener_->Listen<SwitchMonitorMessage>([=, this](const SwitchMonitorMessage& msg) {
+    msg_listener_->Listen<MsgClientSwitchMonitor>([=, this](const MsgClientSwitchMonitor& msg) {
         if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_ && !isHidden()) {
             need_recalculate_aspect_ = true;
         }
@@ -115,7 +115,7 @@ void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
     if (is_main_view_) {
         if (settings_->IsFullColorEnabled() != enable_full_color) {
             settings_->SetFullColorEnabled(enable_full_color);
-            ctx_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kFullColorStatus });
+            ctx_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFullColorStatus });
         }
     }
 }
@@ -235,14 +235,14 @@ void GameView::RegisterControllerPanelListeners() {
         ctx_->PostUITask([=]() {
             controller_panel_->Hide();
         });
-        this->ctx_->SendAppMessage(OpenDebugPanelMsg{});
+        this->ctx_->SendAppMessage(MsgClientOpenDebugPanel{});
     });
 
     controller_panel_->SetOnFileTransListener([=, this](QWidget* w) {
         ctx_->PostUITask([=]() {
             controller_panel_->Hide();
         });
-        this->ctx_->SendAppMessage(OpenFiletransMsg{});
+        this->ctx_->SendAppMessage(MsgClientOpenFiletrans{});
     });
 
     controller_panel_->SetOnMediaRecordListener([=, this](QWidget* w) {
@@ -266,13 +266,13 @@ void GameView::SetMonitorName(const std::string mon_name) {
 
 void GameView::enterEvent(QEnterEvent* event) {
     s_mouse_in_ = true;
-    this->ctx_->SendAppMessage(MouseEnterViewMsg{});
+    this->ctx_->SendAppMessage(MsgClientMouseEnterView{});
     QWidget::enterEvent(event);
 }
 
 void GameView::leaveEvent(QEvent* event) {
     s_mouse_in_ = false;
-    this->ctx_->SendAppMessage(MouseLeaveViewMsg{});
+    this->ctx_->SendAppMessage(MsgClientMouseLeaveView{});
     QWidget::leaveEvent(event);
 }
 
@@ -283,11 +283,11 @@ bool GameView::eventFilter(QObject* watched, QEvent* event) {
         {
         case QEvent::Enter:
             s_mouse_in_ = false;
-            this->ctx_->SendAppMessage(MouseLeaveViewMsg{});
+            this->ctx_->SendAppMessage(MsgClientMouseLeaveView{});
             break;
         case QEvent::Leave:
             s_mouse_in_ = true;
-            this->ctx_->SendAppMessage(MouseEnterViewMsg{});
+            this->ctx_->SendAppMessage(MsgClientMouseEnterView{});
             break;
         default:
             break;

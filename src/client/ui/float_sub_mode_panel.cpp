@@ -50,10 +50,10 @@ namespace tc
                 SwitchWorkMode::WorkMode mode = enabled ? SwitchWorkMode::kWork : SwitchWorkMode::kGame;
                 settings_->SetWorkMode(mode);
                 sb_game_->SetStatus(!enabled);
-                context_->SendAppMessage(SwitchWorkModeMessage {
+                context_->SendAppMessage(MsgClientSwitchWorkMode {
                     .mode_ = mode,
                 });
-                context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kWorkMode});
+                context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{.update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kWorkMode});
             });
 
             layout->addSpacing(border_spacing);
@@ -85,10 +85,10 @@ namespace tc
                 SwitchWorkMode::WorkMode mode = enabled ? SwitchWorkMode::kGame : SwitchWorkMode::kWork;
                 settings_->SetWorkMode(mode);
                 sb_work_->SetStatus(!enabled);
-                context_->SendAppMessage(SwitchWorkModeMessage {
+                context_->SendAppMessage(MsgClientSwitchWorkMode {
                     .mode_ = mode,
                 });
-                context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kWorkMode });
+                context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kWorkMode });
             });
 
             layout->addSpacing(border_spacing);
@@ -113,8 +113,8 @@ namespace tc
         BaseWidget::paintEvent(event);
     }
 
-    void SubModePanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
-        if (FloatControllerPanelUpdateMessage::EUpdate::kWorkMode == msg.update_type_) {
+    void SubModePanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
+        if (MsgClientFloatControllerPanelUpdate::EUpdate::kWorkMode == msg.update_type_) {
             sb_game_->SetStatus(SwitchWorkMode::kGame == settings_->work_mode_);
             sb_work_->SetStatus(SwitchWorkMode::kWork == settings_->work_mode_);
         }

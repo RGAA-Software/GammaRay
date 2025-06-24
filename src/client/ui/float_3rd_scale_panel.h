@@ -22,7 +22,7 @@ namespace tc
 
     private:
         void UpdateScaleMode(ScaleMode mode);
-        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
+        void UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) override;
 
     private:
         Settings* settings_ = nullptr;

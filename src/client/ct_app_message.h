@@ -15,21 +15,6 @@
 namespace tc
 {
 
-    constexpr int kCodeTimeout1S = 0x1001;
-    constexpr int kCodeStreamAdded = 0x1002;
-    constexpr int kCodeCloseWorkspace = 0x1003;
-    constexpr int kCodeClearWorkspace = 0x1004;
-    constexpr int kCodeClipboard = 0x1005;
-    constexpr int kCodeStreamUpdated = 0x1006;
-    constexpr int kCodeMousePressed = 0x1007;
-    constexpr int kCodeFullscreen = 0x1008;
-    constexpr int kCodeExitFullscreen = 0x1009;
-    constexpr int kCodeClipboardStatus = 0x1010;
-    constexpr int kCodeAudioStatus = 0x1011;
-
-    /////
-    constexpr int kCodeExit = -1;
-
     const std::string kCaptureAllMonitorsSign = "all";
 
     const int kMainGameViewIndex = 0;
@@ -40,13 +25,13 @@ namespace tc
         kSeparate,   //分屏展示
     };
 
-    class AppMessage {
+    class MsgClientBase {
     public:
 
     };
 
     // Clipboard
-    class ClipboardMessage : public AppMessage {
+    class MsgClientClipboard : public MsgClientBase {
     public:
         int type_;
         std::string msg_;
@@ -54,39 +39,27 @@ namespace tc
     };
 
     // Mouse pressed
-    class MousePressedMessage : public AppMessage {
+    class MsgClientMousePressed : public MsgClientBase {
     public:
         int global_x_;
         int global_y_;
     };
 
     // Fullscreen
-    class FullscreenMessage : public AppMessage {
+    class MsgClientFullscreen : public MsgClientBase {
     public:
     };
 
     // Exit fullscreen
-    class ExitFullscreenMessage : public AppMessage {
+    class MsgClientExitFullscreen : public MsgClientBase {
     public:
     };
 
-    // Change clipboard status
-    class ClipboardStatusMessage : public AppMessage {
-    public:
-        bool on_ = false;
-    };
-
-    // Change audio status
-    class AudioStatusMessage : public AppMessage {
-    public:
-        bool on_ = false;
-    };
-
-    class ExitAppMessage : public AppMessage {
+    class MsgClientExitApp : public MsgClientBase {
 
     };
 
-    class CaptureMonitorMessage : public AppMessage {
+    class MsgClientCaptureMonitor : public MsgClientBase {
     public:
         class Resolution {
         public:
@@ -118,41 +91,41 @@ namespace tc
         std::vector<CaptureMonitor> monitors_;
     };
 
-    class SwitchMonitorMessage : public AppMessage {
+    class MsgClientSwitchMonitor : public MsgClientBase {
     public:
         std::string name_;
     };
 
-    class MonitorSwitchedMessage : public AppMessage {
+    class MsgClientMonitorSwitched : public MsgClientBase {
     public:
         std::string name_;
         int index_ = 0;
     };
 
-    class SwitchWorkModeMessage : public AppMessage {
+    class MsgClientSwitchWorkMode : public MsgClientBase {
     public:
         SwitchWorkMode::WorkMode mode_;
     };
 
     // 修改帧率 client->render
-    class ModifyFpsMessage : public AppMessage {
+    class MsgClientModifyFps : public MsgClientBase {
     public:
         int fps_ = 30;
     };
 
     // 切换全彩模式
-    class SwitchFullColorMessage : public AppMessage {
+    class MsgClientSwitchFullColor : public MsgClientBase {
     public:
         bool enable_ = false;
     };
 
-    class SwitchScaleModeMessage : public AppMessage {
+    class MsgClientSwitchScaleMode : public MsgClientBase {
     public:
         ScaleMode mode_;
     };
 
     // change monitor resolution
-    class MsgChangeMonitorResolution {
+    class MsgClientChangeMonitorResolution {
     public:
         std::string monitor_name_;
         int width_ = 0;
@@ -160,28 +133,28 @@ namespace tc
     };
 
     // monitor changed from video frame callback
-    class MsgMonitorChanged : public AppMessage {
+    class MsgClientMonitorChanged : public MsgClientBase {
     public:
     };
 
     // request control + alt + delete
-    class MsgCtrlAltDelete : public AppMessage {
+    class MsgClientCtrlAltDelete : public MsgClientBase {
     public:
     };
 
     // request update desktop
-    class MsgHardUpdateDesktop : public AppMessage {
+    class MsgClientHardUpdateDesktop : public MsgClientBase {
     public:
     };
 
     // MultiMonDisplayMode
-    class MultiMonDisplayModeMessage : public AppMessage {
+    class MsgClientMultiMonDisplayMode : public MsgClientBase {
     public:
         EMultiMonDisplayMode mode_;
         int current_cap_mon_index_ = 0;
     };
 
-    class FloatControllerPanelUpdateMessage : public AppMessage {
+    class MsgClientFloatControllerPanelUpdate : public MsgClientBase {
     public:
         enum class EUpdate {
             kUnknow,
@@ -196,31 +169,31 @@ namespace tc
         EUpdate update_type_ = EUpdate::kUnknow;
     };
 
-    class OpenFiletransMsg : public AppMessage {
+    class MsgClientOpenFiletrans : public MsgClientBase {
     public:
     };
 
-    class OpenDebugPanelMsg : public AppMessage {
+    class MsgClientOpenDebugPanel : public MsgClientBase {
     public:
     };
 
     // clipboard updated
-    class ClipboardUpdatedMsg : public AppMessage {
+    class MsgClientClipboardUpdated : public MsgClientBase {
     public:
 #ifdef WIN32
         HWND hwnd_ = nullptr;
 #endif
     };
 
-    class MediaRecordMsg : public AppMessage {
+    class MsgClientMediaRecord : public MsgClientBase {
     public:
     };
 
-    class MouseEnterViewMsg : public AppMessage {
+    class MsgClientMouseEnterView : public MsgClientBase {
     public:
     };
 
-    class MouseLeaveViewMsg : public AppMessage {
+    class MsgClientMouseLeaveView : public MsgClientBase {
     public:
     };
 }

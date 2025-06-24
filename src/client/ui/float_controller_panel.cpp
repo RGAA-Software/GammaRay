@@ -122,7 +122,7 @@ namespace tc
                         btn->SwitchToSelectedState();
                         settings->SetAudioEnabled(true);
                     }
-                    context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kAudioStatus});
+                    context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{.update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kAudioStatus});
                 });
             }
             {
@@ -152,10 +152,10 @@ namespace tc
                     }
                     if (top_widget->isFullScreen()) {
                         top_widget->showNormal();
-                        context_->SendAppMessage(ExitFullscreenMessage{});
+                        context_->SendAppMessage(MsgClientExitFullscreen{});
                     } else {
                         top_widget->showFullScreen();
-                        context_->SendAppMessage(FullscreenMessage{});
+                        context_->SendAppMessage(MsgClientFullscreen{});
                         HideAllSubPanels();
                     }
                     this->hide();
@@ -170,7 +170,7 @@ namespace tc
                 btn->SetOnClickListener([=, this](QWidget* w) {
 //                    auto msg_box = SizedMessageBox::MakeOkCancelBox(tr("Stop"), tr("Do you want to STOP the control of remote PC ?"));
 //                    if (msg_box->exec() == 0) {
-//                        context_->SendAppMessage(ExitAppMessage {});
+//                        context_->SendAppMessage(MsgClientExitApp {});
 //                    }
 
                     TcDialog dialog(tr("Warning"), tr("Do you want to stop the control of remote PC?"), nullptr);
@@ -396,8 +396,8 @@ namespace tc
                     media_record_lab_->setText(tcTr("id_screen_recording"));
                     text->setStyleSheet(R"(font-weight: bold;)");
                 }
-                context_->SendAppMessage(FloatControllerPanelUpdateMessage{ .update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus });
-                context_->SendAppMessage(MediaRecordMsg{});
+                context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kMediaRecordStatus });
+                context_->SendAppMessage(MsgClientMediaRecord{});
                 if (media_record_listener_) {
                     media_record_listener_(widget);
                 }
@@ -459,37 +459,37 @@ namespace tc
             root_layout->addWidget(widget);
 
             widget->SetOnClickListener([=, this](QWidget* w) {
-                context_->SendAppMessage(ExitAppMessage {});
+                context_->SendAppMessage(MsgClientExitApp {});
             });
         }
         root_layout->addStretch();
         setLayout(root_layout);
 
      
-        msg_listener_->Listen<MousePressedMessage>([=, this](const MousePressedMessage& msg) {
+        msg_listener_->Listen<MsgClientMousePressed>([=, this](const MsgClientMousePressed& msg) {
             this->Hide();
         });
 
-        msg_listener_->Listen<CaptureMonitorMessage>([=, this](const CaptureMonitorMessage& msg) {
+        msg_listener_->Listen<MsgClientCaptureMonitor>([=, this](const MsgClientCaptureMonitor& msg) {
             this->capture_monitor_ = msg;
             context_->PostUITask([=, this]() {
                 UpdateCaptureMonitorInfo();
             });
         });
 
-        msg_listener_->Listen<MonitorSwitchedMessage>([=, this](const MonitorSwitchedMessage& msg) {
+        msg_listener_->Listen<MsgClientMonitorSwitched>([=, this](const MsgClientMonitorSwitched& msg) {
             context_->PostUITask([=, this]() {
                 UpdateCapturingMonitor(msg.name_, msg.index_);
             });
         });
 
-        msg_listener_->Listen<FullscreenMessage>([=, this](const FullscreenMessage& msg) {
+        msg_listener_->Listen<MsgClientFullscreen>([=, this](const MsgClientFullscreen& msg) {
             if (full_screen_btn_) {
                 full_screen_btn_->SwitchToSelectedState();
             }
         });
 
-        msg_listener_->Listen<ExitFullscreenMessage>([=, this](const ExitFullscreenMessage& msg) {
+        msg_listener_->Listen<MsgClientExitFullscreen>([=, this](const MsgClientExitFullscreen& msg) {
             if (full_screen_btn_) {
                 full_screen_btn_->SwitchToNormalState();
             }
@@ -570,14 +570,14 @@ namespace tc
     }
 
     void FloatControllerPanel::SwitchMonitor(ComputerIcon* w) {
-        context_->SendAppMessage(SwitchMonitorMessage {
+        context_->SendAppMessage(MsgClientSwitchMonitor {
             .name_ = w->GetMonitorName(),
         });
     }
 
     void FloatControllerPanel::UpdateCapturingMonitor(const std::string& name, int cur_cap_mon_index) {
         if (kCaptureAllMonitorsSign == name) {
-            context_->SendAppMessage(MultiMonDisplayModeMessage{
+            context_->SendAppMessage(MsgClientMultiMonDisplayMode{
                 .mode_ = EMultiMonDisplayMode::kSeparate,
             });
             for (const auto& w : computer_icons_) {
@@ -586,7 +586,7 @@ namespace tc
             return;
         }
 
-        context_->SendAppMessage(MultiMonDisplayModeMessage{
+        context_->SendAppMessage(MsgClientMultiMonDisplayMode{
             .mode_ = EMultiMonDisplayMode::kTab,
             .current_cap_mon_index_ = cur_cap_mon_index
         });
@@ -601,13 +601,13 @@ namespace tc
     }
 
     void FloatControllerPanel::CaptureAllMonitor() {
-        context_->SendAppMessage(SwitchMonitorMessage{
+        context_->SendAppMessage(MsgClientSwitchMonitor{
            .name_ = kCaptureAllMonitorsSign,
         });
     }
 
-    void FloatControllerPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
-        if (FloatControllerPanelUpdateMessage::EUpdate::kAudioStatus == msg.update_type_) {
+    void FloatControllerPanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
+        if (MsgClientFloatControllerPanelUpdate::EUpdate::kAudioStatus == msg.update_type_) {
             auto settings = Settings::Instance();
             if (settings->IsAudioEnabled()) {
                 audio_btn_->SwitchToSelectedState();
@@ -616,7 +616,7 @@ namespace tc
                 audio_btn_->SwitchToNormalState();
             }
         }
-        else if (FloatControllerPanelUpdateMessage::EUpdate::kMediaRecordStatus == msg.update_type_) {
+        else if (MsgClientFloatControllerPanelUpdate::EUpdate::kMediaRecordStatus == msg.update_type_) {
             bool res = context_->GetRecording();
             if (res) {
                 media_record_lab_->setText(tcTr("id_stop_recording"));

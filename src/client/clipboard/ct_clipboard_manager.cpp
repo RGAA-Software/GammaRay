@@ -31,7 +31,7 @@ namespace tc
         context_ = ws_->GetContext();
 
         msg_listener_ = context_->ObtainMessageListener();
-        msg_listener_->Listen<ClipboardUpdatedMsg>([=, this](const ClipboardUpdatedMsg& msg) {
+        msg_listener_->Listen<MsgClientClipboardUpdated>([=, this](const MsgClientClipboardUpdated& msg) {
             context_->PostUITask([=, this]() {
                 this->OnClipboardUpdated();
             });
@@ -134,7 +134,7 @@ namespace tc
                 LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
             }
 
-            context_->SendAppMessage(ClipboardMessage{
+            context_->SendAppMessage(MsgClientClipboard{
                 .type_ = ClipboardType::kClipboardFiles,
                 .files_ = cp_files,
             });
@@ -146,7 +146,7 @@ namespace tc
             }
             LOGI("===> new Text: {}", text.toStdString());
 
-            context_->SendAppMessage(ClipboardMessage{
+            context_->SendAppMessage(MsgClientClipboard{
                 .type_ = ClipboardType::kClipboardText,
                 .msg_ = text.toStdString(),
             });

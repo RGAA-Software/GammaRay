@@ -28,15 +28,15 @@ namespace tc
         void paintEvent(QPaintEvent *event) override;
         void Show() override;
         void Hide() override;
-        void UpdateMonitorInfo(const CaptureMonitorMessage& m);
+        void UpdateMonitorInfo(const MsgClientCaptureMonitor& m);
         void SetCaptureMonitorName(const std::string& name);
     private:
         BaseWidget* GetSubPanel(const SubDisplayType& type);
         void HideAllSubPanels();
-        void UpdateStatus(const FloatControllerPanelUpdateMessage& msg) override;
+        void UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) override;
     private:
         std::map<SubDisplayType, BaseWidget*> sub_panels_;
-        CaptureMonitorMessage cap_monitors_info_;
+        MsgClientCaptureMonitor cap_monitors_info_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 
         std::string capture_monitor_name_;

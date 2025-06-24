@@ -47,7 +47,7 @@ namespace tc
             layout->addWidget(sb);
             sb->SetClickCallback([=,this](bool enabled) {
                 Settings::Instance()->SetClipboardEnabled(enabled);
-                this->context_->SendAppMessage(FloatControllerPanelUpdateMessage{.update_type_ = FloatControllerPanelUpdateMessage::EUpdate::kClipboardSharedStatus});
+                this->context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{.update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kClipboardSharedStatus});
             });
 
             layout->addSpacing(border_spacing);
@@ -150,16 +150,16 @@ namespace tc
     }
 
     void SubControlPanel::RequestCtrlAltDelete() {
-        context_->SendAppMessage(MsgCtrlAltDelete{});
+        context_->SendAppMessage(MsgClientCtrlAltDelete{});
     }
 
-    void SubControlPanel::UpdateStatus(const FloatControllerPanelUpdateMessage& msg) {
-        if (FloatControllerPanelUpdateMessage::EUpdate::kClipboardSharedStatus == msg.update_type_) {
+    void SubControlPanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
+        if (MsgClientFloatControllerPanelUpdate::EUpdate::kClipboardSharedStatus == msg.update_type_) {
             clibpboard_btn_->SetStatus(Settings::Instance()->clipboard_on_);
         }
     }
 
     void SubControlPanel::RequestRefreshDesktop() {
-        context_->SendAppMessage(MsgHardUpdateDesktop{});
+        context_->SendAppMessage(MsgClientHardUpdateDesktop{});
     }
 }

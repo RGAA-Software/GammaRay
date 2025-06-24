@@ -49,7 +49,7 @@ namespace tc
                 LOGE("Target monitor name is empty");
                 return;
             }
-            context_->SendAppMessage(MsgChangeMonitorResolution {
+            context_->SendAppMessage(MsgClientChangeMonitorResolution {
                 .monitor_name_ = monitor_name,
                 .width_ = width,
                 .height_ = height,
@@ -61,7 +61,7 @@ namespace tc
         root_layout->addStretch();
         setLayout(root_layout);
 
-        msg_listener_->Listen<MsgMonitorChanged>([=, this](const MsgMonitorChanged& msg) {
+        msg_listener_->Listen<MsgClientMonitorChanged>([=, this](const MsgClientMonitorChanged& msg) {
             context_->PostUITask([=, this]() {
                 this->SelectCapturingMonitorSize();
             });
@@ -100,7 +100,7 @@ namespace tc
         LOGI("Capturing monitor size is {}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
     }
 
-    void ThirdResolutionPanel::UpdateMonitor(const CaptureMonitorMessage::CaptureMonitor& m) {
+    void ThirdResolutionPanel::UpdateMonitor(const MsgClientCaptureMonitor::CaptureMonitor& m) {
         monitor_ = m;
         std::vector<SingleItemPtr> items;
         for (const auto& res : monitor_.resolutions_) {

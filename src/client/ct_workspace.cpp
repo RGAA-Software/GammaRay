@@ -67,7 +67,7 @@ namespace tc
     }
 
     void Workspace::ListenMultiMonDisplayModeMessage() {
-        msg_listener_->Listen<MultiMonDisplayModeMessage>([=, this](const MultiMonDisplayModeMessage& msg) {
+        msg_listener_->Listen<MsgClientMultiMonDisplayMode>([=, this](const MsgClientMultiMonDisplayMode& msg) {
             multi_display_mode_ = msg.mode_;
             context_->PostUITask([=]() {
                 if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
