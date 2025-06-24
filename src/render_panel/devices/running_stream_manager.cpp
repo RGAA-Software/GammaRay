@@ -120,7 +120,7 @@ namespace tc
         if (running_processes_.contains(item->stream_id_)) {
             auto process = running_processes_[item->stream_id_];
             if (process) {
-                TcDialog dialog("Stop Stream", "Do you want to stop the stream ?", nullptr);
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_exit_client"), nullptr);
                 if (dialog.exec() == kDoneOk) {
                     process->kill();
                     running_processes_.erase(item->stream_id_);

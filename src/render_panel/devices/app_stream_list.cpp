@@ -463,6 +463,9 @@ namespace tc
     void AppStreamList::DeleteStream(const std::shared_ptr<StreamItem>& item) {
         TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_remote_control"), grWorkspace.get());
         if (dialog.exec() == kDoneOk) {
+            // stop it if running
+            StopStream(item);
+            // delete it from database
             auto mgr = context_->GetStreamDBManager();
             mgr->DeleteStream(item->_id);
             LoadStreamItems();
