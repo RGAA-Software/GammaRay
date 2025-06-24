@@ -36,7 +36,7 @@
   "id_connect": "连接",
   "id_encoder_settings": "编码设置",
   "id_bitrate": "比特率(Mbps)",
-  "id_fps": "FPS",
+  "id_fps": "视频帧率",
   "id_format": "格式",
   "id_resize_resolution": "分辨率缩放",
   "id_resize_width": "缩放宽度",

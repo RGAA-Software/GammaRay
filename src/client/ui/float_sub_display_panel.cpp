@@ -171,8 +171,8 @@ namespace tc
             widget->setFixedSize(item_size);
             layout->addWidget(widget);
 
-            auto lbl = new QLabel();
-            lbl->setText(tr("FPS"));
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_fps");
             lbl->setStyleSheet(R"(font-weight:bold;)");
             layout->addSpacing(border_spacing * 2);
             layout->addWidget(lbl);
