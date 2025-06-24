@@ -1,21 +1,12 @@
-﻿#include <QDebug>
-#include <QTimer>
+﻿#include <QTimer>
 #include <QOpenGLFunctions>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QWheelEvent>
-#include <QMouseEvent>
 #include <QString>
 #include <QMimeData>
 #include <QApplication>
-#include <QWindow>
-#include <QScreen>
-
-#include <fstream>
-#include <iostream>
-#include <chrono>
 #include <thread>
-
 #include "ct_shader_program.h"
 #include "ct_opengl_video_widget.h"
 #include "ct_video_widget_shaders.h"
@@ -36,16 +27,9 @@ namespace tc
         TimeDuration dr("OpenGLVideoWidget");
         context_ = ctx;
         raw_image_format_ = format;
-//		statistics = Statistics::Instance();
 
 		setFocusPolicy(Qt::StrongFocus);
 		setMouseTracking(true);
-
-//        auto timer = new QTimer(this);
-//        connect(timer, &QTimer::timeout, this, [this]() {
-//            this->update();
-//        });
-//        timer->start(17);
 	}
 
 	OpenGLVideoWidget::~OpenGLVideoWidget() {
@@ -377,7 +361,6 @@ namespace tc
 		render_fps_ += 1;
 		auto current_time = TimeUtil::GetCurrentTimestamp();
 		if (current_time - last_update_fps_time_ > 1000) {
-			//statistics->render_fps = render_fps;
 			render_fps_ = 0;
 			last_update_fps_time_ = current_time;
 		}

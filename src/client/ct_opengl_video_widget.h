@@ -104,13 +104,6 @@ namespace tc
 
         int render_fps_ = 0;
         uint64_t last_update_fps_time_ = 0;
-
-        Statistics* statistics_ = nullptr;
-
-        int tex_rect_left_ = 0;
-        int tex_rect_right_ = 0;
-
-        bool has_set_imge_sign_  = false;
         
     };
 }
