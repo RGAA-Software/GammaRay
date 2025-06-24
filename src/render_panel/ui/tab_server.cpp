@@ -389,7 +389,9 @@ namespace tc
                             return;
                         }
                         // get device's relay server info
-                        std::shared_ptr<relay::RelayDeviceInfo> relay_device_info = context_->GetRelayServerSideDeviceInfo(remote_device_id);
+                        auto relay_host = settings_->GetRelayServerHost();
+                        auto relay_port = settings_->GetRelayServerPort();
+                        auto relay_device_info = context_->GetRelayServerSideDeviceInfo(relay_host, relay_port, remote_device_id);
                         if (relay_device_info == nullptr) {
                             return;
                         }

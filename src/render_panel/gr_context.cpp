@@ -252,12 +252,15 @@ namespace tc
         return acc_sdk_;
     }
 
-    std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog) {
+    std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& relay_host,
+                                                                                    int relay_port,
+                                                                                    const std::string& device_id,
+                                                                                    bool show_dialog) {
         if (!settings_->HasRelayServerConfig()) {
             return nullptr;
         }
         auto srv_remote_device_id = "server_" + device_id;
-        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(settings_->GetRelayServerHost(), settings_->GetRelayServerPort(), srv_remote_device_id);
+        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id);
         if (!relay_result) {
             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, RelayError2String(relay_result.error()));
             if (show_dialog) {

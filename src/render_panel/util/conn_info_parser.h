@@ -32,6 +32,9 @@ namespace tc
         std::vector<GrConnectionHost> hosts_;
         int panel_srv_port_{0};
         int render_srv_port_{0};
+        // relay server
+        std::string relay_host_;
+        int relay_port_{0};
     };
 
     // parse gammaray://xxxx

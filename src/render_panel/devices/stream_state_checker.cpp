@@ -55,7 +55,7 @@ namespace tc
             bool online = false;
             if (item->IsRelay()) {
                 // to check in server
-                auto device_info = context_->GetRelayServerSideDeviceInfo(item->remote_device_id_, false);
+                auto device_info = context_->GetRelayServerSideDeviceInfo(item->stream_host_, item->stream_port_, item->remote_device_id_, false);
                 if (device_info && relay::RelayApi::IsRelayDeviceValid(device_info)) {
                     online = true;
                 }

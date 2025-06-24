@@ -304,7 +304,7 @@ namespace tc
             if (!relay_device_info.has_value()) {
                 if (relay_device_info.error() == relay::RelayError::kRelayRequestFailed) {
                     // network failed
-                    TcDialog dialog(tcTr("id_error"), tcTr("id_relay_network_unavailable"));
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_relay_network_unavailable_recreate"));
                     dialog.exec();
                 }
                 else {

@@ -179,7 +179,10 @@ namespace tc
                 dialog.exec();
                 return false;
             }
-            auto relay_device_info = context_->GetRelayServerSideDeviceInfo(conn_info->device_id_);
+            // TODO: use conn_info->relay_host_; conn_info->relay_port_
+            auto relay_host = settings->GetRelayServerHost();
+            auto relay_port = settings->GetRelayServerPort();
+            auto relay_device_info = context_->GetRelayServerSideDeviceInfo(relay_host, relay_port, conn_info->device_id_);
             if (relay_device_info == nullptr) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), this);
                 dialog.exec();

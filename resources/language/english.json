@@ -192,6 +192,7 @@
   "id_application": "Application",
   "id_developer_mode": "Developer Mode",
   "id_relay_network_unavailable": "Can't access Relay server.",
+  "id_relay_network_unavailable_recreate": "Can't access Relay server, please check it or your relay server may has changed，please re-create your connection.",
   "id_profile_network_unavailable": "Can't access Profile server.",
   "id_spvr_network_unavailable": "Can't access Supervisor server.",
   "id_cant_get_local_device_info": "Can't get device information, please check your server.",

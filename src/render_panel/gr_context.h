@@ -39,7 +39,6 @@ namespace tc
     // Device list
     class StreamDBOperator;
     class TaskRuntime;
-    class SpvrManager;
     class RunningStreamManager;
 
     class GrContext : public QObject, public std::enable_shared_from_this<GrContext> {
@@ -102,7 +101,10 @@ namespace tc
         // spvr
         // will add prefix: server
         // id ==> server_111333444
-        std::shared_ptr<relay::RelayDeviceInfo> GetRelayServerSideDeviceInfo(const std::string& device_id, bool show_dialog = true);
+        std::shared_ptr<relay::RelayDeviceInfo> GetRelayServerSideDeviceInfo(const std::string& relay_host,
+                                                                             int relay_port,
+                                                                             const std::string& device_id,
+                                                                             bool show_dialog = true);
 
     private:
         void StartTimers();
@@ -123,7 +125,6 @@ namespace tc
         std::shared_ptr<GrRunGameManager> run_game_manager_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ =  nullptr;
         std::shared_ptr<StreamDBOperator> stream_db_mgr_ = nullptr;
-        std::shared_ptr<SpvrManager> spvr_mgr_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<NotifyManager> notify_mgr_ = nullptr;
         std::shared_ptr<GrDatabase> database_ = nullptr;
