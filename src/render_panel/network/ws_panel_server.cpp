@@ -335,7 +335,7 @@ namespace tc
         }
         else if (proto_msg->type() == tccp::CpMessageType::kCpHeartBeat) {
             auto hb = proto_msg->heartbeat();
-            LOGI("HB: stream id: {} remote desktop: {} os: {}", proto_msg->stream_id(), hb.remote_device_desktop_name(), hb.remote_os_name());
+            //LOGI("HB: stream id: {} remote desktop: {} os: {}", proto_msg->stream_id(), hb.remote_device_desktop_name(), hb.remote_os_name());
             if (proto_msg->stream_id().empty() || hb.remote_device_desktop_name().empty() || hb.remote_os_name().empty()) {
                 return false;
             }
@@ -344,6 +344,32 @@ namespace tc
                 .stream_id_ = proto_msg->stream_id(),
                 .desktop_name_ = hb.remote_device_desktop_name(),
                 .os_version_ = hb.remote_os_name(),
+            });
+        }
+        else if (proto_msg->type() == tccp::kCpFileTransferBegin) {
+            context_->PostDBTask([=, this]() {
+                auto sub = proto_msg->ft_transfer_beg();
+                auto ips = context_->GetIps();
+                std::string ip_address;
+                if (!ips.empty()) {
+                    ip_address = ips[0].ip_addr_;
+                }
+
+                ft_record_op_->InsertFileTransferRecord(std::make_shared<FileTransferRecord>(FileTransferRecord {
+                    .the_file_id_ = sub.the_file_id(),
+                    .begin_ = sub.begin_timestamp(),
+                    .end_ = 0,
+                    .visitor_device_ = settings_->GetDeviceId().empty() ? ip_address : settings_->GetDeviceId(),
+                    .target_device_ = sub.remote_device_id(),
+                    .direction_ = sub.direction(),
+                    .file_detail_ = sub.file_detail(),
+                }));
+            });
+        }
+        else if (proto_msg->type() == tccp::kCpFileTransferEnd) {
+            context_->PostDBTask([=, this]() {
+                auto sub = proto_msg->ft_transfer_end();
+                ft_record_op_->UpdateVisitRecord(sub.the_file_id(), sub.end_timestamp(), sub.success());
             });
         }
         return true;

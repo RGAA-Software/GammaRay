@@ -181,7 +181,7 @@ namespace tc
     class MsgClientClipboardUpdated : public MsgClientBase {
     public:
 #ifdef WIN32
-        HWND hwnd_ = nullptr;
+        //HWND hwnd_ = nullptr;
 #endif
     };
 
@@ -195,6 +195,25 @@ namespace tc
 
     class MsgClientMouseLeaveView : public MsgClientBase {
     public:
+    };
+
+    // file transmission begins
+    class MsgClientFileTransmissionBegin {
+    public:
+        std::string the_file_id_;
+        int64_t begin_timestamp_;
+        std::string direction_;
+        std::string file_detail_;
+        std::string remote_device_id_;
+    };
+
+    // file transmission ends
+    class MsgClientFileTransmissionEnd {
+    public:
+        std::string the_file_id_;
+        int64_t end_timestamp_;
+        int64_t duration_;
+        bool success_;
     };
 }
 

@@ -43,6 +43,7 @@
 #include "tc_common_new/qwidget_helper.h"
 #include "ui/retry_conn_dialog.h"
 #include "network/ct_panel_client.h"
+#include "tc_common_new/md5.h"
 #include "tc_common_new/time_util.h"
 #include "plugins/ct_plugin_manager.h"
 #include "plugins/ct_app_events.h"
@@ -168,22 +169,44 @@ namespace tc
         file_trans_interface_ = FileTransInterface::Make(sdk_);
         // upload begin callback
         file_trans_interface_->SetOnFileUploadBeginCallback([=, this](const std::string& task_id, const std::string& file_path) {
-            LOGI("** file upload begin: {}-{}", task_id, file_path);
+            context_->SendAppMessage(MsgClientFileTransmissionBegin {
+                .the_file_id_ = MD5::Hex(task_id),
+                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .direction_ = "Upload",
+                .file_detail_ = file_path,
+                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
+            });
         });
 
         // upload end callback
         file_trans_interface_->SetOnFileUploadEndCallback([=, this](const std::string& task_id, const std::string& file_path, bool success) {
-            LOGI("** file upload end: {}-{}", task_id, success);
+            context_->SendAppMessage(MsgClientFileTransmissionEnd {
+                .the_file_id_ = MD5::Hex(task_id),
+                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .duration_ = 0,
+                .success_ = success,
+            });
         });
 
         // download begin callback
         file_trans_interface_->SetOnFileDownloadBeginCallback([=, this](const std::string& task_id, const std::string& remote_file_path) {
-            LOGI("** file download begin: {}-{}", task_id, remote_file_path);
+            context_->SendAppMessage(MsgClientFileTransmissionBegin {
+                .the_file_id_ = MD5::Hex(task_id),
+                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .direction_ = "Download",
+                .file_detail_ = remote_file_path,
+                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
+            });
         });
 
         // download end callback
         file_trans_interface_->SetOnFileDownloadEndCallback([=, this](const std::string& task_id, const std::string& remote_file_path, bool success) {
-            LOGI("** file download end: {}-{}", task_id, success);
+            context_->SendAppMessage(MsgClientFileTransmissionEnd {
+                .the_file_id_ = MD5::Hex(task_id),
+                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .duration_ = 0,
+                .success_ = success,
+            });
         });
 
 #endif // TC_ENABLE_FILE_TRANSMISSION
