@@ -14,9 +14,11 @@
 namespace tc
 {
 
+    class TcLabel;
     class ThunderSdk;
     class Settings;
     class ClientContext;
+    class MessageListener;
 
     class MainProgress : public QLabel {
     public:
@@ -32,10 +34,10 @@ namespace tc
         std::shared_ptr<ClientContext> context_ = nullptr;
         Settings* settings_ = nullptr;
         QPixmap bg_pixmap_;
-        QLabel* lbl_main_message_ = nullptr;
-        QLabel* lbl_sub_message_ = nullptr;
+        TcLabel* lbl_sub_message_ = nullptr;
         QProgressBar* progress_bar_ = nullptr;
         std::atomic_int progress_steps_ = { 0 };
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

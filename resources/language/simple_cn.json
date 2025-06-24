@@ -237,6 +237,10 @@
   "id_capture_size": "采集帧尺寸",
   "id_encoder_name": "编码器名称",
   "id_encoder_fps": "编码FPS",
+  "id_connecting_server": "正在连接远端设备...",
+  "id_start_connection": "开始连接, 等待配置信息",
+  "id_has_connection": "已收到配置信息, 等待视频帧",
+  "id_has_video_frame": "已收到视频帧, 开始控制",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文档",
@@ -353,5 +357,5 @@
   "id_file_trans_no_exists": "不存在",
   "id_file_trans_target_path_no_exists": "目标路径不存在",
   "id_file_trans_rename_failed_name_occypy": "重命名失败, 文件名已经被占用",
-  "id_file_trans_rename_failed_file_occypy": "重命名失败, 请检查文件是否被占用",
+  "id_file_trans_rename_failed_file_occypy": "重命名失败, 请检查文件是否被占用"
 }

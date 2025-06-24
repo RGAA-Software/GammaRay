@@ -21,7 +21,8 @@
 static std::string kUrlMedia = "/media";
 static std::string kUrlFileTransfer = "/file/transfer";
 static std::string kApiPing = "/api/ping";
-static std::string kApiVerifySafetyPassword = "/verify/safety/password";
+static std::string kApiVerifySecurityPassword = "/verify/security/password";
+static std::string kApiGetRenderConfiguration = "/get/render/configuration";
 
 namespace tc
 {
@@ -97,9 +98,14 @@ namespace tc
             http_handler_->HandlePing(req, rep);
         });
 
-        // verify safety pwd
-        AddHttpRouter(kApiVerifySafetyPassword, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
-            http_handler_->HandleVerifySafetyPassword(req, rep);
+        // verify security pwd
+        AddHttpRouter(kApiVerifySecurityPassword, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+            http_handler_->HandleVerifySecurityPassword(req, rep);
+        });
+
+        // get render configuration
+        AddHttpRouter(kApiGetRenderConfiguration, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+            http_handler_->HandleGetRenderConfiguration(req, rep);
         });
 
         if (listen_port_ <= 0) {

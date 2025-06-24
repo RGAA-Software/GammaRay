@@ -20,8 +20,15 @@ namespace tc
     public:
         explicit HttpHandler(WsPlugin* plugin);
         std::string GetErrorMessage(int code) override;
+
+        // /api/ping
         void HandlePing(http::web_request &req, http::web_response &rep);
-        void HandleVerifySafetyPassword(http::web_request &req, http::web_response &rep);
+
+        // /verify/security/password
+        void HandleVerifySecurityPassword(http::web_request& req, http::web_response& rep);
+
+        // /get/render/configuration
+        void HandleGetRenderConfiguration(http::web_request& req, http::web_response& rep);
 
     private:
         WsPlugin* plugin_ = nullptr;

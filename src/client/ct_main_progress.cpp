@@ -8,12 +8,15 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTimer>
-#include "tc_qt_widget/no_margin_layout.h"
-#include "tc_client_sdk_new/thunder_sdk.h"
-#include "tc_common_new/log.h"
+#include "tc_label.h"
 #include "ct_settings.h"
-#include "ct_client_context.h"
+#include "tc_pushbutton.h"
 #include "ct_app_message.h"
+#include "no_margin_layout.h"
+#include "tc_common_new/log.h"
+#include "ct_client_context.h"
+#include "tc_client_sdk_new/thunder_sdk.h"
+#include "tc_client_sdk_new/sdk_messages.h"
 
 namespace tc
 {
@@ -36,12 +39,12 @@ namespace tc
 
             root_layout->addLayout(layout);
         }
+
         // title
         {
             auto layout = new NoMarginHLayout();
-            auto title = new QLabel(this);
-            lbl_main_message_ = title;
-            title->setText(tr("Connecting Server..."));
+            auto title = new TcLabel(this);
+            title->SetTextId("id_connecting_server");
             title->setStyleSheet(R"(font-size: 20px; font-weight: 500;)");
             layout->addStretch();
             layout->addWidget(title);
@@ -70,9 +73,9 @@ namespace tc
         // sub messages
         {
             auto layout = new NoMarginHLayout();
-            auto lbl = new QLabel(this);
+            auto lbl = new TcLabel(this);
             lbl_sub_message_ = lbl;
-            lbl->setText(tr("checking connection..."));
+            lbl->SetTextId("id_start_connection");
             lbl->setStyleSheet(R"(font-size: 16px;;)");
             layout->addStretch();
             layout->addWidget(lbl);
@@ -84,9 +87,9 @@ namespace tc
         // cancel button
         {
             auto layout = new NoMarginHLayout();
-            auto lbl = new QPushButton(this);
+            auto lbl = new TcPushButton(this);
             lbl->setFixedSize(150, 30);
-            lbl->setText(tr("CANCEL"));
+            lbl->SetTextId("id_cancel");
             layout->addStretch();
             layout->addWidget(lbl);
             layout->addStretch();
@@ -105,6 +108,37 @@ namespace tc
         image.load(":/resources/image/ic_loading_bg.svg");
         bg_pixmap_ = QPixmap::fromImage(image);
         bg_pixmap_ = bg_pixmap_.scaled(640, 640);
+
+        // listeners
+        msg_listener_ = ctx->ObtainMessageListener();
+
+        // begin to start
+        msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_sub_message_->SetTextId("id_start_connection");
+            });
+        });
+
+        // reconnection
+        msg_listener_->Listen<SdkMsgReconnect>([=, this](const SdkMsgReconnect& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_sub_message_->SetTextId("id_start_connection");
+            });
+        });
+
+        // configuration from remote device
+        msg_listener_->Listen<SdkMsgFirstConfigInfoCallback>([=, this](const SdkMsgFirstConfigInfoCallback& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_sub_message_->SetTextId("id_has_connection");
+            });
+        });
+
+        // first video frame
+        msg_listener_->Listen<SdkMsgFirstVideoFrameDecoded>([=, this](const SdkMsgFirstVideoFrameDecoded& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_sub_message_->SetTextId("id_has_video_frame");
+            });
+        });
     }
 
     void MainProgress::ResetProgress() {

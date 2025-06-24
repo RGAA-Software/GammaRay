@@ -238,6 +238,14 @@ namespace tc
             DismissConnectingDialog();
         });
 
+        // reconnection
+        // relay mode now, already connected
+        msg_listener_->Listen<SdkMsgReconnect>([=, this](const SdkMsgReconnect& msg) {
+            main_progress_->ResetProgress();
+            main_progress_->StepForward();
+            LOGI("Step: SdkMsgReconnect, at: {}", main_progress_->GetCurrentProgress());
+        });
+
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
             //
             context_->PostUITask([=, this]() {

@@ -19,10 +19,10 @@ namespace tc
 
     std::string HttpHandler::GetErrorMessage(int code) {
         if (code == kHandlerErrVerifySafetyPasswordFailed) {
-            return "Verify safety password failed";
+            return "Verify security password failed";
         }
         else if (code == kHandlerErrNoSafetyPasswordInRenderer) {
-            return "No safety password in renderer";
+            return "No security password in renderer";
         }
         return BaseHandler::GetErrorMessage(code);
     }
@@ -32,7 +32,7 @@ namespace tc
         resp.fill_json(data);
     }
 
-    void HttpHandler::HandleVerifySafetyPassword(http::web_request& req, http::web_response& resp) {
+    void HttpHandler::HandleVerifySecurityPassword(http::web_request& req, http::web_response& resp) {
         auto params = GetQueryParams(req.query());
         auto value = GetParam(params, "safety_pwd_md5");
         if (!value.has_value()) {
@@ -61,5 +61,14 @@ namespace tc
         else {
             SendOkJson(resp, "");
         }
+    }
+
+    void HttpHandler::HandleGetRenderConfiguration(http::web_request& req, http::web_response& resp) {
+        const auto& settings = plugin_->GetPluginSettingsInfo();
+        nlohmann::json obj;
+        obj["device_id"] = settings.device_id_;
+        obj["relay_host"] = settings.relay_host_;
+        obj["relay_port"] = std::atoi(settings.relay_port_.c_str());
+        SendOkJson(resp, obj.dump());
     }
 }

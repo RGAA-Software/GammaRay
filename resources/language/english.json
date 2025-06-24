@@ -236,7 +236,11 @@
   "id_capture_size": "Capture Size",
   "id_encoder_name": "Encoder Name",
   "id_encoder_fps": "Encoder FPS",
-  
+  "id_connecting_server": "Connecting Remote Device...",
+  "id_start_connection": "Starting connection, wait for configuration",
+  "id_has_connection": "Received configuration, wait for video frame",
+  "id_has_video_frame": "Received video frame, start controlling",
+
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",
   "id_file_trans_my_music": "My Music",

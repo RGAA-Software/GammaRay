@@ -297,10 +297,10 @@ namespace tc
                 return;
             }
 
-            // check relay server
-            auto srv_remote_device_id = "server_" + settings_->GetDeviceId();
-            LOGI("Will check device: {} on relay server: {}:{}", settings_->GetDeviceId(), settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
-            auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(settings_->GetRelayServerHost(), settings_->GetRelayServerPort(), srv_remote_device_id);
+            // check the remote device in relay server
+            auto srv_remote_device_id = "server_" + item->remote_device_id_;
+            LOGI("Will check remote device: {} on relay server: {}:{}", item->remote_device_id_, item->stream_host_, item->stream_port_);
+            auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id);
             if (!relay_device_info.has_value()) {
                 if (relay_device_info.error() == relay::RelayError::kRelayRequestFailed) {
                     // network failed
@@ -381,12 +381,23 @@ namespace tc
             }
         }
         else {
-            auto r = RenderApi::VerifySafetyPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
+            // get render configuration; to check the render online or not
+            {
+                auto r = RenderApi::GetRenderConfiguration(target_item->stream_host_, target_item->stream_port_);
+                if (!r.has_value()) {
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
+                    dialog.exec();
+                    return;
+                }
+            }
+
+            // verify security password
+            auto r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
             auto ok = r.value_or(false);
             for (;;) {
-                LOGI("VerifySafetyPassword result: {}", ok);
+                LOGI("VerifySecurityPassword result: {}", ok);
                 if (!ok) {
-                    LOGI("VerifySafetyPassword result 1: {}", ok);
+                    LOGI("VerifySecurityPassword result 1: {}", ok);
                     InputRemotePwdDialog dlg_input_pwd(context_);
                     if (dlg_input_pwd.exec() == 1) {
                         return;
@@ -400,7 +411,7 @@ namespace tc
                     // md5 pwd
                     auto pwd_md5 = MD5::Hex(input_password.toStdString());
 
-                    r = RenderApi::VerifySafetyPassword(target_item->stream_host_, target_item->stream_port_, pwd_md5);
+                    r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, pwd_md5);
                     ok = r.value_or(false);
                     if (!ok) {
                         context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
