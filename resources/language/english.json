@@ -10,6 +10,7 @@
   "id_settings_security": "Security",
   "id_settings_plugins": "Plugins",
   "id_settings_controller": "Controller",
+  "id_settings_other_clients": "Mobile Clients",
   "id_settings_aboutme": "AboutMe",
 
   "id_tab_remote_control": "Remote Control",
@@ -241,6 +242,7 @@
   "id_start_connection": "Starting connection, wait for configuration",
   "id_has_connection": "Received configuration, wait for video frame",
   "id_has_video_frame": "Received video frame, start controlling",
+  "id_open_directory": "Open Directory",
 
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",

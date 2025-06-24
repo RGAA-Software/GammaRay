@@ -11,6 +11,7 @@
   "id_settings_security": "安全",
   "id_settings_plugins": "插件",
   "id_settings_controller": "控制端",
+  "id_settings_other_clients": "移动客户端",
   "id_settings_aboutme": "关于",
 
   "id_tab_remote_control": "远程控制",
@@ -242,6 +243,7 @@
   "id_start_connection": "开始连接, 等待配置信息",
   "id_has_connection": "已收到配置信息, 等待视频帧",
   "id_has_video_frame": "已收到视频帧, 开始控制",
+  "id_open_directory": "打开路径",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文档",
