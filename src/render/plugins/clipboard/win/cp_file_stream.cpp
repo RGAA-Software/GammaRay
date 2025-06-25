@@ -98,6 +98,7 @@ namespace tc
     }
 
     void CpFileStream::OnClipboardRespBuffer(const ClipboardRespBuffer& rb) {
+        std::unique_lock lk(wait_data_mtx_);
         ClipboardRespBuffer buffer;
         buffer.CopyFrom(rb);
         resp_buffer_ = buffer;
