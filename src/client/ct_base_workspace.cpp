@@ -25,7 +25,6 @@
 #include "ui/notification_panel.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "ui/ct_statistics_panel.h"
-#include "client/clipboard/ct_clipboard_manager.h"
 #include "ui/no_margin_layout.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/process_util.h"
@@ -81,7 +80,8 @@ namespace tc
 
         InitSampleWidget();
 
-        InitClipboardManager();
+        // By Plugin
+        //InitClipboardManager();
 
         // notification handle
         // notification_handler_ = new FloatNotificationHandle(context_, this);
@@ -111,9 +111,8 @@ namespace tc
         LOGI("Init .3 used: {}ms", (end - beg));
     }
 
-
     void BaseWorkspace::InitPluginsManager() {
-        plugin_manager_ = ClientPluginManager::Make(this->context_);
+        plugin_manager_ = ClientPluginManager::Make(shared_from_this());
         context_->SetPluginManager(plugin_manager_);
         plugin_manager_->LoadAllPlugins();
         plugin_manager_->RegisterPluginEventsCallback();
@@ -315,10 +314,10 @@ namespace tc
 
     }
 
-    void BaseWorkspace::InitClipboardManager() {
-        clipboard_mgr_ = std::make_shared<ClipboardManager>(shared_from_this());
-        clipboard_mgr_->Start();
-    }
+//    void BaseWorkspace::InitClipboardManager() {
+//        clipboard_mgr_ = std::make_shared<ClipboardManager>(shared_from_this());
+//        clipboard_mgr_->Start();
+//    }
 
     void BaseWorkspace::RegisterSdkMsgCallbacks() {
         sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
@@ -395,9 +394,7 @@ namespace tc
         });
 
         sdk_->SetOnClipboardCallback([=, this](std::shared_ptr<tc::Message> msg) {
-            if (clipboard_mgr_) {
-                clipboard_mgr_->OnRemoteClipboardMessage(msg);
-            }
+            // See: RawMessageCallback
         });
 
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
@@ -498,41 +495,47 @@ namespace tc
             force_update_cursor_ = true;
 
             plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
+                // callback
                 plugin->On1Second();
+
+                // sync settings
+                plugin->SyncClientPluginSettings(ClientPluginSettings {
+                    .clipboard_enabled_ = settings_->clipboard_on_,
+                });
             });
         });
 
-        msg_listener_->Listen<SdkMsgClipboardReqBuffer>([=, this](const SdkMsgClipboardReqBuffer& buffer) {
-            auto req_index = buffer.req_buffer_.req_index();
-            auto req_start = buffer.req_buffer_.req_start();
-            auto req_size = buffer.req_buffer_.req_size();
-            auto full_filename = buffer.req_buffer_.full_name();
-
-            auto file = File::OpenForReadB(full_filename);
-            DataPtr data = nullptr;
-            if (file->Exists()) {
-                uint64_t read_size = 0;
-                data = file->Read(req_start, req_size, read_size);
-            }
-
-            tc::Message msg;
-            msg.set_device_id(settings_->device_id_);
-            msg.set_stream_id(settings_->stream_id_);
-            msg.set_type(MessageType::kClipboardRespBuffer);
-            auto sub = msg.mutable_cp_resp_buffer();
-            sub->set_full_name(full_filename);
-            sub->set_req_size(req_size);
-            sub->set_req_start(req_start);
-            sub->set_req_index(req_index);
-            if (data) {
-                sub->set_read_size(data->Size());
-                sub->set_buffer(data->AsString());
-            }
-
-            sdk_->PostFileTransferMessage(msg.SerializeAsString());
-
-            //LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
-        });
+//        msg_listener_->Listen<SdkMsgClipboardReqBuffer>([=, this](const SdkMsgClipboardReqBuffer& buffer) {
+//            auto req_index = buffer.req_buffer_.req_index();
+//            auto req_start = buffer.req_buffer_.req_start();
+//            auto req_size = buffer.req_buffer_.req_size();
+//            auto full_filename = buffer.req_buffer_.full_name();
+//
+//            auto file = File::OpenForReadB(full_filename);
+//            DataPtr data = nullptr;
+//            if (file->Exists()) {
+//                uint64_t read_size = 0;
+//                data = file->Read(req_start, req_size, read_size);
+//            }
+//
+//            tc::Message msg;
+//            msg.set_device_id(settings_->device_id_);
+//            msg.set_stream_id(settings_->stream_id_);
+//            msg.set_type(MessageType::kClipboardRespBuffer);
+//            auto sub = msg.mutable_cp_resp_buffer();
+//            sub->set_full_name(full_filename);
+//            sub->set_req_size(req_size);
+//            sub->set_req_start(req_start);
+//            sub->set_req_index(req_index);
+//            if (data) {
+//                sub->set_read_size(data->Size());
+//                sub->set_buffer(data->AsString());
+//            }
+//
+//            sdk_->PostFileTransferMessage(msg.SerializeAsString());
+//
+//            //LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
+//        });
 
         msg_listener_->Listen<MsgClientFullscreen>([=, this](const MsgClientFullscreen& msg) {
             context_->PostUITask([=, this]() {

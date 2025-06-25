@@ -31,7 +31,7 @@ namespace tc
         }
     }
 
-    void ClientPluginContext::PostUIThread(std::function<void()>&& task) {
+    void ClientPluginContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [t = std::move(task)]() {
             t();
         });

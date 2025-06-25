@@ -7,13 +7,13 @@ namespace tc
 {
 
     class WinMessageWindow;
-    class ClientContext;
+    class ClientClipboardPlugin;
 
     // 监听windows消息
     class WinMessageLoop : public std::enable_shared_from_this<WinMessageLoop> {
     public:
-        static std::shared_ptr<WinMessageLoop> Make(const std::shared_ptr<ClientContext>& ctx);
-        explicit WinMessageLoop(const std::shared_ptr<ClientContext>& ctx);
+        static std::shared_ptr<WinMessageLoop> Make(ClientClipboardPlugin* plugin);
+        explicit WinMessageLoop(ClientClipboardPlugin* plugin);
         ~WinMessageLoop();
         void Start();
         void Stop();
@@ -25,7 +25,7 @@ namespace tc
         void OnWinSessionChange(uint32_t msg);
         static void CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime);
     private:
-        std::shared_ptr<ClientContext> context_ = nullptr;
+        ClientClipboardPlugin* plugin_ = nullptr;
         std::thread thread_;
         std::shared_ptr<WinMessageWindow> message_window_ = nullptr;
     };

@@ -5,6 +5,7 @@
 #include "win_message_loop.h"
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
+#include "client/plugins/clipboard/clipboard_plugin.h"
 
 namespace tc
 {
@@ -14,12 +15,12 @@ namespace tc
     std::atomic<bool> WinMessageWindow::class_registered_ = false;
     std::mutex WinMessageWindow::register_mutex_;
 
-    std::shared_ptr<WinMessageWindow> WinMessageWindow::Make(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop) {
-        return std::make_shared<WinMessageWindow>(ctx, message_loop);
+    std::shared_ptr<WinMessageWindow> WinMessageWindow::Make(ClientClipboardPlugin* plugin, std::shared_ptr<WinMessageLoop> message_loop) {
+        return std::make_shared<WinMessageWindow>(plugin, message_loop);
     }
 
-    WinMessageWindow::WinMessageWindow(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop) {
-        context_ = ctx;
+    WinMessageWindow::WinMessageWindow(ClientClipboardPlugin* plugin, std::shared_ptr<WinMessageLoop> message_loop) {
+        plugin_ = plugin;
         message_loop_ = message_loop;
     }
 
@@ -218,9 +219,11 @@ namespace tc
     }
 
     void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        context_->SendAppMessage(MsgClientClipboardUpdated {
-            //.hwnd_ = hwnd,
-        });
+        /// TODO:
+//        context_->SendAppMessage(MsgClientClipboardUpdated {
+//            //.hwnd_ = hwnd,
+//        });
+        plugin_->OnClipboardUpdated();
     }
 
     void WinMessageWindow::OnDisplayChange() {

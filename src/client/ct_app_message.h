@@ -177,14 +177,6 @@ namespace tc
     public:
     };
 
-    // clipboard updated
-    class MsgClientClipboardUpdated : public MsgClientBase {
-    public:
-#ifdef WIN32
-        //HWND hwnd_ = nullptr;
-#endif
-    };
-
     class MsgClientMediaRecord : public MsgClientBase {
     public:
     };

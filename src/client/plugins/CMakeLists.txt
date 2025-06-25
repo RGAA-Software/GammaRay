@@ -1,3 +1,3 @@
 add_subdirectory(multi_screens)
-
 add_subdirectory(media_record)
+add_subdirectory(clipboard)

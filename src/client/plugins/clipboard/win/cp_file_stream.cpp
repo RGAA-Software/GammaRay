@@ -41,7 +41,8 @@ namespace tc
         req_buffer->set_req_start(current_position_);
         req_buffer->set_full_name(cp_file_.file_.full_path());
 
-        workspace_->GetThunderSdk()->PostFileTransferMessage(msg.SerializeAsString());
+        /// TODO:
+        //workspace_->GetThunderSdk()->PostFileTransferMessage(msg.SerializeAsString());
 
         std::unique_lock lk(wait_data_mtx_);
         data_cv_.wait(lk, [this]() -> bool {

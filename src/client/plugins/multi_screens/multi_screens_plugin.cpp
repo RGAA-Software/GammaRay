@@ -15,7 +15,7 @@ namespace tc
 {
 
     std::string MultiScreensPlugin::GetPluginId() {
-        return kMultiScreenCtPluginId;
+        return kClientMultiScreenCtPluginId;
     }
 
     std::string MultiScreensPlugin::GetPluginName() {

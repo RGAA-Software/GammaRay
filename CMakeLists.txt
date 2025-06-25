@@ -208,7 +208,8 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_clipboard tc_account_sdk tc_rp_message tc_profile_client
 )
 
-add_dependencies(tc_build_all plugin_multi_screens plugin_media_record_client)
+# client plugins
+add_dependencies(tc_build_all plugin_multi_screens plugin_media_record_client plugin_client_clipboard)
 
 add_custom_target(tc_build_client ALL COMMENT "Build client")
 add_dependencies(tc_build_client GammaRayClientInner)#GammaRayClient
@@ -300,6 +301,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_media_record_client.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_media_record_client.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/media_record/plugin_media_record_client.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_media_record_client.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_client_clipboard.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_client_clipboard.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/clipboard/plugin_client_clipboard.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_client_clipboard.dll.toml"
 
 )
 

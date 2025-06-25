@@ -10,9 +10,10 @@
 namespace tc
 {
 
-    const std::string kMultiScreenCtPluginId = "8fb40611-54a8-4b2e-b7dd-deca05ff5453";
+    const std::string kClientMultiScreenCtPluginId = "8fb40611-54a8-4b2e-b7dd-deca05ff5453";
+    const std::string kClientMediaRecordPluginId = "db49cbd4-8800-4746-ae3d-efd89801d33f";
+    const std::string kClientClipboardPluginId = "113ca5af-f31f-4868-9b8b-ac436e4a3531";
 
-    const std::string kMediaRecordPluginId = "db49cbd4-8800-4746-ae3d-efd89801d33f";
 }
 
 #endif //GAMMARAY_CT_PLUGIN_IDS_H

@@ -25,7 +25,7 @@ namespace tc
 {
 
     std::string MediaRecordPluginClient::GetPluginId() {
-        return kMediaRecordPluginId;
+        return kClientMediaRecordPluginId;
     }
 
     std::string MediaRecordPluginClient::GetPluginName() {

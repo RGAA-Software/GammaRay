@@ -26,7 +26,6 @@
 #include "ui/notification_panel.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "ui/ct_statistics_panel.h"
-#include "client/clipboard/ct_clipboard_manager.h"
 #include "ui/no_margin_layout.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "tc_common_new/process_util.h"
@@ -102,7 +101,7 @@ namespace tc
 
         InitSampleWidget();
 
-        InitClipboardManager();
+        //InitClipboardManager();
     
         // message listener
         InitListener();

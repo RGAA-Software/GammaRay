@@ -29,7 +29,7 @@ namespace tc
 
         // tasks
         void PostWorkTask(std::function<void()>&& task);
-        void PostUIThread(std::function<void()>&& task);
+        void PostUITask(std::function<void()>&& task);
 
         // timer
         void StartTimer(int millis, std::function<void()>&& cbk);

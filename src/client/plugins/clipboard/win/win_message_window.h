@@ -8,13 +8,13 @@
 namespace tc
 {
 
-    class ClientContext;
     class WinMessageLoop;
+    class ClientClipboardPlugin;
 
     class WinMessageWindow {
     public:
-        static std::shared_ptr<WinMessageWindow> Make(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop);
-        explicit WinMessageWindow(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop);
+        static std::shared_ptr<WinMessageWindow> Make(ClientClipboardPlugin* plugin, std::shared_ptr<WinMessageLoop> message_loop);
+        explicit WinMessageWindow(ClientClipboardPlugin* plugin, std::shared_ptr<WinMessageLoop> message_loop);
         ~WinMessageWindow();
         using MessageCallback = std::function<bool(UINT message,
             WPARAM wparam,
@@ -34,7 +34,7 @@ namespace tc
         void OnDisplayChange();
 
     private:
-        std::shared_ptr<ClientContext> context_ = nullptr;
+        ClientClipboardPlugin* plugin_ = nullptr;
         MessageCallback message_callback_;
         HWND mHwnd = nullptr;
         std::string window_name_;

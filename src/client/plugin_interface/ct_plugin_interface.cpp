@@ -77,6 +77,13 @@ namespace tc
 
         screen_recording_path_ = GetConfigParam<std::string>("screen_recording_path");
 
+        plugin_settings_.clipboard_enabled_ = GetConfigBoolParam("clipboard_enabled");
+        plugin_settings_.device_id_ = GetConfigStringParam("device_id");
+        plugin_settings_.stream_id_ = GetConfigStringParam("stream_id");
+        LOGI("plugin settings clipboard enabled: {}", plugin_settings_.clipboard_enabled_);
+        LOGI("plugin settings device id: {}", plugin_settings_.device_id_);
+        LOGI("plugin settings stream id: {}", plugin_settings_.stream_id_);
+
         // print params
         LOGI("Input params size : {}", param.cluster_.size());
         for (const auto& [key, value]: param.cluster_) {
@@ -208,6 +215,10 @@ namespace tc
 
     void ClientPluginInterface::OnMessageRaw(const std::any& msg) {
 
+    }
+
+    void ClientPluginInterface::SyncClientPluginSettings(const ClientPluginSettings& st) {
+        plugin_settings_.clipboard_enabled_ = st.clipboard_enabled_;
     }
 
 }

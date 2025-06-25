@@ -19,12 +19,12 @@ namespace tc
         }
     }
 
-    std::shared_ptr<WinMessageLoop> WinMessageLoop::Make(const std::shared_ptr<ClientContext>& ctx) {
-        return std::make_shared<WinMessageLoop>(ctx);
+    std::shared_ptr<WinMessageLoop> WinMessageLoop::Make(ClientClipboardPlugin* plugin) {
+        return std::make_shared<WinMessageLoop>(plugin);
     }
 
-    WinMessageLoop::WinMessageLoop(const std::shared_ptr<ClientContext>& ctx) {
-        context_ = ctx;
+    WinMessageLoop::WinMessageLoop(ClientClipboardPlugin* plugin) {
+        plugin_ = plugin;
     }
 
     WinMessageLoop::~WinMessageLoop() {
@@ -33,7 +33,7 @@ namespace tc
 
     void WinMessageLoop::CreateMessageWindow() {
         //构造函数内 不能使用shared_from_this();
-        message_window_ = WinMessageWindow::Make(context_, shared_from_this());
+        message_window_ = WinMessageWindow::Make(plugin_, shared_from_this());
     }
 
     void WinMessageLoop::OnWinSessionChange(uint32_t message) {

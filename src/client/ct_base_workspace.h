@@ -28,7 +28,6 @@ namespace tc
     class NotificationPanel;
     class FileTransferChannel;
     class CtStatisticsPanel;
-    class ClipboardManager;
     class FloatButtonStateIndicator;
     class FileTransInterface;
     class MainProgress;
@@ -67,7 +66,6 @@ namespace tc
         virtual void InitListener();
         void InitFileTrans();
         void InitPanelClient();
-        void InitClipboardManager();
 
         virtual void RegisterSdkMsgCallbacks();
         void Exit();
@@ -123,7 +121,6 @@ namespace tc
         uint32_t cursor_type_ = 100000;
         bool force_update_cursor_ = true;
         CtStatisticsPanel* st_panel_ = nullptr;
-        std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
         FloatButtonStateIndicator* btn_indicator_ = nullptr;
         std::atomic_bool has_frame_arrived_ = false;
 

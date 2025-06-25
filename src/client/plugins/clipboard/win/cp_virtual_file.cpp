@@ -20,8 +20,8 @@
 namespace tc
 {
 
-    CpVirtualFile::CpVirtualFile(const std::shared_ptr<BaseWorkspace>& ws) {
-        workspace_ = ws;
+    CpVirtualFile::CpVirtualFile(ClientClipboardPlugin* plugin) {
+        plugin_ = plugin;
     }
 
     CpVirtualFile::~CpVirtualFile() {
@@ -104,7 +104,7 @@ namespace tc
                 if (file_stream_) {
                     file_stream_->Exit();
                 }
-                file_stream_ = std::make_shared<CpFileStream>(workspace_, fw);
+                file_stream_ = std::make_shared<CpFileStream>(plugin_, fw);
 
                 pmedium->pstm = (IStream *)file_stream_.get();
                 pmedium->pstm->AddRef();
@@ -197,9 +197,9 @@ namespace tc
         }
     }
 
-    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<BaseWorkspace>& ws) {
+    CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClientClipboardPlugin* plugin) {
         *ppv = nullptr;
-        auto p = new CpVirtualFile(ws);
+        auto p = new CpVirtualFile(plugin);
         p->Init();
         auto hr = p->QueryInterface(riid, ppv);
         if (SUCCEEDED(hr)) {

@@ -11,18 +11,22 @@
 namespace tc
 {
 
+    class ThunderSdk;
     class ClientContext;
-    class ClientPluginBaseEvent;
+    class BaseWorkspace;
     class MessageNotifier;
+    class ClientPluginBaseEvent;
 
     class ClientPluginEventRouter {
     public:
-        explicit ClientPluginEventRouter(const std::shared_ptr<ClientContext>& app);
+        explicit ClientPluginEventRouter(const std::shared_ptr<BaseWorkspace>& ws);
         void ProcessPluginEvent(const std::shared_ptr<ClientPluginBaseEvent>& event);
 
     private:
+        std::shared_ptr<BaseWorkspace> ws_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
+        std::shared_ptr<ThunderSdk> thunder_sdk_ = nullptr;
     };
 
 }

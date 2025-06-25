@@ -27,6 +27,12 @@ namespace tc
 
         // 显示通知消息
         kPluginNotifyMsgEvent,
+
+        // local clipboard updated
+        kPluginClipboardEvent,
+
+        // network event with protobuf
+        kPluginNetworkEvent,
     };
 
     class ClientPluginBaseEvent {
@@ -63,6 +69,32 @@ namespace tc
         std::string message_;
     };
 
+    // kPluginClipboardEvent
+    class ClientPluginClipboardEvent : public ClientPluginBaseEvent {
+    public:
+        ClientPluginClipboardEvent() : ClientPluginBaseEvent() {
+            event_type_ = ClientPluginEventType::kPluginClipboardEvent;
+        }
+    public:
+        // text or files
+        ClipboardType type_;
+        // text mode
+        std::string text_msg_;
+        // file mode
+        std::vector<ClipboardFile> cp_files_;
+    };
+
+    // kPluginNetworkEvent
+    class ClientPluginNetworkEvent : public ClientPluginBaseEvent {
+    public:
+        ClientPluginNetworkEvent() : ClientPluginBaseEvent() {
+            event_type_ = ClientPluginEventType::kPluginNetworkEvent;
+        }
+    public:
+        // sent message via media channel ?
+        bool media_channel_ = false;
+        std::string buf_;
+    };
 }
 
 #endif //GAMMARAY_GR_PLUGIN_EVENTS_H

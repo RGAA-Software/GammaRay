@@ -20,26 +20,29 @@
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/file_util.h"
 #include "win/win_message_loop.h"
-#include "clipboard/win/cp_virtual_file.h"
+#include "win/cp_virtual_file.h"
 #include "client/ct_base_workspace.h"
+#include "clipboard_plugin.h"
+#include "client/plugin_interface/ct_plugin_context.h"
+#include "plugins/ct_plugin_events.h"
 
 namespace tc
 {
 
-    ClipboardManager::ClipboardManager(const std::shared_ptr<BaseWorkspace>& ws) : QObject(nullptr) {
-        ws_ = ws;
-        context_ = ws_->GetContext();
+    ClipboardManager::ClipboardManager(ClientClipboardPlugin* plugin) : QObject(nullptr) {
+        plugin_ = plugin;
+        context_ = plugin->GetPluginContext();
 
-        msg_listener_ = context_->ObtainMessageListener();
-        msg_listener_->Listen<MsgClientClipboardUpdated>([=, this](const MsgClientClipboardUpdated& msg) {
-            context_->PostUITask([=, this]() {
-                this->OnClipboardUpdated();
-            });
-        });
+//        msg_listener_ = context_->ObtainMessageListener();
+//        msg_listener_->Listen<MsgClientClipboardUpdated>([=, this](const MsgClientClipboardUpdated& msg) {
+//            context_->PostUITask([=, this]() {
+//                this->OnClipboardUpdated();
+//            });
+//        });
     }
 
     void ClipboardManager::Start() {
-        msg_loop_ = WinMessageLoop::Make(context_);
+        msg_loop_ = WinMessageLoop::Make(plugin_);
         msg_loop_->Start();
     }
 
@@ -50,11 +53,9 @@ namespace tc
     }
 
     void ClipboardManager::OnClipboardUpdated() {
-        if (!Settings::Instance()->clipboard_on_) {
+        if (!plugin_->IsClipboardEnabled()) {
             return;
         }
-
-        //LOGI("===> OnClipboardUpdated!");
 
         QClipboard *board = QGuiApplication::clipboard();
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
@@ -134,10 +135,16 @@ namespace tc
                 LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
             }
 
-            context_->SendAppMessage(MsgClientClipboard{
-                .type_ = ClipboardType::kClipboardFiles,
-                .files_ = cp_files,
-            });
+            /// TODO:
+//            context_->SendAppMessage(MsgClientClipboard{
+//                .type_ = ClipboardType::kClipboardFiles,
+//                .files_ = cp_files,
+//            });
+
+            auto event = std::make_shared<ClientPluginClipboardEvent>();
+            event->type_ = ClipboardType::kClipboardFiles;
+            event->cp_files_ = cp_files;
+            plugin_->CallbackEvent(event);
         }
         else if (!text.isEmpty()) {
             LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
@@ -145,17 +152,23 @@ namespace tc
                 return;
             }
             LOGI("===> new Text: {}", text.toStdString());
+            /// TODO:
+//            context_->SendAppMessage(MsgClientClipboard{
+//                .type_ = ClipboardType::kClipboardText,
+//                .msg_ = text.toStdString(),
+//            });
 
-            context_->SendAppMessage(MsgClientClipboard{
-                .type_ = ClipboardType::kClipboardText,
-                .msg_ = text.toStdString(),
-            });
+            auto event = std::make_shared<ClientPluginClipboardEvent>();
+            event->type_ = ClipboardType::kClipboardText;
+            event->text_msg_ = text.toStdString();
+            plugin_->CallbackEvent(event);
+
             remote_info_ = text;
         }
     }
 
     void ClipboardManager::OnRemoteClipboardMessage(std::shared_ptr<tc::Message> msg) {
-        if (!Settings::Instance()->clipboard_on_) {
+        if (!plugin_->IsClipboardEnabled()) {
             LOGI("clipboard is not on!");
             return;
         }
@@ -198,7 +211,7 @@ namespace tc
                     }
 
                     if (!virtual_file_) {
-                        virtual_file_ = tc::CreateVirtualFile(IID_IDataObject, (void **) &data_object_, ws_);
+                        virtual_file_ = tc::CreateVirtualFile(IID_IDataObject, (void **) &data_object_, plugin_);
                     }
                     if (!data_object_) {
                         LOGE("DataObject is null!");

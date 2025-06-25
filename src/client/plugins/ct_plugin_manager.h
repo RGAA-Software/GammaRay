@@ -15,15 +15,17 @@ namespace tc
 {
 
     class ClientContext;
+    class BaseWorkspace;
     class ClientPluginInterface;
     class ClientPluginEventRouter;
     class MediaRecordPluginClient;
+    class ClientClipboardPlugin;
 
     class ClientPluginManager {
     public:
-        static std::shared_ptr<ClientPluginManager> Make(const std::shared_ptr<ClientContext>& ctx);
+        static std::shared_ptr<ClientPluginManager> Make(const std::shared_ptr<BaseWorkspace>& ws);
 
-        explicit ClientPluginManager(const std::shared_ptr<ClientContext>& ctx);
+        explicit ClientPluginManager(const std::shared_ptr<BaseWorkspace>& ws);
 
         void LoadAllPlugins();
         void RegisterPluginEventsCallback();
@@ -31,8 +33,8 @@ namespace tc
         void ReleasePlugin(const std::string& name);
 
         ClientPluginInterface* GetPluginById(const std::string& id);
-
         MediaRecordPluginClient* GetMediaRecordPlugin();
+        ClientClipboardPlugin* GetClipboardPlugin();
 
         void VisitAllPlugins(const std::function<void(ClientPluginInterface*)>&& visitor);
         void DumpPluginInfo();
@@ -40,6 +42,7 @@ namespace tc
         void On1Second();
 
     private:
+        std::shared_ptr<BaseWorkspace> ws_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::map<std::string, ClientPluginInterface*> plugins_;
         std::shared_ptr<ClientPluginEventRouter> evt_router_ = nullptr;

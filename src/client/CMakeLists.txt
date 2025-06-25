@@ -99,7 +99,6 @@ else()
     message(STATUS "file transmission is disabled.")
 endif()
 
-add_subdirectory(clipboard)
 add_subdirectory(plugin_interface)
 add_subdirectory(plugins)
 add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS} ${CLIPBOARD_WIN_SRCS}) #WIN32 MANUAL_FINALIZATION

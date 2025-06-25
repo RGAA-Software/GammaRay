@@ -18,13 +18,13 @@
 namespace tc
 {
 
-    class BaseWorkspace;
+    class ClientClipboardPlugin;
 
     class CpFileStream : public IStream {
     public:
 
-        CpFileStream(const std::shared_ptr<BaseWorkspace>& ws, const ClipboardFileWrapper& fw) : ref_(1) {
-            workspace_ = ws;
+        CpFileStream(ClientClipboardPlugin* plugin, const ClipboardFileWrapper& fw) : ref_(1) {
+            plugin_ = plugin;
             cp_file_ = fw;
         }
 
@@ -88,7 +88,7 @@ namespace tc
         void Exit();
 
     private:
-        std::shared_ptr<BaseWorkspace> workspace_ = nullptr;
+        ClientClipboardPlugin* plugin_ = nullptr;
         LONG ref_;
         uint64_t file_size_ {0};
         std::atomic_int64_t current_position_ = 0;

@@ -16,7 +16,7 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
 #include <QtGui/QPixmap>
-#include <mutex>
+#include "ct_plugin_settings.h"
 
 namespace tc
 {
@@ -105,6 +105,9 @@ namespace tc
         // app events
         virtual void DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent>& event) {};  // exe -> dll
 
+        // exe -> dlls
+        virtual void SyncClientPluginSettings(const ClientPluginSettings& st);
+
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;
@@ -145,6 +148,7 @@ namespace tc
         std::string base_path_;
         std::string capture_audio_device_id_;
         std::string screen_recording_path_;
+        ClientPluginSettings plugin_settings_;
     };
 
 

@@ -8,24 +8,25 @@
 #include <QFile>
 #include <QApplication>
 #include "toml/toml.hpp"
+#include "ct_settings.h"
+#include "ct_plugin_ids.h"
 #include "ct_client_context.h"
+#include "ct_base_workspace.h"
 #include "ct_plugin_event_router.h"
 #include "plugin_interface/ct_plugin_interface.h"
-#include "ct_plugin_ids.h"
-#include "ct_settings.h"
-//#include "media_record/media_record_plugin.h"
 
 typedef void *(*FnGetInstance)();
 
 namespace tc
 {
 
-    std::shared_ptr<ClientPluginManager> ClientPluginManager::Make(const std::shared_ptr<ClientContext>& ctx) {
-        return std::make_shared<ClientPluginManager>(ctx);
+    std::shared_ptr<ClientPluginManager> ClientPluginManager::Make(const std::shared_ptr<BaseWorkspace>& ws) {
+        return std::make_shared<ClientPluginManager>(ws);
     }
 
-    ClientPluginManager::ClientPluginManager(const std::shared_ptr<ClientContext>& ctx) {
-        this->context_ = ctx;
+    ClientPluginManager::ClientPluginManager(const std::shared_ptr<BaseWorkspace>& ws) {
+        this->ws_ = ws;
+        this->context_ = ws_->GetContext();
     }
 
     void ClientPluginManager::LoadAllPlugins() {
@@ -66,7 +67,10 @@ namespace tc
                         .cluster_ = {
                             {"name", filename.toStdString()},
                             {"base_path", base_path.toStdString()},
-                            {"screen_recording_path", settings->screen_recording_path_}
+                            {"screen_recording_path", settings->screen_recording_path_},
+                            {"clipboard_enabled", settings->clipboard_on_},
+                            {"device_id", settings->device_id_},
+                            {"stream_id", settings->stream_id_}
                         },
                     };
 
@@ -124,7 +128,7 @@ namespace tc
     }
 
     void ClientPluginManager::RegisterPluginEventsCallback() {
-        this->evt_router_ = std::make_shared<ClientPluginEventRouter>(context_);
+        this->evt_router_ = std::make_shared<ClientPluginEventRouter>(ws_);
         VisitAllPlugins([&](ClientPluginInterface* plugin) {
             plugin->RegisterEventCallback([=, this](const std::shared_ptr<ClientPluginBaseEvent>& event) {
                 evt_router_->ProcessPluginEvent(event);
@@ -149,6 +153,22 @@ namespace tc
             return nullptr;
         }
         return plugins_.at(id);
+    }
+
+    MediaRecordPluginClient* ClientPluginManager::GetMediaRecordPlugin() {
+        auto plugin = GetPluginById(kClientMediaRecordPluginId);
+        if (plugin) {
+            return (MediaRecordPluginClient*)plugin;
+        }
+        return nullptr;
+    }
+
+    ClientClipboardPlugin* ClientPluginManager::GetClipboardPlugin() {
+        auto plugin = GetPluginById(kClientClipboardPluginId);
+        if (plugin) {
+            return (ClientClipboardPlugin*)plugin;
+        }
+        return nullptr;
     }
 
     void ClientPluginManager::VisitAllPlugins(const std::function<void(ClientPluginInterface *)>&& visitor) {
@@ -177,13 +197,5 @@ namespace tc
                  plugin->IsPluginEnabled()
             );
         });
-    }
-
-    MediaRecordPluginClient* ClientPluginManager::GetMediaRecordPlugin() {
-        auto plugin = GetPluginById(kMediaRecordPluginId);
-        if (plugin) {
-            return (MediaRecordPluginClient*)plugin;
-        }
-        return nullptr;
     }
 }
