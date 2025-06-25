@@ -20,3 +20,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core
 #target_link_libraries(test_process PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main tc_common_new tc_steam_manager_new tc_encoder_new)
 
 add_executable(test_resolutions test_resolutions.cpp)
+
+add_executable(test_http_client test_http_client.cpp)
+target_link_libraries(test_http_client tc_common_new)

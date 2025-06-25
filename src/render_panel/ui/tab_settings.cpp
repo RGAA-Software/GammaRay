@@ -110,6 +110,22 @@ namespace tc
             left_button_layout->addSpacing(10);
             left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
         }
+        // other clients
+        {
+            auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+            btn_other_clients = btn;
+            btn->SetBorderRadius(border_radius);
+            btn->SetTextId("id_settings_other_clients");
+
+            btn->SetSelectedFontColor(btn_font_color);
+            btn->setFixedSize(btn_size);
+            //tab_btns.insert(std::make_pair(TabType::kInstalled, btn));
+            connect(btn, &QPushButton::clicked, this, [=, this]() {
+                ChangeTab(StTabName::kStOtherClients);
+            });
+            left_button_layout->addSpacing(10);
+            left_button_layout->addWidget(btn, 0, Qt::AlignHCenter);
+        }
         // About me
         {
             auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
@@ -135,6 +151,7 @@ namespace tc
             tabs_.insert({StTabName::kStSecurity, new StSecurity(app_, this)});
             tabs_.insert({StTabName::kStPlugins, new StPlugins(app_, this)});
             tabs_.insert({StTabName::kStController, new StController(app_, this)});
+            tabs_.insert({StTabName::kStOtherClients, new StClient(app_, this)});
             tabs_.insert({StTabName::kStAboutMe, new StAboutMe(app_, this)});
 
             tabs_[StTabName::kStGeneral]->SetAttach(btn_input_);
@@ -142,6 +159,7 @@ namespace tc
             tabs_[StTabName::kStSecurity]->SetAttach(btn_security_);
             tabs_[StTabName::kStPlugins]->SetAttach(btn_plugins_);
             tabs_[StTabName::kStController]->SetAttach(btn_controller);
+            tabs_[StTabName::kStOtherClients]->SetAttach(btn_other_clients);
             tabs_[StTabName::kStAboutMe]->SetAttach(btn_about_me_);
 
             auto layout = new NoMarginVLayout();
@@ -154,6 +172,7 @@ namespace tc
             stack_widget->addWidget(tabs_[StTabName::kStSecurity]);
             stack_widget->addWidget(tabs_[StTabName::kStPlugins]);
             stack_widget->addWidget(tabs_[StTabName::kStController]);
+            stack_widget->addWidget(tabs_[StTabName::kStOtherClients]);
             stack_widget->addWidget(tabs_[StTabName::kStAboutMe]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);
