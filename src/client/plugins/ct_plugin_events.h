@@ -67,6 +67,7 @@ namespace tc
     public:
         std::string title_;
         std::string message_;
+        std::function<void()> clicked_cbk_ {nullptr};
     };
 
     // kPluginClipboardEvent

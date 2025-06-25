@@ -28,7 +28,13 @@ namespace tc
         else if (ClientPluginEventType::kPluginNotifyMsgEvent == event->event_type_) {
             auto target_event = std::dynamic_pointer_cast<ClientPluginNotifyMsgEvent>(event);
             this->context_->NotifyAppMessage(QString::fromStdString(target_event->title_),
-                                             QString::fromStdString(target_event->message_));
+                                             QString::fromStdString(target_event->message_),
+                                             [=]() {
+                                                 if (target_event->clicked_cbk_) {
+                                                     target_event->clicked_cbk_();
+                                                 }
+                                             }
+            );
         }
         else if (ClientPluginEventType::kPluginClipboardEvent == event->event_type_) {
             auto target_event = std::dynamic_pointer_cast<ClientPluginClipboardEvent>(event);

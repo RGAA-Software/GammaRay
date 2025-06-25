@@ -98,6 +98,13 @@ namespace tc
         running_stream_mgr_ = std::make_shared<RunningStreamManager>(shared_from_this());
 
         notify_mgr_ = std::make_shared<NotifyManager>(main_window_);
+        connect(notify_mgr_.get(), &NotifyManager::notifyDetail, this, [=, this](const NotifyItem& data) {
+            this->PostTask([=, this]() {
+                this->SendAppMessage(MsgNotificationClicked {
+                    .data_ = data,
+                });
+            });
+        });
 
         StartTimers();
     }
@@ -228,18 +235,28 @@ namespace tc
         return notify_mgr_;
     }
 
-    void GrContext::NotifyAppMessage(const QString& title, const QString& msg) {
+    void GrContext::NotifyAppMessage(const QString& title, const QString& msg, std::function<void()>&& cbk) {
         QMetaObject::invokeMethod(this, [=, this]() {
             if (notify_mgr_) {
-                notify_mgr_->notify(title, msg);
+                notify_mgr_->notify(NotifyItem {
+                    .type_ = NotifyItemType::kNormal,
+                    .title_ = title,
+                    .body_ = msg,
+                    .cbk_ = cbk,
+                });
             }
         });
     }
 
-    void GrContext::NotifyAppErrMessage(const QString& title, const QString& msg) {
+    void GrContext::NotifyAppErrMessage(const QString& title, const QString& msg, std::function<void()>&& cbk) {
         QMetaObject::invokeMethod(this, [=, this]() {
             if (notify_mgr_) {
-                notify_mgr_->notifyErr(title, msg);
+                notify_mgr_->notify(NotifyItem {
+                    .type_ = NotifyItemType::kError,
+                    .title_ = title,
+                    .body_ = msg,
+                    .cbk_ = cbk,
+                });
             }
         });
     }

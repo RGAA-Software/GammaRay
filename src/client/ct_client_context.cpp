@@ -153,24 +153,41 @@ namespace tc
 
     void ClientContext::InitNotifyManager(QWidget* parent) {
         notify_manager_ = std::make_shared<NotifyManager>(parent);
+        connect(notify_manager_.get(), &NotifyManager::notifyDetail, this, [=, this](const NotifyItem& data) {
+            this->PostTask([=, this]() {
+                this->SendAppMessage(MsgClientNotificationClicked {
+                    .data_ = data,
+                });
+            });
+        });
     }
 
     std::shared_ptr<NotifyManager> ClientContext::GetNotifyManager() const {
         return notify_manager_;
     }
 
-    void ClientContext::NotifyAppMessage(const QString& title, const QString& msg) {
+    void ClientContext::NotifyAppMessage(const QString& title, const QString& msg, std::function<void()>&& cbk) {
         QMetaObject::invokeMethod(this, [=, this]() {
             if (notify_manager_) {
-                notify_manager_->notify(title, msg);
+                notify_manager_->notify(NotifyItem {
+                    .type_ = NotifyItemType::kNormal,
+                    .title_ = title,
+                    .body_ = msg,
+                    .cbk_ = cbk,
+                });
             }
         });
     }
 
-    void ClientContext::NotifyAppErrMessage(const QString& title, const QString& msg) {
+    void ClientContext::NotifyAppErrMessage(const QString& title, const QString& msg, std::function<void()>&& cbk) {
         QMetaObject::invokeMethod(this, [=, this]() {
             if (notify_manager_) {
-                notify_manager_->notifyErr(title, msg);
+                notify_manager_->notify(NotifyItem {
+                    .type_ = NotifyItemType::kError,
+                    .title_ = title,
+                    .body_ = msg,
+                    .cbk_ = cbk,
+                });
             }
         });
     }

@@ -1,12 +1,13 @@
 #include "media_recorder.h"
+#include <QDir>
+#include <QApplication>
+#include <QStandardPaths>
 #include "tc_common_new/log.h"
-#include "tc_common_new/frame_common.h"
+#include "media_record_plugin.h"
 #include "tc_common_new/time_util.h"
 #include "plugins/ct_plugin_events.h"
-#include "media_record_plugin.h"
-#include <QApplication>
-#include <qstandardpaths.h>
-#include <qdir.h>
+#include "tc_common_new/frame_common.h"
+#include "plugin_interface/ct_plugin_context.h"
 
 namespace tc {
 
@@ -146,10 +147,16 @@ bool MediaRecorder::InitFFmpeg() {
 void MediaRecorder::EndRecord() {
 
 	if (plugin_) {
-		if (file_name_.size() > 0) {
-			std::shared_ptr<ClientPluginNotifyMsgEvent> event = std::make_shared<ClientPluginNotifyMsgEvent>();
-			event->title_ = "A screen recording has ended";
+		if (!file_name_.empty()) {
+			auto event = std::make_shared<ClientPluginNotifyMsgEvent>();
+			event->title_ = "Screen recording success";
 			event->message_ = file_name_;
+            event->clicked_cbk_ = [=, this]() {
+                LOGI("====> Screen recording ended: {}", event->message_);
+                plugin_->GetPluginContext()->PostUITask([]() {
+                    // Show the file path?
+                });
+            };
 			plugin_->CallbackEvent(event);
 		}
 	}

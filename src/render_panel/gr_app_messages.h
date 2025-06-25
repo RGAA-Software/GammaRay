@@ -1,7 +1,9 @@
 #ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
+#include <QVariantMap>
 #include "database/stream_item.h"
+#include "notify/notify_defs.h"
 
 namespace tcrp
 {
@@ -178,6 +180,12 @@ namespace tc
     // exit all programs
     class MsgForceStopAllPrograms {
     public:
+    };
+
+    // notification clicked
+    class MsgNotificationClicked {
+    public:
+        NotifyItem data_;
     };
 }
 

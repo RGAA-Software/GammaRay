@@ -8,9 +8,11 @@
 #include <utility>
 #include <memory>
 #include <string>
+#include <QVariantMap>
 
 #include "tc_message.pb.h"
 #include "client/ct_settings.h"
+#include "notify/notify_defs.h"
 
 namespace tc
 {
@@ -206,6 +208,12 @@ namespace tc
         int64_t end_timestamp_;
         int64_t duration_;
         bool success_;
+    };
+
+    // notification
+    class MsgClientNotificationClicked {
+    public:
+        NotifyItem data_;
     };
 }
 
