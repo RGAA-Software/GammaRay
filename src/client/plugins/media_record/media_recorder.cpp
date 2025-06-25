@@ -6,6 +6,8 @@
 #include "media_record_plugin.h"
 #include "tc_common_new/time_util.h"
 #include "plugins/ct_plugin_events.h"
+#include "tc_common_new/file_util.h"
+#include "tc_common_new/folder_util.h"
 #include "tc_common_new/frame_common.h"
 #include "plugin_interface/ct_plugin_context.h"
 
@@ -153,8 +155,11 @@ void MediaRecorder::EndRecord() {
 			event->message_ = file_name_;
             event->clicked_cbk_ = [=, this]() {
                 LOGI("====> Screen recording ended: {}", event->message_);
-                plugin_->GetPluginContext()->PostUITask([]() {
+                auto file_path = event->message_;
+                plugin_->GetPluginContext()->PostUITask([=]() {
                     // Show the file path?
+                    auto folder_path = FileUtil::GetFileFolder(event->message_);
+                    FolderUtil::OpenDir(folder_path);
                 });
             };
 			plugin_->CallbackEvent(event);
