@@ -39,12 +39,12 @@ namespace tc
 
         auto header_style = R"(font-weight: 500; padding-left: 3px; color: #333333;)";
         auto item_style = R"(font-weight: 500; padding-left: 3px; color: #555555;)";
-        auto target_style = item_info_->IsValid() ? item_style : header_style;
+        auto target_style = !item_info_->IsHeaderItem() ? item_style : header_style;
 
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(R"(font-weight: 500; padding-left: 8px; color: #555555;)");
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(item_info_->conn_type_.c_str());
             }
             else {
@@ -56,7 +56,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(TimeUtil::FormatTimestamp(item_info_->begin_).c_str());
             }
             else {
@@ -68,7 +68,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 if (item_info_->end_ > 0) {
                     lbl->setText(TimeUtil::FormatTimestamp(item_info_->end_).c_str());
                 }
@@ -85,7 +85,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(TimeUtil::FormatSecondsToDHMS(item_info_->duration_/1000).c_str());
             }
             else {
@@ -98,7 +98,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(SpaceId(item_info_->visitor_device_).c_str());
             }
             else {
@@ -110,7 +110,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(SpaceId(item_info_->target_device_).c_str());
             }
             else {
@@ -126,7 +126,7 @@ namespace tc
 
     void StSecurityVisitorItemWidget::paintEvent(QPaintEvent *event) {
         QPainter painter(this);
-        if (item_info_->IsValid()) {
+        if (!item_info_->IsHeaderItem()) {
             QPen pen;
             pen.setStyle(Qt::PenStyle::DashDotDotLine);
             pen.setColor(0xdddddd);
@@ -152,11 +152,6 @@ namespace tc
     }
 
     void StSecurityVisitorItemWidget::UpdateStatus() {
-        if (!lbl_enabled_) {
-            return;
-        }
-
-
 
     }
 

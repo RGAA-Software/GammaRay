@@ -212,6 +212,7 @@ namespace tc
             auto total_count = ft_record_op_->GetTotalCounts();
 
             records_.push_back(std::make_shared<FileTransferRecord>(FileTransferRecord {
+                .id_ = 0,
                 .begin_ = 1,
                 .end_ = 1,
                 .visitor_device_ = "",

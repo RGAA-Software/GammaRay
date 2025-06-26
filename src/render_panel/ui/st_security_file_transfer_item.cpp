@@ -41,11 +41,11 @@ namespace tc
 
         auto header_style = R"(font-weight: 500; padding-left: 3px; color: #333333;)";
         auto item_style = R"(font-weight: 500; padding-left: 3px; color: #555555;)";
-        auto target_style = item_info_->IsValid() ? item_style : header_style;
+        auto target_style = !item_info_->IsHeaderItem() ? item_style : header_style;
 
         {
             auto lbl = new TcLabel(this);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 if (item_info_->success_) {
                     lbl->setStyleSheet(R"(font-weight: 700; padding-left: 8px; color: #33FF33;)");
                 }
@@ -66,7 +66,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(TimeUtil::FormatTimestamp(item_info_->begin_).c_str());
             }
             else {
@@ -79,7 +79,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 if (item_info_->end_ <= 0) {
                     lbl->setText("- - -");
                 }
@@ -97,7 +97,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 std::string visitor_device_id = ExtractClientId(item_info_->visitor_device_);
                 lbl->setText(SpaceId(visitor_device_id).c_str());
             }
@@ -111,7 +111,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(SpaceId(item_info_->target_device_).c_str());
             }
             else {
@@ -124,7 +124,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 lbl->setText(item_info_->direction_.c_str());
             }
             else {
@@ -137,7 +137,7 @@ namespace tc
         {
             auto lbl = new TcLabel(this);
             lbl->setStyleSheet(target_style);
-            if (item_info_->IsValid()) {
+            if (!item_info_->IsHeaderItem()) {
                 auto filename = FileUtil::GetFileNameFromPath(item_info_->file_detail_);
                 lbl->setText(filename.c_str());
             }
@@ -155,7 +155,7 @@ namespace tc
 
     void StSecurityFileTransferItemWidget::paintEvent(QPaintEvent *event) {
         QPainter painter(this);
-        if (item_info_->IsValid()) {
+        if (!item_info_->IsHeaderItem()) {
             QPen pen;
             pen.setStyle(Qt::PenStyle::DashDotDotLine);
             pen.setColor(0xdddddd);

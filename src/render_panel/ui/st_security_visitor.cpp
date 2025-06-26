@@ -170,7 +170,7 @@ namespace tc
         auto item_size = QSize(995, 45);
         item->setSizeHint(item_size);
         auto widget = new StSecurityVisitorItemWidget(app_, item_info, list_widget_);
-        if (!item_info->IsValid()) {
+        if (item_info->IsHeaderItem()) {
             header_item_ = widget;
         }
         widget->setFixedSize(item_size);
@@ -192,6 +192,7 @@ namespace tc
             auto total_count = visit_op_->GetTotalCounts();
 
             records_.push_back(std::make_shared<VisitRecord>(VisitRecord {
+                .id_ = 0,
                 .conn_type_ = "",
                 .begin_ = 1,
                 .end_ = 1,
