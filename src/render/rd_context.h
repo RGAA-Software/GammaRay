@@ -18,6 +18,7 @@ namespace tc
 
     class PluginManager;
     class TaskRuntime;
+    class AppBaseEvent;
 
     class RdContext : public QObject, public std::enable_shared_from_this<RdContext> {
     public:
@@ -46,6 +47,8 @@ namespace tc
         void PostUITask(std::function<void()>&& task);
         void PostStreamPluginTask(std::function<void()>&& task);
         static std::string GetCurrentExeFolder();
+        // dispatch app event
+        void DispatchAppEvent2Plugins(const std::shared_ptr<AppBaseEvent>& event);
 
     private:
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;

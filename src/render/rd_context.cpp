@@ -3,10 +3,11 @@
 //
 
 #include "rd_context.h"
+#include <QApplication>
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
 #include "plugins/plugin_manager.h"
-#include <QApplication>
+#include "plugin_interface/gr_plugin_interface.h"
 
 namespace tc
 {
@@ -58,6 +59,12 @@ namespace tc
 
     std::string RdContext::GetCurrentExeFolder() {
         return QCoreApplication::applicationDirPath().toStdString();
+    }
+
+    void RdContext::DispatchAppEvent2Plugins(const std::shared_ptr<AppBaseEvent>& event) {
+        plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+            plugin->DispatchAppEvent(event);
+        });
     }
 
 }

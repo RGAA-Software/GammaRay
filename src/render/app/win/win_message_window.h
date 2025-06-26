@@ -26,8 +26,9 @@ namespace tc
         static bool registerWindowClass(HINSTANCE instance);
         static LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
+        // @deprecated use the render panel process to receive clipboard changes.
         /*剪切板更新*/
-        void OnClipboardUpdate(HWND hwnd);
+        //void OnClipboardUpdate(HWND hwnd);
 
         /*显示设备变化消息*/
         void OnDisplayChange();

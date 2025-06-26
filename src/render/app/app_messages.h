@@ -24,6 +24,7 @@ namespace tc
             kClipboardUpdate,
             kDisplayDeviceChange,
             kConnectedClientCount,
+            kClipboardEvent,
         };
         EType type_ = EType::kUnknown;
     public:
@@ -153,15 +154,6 @@ namespace tc
         int fps_ = 30;
     };
 
-    // public AppBaseEvent
-    class MsgClipboardUpdate : public AppBaseEvent {
-    public:
-        MsgClipboardUpdate() {
-            type_ = EType::kClipboardUpdate;
-        }
-        HWND hwnd_ = nullptr;
-    };
-
     // 当监听到显示变更的windows消息,然后分发到 dda capture plugin
     class MsgDisplayDeviceChange : public AppBaseEvent {
     public:
@@ -178,6 +170,35 @@ namespace tc
         }
     public:
         int connected_client_count_ = 0;
+    };
+
+    // Clipboard message
+    enum class MsgClipboardType {
+        kText,
+        kFiles,
+    };
+
+    class MsgClipboardFile {
+    public:
+        std::string file_name_;
+        std::string full_path_;
+        int64_t total_size_ = 0;
+        std::string ref_path_;
+    };
+
+    // render panel -> network -> render -> plugins
+    class MsgClipboardEvent : public AppBaseEvent {
+    public:
+        MsgClipboardEvent() : AppBaseEvent() {
+            type_ = EType::kClipboardEvent;
+        }
+    public:
+        // text or files
+        MsgClipboardType clipboard_type_;
+        // text mode
+        std::string text_msg_;
+        // file mode
+        std::vector<MsgClipboardFile> files_;
     };
 }
 

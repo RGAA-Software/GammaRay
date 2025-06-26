@@ -44,7 +44,9 @@ namespace tc
         std::shared_ptr<WsPanelServer> GetWsPanelServer() { return ws_panel_server_; }
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
         std::shared_ptr<GrAccountManager> GetAccountManager() { return account_mgr_; }
+        bool IsServiceConnected();
         bool PostMessage2Service(const std::string& msg);
+        bool IsRendererConnected();
         bool PostMessage2Renderer(const std::string& msg);
         void RequestNewClientId(bool force_update);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();

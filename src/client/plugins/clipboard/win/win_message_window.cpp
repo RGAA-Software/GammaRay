@@ -10,6 +10,7 @@
 namespace tc
 {
     constexpr char kWindowClassName[] = "GammaRay_client_MessageWindowClass";
+
     std::atomic<int> WinMessageWindow::current_create_window_count_ = 0;
     std::string WinMessageWindow::class_name_;
     std::atomic<bool> WinMessageWindow::class_registered_ = false;
@@ -219,10 +220,6 @@ namespace tc
     }
 
     void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        /// TODO:
-//        context_->SendAppMessage(MsgClientClipboardUpdated {
-//            //.hwnd_ = hwnd,
-//        });
         plugin_->OnClipboardUpdated();
     }
 

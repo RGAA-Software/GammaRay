@@ -2,17 +2,18 @@
 #include <Windows.h>
 #include <memory>
 #include <thread>
+#include <QString>
 
 namespace tc
 {
 
     class GrContext;
+    class GrApplication;
     class WinMessageWindow;
 
     class WinMessageLoop : public std::enable_shared_from_this<WinMessageLoop> {
     public:
-        static std::shared_ptr<WinMessageLoop> Make(const std::shared_ptr<GrContext>& ctx);
-        explicit WinMessageLoop(const std::shared_ptr<GrContext>& ctx);
+        explicit WinMessageLoop(const std::shared_ptr<GrApplication>& ctx);
         ~WinMessageLoop();
         void Start();
         void Stop();
@@ -25,8 +26,10 @@ namespace tc
         void OnWinSessionChange(uint32_t msg);
         static void CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime);
     private:
-        std::shared_ptr<GrContext> context_ = nullptr;
         std::thread thread_;
+        QString remote_info_;
+        std::shared_ptr<GrApplication> app_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<WinMessageWindow> message_window_ = nullptr;
     };
 

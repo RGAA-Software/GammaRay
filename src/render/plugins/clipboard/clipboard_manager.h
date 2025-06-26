@@ -14,12 +14,12 @@ namespace tc
     class RdContext;
     class Message;
     class ClipboardPlugin;
-    class MsgClipboardUpdate;
+    class MsgClipboardEvent;
 
     class ClipboardManager : public QObject {
     public:
         explicit ClipboardManager(ClipboardPlugin* plugin);
-        void OnClipboardUpdated(const std::shared_ptr<MsgClipboardUpdate>& msg);
+        void OnClipboardUpdated(const std::shared_ptr<MsgClipboardEvent>& msg);
         void UpdateRemoteInfo(const std::shared_ptr<Message>& msg);
 
     private:

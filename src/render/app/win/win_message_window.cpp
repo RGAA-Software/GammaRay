@@ -9,6 +9,7 @@
 namespace tc
 {
     constexpr char kWindowClassName[] = "GammaRay_render_MessageWindowClass";
+
     std::atomic<int> WinMessageWindow::current_create_window_count_ = 0;
     std::string WinMessageWindow::class_name_;
     std::atomic<bool> WinMessageWindow::class_registered_ = false;
@@ -38,7 +39,7 @@ namespace tc
             // Set up the self before handling WM_CREATE.
         case WM_CREATE: {
             // lParam from function CreateWindowA(..., this)
-            LPCREATESTRUCT cs = reinterpret_cast<LPCREATESTRUCT>(lParam);
+            auto cs = reinterpret_cast<LPCREATESTRUCT>(lParam);
             self = reinterpret_cast<WinMessageWindow*>(cs->lpCreateParams);
 
             // Make |hwnd| available to the message handler. At this point the
@@ -66,7 +67,7 @@ namespace tc
         }
 
         case WM_CLIPBOARDUPDATE: {
-            self->OnClipboardUpdate(window);
+            //self->OnClipboardUpdate(window);
             break;
         }
 
@@ -218,12 +219,12 @@ namespace tc
         --current_create_window_count_;
     }
 
-    void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        if (!message_loop_) {
-            return;
-        }
-        message_loop_->OnClipboardUpdate(hwnd);
-    }
+    //void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
+    //    if (!message_loop_) {
+    //        return;
+    //    }
+    //    message_loop_->OnClipboardUpdate(hwnd);
+    //}
 
     void WinMessageWindow::OnDisplayChange() {
         if (!message_loop_) {

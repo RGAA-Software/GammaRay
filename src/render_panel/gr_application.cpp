@@ -144,16 +144,24 @@ namespace tc
         return false;
     }
 
+    bool GrApplication::IsServiceConnected() {
+        return service_client_ && service_client_->IsAlive();
+    }
+
     bool GrApplication::PostMessage2Service(const std::string& msg) {
-        if (!service_client_ || !service_client_->IsAlive()) {
+        if (!IsServiceConnected()) {
             return false;
         }
         service_client_->PostNetMessage(msg);
         return true;
     }
 
+    bool GrApplication::IsRendererConnected() {
+        return ws_panel_server_ && ws_panel_server_->IsAlive();
+    }
+
     bool GrApplication::PostMessage2Renderer(const std::string& msg) {
-        if (!ws_panel_server_ || !ws_panel_server_->IsAlive()) {
+        if (!IsRendererConnected()) {
             return false;
         }
         ws_panel_server_->PostRendererMessage(msg);
@@ -295,7 +303,7 @@ namespace tc
 
     void GrApplication::StartWindowsMessagesLooping() {
         win_msg_thread_ = std::make_shared<Thread>([=, this]() {
-            win_msg_loop_ = WinMessageLoop::Make(context_);
+            win_msg_loop_ = std::make_shared<WinMessageLoop>(shared_from_this());
             win_msg_loop_->Start();
         }, "", false);
     }

@@ -127,11 +127,13 @@ namespace tc
     }
 
     void ClipboardPlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
-        if (auto ev = std::dynamic_pointer_cast<MsgClipboardUpdate>(event); ev) {
-            LOGI("Clipboard update!");
-            plugin_context_->PostUIThread([=, this]() {
-                clipboard_mgr_->OnClipboardUpdated(ev);
-            });
+        if (event->type_ == AppBaseEvent::EType::kClipboardEvent) {
+            if (auto ev = std::dynamic_pointer_cast<MsgClipboardEvent>(event); ev) {
+                LOGI("Clipboard update!");
+                plugin_context_->PostUIThread([=, this]() {
+                    clipboard_mgr_->OnClipboardUpdated(ev);
+                });
+            }
         }
     }
 }

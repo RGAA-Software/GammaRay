@@ -2,12 +2,19 @@
 #include <iostream>
 #include <wtsapi32.h>
 #include <QUrl>
+#include <QFileInfo>
 #include <QMimeData>
+#include <QString>
 #include <QApplication>
 #include <QClipboard>
 #include "tc_common_new/log.h"
 #include "render_panel/gr_context.h"
+#include "render_panel/gr_application.h"
 #include "win_panel_message_window.h"
+#include "tc_render_panel_message.pb.h"
+#include "tc_common_new/folder_util.h"
+
+using namespace tcrp;
 
 namespace tc
 {
@@ -23,12 +30,9 @@ namespace tc
         }
     }
 
-    std::shared_ptr<WinMessageLoop> WinMessageLoop::Make(const std::shared_ptr<GrContext>& ctx) {
-        return std::make_shared<WinMessageLoop>(ctx);
-    }
-
-    WinMessageLoop::WinMessageLoop(const std::shared_ptr<GrContext>& ctx) {
-        context_ = ctx;
+    WinMessageLoop::WinMessageLoop(const std::shared_ptr<GrApplication>& app) {
+        app_ = app;
+        context_ = app_->GetContext();
     }
 
     WinMessageLoop::~WinMessageLoop() {
@@ -40,22 +44,118 @@ namespace tc
     }
 
     void WinMessageLoop::OnClipboardUpdate(HWND hwnd) {
-        LOGI("--OnClipboardUpdated.");
+        if (!app_->IsRendererConnected()) {
+            LOGE("render is offline, clipboard not work!");
+            return;
+        }
+
         QClipboard *board = QGuiApplication::clipboard();
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
         bool has_urls = mime_data->hasUrls();
+        auto text = board->text();
         LOGI("has urls: {}", has_urls);
+        if (has_urls) {
+            auto urls = mime_data->urls();
+            LOGI("Has urls: {}", has_urls);
 
-        auto urls = mime_data->urls();
-        for (const auto& url : urls) {
-            LOGI("url: {}", url.toLocalFile().toStdString());
+            // URL:         file:///C:/Users/xx/Documents/aaa.png
+            // Full Path:   C:/Users/xx/Documents/aaa.png
+            // Ref Path:    aaa.png
+            // Base Folder: C:/Users/xx/Documents
+
+            auto fn_make_cp_file=
+                [=, this](const QString& base_folder_path, const QString& full_path) -> std::optional<RpClipboardFile> {
+                    QFileInfo file_info(full_path);
+                    if (!file_info.exists()) {
+                        return std::nullopt;
+                    }
+                    auto cpy_full_path = full_path;
+                    if (!cpy_full_path.contains(base_folder_path)) {
+                        LOGE("not same folder, {} => {}", base_folder_path.toStdString(), full_path.toStdString());
+                        return std::nullopt;
+                    }
+                    auto ref_path = cpy_full_path.mid(base_folder_path.size()+1);
+
+                    auto cp_file = RpClipboardFile();
+                    cp_file.set_full_path(full_path.toStdString());
+                    cp_file.set_file_name(file_info.fileName().toStdString());
+                    cp_file.set_ref_path(ref_path.toStdString());
+                    cp_file.set_total_size((int64_t)file_info.size());
+                    LOGI("Copy file size: {}", cp_file.total_size());
+                    return cp_file;
+                };
+
+            // find base folder
+            QString base_folder_path = "";
+            for (auto& url : urls) {
+                auto full_path = url.toLocalFile();
+                QFileInfo file_info(full_path);
+                base_folder_path = file_info.dir().path();
+                break;
+            }
+            LOGI("Clipboard, base folder path: {}", base_folder_path.toStdString());
+            if (base_folder_path.isEmpty()) {
+                LOGE("Clipboard base folder path is empty.");
+                return;
+            }
+
+            // retrieve all files
+            std::vector<RpClipboardFile> cp_files;
+            for (auto& url : urls) {
+                auto full_path = url.toLocalFile();
+                QFileInfo file_info(full_path);
+                if (file_info.isDir()) {
+                    FolderUtil::VisitAllByQt(full_path.toStdString(), [&](VisitResult&& r) {
+                        auto cp_file = fn_make_cp_file(base_folder_path, QString::fromStdWString(r.path_));
+                        if (cp_file) {
+                            cp_files.push_back(cp_file.value());
+                        }
+                    });
+                }
+                else {
+                    auto cp_file = fn_make_cp_file(base_folder_path, full_path);
+                    if (cp_file.has_value()) {
+                        cp_files.push_back(cp_file.value());
+                    }
+                }
+
+                LOGI("url: {}, path: {}", url.toString().toStdString(), url.toLocalFile().toStdString());
+            }
+
+            // debug
+            LOGI("Total files: {}", cp_files.size());
+            for (const auto& file : cp_files) {
+                LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
+            }
+
+            tcrp::RpMessage msg;
+            msg.set_type(RpMessageType::kRpClipboardEvent);
+            auto sub = msg.mutable_clipboard_info();
+            sub->set_type(RpClipboardType::kRpClipboardFiles);
+            for (const auto& file : cp_files) {
+                auto target_file = sub->mutable_files()->Add();
+                target_file->CopyFrom(file);
+            }
+            app_->PostMessage2Renderer(msg.SerializeAsString());
+        }
+        else if (!text.isEmpty()) {
+            LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
+            if (text == remote_info_) {
+                return;
+            }
+            LOGI("===> new Text: {}", text.toStdString());
+
+            tcrp::RpMessage msg;
+            msg.set_type(RpMessageType::kRpClipboardEvent);
+            auto sub = msg.mutable_clipboard_info();
+            sub->set_type(RpClipboardType::kRpClipboardFiles);
+            sub->set_msg(text.toStdString());
+            app_->PostMessage2Renderer(msg.SerializeAsString());
+
+            remote_info_ = text;
         }
 
-//        if (auto plugin = plugin_mgr_->GetClipboardPlugin(); plugin) {
-//            auto event = std::make_shared<MsgClipboardUpdate>();
-//            event->hwnd_ = hwnd;
-//            plugin->DispatchAppEvent(event);
-//        }
+
     }
 
     void WinMessageLoop::OnWinSessionChange(uint32_t message) {
@@ -63,27 +163,7 @@ namespace tc
     }
 
     void WinMessageLoop::OnDisplayDeviceChange() {
-//        if (auto plugin = plugin_mgr_->GetDDACapturePlugin(); plugin) {
-//            if (plugin->IsPluginEnabled()) {
-//                auto event = std::make_shared<MsgDisplayDeviceChange>();
-//                LOGI("OnDisplayDeviceChange, DispatchAppEvent is MsgDisplayDeviceChange");
-//                plugin->DispatchAppEvent(event);
-//                return;
-//            }
-//        }
-//        if (auto plugin = plugin_mgr_->GetGdiCapturePlugin(); plugin) {
-//            if (plugin->IsPluginEnabled()) {
-//                auto event = std::make_shared<MsgDisplayDeviceChange>();
-//                LOGI("OnDisplayDeviceChange, DispatchAppEvent is MsgDisplayDeviceChange");
-//                plugin->DispatchAppEvent(event);
-//                return;
-//            }
-//        }
-//
-//        {
-//            MsgReCreateRefresher msg;
-//            context_->SendAppMessage(msg);
-//        }
+
     }
 
     void WinMessageLoop::Start() {

@@ -13,7 +13,8 @@ namespace tc
 
     constexpr char kWindowName[] = "GammaRay_client_MessageWindow";
 
-    void CALLBACK WinMessageLoop::WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
+    void CALLBACK WinMessageLoop::WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject,
+                                               LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
         if (event == EVENT_SYSTEM_DESKTOPSWITCH) {
             std::cout << "Desktop switch event detected." << std::endl;
         }

@@ -145,6 +145,30 @@ namespace tc
                     ProcessCommandDisablePlugin(plugin_id);
                 }
             }
+            else if (m.type() == tcrp::RpMessageType::kRpClipboardEvent) {
+                const auto& clipboard_info = m.clipboard_info();
+                LOGI("*** Clipboard type: {}, text: {}, file size: {}", (int)clipboard_info.type(), clipboard_info.msg(), clipboard_info.files_size());
+
+                auto event = std::make_shared<MsgClipboardEvent>();
+                event->clipboard_type_ = [&]() {
+                   if (clipboard_info.type() == tcrp::RpClipboardType::kRpClipboardText) {
+                       return MsgClipboardType::kText;
+                   }
+                   else {
+                       return MsgClipboardType::kFiles;
+                   }
+                }();
+                event->text_msg_ = clipboard_info.msg();
+                for (const auto& file : clipboard_info.files()) {
+                    event->files_.push_back(MsgClipboardFile {
+                        .file_name_ = file.file_name(),
+                        .full_path_ = file.full_path(),
+                        .total_size_ = file.total_size(),
+                        .ref_path_ = file.ref_path(),
+                    });
+                }
+                context_->DispatchAppEvent2Plugins(event);
+            }
 
         } catch(std::exception& e) {
             LOGE("ParseNetMessage failed: {}", e.what());

@@ -51,7 +51,12 @@ namespace tc
         return true;
     }
 
-    void ClipboardManager::OnClipboardUpdated(const std::shared_ptr<MsgClipboardUpdate>& msg) {
+    void ClipboardManager::OnClipboardUpdated(const std::shared_ptr<MsgClipboardEvent>& msg) {
+        LOGI("**clipboard update, type : {}, msg: {}, file size: {}", (int)msg->clipboard_type_, msg->text_msg_, msg->files_.size());
+        for (const auto& file : msg->files_) {
+            LOGI("** file name: {}, size: {}, full path: {}, ref path: {}", file.file_name_, file.total_size_, file.full_path_, file.ref_path_);
+        }
+
         QClipboard *board = QGuiApplication::clipboard();
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
         bool has_urls = mime_data->hasUrls();
@@ -151,10 +156,10 @@ namespace tc
                 }
                 LOGI("===> new Text: {}", text.toStdString());
 
-                auto event = std::make_shared<GrPluginClipboardEvent>();
-                event->type_ = ClipboardType::kClipboardText;
-                event->msg_ = text.toStdString();
-                this->plugin_->CallbackEvent(event);
+//                auto event = std::make_shared<GrPluginClipboardEvent>();
+//                event->type_ = ClipboardType::kClipboardText;
+//                event->msg_ = text.toStdString();
+//                this->plugin_->CallbackEvent(event);
 
                 // send to remote
                 tc::Message m;

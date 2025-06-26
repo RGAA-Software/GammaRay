@@ -7,11 +7,11 @@
 
 #include <string>
 #include <memory>
-#include "gr_plugin_interface.h"
 #include "gr_net_plugin.h"
-#include "tc_capture_new/capture_message.h"
-#include "tc_common_new/time_util.h"
+#include "gr_plugin_interface.h"
 #include "tc_common_new/image.h"
+#include "tc_common_new/time_util.h"
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {
@@ -33,7 +33,6 @@ namespace tc
         kPluginRawAudioFrameEvent,
         kPluginSplitRawAudioFrameEvent,
         kPluginEncodedAudioFrameEvent,
-        kPluginClipboardEvent,
         kPluginRelayPausedEvent,
         kPluginRelayResumeEvent,
         kPluginRtcAnswerSdpEvent,
@@ -208,17 +207,6 @@ namespace tc
         int bits_ = 0;
         int frame_size_ = 0;
         std::shared_ptr<Data> data_ = nullptr;
-    };
-
-    // Clipboard message
-    class GrPluginClipboardEvent : public GrPluginBaseEvent {
-    public:
-        GrPluginClipboardEvent() : GrPluginBaseEvent() {
-            event_type_ = GrPluginEventType::kPluginClipboardEvent;
-        }
-    public:
-        int type_;
-        std::string msg_;
     };
 
     // relay paused
