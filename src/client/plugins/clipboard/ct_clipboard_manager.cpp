@@ -32,13 +32,6 @@ namespace tc
     ClipboardManager::ClipboardManager(ClientClipboardPlugin* plugin) : QObject(nullptr) {
         plugin_ = plugin;
         context_ = plugin->GetPluginContext();
-
-//        msg_listener_ = context_->ObtainMessageListener();
-//        msg_listener_->Listen<MsgClientClipboardUpdated>([=, this](const MsgClientClipboardUpdated& msg) {
-//            context_->PostUITask([=, this]() {
-//                this->OnClipboardUpdated();
-//            });
-//        });
     }
 
     void ClipboardManager::Start() {
@@ -88,7 +81,8 @@ namespace tc
                     cp_file.set_full_path(full_path.toStdString());
                     cp_file.set_file_name(file_info.fileName().toStdString());
                     cp_file.set_ref_path(ref_path.toStdString());
-                    cp_file.set_total_size((int32_t)file_info.size());
+                    cp_file.set_total_size((int64_t)file_info.size());
+                    LOGI("Copy file size: {}", cp_file.total_size());
                     return cp_file;
                 };
 
@@ -135,12 +129,6 @@ namespace tc
                 LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
             }
 
-            /// TODO:
-//            context_->SendAppMessage(MsgClientClipboard{
-//                .type_ = ClipboardType::kClipboardFiles,
-//                .files_ = cp_files,
-//            });
-
             auto event = std::make_shared<ClientPluginClipboardEvent>();
             event->type_ = ClipboardType::kClipboardFiles;
             event->cp_files_ = cp_files;
@@ -152,11 +140,6 @@ namespace tc
                 return;
             }
             LOGI("===> new Text: {}", text.toStdString());
-            /// TODO:
-//            context_->SendAppMessage(MsgClientClipboard{
-//                .type_ = ClipboardType::kClipboardText,
-//                .msg_ = text.toStdString(),
-//            });
 
             auto event = std::make_shared<ClientPluginClipboardEvent>();
             event->type_ = ClipboardType::kClipboardText;
@@ -169,7 +152,7 @@ namespace tc
 
     void ClipboardManager::OnRemoteClipboardMessage(std::shared_ptr<tc::Message> msg) {
         if (!plugin_->IsClipboardEnabled()) {
-            LOGI("clipboard is not on!");
+            LOGI("clipboard is off!");
             return;
         }
 

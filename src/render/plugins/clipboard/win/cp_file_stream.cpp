@@ -5,7 +5,6 @@
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
 #include "../clipboard_plugin.h"
-#include <iostream>
 
 namespace tc
 {
@@ -56,12 +55,13 @@ namespace tc
 
         // copy data
         auto resp_buffer = resp_buffer_.value();
-        memcpy(pv, resp_buffer.buffer().data(), resp_buffer.read_size());
-        *pcbRead = resp_buffer.read_size();
+        if (resp_buffer.read_size() > 0) {
+            memcpy(pv, resp_buffer.buffer().data(), resp_buffer.read_size());
+            *pcbRead = resp_buffer.read_size();
+            current_position_ += resp_buffer.read_size();
+        }
 
-        current_position_ += resp_buffer.read_size();
         req_index_ += 1;
-
         // clear data
         resp_buffer_.reset();
         return S_OK;
@@ -70,6 +70,7 @@ namespace tc
     HRESULT STDMETHODCALLTYPE CpFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER* new_pos) {
         switch (dwOrigin) {
             case STREAM_SEEK_SET:
+                LOGI("Before clear, current position: {}, new pos: {}", current_position_, new_pos->QuadPart);
                 current_position_ = 0;
                 if (new_pos) {
                     new_pos->QuadPart = 0;
@@ -94,6 +95,7 @@ namespace tc
         pstatstg->pwcsName = NULL;
         pstatstg->type = STGTY_STREAM;
         pstatstg->cbSize.QuadPart = cp_file_.file_.total_size();
+        LOGI("stat: total size: {}", cp_file_.file_.total_size());
         return S_OK;
     }
 

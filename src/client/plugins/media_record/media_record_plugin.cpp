@@ -41,12 +41,7 @@ namespace tc
     }
 
     void MediaRecordPluginClient::On1Second() {
-        
         ClientPluginInterface::On1Second();
-
-        auto event = std::make_shared<ClientPluginTestEvent>();
-        event->message_ = "///1Second///";
-        //CallbackEvent(event);
     }
     
     bool MediaRecordPluginClient::OnCreate(const tc::ClientPluginParam& param) {

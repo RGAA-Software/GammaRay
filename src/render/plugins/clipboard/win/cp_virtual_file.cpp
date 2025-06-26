@@ -1,6 +1,4 @@
 ﻿#include "cp_virtual_file.h"
-
-#define WIN32_LEAN_AND_MEAN
 #include <wininet.h>
 #include <windows.h>
 #include <iostream>
@@ -32,7 +30,6 @@ namespace tc
     void CpVirtualFile::Init() {
         clip_format_filedesc_ = RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
         clip_format_filecontent_ = RegisterClipboardFormat(CFSTR_FILECONTENTS);
-
     }
 
     STDMETHODIMP CpVirtualFile::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
@@ -41,7 +38,7 @@ namespace tc
         HRESULT hr = DATA_E_FORMATETC;
         if (pformatetcIn->cfFormat == clip_format_filedesc_) {
             uint32_t file_count = menu_files_.size();
-            LOGI("GetData, file count: {}", file_count);
+            LOGI("GetData file format, file count: {}", file_count);
             if (file_count <= 0) {
                 return S_FALSE;
             }
@@ -67,14 +64,14 @@ namespace tc
                     auto clipboard_file = menu_files_.at(index);
                     auto target_filename = QString::fromStdString(clipboard_file.file_name()).toStdWString();
                     LOGI("GetData, file: {}, name: {}", clipboard_file.file_name(), QString::fromStdWString(target_filename).toStdString());
-                    //wcsncpy_s(fd_array[index].cFileName,
-                    //          _countof(fd_array[index].cFileName), target_filename.c_str(), _TRUNCATE);
+
                     wmemcpy(fd_array[index].cFileName, target_filename.c_str(), target_filename.size());
-                    fd_array[index].dwFlags =
-                            FD_FILESIZE | FD_ATTRIBUTES | FD_CREATETIME | FD_WRITESTIME | FD_PROGRESSUI;
-                    fd_array[index].nFileSizeLow = clipboard_file.total_size();
-                    fd_array[index].nFileSizeHigh = 0;
+                    fd_array[index].dwFlags = FD_FILESIZE | FD_ATTRIBUTES | FD_CREATETIME | FD_WRITESTIME | FD_PROGRESSUI;
+                    uint64_t file_size = static_cast<uint64_t>(clipboard_file.total_size());
+                    fd_array[index].nFileSizeLow = static_cast<DWORD>(file_size & 0xFFFFFFFF);
+                    fd_array[index].nFileSizeHigh = static_cast<DWORD>((file_size >> 32) & 0xFFFFFFFF);
                     fd_array[index].dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+                    LOGI("GetData, total size: {}, high: {}, low: {}", file_size, fd_array[index].nFileSizeHigh, fd_array[index].nFileSizeLow);
 
                     SYSTEMTIME lt;
                     GetLocalTime(&lt);

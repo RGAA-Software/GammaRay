@@ -14,6 +14,7 @@
 #include "cp_data_object.h"
 #include "cp_file_struct.h"
 #include "tc_message.pb.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -46,27 +47,33 @@ namespace tc
             return newRef;
         }
 
-        HRESULT SetSize(ULARGE_INTEGER) override {
+        HRESULT SetSize(ULARGE_INTEGER size) override {
+            LOGI("SetSize: {}, low: {}, high: {}", size.QuadPart, size.LowPart, size.HighPart);
             return E_NOTIMPL;
         }
 
         HRESULT CopyTo(IStream *, ULARGE_INTEGER, ULARGE_INTEGER *, ULARGE_INTEGER *) override {
+            LOGI("CopyTo");
             return E_NOTIMPL;
         }
 
         HRESULT Commit(DWORD) override {
+            LOGI("Commit");
             return E_NOTIMPL;
         }
 
         HRESULT Revert(void) override {
+            LOGI("Revert");
             return E_NOTIMPL;
         }
 
         HRESULT LockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override {
+            LOGI("LockRegion");
             return E_NOTIMPL;
         }
 
         HRESULT UnlockRegion(ULARGE_INTEGER, ULARGE_INTEGER, DWORD) override {
+            LOGI("UnLockRegion");
             return E_NOTIMPL;
         }
 

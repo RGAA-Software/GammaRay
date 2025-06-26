@@ -114,6 +114,8 @@ namespace tc
         event->media_channel_ = false;
         event->buf_ = msg.SerializeAsString();
         CallbackEventDirectly(event);
+
+        //LOGI("Req, index: {}, start: {}, size: {}, read size: {}", req_index, req_start, req_size, data ? data->Size() : 0);
     }
     
 }
