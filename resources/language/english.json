@@ -59,7 +59,7 @@
   "id_websocket": "WSS Streaming",
   "id_streaming_websocket_port": "WSS Streaming Port(TCP)",
   "id_udp": "UDP Streaming",
-  "id_streaming_udp_port": " UDP Streaming Port",
+  "id_streaming_udp_port": "UDP Streaming Port",
   "id_rtc": "RTC Streaming",
   "id_ethernet_adapter": "Ethernet Adapter",
   "id_panel_listening_port": "Panel Listening Port",
