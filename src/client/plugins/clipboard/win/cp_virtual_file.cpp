@@ -70,8 +70,9 @@ namespace tc
                               _countof(fd_array[index].cFileName), target_filename.c_str(), _TRUNCATE);
                     fd_array[index].dwFlags =
                             FD_FILESIZE | FD_ATTRIBUTES | FD_CREATETIME | FD_WRITESTIME | FD_PROGRESSUI;
-                    fd_array[index].nFileSizeLow = clipboard_file.total_size();
-                    fd_array[index].nFileSizeHigh = 0;
+                    uint64_t file_size = static_cast<uint64_t>(clipboard_file.total_size());
+                    fd_array[index].nFileSizeLow = static_cast<DWORD>(file_size & 0xFFFFFFFF);
+                    fd_array[index].nFileSizeHigh = static_cast<DWORD>((file_size >> 32) & 0xFFFFFFFF);
                     fd_array[index].dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
 
                     SYSTEMTIME lt;

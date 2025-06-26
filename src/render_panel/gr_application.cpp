@@ -3,14 +3,28 @@
 //
 
 #include "gr_application.h"
-
+#include <QTimer>
+#include <QScreen>
+#include <QApplication>
+#include "tc_dialog.h"
+#include "gr_workspace.h"
+#include "tc_label.h"
 #include "gr_context.h"
 #include "gr_settings.h"
 #include "gr_statistics.h"
-#include "gr_system_monitor.h"
 #include "gr_app_messages.h"
-#include "tc_common_new/folder_util.h"
 #include "tc_common_new/log.h"
+#include "gr_system_monitor.h"
+#include "gr_account_manager.h"
+#include "tc_common_new/thread.h"
+#include "tc_common_new/time_util.h"
+#include "ui/input_safety_pwd_dialog.h"
+#include "tc_manager_client/mgr_device.h"
+#include "tc_3rdparty/json/json.hpp"
+#include "tc_steam_manager_new/steam_manager.h"
+#include "tc_manager_client/mgr_client_sdk.h"
+#include "tc_manager_client/mgr_device_operator.h"
+#include "tc_common_new/folder_util.h"
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
@@ -18,21 +32,8 @@
 #include "render_panel/network/udp_broadcaster.h"
 #include "render_panel/network/gr_service_client.h"
 #include "render_panel/network/ws_sig_client.h"
-#include "tc_3rdparty/json/json.hpp"
-#include "tc_steam_manager_new/steam_manager.h"
-#include "tc_manager_client/mgr_client_sdk.h"
-#include "tc_manager_client/mgr_device_operator.h"
-#include "tc_manager_client/mgr_device.h"
-#include "tc_common_new/time_util.h"
-#include "gr_account_manager.h"
-#include "ui/input_safety_pwd_dialog.h"
-#include "tc_dialog.h"
-#include "gr_workspace.h"
-#include "tc_label.h"
+#include "render_panel/system/win/win_panel_message_loop.h"
 
-#include <QTimer>
-#include <QApplication>
-#include <QScreen>
 #include <shellapi.h>
 
 using namespace nlohmann;
@@ -101,6 +102,7 @@ namespace tc
 
         RefreshSigServerSettings();
         RegisterMessageListener();
+        StartWindowsMessagesLooping();
 
         context_->PostUIDelayTask([=, this]() {
             this->UpdateServerSecurityPasswordIfNeeded();
@@ -109,6 +111,12 @@ namespace tc
     }
 
     void GrApplication::Exit() {
+        if (win_msg_loop_) {
+            win_msg_loop_->Stop();
+        }
+        if (win_msg_thread_ && win_msg_thread_->IsJoinable()) {
+            win_msg_thread_->Join();
+        }
         context_->Exit();
     }
 
@@ -283,6 +291,13 @@ namespace tc
             auto dev_opt = GetDeviceOperator();
             dev_opt->QueryDevice("");
         });
+    }
+
+    void GrApplication::StartWindowsMessagesLooping() {
+        win_msg_thread_ = std::make_shared<Thread>([=, this]() {
+            win_msg_loop_ = WinMessageLoop::Make(context_);
+            win_msg_loop_->Start();
+        }, "", false);
     }
 
 }

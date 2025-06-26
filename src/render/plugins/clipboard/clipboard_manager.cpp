@@ -52,21 +52,6 @@ namespace tc
     }
 
     void ClipboardManager::OnClipboardUpdated(const std::shared_ptr<MsgClipboardUpdate>& msg) {
-//        for (int i = 0; i < 10; i++) {
-//            std::vector<std::wstring> files;
-//            if (GetClipboardFiles(msg->hwnd_, files)) {
-//                LOGI("GetClipboard files success:");
-//                for (const auto file : files) {
-//                    LOGI("file: {}", QString::fromStdWString(file).toStdString());
-//                }
-//                break;
-//            }
-//            else {
-//                LOGI("GetClipboard files failed!");
-//            }
-//            TimeUtil::DelayBySleep(10);
-//        }
-
         QClipboard *board = QGuiApplication::clipboard();
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
         bool has_urls = mime_data->hasUrls();
@@ -97,7 +82,7 @@ namespace tc
                     cp_file.set_full_path(full_path.toStdString());
                     cp_file.set_file_name(file_info.fileName().toStdString());
                     cp_file.set_ref_path(ref_path.toStdString());
-                    cp_file.set_total_size((int32_t)file_info.size());
+                    cp_file.set_total_size(file_info.size());
                     return cp_file;
                 };
 
@@ -144,11 +129,6 @@ namespace tc
                 LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
             }
 
-            // context_->SendAppMessage(ClipboardMessage{
-            //     .type_ = ClipboardType::kClipboardFiles,
-            //     .files_ = cp_files,
-            // });
-
             tc::Message m;
             m.set_type(tc::kClipboardInfo);
             auto sub = m.mutable_clipboard_info();
@@ -160,7 +140,6 @@ namespace tc
                 pf->set_ref_path(file.ref_path());
                 pf->set_total_size(file.total_size());
             }
-            //sdk_->PostMediaMessage(m.SerializeAsString());
             plugin_->DispatchAllStreamMessage(m.SerializeAsString());
         }
         else {

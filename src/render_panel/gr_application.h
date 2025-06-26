@@ -14,6 +14,7 @@
 namespace tc
 {
 
+    class Thread;
     class GrContext;
     class WsPanelServer;
     class UdpBroadcaster;
@@ -26,6 +27,7 @@ namespace tc
     class MessageListener;
     class GrAccountManager;
     class MgrDeviceOperator;
+    class WinMessageLoop;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -52,7 +54,6 @@ namespace tc
         // device operator
         std::shared_ptr<MgrDeviceOperator> GetDeviceOperator();
 
-
         // 1. device id is empty ?
         // 2. device id & password paired ?
         bool CheckLocalDeviceInfoWithPopup();
@@ -71,6 +72,9 @@ namespace tc
         // if there isn't a security password, will pop up a dialog for you to input it
         void CheckSecurityPassword();
 
+        // windows messages looping
+        void StartWindowsMessagesLooping();
+
     private:
         QWidget* main_window_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
@@ -85,6 +89,9 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<GrAccountManager> account_mgr_ = nullptr;
+        // window messages looping
+        std::shared_ptr<Thread> win_msg_thread_ = nullptr;
+        std::shared_ptr<WinMessageLoop> win_msg_loop_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;

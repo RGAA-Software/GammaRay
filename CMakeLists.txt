@@ -130,7 +130,6 @@ add_executable(${PROJECT_NAME} WIN32
         ${MAIN_SRCS}
         ${NETWORK_SRCS}
         ${CMAKE_CURRENT_BINARY_DIR}/icon.rc
-        ${TS_FILES}
         ${SERVICE_MGR_SRCS}
         ${DEVICE_LIST_SRCS}
 )

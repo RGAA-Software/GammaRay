@@ -36,7 +36,8 @@ namespace tc
                     LOGI("GammaRay.exe not exist!, Will start it");
                     QString work_dir = QString::fromStdString(this->work_dir_);
                     QString current_path = QString::fromStdString(std::format("{}/{}", this->work_dir_, kGammaRayName));
-                    return ProcessUtil::StartProcessAsUser(current_path.toStdWString(), work_dir.toStdWString(), false);
+                    //ProcessUtil::StartProcessInSameUser(current_path.toStdWString(), work_dir.toStdWString(), false);
+                    ProcessUtil::StartProcessInCurrentUser(current_path.toStdWString(), work_dir.toStdWString(), false);
                 }
             });
         });
@@ -165,7 +166,7 @@ namespace tc
     bool RenderManager::StartServerInternal(const std::string& _work_dir, const std::string& _app_path, const std::string& args) {
         QString work_dir = QString::fromStdString(_work_dir);
         QString current_path = QString::fromStdString(std::format("{}/{} {}", _work_dir, kGammaRayRenderName, args));
-        return ProcessUtil::StartProcessAsUser(current_path.toStdWString(), work_dir.toStdWString(), false);
+        return ProcessUtil::StartProcessInSameUser(current_path.toStdWString(), work_dir.toStdWString(), false);
     }
 
     bool RenderManager::IsRenderAlive() const {

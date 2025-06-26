@@ -8,16 +8,15 @@
 namespace tc
 {
 
-    class RdContext;
-    class PluginManager;
+    class GrContext;
     class WinMessageLoop;
 
     using MessageCallback = std::function<bool(UINT message, WPARAM wparam, LPARAM lparam, LRESULT& result)>;
 
     class WinMessageWindow {
     public:
-        static std::shared_ptr<WinMessageWindow> Make(const std::shared_ptr<RdContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop);
-        explicit WinMessageWindow(const std::shared_ptr<RdContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop);
+        static std::shared_ptr<WinMessageWindow> Make(const std::shared_ptr<GrContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop);
+        explicit WinMessageWindow(const std::shared_ptr<GrContext>& ctx, std::shared_ptr<WinMessageLoop> message_loop);
         ~WinMessageWindow();
         bool Create(const std::string& window_name);
         HWND GetHwnd() const;
@@ -33,8 +32,7 @@ namespace tc
         void OnDisplayChange();
 
     private:
-        std::shared_ptr<RdContext> context_ = nullptr;
-        std::shared_ptr<PluginManager> plugin_mgr_ = nullptr;
+        std::shared_ptr<GrContext> context_ = nullptr;
         MessageCallback message_callback_;
         HWND mHwnd = nullptr;
         std::string window_name_;
