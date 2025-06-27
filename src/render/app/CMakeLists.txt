@@ -11,9 +11,9 @@ if (WIN32)
         win/app_manager_win.cpp
         win/dx_address_loader.cpp
         win/win_event_replayer.cpp
-        win/win_message_window.cpp
+            win/win_render_message_window.cpp
         win/win_desktop_manager.cpp
-        win/win_message_loop.cpp
+            win/win_render_message_loop.cpp
         video_frame_carrier.cpp
         monitor_refresher.cpp
     )

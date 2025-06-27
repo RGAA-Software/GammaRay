@@ -19,15 +19,12 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
-
         bool OnCreate(const tc::ClientPluginParam& param) override;
         void On1Second() override;
         void OnMessage(std::shared_ptr<Message> msg) override;
         void DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) override;
 
-        // from local
-        void OnClipboardUpdated();
-
+        void OnLocalClipboardUpdated();
         bool IsClipboardEnabled();
 
     private:

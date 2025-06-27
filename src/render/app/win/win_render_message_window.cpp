@@ -1,10 +1,11 @@
-#include "win_message_window.h"
+#include "win_render_message_window.h"
 #include <iostream>
 #include <atomic>
+#include <shellapi.h>
 #include "tc_common_new/log.h"
 #include "rd_context.h"
 #include "plugins/plugin_manager.h"
-#include "win_message_loop.h"
+#include "win_render_message_loop.h"
 
 namespace tc
 {
@@ -136,7 +137,6 @@ namespace tc
             break;
         }
 
-
         default:
             break;
         }
@@ -175,7 +175,6 @@ namespace tc
 
 
     bool WinMessageWindow::Create(const std::string& window_name) {
-
         HINSTANCE instance = nullptr;
         window_name_ = window_name;
         if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |

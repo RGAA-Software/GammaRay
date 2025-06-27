@@ -11,24 +11,23 @@ namespace tc
     class WinMessageLoop;
     class ClientClipboardPlugin;
 
+    using MessageCallback = std::function<bool(UINT message, WPARAM wparam, LPARAM lparam, LRESULT& result)>;
+
     class WinMessageWindow {
     public:
         static std::shared_ptr<WinMessageWindow> Make(ClientClipboardPlugin* plugin, std::shared_ptr<WinMessageLoop> message_loop);
         explicit WinMessageWindow(ClientClipboardPlugin* plugin, std::shared_ptr<WinMessageLoop> message_loop);
         ~WinMessageWindow();
-        using MessageCallback = std::function<bool(UINT message,
-            WPARAM wparam,
-            LPARAM lparam,
-            LRESULT& result)>;
         bool Create(const std::string& window_name);
         HWND GetHwnd() const;
         void CloseWindow();
+
     private:
         static bool registerWindowClass(HINSTANCE instance);
         static LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
         /*剪切板更新*/
-        void OnClipboardUpdate(HWND hwnd);
+        void OnLocalClipboardUpdated(HWND hwnd);
 
         /*显示设备变化消息*/
         void OnDisplayChange();

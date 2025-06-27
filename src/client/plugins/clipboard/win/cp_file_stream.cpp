@@ -3,10 +3,12 @@
 //
 
 #include "cp_file_stream.h"
+#include "ct_settings.h"
 #include "tc_common_new/log.h"
 #include "ct_base_workspace.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
-#include "ct_settings.h"
+#include "client/plugins/ct_plugin_events.h"
+#include "client/plugins/clipboard/clipboard_plugin.h"
 
 namespace tc
 {
@@ -30,10 +32,10 @@ namespace tc
 
     HRESULT STDMETHODCALLTYPE CpFileStream::Read(void *pv, ULONG cb, ULONG *pcbRead) {
         // read from remote synchronized
-        auto settings = Settings::Instance();
+        auto settings = plugin_->GetPluginSettings();
         tc::Message msg;
-        msg.set_device_id(settings->device_id_);
-        msg.set_stream_id(settings->stream_id_);
+        msg.set_device_id(settings.device_id_);
+        msg.set_stream_id(settings.stream_id_);
         msg.set_type(MessageType::kClipboardReqBuffer);
         auto req_buffer = msg.mutable_cp_req_buffer();
         req_buffer->set_req_index(req_index_);
@@ -41,8 +43,11 @@ namespace tc
         req_buffer->set_req_start(current_position_);
         req_buffer->set_full_name(cp_file_.file_.full_path());
 
-        /// TODO:
-        //workspace_->GetThunderSdk()->PostFileTransferMessage(msg.SerializeAsString());
+        auto event = std::make_shared<ClientPluginNetworkEvent>();
+        event->media_channel_ = false;
+        event->buf_ = msg.SerializeAsString();
+        plugin_->CallbackEvent(event);
+        //LOGI("request index: {}, current position: {}, req size: {}", req_index_, current_position_, cb);
 
         std::unique_lock lk(wait_data_mtx_);
         data_cv_.wait(lk, [this]() -> bool {
@@ -61,10 +66,11 @@ namespace tc
 
         // copy data
         auto resp_buffer = resp_buffer_.value();
-        memcpy(pv, resp_buffer.buffer().data(), resp_buffer.read_size());
-        *pcbRead = resp_buffer.read_size();
-
-        current_position_ += resp_buffer.read_size();
+        if (resp_buffer.read_size() > 0) {
+            memcpy(pv, resp_buffer.buffer().data(), resp_buffer.read_size());
+            *pcbRead = resp_buffer.read_size();
+            current_position_ += resp_buffer.read_size();
+        }
         req_index_ += 1;
 
         // clear data

@@ -1,8 +1,8 @@
-#include "win_message_loop.h"
+#include "win_render_message_loop.h"
 #include <iostream>
 #include <wtsapi32.h>
 #include "tc_common_new/log.h"
-#include "win_message_window.h"
+#include "win_render_message_window.h"
 #include "rd_context.h"
 #include "plugins/plugin_manager.h"
 #include "render/app/app_messages.h"
@@ -42,15 +42,13 @@ namespace tc
     }
 
     //void WinMessageLoop::OnClipboardUpdate(HWND hwnd) {
-    //    LOGI("--OnClipboardUpdated.");
     //    QClipboard *board = QGuiApplication::clipboard();
     //    auto mime_data = const_cast<QMimeData*>(board->mimeData());
     //    bool has_urls = mime_data->hasUrls();
     //    LOGI("has urls: {}", has_urls);
-    //
+
     //    if (auto plugin = plugin_mgr_->GetClipboardPlugin(); plugin) {
-    //        auto event = std::make_shared<MsgClipboardUpdate>();
-    //        event->hwnd_ = hwnd;
+    //        auto event = std::make_shared<MsgClipboardEvent>();
     //        plugin->DispatchAppEvent(event);
     //    }
     //}

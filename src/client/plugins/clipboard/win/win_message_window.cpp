@@ -67,7 +67,7 @@ namespace tc
         }
 
         case WM_CLIPBOARDUPDATE: {
-            self->OnClipboardUpdate(window);
+            self->OnLocalClipboardUpdated(window);
             break;
         }
 
@@ -190,14 +190,15 @@ namespace tc
         if (!registerWindowClass(instance))
             return false;
 
-        mHwnd = CreateWindowA(
-            kWindowClassName,
-            window_name_.c_str(),
-            0, 0, 0, 0, 0,
-            nullptr,
-            nullptr,
-            instance,
-            this);
+        HWND pHwnd = CreateWindowA(
+                kWindowClassName,
+                window_name_.c_str(),
+                0, 0, 0, 0, 0,
+                nullptr,
+                nullptr,
+                instance,
+                this);
+        mHwnd = pHwnd;
 
         if (!mHwnd)
         {
@@ -219,8 +220,8 @@ namespace tc
         --current_create_window_count_;
     }
 
-    void WinMessageWindow::OnClipboardUpdate(HWND hwnd) {
-        plugin_->OnClipboardUpdated();
+    void WinMessageWindow::OnLocalClipboardUpdated(HWND hwnd) {
+        plugin_->OnLocalClipboardUpdated();
     }
 
     void WinMessageWindow::OnDisplayChange() {

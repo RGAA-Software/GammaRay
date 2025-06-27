@@ -63,7 +63,9 @@ namespace tc
     void ClipboardPlugin::OnMessage(const std::shared_ptr<Message>& msg) {
         if (msg->type() == MessageType::kClipboardInfo) {
             if (msg->clipboard_info().type() == ClipboardType::kClipboardText && clipboard_mgr_) {
-                clipboard_mgr_->UpdateRemoteInfo(msg);
+                plugin_context_->PostUITask([=, this]() {
+                    clipboard_mgr_->OnRemoteClipboardInfo(msg);
+                });
             }
             if (msg->clipboard_info().type() == ClipboardType::kClipboardFiles) {
                 const auto& files = msg->clipboard_info().files();
@@ -123,17 +125,49 @@ namespace tc
                 virtual_file_->OnClipboardRespBuffer(msg->cp_resp_buffer());
             }
         }
-
+        else if (msg->type() == MessageType::kClipboardReqBuffer) {
+            this->OnRequestFileBuffer(msg);
+        }
     }
 
     void ClipboardPlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
         if (event->type_ == AppBaseEvent::EType::kClipboardEvent) {
             if (auto ev = std::dynamic_pointer_cast<MsgClipboardEvent>(event); ev) {
-                LOGI("Clipboard update!");
-                plugin_context_->PostUIThread([=, this]() {
-                    clipboard_mgr_->OnClipboardUpdated(ev);
+                plugin_context_->PostUITask([=, this]() {
+                    clipboard_mgr_->OnLocalClipboardUpdated(ev);
                 });
             }
         }
+    }
+
+    void ClipboardPlugin::OnRequestFileBuffer(std::shared_ptr<Message> in_msg) {
+        const auto& buffer = in_msg->cp_req_buffer();
+        auto req_index = buffer.req_index();
+        auto req_start = buffer.req_start();
+        auto req_size = buffer.req_size();
+        auto full_filename = buffer.full_name();
+
+        auto file = File::OpenForReadB(full_filename);
+        DataPtr data = nullptr;
+        if (file->Exists()) {
+            uint64_t read_size = 0;
+            data = file->Read(req_start, req_size, read_size);
+        }
+
+        tc::Message msg;
+        msg.set_device_id(sys_settings_.device_id_);
+        msg.set_stream_id(in_msg->stream_id());
+        msg.set_type(MessageType::kClipboardRespBuffer);
+        auto sub = msg.mutable_cp_resp_buffer();
+        sub->set_full_name(full_filename);
+        sub->set_req_size(req_size);
+        sub->set_req_start(req_start);
+        sub->set_req_index(req_index);
+        if (data) {
+            sub->set_read_size(data->Size());
+            sub->set_buffer(data->AsString());
+        }
+        this->DispatchTargetFileTransferMessage(in_msg->stream_id(), msg.SerializeAsString());
+        //LOGI("Req, index: {}, start: {}, size: {}, read size: {}", req_index, req_start, req_size, data ? data->Size() : 0);
     }
 }

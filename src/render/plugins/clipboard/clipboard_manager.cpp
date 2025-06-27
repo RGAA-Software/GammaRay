@@ -51,12 +51,36 @@ namespace tc
         return true;
     }
 
-    void ClipboardManager::OnClipboardUpdated(const std::shared_ptr<MsgClipboardEvent>& msg) {
+    void ClipboardManager::OnLocalClipboardUpdated(const std::shared_ptr<MsgClipboardEvent>& msg) {
         LOGI("**clipboard update, type : {}, msg: {}, file size: {}", (int)msg->clipboard_type_, msg->text_msg_, msg->files_.size());
         for (const auto& file : msg->files_) {
             LOGI("** file name: {}, size: {}, full path: {}, ref path: {}", file.file_name_, file.total_size_, file.full_path_, file.ref_path_);
         }
 
+        if (msg->clipboard_type_ == MsgClipboardType::kText) {
+            // send it to remote
+            tc::Message m;
+            m.set_type(tc::kClipboardInfo);
+            auto sub = m.mutable_clipboard_info();
+            sub->set_type(ClipboardType::kClipboardText);
+            sub->set_msg(msg->text_msg_);
+            plugin_->DispatchAllStreamMessage(m.SerializeAsString());
+        }
+        else if (msg->clipboard_type_ == MsgClipboardType::kFiles && !msg->files_.empty()) {
+            tc::Message m;
+            m.set_type(tc::kClipboardInfo);
+            auto sub = m.mutable_clipboard_info();
+            sub->set_type(ClipboardType::kClipboardFiles);
+            for (const auto& file : msg->files_) {
+                auto pf = sub->mutable_files()->Add();
+                pf->set_file_name(file.file_name_);
+                pf->set_full_path(file.full_path_);
+                pf->set_ref_path(file.ref_path_);
+                pf->set_total_size(file.total_size_);
+            }
+            plugin_->DispatchAllStreamMessage(m.SerializeAsString());
+        }
+#if 0
         QClipboard *board = QGuiApplication::clipboard();
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
         bool has_urls = mime_data->hasUrls();
@@ -172,56 +196,54 @@ namespace tc
                 remote_info_ = text;
             }
         }
+#endif
     }
 
-    void ClipboardManager::UpdateRemoteInfo(const std::shared_ptr<Message>& msg) {
-        QMetaObject::invokeMethod(this, [=, this]() {
-            auto sub = msg->clipboard_info();
-            LOGI("===>2 clipboard type: {}", (int)sub.type());
-            if (sub.type() == ClipboardType::kClipboardText) {
-                auto in_text = sub.msg();
-                auto updated = false;
-                for (int i = 0; i < 100; i++) {
-                    QClipboard *board = QGuiApplication::clipboard();
-                    if (board->text() == in_text) {
-                        LOGI("Already same with clipboard, ignore: {}", in_text);
-                        return;
-                    }
-                    board->setText(QString::fromStdString(in_text));
-                    if (board->ownsClipboard() && board->text() == in_text) {
-                        updated = true;
-                        LOGI("*** update remote clipboard info: {}", in_text);
-                        break;
-                    } else {
-                        LOGE("Can't update remote clipboard, not own it.");
-                    }
-                    TimeUtil::DelayBySleep(5);
-                }
-                if (updated) {
-                    remote_info_ = QString::fromStdString(in_text);
-                }
-            }
-            else if (sub.type() == ClipboardType::kClipboardImage) {
-                auto in_image = sub.msg();
-                QImage image;
-                image.loadFromData((uchar*)in_image.c_str(), in_image.size(), "PNG");
-                if (image.isNull()) {
-                    LOGE("An invalid image...");
+    void ClipboardManager::OnRemoteClipboardInfo(const std::shared_ptr<Message>& msg) {
+        auto sub = msg->clipboard_info();
+        if (sub.type() == ClipboardType::kClipboardText) {
+            auto in_text = sub.msg();
+            auto updated = false;
+            for (int i = 0; i < 100; i++) {
+                QClipboard *board = QGuiApplication::clipboard();
+                if (board->text() == in_text) {
+                    LOGI("Already same with clipboard, ignore: {}", in_text);
                     return;
                 }
-                LOGI("In image size: {}, {}x{}", in_image.size(), image.width(), image.height());
-                for (int i = 0; i < 100; i++) {
-                    QClipboard *board = QGuiApplication::clipboard();
-                    board->setImage(image);
-                    if (board->ownsClipboard()) {
-                        LOGI("set image Success: {}", i);
-                        break;
-                    }
-                    LOGI("Will try next: {}", i);
-                    TimeUtil::DelayBySleep(5);
+                board->setText(QString::fromStdString(in_text));
+                if (board->ownsClipboard() && board->text() == in_text) {
+                    updated = true;
+                    LOGI("*** update remote clipboard info: {}", in_text);
+                    break;
+                } else {
+                    LOGE("Can't update remote clipboard, not own it.");
                 }
+                TimeUtil::DelayBySleep(5);
             }
-        });
+            if (updated) {
+                remote_info_ = QString::fromStdString(in_text);
+            }
+        }
+        else if (sub.type() == ClipboardType::kClipboardImage) {
+            auto in_image = sub.msg();
+            QImage image;
+            image.loadFromData((uchar*)in_image.c_str(), in_image.size(), "PNG");
+            if (image.isNull()) {
+                LOGE("An invalid image...");
+                return;
+            }
+            LOGI("In image size: {}, {}x{}", in_image.size(), image.width(), image.height());
+            for (int i = 0; i < 100; i++) {
+                QClipboard *board = QGuiApplication::clipboard();
+                board->setImage(image);
+                if (board->ownsClipboard()) {
+                    LOGI("set image Success: {}", i);
+                    break;
+                }
+                LOGI("Will try next: {}", i);
+                TimeUtil::DelayBySleep(5);
+            }
+        }
     }
 
 }

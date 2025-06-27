@@ -54,6 +54,7 @@ namespace tc
         else if (ClientPluginEventType::kPluginNetworkEvent == event->event_type_) {
             auto target_event = std::dynamic_pointer_cast<ClientPluginNetworkEvent>(event);
             if (target_event->media_channel_) {
+                LOGI("Will post to media channel.");
                 thunder_sdk_->PostMediaMessage(target_event->buf_);
             }
             else {

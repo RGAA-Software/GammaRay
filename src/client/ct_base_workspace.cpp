@@ -505,38 +505,6 @@ namespace tc
             });
         });
 
-//        msg_listener_->Listen<SdkMsgClipboardReqBuffer>([=, this](const SdkMsgClipboardReqBuffer& buffer) {
-//            auto req_index = buffer.req_buffer_.req_index();
-//            auto req_start = buffer.req_buffer_.req_start();
-//            auto req_size = buffer.req_buffer_.req_size();
-//            auto full_filename = buffer.req_buffer_.full_name();
-//
-//            auto file = File::OpenForReadB(full_filename);
-//            DataPtr data = nullptr;
-//            if (file->Exists()) {
-//                uint64_t read_size = 0;
-//                data = file->Read(req_start, req_size, read_size);
-//            }
-//
-//            tc::Message msg;
-//            msg.set_device_id(settings_->device_id_);
-//            msg.set_stream_id(settings_->stream_id_);
-//            msg.set_type(MessageType::kClipboardRespBuffer);
-//            auto sub = msg.mutable_cp_resp_buffer();
-//            sub->set_full_name(full_filename);
-//            sub->set_req_size(req_size);
-//            sub->set_req_start(req_start);
-//            sub->set_req_index(req_index);
-//            if (data) {
-//                sub->set_read_size(data->Size());
-//                sub->set_buffer(data->AsString());
-//            }
-//
-//            sdk_->PostFileTransferMessage(msg.SerializeAsString());
-//
-//            //LOGI("Req: {}, offset: {}, req size: {}", full_filename, req_start, req_size);
-//        });
-
         msg_listener_->Listen<MsgClientFullscreen>([=, this](const MsgClientFullscreen& msg) {
             context_->PostUITask([=, this]() {
                 full_screen_ = true;
@@ -795,9 +763,7 @@ namespace tc
     }
 
     void BaseWorkspace::UpdateDebugPanelPosition() {
-//        int offset = 120;
-//        st_panel_->resize(this->width()-offset, this->height()-offset);
-//        st_panel_->move(offset/2, offset/2);
+
     }
 
     void BaseWorkspace::SendClipboardMessage(const MsgClientClipboard& msg) {

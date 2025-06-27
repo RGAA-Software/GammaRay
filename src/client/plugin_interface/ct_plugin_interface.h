@@ -108,6 +108,9 @@ namespace tc
         // exe -> dlls
         virtual void SyncClientPluginSettings(const ClientPluginSettings& st);
 
+        // plugin settings
+        ClientPluginSettings GetPluginSettings();
+
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;

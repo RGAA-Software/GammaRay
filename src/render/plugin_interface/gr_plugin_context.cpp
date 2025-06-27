@@ -31,7 +31,7 @@ namespace tc
         }
     }
 
-    void GrPluginContext::PostUIThread(std::function<void()>&& task) {
+    void GrPluginContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [t = std::move(task)]() {
             t();
         });

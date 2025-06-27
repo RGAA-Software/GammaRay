@@ -29,6 +29,9 @@ namespace tc
         void OnMessage(const std::shared_ptr<Message> &msg) override;
         void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override;
 
+        // client -> request buffer
+        void OnRequestFileBuffer(std::shared_ptr<Message> in_msg);
+
     private:
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
         CpVirtualFile* virtual_file_ = nullptr;

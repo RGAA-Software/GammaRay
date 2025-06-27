@@ -221,4 +221,8 @@ namespace tc
         plugin_settings_.clipboard_enabled_ = st.clipboard_enabled_;
     }
 
+    ClientPluginSettings ClientPluginInterface::GetPluginSettings() {
+        return plugin_settings_;
+    }
+
 }

@@ -53,16 +53,31 @@ namespace tc
         auto mime_data = const_cast<QMimeData*>(board->mimeData());
         bool has_urls = mime_data->hasUrls();
         auto text = board->text();
-        LOGI("has urls: {}", has_urls);
-        if (has_urls) {
-            auto urls = mime_data->urls();
-            LOGI("Has urls: {}", has_urls);
 
+        auto fn_send_text = [=, this]() {
+            LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
+            if (text == remote_info_) {
+                return;
+            }
+            LOGI("===> new Text: {}", text.toStdString());
+
+            tcrp::RpMessage msg;
+            msg.set_type(RpMessageType::kRpClipboardEvent);
+            auto sub = msg.mutable_clipboard_info();
+            sub->set_type(RpClipboardType::kRpClipboardText);
+            sub->set_msg(text.toStdString());
+            app_->PostMessage2Renderer(msg.SerializeAsString());
+
+            remote_info_ = text;
+        };
+
+        if (has_urls) {
             // URL:         file:///C:/Users/xx/Documents/aaa.png
             // Full Path:   C:/Users/xx/Documents/aaa.png
             // Ref Path:    aaa.png
             // Base Folder: C:/Users/xx/Documents
 
+            auto urls = mime_data->urls();
             auto fn_make_cp_file=
                 [=, this](const QString& base_folder_path, const QString& full_path) -> std::optional<RpClipboardFile> {
                     QFileInfo file_info(full_path);
@@ -128,34 +143,26 @@ namespace tc
                 LOGI("==> full path: {}, ref path: {}, total size: {}", file.full_path(), file.ref_path(), file.total_size());
             }
 
-            tcrp::RpMessage msg;
-            msg.set_type(RpMessageType::kRpClipboardEvent);
-            auto sub = msg.mutable_clipboard_info();
-            sub->set_type(RpClipboardType::kRpClipboardFiles);
-            for (const auto& file : cp_files) {
-                auto target_file = sub->mutable_files()->Add();
-                target_file->CopyFrom(file);
+            if (!cp_files.empty()) {
+                tcrp::RpMessage msg;
+                msg.set_type(RpMessageType::kRpClipboardEvent);
+                auto sub = msg.mutable_clipboard_info();
+                sub->set_type(RpClipboardType::kRpClipboardFiles);
+                for (const auto &file: cp_files) {
+                    auto target_file = sub->mutable_files()->Add();
+                    target_file->CopyFrom(file);
+                }
+                app_->PostMessage2Renderer(msg.SerializeAsString());
             }
-            app_->PostMessage2Renderer(msg.SerializeAsString());
+            else {
+                if (!text.isEmpty()) {
+                    fn_send_text();
+                }
+            }
         }
         else if (!text.isEmpty()) {
-            LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
-            if (text == remote_info_) {
-                return;
-            }
-            LOGI("===> new Text: {}", text.toStdString());
-
-            tcrp::RpMessage msg;
-            msg.set_type(RpMessageType::kRpClipboardEvent);
-            auto sub = msg.mutable_clipboard_info();
-            sub->set_type(RpClipboardType::kRpClipboardFiles);
-            sub->set_msg(text.toStdString());
-            app_->PostMessage2Renderer(msg.SerializeAsString());
-
-            remote_info_ = text;
+            fn_send_text();
         }
-
-
     }
 
     void WinMessageLoop::OnWinSessionChange(uint32_t message) {

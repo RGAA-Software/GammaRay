@@ -53,27 +53,37 @@ namespace tc
 
     void ClientClipboardPlugin::OnMessage(std::shared_ptr<Message> msg) {
         ClientPluginInterface::OnMessage(msg);
-        // clipboard
         if (msg->type() == MessageType::kClipboardInfo) {
-            if (clipboard_mgr_) {
-                clipboard_mgr_->OnRemoteClipboardMessage(msg);
-            }
+            // server -> text message -> client
+            plugin_context_->PostUITask([=, this]() {
+                if (clipboard_mgr_) {
+                    clipboard_mgr_->OnRemoteClipboardMessage(msg);
+                }
+            });
         }
         else if (msg->type() == tc::kClipboardReqBuffer) {
+            // server -> request a part of data in the file -> client -> response -> server
             plugin_context_->PostWorkTask([=, this]() {
                 this->OnRequestFileBuffer(msg);
+            });
+        }
+        else if (msg->type() == MessageType::kClipboardRespBuffer) {
+            // server -> response a part of data in the file -> client
+            plugin_context_->PostWorkTask([=, this]() {
+                if (clipboard_mgr_) {
+                    clipboard_mgr_->OnRemoteFileRespMessage(msg);
+                }
             });
         }
     }
 
     void ClientClipboardPlugin::DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) {
         ClientPluginInterface::DispatchAppEvent(event);
-        LOGI("AppEvent: {}", (int)event->evt_type_);
     }
 
-    void ClientClipboardPlugin::OnClipboardUpdated() {
+    void ClientClipboardPlugin::OnLocalClipboardUpdated() {
         plugin_context_->PostUITask([this]() {
-            clipboard_mgr_->OnClipboardUpdated();
+            clipboard_mgr_->OnLocalClipboardUpdated();
         });
     }
 
@@ -108,16 +118,12 @@ namespace tc
             sub->set_read_size(data->Size());
             sub->set_buffer(data->AsString());
         }
-
-        //sdk_->PostFileTransferMessage(msg.SerializeAsString());
+        //LOGI("Req, index: {}, start: {}, size: {}, read size: {}", req_index, req_start, req_size, data ? data->Size() : 0);
         auto event = std::make_shared<ClientPluginNetworkEvent>();
         event->media_channel_ = false;
         event->buf_ = msg.SerializeAsString();
-        CallbackEventDirectly(event);
-
-        //LOGI("Req, index: {}, start: {}, size: {}, read size: {}", req_index, req_start, req_size, data ? data->Size() : 0);
+        CallbackEvent(event);
     }
-    
 }
 
 void* GetInstance() {
