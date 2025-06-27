@@ -274,6 +274,14 @@ namespace tc
         return nullptr;
     }
 
+    GrFrameCarrierPlugin* PluginManager::GetFrameCarrierPlugin() {
+        auto plugin = GetPluginById(kFrameCarrierPluginId);
+        if (plugin) {
+            return (GrFrameCarrierPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

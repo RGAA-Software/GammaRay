@@ -31,6 +31,7 @@ namespace tc
     const std::string kVrManagerPluginId = "f4a43a64-52e8-4a51-b5a1-6e9b57333b59";
     const std::string kRelayPluginId = "55b2a2fa-b4e9-4ff6-a0a4-522df80ebda2";
     const std::string kClipboardPluginId = "5b2a1187-e93b-4769-96f3-dfecf2d5d8e4";
+    const std::string kFrameCarrierPluginId = "ebde829b-ef0f-4cbc-961a-3cca5f3d646c";
 
 }
 

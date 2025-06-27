@@ -14,18 +14,19 @@
 
 namespace tc
 {
-    class Thread;
-    class VideoEncoder;
     class Data;
     class Image;
     class File;
+    class Thread;
     class RdContext;
-    class MessageListener;
-    class PluginManager;
-    class GrVideoEncoderPlugin;
-    class VideoFrameCarrier;
-    class RdApplication;
     class RdStatistics;
+    class VideoEncoder;
+    class RdApplication;
+    class PluginManager;
+    class MessageListener;
+    class VideoFrameCarrier;
+    class GrVideoEncoderPlugin;
+    class GrFrameCarrierPlugin;
 
     class EncoderThread {
     public:
@@ -63,6 +64,9 @@ namespace tc
         std::map<std::string, GrVideoEncoderPlugin*> encoder_plugins_;
         std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
         std::map<std::string, std::optional<CaptureVideoFrame>> last_video_frames_;
+
+        // frame carrier plugin
+        GrFrameCarrierPlugin* frame_carrier_plugin_ = nullptr;
     };
 
 }

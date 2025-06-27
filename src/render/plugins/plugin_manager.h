@@ -17,6 +17,7 @@ namespace tc
 {
 
     class RdContext;
+    class RdSettings;
     class RdApplication;
     class PluginEventRouter;
     class GrPluginInterface;
@@ -26,7 +27,7 @@ namespace tc
     class GrMonitorCapturePlugin;
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
-    class RdSettings;
+    class GrFrameCarrierPlugin;
 
     class PluginManager {
     public:
@@ -53,6 +54,7 @@ namespace tc
         GrPluginInterface* GetRtcPlugin();
         GrNetPlugin* GetUdpPlugin();
         GrNetPlugin* GetRelayPlugin();
+        GrFrameCarrierPlugin* GetFrameCarrierPlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
         int GetTotalConnectedPeerCount();

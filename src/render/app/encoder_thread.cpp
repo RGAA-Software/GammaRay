@@ -3,7 +3,9 @@
 //
 
 #include "encoder_thread.h"
-
+#include <d3d11.h>
+#include <wrl/client.h>
+#include "rd_app.h"
 #include "rd_context.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
@@ -20,15 +22,13 @@
 #include "app/app_messages.h"
 #include "settings/rd_settings.h"
 #include "render/rd_statistics.h"
-#include <d3d11.h>
-#include <wrl/client.h>
+#include "video_frame_carrier.h"
 #include "tc_common_new/win32/d3d_render.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
-#include "video_frame_carrier.h"
-#include "rd_app.h"
+#include "plugin_interface/gr_frame_carrier_plugin.h"
 
 #define DEBUG_FILE 0
 #define DEBUG_SAVE_D3D11TEXTURE_TO_FILE 0
@@ -50,6 +50,9 @@ namespace tc
         plugin_manager_ = context_->GetPluginManager();
         enc_thread_ = Thread::Make("encoder_thread", 5);
         enc_thread_->Poll();
+
+        // frame carrier
+        frame_carrier_plugin_ = plugin_manager_->GetFrameCarrierPlugin();
 
         msg_listener_ = context_->CreateMessageListener();
         msg_listener_->Listen<MsgInsertKeyFrame>([=, this](const MsgInsertKeyFrame& msg) {
@@ -216,7 +219,6 @@ namespace tc
 
                 encoder_config.enable_full_color_mode_ = settings_->EnableFullColorMode();
 
-
                 LOGI("encoder_config.enable_full_color_mode_ : {}, encoder_config.codec_type: {}", encoder_config.enable_full_color_mode_, (int)encoder_config.codec_type);
 
                 PrintEncoderConfig(encoder_config);
@@ -258,6 +260,14 @@ namespace tc
                                                                         encoder_config.encode_width,
                                                                         encoder_config.encode_height,
 																		encoder_config.enable_full_color_mode_);
+                    auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
+                        .mon_name_ = monitor_name,
+                        .frame_resize_ = true,
+                    });
+                    if (!r) {
+                        LOGE("Init Frame Carrier failed, resize");
+                        //return;
+                    }
                 }
                 else {
                     frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
@@ -269,6 +279,14 @@ namespace tc
                                                                         -1,
                                                                         -1,
 																		encoder_config.enable_full_color_mode_);
+                    auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
+                        .mon_name_ = monitor_name,
+                        .frame_resize_ = false,
+                    });
+                    if (!r) {
+                        LOGE("Init Frame Carrier failed");
+                        //return;
+                    }
                 }
                 frame_carriers_[monitor_name] = frame_carrier;
                 LOGI("Create frame carrier for monitor: {}", monitor_name);
@@ -347,6 +365,7 @@ namespace tc
                 // copy shared texture
                 auto beg = TimeUtil::GetCurrentTimestamp();
                 auto target_texture = frame_carrier->CopyTexture(cap_video_msg.handle_, frame_index);
+                auto cp_result = frame_carrier_plugin_->CopyTexture(monitor_name, cap_video_msg.handle_, frame_index);
                 if (target_texture == nullptr) {
                     LOGI("Don't have target texture, frame carrier copies texture failed!");
                     return;
