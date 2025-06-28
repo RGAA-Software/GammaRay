@@ -5,6 +5,7 @@
 #include "frame_carrier_plugin.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
+#include "tc_common_new/image.h"
 #include "video_frame_carrier.h"
 #include "render/plugins/plugin_ids.h"
 #include "plugin_interface/gr_plugin_events.h"
@@ -85,6 +86,12 @@ namespace tc
         }
         frame_carriers_[params.mon_name_] = frame_carrier;
         LOGI("Create frame carrier for monitor: {}, resize?: {}", params.mon_name_, params.frame_resize_);
+
+        //
+        auto file = File::OpenForReadB("ic_logo_point.png");
+        auto data = file->ReadAll();
+        logo_image_ = Image::MakeByCompressedImage(data);
+
         return true;
     }
 
@@ -143,6 +150,10 @@ namespace tc
             };
         }
         return std::nullopt;
+    }
+
+    std::shared_ptr<Image> FrameCarrierPlugin::GetLogoImage() {
+        return logo_image_;
     }
 
 }

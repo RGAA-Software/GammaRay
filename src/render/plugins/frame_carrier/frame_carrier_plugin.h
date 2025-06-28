@@ -11,6 +11,7 @@ namespace tc
 {
 
     class File;
+    class Image;
     class VideoFrameCarrier;
     class GrFrameProcessorPlugin;
 
@@ -46,11 +47,17 @@ namespace tc
         // Resize information
         std::optional<GrFrameResizeInfo> GetFrameResizeInfo(const std::string &mon_name) override;
 
+        // logo image
+        std::shared_ptr<Image> GetLogoImage();
+
     private:
         std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
 
     private:
+        // monitor name <=> Frame carrier
         std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
+        // image
+        std::shared_ptr<Image> logo_image_ = nullptr;
     };
 
 }

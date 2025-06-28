@@ -12,10 +12,10 @@
 #include "tc_common_new/image.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/defer.h"
-#include "tc_common_new/win32/d3d_debug_helper.h"
 #include "tc_common_new/file.h"
 #include "frame_carrier_plugin.h"
 #include "plugins/plugin_manager.h"
+#include "tc_common_new/win32/d3d_debug_helper.h"
 #include "plugin_interface/gr_frame_processor_plugin.h"
 
 namespace tc
@@ -127,6 +127,34 @@ namespace tc
                 LOGE("desktop capture create texture failed with:{}", StringUtil::GetErrorStr(res).c_str());
                 return false;
             }
+
+            // Create the sample state
+            D3D11_SAMPLER_DESC SampDesc;
+            RtlZeroMemory(&SampDesc, sizeof(SampDesc));
+            SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+            SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+            SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+            SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+            SampDesc.MinLOD = 0;
+            SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+            auto hr = d3d11_device_->CreateSamplerState(&SampDesc, &m_SamplerLinear);
+            //RETURN_ON_BAD_HR(hr);
+
+            // Create the blend state
+            D3D11_BLEND_DESC BlendStateDesc;
+            BlendStateDesc.AlphaToCoverageEnable = FALSE;
+            BlendStateDesc.IndependentBlendEnable = FALSE;
+            BlendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+            BlendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+            BlendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+            BlendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+            BlendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+            BlendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+            BlendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+            BlendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+            hr = d3d11_device_->CreateBlendState(&BlendStateDesc, &m_BlendState);
+
         }
         ComPtr<ID3D11DeviceContext> ctx;
         curDevice->GetImmediateContext(&ctx);
@@ -177,6 +205,7 @@ namespace tc
                 return nullptr;
             }
             //DebugOutDDS(final_texture.Get(), "3.dds");
+            StampLogoOnTexture(final_texture);
             return final_texture.Get();
         } else {
             if (!CopyID3D11Texture2D(shared_texture)) {
@@ -185,8 +214,65 @@ namespace tc
             }
             //DebugOutDDS(texture2d_.Get(), "2.dds");
             //PrintD3DTexture2DDesc("frame carrier, texture2d", texture2d_.Get());
+
+            // logo
+            StampLogoOnTexture(texture2d_);
             return texture2d_.Get();
         }
+    }
+
+    void VideoFrameCarrier::StampLogoOnTexture(const ComPtr<ID3D11Texture2D> &texture) {
+        auto logo_image = plugin_->GetLogoImage();
+        auto logo_width = static_cast<UINT>(logo_image->GetWidth());
+        auto logo_height = static_cast<UINT>(logo_image->GetHeight());
+
+        D3D11_TEXTURE2D_DESC desc;
+        texture->GetDesc(&desc);
+        D3D11_TEXTURE2D_DESC logo_desc = {
+            logo_width, logo_height, 1, 1,
+            desc.Format, // 必须与目标纹理格式一致
+            {1, 0},                     // 1 mip, 0 msaa
+            D3D11_USAGE_DEFAULT,
+            D3D11_BIND_SHADER_RESOURCE,
+            0, 0
+        };
+
+        ID3D11Texture2D *pTempTexture;
+        d3d11_device_->CreateTexture2D(&logo_desc, nullptr, &pTempTexture);
+
+        //
+        cv::Mat rgba_mat(logo_height, logo_width, CV_8UC4, logo_image->data->DataAddr());
+
+        cv::Mat bgra_mat;
+        cv::cvtColor(rgba_mat, bgra_mat, cv::COLOR_RGBA2BGRA);
+
+        d3d11_device_context_->UpdateSubresource(pTempTexture, 0, nullptr, bgra_mat.data, logo_image->GetWidth() * 4, 0);
+
+        // 3. 使用CopySubresourceRegion拷贝到目标位置
+        D3D11_BOX srcBox = {0, 0, 0, logo_width, logo_height, 1};
+        for (int i = 0; i < 100; i++) {
+            d3d11_device_context_->CopySubresourceRegion(
+                texture.Get(),
+                0,              // 目标子资源
+                i, i, 0,        // 目标位置(x,y,z)
+                pTempTexture,
+                0,              // 源子资源
+                &srcBox
+            );
+        }
+        for (int i = 0; i < 100; i++) {
+            d3d11_device_context_->CopySubresourceRegion(
+                texture.Get(),
+                0,              // 目标子资源
+                100 - i, i, 0,        // 目标位置(x,y,z)
+                pTempTexture,
+                0,              // 源子资源
+                &srcBox
+            );
+        }
+
+        // 4. 释放临时纹理
+        pTempTexture->Release();
     }
 
     bool VideoFrameCarrier::ConvertRawImage(const std::shared_ptr<Image> image,

@@ -233,6 +233,7 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/package"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}package"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources/qt_material"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}resources/qt_material"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources/language"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}resources/language"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/resources/ic_logo_point.png"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/settings.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
         COMMAND ${CMAKE_COMMAND} -E copy "${OpenCV_ROOT}/x64/vc16/bin/opencv_world4100.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}"
 

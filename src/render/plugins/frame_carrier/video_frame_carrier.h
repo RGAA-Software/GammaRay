@@ -14,6 +14,7 @@
 #include <wrl/client.h>
 #endif
 #include <mutex>
+#include <opencv2/opencv.hpp>
 #include "tc_common_new/image.h"
 
 namespace tc
@@ -64,6 +65,7 @@ namespace tc
         void ConvertToYuv420(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
         void ConvertToYuv444(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
         [[nodiscard]] int GetRawImageType() const;
+        void StampLogoOnTexture(const ComPtr<ID3D11Texture2D>& texture);
 
     private:
         FrameCarrierPlugin* plugin_ = nullptr;
@@ -87,6 +89,9 @@ namespace tc
         std::string monitor_name_;
 
         bool enable_full_color_mode_ = false;
+
+        ID3D11SamplerState *m_SamplerLinear = nullptr;
+        ID3D11BlendState *m_BlendState = nullptr;
     };
 
 }
