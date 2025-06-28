@@ -67,6 +67,7 @@ namespace tc
         void ConvertToYuv444(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
         [[nodiscard]] int GetRawImageType() const;
         void StampLogoOnTexture(const ComPtr<ID3D11Texture2D>& texture, int tex_width, int tex_height);
+        void StampLogoOnRGBABuffer(const std::shared_ptr<Image>& image);
 
     private:
         FrameCarrierPlugin* plugin_ = nullptr;
