@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/ic_logo_point.png</file>
+        <file>resources/ic_logo_src.png</file>
+        <file>resources/ic_logo_src_big.png</file>
+	</qresource>
+</RCC>

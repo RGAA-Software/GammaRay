@@ -15,6 +15,7 @@
 #endif
 #include <mutex>
 #include <opencv2/opencv.hpp>
+#include <QPoint>
 #include "tc_common_new/image.h"
 
 namespace tc
@@ -90,8 +91,10 @@ namespace tc
 
         bool enable_full_color_mode_ = false;
 
-        ID3D11SamplerState *m_SamplerLinear = nullptr;
-        ID3D11BlendState *m_BlendState = nullptr;
+        // logo points
+        std::vector<QPoint> logo_points_;
+        // big log points
+        std::vector<QPoint> big_logo_points_;
     };
 
 }

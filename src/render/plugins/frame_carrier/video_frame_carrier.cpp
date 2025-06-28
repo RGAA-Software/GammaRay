@@ -42,6 +42,9 @@ namespace tc
         enable_full_color_mode_ = enable_full_color_mode;
         yuv_converter_thread_ = Thread::Make("video frame carrier", 1024);
         yuv_converter_thread_->Poll();
+        // logo points
+        logo_points_ = plugin_->GetLogoPoints();
+        big_logo_points_ = plugin_->GetBigLogoPoints();
     }
 
     bool VideoFrameCarrier::D3D11Texture2DLockMutex(const ComPtr<ID3D11Texture2D>& texture2d) {
@@ -127,34 +130,6 @@ namespace tc
                 LOGE("desktop capture create texture failed with:{}", StringUtil::GetErrorStr(res).c_str());
                 return false;
             }
-
-            // Create the sample state
-            D3D11_SAMPLER_DESC SampDesc;
-            RtlZeroMemory(&SampDesc, sizeof(SampDesc));
-            SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-            SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-            SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-            SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-            SampDesc.MinLOD = 0;
-            SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-            auto hr = d3d11_device_->CreateSamplerState(&SampDesc, &m_SamplerLinear);
-            //RETURN_ON_BAD_HR(hr);
-
-            // Create the blend state
-            D3D11_BLEND_DESC BlendStateDesc;
-            BlendStateDesc.AlphaToCoverageEnable = FALSE;
-            BlendStateDesc.IndependentBlendEnable = FALSE;
-            BlendStateDesc.RenderTarget[0].BlendEnable = TRUE;
-            BlendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-            BlendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-            BlendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-            BlendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-            BlendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-            BlendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-            BlendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-            hr = d3d11_device_->CreateBlendState(&BlendStateDesc, &m_BlendState);
-
         }
         ComPtr<ID3D11DeviceContext> ctx;
         curDevice->GetImmediateContext(&ctx);
@@ -239,34 +214,19 @@ namespace tc
 
         ID3D11Texture2D *pTempTexture;
         d3d11_device_->CreateTexture2D(&logo_desc, nullptr, &pTempTexture);
+        d3d11_device_context_->UpdateSubresource(pTempTexture, 0, nullptr, logo_image->data->DataAddr(), logo_image->GetWidth() * 4, 0);
 
-        //
-        cv::Mat rgba_mat(logo_height, logo_width, CV_8UC4, logo_image->data->DataAddr());
+        auto big_picture = desc.Width > 1920 && desc.Height > 1080;
+        const auto& points = big_picture ? big_logo_points_ : logo_points_;
 
-        cv::Mat bgra_mat;
-        cv::cvtColor(rgba_mat, bgra_mat, cv::COLOR_RGBA2BGRA);
-
-        d3d11_device_context_->UpdateSubresource(pTempTexture, 0, nullptr, bgra_mat.data, logo_image->GetWidth() * 4, 0);
-
-        // 3. 使用CopySubresourceRegion拷贝到目标位置
         D3D11_BOX srcBox = {0, 0, 0, logo_width, logo_height, 1};
-        for (int i = 0; i < 100; i++) {
+        for (const auto& point : points) {
             d3d11_device_context_->CopySubresourceRegion(
                 texture.Get(),
-                0,              // 目标子资源
-                i, i, 0,        // 目标位置(x,y,z)
+                0,
+                point.x(), point.y(), 0,
                 pTempTexture,
-                0,              // 源子资源
-                &srcBox
-            );
-        }
-        for (int i = 0; i < 100; i++) {
-            d3d11_device_context_->CopySubresourceRegion(
-                texture.Get(),
-                0,              // 目标子资源
-                100 - i, i, 0,        // 目标位置(x,y,z)
-                pTempTexture,
-                0,              // 源子资源
+                0,
                 &srcBox
             );
         }

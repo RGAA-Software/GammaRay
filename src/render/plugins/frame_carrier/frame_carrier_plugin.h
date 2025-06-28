@@ -50,14 +50,23 @@ namespace tc
         // logo image
         std::shared_ptr<Image> GetLogoImage();
 
+        // logo points
+        std::vector<QPoint> GetLogoPoints();
+        // big log points
+        std::vector<QPoint> GetBigLogoPoints();
+
     private:
         std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
 
     private:
         // monitor name <=> Frame carrier
         std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
-        // image
+        // logo image item
         std::shared_ptr<Image> logo_image_ = nullptr;
+        // logo points
+        std::vector<QPoint> logo_points_;
+        // big log points
+        std::vector<QPoint> big_logo_points_;
     };
 
 }

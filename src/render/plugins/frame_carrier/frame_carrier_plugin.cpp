@@ -44,6 +44,43 @@ namespace tc
 
     bool FrameCarrierPlugin::OnCreate(const tc::GrPluginParam& param) {
         GrPluginInterface::OnCreate(param);
+        // logo point / 1 pixel
+        {
+            auto file = File::OpenForReadB(":/resources/ic_logo_point.png");
+            auto data = file->ReadAll();
+            logo_image_ = Image::MakeByCompressedImage(data);
+        }
+
+        // logo src
+        {
+            QImage image;
+            image.load(":/resources/ic_logo_src.png");
+            LOGI("logo src image, size: {}x{}, channels:{}, data size: {}", image.width(), image.height(), (int)image.format(), image.sizeInBytes());
+            for (int h = 0; h < image.height(); h++) {
+                for (int w = 0; w < image.width(); w++) {
+                    auto r = image.pixel(w, h);
+                    if (qRed(r) == 0) {
+                        logo_points_.emplace_back(w, h);
+                    }
+                }
+            }
+        }
+
+        // big logo src
+        {
+            QImage image;
+            image.load(":/resources/ic_logo_src_big.png");
+            LOGI("logo src image, size: {}x{}, channels:{}, data size: {}", image.width(), image.height(), (int)image.format(), image.sizeInBytes());
+            for (int h = 0; h < image.height(); h++) {
+                for (int w = 0; w < image.width(); w++) {
+                    auto r = image.pixel(w, h);
+                    if (qRed(r) == 0) {
+                        big_logo_points_.emplace_back(w, h);
+                    }
+                }
+            }
+        }
+
         return true;
     }
 
@@ -86,12 +123,6 @@ namespace tc
         }
         frame_carriers_[params.mon_name_] = frame_carrier;
         LOGI("Create frame carrier for monitor: {}, resize?: {}", params.mon_name_, params.frame_resize_);
-
-        //
-        auto file = File::OpenForReadB("ic_logo_point.png");
-        auto data = file->ReadAll();
-        logo_image_ = Image::MakeByCompressedImage(data);
-
         return true;
     }
 
@@ -154,6 +185,14 @@ namespace tc
 
     std::shared_ptr<Image> FrameCarrierPlugin::GetLogoImage() {
         return logo_image_;
+    }
+
+    std::vector<QPoint> FrameCarrierPlugin::GetLogoPoints() {
+        return logo_points_;
+    }
+
+    std::vector<QPoint> FrameCarrierPlugin::GetBigLogoPoints() {
+        return big_logo_points_;
     }
 
 }
