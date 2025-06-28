@@ -138,9 +138,9 @@ namespace tc
             else {
                 monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
                 LOGI("Use capture fps: {}", settings_->encoder_.fps_);
-                monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
                 if (monitor_capture_plugin_ && monitor_capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
+                    monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
                     monitor_capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
                         monitor_capture_plugin_->StopCapturing();
                         monitor_capture_plugin_->DisablePlugin();
@@ -264,7 +264,7 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgReCreateRefresher>([=, this](const MsgReCreateRefresher& msg) {
-            context_->PostUITask([=]() {
+            context_->PostUITask([=, this]() {
                 monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
             });
         });

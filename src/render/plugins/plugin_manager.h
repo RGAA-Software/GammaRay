@@ -28,6 +28,7 @@ namespace tc
     class GrDataProviderPlugin;
     class GrAudioEncoderPlugin;
     class GrFrameCarrierPlugin;
+    class GrFrameProcessorPlugin;
 
     class PluginManager {
     public:
@@ -55,6 +56,7 @@ namespace tc
         GrNetPlugin* GetUdpPlugin();
         GrNetPlugin* GetRelayPlugin();
         GrFrameCarrierPlugin* GetFrameCarrierPlugin();
+        GrFrameProcessorPlugin* GetFrameResizePlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
         int GetTotalConnectedPeerCount();
@@ -70,6 +72,11 @@ namespace tc
 
         // from render panel -> render
         void SyncPluginSettingsInfo(const GrPluginSettingsInfo& info);
+
+        // is GDI
+        bool IsGDIMonitorCapturePlugin(GrMonitorCapturePlugin* plugin);
+        // is DDA
+        bool IsDDAMonitorCapturePlugin(GrMonitorCapturePlugin* plugin);
 
     private:
         RdSettings* settings_ = nullptr;

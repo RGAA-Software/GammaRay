@@ -62,7 +62,7 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         std::map<std::string, GrVideoEncoderPlugin*> encoder_plugins_;
-        std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
+        //std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
         std::map<std::string, std::optional<CaptureVideoFrame>> last_video_frames_;
 
         // frame carrier plugin

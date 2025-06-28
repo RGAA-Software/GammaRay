@@ -123,6 +123,9 @@ namespace tc
     }
 
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
+        if (!frame_carrier_plugin_) {
+            return;
+        }
         PostEncTask([=, this]() {
             auto settings = RdSettings::Instance();
             auto frame_index = cap_video_msg.frame_index_;
@@ -157,9 +160,6 @@ namespace tc
                 return last_video_frame.value().frame_width_ != cap_video_msg.frame_width_
                     || last_video_frame.value().frame_height_ != cap_video_msg.frame_height_;
             }();
-            //frame_width_ != cap_video_msg.frame_width_ || frame_height_ != cap_video_msg.frame_height_
-
-           // LOGI("EncoderThread settings_->enable_full_color_mode_: {}", settings_->enable_full_color_mode_);
 
             bool full_color_mode_changed = false;
             auto target_encoder_plugin = GetEncoderPluginForMonitor(monitor_name);
@@ -180,14 +180,16 @@ namespace tc
                 LOGI("EncoderThread target_encoder_plugin is nullptr");
             }
 
-            if (full_color_mode_changed || frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_ || !target_encoder_plugin || !target_encoder_plugin->IsPluginEnabled()) {
+            if (full_color_mode_changed || frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_
+                || !target_encoder_plugin || !target_encoder_plugin->IsPluginEnabled()) {
                 if (target_encoder_plugin) {
                     // todo : Test it!
                     target_encoder_plugin->Exit(monitor_name);
                     target_encoder_plugin = nullptr;
                 }
                 tc::EncoderConfig encoder_config;
-                if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
+                bool is_gdi_capture = plugin_manager_->IsGDIMonitorCapturePlugin(app_->GetWorkingMonitorCapturePlugin());
+                if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin || is_gdi_capture) {
                     encoder_config.width = cap_video_msg.frame_width_;
                     encoder_config.height = cap_video_msg.frame_height_;
                     encoder_config.encode_width = cap_video_msg.frame_width_;
@@ -198,6 +200,7 @@ namespace tc
                     encoder_config.height = settings_->encoder_.encode_height_;
                     encoder_config.encode_width = settings_->encoder_.encode_width_;
                     encoder_config.encode_height = settings_->encoder_.encode_height_;
+                    // resize will be enabled when dda capture working
                     encoder_config.frame_resize = true;
                 }
                 encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
@@ -244,25 +247,31 @@ namespace tc
                 });
 
                 // video frame carrier
-                auto frame_carrier = GetFrameCarrier(monitor_name);
-                if (frame_carrier != nullptr) {
-                    frame_carrier->Exit();
-                    frame_carriers_.erase(monitor_name);
-                    frame_carrier = nullptr;
-                }
+                //auto frame_carrier = GetFrameCarrier(monitor_name);
+                //if (frame_carrier != nullptr) {
+                //    frame_carrier->Exit();
+                //    frame_carriers_.erase(monitor_name);
+                //    frame_carrier = nullptr;
+                //}
                 if (encoder_config.frame_resize) {
-                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
-                                                                        app_->GetD3DDevice(adapter_uid),
-                                                                        app_->GetD3DContext(adapter_uid),
-                                                                        cap_video_msg.adapter_uid_,
-                                                                        monitor_name,
-                                                                        true,
-                                                                        encoder_config.encode_width,
-                                                                        encoder_config.encode_height,
-																		encoder_config.enable_full_color_mode_);
+                    //frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
+                    //                                                    app_->GetD3DDevice(adapter_uid),
+                    //                                                    app_->GetD3DContext(adapter_uid),
+                    //                                                    cap_video_msg.adapter_uid_,
+                    //                                                    monitor_name,
+                    //                                                    true,
+                    //                                                    encoder_config.encode_width,
+                    //                                                    encoder_config.encode_height,
+					//													encoder_config.enable_full_color_mode_);
                     auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
                         .mon_name_ = monitor_name,
                         .frame_resize_ = true,
+                        .d3d_device_ = app_->GetD3DDevice(adapter_uid),
+                        .d3d_device_context_ = app_->GetD3DContext(adapter_uid),
+                        .adapter_uid_ = cap_video_msg.adapter_uid_,
+                        .encode_width_ = encoder_config.encode_width,
+                        .encode_height_ = encoder_config.encode_height,
+                        .frame_resize_plugin_ = plugin_manager_->GetFrameResizePlugin(),
                     });
                     if (!r) {
                         LOGE("Init Frame Carrier failed, resize");
@@ -270,26 +279,32 @@ namespace tc
                     }
                 }
                 else {
-                    frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
-                                                                        app_->GetD3DDevice(adapter_uid),
-                                                                        app_->GetD3DContext(adapter_uid),
-                                                                        cap_video_msg.adapter_uid_,
-                                                                        monitor_name,
-                                                                        false,
-                                                                        -1,
-                                                                        -1,
-																		encoder_config.enable_full_color_mode_);
+                    //frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
+                    //                                                    app_->GetD3DDevice(adapter_uid),
+                    //                                                    app_->GetD3DContext(adapter_uid),
+                    //                                                    cap_video_msg.adapter_uid_,
+                    //                                                    monitor_name,
+                    //                                                    false,
+                    //                                                    -1,
+                    //                                                    -1,
+					//													encoder_config.enable_full_color_mode_);
                     auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
                         .mon_name_ = monitor_name,
                         .frame_resize_ = false,
+                        .d3d_device_ = app_->GetD3DDevice(adapter_uid),
+                        .d3d_device_context_ = app_->GetD3DContext(adapter_uid),
+                        .adapter_uid_ = cap_video_msg.adapter_uid_,
+                        .encode_width_ = -1,
+                        .encode_height_ = -1,
+                        .frame_resize_plugin_ = plugin_manager_->GetFrameResizePlugin(),
                     });
                     if (!r) {
                         LOGE("Init Frame Carrier failed");
                         //return;
                     }
                 }
-                frame_carriers_[monitor_name] = frame_carrier;
-                LOGI("Create frame carrier for monitor: {}", monitor_name);
+                //frame_carriers_[monitor_name] = frame_carrier;
+                //LOGI("Create frame carrier for monitor: {}", monitor_name);
 
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
@@ -355,18 +370,18 @@ namespace tc
                 last_video_frames_[monitor_name] = cap_video_msg;
             }
 
-            auto frame_carrier = GetFrameCarrier(monitor_name);
-            if (frame_carrier == nullptr) {
-                LOGI("Don't have frame carrier for monitor: {}", monitor_name);
-                return;
-            }
+            //auto frame_carrier = GetFrameCarrier(monitor_name);
+            //if (frame_carrier == nullptr) {
+            //    LOGI("Don't have frame carrier for monitor: {}", monitor_name);
+            //    return;
+            //}
             // from texture
-            if (cap_video_msg.handle_ > 0 && frame_carrier) {
+            if (cap_video_msg.handle_ > 0 /*&& frame_carrier*/) {
                 // copy shared texture
                 auto beg = TimeUtil::GetCurrentTimestamp();
-                auto target_texture = frame_carrier->CopyTexture(cap_video_msg.handle_, frame_index);
+                //auto target_texture = frame_carrier->CopyTexture(cap_video_msg.handle_, frame_index);
                 auto cp_result = frame_carrier_plugin_->CopyTexture(monitor_name, cap_video_msg.handle_, frame_index);
-                if (target_texture == nullptr) {
+                if (cp_result->texture_ == nullptr) {
                     LOGI("Don't have target texture, frame carrier copies texture failed!");
                     return;
                 }
@@ -379,7 +394,7 @@ namespace tc
                 if (target_encoder_plugin && target_encoder_plugin->CanEncodeTexture()) {
                     can_encode_texture = true;
                     // plugins: EncodeTexture
-                    target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
+                    target_encoder_plugin->Encode(cp_result->texture_, frame_index, cap_video_msg);
                 }
 
                 // TODO: Add Texture Mapping duration
@@ -390,7 +405,7 @@ namespace tc
                     auto beg_map_texture = TimeUtil::GetCurrentTimestamp();
 
                     D3D11_TEXTURE2D_DESC desc;
-                    target_texture->GetDesc(&desc);
+                    cp_result->texture_->GetDesc(&desc);
                     auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
                         // callback in Enc thread
                         context_->PostStreamPluginTask([=, this]() {
@@ -417,7 +432,8 @@ namespace tc
                             });
                         });
                     };
-                    frame_carrier->MapRawTexture(target_texture, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+                    // map the texture from GPU -> CPU
+                    frame_carrier_plugin_->MapRawTexture(monitor_name, cp_result->texture_, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
                 }
 
                 auto end = TimeUtil::GetCurrentTimestamp();
@@ -469,11 +485,7 @@ namespace tc
                             });
                     });
                 };
-
-
-                frame_carrier->HandleRawImage(cap_video_msg.raw_image_, rgba_cbk, yuv_cbk);
-
-
+                frame_carrier_plugin_->ConvertRawImage(monitor_name, cap_video_msg.raw_image_, rgba_cbk, yuv_cbk);
             }
         });
     }
@@ -489,9 +501,9 @@ namespace tc
     }
 
     std::shared_ptr<VideoFrameCarrier> EncoderThread::GetFrameCarrier(const std::string& monitor_name) {
-        if (frame_carriers_.contains(monitor_name)) {
-            return frame_carriers_[monitor_name];
-        }
+//        if (frame_carriers_.contains(monitor_name)) {
+//            return frame_carriers_[monitor_name];
+//        }
         return nullptr;
     }
 
@@ -500,7 +512,8 @@ namespace tc
     }
 
     std::map<std::string, std::shared_ptr<VideoFrameCarrier>> EncoderThread::GetWorkingFrameCarriers() {
-        return frame_carriers_;
+        //return frame_carriers_;
+        return {};
     }
 
     bool EncoderThread::HasEncoderForMonitor(const std::string& monitor_name) {

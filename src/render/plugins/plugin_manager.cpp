@@ -282,6 +282,14 @@ namespace tc
         return nullptr;
     }
 
+    GrFrameProcessorPlugin* PluginManager::GetFrameResizePlugin() {
+        auto plugin = GetPluginById(kFrameResizerPluginId);
+        if (plugin) {
+            return (GrFrameProcessorPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {
@@ -385,6 +393,16 @@ namespace tc
             total_size += plugin->GetConnectedPeerCount();
         });
         return total_size;
+    }
+
+    // is GDI
+    bool PluginManager::IsGDIMonitorCapturePlugin(GrMonitorCapturePlugin* plugin) {
+        return plugin && plugin->GetPluginId() == kGdiCapturePluginId;
+    }
+
+    // is DDA
+    bool PluginManager::IsDDAMonitorCapturePlugin(GrMonitorCapturePlugin* plugin) {
+        return plugin && plugin->GetPluginId() == kDdaCapturePluginId;
     }
 
 }
