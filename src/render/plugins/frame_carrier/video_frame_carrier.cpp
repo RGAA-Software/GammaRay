@@ -180,7 +180,7 @@ namespace tc
                 return nullptr;
             }
             //DebugOutDDS(final_texture.Get(), "3.dds");
-            StampLogoOnTexture(final_texture);
+            StampLogoOnTexture(final_texture, desc.Width, desc.Height);
             return final_texture.Get();
         } else {
             if (!CopyID3D11Texture2D(shared_texture)) {
@@ -191,32 +191,33 @@ namespace tc
             //PrintD3DTexture2DDesc("frame carrier, texture2d", texture2d_.Get());
 
             // logo
-            StampLogoOnTexture(texture2d_);
+            StampLogoOnTexture(texture2d_, desc.Width, desc.Height);
             return texture2d_.Get();
         }
     }
 
-    void VideoFrameCarrier::StampLogoOnTexture(const ComPtr<ID3D11Texture2D> &texture) {
+    void VideoFrameCarrier::StampLogoOnTexture(const ComPtr<ID3D11Texture2D>& texture, int tex_width, int tex_height) {
         auto logo_image = plugin_->GetLogoImage();
         auto logo_width = static_cast<UINT>(logo_image->GetWidth());
         auto logo_height = static_cast<UINT>(logo_image->GetHeight());
 
-        D3D11_TEXTURE2D_DESC desc;
-        texture->GetDesc(&desc);
-        D3D11_TEXTURE2D_DESC logo_desc = {
-            logo_width, logo_height, 1, 1,
-            desc.Format, // 必须与目标纹理格式一致
-            {1, 0},                     // 1 mip, 0 msaa
-            D3D11_USAGE_DEFAULT,
-            D3D11_BIND_SHADER_RESOURCE,
-            0, 0
-        };
+        if (logo_point_texture_ == nullptr) {
+            D3D11_TEXTURE2D_DESC desc;
+            texture->GetDesc(&desc);
+            D3D11_TEXTURE2D_DESC logo_desc = {
+                logo_width, logo_height, 1, 1,
+                desc.Format, // MUST SAME FORMAT
+                {1, 0},
+                D3D11_USAGE_DEFAULT,
+                D3D11_BIND_SHADER_RESOURCE,
+                0, 0
+            };
 
-        ID3D11Texture2D *pTempTexture;
-        d3d11_device_->CreateTexture2D(&logo_desc, nullptr, &pTempTexture);
-        d3d11_device_context_->UpdateSubresource(pTempTexture, 0, nullptr, logo_image->data->DataAddr(), logo_image->GetWidth() * 4, 0);
+            d3d11_device_->CreateTexture2D(&logo_desc, nullptr, &logo_point_texture_);
+            d3d11_device_context_->UpdateSubresource(logo_point_texture_, 0, nullptr, logo_image->data->DataAddr(), logo_image->GetWidth() * 4, 0);
+        }
 
-        auto big_picture = desc.Width > 1920 && desc.Height > 1080;
+        auto big_picture = tex_width > 1920 && tex_height > 1080;
         const auto& points = big_picture ? big_logo_points_ : logo_points_;
 
         D3D11_BOX srcBox = {0, 0, 0, logo_width, logo_height, 1};
@@ -225,14 +226,11 @@ namespace tc
                 texture.Get(),
                 0,
                 point.x(), point.y(), 0,
-                pTempTexture,
+                logo_point_texture_,
                 0,
                 &srcBox
             );
         }
-
-        // 4. 释放临时纹理
-        pTempTexture->Release();
     }
 
     bool VideoFrameCarrier::ConvertRawImage(const std::shared_ptr<Image> image,
@@ -417,6 +415,9 @@ namespace tc
     void VideoFrameCarrier::Exit() {
         if (yuv_converter_thread_) {
             yuv_converter_thread_->Exit();
+        }
+        if (logo_point_texture_) {
+            logo_point_texture_->Release();
         }
     }
 

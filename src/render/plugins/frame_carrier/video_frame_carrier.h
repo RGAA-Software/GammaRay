@@ -66,7 +66,7 @@ namespace tc
         void ConvertToYuv420(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
         void ConvertToYuv444(std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
         [[nodiscard]] int GetRawImageType() const;
-        void StampLogoOnTexture(const ComPtr<ID3D11Texture2D>& texture);
+        void StampLogoOnTexture(const ComPtr<ID3D11Texture2D>& texture, int tex_width, int tex_height);
 
     private:
         FrameCarrierPlugin* plugin_ = nullptr;
@@ -95,6 +95,8 @@ namespace tc
         std::vector<QPoint> logo_points_;
         // big log points
         std::vector<QPoint> big_logo_points_;
+
+        ID3D11Texture2D* logo_point_texture_ = nullptr;
     };
 
 }
