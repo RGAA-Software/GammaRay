@@ -22,7 +22,6 @@
 #include "app/app_messages.h"
 #include "settings/rd_settings.h"
 #include "render/rd_statistics.h"
-#include "video_frame_carrier.h"
 #include "tc_common_new/win32/d3d_render.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
 #include "plugins/plugin_manager.h"
@@ -500,20 +499,8 @@ namespace tc
         enc_thread_->Post(std::move(task));
     }
 
-    std::shared_ptr<VideoFrameCarrier> EncoderThread::GetFrameCarrier(const std::string& monitor_name) {
-//        if (frame_carriers_.contains(monitor_name)) {
-//            return frame_carriers_[monitor_name];
-//        }
-        return nullptr;
-    }
-
     std::map<std::string, GrVideoEncoderPlugin*> EncoderThread::GetWorkingVideoEncoderPlugins() {
         return encoder_plugins_;
-    }
-
-    std::map<std::string, std::shared_ptr<VideoFrameCarrier>> EncoderThread::GetWorkingFrameCarriers() {
-        //return frame_carriers_;
-        return {};
     }
 
     bool EncoderThread::HasEncoderForMonitor(const std::string& monitor_name) {

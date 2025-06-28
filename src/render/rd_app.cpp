@@ -640,13 +640,6 @@ namespace tc
         return {};
     }
 
-    std::map<std::string, std::shared_ptr<VideoFrameCarrier>> RdApplication::GetWorkingFrameCarriers() {
-        if (encoder_thread_) {
-            return encoder_thread_->GetWorkingFrameCarriers();
-        }
-        return {};
-    }
-
     bool RdApplication::GenerateD3DDevice(uint64_t adapter_uid) {
         LOGI("GenerateD3DDevice, adapter_uid = {}", adapter_uid);
         if (d3d11_devices_.contains(adapter_uid)) {

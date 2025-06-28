@@ -24,7 +24,6 @@ namespace tc
     class RdApplication;
     class PluginManager;
     class MessageListener;
-    class VideoFrameCarrier;
     class GrVideoEncoderPlugin;
     class GrFrameCarrierPlugin;
 
@@ -39,11 +38,9 @@ namespace tc
         void Encode(const CaptureVideoFrame& msg);
         void Exit();
         std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
-        std::map<std::string, std::shared_ptr<VideoFrameCarrier>> GetWorkingFrameCarriers();
 
     private:
         void PostEncTask(std::function<void()>&& task);
-        std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
         void PrintEncoderConfig(const tc::EncoderConfig& config);
         bool HasEncoderForMonitor(const std::string& monitor_name);
         GrVideoEncoderPlugin* GetEncoderPluginForMonitor(const std::string& monitor_name);
@@ -62,7 +59,6 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         std::map<std::string, GrVideoEncoderPlugin*> encoder_plugins_;
-        //std::map<std::string, std::shared_ptr<VideoFrameCarrier>> frame_carriers_;
         std::map<std::string, std::optional<CaptureVideoFrame>> last_video_frames_;
 
         // frame carrier plugin

@@ -3,23 +3,23 @@
 //
 
 #include "rd_statistics.h"
-#include "tc_render_panel_message.pb.h"
+#include "rd_context.h"
+#include "render/rd_app.h"
+#include "app/app_messages.h"
+#include "plugins/plugin_ids.h"
+#include "settings/rd_settings.h"
+#include "plugins/plugin_manager.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/fps_stat.h"
-#include "app/app_messages.h"
-#include "rd_context.h"
 #include "tc_common_new/thread.h"
-#include "tc_common_new/message_notifier.h"
-#include "tc_common_new/process_util.h"
 #include "tc_common_new/time_util.h"
-#include "plugins/plugin_manager.h"
-#include "plugins/plugin_ids.h"
-#include "render/rd_app.h"
+#include "tc_common_new/process_util.h"
+#include "tc_render_panel_message.pb.h"
+#include "tc_common_new/message_notifier.h"
 #include "plugin_interface/gr_monitor_capture_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
-#include "settings/rd_settings.h"
-#include "app/video_frame_carrier.h"
+#include "plugin_interface/gr_frame_carrier_plugin.h"
 
 namespace tc
 {
@@ -112,7 +112,7 @@ namespace tc
         //
         auto video_capture_plugin = app_->GetWorkingMonitorCapturePlugin();
         auto video_encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
-        auto frame_carriers = app_->GetWorkingFrameCarriers();
+        auto frame_carrier_plugin = plugin_mgr_->GetFrameCarrierPlugin();
         if (video_capture_plugin && !video_encoder_plugins.empty()) {
             // encoder info
 
@@ -167,15 +167,16 @@ namespace tc
                 }
 
                 // resize info
-                if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin) {
+                bool is_gdi_capture = plugin_mgr_->IsGDIMonitorCapturePlugin(app_->GetWorkingMonitorCapturePlugin());
+                if (settings_->encoder_.encode_res_type_ == Encoder::EncodeResolutionType::kOrigin || is_gdi_capture) {
                     item->set_resize_frame_width(0);
                     item->set_resize_frame_height(0);
                 }
                 else {
-                    if (frame_carriers.contains(info->target_name_)) {
-                        auto carrier = frame_carriers[info->target_name_];
-                        item->set_resize_frame_width(carrier->GetResizeWidth());
-                        item->set_resize_frame_height(carrier->GetResizeHeight());
+                    if (auto resize_info = frame_carrier_plugin->GetFrameResizeInfo(info->target_name_); resize_info.has_value()) {
+                        auto frame_resize_info = resize_info.value();
+                        item->set_resize_frame_width(frame_resize_info.resize_width_);
+                        item->set_resize_frame_height(frame_resize_info.resize_height_);
                     }
                 }
             }

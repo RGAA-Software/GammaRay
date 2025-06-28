@@ -43,6 +43,9 @@ namespace tc
         bool ConvertRawImage(const std::string& mon_name, const std::shared_ptr<Image> image,
                                    std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                                    std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) override;
+        // Resize information
+        std::optional<GrFrameResizeInfo> GetFrameResizeInfo(const std::string &mon_name) override;
+
     private:
         std::shared_ptr<VideoFrameCarrier> GetFrameCarrier(const std::string& monitor_name);
 

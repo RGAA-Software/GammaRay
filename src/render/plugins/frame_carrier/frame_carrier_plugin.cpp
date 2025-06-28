@@ -134,4 +134,15 @@ namespace tc
         return false;
     }
 
+    std::optional<GrFrameResizeInfo> FrameCarrierPlugin::GetFrameResizeInfo(const std::string &mon_name) {
+        if (auto frame_carrier = GetFrameCarrier(mon_name); frame_carrier) {
+            return GrFrameResizeInfo {
+                .mon_name_ = mon_name,
+                .resize_width_ = frame_carrier->GetResizeWidth(),
+                .resize_height_ = frame_carrier->GetResizeHeight(),
+            };
+        }
+        return std::nullopt;
+    }
+
 }

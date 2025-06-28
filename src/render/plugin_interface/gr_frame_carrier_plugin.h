@@ -6,6 +6,7 @@
 #define GAMMARAY_GR_FRAME_CARRIER_PLUGIN_H
 
 #include <memory>
+#include <optional>
 #include "gr_plugin_interface.h"
 
 namespace tc
@@ -38,6 +39,14 @@ namespace tc
 #endif
     };
 
+    // Resize Info
+    class GrFrameResizeInfo {
+    public:
+        std::string mon_name_;
+        int resize_width_ = 0;
+        int resize_height_ = 0;
+    };
+
     class GrFrameCarrierPlugin : public GrPluginInterface {
     public:
         // Create frame carrier
@@ -64,6 +73,11 @@ namespace tc
                              std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
             return false;
         }
+
+        virtual std::optional<GrFrameResizeInfo> GetFrameResizeInfo(const std::string& mon_name) {
+            return std::nullopt;
+        }
+
     protected:
         std::map<std::string, GrCarrierParams> carrier_params_;
     };

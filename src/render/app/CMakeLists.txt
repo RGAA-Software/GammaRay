@@ -14,7 +14,6 @@ if (WIN32)
         win/win_render_message_window.cpp
         win/win_desktop_manager.cpp
         win/win_render_message_loop.cpp
-        video_frame_carrier.cpp
         monitor_refresher.cpp
     )
     target_link_libraries(app_manager tc_message frame_render libprotobuf)
