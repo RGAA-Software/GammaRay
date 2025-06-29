@@ -66,7 +66,7 @@ namespace tc
                             {"base_path", base_path.toStdString()},
                             {"screen_recording_path", settings->screen_recording_path_},
                             {"clipboard_enabled", settings->clipboard_on_},
-                            {"device_id", settings->device_id_},
+                            {"device_id", settings->device_id_.empty() ? settings->my_host_ : settings->device_id_},
                             {"stream_id", settings->stream_id_},
                             {"language", (int64_t)settings->language_},
                             {"stream_name", settings->stream_name_},

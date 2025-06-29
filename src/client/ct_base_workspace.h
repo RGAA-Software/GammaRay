@@ -64,7 +64,6 @@ namespace tc
         void InitTheme();
         void InitSampleWidget();
         virtual void InitListener();
-        void InitFileTrans();
         void InitPanelClient();
 
         virtual void RegisterSdkMsgCallbacks();

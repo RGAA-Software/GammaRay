@@ -106,8 +106,6 @@ namespace tc
         // message listener
         InitListener();
 
-        InitFileTrans();
-
         // connect to GammaRay Panel
         InitPanelClient();
 
@@ -296,7 +294,7 @@ namespace tc
 
     void Workspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(def_window_size_);
-        // kMaxGameViewCount 被 max_number_of_screen_window_ 取代 
+        // kMaxGameViewCount 锟斤拷 max_number_of_screen_window_ 取锟斤拷 
         for (int index = 0; index < settings_->max_number_of_screen_window_; ++index) {
             GameView* game_view = nullptr;
             if (0 == index) {

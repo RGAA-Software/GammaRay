@@ -60,7 +60,73 @@ namespace tc
         layout->addWidget(file_trans_interface_->GetFileTransWidget());
         root_widget_->setLayout(layout);
 
+        // title
         root_widget_->setWindowTitle(QString::fromStdString(std::format("{}[{}]", tcTr("id_file_transfer").toStdString(), plugin_settings_.stream_name_)));
+
+        // callbacks
+        // upload begin callback
+        file_trans_interface_->SetOnFileUploadBeginCallback([=, this](const std::string& task_id, const std::string& file_path) {
+            auto event = std::make_shared<ClientPluginFileTransferBeginEvent>();
+            event->task_id_ = task_id;
+            event->file_path_ = file_path;
+            event->direction_ = "Upload";
+            CallbackEvent(event);
+//            context_->SendAppMessage(MsgClientFileTransmissionBegin {
+//                .the_file_id_ = MD5::Hex(task_id),
+//                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+//                .direction_ = "Upload",
+//                .file_detail_ = file_path,
+//                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
+//            });
+        });
+
+        // upload end callback
+        file_trans_interface_->SetOnFileUploadEndCallback([=, this](const std::string& task_id, const std::string& file_path, bool success) {
+            auto event = std::make_shared<ClientPluginFileTransferEndEvent>();
+            event->task_id_ = task_id;
+            event->file_path_ = file_path;
+            event->direction_ = "Upload";
+            event->success_ = success;
+            CallbackEvent(event);
+//            context_->SendAppMessage(MsgClientFileTransmissionEnd {
+//                .the_file_id_ = MD5::Hex(task_id),
+//                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+//                .duration_ = 0,
+//                .success_ = success,
+//            });
+        });
+
+        // download begin callback
+        file_trans_interface_->SetOnFileDownloadBeginCallback([=, this](const std::string& task_id, const std::string& remote_file_path) {
+            auto event = std::make_shared<ClientPluginFileTransferBeginEvent>();
+            event->task_id_ = task_id;
+            event->file_path_ = remote_file_path;
+            event->direction_ = "Download";
+            CallbackEvent(event);
+//            context_->SendAppMessage(MsgClientFileTransmissionBegin {
+//                .the_file_id_ = MD5::Hex(task_id),
+//                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+//                .direction_ = "Download",
+//                .file_detail_ = remote_file_path,
+//                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
+//            });
+        });
+
+        // download end callback
+        file_trans_interface_->SetOnFileDownloadEndCallback([=, this](const std::string& task_id, const std::string& remote_file_path, bool success) {
+            auto event = std::make_shared<ClientPluginFileTransferEndEvent>();
+            event->task_id_ = task_id;
+            event->file_path_ = remote_file_path;
+            event->direction_ = "Download";
+            event->success_ = success;
+            CallbackEvent(event);
+//            context_->SendAppMessage(MsgClientFileTransmissionEnd {
+//                .the_file_id_ = MD5::Hex(task_id),
+//                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+//                .duration_ = 0,
+//                .success_ = success,
+//            });
+        });
         return true;
     }
 

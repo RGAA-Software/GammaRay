@@ -33,6 +33,12 @@ namespace tc
 
         // network event with protobuf
         kPluginNetworkEvent,
+
+        // file transfer begin
+        kPluginFileTransBeginEvent,
+
+        // file transfer end
+        kPluginFileTransferEndEvent,
     };
 
     class ClientPluginBaseEvent {
@@ -95,6 +101,25 @@ namespace tc
         // sent message via media channel ?
         bool media_channel_ = false;
         std::string buf_;
+    };
+
+    // file transfer begin
+    //kPluginFileTransBeginEvent,
+    class ClientPluginFileTransferBeginEvent : public ClientPluginBaseEvent {
+    public:
+        std::string task_id_;
+        std::string file_path_;
+        std::string direction_;
+    };
+
+    // file transfer end
+    //kPluginFileTransferEndEvent,
+    class ClientPluginFileTransferEndEvent : public ClientPluginBaseEvent {
+    public:
+        std::string task_id_;
+        std::string file_path_;
+        std::string direction_;
+        bool success_;
     };
 }
 

@@ -3,12 +3,14 @@
 //
 
 #include "ct_plugin_event_router.h"
+#include "ct_settings.h"
 #include "ct_client_context.h"
 #include "ct_plugin_events.h"
 #include "tc_common_new/log.h"
 #include "ct_app_message.h"
 #include "ct_base_workspace.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
+#include "tc_common_new/md5.h"
 
 namespace tc
 {
@@ -16,6 +18,7 @@ namespace tc
     ClientPluginEventRouter::ClientPluginEventRouter(const std::shared_ptr<BaseWorkspace>& ws) {
         ws_ = ws;
         context_ = ws_->GetContext();
+        settings_ = Settings::Instance();
     }
 
     void ClientPluginEventRouter::ProcessPluginEvent(const std::shared_ptr<ClientPluginBaseEvent>& event) {
@@ -60,6 +63,25 @@ namespace tc
             else {
                 thunder_sdk_->PostFileTransferMessage(target_event->buf_);
             }
+        }
+        else if (ClientPluginEventType::kPluginFileTransBeginEvent == event->event_type_) {
+            auto target_event = std::dynamic_pointer_cast<ClientPluginFileTransferBeginEvent>(event);
+            context_->SendAppMessage(MsgClientFileTransmissionBegin {
+                .the_file_id_ = MD5::Hex(target_event->task_id_),
+                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .direction_ = target_event->direction_,
+                .file_detail_ = target_event->file_path_,
+                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
+            });
+        }
+        else if (ClientPluginEventType::kPluginFileTransferEndEvent == event->event_type_) {
+            auto target_event = std::dynamic_pointer_cast<ClientPluginFileTransferEndEvent>(event);
+            context_->SendAppMessage(MsgClientFileTransmissionEnd {
+                .the_file_id_ = MD5::Hex(target_event->task_id_),
+                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .duration_ = 0,
+                .success_ = target_event->success_,
+            });
         }
     }
 

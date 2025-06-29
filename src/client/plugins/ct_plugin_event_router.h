@@ -11,6 +11,7 @@
 namespace tc
 {
 
+    class Settings;
     class ThunderSdk;
     class ClientContext;
     class BaseWorkspace;
@@ -23,6 +24,7 @@ namespace tc
         void ProcessPluginEvent(const std::shared_ptr<ClientPluginBaseEvent>& event);
 
     private:
+        Settings* settings_ = nullptr;
         std::shared_ptr<BaseWorkspace> ws_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
