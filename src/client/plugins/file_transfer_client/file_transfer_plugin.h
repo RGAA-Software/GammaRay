@@ -25,6 +25,7 @@ namespace tc
         void On1Second() override;
         void OnMessage(std::shared_ptr<Message> msg) override;
         void DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) override;
+        bool HasProcessingTasks() override;
 
     private:
         std::shared_ptr<FileTransInterface> file_trans_interface_ = nullptr;

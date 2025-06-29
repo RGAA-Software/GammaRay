@@ -111,6 +111,10 @@ namespace tc
         // plugin settings
         ClientPluginSettings GetPluginSettings();
 
+        // has processing tasks
+        // something is running?
+        virtual bool HasProcessingTasks();
+
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;

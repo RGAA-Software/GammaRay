@@ -71,13 +71,6 @@ namespace tc
             event->file_path_ = file_path;
             event->direction_ = "Upload";
             CallbackEvent(event);
-//            context_->SendAppMessage(MsgClientFileTransmissionBegin {
-//                .the_file_id_ = MD5::Hex(task_id),
-//                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
-//                .direction_ = "Upload",
-//                .file_detail_ = file_path,
-//                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
-//            });
         });
 
         // upload end callback
@@ -88,12 +81,6 @@ namespace tc
             event->direction_ = "Upload";
             event->success_ = success;
             CallbackEvent(event);
-//            context_->SendAppMessage(MsgClientFileTransmissionEnd {
-//                .the_file_id_ = MD5::Hex(task_id),
-//                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
-//                .duration_ = 0,
-//                .success_ = success,
-//            });
         });
 
         // download begin callback
@@ -103,13 +90,6 @@ namespace tc
             event->file_path_ = remote_file_path;
             event->direction_ = "Download";
             CallbackEvent(event);
-//            context_->SendAppMessage(MsgClientFileTransmissionBegin {
-//                .the_file_id_ = MD5::Hex(task_id),
-//                .begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
-//                .direction_ = "Download",
-//                .file_detail_ = remote_file_path,
-//                .remote_device_id_ = settings_->remote_device_id_.empty() ? settings_->host_ : settings_->remote_device_id_,
-//            });
         });
 
         // download end callback
@@ -120,12 +100,6 @@ namespace tc
             event->direction_ = "Download";
             event->success_ = success;
             CallbackEvent(event);
-//            context_->SendAppMessage(MsgClientFileTransmissionEnd {
-//                .the_file_id_ = MD5::Hex(task_id),
-//                .end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
-//                .duration_ = 0,
-//                .success_ = success,
-//            });
         });
         return true;
     }
@@ -150,7 +124,10 @@ namespace tc
 
     void FileTransferPlugin::HideRootWidget() {
         ClientPluginInterface::HideRootWidget();
+    }
 
+    bool FileTransferPlugin::HasProcessingTasks() {
+        return file_trans_interface_ && file_trans_interface_->HasTransTask();
     }
 
 }

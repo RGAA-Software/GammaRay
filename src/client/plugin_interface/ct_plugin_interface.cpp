@@ -230,4 +230,8 @@ namespace tc
         return plugin_settings_;
     }
 
+    bool ClientPluginInterface::HasProcessingTasks() {
+        return false;
+    }
+
 }

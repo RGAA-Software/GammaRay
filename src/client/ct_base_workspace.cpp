@@ -531,12 +531,11 @@ namespace tc
 
     void BaseWorkspace::ExitClientWithDialog() {
         QString msg = tcTr("id_exit_client");
-        // TODO:///
-//        if (file_trans_interface_) {
-//            if (file_trans_interface_->HasTransTask()) {
-//                msg = tcTr("id_file_transfer_busy") + msg;
-//            }
-//        }
+        if (auto plugin = plugin_manager_->GetFileTransferPlugin(); plugin) {
+             if (plugin->HasProcessingTasks()) {
+                msg = tcTr("id_file_transfer_busy") + msg;
+            }
+        }
         TcDialog dialog(tcTr("id_exit"), msg, this);
         if (dialog.exec() == kDoneOk) {
             if (media_record_plugin_) {
