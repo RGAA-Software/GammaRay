@@ -447,9 +447,10 @@ namespace tc
         });
 
         sdk_->SetOnRawMessageCallback([=, this](const std::shared_ptr<tc::Message>& msg) {
-            if (file_trans_interface_) {
-                file_trans_interface_->OnProtoMessage(msg);
-            }
+            // TODO:///
+//            if (file_trans_interface_) {
+//                file_trans_interface_->OnProtoMessage(msg);
+//            }
 
             // test beg //
             if (false && msg->type() == tc::kFileTransDataPacket) {
@@ -610,11 +611,12 @@ namespace tc
 
     void BaseWorkspace::ExitClientWithDialog() {
         QString msg = tcTr("id_exit_client");
-        if (file_trans_interface_) {
-            if (file_trans_interface_->HasTransTask()) {
-                msg = tcTr("id_file_transfer_busy") + msg;
-            }
-        }
+        // TODO:///
+//        if (file_trans_interface_) {
+//            if (file_trans_interface_->HasTransTask()) {
+//                msg = tcTr("id_file_transfer_busy") + msg;
+//            }
+//        }
         TcDialog dialog(tcTr("id_exit"), msg, this);
         if (dialog.exec() == kDoneOk) {
             if (media_record_plugin_) {
@@ -750,7 +752,8 @@ namespace tc
 
         msg_listener_->Listen<MsgClientOpenFiletrans>([=, this](const MsgClientOpenFiletrans& msg) {
             context_->PostUITask([=, this]() {
-                file_trans_interface_->OnClickedFileTrans();
+                // TODO:///
+                //file_trans_interface_->OnClickedFileTrans();
             });
         });
 
@@ -923,9 +926,10 @@ namespace tc
             context_->Exit();
             context_ = nullptr;
         }
-        if (file_trans_interface_) {
-            file_trans_interface_->Exit();
-        }
+        // TODO:///
+//        if (file_trans_interface_) {
+//            file_trans_interface_->Exit();
+//        }
         ProcessUtil::KillProcess(QApplication::applicationPid());
         qApp->exit(0);
     }

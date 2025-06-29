@@ -204,7 +204,7 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
         plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer #tc_signaling_sdk #lib_GammaRayClient
         plugin_mock_video_stream plugin_obj_detector plugin_net_relay plugin_gdi_capture tc_translator tc_spv_client #QWindowKit::Widgets TC_WidgetFrame
-        plugin_clipboard tc_account_sdk tc_rp_message tc_profile_client plugin_frame_carrier
+        plugin_clipboard tc_account_sdk tc_rp_message tc_profile_client plugin_frame_carrier plugin_file_transfer_client
 )
 
 # client plugins
@@ -306,6 +306,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_client_clipboard.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_client_clipboard.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/clipboard/plugin_client_clipboard.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_client_clipboard.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_file_transfer_client.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_file_transfer_client.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/client/plugins/file_transfer_client/plugin_file_transfer_client.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_file_transfer_client.dll.toml"
 
 )
 

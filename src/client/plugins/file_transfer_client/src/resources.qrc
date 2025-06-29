@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/local_send.png</file>
+        <file>resource/go_back_disable.svg</file>
+        <file>resource/go_back_hover.svg</file>
+        <file>resource/go_back_normal.svg</file>
+        <file>resource/go_back_press.svg</file>
+        <file>resource/go_index_disable.svg</file>
+        <file>resource/go_index_hover.svg</file>
+        <file>resource/go_index_normal.svg</file>
+        <file>resource/go_index_press.svg</file>
+        <file>resource/parent_dir_disable.svg</file>
+        <file>resource/parent_dir_hover.svg</file>
+        <file>resource/parent_dir_normal.svg</file>
+        <file>resource/parent_dir_press.svg</file>
+        <file>resource/refresh_disable.svg</file>
+        <file>resource/refresh_hover.svg</file>
+        <file>resource/refresh_normal.svg</file>
+        <file>resource/refresh_press.svg</file>
+        <file>resource/arrow.svg</file>
+        <file>resource/arrow.png</file>
+        <file>resource/disk.png</file>
+        <file>resource/disk.svg</file>
+        <file>resource/remote_send.png</file>
+        <file>resource/search.svg</file>
+        <file>resource/folder.svg</file>
+        <file>resource/desktop.svg</file>
+        <file>resource/delete.svg</file>
+        <file>resource/delete_hover.svg</file>
+        <file>resource/new_folder.svg</file>
+        <file>resource/rename.svg</file>
+        <file>resource/select_all.svg</file>
+        <file>resource/del.svg</file>
+        <file>resource/close_normal.svg</file>
+        <file>resource/close_hover.svg</file>
+        <file>resource/close_press.svg</file>
+        <file>resource/file_exists_warning.svg</file>
+		<file>resource/profile_picture.svg</file>
+		<file>resource/logo_text.png</file>
+	</qresource>
+</RCC>

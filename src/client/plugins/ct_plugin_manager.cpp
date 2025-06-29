@@ -46,9 +46,6 @@ namespace tc
             library->load();
             auto fn_get_instance = (FnGetInstance)library->resolve("GetInstance");
 
-            //HMODULE module = LoadLibraryW(target_plugin_path.toStdWString().c_str());
-            //auto fn_get_instance = GetProcAddress(module, "GetInstance");
-
             auto func = (FnGetInstance) fn_get_instance;
             if (func) {
                 auto plugin = (ClientPluginInterface*)func();
@@ -167,6 +164,14 @@ namespace tc
         auto plugin = GetPluginById(kClientClipboardPluginId);
         if (plugin) {
             return (ClientClipboardPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
+    ClientPluginInterface* ClientPluginManager::GetFileTransferPlugin() {
+        auto plugin = GetPluginById(kClientFileTransferPluginId);
+        if (plugin) {
+            return (ClientPluginInterface*)plugin;
         }
         return nullptr;
     }

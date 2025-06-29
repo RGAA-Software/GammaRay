@@ -16,9 +16,10 @@ endif()
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Svg Charts)
 find_package(OpenSSL REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(${CMAKE_SOURCE_DIR}/src/client)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/plugins)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/plugins/file_transfer_client)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/plugins/file_transfer_client/src)
 
 qt_add_resources(RES ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
 add_compile_options(/bigobj)
@@ -91,10 +92,10 @@ endif()
 #transfer/fs_folder.cpp
 
 if(TC_USE_FILE_TRANSMISSION)
-    message(STATUS "file transmission is enabled.")
-    add_subdirectory(./file_transmission_client/src)
-    include_directories(./file_transmission_client/src)
-    add_definitions(-DTC_ENABLE_FILE_TRANSMISSION)
+#    message(STATUS "file transmission is enabled.")
+#    add_subdirectory(./file_transmission_client/src)
+#    include_directories(./file_transmission_client/src)
+#    add_definitions(-DTC_ENABLE_FILE_TRANSMISSION)
 else()
     message(STATUS "file transmission is disabled.")
 endif()
@@ -127,10 +128,10 @@ target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::Op
         tc_rtc_client Dwmapi.lib tc_client_plugin
 )
 
-if(TC_USE_FILE_TRANSMISSION) #file_transfer
-    target_link_libraries(GammaRayClientInner PRIVATE file_transfer
-    )
-endif()
+#if(TC_USE_FILE_TRANSMISSION) #file_transfer
+#    target_link_libraries(GammaRayClientInner PRIVATE file_transfer
+#    )
+#endif()
 
 if(QT_VERSION_MAJOR EQUAL 6)
 #    qt_finalize_executable(${PROJECT_NAME})

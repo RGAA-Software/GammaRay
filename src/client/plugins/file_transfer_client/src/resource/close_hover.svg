@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>关闭</title>
+    <defs>
+        <polygon id="path-1" points="0 0 12 0 12 12 0 12"></polygon>
+    </defs>
+    <g id="前端界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="文件传输" transform="translate(-1377, -194)">
+            <g id="编组-11" transform="translate(527, 182)">
+                <g id="关闭" transform="translate(850, 12)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <polygon id="Fill-1" fill="#2979ff" mask="url(#mask-2)" points="10.2967598 0.75 6 5.04545455 1.70453227 0.75 0.75 1.70454545 5.04545455 6.00001318 0.75 10.2967598 1.70453227 11.2513184 6 6.95586389 10.2954414 11.2513184 11.25 10.2967598 6.95453227 6.00001318 11.25 1.70454545"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

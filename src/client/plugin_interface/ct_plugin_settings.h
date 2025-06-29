@@ -15,6 +15,10 @@ namespace tc
         bool clipboard_enabled_ = false;
         std::string device_id_;
         std::string stream_id_;
+        int language_ = 1;
+        std::string stream_name_;
+        std::string display_name_;
+        std::string display_remote_name_;
     };
 
 }

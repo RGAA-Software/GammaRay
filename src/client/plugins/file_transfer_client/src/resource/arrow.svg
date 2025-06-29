@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8px" height="8px" viewBox="0 0 8 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>三角</title>
+    <defs>
+        <polygon id="path-1" points="0 0 8 0 8 8 0 8"></polygon>
+    </defs>
+    <g id="前端界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="文件传输" transform="translate(-934, -337)">
+            <g id="编组-11" transform="translate(527, 182)">
+                <g id="编组-16" transform="translate(12, 40)">
+                    <g id="编组-14" transform="translate(7, 103)">
+                        <g id="三角" transform="translate(388, 12)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="Clip-2"></g>
+                            <path d="M7.82735737,3.06955776 L4.40504345,6.81672715 C4.30277827,6.93323316 4.1554029,7 4.00050367,7 C3.84559343,7 3.69817406,6.93323316 3.59590889,6.81672715 L0.173594969,3.06955776 C0.00654095009,2.89286029 -0.045114128,2.63532011 0.0412563305,2.4079032 C0.12758279,2.18043122 0.335974071,2.02159844 0.578178748,2 L7.41997964,2 C7.6630863,2.02069529 7.87239056,2.17854783 7.95875002,2.406956 C8.04606646,2.63536416 7.99445539,2.89191308 7.82735737,3.06955776 Z" id="Fill-1" fill="#A4B1CA" mask="url(#mask-2)"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

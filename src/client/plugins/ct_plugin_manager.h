@@ -35,6 +35,7 @@ namespace tc
         ClientPluginInterface* GetPluginById(const std::string& id);
         MediaRecordPluginClient* GetMediaRecordPlugin();
         ClientClipboardPlugin* GetClipboardPlugin();
+        ClientPluginInterface* GetFileTransferPlugin();
 
         void VisitAllPlugins(const std::function<void(ClientPluginInterface*)>&& visitor);
         void DumpPluginInfo();
