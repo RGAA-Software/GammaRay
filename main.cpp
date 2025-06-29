@@ -17,6 +17,8 @@
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_common_new/shared_preference.h"
 
+#include "render_panel/devices/connected_info_panel.h"
+
 using namespace tc;
 
 bool PrepareDirs(const QString& base_path) {
@@ -85,6 +87,10 @@ int main(int argc, char *argv[]) {
     g_workspace->Init();
     g_workspace->setFixedSize(1450, 800);
     g_workspace->show();
+
+    // test
+    //ConnectedInfoPanel *connected_info_panel = new ConnectedInfoPanel(nullptr);
+    //connected_info_panel->show();
 
     return app.exec();
 }

@@ -1,6 +1,8 @@
 #pragma once 
 
 #include <QWidget>
+#include <qpainter.h>
+#include <qevent.h>
 class QCheckBox;
 
 namespace tc {
@@ -9,11 +11,13 @@ namespace tc {
     class NoMarginHLayout;
     class TcLabel;
     class TcPushButton;
+    class GrContext;
 
     // 被客户端连接上来后，显示连接者的一些信息
     class ConnectedInfoPanel : public QWidget {
     public:
-        ConnectedInfoPanel(QWidget* parent = nullptr);
+        ConnectedInfoPanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
+        void paintEvent(QPaintEvent* event) override;
     private:
         void InitView();
     private:
@@ -45,6 +49,8 @@ namespace tc {
         // 文件
         QCheckBox* file_cbox_ = nullptr;
         TcLabel* file_lab_ = nullptr;
+
+        std::shared_ptr<GrContext> ctx_ = nullptr;
     };
 
 

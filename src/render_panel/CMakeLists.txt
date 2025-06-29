@@ -46,7 +46,6 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_file_transfer_item.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_profile_device_item.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/security_password_checker.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/connected_info_panel.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp
@@ -75,6 +74,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/start_stream_loading.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/input_remote_pwd_dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_state_checker.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/connected_info_panel.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
 
