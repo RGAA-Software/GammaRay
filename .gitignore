@@ -8,3 +8,4 @@ out/*
 src/.vscode/*
 src/client/.vscode/*
 src/render/.vscode/*
+/temp

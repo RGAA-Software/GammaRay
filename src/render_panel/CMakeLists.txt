@@ -46,6 +46,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/st_security_file_transfer_item.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_profile_device_item.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/security_password_checker.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/connected_info_panel.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_context.cpp
@@ -58,6 +59,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_run_game_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_running_pipe.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_account_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_connected_manager.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/transfer/file_transfer.cpp
 

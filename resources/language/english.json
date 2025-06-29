@@ -244,6 +244,12 @@
   "id_has_connection": "Received configuration, wait for video frame",
   "id_has_video_frame": "Received video frame, start controlling",
   "id_open_directory": "Open Directory",
+  "id_remote_local_machine":"Remote local maching in progress",
+  "id_disconncet":"Disconnect",
+  "id_allow_access_to":"Allow access to:",
+  "id_voice":"voice",
+  "id_file":"file",
+  "id_key_mouse":"keyboard mouse",
 
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",

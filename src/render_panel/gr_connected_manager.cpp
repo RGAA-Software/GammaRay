@@ -1,0 +1,1 @@
+#include "gr_connected_manager.h"

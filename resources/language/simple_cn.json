@@ -245,6 +245,12 @@
   "id_has_connection": "已收到配置信息, 等待视频帧",
   "id_has_video_frame": "已收到视频帧, 开始控制",
   "id_open_directory": "打开路径",
+  "id_remote_local_machine":"正在远程本机",
+  "id_disconncet":"断开",
+  "id_allow_access_to":"允许访问:",
+  "id_voice":"声音",
+  "id_file":"文件",
+  "id_key_mouse":"键鼠",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文档",
