@@ -109,6 +109,9 @@ namespace tc
 
         // show all windows
         bool split_windows_ = false;
+
+        // max_number_of_screen_window
+        int max_number_of_screen_window_ = 2;
     };
 
 }
