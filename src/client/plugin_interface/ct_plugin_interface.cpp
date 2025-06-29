@@ -80,6 +80,11 @@ namespace tc
         plugin_settings_.clipboard_enabled_ = GetConfigBoolParam("clipboard_enabled");
         plugin_settings_.device_id_ = GetConfigStringParam("device_id");
         plugin_settings_.stream_id_ = GetConfigStringParam("stream_id");
+        plugin_settings_.language_ = (int)GetConfigIntParam("language");
+        plugin_settings_.stream_name_ = GetConfigStringParam("stream_name");
+        plugin_settings_.display_name_ = GetConfigStringParam("display_name");
+        plugin_settings_.display_remote_name_ = GetConfigStringParam("display_remote_name");
+
         LOGI("plugin settings clipboard enabled: {}", plugin_settings_.clipboard_enabled_);
         LOGI("plugin settings device id: {}", plugin_settings_.device_id_);
         LOGI("plugin settings stream id: {}", plugin_settings_.stream_id_);

@@ -57,7 +57,6 @@ namespace tc
 
     void MultiScreensPlugin::DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) {
         ClientPluginInterface::DispatchAppEvent(event);
-        LOGI("AppEvent: {}", (int)event->evt_type_);
     }
 
 }

@@ -92,10 +92,10 @@ namespace tc
         virtual void On1Second();
 
         // widget
-        QWidget* GetRootWidget();
+        virtual QWidget* GetRootWidget();
+        virtual void ShowRootWidget();
+        virtual void HideRootWidget();
         bool eventFilter(QObject *watched, QEvent *event) override;
-        void ShowRootWidget();
-        void HideRootWidget();
 
         // messages from remote
         virtual void OnMessage(std::shared_ptr<Message> msg);

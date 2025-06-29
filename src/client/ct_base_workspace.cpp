@@ -314,14 +314,8 @@ namespace tc
 
     }
 
-//    void BaseWorkspace::InitClipboardManager() {
-//        clipboard_mgr_ = std::make_shared<ClipboardManager>(shared_from_this());
-//        clipboard_mgr_->Start();
-//    }
-
     void BaseWorkspace::RegisterSdkMsgCallbacks() {
         sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
-
             if (!has_frame_arrived_) {
                 has_frame_arrived_ = true;
                 UpdateVideoWidgetSize();
@@ -398,7 +392,6 @@ namespace tc
         });
 
         sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
-
             monitor_index_map_name_.clear();
 
             MsgClientCaptureMonitor msg;
@@ -447,27 +440,9 @@ namespace tc
         });
 
         sdk_->SetOnRawMessageCallback([=, this](const std::shared_ptr<tc::Message>& msg) {
-            // TODO:///
-//            if (file_trans_interface_) {
-//                file_trans_interface_->OnProtoMessage(msg);
-//            }
-
-            // test beg //
-            if (false && msg->type() == tc::kFileTransDataPacket) {
-                // test beg //
-                static std::ofstream tst_file("2.test.recv.zip", std::ios::binary);
-                std::string data = msg->file_trans_data_packet().data();
-                tst_file.write(data.data(), data.size());
-                tst_file.flush();
-                LOGI("2.Write size: {}", data.size());
-                // test end //
-            }
-            // test end //
-
             plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
                 plugin->OnMessage(msg);
             });
-
         });
 
         media_record_plugin_ = plugin_manager_->GetMediaRecordPlugin();
@@ -532,17 +507,13 @@ namespace tc
             m.set_stream_id(settings_->stream_id_);
             bool res = context_->GetRecording();
             if (res) {
-                m.set_type(tc::kStartMediaRecordClientSide);
-
                 LOGI("StartRecord");
-
+                m.set_type(tc::kStartMediaRecordClientSide);
                 media_record_plugin_->StartRecord();
             }
             else {
-                m.set_type(tc::kStopMediaRecordClientSide);
-
-
                 LOGI("EndRecord");
+                m.set_type(tc::kStopMediaRecordClientSide);
                 media_record_plugin_->EndRecord();
             }
             sdk_->PostMediaMessage(m.SerializeAsString());
@@ -749,11 +720,11 @@ namespace tc
     }
 
     void BaseWorkspace::RegisterControllerPanelListeners() {
-
         msg_listener_->Listen<MsgClientOpenFiletrans>([=, this](const MsgClientOpenFiletrans& msg) {
             context_->PostUITask([=, this]() {
-                // TODO:///
-                //file_trans_interface_->OnClickedFileTrans();
+                if (auto plugin = plugin_manager_->GetFileTransferPlugin(); plugin) {
+                    plugin->ShowRootWidget();
+                }
             });
         });
 

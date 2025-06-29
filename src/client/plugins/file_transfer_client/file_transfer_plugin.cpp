@@ -53,12 +53,14 @@ namespace tc
         }
 
         root_widget_->resize(1366, 768);
-        root_widget_->show();
+        root_widget_->hide();
 
         file_trans_interface_ = std::make_shared<FileTransInterface>(this);
         auto layout = new NoMarginHLayout();
         layout->addWidget(file_trans_interface_->GetFileTransWidget());
         root_widget_->setLayout(layout);
+
+        root_widget_->setWindowTitle(QString::fromStdString(std::format("{}[{}]", tcTr("id_file_transfer").toStdString(), plugin_settings_.stream_name_)));
         return true;
     }
 
@@ -71,7 +73,18 @@ namespace tc
 
     void FileTransferPlugin::DispatchAppEvent(const std::shared_ptr<ClientAppBaseEvent> &event) {
         ClientPluginInterface::DispatchAppEvent(event);
-        LOGI("AppEvent: {}", (int)event->evt_type_);
+    }
+
+    void FileTransferPlugin::ShowRootWidget() {
+        ClientPluginInterface::ShowRootWidget();
+        if (file_trans_interface_) {
+            file_trans_interface_->ShowFileTrans();
+        }
+    }
+
+    void FileTransferPlugin::HideRootWidget() {
+        ClientPluginInterface::HideRootWidget();
+
     }
 
 }

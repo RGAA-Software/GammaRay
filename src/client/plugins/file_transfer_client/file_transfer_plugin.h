@@ -19,7 +19,8 @@ namespace tc
         std::string GetPluginName() override;
         std::string GetVersionName() override;
         uint32_t GetVersionCode() override;
-
+        void ShowRootWidget() override;
+        void HideRootWidget() override;
         bool OnCreate(const tc::ClientPluginParam& param) override;
         void On1Second() override;
         void OnMessage(std::shared_ptr<Message> msg) override;
