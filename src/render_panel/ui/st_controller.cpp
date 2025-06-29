@@ -87,6 +87,51 @@ namespace tc
                 segment_layout->addSpacing(10);
                 segment_layout->addLayout(layout);
             }
+
+            {
+                //最多允许的屏幕数量
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_allow_max_num_of_screens");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QComboBox(this);
+                edit->setFixedSize(input_size);
+                edit->addItem("2");
+                edit->addItem("4");
+                edit->addItem("6");
+                edit->addItem("8");
+                layout->addWidget(edit);
+
+                const QString current_num = QString::fromStdString(settings_->GetMaxNumOfScreen());
+                if (current_num == "2") {
+                    edit->setCurrentIndex(0);
+                }
+                else if (current_num == "4") {
+                    edit->setCurrentIndex(1);
+                }
+                else if (current_num == "6") {
+                    edit->setCurrentIndex(2);
+                }
+                else if (current_num == "8") {
+                    edit->setCurrentIndex(3);
+                }
+                else {
+                    edit->setCurrentIndex(0);
+                }
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int index) {
+                    std::string num = edit->currentText().toStdString();
+                    settings_->SetMaxNumOfScreen(num);
+                });
+
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+            }
+
             column1_layout->addLayout(segment_layout);
         }
 

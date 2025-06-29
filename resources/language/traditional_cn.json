@@ -178,6 +178,7 @@
   "id_profile_network_unavailable": "無法連接到用戶管理服務.",
   "id_general_settings": "通用設置",
   "id_start_max_window": "以窗口最大化啟動",
+  "id_allow_max_num_of_screens": "最多允許的屏幕數量",
   "id_input_security_password": "輸入安全密碼",
   "id_password_again": "確認密碼",
   "id_unmanaged_device": "您的設備ID是空，設備未被服務管理，請在網路設置中填寫Supervisor服務地址.",

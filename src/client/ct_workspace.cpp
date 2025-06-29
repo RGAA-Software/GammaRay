@@ -296,7 +296,8 @@ namespace tc
 
     void Workspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(def_window_size_);
-        for (int index = 0; index < kMaxGameViewCount; ++index) {
+        // kMaxGameViewCount ±» max_number_of_screen_window_ È¡´ú 
+        for (int index = 0; index < settings_->max_number_of_screen_window_; ++index) {
             GameView* game_view = nullptr;
             if (0 == index) {
                 game_view = new GameView(context_, sdk_, params, this);    // main view

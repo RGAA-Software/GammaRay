@@ -51,6 +51,7 @@ namespace tc
         webrtc_enabled_ = sp_->Get(kStWebRTCEnabled, kStTrue);
         udp_listen_port_ = sp_->GetInt(kStUdpListenPort, 20381);
         udp_kcp_enabled_ = sp_->Get(kStUdpKcpEnabled, kStTrue);
+        max_num_of_screen_ = sp_->Get(kStMaxNumOfScreen, "2");
 
         file_transfer_folder_ = sp_->Get(kStFileTransferFolder, "");
         if (file_transfer_folder_.empty()) {
@@ -369,6 +370,15 @@ namespace tc
 
     bool GrSettings::IsMaxWindowEnabled() {
         return sp_->Get(kStShowMaxWindow) == kStTrue;
+    }
+
+    void GrSettings::SetMaxNumOfScreen(const std::string& num) {
+        max_num_of_screen_ = num;
+        sp_->Put(kStMaxNumOfScreen, num);
+    }
+
+    std::string GrSettings::GetMaxNumOfScreen() {
+        return max_num_of_screen_;
     }
 
     // can be operated

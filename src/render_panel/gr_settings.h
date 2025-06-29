@@ -53,6 +53,7 @@ namespace tc
     static const std::string kStSpvrServerPort = "spvr_server_port";
     static const std::string kStScreenRecordingPath = "screen_recording_path";
     static const std::string kStShowMaxWindow = "show_max_window";
+    static const std::string kStMaxNumOfScreen = "max_num_of_screen";
     static const std::string kStCanBeOperated = "can_be_operated";
     static const std::string kStSSLConnection = "ssl_connection";
     static const std::string kStRecordVisitHistory = "record_visit_history";
@@ -169,6 +170,11 @@ namespace tc
         void SetShowingMaxWindow(bool enable);
         bool IsMaxWindowEnabled();
 
+        // allow max num of screen  允许客户端显示的最大屏幕数
+        // Settings-> Controller Settings
+        void SetMaxNumOfScreen(const std::string& num);
+        std::string GetMaxNumOfScreen();
+
         // can be operated
         // Settings->Security Settings
         void SetCanBeOperated(bool enable);
@@ -229,6 +235,9 @@ namespace tc
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
+
+        // 控制端参数, 允许的最大屏幕窗口数量
+        std::string max_num_of_screen_ = "2";
 
     };
 

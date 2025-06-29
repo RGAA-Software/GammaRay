@@ -177,6 +177,7 @@
   "id_connect_failed": "Connect Failed",
   "id_general_settings": "General Settings",
   "id_start_max_window": "Start with Max Window",
+  "id_allow_max_num_of_screens": "Max allowed number of screens",
   "id_input_security_password": "Input Security Password",
   "id_password_again": "Password Again",
   "id_unmanaged_device": "Your device is NOT managed, your device id is empty. Please input Supervisor server info in Network settings.",
