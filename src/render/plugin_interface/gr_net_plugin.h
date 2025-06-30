@@ -24,6 +24,13 @@ namespace tc
         std::string stream_id_{};
     };
 
+    // connected client information
+    class GrConnectedClientInfo {
+    public:
+        std::string device_id_;
+        std::string stream_id_;
+    };
+
     class GrNetPlugin : public GrPluginInterface {
     public:
         GrNetPlugin();
@@ -70,6 +77,8 @@ namespace tc
 
         // sent data statistics
         void ReportSentDataSize(int size);
+
+        virtual std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo();
 
     protected:
         NetSyncInfo sync_info_{};

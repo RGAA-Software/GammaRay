@@ -71,4 +71,8 @@ namespace tc
         CallbackEvent(event);
     }
 
+    std::vector<std::shared_ptr<GrConnectedClientInfo>> GrNetPlugin::GetConnectedClientInfo() {
+        return {};
+    }
+
 }

@@ -296,4 +296,15 @@ namespace tc
         });
         return count;
     }
+
+    std::vector<std::shared_ptr<GrConnectedClientInfo>> WsPluginServer::GetConnectedClientInfo() {
+        std::vector<std::shared_ptr<GrConnectedClientInfo>> clients_info;
+        stream_routers_.VisitAll([&](const auto&, const std::shared_ptr<WsStreamRouter>& router) {
+            clients_info.push_back(std::make_shared<GrConnectedClientInfo>(GrConnectedClientInfo {
+                .device_id_ = router->visitor_device_id_,
+                .stream_id_ = router->stream_id_,
+            }));
+        });
+        return clients_info;
+    }
 }

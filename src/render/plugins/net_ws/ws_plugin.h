@@ -36,6 +36,7 @@ namespace tc
         int64_t GetQueuingFtMsgCount() override;
         bool HasEnoughBufferForQueuingMediaMessages() override;
         bool HasEnoughBufferForQueuingFtMessages() override;
+        std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo() override;
 
     private:
         bool HasConnectedClients();

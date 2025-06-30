@@ -137,4 +137,11 @@ namespace tc
     bool WsPlugin::HasConnectedClients() {
         return GetConnectedPeerCount() > 0;
     }
+
+    std::vector<std::shared_ptr<GrConnectedClientInfo>> WsPlugin::GetConnectedClientInfo() {
+        if (IsWorking()) {
+            return ws_server_->GetConnectedClientInfo();
+        }
+        return {};
+    }
 }

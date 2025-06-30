@@ -6,6 +6,7 @@
 #define TC_APPLICATION_APP_SERVER_H
 
 #include <memory>
+#include <vector>
 #include "render/network/ws_router.h"
 #include "tc_common_new/concurrent_hashmap.h"
 #include <asio2/asio2.hpp>
@@ -16,6 +17,7 @@ namespace tc
     class WsFileTransferRouter;
     class HttpHandler;
     class WsPlugin;
+    class GrConnectedClientInfo;
 
     class WsPluginServer {
     public:
@@ -33,6 +35,7 @@ namespace tc
         bool IsWorking();
         int64_t GetQueuingMediaMsgCount();
         int64_t GetQueuingFtMsgCount();
+        std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo();
 
     private:
         void AddWebsocketRouter(const std::string& path);
