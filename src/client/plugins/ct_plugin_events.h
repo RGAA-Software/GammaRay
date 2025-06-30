@@ -107,6 +107,10 @@ namespace tc
     //kPluginFileTransBeginEvent,
     class ClientPluginFileTransferBeginEvent : public ClientPluginBaseEvent {
     public:
+        ClientPluginFileTransferBeginEvent() {
+            event_type_ = ClientPluginEventType::kPluginFileTransBeginEvent;
+        }
+    public:
         std::string task_id_;
         std::string file_path_;
         std::string direction_;
@@ -115,6 +119,10 @@ namespace tc
     // file transfer end
     //kPluginFileTransferEndEvent,
     class ClientPluginFileTransferEndEvent : public ClientPluginBaseEvent {
+    public:
+        ClientPluginFileTransferEndEvent() {
+            event_type_ = ClientPluginEventType::kPluginFileTransferEndEvent;
+        }
     public:
         std::string task_id_;
         std::string file_path_;
