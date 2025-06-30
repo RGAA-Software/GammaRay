@@ -220,13 +220,14 @@ namespace tc
 
         auto big_picture = tex_width > 1920 && tex_height > 1080;
         const auto& points = big_picture ? big_logo_points_ : logo_points_;
-
+        auto right_offset = big_picture ? 210 : 135;
+        right_offset += 130; // total logo width
         D3D11_BOX srcBox = {0, 0, 0, logo_width, logo_height, 1};
         for (const auto& point : points) {
             d3d11_device_context_->CopySubresourceRegion(
                 texture.Get(),
                 0,
-                point.x(), point.y(), 0,
+                tex_width - right_offset + point.x(), point.y(), 0,
                 logo_point_texture_,
                 0,
                 &srcBox
@@ -256,9 +257,10 @@ namespace tc
     void VideoFrameCarrier::StampLogoOnRGBABuffer(const std::shared_ptr<Image>& image) {
         auto big_picture = image->width > 1920 && image->height > 1080;
         const auto& points = big_picture ? big_logo_points_ : logo_points_;
-
+        auto right_offset = big_picture ? 210 : 135;
+        right_offset += 130; // total logo width
         for (const auto& point : points) {
-            auto offset = (point.y() * image->width + point.x()) * 4;
+            auto offset = (point.y() * image->width + (point.x() + (image->width - right_offset))) * 4;
             if (image->data->Size() <= offset + 3) {
                 return;
             }
