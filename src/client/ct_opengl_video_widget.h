@@ -28,6 +28,7 @@ namespace tc
     class ShaderProgram;
     class Statistics;
     class ThunderSdk;
+    class Settings;
 
     class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core, public VideoWidgetEvent {
     public:
@@ -71,6 +72,7 @@ namespace tc
         void Update();
 
     private:
+        Settings* settings_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         glm::mat4 model_;
         std::shared_ptr<ShaderProgram> shader_program_ = nullptr;

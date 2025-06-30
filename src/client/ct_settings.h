@@ -112,6 +112,9 @@ namespace tc
 
         // max_number_of_screen_window
         int max_number_of_screen_window_ = 2;
+
+        // display logo
+        bool display_logo_ = false;
     };
 
 }

@@ -122,6 +122,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_max_num_of_screen("max_num_of_screen", "maximum allowed number of screens", "value", "2");
     parser.addOption(opt_max_num_of_screen);
 
+    QCommandLineOption opt_display_logo("display_logo", "display logo", "value", "");
+    parser.addOption(opt_display_logo);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -240,6 +243,14 @@ void ParseCommandLine(QApplication& app) {
         auto value = parser.value(opt_max_num_of_screen);
         if (!value.isEmpty()) {
             settings->max_number_of_screen_window_ = value.toInt();
+        }
+    }
+
+    // display logo
+    {
+        auto value = parser.value(opt_display_logo);
+        if (!value.isEmpty()) {
+            settings->display_logo_ = value.toInt() == 1;
         }
     }
 }

@@ -178,6 +178,7 @@
   "id_connect_failed": "连接失败",
   "id_general_settings": "通用设置",
   "id_start_max_window": "以窗口最大化启动",
+  "id_display_client_logo": "显示Logo",
   "id_allow_max_num_of_screens": "最多允许的屏幕数量",
   "id_input_security_password": "输入安全密码",
   "id_password_again": "确认密码",

@@ -60,6 +60,7 @@ namespace tc
     static const std::string kStRecordFileTransferHistory = "record_file_transfer_history";
     static const std::string kStRelayEnabled = "relay_enabled";
     static const std::string kStDevelopMode = "develop_mode";
+    static const std::string kStDisplayClientLogo = "display_client_logo";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -175,6 +176,11 @@ namespace tc
         void SetMaxNumOfScreen(const std::string& num);
         std::string GetMaxNumOfScreen();
 
+        // kStDisplayClientLogo
+        // Settings -> Controller Settings
+        void SetDisplayClientLogo(int enable);
+        bool IsClientLogoDisplaying();
+
         // can be operated
         // Settings->Security Settings
         void SetCanBeOperated(bool enable);
@@ -235,9 +241,6 @@ namespace tc
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
-
-        // 控制端参数, 允许的最大屏幕窗口数量
-        std::string max_num_of_screen_ = "2";
 
     };
 

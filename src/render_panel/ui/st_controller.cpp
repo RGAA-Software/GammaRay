@@ -89,6 +89,31 @@ namespace tc
             }
 
             {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_display_client_logo");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setChecked(settings_->IsClientLogoDisplaying());
+                layout->addWidget(edit);
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    if (state == Qt::CheckState::Checked) {
+                        settings_->SetDisplayClientLogo(true);
+                    }
+                    else {
+                        settings_->SetDisplayClientLogo(false);
+                    }
+                });
+
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+            }
+
+            {
                 //最多允许的屏幕数量
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);

@@ -15,6 +15,7 @@
 #include "tc_common_new/data.h"
 #include "client/ct_director.h"
 #include "ct_sprite.h"
+#include "ct_settings.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/file.h"
 
@@ -27,6 +28,7 @@ namespace tc
         TimeDuration dr("OpenGLVideoWidget");
         context_ = ctx;
         raw_image_format_ = format;
+        settings_ = Settings::Instance();
 
 		setFocusPolicy(Qt::StrongFocus);
 		setMouseTracking(true);
@@ -109,13 +111,14 @@ namespace tc
         cursor_ = std::make_shared<Sprite>(director_);
 
         // logo
-        logo_ = std::make_shared<Sprite>(director_);
-        auto data = File::OpenForReadB(":/resources/image/logo_text.png")->ReadAll();
-        auto image = Image::MakeByCompressedImage(data);
-        auto raw_image = RawImage::MakeRGBA(image->data->DataAddr(), image->data->Size(), image->width, image->height);
-        logo_->UpdateImage(raw_image);
-        logo_->ForceImageSize(image->width, image->height);
-
+        if (settings_->display_logo_) {
+            logo_ = std::make_shared<Sprite>(director_);
+            auto data = File::OpenForReadB(":/resources/image/logo_text.png")->ReadAll();
+            auto image = Image::MakeByCompressedImage(data);
+            auto raw_image = RawImage::MakeRGBA(image->data->DataAddr(), image->data->Size(), image->width, image->height);
+            logo_->UpdateImage(raw_image);
+            logo_->ForceImageSize(image->width, image->height);
+        }
 	}
 
 	void OpenGLVideoWidget::RefreshRGBImage(const std::shared_ptr<RawImage>& image) {
