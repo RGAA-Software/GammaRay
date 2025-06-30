@@ -18,6 +18,7 @@
 #include "tc_common_new/shared_preference.h"
 
 #include "render_panel/devices/connected_info_panel.h"
+#include "render_panel/devices/connected_info_tag.h"
 
 using namespace tc;
 
@@ -89,8 +90,12 @@ int main(int argc, char *argv[]) {
     g_workspace->show();
 
     // test
-    //ConnectedInfoPanel *connected_info_panel = new ConnectedInfoPanel(nullptr);
-    //connected_info_panel->show();
+    ConnectedInfoPanel *connected_info_panel = new ConnectedInfoPanel(nullptr);
+    connected_info_panel->show();
+
+	// test
+    ConnectedInfoTag* tag = new ConnectedInfoTag(nullptr);
+    tag->show();
 
     return app.exec();
 }
