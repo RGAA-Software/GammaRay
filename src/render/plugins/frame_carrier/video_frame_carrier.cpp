@@ -52,12 +52,12 @@ namespace tc
         ComPtr<IDXGIKeyedMutex> key_mutex;
         res = texture2d.As<IDXGIKeyedMutex>(&key_mutex);
         if (FAILED(res)) {
-            printf("D3D11Texture2DReleaseMutex IDXGIKeyedMutex. error\n");
+            LOGE("D3D11Texture2DReleaseMutex IDXGIKeyedMutex. error\n");
             return false;
         }
-        res = key_mutex->AcquireSync(0, INFINITE);
+        res = key_mutex->AcquireSync(0x0, 17/*INFINITE*/);
         if (FAILED(res)) {
-            printf("D3D11Texture2DReleaseMutex AcquireSync failed.\n");
+            LOGE("D3D11Texture2DReleaseMutex AcquireSync failed.\n");
             return false;
         }
         return true;
@@ -68,25 +68,25 @@ namespace tc
         ComPtr<IDXGIKeyedMutex> key_mutex;
         res = texture2d.As<IDXGIKeyedMutex>(&key_mutex);
         if (FAILED(res)) {
-            printf("D3D11Texture2DReleaseMutex IDXGIKeyedMutex. error\n");
+            LOGE("D3D11Texture2DReleaseMutex IDXGIKeyedMutex. error\n");
             return false;
         }
-        res = key_mutex->ReleaseSync(0);
+        res = key_mutex->ReleaseSync(0x0);
         if (FAILED(res)) {
-            printf("D3D11Texture2DReleaseMutex ReleaseSync failed.\n");
+            LOGE("D3D11Texture2DReleaseMutex ReleaseSync failed.\n");
             return false;
         }
         return true;
     }
 
     bool VideoFrameCarrier::CopyID3D11Texture2D(const ComPtr<ID3D11Texture2D>& shared_texture) {
-        if (!D3D11Texture2DLockMutex(shared_texture)) {
-            LOGE("D3D11Texture2DLockMutex error");
-            return false;
-        }
-        std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
-            D3D11Texture2DReleaseMutex(shared_texture);
-        });
+        //if (!D3D11Texture2DLockMutex(shared_texture)) {
+        //    LOGE("D3D11Texture2DLockMutex error");
+        //    return false;
+        //}
+        //std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
+        //    D3D11Texture2DReleaseMutex(shared_texture);
+        //});
 
         HRESULT res;
         D3D11_TEXTURE2D_DESC desc;
@@ -166,13 +166,14 @@ namespace tc
         D3D11_TEXTURE2D_DESC desc;
         shared_texture->GetDesc(&desc);
         if (resize_) {
-            if (!D3D11Texture2DLockMutex(shared_texture)) {
-                LOGE("D3D11Texture2DLockMutex error\n");
-                return nullptr;
-            }
-            std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
-                D3D11Texture2DReleaseMutex(shared_texture);
-            });
+            //if (!D3D11Texture2DLockMutex(shared_texture)) {
+            //    LOGE("D3D11Texture2DLockMutex error\n");
+            //    return nullptr;
+            //}
+            //std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
+            //    D3D11Texture2DReleaseMutex(shared_texture);
+            //});
+
             auto final_texture
                 = frame_resize_plugin->Process(shared_texture.Get(), adapter_uid_, monitor_name_, resize_width_, resize_height_);
             if (!final_texture) {

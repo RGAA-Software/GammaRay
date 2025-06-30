@@ -411,7 +411,8 @@ namespace tc
             create_desc.SampleDesc.Count = 1;
             create_desc.Usage = D3D11_USAGE_DEFAULT;
             create_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-            create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+            //create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+            create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
 
             result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &last_list_texture_.texture2d_);
             if (FAILED(result)) {
@@ -448,26 +449,26 @@ namespace tc
             LOGI("Create cached texture success: {}", my_monitor_info_.name_);
         }
 
-        ComPtr<IDXGIKeyedMutex> keyMutex;
-        result = last_list_texture_.texture2d_.As<IDXGIKeyedMutex>(&keyMutex);
-        if (FAILED(result)) {
-            LOGE("desktop frame capture as IDXGIKeyedMutex failed:{}", StringUtil::GetErrorStr(result).c_str());
-            return;
-        }
-        result = keyMutex->AcquireSync(0, INFINITE);
-        if (FAILED(result)) {
-            LOGE("desktop frame capture texture AcquireSync failed with:{}", StringUtil::GetErrorStr(result).c_str());
-            return;
-        }
+        //ComPtr<IDXGIKeyedMutex> keyMutex;
+        //result = last_list_texture_.texture2d_.As<IDXGIKeyedMutex>(&keyMutex);
+        //if (FAILED(result)) {
+        //    LOGE("desktop frame capture as IDXGIKeyedMutex failed:{}", StringUtil::GetErrorStr(result).c_str());
+        //    return;
+        //}
+        //result = keyMutex->AcquireSync(0x0, 17/*INFINITE*/);
+        //if (FAILED(result)) {
+        //    LOGE("desktop frame capture texture AcquireSync failed with:{}", StringUtil::GetErrorStr(result).c_str());
+        //    return;
+        //}
 
         d3d11_device_context_->CopyResource(last_list_texture_.texture2d_.Get(), texture);
         if (!is_cached) {
             d3d11_device_context_->CopyResource(cached_texture_, texture);
         }
 
-        if (keyMutex) {
-            keyMutex->ReleaseSync(0);
-        }
+        //if (SUCCEEDED(result) && keyMutex) {
+        //    keyMutex->ReleaseSync(0x0);
+        //}
 
         SendTextureHandle(last_list_texture_.shared_handle_, input_width, input_height, input_format);
     }
