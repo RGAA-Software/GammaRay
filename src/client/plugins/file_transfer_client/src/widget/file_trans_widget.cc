@@ -16,8 +16,6 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_qt_widget/widget_helper.h"
 #include "tc_label.h"
-// to do : use leveldb save current path
-
 
 namespace tc {
 
@@ -34,7 +32,6 @@ StatisticsPanel::StatisticsPanel(QWidget* parent) : QWidget(parent) {
 
 StatisticsPanel::~StatisticsPanel() {
 }
-
 
 void StatisticsPanel::SetData(int total, int completed, int failed) {
 	total_value_lab_->setText(QString::number(total));
@@ -246,10 +243,25 @@ void FileTransWidget::SetFileTransmitDirectionControlPermission(int permission) 
 void FileTransWidget::InitSigChannel() {
 	connect(file_show_widget_, &FileShowWidget::SigLocalCurrentDirChangePath, this, [=](QString path) {
 		local_current_dir_path_ = path;
-		});
+		task_worker_.AsyncTask(
+			[=]() {
+				SaveCurrentVisitPath();
+			},
+			[]() {
+			}
+		);
+		
+	});
 	connect(file_show_widget_, &FileShowWidget::SigRemoteCurrentDirChangePath, this, [=](QString path) {
 		remote_current_dir_path_ = path;
-		});
+		task_worker_.AsyncTask(
+			[=]() {
+				SaveCurrentVisitPath();
+			},
+			[]() {
+			}
+		);
+	});
 
 	connect(file_show_widget_, &FileShowWidget::SigNoFileTransmitPermission, this, [=](int direction) {
 		// to do 权限控制
