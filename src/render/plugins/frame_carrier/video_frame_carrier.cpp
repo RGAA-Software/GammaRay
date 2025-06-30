@@ -220,7 +220,7 @@ namespace tc
 
         auto big_picture = tex_width > 1920 && tex_height > 1080;
         const auto& points = big_picture ? big_logo_points_ : logo_points_;
-        auto right_offset = big_picture ? 210 : 135;
+        auto right_offset = big_picture ? 280 : 135;
         right_offset += 130; // total logo width
         D3D11_BOX srcBox = {0, 0, 0, logo_width, logo_height, 1};
         for (const auto& point : points) {
@@ -257,7 +257,7 @@ namespace tc
     void VideoFrameCarrier::StampLogoOnRGBABuffer(const std::shared_ptr<Image>& image) {
         auto big_picture = image->width > 1920 && image->height > 1080;
         const auto& points = big_picture ? big_logo_points_ : logo_points_;
-        auto right_offset = big_picture ? 210 : 135;
+        auto right_offset = big_picture ? 280 : 135;
         right_offset += 130; // total logo width
         for (const auto& point : points) {
             auto offset = (point.y() * image->width + (point.x() + (image->width - right_offset))) * 4;
