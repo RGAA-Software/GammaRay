@@ -377,7 +377,7 @@ namespace tc
 
     std::string GrSettings::GetMaxNumOfScreen() {
         auto value = sp_->Get(kStMaxNumOfScreen);
-        return value.empty() ? "2" : value;
+        return value.empty() ? "4" : value;
     }
 
     void GrSettings::SetDisplayClientLogo(int enable) {
