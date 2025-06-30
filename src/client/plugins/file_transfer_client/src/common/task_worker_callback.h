@@ -6,7 +6,6 @@
 #include <fstream>
 #include <tuple>
 #include <wchar.h>
-#include <memory>
 #include <thread>
 #include <future>
 #include <queue>

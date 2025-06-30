@@ -2,6 +2,8 @@
 #include <qwidget.h>
 #include <qstring.h>
 #include "file_transmit_task_state.h"
+#include "common/task_worker_callback.h"
+
 class QHBoxLayout;
 class QVBoxLayout;
 class QLabel;
@@ -85,6 +87,8 @@ private:
 
 	static QString local_current_dir_path_;
 	static QString remote_current_dir_path_;
+
+	YKTaskWorker task_worker_;
 public slots:
 	void OnSwitchRecordOrLog();
 };
