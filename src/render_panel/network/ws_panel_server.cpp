@@ -387,6 +387,8 @@ namespace tc
         sub->set_can_be_operated(settings_->IsBeingOperatedEnabled());
         sub->set_relay_enabled(settings_->IsRelayEnabled());
         sub->set_language((int)tcTrMgr()->GetSelectedLanguage());
+        sub->set_file_transfer_enabled(settings_->IsFileTransferEnabled());
+        sub->set_audio_enabled(settings_->IsCaptureAudioEnabled());
         PostRendererMessage(m.SerializeAsString());
     }
 

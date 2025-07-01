@@ -28,7 +28,6 @@ namespace tc
         LanguageKind GetCurrentLanguage();
 
     private:
-
         std::shared_ptr<FileTransmitMsgInterface> file_trans_msg_interface_ = nullptr;
     };
 

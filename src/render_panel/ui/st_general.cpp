@@ -381,7 +381,7 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(settings_->capture_audio_ == kStTrue);
+                edit->setChecked(settings_->IsCaptureAudioEnabled());
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     settings_->SetCaptureAudio(enabled);
@@ -400,7 +400,7 @@ namespace tc
 
                 auto edit = new QComboBox(this);
                 cb_capture_audio_device_name_ = edit;
-                edit->setEnabled(settings_->capture_audio_ == kStTrue);
+                edit->setEnabled(settings_->IsCaptureAudioEnabled());
                 edit->setFixedSize(input_size);
 
                 auto devices = AudioDeviceHelper::DetectAudioDevices();

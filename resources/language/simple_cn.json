@@ -68,6 +68,7 @@
   "id_security_settings": "安全设置",
   "id_long_term_password": "安全密码(长期)",
   "id_allowed_mouse_keyboard": "允许鼠标键盘操作",
+  "id_allowed_file_transfer": "允许文件传输",
   "id_ssl_enabled": "SSL安全链接(始终启用)",
   "id_record_visitor": "记录访问历史",
   "id_record_file_transfer": "记录文件传输历史",

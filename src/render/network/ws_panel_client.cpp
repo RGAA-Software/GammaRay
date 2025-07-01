@@ -138,6 +138,8 @@ namespace tc
                 settings_->can_be_operated_ = sub.can_be_operated();
                 settings_->relay_enabled_ = sub.relay_enabled();
                 settings_->language_ = sub.language();
+                settings_->file_transfer_enabled_ = sub.file_transfer_enabled();
+                settings_->audio_enabled_ = sub.audio_enabled();
 
                 plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
@@ -148,6 +150,8 @@ namespace tc
                     .can_be_operated_ = settings_->can_be_operated_,
                     .relay_enabled_ = settings_->relay_enabled_,
                     .language_ = settings_->language_,
+                    .file_transfer_enabled_ = settings_->file_transfer_enabled_,
+                    .audio_enabled_ = settings_->audio_enabled_,
                 });
             }
             else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {

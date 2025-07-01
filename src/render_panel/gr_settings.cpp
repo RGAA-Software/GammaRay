@@ -41,7 +41,6 @@ namespace tc
         encoder_width_ = sp_->Get(kStEncoderWidth, "1280");
         encoder_height_ = sp_->Get(kStEncoderHeight, "720");
 
-        capture_audio_ = sp_->Get(kStCaptureAudio, "true");
         capture_audio_type_ = sp_->Get(kStCaptureAudioType, "global");
         capture_video_ = sp_->Get(kStCaptureVideo, "true");
         capture_video_type_ = sp_->Get(kStCaptureVideoType, "global");
@@ -78,7 +77,7 @@ namespace tc
         ss << "encoder_resolution_type_: " << encoder_resolution_type_ << std::endl;
         ss << "encoder_width_: " << encoder_width_ << std::endl;
         ss << "encoder_height_: " << encoder_height_ << std::endl;
-        ss << "capture_audio_: " << capture_audio_ << std::endl;
+        ss << "capture_audio_: " << IsCaptureAudioEnabled() << std::endl;
         ss << "capture_audio_type_: " << capture_audio_type_ << std::endl;
         ss << "capture_video_: " << capture_video_ << std::endl;
         ss << "capture_video_type: " << capture_video_type_ << std::endl;
@@ -112,7 +111,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStEncoderResolutionType, encoder_resolution_type_));
         args.push_back(std::format("--{}={}", kStEncoderWidth, encoder_width_));
         args.push_back(std::format("--{}={}", kStEncoderHeight, encoder_height_));
-        args.push_back(std::format("--{}={}", kStCaptureAudio, capture_audio_));
+        args.push_back(std::format("--{}={}", kStCaptureAudio, IsCaptureAudioEnabled()));
         args.push_back(std::format("--{}={}", kStCaptureAudioType, capture_audio_type_));
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
         args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
@@ -182,8 +181,12 @@ namespace tc
     }
 
     void GrSettings::SetCaptureAudio(bool enabled) {
-        capture_audio_ = enabled ? kStTrue : kStFalse;
-        sp_->Put(kStCaptureAudio, capture_audio_);
+        sp_->Put(kStCaptureAudio, enabled ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsCaptureAudioEnabled() {
+        auto value = sp_->Get(kStCaptureAudio);
+        return value.empty() || value == kStTrue;
     }
 
     void GrSettings::SetCaptureAudioDeviceId(const std::string& name) {
@@ -449,6 +452,15 @@ namespace tc
     bool GrSettings::IsDevelopMode() {
         auto value = sp_->Get(kStDevelopMode);
         return value == kStTrue;
+    }
+
+    void GrSettings::SetFileTransferEnabled(bool enable) {
+        sp_->Put(kStFileTransferEnabled, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsFileTransferEnabled() {
+        auto value = sp_->Get(kStFileTransferEnabled);
+        return value.empty() || value == kStTrue;
     }
 
 }

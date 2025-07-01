@@ -150,6 +150,10 @@ namespace tc
         bool relay_enabled_ = true;
         // language
         int language_ = 1;
+        // file transfer enabled
+        bool file_transfer_enabled_ = true;
+        // audio enabled
+        bool audio_enabled_ = true;
 
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";

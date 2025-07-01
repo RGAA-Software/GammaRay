@@ -67,6 +67,7 @@
   "id_security_settings": "Security Settings",
   "id_long_term_password": "Security Password(Long-term)",
   "id_allowed_mouse_keyboard": "Controlled by Mouse&Keyboard",
+  "id_allowed_file_transfer": "Allowed File Transfer",
   "id_ssl_enabled": "SSL Connection(Always Enabled)",
   "id_record_visitor": "Record Visiting",
   "id_record_file_transfer": "Record File Transferring",

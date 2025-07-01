@@ -27,6 +27,10 @@ namespace tc
         bool relay_enabled_ = true;
         // language // default is English
         int language_ = 1;
+        // file transfer enabled or not
+        bool file_transfer_enabled_ = true;
+        // audio enabled or not
+        bool audio_enabled_ = true;
     };
 
 }

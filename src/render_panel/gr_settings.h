@@ -61,6 +61,7 @@ namespace tc
     static const std::string kStRelayEnabled = "relay_enabled";
     static const std::string kStDevelopMode = "develop_mode";
     static const std::string kStDisplayClientLogo = "display_client_logo";
+    static const std::string kStFileTransferEnabled = "file_transfer_enabled";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -96,6 +97,7 @@ namespace tc
         void SetEncoderFormat(int idx);
         void SetCaptureVideo(bool enabled);
         void SetCaptureAudio(bool enabled);
+        bool IsCaptureAudioEnabled();
         void SetCaptureAudioDeviceId(const std::string& name);
         [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
@@ -211,6 +213,11 @@ namespace tc
         void SetDevelopModeEnabled(bool enable);
         bool IsDevelopMode();
 
+        // file transfer enabled
+        // Settings -> Security Settings
+        void SetFileTransferEnabled(bool enable);
+        bool IsFileTransferEnabled();
+
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
@@ -228,7 +235,6 @@ namespace tc
         std::string encoder_width_;
         std::string encoder_height_;
 
-        std::string capture_audio_;
         std::string capture_audio_type_;
         std::string capture_video_;
         std::string capture_video_type_;

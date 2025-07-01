@@ -103,6 +103,27 @@ namespace tc
                 });
             }
 
+            // File Transfer
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_allowed_file_transfer");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->IsFileTransferEnabled());
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    settings_->SetFileTransferEnabled(state == Qt::CheckState::Checked);
+                });
+            }
+
             // SSL Always Enabled
             {
                 auto layout = new NoMarginHLayout();

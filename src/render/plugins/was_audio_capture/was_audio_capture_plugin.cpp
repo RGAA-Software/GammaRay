@@ -52,6 +52,9 @@ namespace tc
         });
 
         audio_capture_->RegisterDataCallback([=, this](const std::shared_ptr<Data>& data) {
+            if (!sys_settings_.audio_enabled_) {
+                return;
+            }
             auto event = std::make_shared<GrPluginRawAudioFrameEvent>();
             event->full_data_ = data;
             event->sample_rate_ = this->samples_;
@@ -61,6 +64,9 @@ namespace tc
         });
 
         audio_capture_->RegisterSplitDataCallback([=, this](const auto& left, const auto& right) {
+            if (!sys_settings_.audio_enabled_) {
+                return;
+            }
             auto event = std::make_shared<GrPluginSplitRawAudioFrameEvent>();
             event->left_ch_data_ = left;
             event->right_ch_data_ = right;
