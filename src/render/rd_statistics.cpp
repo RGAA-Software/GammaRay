@@ -182,8 +182,17 @@ namespace tc
             }
         }
 
-        int32_t connected_clients = plugin_mgr_->GetTotalConnectedPeerCount();
-        cst->set_connected_clients(connected_clients);
+        // connected clients
+        int32_t connected_clients = plugin_mgr_->GetTotalConnectedClientsCount();
+        cst->set_connected_clients_count(connected_clients);
+
+        auto connected_clients_info = plugin_mgr_->GetConnectedClientsInfo();
+        for (const auto& item : connected_clients_info) {
+            auto cc = cst->mutable_connected_clients()->Add();
+            cc->set_device_id(item->device_id_);
+            cc->set_stream_id(item->stream_id_);
+            cc->set_room_id(item->relay_room_id_);
+        }
 
         auto relay_plugin = plugin_mgr_->GetRelayPlugin();
 

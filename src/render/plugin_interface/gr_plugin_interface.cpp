@@ -262,7 +262,7 @@ namespace tc
     int64_t GrPluginInterface::GetQueuingMediaMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         for (const auto& [plugin_id, plugin] : net_plugins_) {
-            if (plugin->GetConnectedPeerCount() > 0) {
+            if (plugin->GetConnectedClientsCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingMediaMsgCount();
                 //LOGI("Queuing msg count in [{}] is : {}", plugin_id, plugin->GetQueuingMediaMsgCount());
             }
@@ -273,7 +273,7 @@ namespace tc
     int64_t GrPluginInterface::GetQueuingFtMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         for (const auto& [plugin_id, plugin] : net_plugins_) {
-            if (plugin->GetConnectedPeerCount() > 0) {
+            if (plugin->GetConnectedClientsCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingFtMsgCount();
             }
         }

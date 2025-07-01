@@ -28,7 +28,10 @@ namespace tc
     class GrConnectedClientInfo {
     public:
         std::string device_id_;
+        // direct mode
         std::string stream_id_;
+        // relay mode
+        std::string relay_room_id_;
     };
 
     class GrNetPlugin : public GrPluginInterface {
@@ -62,7 +65,7 @@ namespace tc
 
         virtual bool IsOnlyAudioClients();
 
-        virtual int GetConnectedPeerCount();
+        virtual int GetConnectedClientsCount();
 
         virtual void SyncInfo(const NetSyncInfo& info);
 

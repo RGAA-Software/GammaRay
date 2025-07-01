@@ -58,8 +58,9 @@ namespace tc
         std::vector<double> left_spectrum_;
         std::vector<double> right_spectrum_;
 
-        std::vector<tcrp::RpMsgWorkingCaptureInfo> captures_info_;
+        std::vector<std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>> captures_info_;
         int32_t connected_clients_ = 0;
+        std::vector<std::shared_ptr<tcrp::RpConnectedClientInfo>> connected_clients_info_;
         std::string video_capture_type_;
         std::string video_encode_type_;
         bool relay_connected_ = false;

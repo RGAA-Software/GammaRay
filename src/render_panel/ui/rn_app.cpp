@@ -343,27 +343,27 @@ namespace tc
             if (index >= 4) {
                 break;
             }
-            stat_charts_[index]->UpdateTitle(info.target_name().c_str());
+            stat_charts_[index]->UpdateTitle(info->target_name().c_str());
             frame_info_items_[index]->UpdateInfo(info);
 
             std::map<QString, std::vector<int32_t>> stat_value;
             // update video frame gap
-            if (stat->video_capture_gaps_.contains(info.target_name())) {
-                stat_value.insert({kChartVideoFrameGap, stat->video_capture_gaps_[info.target_name()]});
+            if (stat->video_capture_gaps_.contains(info->target_name())) {
+                stat_value.insert({kChartVideoFrameGap, stat->video_capture_gaps_[info->target_name()]});
             }
 
             // update encode durations
-            if (stat->encode_durations_.contains(info.target_name())) {
-                stat_value.insert({kChartEncode, stat->encode_durations_[info.target_name()]});
+            if (stat->encode_durations_.contains(info->target_name())) {
+                stat_value.insert({kChartEncode, stat->encode_durations_[info->target_name()]});
             }
 
             // copy / resize texture
-            if (stat->copy_texture_durations_.contains(info.target_name())) {
-                stat_value.insert({kChartCopyTexture, stat->copy_texture_durations_[info.target_name()]});
+            if (stat->copy_texture_durations_.contains(info->target_name())) {
+                stat_value.insert({kChartCopyTexture, stat->copy_texture_durations_[info->target_name()]});
             }
 
-            if (stat->map_cvt_texture_durations_.contains(info.target_name())) {
-                stat_value.insert({kChartMapCvtTexture, stat->map_cvt_texture_durations_[info.target_name()]});
+            if (stat->map_cvt_texture_durations_.contains(info->target_name())) {
+                stat_value.insert({kChartMapCvtTexture, stat->map_cvt_texture_durations_[info->target_name()]});
             }
 
             if (index == 0) {

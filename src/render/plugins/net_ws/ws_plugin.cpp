@@ -102,9 +102,9 @@ namespace tc
         }
     }
 
-    int WsPlugin::GetConnectedPeerCount() {
+    int WsPlugin::GetConnectedClientsCount() {
         if (IsWorking()) {
-            return ws_server_->GetConnectedPeerCount();
+            return ws_server_->GetConnectedClientsCount();
         } else {
             return 0;
         }
@@ -135,7 +135,7 @@ namespace tc
     }
 
     bool WsPlugin::HasConnectedClients() {
-        return GetConnectedPeerCount() > 0;
+        return GetConnectedClientsCount() > 0;
     }
 
     std::vector<std::shared_ptr<GrConnectedClientInfo>> WsPlugin::GetConnectedClientInfo() {

@@ -24,9 +24,22 @@ namespace tc
         context_ = ctx;
         plugin_mgr_ = context_->GetPluginManager();
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-        msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
-            this->SendStatistics();
-            this->SendPluginsInfo();
+        msg_listener_->Listen<MsgTimer500>([=, this](const MsgTimer500& msg) {
+            context_->PostTask([this]() {
+                ReportStatistics();
+            });
+        });
+
+        msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {
+            context_->PostTask([this]() {
+                ReportStatistics();
+            });
+        });
+
+        msg_listener_->Listen<MsgClientDisconnected>([=, this](const MsgClientDisconnected& msg) {
+            context_->PostTask([this]() {
+                ReportStatistics();
+            });
         });
     }
 
@@ -70,11 +83,16 @@ namespace tc
         }
     }
 
-    void WsPanelClient::SendStatistics() {
+    void WsPanelClient::ReportStatistics() {
+        this->SendStatisticsInternal();
+        this->SendPluginsInfoInternal();
+    }
+
+    void WsPanelClient::SendStatisticsInternal() {
         PostNetMessage(statistics_->AsProtoMessage());
     }
 
-    void WsPanelClient::SendPluginsInfo() {
+    void WsPanelClient::SendPluginsInfoInternal() {
         tcrp::RpMessage msg;
         msg.set_type(tcrp::kRpPluginsInfo);
         auto m_info = msg.mutable_plugins_info();

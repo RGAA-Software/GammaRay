@@ -29,6 +29,7 @@ namespace tc
     class GrAudioEncoderPlugin;
     class GrFrameCarrierPlugin;
     class GrFrameProcessorPlugin;
+    class GrConnectedClientInfo;
 
     class PluginManager {
     public:
@@ -59,7 +60,8 @@ namespace tc
         GrFrameProcessorPlugin* GetFrameResizePlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
-        int GetTotalConnectedPeerCount();
+        int GetTotalConnectedClientsCount();
+        std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientsInfo();
 
         void VisitAllPlugins(const std::function<void(GrPluginInterface*)>&& visitor);
         void VisitStreamPlugins(const std::function<void(GrStreamPlugin*)>&& visitor);

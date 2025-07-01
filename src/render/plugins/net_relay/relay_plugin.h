@@ -25,7 +25,7 @@ namespace tc
         void PostProtoMessage(const std::string &msg, bool run_through) override;
         bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) override;
         bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
-        int GetConnectedPeerCount() override;
+        int GetConnectedClientsCount() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;
         void SyncInfo(const tc::NetSyncInfo& info) override;
@@ -34,6 +34,7 @@ namespace tc
         int64_t GetQueuingFtMsgCount() override;
         bool HasEnoughBufferForQueuingMediaMessages() override;
         bool HasEnoughBufferForQueuingFtMessages() override;
+        std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo() override;
 
     private:
         void NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& visitor_device_id);

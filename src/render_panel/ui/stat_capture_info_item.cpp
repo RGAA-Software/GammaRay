@@ -116,12 +116,12 @@ namespace tc
         return lbl_target_name_->text().toStdString();
     }
 
-    void StatCaptureInfoItem::UpdateInfo(const tcrp::RpMsgWorkingCaptureInfo& info) {
-        lbl_target_name_->setText(info.target_name().c_str());
-        lbl_capture_size_->setText(std::format("Capture Size: {}x{}", info.capture_frame_width(), info.capture_frame_height()).c_str());
-        lbl_frame_resize_size_->setText(std::format("Frame Resize: {}x{}", info.resize_frame_width(), info.resize_frame_height()).c_str());
-        lbl_capture_fps_->setText(std::format("Capture FPS: {}",info.capturing_fps()).c_str());
-        lbl_encode_fps_->setText(std::format("Encoder: {}, FPS: {}", info.encoder_name(), info.encoding_fps()).c_str());
+    void StatCaptureInfoItem::UpdateInfo(const std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>& info) {
+        lbl_target_name_->setText(info->target_name().c_str());
+        lbl_capture_size_->setText(std::format("Capture Size: {}x{}", info->capture_frame_width(), info->capture_frame_height()).c_str());
+        lbl_frame_resize_size_->setText(std::format("Frame Resize: {}x{}", info->resize_frame_width(), info->resize_frame_height()).c_str());
+        lbl_capture_fps_->setText(std::format("Capture FPS: {}",info->capturing_fps()).c_str());
+        lbl_encode_fps_->setText(std::format("Encoder: {}, FPS: {}", info->encoder_name(), info->encoding_fps()).c_str());
         update();
     }
 

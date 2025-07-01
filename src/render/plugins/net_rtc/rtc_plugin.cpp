@@ -136,7 +136,7 @@ namespace tc
         });
     }
 
-    int RtcPlugin::GetConnectedPeerCount() {
+    int RtcPlugin::GetConnectedClientsCount() {
         bool has_connected_channel_ = false;
         rtc_servers_.ApplyAll([&](const auto&, const std::shared_ptr<RtcServer>& srv) {
             if (srv->IsDataChannelConnected()) {

@@ -19,7 +19,7 @@ namespace tc
         StatCaptureInfoItem(const std::shared_ptr<GrContext>& ctx, QWidget* parent);
         void paintEvent(QPaintEvent *event) override;
         std::string GetTargetName();
-        void UpdateInfo(const tcrp::RpMsgWorkingCaptureInfo& info);
+        void UpdateInfo(const std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>& info);
         void ClearInfo();
         void Select();
         void Unselect();

@@ -11,6 +11,7 @@ namespace tcrp
     class RpCaptureStatistics;
     class RpPluginsInfo;
     class RpServerAudioSpectrum;
+    class RpConnectedClientInfo;
 }
 
 namespace tc
@@ -186,6 +187,12 @@ namespace tc
     class MsgNotificationClicked {
     public:
         NotifyItem data_;
+    };
+
+    // update connected clients info
+    class MsgUpdateConnectedClientsInfo {
+    public:
+        std::vector<std::shared_ptr<tcrp::RpConnectedClientInfo>> clients_info_;
     };
 }
 

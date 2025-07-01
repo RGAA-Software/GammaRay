@@ -13,6 +13,7 @@
 #include "tc_relay_client/relay_server_sdk.h"
 #include "tc_relay_client/relay_server_sdk_param.h"
 #include "tc_relay_client/relay_room.h"
+#include "tc_relay_client/relay_connected_info.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "plugin_interface/gr_plugin_context.h"
 #include "relay_message.pb.h"
@@ -270,9 +271,9 @@ namespace tc
         return true;
     }
 
-    int RelayPlugin::GetConnectedPeerCount() {
-        //LOGI("IsWorking ? {}, ConnectedPeerCount: {}", IsWorking(), relay_media_sdk_->GetConnectedPeerCount());
-        return IsWorking() ? relay_media_sdk_->GetConnectedPeerCount() : 0;
+    int RelayPlugin::GetConnectedClientsCount() {
+        //LOGI("IsWorking ? {}, ConnectedPeerCount: {}", IsWorking(), relay_media_sdk_->GetConnectedClientsCount());
+        return IsWorking() ? relay_media_sdk_->GetConnectedClientsCount() : 0;
     }
 
     bool RelayPlugin::IsOnlyAudioClients() {
@@ -325,5 +326,21 @@ namespace tc
 
     bool RelayPlugin::HasEnoughBufferForQueuingFtMessages() {
         return true;
+    }
+
+    std::vector<std::shared_ptr<GrConnectedClientInfo>> RelayPlugin::GetConnectedClientInfo() {
+        if (IsWorking()) {
+            auto r = relay_media_sdk_->GetConnectedClientInfo();
+            std::vector<std::shared_ptr<GrConnectedClientInfo>> clients_info;
+            for (const auto& item : r) {
+                clients_info.push_back(std::make_shared<GrConnectedClientInfo>(GrConnectedClientInfo {
+                    .device_id_ = item->device_id_,
+                    .stream_id_ = "",
+                    .relay_room_id_ = item->room_id_,
+                }));
+            }
+            return clients_info;
+        }
+        return {};
     }
 }

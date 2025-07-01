@@ -7,6 +7,7 @@
 #include "gr_app_messages.h"
 #include "gr_context.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/client_id_extractor.h"
 
 namespace tc
 {
@@ -47,8 +48,8 @@ namespace tc
             int size = msg.statistics_->working_captures_info_size();
             for (int i = 0; i < size; i++) {
                 auto info = msg.statistics_->working_captures_info(i);
-                tcrp::RpMsgWorkingCaptureInfo cpy_info;
-                cpy_info.CopyFrom(info);
+                auto cpy_info = std::make_shared<tcrp::RpMsgWorkingCaptureInfo>();
+                cpy_info->CopyFrom(info);
                 captures_info_.push_back(cpy_info);
 
                 if (video_capture_type_ != info.capture_type()) {
@@ -85,7 +86,25 @@ namespace tc
             }
         }
 
-        connected_clients_ = msg.statistics_->connected_clients();
+        connected_clients_ = msg.statistics_->connected_clients_count();
+        connected_clients_info_.clear();
+        for (const auto& item : msg.statistics_->connected_clients()) {
+            auto info = std::make_shared<tcrp::RpConnectedClientInfo>();
+            info->CopyFrom(item);
+            connected_clients_info_.push_back(info);
+        }
+        context_->PostTask([=, this]() {
+            context_->SendAppMessage(MsgUpdateConnectedClientsInfo {
+                .clients_info_ = connected_clients_info_,
+            });
+            // test beg //
+            //LOGI("*** Connected client count: {}", connected_clients_info_.size());
+            //for (const auto& item : connected_clients_info_) {
+            //    LOGI("connected, device id: {}, room id: {}", ExtractClientId(item->device_id()), item->room_id());
+            //}
+            // test end //
+        });
+
         relay_connected_ = msg.statistics_->relay_connected();
         audio_capture_type_ = msg.statistics_->audio_capture_type();
 

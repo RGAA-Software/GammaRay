@@ -27,8 +27,9 @@ namespace tc
         void PostNetMessage(const std::string& msg);
 
     private:
-        void SendStatistics();
-        void SendPluginsInfo();
+        void ReportStatistics();
+        void SendStatisticsInternal();
+        void SendPluginsInfoInternal();
         void ParseNetMessage(std::string_view msg);
         void ProcessCommandEnablePlugin(const std::string& plugin_id);
         void ProcessCommandDisablePlugin(const std::string& plugin_id);

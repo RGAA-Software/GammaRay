@@ -332,7 +332,7 @@ namespace tc
 
     void PluginManager::On1Second() {
         context_->PostTask([=, this]() {
-            auto connected_client_count = this->GetTotalConnectedPeerCount();
+            auto connected_client_count = this->GetTotalConnectedClientsCount();
             //LOGI("connected_client_count: {}", connected_client_count);
             VisitAllPlugins([=, this](GrPluginInterface* plugin) {
                 plugin->On1Second();
@@ -370,7 +370,7 @@ namespace tc
     int64_t PluginManager::GetQueuingMediaMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->GetConnectedPeerCount() > 0) {
+            if (plugin->GetConnectedClientsCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingMediaMsgCount();
             }
         });
@@ -380,19 +380,31 @@ namespace tc
     int64_t PluginManager::GetQueuingFtMsgCountInNetPlugins() {
         int64_t queuing_msg_count = 0;
         VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->GetConnectedPeerCount() > 0) {
+            if (plugin->GetConnectedClientsCount() > 0) {
                 queuing_msg_count += plugin->GetQueuingFtMsgCount();
             }
         });
         return queuing_msg_count;
     }
 
-    int PluginManager::GetTotalConnectedPeerCount() {
+    int PluginManager::GetTotalConnectedClientsCount() {
         int total_size = 0;
         VisitNetPlugins([&](GrNetPlugin* plugin) {
-            total_size += plugin->GetConnectedPeerCount();
+            total_size += plugin->GetConnectedClientsCount();
         });
         return total_size;
+    }
+
+    std::vector<std::shared_ptr<GrConnectedClientInfo>> PluginManager::GetConnectedClientsInfo() {
+        std::vector<std::shared_ptr<GrConnectedClientInfo>> clients_info;
+        VisitNetPlugins([&](GrNetPlugin* plugin) {
+            if (auto cs = plugin->GetConnectedClientInfo(); !cs.empty()) {
+                for (auto& info : cs) {
+                    clients_info.push_back(info);
+                }
+            }
+        });
+        return clients_info;
     }
 
     // is GDI
