@@ -16,6 +16,7 @@
 #include "tc_common_new/log.h"
 #include "gr_system_monitor.h"
 #include "gr_account_manager.h"
+#include "gr_connected_manager.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/time_util.h"
 #include "ui/input_safety_pwd_dialog.h"
@@ -96,6 +97,8 @@ namespace tc
 
         sig_client_ = std::make_shared<WsSigClient>(shared_from_this());
         sig_client_->Start();
+
+        gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
 
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;
         LOGI("** Connection used: {}ms", conn_diff);

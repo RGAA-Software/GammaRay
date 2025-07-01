@@ -16,12 +16,12 @@ namespace tc {
 	}
 	
 	void ConnectedInfoPanel::InitView() {
-		setWindowFlags(Qt::FramelessWindowHint);
-		//setAttribute(Qt::WA_StyledBackground);
+		setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 		setAttribute(Qt::WA_TranslucentBackground);
-		setFixedSize(500, 220);
+		setFixedSize(500, 200);
 		root_vbox_layout_ = new NoMarginVLayout();
 		setLayout(root_vbox_layout_);
+		root_vbox_layout_->addSpacing(30);
 
 		// logo标识
 		logo_hbox_layout_ = new NoMarginHLayout();
@@ -37,7 +37,6 @@ namespace tc {
 		logo_hbox_layout_->addWidget(logo_lab_);
 		logo_hbox_layout_->addSpacing(6);
 		logo_hbox_layout_->addWidget(logo_name_lab_);
-		root_vbox_layout_->addSpacing(12);
 		root_vbox_layout_->addLayout(logo_hbox_layout_);
 
 		// 连接者信息
@@ -69,6 +68,7 @@ namespace tc {
 		avatar_name_hbox_layout_->addSpacing(20);
 		root_vbox_layout_->addSpacing(12);
 		root_vbox_layout_->addLayout(avatar_name_hbox_layout_);
+		root_vbox_layout_->addStretch(1);
 
 		// 允许访问
 		promtp_hbox_layout_ = new NoMarginHLayout();
@@ -109,7 +109,9 @@ namespace tc {
 		access_control_hbox_layout_->addSpacing(4);
 		access_control_hbox_layout_->addWidget(file_cbox_);
 		access_control_hbox_layout_->addStretch(1);
+		root_vbox_layout_->addSpacing(8);
 		root_vbox_layout_->addLayout(access_control_hbox_layout_);
+		root_vbox_layout_->addStretch(1);
 		root_vbox_layout_->addSpacing(20);
 	}
 
@@ -120,10 +122,13 @@ namespace tc {
 		painter.setPen(Qt::NoPen);
 		painter.setBrush(QBrush(0xffffff));
 
-		int offset = 8;
 		int radius = 4;
-		QRect rect(offset, offset, this->width() - offset * 2, this->height() - offset * 2);
+		QRect rect(rect_offset_, rect_offset_, this->width() - rect_offset_ * 2, this->height() - rect_offset_ * 2);
 		painter.drawRoundedRect(rect, radius, radius);
+	}
+
+	int ConnectedInfoPanel::GetRectOffset() const {
+		return rect_offset_;
 	}
 }
 
