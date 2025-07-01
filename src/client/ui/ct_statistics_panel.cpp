@@ -71,9 +71,9 @@ namespace tc
                             .rng_end_ = 180,
                             .format_ = "%d"
                         }, CtStatChartAxisSettings {
-                            .count_ = 6,
+                            .count_ = 7,
                             .rng_beg_ = 0,
-                            .rng_end_ = 5,
+                            .rng_end_ = 50,
                             .format_ = "%d MB/s"
                         }, this);
                     data_speed_stat_chart_->setFixedSize(600, 250);
