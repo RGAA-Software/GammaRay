@@ -12,22 +12,11 @@ namespace tc {
 
 	ConnectedInfoPanel::ConnectedInfoPanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent), ctx_(ctx) {
 		InitView();
-		WidgetHelper::AddShadow(this, 0x666666, 8);
+		WidgetHelper::AddShadow(this, 0xbbbbbb, 8);
 	}
 	
 	void ConnectedInfoPanel::InitView() {
-		setAttribute(Qt::WA_StyledBackground);
-		setAttribute(Qt::WA_OpaquePaintEvent); // 不受父widget透明影响
-		this->setStyleSheet(
-			".QWidget {"
-			"   background-color: white;"  
-			"   border-style: solid;"      
-			"   border-width: 1px;"        
-			"   border-color: black;"      
-			"   border-radius: 0px;"       
-			"   padding: 0px;"             
-			"}"
-		);
+        setAttribute(Qt::WA_TranslucentBackground);
 
 		setFixedSize(500, 200);
 		root_vbox_layout_ = new NoMarginVLayout();
@@ -128,6 +117,10 @@ namespace tc {
 
 	void ConnectedInfoPanel::paintEvent(QPaintEvent* event) {
 		QWidget::paintEvent(event);
+        QPainter painter(this);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QBrush(0xffffff));
+        painter.drawRoundedRect(0, 5, this->width(), this->height()-10, 5, 5);
 	}
 
 }

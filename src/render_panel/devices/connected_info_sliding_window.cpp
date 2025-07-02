@@ -11,29 +11,28 @@ namespace tc {
 
 	ConnectedInfoSlidingWindow::ConnectedInfoSlidingWindow(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent), ctx_(ctx) {
 		InitView();
-		WidgetHelper::AddShadow(this, 0x666666, 8);
 	}
 
 	void ConnectedInfoSlidingWindow::InitView() {
-		setWindowFlags(Qt::FramelessWindowHint | Qt::Tool /* | Qt::WindowStaysOnTopHint */ );
-		setAttribute(Qt::WA_TranslucentBackground);
+        setWindowFlags(Qt::FramelessWindowHint | Qt::Tool  | Qt::WindowStaysOnTopHint);
+        setAttribute(Qt::WA_TranslucentBackground);
 		setFixedSize(528, 200);
 		main_hbox_layout_ = new NoMarginHLayout();
 		setLayout(main_hbox_layout_);
 
 		main_hbox_layout_->addStretch(1);
-
-        tag_ = new ConnectedInfoTag(this);
-        main_hbox_layout_->addWidget(tag_, 0, Qt::AlignTop);
-
-        panel_ = new ConnectedInfoPanel(ctx_, this);
+        {
+            auto layout = new NoMarginVLayout();
+            tag_ = new ConnectedInfoTag();
+            layout->addSpacing(5);
+            layout->addWidget(tag_);
+            main_hbox_layout_->addLayout(layout);
+            layout->addStretch();
+        }
+        panel_ = new ConnectedInfoPanel(ctx_);
         main_hbox_layout_->addWidget(panel_);
 
 		tag_->installEventFilter(this);
-
-		QTimer::singleShot(3000, [=, this]() {
-			panel_->hide();
-		});
 	}
 
 	void ConnectedInfoSlidingWindow::paintEvent(QPaintEvent* event) {
@@ -45,21 +44,17 @@ namespace tc {
 	}
 
 	bool ConnectedInfoSlidingWindow::eventFilter(QObject* obj, QEvent* event) {
-		if (obj == tag_) {  
+		if (obj == tag_) {
 			if (event->type() == QEvent::MouseButtonRelease) {
 				bool current_state = tag_->GetExpanded();
 				LOGI("ConnectedInfoSlidingWindow tag_ MouseButtonRelease");
 				if (current_state) {
-					//panel_->hide();
-					//panel_->setVisible(false);
-					panel_->setFixedWidth(0);
+					panel_->hide();
 					LOGI("ConnectedInfoSlidingWindow panel_->hide()");
 				}
 				else {
 					LOGI("ConnectedInfoSlidingWindow panel_->show()");
-					panel_->setFixedWidth(500);
-					//panel_->show();
-					//panel_->setVisible(true);
+					panel_->show();
 
 				}
 				tag_->SetExpanded(!current_state);

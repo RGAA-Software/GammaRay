@@ -17,7 +17,7 @@ namespace tc {
 			return;
 		}
 
-        const int kMaxCount = 2;
+        const int kMaxCount = 1;
         for (int index = 0; index < kMaxCount; ++index) {
             /*ConnectedPair pair;
             pair.tag_ = new ConnectedInfoTag(nullptr);
