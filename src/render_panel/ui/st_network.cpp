@@ -326,6 +326,18 @@ namespace tc
             connect(btn, &QPushButton::clicked, this, [=, this]() {
                 auto spvr_host = edt_spvr_server_host_->text().toStdString();
                 auto spvr_port = edt_spvr_server_port_->text().toStdString();
+                bool force_update_device_id = false;
+                if (!settings_->GetSpvrServerHost().empty()
+                    && (settings_->GetSpvrServerHost() != spvr_host || settings_->GetSpvrServerPort() != std::atoi(spvr_port.c_str()))) {
+                    force_update_device_id = true;
+                    settings_->SetDeviceId("");
+                    settings_->SetDeviceRandomPwd("");
+                    settings_->SetRelayServerHost("");
+                    settings_->SetRelayServerPort("");
+                    settings_->SetProfileServerHost("");
+                    settings_->SetProfileServerPort("");
+                    LOGW("Clear old device id, force updating device id.");
+                }
                 settings_->SetSpvrServerHost(spvr_host);
                 settings_->SetSpvrServerPort(spvr_port);
                 settings_->SetPanelServerPort(edt_panel_port_->text().toInt());
@@ -335,6 +347,7 @@ namespace tc
 
                 this->context_->SendAppMessage(MsgSettingsChanged {
                     .settings_ = settings_,
+                    .force_update_device_id_ = force_update_device_id,
                 });
 
                 TcDialog dialog(tcTr("id_tips"), tcTr("id_save_settings_restart_renderer"), nullptr);
