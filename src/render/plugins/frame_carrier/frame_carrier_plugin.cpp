@@ -108,7 +108,7 @@ namespace tc
                                                                 params.frame_resize_,
                                                                 params.encode_width_,
                                                                 params.encode_height_,
-                                                                params.full_color_mode_);
+                                                                params.enable_full_color_mode_);
         }
         else {
             frame_carrier = std::make_shared<VideoFrameCarrier>(this,
@@ -119,7 +119,7 @@ namespace tc
                                                                 false,
                                                                 -1,
                                                                 -1,
-                                                                params.full_color_mode_);
+                                                                params.enable_full_color_mode_);
         }
         frame_carriers_[params.mon_name_] = frame_carrier;
         LOGI("Create frame carrier for monitor: {}, resize?: {}", params.mon_name_, params.frame_resize_);

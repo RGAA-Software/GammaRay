@@ -26,13 +26,10 @@ add_compile_options(/bigobj)
 
 set(SRCS_MAIN ct_main.cpp)
 
-if(${TC_USE_ADVANCED})
-    add_definitions(-DTC_ADVANCED)
-endif()
-
 set(SRCS_WS
         ct_main_ws.cpp
         ct_client_context.cpp
+        ct_workspace.cpp
         ct_base_workspace.cpp
         ct_director.cpp
         ct_video_widget_event.cpp
@@ -80,25 +77,6 @@ set(SRCS_WS
         plugins/ct_plugin_manager.cpp
         plugins/ct_plugin_event_router.cpp
 )
-
-if(${TC_USE_ADVANCED})
-    list(APPEND SRCS_WS ct_workspace.cpp)
-endif()
-
-#transfer/file_transfer.cpp
-#transfer/fs_object.cpp
-#transfer/file_writer.cpp
-#transfer/fs_file.cpp
-#transfer/fs_folder.cpp
-
-if(TC_USE_FILE_TRANSMISSION)
-#    message(STATUS "file transmission is enabled.")
-#    add_subdirectory(./file_transmission_client/src)
-#    include_directories(./file_transmission_client/src)
-#    add_definitions(-DTC_ENABLE_FILE_TRANSMISSION)
-else()
-    message(STATUS "file transmission is disabled.")
-endif()
 
 add_subdirectory(plugin_interface)
 add_subdirectory(plugins)

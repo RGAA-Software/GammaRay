@@ -15,9 +15,6 @@
 #include "thunder_sdk.h"
 #include "client/ct_client_context.h"
 #include "ct_base_workspace.h"
-#ifdef TC_ADVANCED
-#include "ct_workspace.h"
-#endif
 #include "client/ct_workspace.h"
 #include "client/ct_base_workspace.h"
 #include "client/ct_application.h"
@@ -404,14 +401,7 @@ int main(int argc, char** argv) {
 
     auto beg = TimeUtil::GetCurrentTimestamp();
 
-    static std::shared_ptr<BaseWorkspace> ws = nullptr;
-
-#ifdef TC_ADVANCED
-    ws = std::make_shared<Workspace>(ctx, params);
-#else
-    ws = std::make_shared<BaseWorkspace>(ctx, params);
-#endif
-
+    static auto ws = std::make_shared<Workspace>(ctx, params);
     ws->Init();
     ws->show();
     ctx->PostDelayUITask([=]() {

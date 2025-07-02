@@ -447,16 +447,16 @@ namespace tc
         }
     }
 
-    bool VideoFrameCarrier::IsResizeFrameSize() {
-        return resize_;
-    }
-
     int VideoFrameCarrier::GetResizeWidth() {
         return resize_width_;
     }
 
     int VideoFrameCarrier::GetResizeHeight() {
         return resize_height_;
+    }
+
+    void VideoFrameCarrier::SetFullColorModeEnabled(bool enabled) {
+        enable_full_color_mode_ = enabled;
     }
 
 }

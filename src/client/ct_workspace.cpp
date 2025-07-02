@@ -32,9 +32,6 @@
 #include "ui/float_button_state_indicator.h"
 #include "ct_main_progress.h"
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
-#ifdef TC_ENABLE_FILE_TRANSMISSION
-#include "core/file_trans_interface.h"
-#endif // TC_ENABLE_FILE_TRANSMISSION
 #include "tc_dialog.h"
 #include "ct_game_view.h"
 #include "ct_const_def.h"
@@ -86,39 +83,7 @@ namespace tc
     }
 
     void Workspace::Init() {
-        // plugins
-        InitPluginsManager();
-
-        auto beg = TimeUtil::GetCurrentTimestamp();
-
-        InitTheme();
-
-        sdk_ = ThunderSdk::Make(this->context_->GetMessageNotifier());
-        sdk_->Init(this->params_, nullptr, DecoderRenderType::kFFmpegI420);
-
-        // init game views
-        InitGameView(this->params_);
-
-        InitSampleWidget();
-
-        //InitClipboardManager();
-    
-        // message listener
-        InitListener();
-
-        // connect to GammaRay Panel
-        InitPanelClient();
-
-        auto end = TimeUtil::GetCurrentTimestamp();
-        LOGI("Init .3 used: {}ms", (end - beg));
-    }
-
-    void Workspace::InitListener() {
-        msg_listener_ = context_->GetMessageNotifier()->CreateListener();
-        RegisterSdkMsgCallbacks();
-        sdk_->Start();
-        RegisterBaseListeners();
-        RegisterControllerPanelListeners();
+        BaseWorkspace::Init();
     }
 
     void Workspace::RegisterSdkMsgCallbacks() {
@@ -294,7 +259,6 @@ namespace tc
 
     void Workspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(def_window_size_);
-        // kMaxGameViewCount �� max_number_of_screen_window_ ȡ�� 
         for (int index = 0; index < settings_->max_number_of_screen_window_; ++index) {
             GameView* game_view = nullptr;
             if (0 == index) {

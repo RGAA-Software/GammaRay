@@ -106,6 +106,7 @@ namespace tc
         void DismissConnectingDialog();
 
     protected:
+        Settings* settings_ = nullptr;
         std::shared_ptr<ThunderSdkParams> params_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
@@ -113,18 +114,12 @@ namespace tc
         bool is_window_active_ = false;
         acss::QtAdvancedStylesheet* theme_{};
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        Settings* settings_ = nullptr;
-        //FloatNotificationHandle* notification_handler_ = nullptr;
-        //NotificationPanel* notification_panel_ = nullptr;
         std::shared_ptr<FileTransferChannel> file_transfer_ = nullptr;
         uint32_t cursor_type_ = 100000;
         bool force_update_cursor_ = true;
         CtStatisticsPanel* st_panel_ = nullptr;
         FloatButtonStateIndicator* btn_indicator_ = nullptr;
         std::atomic_bool has_frame_arrived_ = false;
-
-        //文件传输:
-        //std::shared_ptr<FileTransInterface> file_trans_interface_ = nullptr;
 
         // progress
         MainProgress* main_progress_ = nullptr;

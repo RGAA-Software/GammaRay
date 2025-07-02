@@ -115,6 +115,20 @@ namespace tc
 
         // display logo
         bool display_logo_ = false;
+
+        ///////
+        ///////
+        // from render //
+        // file transfer state in render
+        bool is_render_file_transfer_enabled_ = true;
+
+        // audio capture enabled in render
+        bool is_render_audio_capture_enabled_ = true;
+
+        // can be operated by mouse/keyboard in render
+        bool is_render_be_operated_by_mk_ = true;
+        ///////
+        ///////
     };
 
 }

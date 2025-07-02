@@ -25,7 +25,7 @@ namespace tc
         int64_t adapter_uid_ = 0;
         int encode_width_ = 0;
         int encode_height_ = 0;
-        bool full_color_mode_ = false;
+        bool enable_full_color_mode_ = false;
         GrFrameProcessorPlugin* frame_resize_plugin_ = nullptr;
     };
 

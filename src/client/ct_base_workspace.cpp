@@ -80,25 +80,6 @@ namespace tc
 
         InitSampleWidget();
 
-        // By Plugin
-        //InitClipboardManager();
-
-        // notification handle
-        // notification_handler_ = new FloatNotificationHandle(context_, this);
-        // notification_handler_->SetPixmap(":resources/image/ic_mail.svg");
-        // notification_handler_->SetOnClickListener([=, this](QWidget* w) {
-        //     if (notification_panel_->isHidden()) {
-        //         notification_panel_->show();
-        //     } else {
-        //         notification_panel_->hide();
-        //     }
-        //     UpdateNotificationHandlePosition();
-        // });
-
-        // notification panel
-        //notification_panel_ = new NotificationPanel(ctx, this);
-        //notification_panel_->hide();
-
         // message listener
         InitListener();
         // connect to GammaRay Panel
@@ -278,16 +259,8 @@ namespace tc
             context_->UpdateCapturingMonitorInfo(info);
         });
 
+        // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm
         sdk_->SetOnAudioFrameDecodedCallback([=, this](const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
-            //LOGI("data size: {}, samples: {}, channel: {}, bits: {}, audio on: {}", data->Size(), samples, channels, bits, settings_->IsAudioEnabled());
-
-#if 0       // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm 
-            std::string pcm_file_name_ = std::format(".\\audio_{}_{}.pcm", samples, channels);
-            static FILE* pcm_file = fopen(pcm_file_name_.c_str(), "wb");
-            fwrite(data->DataAddr(), 1, data->Size(), pcm_file);
-            fflush(pcm_file);
-#endif
-
             if (!settings_->IsAudioEnabled()) {
                 return;
             }
@@ -306,7 +279,7 @@ namespace tc
         });
 
         sdk_->SetOnCursorInfoCallback([=, this](const CursorInfoSync& cursor_info) {
-            //鼠标使用远端的bitmap数据, 因为只有使用远端的bitmap,鼠标的大小才能与远端保持一致
+            // remote cursor's bitmap
             std::string bitmap_data = cursor_info.bitmap();
             bool change = false;
             if (!bitmap_data.empty()) {
@@ -322,7 +295,6 @@ namespace tc
                 QPixmap pixmap = QPixmap::fromImage(image);
                 QCursor cursor(pixmap, cursor_info.hotspot_x(), cursor_info.hotspot_y());
                 cursor_ = cursor;
-                //LOGI("change UpdateLocalCursor");
                 this->UpdateLocalCursor();
             }
         });
@@ -364,15 +336,21 @@ namespace tc
                 });
                 ++monitor_index;
             }
-
             LOGI("capturing monitors count: {}", monitor_index);
+
+            //
+            settings_->is_render_file_transfer_enabled_ = config.file_transfer_enabled();
+            settings_->is_render_audio_capture_enabled_ = config.audio_enabled();
+            settings_->is_render_be_operated_by_mk_ = config.can_be_operated();
 
             context_->SendAppMessage(msg);
 
             int fps = config.fps();
             settings_->SetFps(fps);
             LOGI("capturing fps: {}", fps);
-            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFps });
+            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{
+                .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFps
+            });
 
             int monitors_count = config.monitors_info().size();
             context_->PostUITask([=, this]() {
@@ -565,9 +543,6 @@ namespace tc
         for (const auto& url : urls) {
             files.push_back(url.toLocalFile());
         }
-        //if (file_transfer_) {
-        //    file_transfer_->SendFiles(files);
-        //}
     }
 
     void BaseWorkspace::SendWindowsKey(unsigned long vk, bool down) {
@@ -578,23 +553,10 @@ namespace tc
 
     void BaseWorkspace::resizeEvent(QResizeEvent *event) {
         main_progress_->setGeometry(0, title_bar_height_, event->size().width(), event->size().height());
-        //UpdateNotificationHandlePosition();
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
         UpdateFloatButtonIndicatorPosition();
     }
-
-    // void BaseWorkspace::UpdateNotificationHandlePosition() {
-    //     int notification_panel_width = 0;
-    //     int offset_border = 8;
-    //     int handle_offset = 0;
-    //     if (!notification_panel_->isHidden()) {
-    //         notification_panel_width = notification_panel_->width();
-    //         handle_offset = offset_border;
-    //     }
-    //     notification_panel_->setGeometry(this->width()-notification_panel_->width() - offset_border, offset_border, notification_panel_->width(), this->height() - 2*offset_border);
-    //     notification_handler_->setGeometry(this->width()-notification_handler_->width()/2 - notification_panel_width-handle_offset, 100, notification_handler_->width(), notification_handler_->height());
-    // }
 
     void BaseWorkspace::UpdateFloatButtonIndicatorPosition() {
         btn_indicator_->setGeometry(0, 0, btn_indicator_->width(), btn_indicator_->height());
@@ -678,7 +640,6 @@ namespace tc
 
         msg_listener_->Listen<MsgClientOpenDebugPanel>([=, this](const MsgClientOpenDebugPanel& msg) {
             context_->PostUITask([=, this]() {
-                //st_panel_->setHidden(!st_panel_->isHidden());
                 st_panel_->setHidden(false);
             });
         });
@@ -756,7 +717,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
-        return; // 暂时不启用这种模式切换,改用直接设置帧率
+#if 0 // Deprecated !!
         if (!sdk_) {
             return;
         }
@@ -768,6 +729,7 @@ namespace tc
         auto wm = m.mutable_work_mode();
         wm->set_mode(mode);
         sdk_->PostMediaMessage(m.SerializeAsString());
+#endif
     }
 
     void BaseWorkspace::SendSwitchFullColorMessage(bool enable) {
@@ -845,12 +807,7 @@ namespace tc
             context_->Exit();
             context_ = nullptr;
         }
-        // TODO:///
-//        if (file_trans_interface_) {
-//            file_trans_interface_->Exit();
-//        }
         ProcessUtil::KillProcess(QApplication::applicationPid());
-        qApp->exit(0);
     }
 
     void BaseWorkspace::UpdateGameViewsStatus() {

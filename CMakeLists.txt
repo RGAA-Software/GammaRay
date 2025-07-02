@@ -11,7 +11,6 @@ set(BUILD_TYPE_PATH "")
 
 message("==> CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message("==> BUILD_FROM: ${BUILD_FROM}")
-message("==> TC_USE_VR_MANAGER: ${TC_USE_VR_MANAGER}")
 
 if(${BUILD_FROM} STREQUAL "CMD")
     set(BUILD_TYPE_PATH "${CMAKE_BUILD_TYPE}/")
@@ -205,6 +204,7 @@ add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin
         plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer #tc_signaling_sdk #lib_GammaRayClient
         plugin_mock_video_stream plugin_obj_detector plugin_net_relay plugin_gdi_capture tc_translator tc_spv_client #QWindowKit::Widgets TC_WidgetFrame
         plugin_clipboard tc_account_sdk tc_rp_message tc_profile_client plugin_frame_carrier plugin_file_transfer_client
+        plugin_vr_manager
 )
 
 # client plugins
@@ -212,17 +212,6 @@ add_dependencies(tc_build_all plugin_multi_screens plugin_media_record_client pl
 
 add_custom_target(tc_build_client ALL COMMENT "Build client")
 add_dependencies(tc_build_client GammaRayClientInner)#GammaRayClient
-
-if(TC_USE_VR_MANAGER)
-    message("===> tc_vr_plugin_builder")
-    add_custom_target(tc_vr_plugin_builder)
-    add_dependencies(tc_vr_plugin_builder plugin_vr_manager)
-    add_custom_command(TARGET tc_vr_plugin_builder POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_vr_manager.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_vr_manager.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/tc_vr_plugin/plugin_vr_manager.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_vr_manager.dll.toml"
-    )
-    add_dependencies(tc_build_all tc_vr_plugin_builder)
-endif ()
 
 add_custom_command(TARGET tc_build_all POST_BUILD
 # gdi 
@@ -296,6 +285,9 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_frame_carrier.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_carrier.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/frame_carrier/plugin_frame_carrier.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_carrier.dll.toml"
+
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_vr_manager.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_vr_manager.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/render/plugins/tc_vr_plugin/plugin_vr_manager.dll.toml"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins/plugin_vr_manager.dll.toml"
 
         ###### Client Plugins ######
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}plugin_multi_screens.dll"  "${CMAKE_BINARY_DIR}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll"

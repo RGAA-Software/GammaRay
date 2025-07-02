@@ -64,9 +64,14 @@ DEFINE_string(relay_server_host, "", "relay host");
 DEFINE_string(relay_server_port, "", "relay port");
 
 DEFINE_int32(panel_server_port, 0, "");
-
+// can be operated by mouse / keyboard
 DEFINE_bool(can_be_operated, true, "");
+// file transfer enabled
+DEFINE_bool(file_transfer_enabled, true, "");
+// audio enabled
+DEFINE_bool(audio_enabled, true, "");
 
+// relay enabled
 DEFINE_bool(relay_enabled, true, "");
 
 DEFINE_int32(language, 0, "");
@@ -153,6 +158,10 @@ void UpdateSettings(RdSettings* settings) {
 
     // can be operated
     settings->can_be_operated_ = FLAGS_can_be_operated;
+    // file transfer enabled
+    settings->file_transfer_enabled_ = FLAGS_file_transfer_enabled;
+    // audio enabled
+    settings->audio_enabled_ = FLAGS_audio_enabled;
     // relay enabled
     settings->relay_enabled_ = FLAGS_relay_enabled;
     // language
@@ -160,6 +169,7 @@ void UpdateSettings(RdSettings* settings) {
 }
 
 void PrintInputArgs() {
+    auto settings = RdSettings::Instance();
     LOGI("--------------In args begin--------------");
     LOGI("steam_app_id: {}", FLAGS_steam_app_id);
     LOGI("logfile: {}", FLAGS_logfile);
@@ -195,6 +205,8 @@ void PrintInputArgs() {
     LOGI("relay host: {}", FLAGS_relay_server_host);
     LOGI("relay port: {}", FLAGS_relay_server_port);
     LOGI("can be operated: {}", FLAGS_can_be_operated);
+    LOGI("file transfer enabled: {}", settings->file_transfer_enabled_);
+    LOGI("audio enabled: {}", settings->audio_enabled_);
     LOGI("relay enabled: {}", FLAGS_relay_enabled);
     LOGI("language: {}", FLAGS_language);
     LOGI("--------------In args end----------------");

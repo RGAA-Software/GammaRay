@@ -236,9 +236,6 @@ namespace tc
                     LOGI("We use d3d device from capture.");
                 }
 
-                //encoder_config.d3d11_device_ = app_->GetD3DDevice(adapter_uid);
-                //encoder_config.d3d11_device_context_ = app_->GetD3DContext(adapter_uid);
-
                 // all plugins
                 plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
                     plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
@@ -246,22 +243,7 @@ namespace tc
                 });
 
                 // video frame carrier
-                //auto frame_carrier = GetFrameCarrier(monitor_name);
-                //if (frame_carrier != nullptr) {
-                //    frame_carrier->Exit();
-                //    frame_carriers_.erase(monitor_name);
-                //    frame_carrier = nullptr;
-                //}
                 if (encoder_config.frame_resize) {
-                    //frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
-                    //                                                    app_->GetD3DDevice(adapter_uid),
-                    //                                                    app_->GetD3DContext(adapter_uid),
-                    //                                                    cap_video_msg.adapter_uid_,
-                    //                                                    monitor_name,
-                    //                                                    true,
-                    //                                                    encoder_config.encode_width,
-                    //                                                    encoder_config.encode_height,
-					//													encoder_config.enable_full_color_mode_);
                     auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
                         .mon_name_ = monitor_name,
                         .frame_resize_ = true,
@@ -270,23 +252,14 @@ namespace tc
                         .adapter_uid_ = cap_video_msg.adapter_uid_,
                         .encode_width_ = encoder_config.encode_width,
                         .encode_height_ = encoder_config.encode_height,
+                        .enable_full_color_mode_ = encoder_config.enable_full_color_mode_,
                         .frame_resize_plugin_ = plugin_manager_->GetFrameResizePlugin(),
                     });
                     if (!r) {
                         LOGE("Init Frame Carrier failed, resize");
-                        //return;
                     }
                 }
                 else {
-                    //frame_carrier = std::make_shared<VideoFrameCarrier>(context_,
-                    //                                                    app_->GetD3DDevice(adapter_uid),
-                    //                                                    app_->GetD3DContext(adapter_uid),
-                    //                                                    cap_video_msg.adapter_uid_,
-                    //                                                    monitor_name,
-                    //                                                    false,
-                    //                                                    -1,
-                    //                                                    -1,
-					//													encoder_config.enable_full_color_mode_);
                     auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
                         .mon_name_ = monitor_name,
                         .frame_resize_ = false,
@@ -295,11 +268,11 @@ namespace tc
                         .adapter_uid_ = cap_video_msg.adapter_uid_,
                         .encode_width_ = -1,
                         .encode_height_ = -1,
+                        .enable_full_color_mode_ = encoder_config.enable_full_color_mode_,
                         .frame_resize_plugin_ = plugin_manager_->GetFrameResizePlugin(),
                     });
                     if (!r) {
                         LOGE("Init Frame Carrier failed");
-                        //return;
                     }
                 }
                 //frame_carriers_[monitor_name] = frame_carrier;

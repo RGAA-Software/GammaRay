@@ -594,7 +594,9 @@ namespace tc
         LOGI("Will send configuration back, fps: {}", settings_->encoder_.fps_);
         config->set_fps(settings_->encoder_.fps_);
         config->set_capturing_monitor_name(capturing_name);
-
+        config->set_file_transfer_enabled(settings_->file_transfer_enabled_);
+        config->set_audio_enabled(settings_->audio_enabled_);
+        config->set_can_be_operated(settings_->can_be_operated_);
         //
         PostNetMessage(m.SerializeAsString());
     }

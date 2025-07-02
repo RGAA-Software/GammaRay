@@ -38,8 +38,8 @@ namespace tc
                                    const std::string& monitor_name,
                                    bool resize,
                                    int resize_width,
-                                   int resize_height, 
-                                   bool enable_full_color_mode = false);
+                                   int resize_height,
+                                   bool enable_full_color_mode);
 
         bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
@@ -52,10 +52,9 @@ namespace tc
                             std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
 
         void Exit();
-
-        bool IsResizeFrameSize();
         int GetResizeWidth();
         int GetResizeHeight();
+        void SetFullColorModeEnabled(bool enabled);
 
     private:
         static bool D3D11Texture2DLockMutex(const ComPtr<ID3D11Texture2D>& texture2d);
