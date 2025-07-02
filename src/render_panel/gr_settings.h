@@ -18,7 +18,7 @@ namespace tc
     static const std::string kStEncoderFormat = "encoder_format";
     static const std::string kStEncoderBitrate = "encoder_bitrate";
     static const std::string kStEncoderFPS = "encoder_fps";
-    static const std::string kStEncoderResolutionType = "encoder_resolution_type";
+    static const std::string kStEncoderResResize = "encoder_res_resize";
     static const std::string kStEncoderWidth = "encoder_width";
     static const std::string kStEncoderHeight = "encoder_height";
     static const std::string kStCaptureAudio = "capture_audio";
@@ -89,17 +89,32 @@ namespace tc
         void Dump();
         [[nodiscard]] std::vector<std::string> GetArgs();
 
+        // Settings -> General
         void SetBitrate(int br);
+        int GetBitrate();
+
+        // Settings -> General
         void SetFPS(int fps);
+        int GetFPS();
+
+        // Settings -> General
         void SetEnableResResize(bool enabled);
+        bool IsResResizeEnabled();
+
         void SetResWidth(int width);
+        int GetResWidth();
+
         void SetResHeight(int height);
+        int GetResHeight();
+
+        // Settings -> General
         void SetEncoderFormat(int idx);
+        std::string GetEncoderFormat();
+
         void SetCaptureVideo(bool enabled);
         void SetCaptureAudio(bool enabled);
         bool IsCaptureAudioEnabled();
         void SetCaptureAudioDeviceId(const std::string& name);
-        [[nodiscard]] bool IsEncoderResTypeOrigin() const;
         void SetFileTransferFolder(const std::string& path);
         void SetListeningIp(const std::string& ip);
 
@@ -228,12 +243,12 @@ namespace tc
         std::string log_file_;
         std::string encoder_select_type_;
         std::string encoder_name_;
-        std::string encoder_format_;
-        std::string encoder_bitrate_;
-        std::string encoder_fps_;
-        std::string encoder_resolution_type_;
-        std::string encoder_width_;
-        std::string encoder_height_;
+        //std::string encoder_format_;
+        //std::string encoder_bitrate_;
+        //std::string encoder_fps_;
+        //std::string encoder_resolution_type_;
+        //std::string encoder_width_;
+        //std::string encoder_height_;
 
         std::string capture_audio_type_;
         std::string capture_video_;

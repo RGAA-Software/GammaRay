@@ -28,14 +28,14 @@ namespace tc
         ~NVENCVideoEncoder();
 
         bool Initialize(const tc::EncoderConfig& config);
-        void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra);
+        bool Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, std::any extra);
         void InsertIdr();
         void Exit();
         int32_t GetEncodeFps();
         std::vector<int32_t> GetEncodeDurations();
 
     private:
-        void Transmit(ID3D11Texture2D* pTexture, uint64_t frame_index, std::any extra);
+        bool Transmit(ID3D11Texture2D* pTexture, uint64_t frame_index, std::any extra);
         void Shutdown();
         void FillEncodeConfig(NV_ENC_INITIALIZE_PARAMS& initialize_params, int refreshRate, int renderWidth, int renderHeight, uint64_t bitrate_bps);
         static NV_ENC_BUFFER_FORMAT DxgiFormatToNvEncFormat(DXGI_FORMAT dxgiFormat);

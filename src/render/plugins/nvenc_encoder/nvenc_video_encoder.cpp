@@ -27,8 +27,8 @@ namespace tc
         encoder_config_ = config;
         e_buffer_format_ = DxgiFormatToNvEncFormat(static_cast<DXGI_FORMAT>(encoder_config_.texture_format));
        
-        LOGI("input_frame_width_ = {}, input_frame_height_ = {}, format = {:x} , m_pD3DRender->GetDevice() = {}, config.fps = {}",
-             config.width, config.height, (int)e_buffer_format_, (void *) d3d11_device_.Get(), config.fps);
+        LOGI("input_frame_width_ = {}, input_frame_height_ = {}, format = {:x} , m_pD3DRender->GetDevice() = {}, config.fps = {}, enable 444: {}",
+             config.width, config.height, (int)e_buffer_format_, (void *) d3d11_device_.Get(), config.fps, config.enable_full_color_mode_);
 
         if (!CreateNvEncoder()) {
             return false;
@@ -36,13 +36,13 @@ namespace tc
 
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
         NV_ENC_CONFIG encode_config = {NV_ENC_CONFIG_VER};
-        bool supprot_yuv444 = nv_encoder_->SupportYuv444EncodeH264();
-        LOGI("NVENC NvEncoderD3D11 supprot_yuv444: {}", (int)supprot_yuv444);
+        bool support_yuv444 = nv_encoder_->SupportYuv444EncodeH264();
+        LOGI("NVENC NvEncoderD3D11 support_yuv444: {}", (int)support_yuv444);
 
 
         // 虽然这样设置了, 但实际在264编码中，输出的编码帧解码后还是yuv420, 解决办法: 需要在编码前将纹理格式 参考:https://github.com/LizardByte/Sunshine 
         // 参考Sunshine项目中的 synchronize_input_buffer
-        if (encoder_config_.enable_full_color_mode_ && supprot_yuv444) {             
+        if (encoder_config_.enable_full_color_mode_ && support_yuv444) {
             if (EVideoCodecType::kH264 == config.codec_type) {
                 //LOGI("NVENCVideoEncoder Initialize codec: kH264");
                 encode_config.profileGUID = NV_ENC_H264_PROFILE_HIGH_444_GUID;
@@ -91,11 +91,11 @@ namespace tc
         }
     }
 
-    void NVENCVideoEncoder::Encode(ID3D11Texture2D *tex, uint64_t frame_index, std::any extra) {
-        Transmit(tex, frame_index, extra);
+    bool NVENCVideoEncoder::Encode(ID3D11Texture2D *tex, uint64_t frame_index, std::any extra) {
+        return Transmit(tex, frame_index, extra);
     }
 
-    void NVENCVideoEncoder::Transmit(ID3D11Texture2D* texture, uint64_t frame_index, std::any extra) {
+    bool NVENCVideoEncoder::Transmit(ID3D11Texture2D* texture, uint64_t frame_index, std::any extra) {
         auto beg = TimeUtil::GetCurrentTimestamp();
         std::vector<std::vector<uint8_t>> out_packet;
         const NvEncInputFrame *input_frame = nv_encoder_->GetNextInputFrame();
@@ -109,7 +109,12 @@ namespace tc
             insert_idr_ = false;
             is_key_frame = true;
         }
-        nv_encoder_->EncodeFrame(out_packet, &picParams);
+        try {
+            nv_encoder_->EncodeFrame(out_packet, &picParams);
+        } catch(NVENCException& e) {
+            LOGE("Encode frame failed, code: {}, err: {}", (int)e.getErrorCode(), e.what());
+            return false;
+        }
 
         CD3D11_TEXTURE2D_DESC desc;
         texture->GetDesc(&desc);
@@ -143,6 +148,7 @@ namespace tc
         encode_durations_.push_back((int32_t)diff);
 
         fps_stat_->Tick();
+        return true;
     }
 
     void

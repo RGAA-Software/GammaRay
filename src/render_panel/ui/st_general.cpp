@@ -136,7 +136,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edit->setValidator(new QIntValidator(0, 1000));
                 et_bitrate_ = edit;
-                et_bitrate_->setText(settings_->encoder_bitrate_.c_str());
+                et_bitrate_->setText(std::to_string(settings_->GetBitrate()).c_str());
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -164,22 +164,23 @@ namespace tc
                 edit->addItem("120");
                 edit->addItem("144");
                 et_fps_ = edit;
-                if (settings_->encoder_fps_ == "15") {
+                auto fps = settings_->GetFPS();
+                if (fps == 15) {
                     edit->setCurrentIndex(0);
                 }
-                else if (settings_->encoder_fps_ == "30") {
+                else if (fps == 30) {
                     edit->setCurrentIndex(1);
                 }
-                else if (settings_->encoder_fps_ == "60") {
+                else if (fps == 60) {
                     edit->setCurrentIndex(2);
                 }
-                else if (settings_->encoder_fps_ == "90") {
+                else if (fps == 90) {
                     edit->setCurrentIndex(3);
                 }
-                else if (settings_->encoder_fps_ == "120") {
+                else if (fps == 120) {
                     edit->setCurrentIndex(4);
                 }
-                else if (settings_->encoder_fps_ == "140") {
+                else if (fps == 140) {
                     edit->setCurrentIndex(5);
                 }
                 edit->setFixedSize(input_size);
@@ -207,7 +208,7 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
 
-                auto is_h265 = settings_->encoder_format_ == "h265";
+                auto is_h265 = settings_->GetEncoderFormat() == "h265";
                 edit->setCurrentIndex(is_h265 ? 1 : 0);
 
                 connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int idx) {
@@ -239,7 +240,7 @@ namespace tc
                 layout->addStretch();
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
-                edit->setChecked(!settings_->IsEncoderResTypeOrigin());
+                edit->setChecked(settings_->IsResResizeEnabled());
                 connect(edit, &QCheckBox::stateChanged, this, [=, this](int state) {
                     bool enabled = state == 2;
                     func_set_res_edit_enabled(enabled);
@@ -257,7 +258,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edit->setValidator(new QIntValidator(0, 80000));
                 et_res_width_ = edit;
-                et_res_width_->setText(settings_->encoder_width_.c_str());
+                et_res_width_->setText(std::to_string(settings_->GetResWidth()).c_str());
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -275,7 +276,7 @@ namespace tc
                 auto edit = new QLineEdit(this);
                 edit->setValidator(new QIntValidator(0, 80000));
                 et_res_height_ = edit;
-                et_res_height_->setText(settings_->encoder_height_.c_str());
+                et_res_height_->setText(std::to_string(settings_->GetResHeight()).c_str());
                 edit->setFixedSize(input_size);
                 layout->addWidget(edit);
                 layout->addStretch();
@@ -283,7 +284,7 @@ namespace tc
                 segment_layout->addLayout(layout);
             }
 
-            func_set_res_edit_enabled(!settings_->IsEncoderResTypeOrigin());
+            func_set_res_edit_enabled(settings_->IsResResizeEnabled());
 
             column1_layout->addLayout(segment_layout);
         }

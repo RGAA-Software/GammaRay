@@ -34,12 +34,12 @@ namespace tc
         log_file_ = sp_->Get(kStLogFile, "true");
         encoder_select_type_ = sp_->Get(kStEncoderSelectType, "auto");
         encoder_name_ = sp_->Get(kStEncoderName, "nvenc");
-        encoder_format_ = sp_->Get(kStEncoderFormat, "h264");
-        encoder_bitrate_ = sp_->Get(kStEncoderBitrate, "10");
-        encoder_fps_ = sp_->Get(kStEncoderFPS, "60");
-        encoder_resolution_type_ = sp_->Get(kStEncoderResolutionType, "origin");
-        encoder_width_ = sp_->Get(kStEncoderWidth, "1280");
-        encoder_height_ = sp_->Get(kStEncoderHeight, "720");
+        //encoder_format_ = sp_->Get(kStEncoderFormat, "h264");
+        //encoder_bitrate_ = sp_->Get(kStEncoderBitrate, "10");
+        //encoder_fps_ = sp_->Get(kStEncoderFPS, "60");
+        //encoder_resolution_type_ = sp_->Get(kStEncoderResolutionType, "origin");
+        //encoder_width_ = sp_->Get(kStEncoderWidth, "1280");
+        //encoder_height_ = sp_->Get(kStEncoderHeight, "720");
 
         capture_audio_type_ = sp_->Get(kStCaptureAudioType, "global");
         capture_video_ = sp_->Get(kStCaptureVideo, "true");
@@ -72,11 +72,11 @@ namespace tc
         ss << "log_file_: " << log_file_ << std::endl;
         ss << "encoder_select_type_: " << encoder_select_type_ << std::endl;
         ss << "encoder_name_: " << encoder_name_ << std::endl;
-        ss << "encoder_format_: " << encoder_format_ << std::endl;
-        ss << "encoder_bitrate_: " << encoder_bitrate_ << std::endl;
-        ss << "encoder_resolution_type_: " << encoder_resolution_type_ << std::endl;
-        ss << "encoder_width_: " << encoder_width_ << std::endl;
-        ss << "encoder_height_: " << encoder_height_ << std::endl;
+        ss << "encoder_format_: " << GetEncoderFormat() << std::endl;
+        ss << "encoder_bitrate_: " << GetBitrate() << std::endl;
+        ss << "res resize enabled ? : " << IsResResizeEnabled() << std::endl;
+        ss << "encoder_width_: " << GetResWidth() << std::endl;
+        ss << "encoder_height_: " << GetResHeight() << std::endl;
         ss << "capture_audio_: " << IsCaptureAudioEnabled() << std::endl;
         ss << "capture_audio_type_: " << capture_audio_type_ << std::endl;
         ss << "capture_video_: " << capture_video_ << std::endl;
@@ -105,12 +105,12 @@ namespace tc
         args.push_back(std::format("--{}={}", kStLogFile, log_file_));
         args.push_back(std::format("--{}={}", kStEncoderSelectType, encoder_select_type_));
         args.push_back(std::format("--{}={}", kStEncoderName, encoder_name_));
-        args.push_back(std::format("--{}={}", kStEncoderFormat, encoder_format_));
-        args.push_back(std::format("--{}={}", kStEncoderBitrate, encoder_bitrate_));
-        args.push_back(std::format("--{}={}", kStEncoderFPS, encoder_fps_));
-        args.push_back(std::format("--{}={}", kStEncoderResolutionType, encoder_resolution_type_));
-        args.push_back(std::format("--{}={}", kStEncoderWidth, encoder_width_));
-        args.push_back(std::format("--{}={}", kStEncoderHeight, encoder_height_));
+        args.push_back(std::format("--{}={}", kStEncoderFormat, GetEncoderFormat()));
+        args.push_back(std::format("--{}={}", kStEncoderBitrate, GetBitrate()));
+        args.push_back(std::format("--{}={}", kStEncoderFPS, GetFPS()));
+        args.push_back(std::format("--encoder_resolution_type={}", (IsResResizeEnabled() ? kResTypeResize : kResTypeOrigin)));
+        args.push_back(std::format("--{}={}", kStEncoderWidth, GetResWidth()));
+        args.push_back(std::format("--{}={}", kStEncoderHeight, GetResHeight()));
         args.push_back(std::format("--{}={}", kStCaptureAudio, IsCaptureAudioEnabled()));
         args.push_back(std::format("--{}={}", kStCaptureAudioType, capture_audio_type_));
         args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
@@ -138,32 +138,48 @@ namespace tc
     }
 
     void GrSettings::SetEnableResResize(bool enabled) {
-        if (enabled) {
-            encoder_resolution_type_ = kResTypeResize;
-        } else {
-            encoder_resolution_type_ = kResTypeOrigin;
-        }
-        sp_->Put(kStEncoderResolutionType, encoder_resolution_type_);
+        sp_->Put(kStEncoderResResize, enabled ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsResResizeEnabled() {
+        auto value = sp_->Get(kStEncoderResResize);
+        return !value.empty() && value == kStTrue;
     }
 
     void GrSettings::SetBitrate(int br) {
-        encoder_bitrate_ = std::to_string(br);
-        sp_->Put(kStEncoderBitrate, encoder_bitrate_);
+        sp_->Put(kStEncoderBitrate, std::to_string(br));
+    }
+
+    int GrSettings::GetBitrate() {
+        auto value = std::atoi(sp_->Get(kStEncoderBitrate).c_str());
+        return value > 0 ? value : 10;
     }
 
     void GrSettings::SetFPS(int fps) {
-        encoder_fps_ = std::to_string(fps);
-        sp_->Put(kStEncoderFPS, encoder_fps_);
+        sp_->Put(kStEncoderFPS, std::to_string(fps));
+    }
+
+    int GrSettings::GetFPS() {
+        auto value = std::atoi(sp_->Get(kStEncoderFPS).c_str());
+        return value > 0 ? value : 60;
     }
 
     void GrSettings::SetResWidth(int width) {
-        encoder_width_ = std::to_string(width);
-        sp_->Put(kStEncoderWidth, encoder_width_);
+        sp_->Put(kStEncoderWidth, std::to_string(width));
+    }
+
+    int GrSettings::GetResWidth() {
+        auto value = std::atoi(sp_->Get(kStEncoderWidth).c_str());
+        return value > 0 ? value : 1280;
     }
 
     void GrSettings::SetResHeight(int height) {
-        encoder_height_ = std::to_string(height);
-        sp_->Put(kStEncoderHeight, encoder_height_);
+        sp_->Put(kStEncoderHeight, std::to_string(height));
+    }
+
+    int GrSettings::GetResHeight() {
+        auto value = std::atoi(sp_->Get(kStEncoderHeight).c_str());
+        return value > 0 ? value : 720;
     }
 
     void GrSettings::SetEncoderFormat(int idx) {
@@ -173,6 +189,11 @@ namespace tc
         } else if (idx == 1) {
             sp_->Put(kStEncoderFormat, "h265");
         }
+    }
+
+    std::string GrSettings::GetEncoderFormat() {
+        auto value = sp_->Get(kStEncoderFormat);
+        return value.empty() ? "h264" : value;
     }
 
     void GrSettings::SetCaptureVideo(bool enabled) {
@@ -192,10 +213,6 @@ namespace tc
     void GrSettings::SetCaptureAudioDeviceId(const std::string& name) {
         capture_audio_device_ = name;
         sp_->Put(kStCaptureAudioDevice, capture_audio_device_);
-    }
-
-    bool GrSettings::IsEncoderResTypeOrigin() const {
-        return encoder_resolution_type_ == kResTypeOrigin;
     }
 
     void GrSettings::SetFileTransferFolder(const std::string& path) {

@@ -92,7 +92,9 @@ namespace tc
         auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
         auto monitor_name = std::string(cap_video_msg.display_name_);
         if (HasEncoderForMonitor(monitor_name)) {
-            video_encoders_[monitor_name]->Encode(tex2d, frame_index, extra);
+            if (!video_encoders_[monitor_name]->Encode(tex2d, frame_index, extra)) {
+                //todo:: callback event
+            }
         }
     }
 
