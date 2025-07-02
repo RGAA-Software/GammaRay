@@ -242,13 +242,19 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessHelloEvent(std::shared_ptr<Message>&& msg) {
         const auto& hello = msg->hello();
-        // todo:
-        //router->enable_audio_ = hello.enable_audio();
-        //router->enable_video_ = hello.enable_video();
-        app_->GetContext()->SendAppMessage(MsgHello {
-            .enable_audio_ = hello.enable_audio(),
-            .enable_video_ = hello.enable_video(),
-            .enable_controller = hello.enable_controller(),
+        auto event = MsgClientHello();
+        event.device_id_ = msg->device_id();
+        event.stream_id_ = msg->stream_id();
+        event.enable_audio_ = hello.enable_audio();
+        event.enable_video_ = hello.enable_video();
+        event.enable_controller = hello.enable_controller();
+        event.client_type_ = hello.client_type();
+        event.device_name_ = hello.device_name();
+        app_->GetContext()->SendAppMessage(event);
+
+        auto e = std::make_shared<MsgClientHello>(event);
+        plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+            plugin->DispatchAppEvent(e);
         });
     }
 
@@ -355,6 +361,15 @@ namespace tc {
             auto& hb = msg->heartbeat();
             auto proto_msg = NetMessageMaker::MakeOnHeartBeatMsg(app_, hb.index(), hb.timestamp());
             app_->PostNetMessage(proto_msg);
+        });
+
+        auto event = std::make_shared<MsgClientHeartbeat>();
+        event->device_id_ = msg->device_id();
+        event->stream_id_ = msg->stream_id();
+        event->hb_index_ = msg->heartbeat().index();
+        event->timestamp_ = msg->heartbeat().timestamp();
+        plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+            plugin->DispatchAppEvent(event);
         });
     }
 

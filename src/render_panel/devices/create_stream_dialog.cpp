@@ -344,6 +344,7 @@ namespace tc
             func_update_stream(item);
             context_->SendAppMessage(StreamItemAdded {
                 .item_ = item,
+                .auto_start_ = true,
             });
         }
         return true;

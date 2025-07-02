@@ -38,6 +38,7 @@ namespace tc
         std::string visitor_device_id_;
         std::string stream_id_;
         unsigned int post_thread_id_ = 0;
+        std::string device_name_;
     };
 
 }

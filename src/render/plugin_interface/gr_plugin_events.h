@@ -67,6 +67,7 @@ namespace tc
         std::string message_;
         int64_t socket_fd_ = 0;
         NetPluginType nt_plugin_type_;
+        GrNetPlugin* from_plugin_ = nullptr;
     };
 
     // GrClientConnectedEvent

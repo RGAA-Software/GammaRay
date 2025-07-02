@@ -7,6 +7,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/ip_util.h"
+#include "tc_common_new/hardware.h"
 #include "tc_common_new/string_util.h"
 #include "tc_common_new/client_id_extractor.h"
 #include "render/plugins/plugin_ids.h"
@@ -119,7 +120,7 @@ namespace tc
                     const auto& device_id = sub.device_id();
                     std::string visitor_device_id = ExtractClientId(device_id);
 
-                    this->NotifyMediaClientConnected(room->the_conn_id_, visitor_device_id);
+                    this->NotifyMediaClientConnected(room->creator_stream_id_, visitor_device_id);
                 });
 
                 relay_media_sdk_->SetOnRoomDestroyedCallback([this](const std::shared_ptr<relay::RelayMessage>& msg) {
@@ -134,7 +135,7 @@ namespace tc
                     std::string visitor_device_id = ExtractClientId(device_id);
 
                     auto begin_timestamp = room ? room->created_timestamp_ : 0;
-                    this->NotifyMediaClientDisConnected(room->the_conn_id_, visitor_device_id, begin_timestamp);
+                    this->NotifyMediaClientDisConnected(room->creator_stream_id_, visitor_device_id, begin_timestamp);
                     if (!relay_media_sdk_->HasRelayRooms()) {
                         paused_stream = true;
                         LOGW("No active rooms, paused stream.");
@@ -182,6 +183,8 @@ namespace tc
                         .ssl_ = false,
                         .device_id_ = ft_device_id,
                         .net_info_ = net_info_,
+                        .device_name_ = Hardware::GetDesktopName(),
+                        .stream_id_ = ft_device_id, //
                     });
 
                     relay_ft_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
@@ -335,8 +338,9 @@ namespace tc
             for (const auto& item : r) {
                 clients_info.push_back(std::make_shared<GrConnectedClientInfo>(GrConnectedClientInfo {
                     .device_id_ = item->device_id_,
-                    .stream_id_ = "",
+                    .stream_id_ = item->stream_id_,
                     .relay_room_id_ = item->room_id_,
+                    .device_name_ = item->device_name_,
                 }));
             }
             return clients_info;

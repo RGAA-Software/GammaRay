@@ -144,4 +144,14 @@ namespace tc
         }
         return {};
     }
+
+    void WsPlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent> &event) {
+        if (event->type_ == AppBaseEvent::EType::kClientHello) {
+            auto target_event = std::dynamic_pointer_cast<MsgClientHello>(event);
+            if (ws_server_) {
+                ws_server_->OnClientHello(target_event);
+            }
+        }
+    }
+
 }

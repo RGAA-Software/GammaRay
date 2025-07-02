@@ -37,12 +37,12 @@ namespace tc
         bool HasEnoughBufferForQueuingMediaMessages() override;
         bool HasEnoughBufferForQueuingFtMessages() override;
         std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo() override;
+        void DispatchAppEvent(const std::shared_ptr<AppBaseEvent> &event) override;
 
     private:
         bool HasConnectedClients();
 
     private:
-
         std::shared_ptr<WsPluginServer> ws_server_ = nullptr;
 
     };

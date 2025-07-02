@@ -366,14 +366,6 @@ int main(int argc, char** argv) {
     LOGI("full device id: {}", settings->full_device_id_);
     LOGI("full remote device id: {}", settings->full_remote_device_id_);
 
-    auto client_type = []() {
-#if defined(WIN32)
-        return ClientType::kWindows;
-#elif defined(ANDROID)
-        return ClientType::kAndroid;
-#endif
-    } ();
-
     auto params = std::make_shared<ThunderSdkParams>(ThunderSdkParams {
         .ssl_ = false,
         .enable_audio_ = true,
@@ -383,7 +375,7 @@ int main(int argc, char** argv) {
         .port_ = port,
         .media_path_ = media_path,
         .ft_path_ = ft_path,
-        .client_type_ = client_type,
+        .client_type_ = ClientType::kUnknown,
         .nt_type_ = settings->network_type_,
         .bare_device_id_ = settings->device_id_,
         .bare_remote_device_id_ = settings->remote_device_id_,

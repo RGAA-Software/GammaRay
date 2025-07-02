@@ -32,6 +32,8 @@ namespace tc
         std::string stream_id_;
         // relay mode
         std::string relay_room_id_;
+        // device name. like: DESKTOP-N3GIEVQ
+        std::string device_name_;
     };
 
     class GrNetPlugin : public GrPluginInterface {

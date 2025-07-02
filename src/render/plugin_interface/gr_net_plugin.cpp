@@ -34,6 +34,7 @@ namespace tc
         event->socket_fd_ = socket_fd;
         event->nt_plugin_type_ = nt_plugin_type;
         event->message_ = msg;
+        event->from_plugin_ = this;
         CallbackEvent(event);
     }
 
