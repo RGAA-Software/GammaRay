@@ -90,6 +90,7 @@ namespace tc
     class MsgSettingsChanged {
     public:
         GrSettings* settings_ = nullptr;
+        bool force_update_device_id_ = false;
     };
 
     // Client id requested

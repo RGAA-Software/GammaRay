@@ -303,8 +303,19 @@ namespace tc
             clients_info.push_back(std::make_shared<GrConnectedClientInfo>(GrConnectedClientInfo {
                 .device_id_ = router->visitor_device_id_,
                 .stream_id_ = router->stream_id_,
+                .device_name_ = router->device_name_,
             }));
         });
         return clients_info;
+    }
+
+    void WsPluginServer::OnClientHello(const std::shared_ptr<MsgClientHello>& event) {
+        stream_routers_.VisitAll([&](const auto&, const std::shared_ptr<WsStreamRouter>& router) {
+            LOGI("*** OnClientHello, evt stream id: {}, router stream id: {}, device name: {}",
+                 event->stream_id_, router->stream_id_, event->device_name_);
+            if (router->stream_id_ == event->stream_id_) {
+                router->device_name_ = event->device_name_;
+            }
+        });
     }
 }

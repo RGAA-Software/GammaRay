@@ -192,6 +192,7 @@ namespace tc
             cc->set_device_id(item->device_id_);
             cc->set_stream_id(item->stream_id_);
             cc->set_room_id(item->relay_room_id_);
+            cc->set_device_name(item->device_name_);
         }
 
         auto relay_plugin = plugin_mgr_->GetRelayPlugin();

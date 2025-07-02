@@ -100,7 +100,7 @@ namespace tc
             // test beg //
             //LOGI("*** Connected client count: {}", connected_clients_info_.size());
             //for (const auto& item : connected_clients_info_) {
-            //    LOGI("connected, device id: {}, room id: {}", ExtractClientId(item->device_id()), item->room_id());
+            //    LOGI("connected, device id: {}, device name: {}", ExtractClientId(item->device_id()), item->device_name());
             //}
             // test end //
         });

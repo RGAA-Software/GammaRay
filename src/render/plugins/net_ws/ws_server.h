@@ -18,6 +18,7 @@ namespace tc
     class HttpHandler;
     class WsPlugin;
     class GrConnectedClientInfo;
+    class MsgClientHello;
 
     class WsPluginServer {
     public:
@@ -36,6 +37,7 @@ namespace tc
         int64_t GetQueuingMediaMsgCount();
         int64_t GetQueuingFtMsgCount();
         std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo();
+        void OnClientHello(const std::shared_ptr<MsgClientHello>& event);
 
     private:
         void AddWebsocketRouter(const std::string& path);

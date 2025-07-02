@@ -25,6 +25,8 @@ namespace tc
             kDisplayDeviceChange,
             kConnectedClientCount,
             kClipboardEvent,
+            kClientHello,
+            kClientHeartbeat,
         };
         EType type_ = EType::kUnknown;
     public:
@@ -117,12 +119,34 @@ namespace tc
         int64_t duration_{0};
     };
 
-    // Hello message
-    class MsgHello {
+    // Hello message from clients
+    class MsgClientHello : public AppBaseEvent {
     public:
+        MsgClientHello() : AppBaseEvent() {
+            type_ = EType::kClientHello;
+        }
+    public:
+        std::string device_id_;
+        std::string stream_id_;
         bool enable_audio_ = false;
         bool enable_video_ = false;
         bool enable_controller = false;
+        // see: ClientType in tc_messages.proto
+        int client_type_ = 100; // 100 is Unknown
+        std::string device_name_;
+    };
+
+    // Heartbeat from clients
+    class MsgClientHeartbeat : public AppBaseEvent {
+    public:
+        MsgClientHeartbeat() : AppBaseEvent() {
+            type_ = EType::kClientHeartbeat;
+        }
+    public:
+        std::string device_id_;
+        std::string stream_id_;
+        int64_t hb_index_ = 0;
+        int64_t timestamp_ = 0;
     };
 
     class ClipboardMessage {
@@ -200,6 +224,8 @@ namespace tc
         // file mode
         std::vector<MsgClipboardFile> files_;
     };
+
+    //
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H

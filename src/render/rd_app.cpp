@@ -221,7 +221,7 @@ namespace tc
             });
         });
 
-        msg_listener_->Listen<MsgHello>([=, this](const MsgHello& msg) {
+        msg_listener_->Listen<MsgClientHello>([=, this](const MsgClientHello& msg) {
             this->PostGlobalTask([=, this]() {
                 if (msg.enable_controller) {
                     InitVigemController();
@@ -485,23 +485,13 @@ namespace tc
 
     void RdApplication::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) {
         if (!HasConnectedPeer()) {
-            //LOGI("Not have client, return...");
             return;
         }
-
-//        LOGI("Frame ws ipc pass from shm: adapter uid: {}, type: {}, frame index: {}, frame_width: {}, frame_height: {}, buffer size: {}",
-//             msg->adapter_uid_, (int)msg->type_, msg->frame_index_, msg->frame_width_, msg->frame_height_,  0);
         encoder_thread_->Encode(*msg);
     }
 
     bool RdApplication::HasConnectedPeer() {
-        bool has_working_net_plugin = false;
-        plugin_manager_->VisitNetPlugins([&](GrNetPlugin* plugin) {
-            if (plugin->IsWorking() && plugin->GetConnectedClientsCount() > 0) {
-                has_working_net_plugin = true;
-            }
-        });
-        return has_working_net_plugin;
+        return plugin_manager_->GetTotalConnectedClientsCount();
     }
 
     void RdApplication::WriteBoostUpInfoForPid(uint32_t pid) {
