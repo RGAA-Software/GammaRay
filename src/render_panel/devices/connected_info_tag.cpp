@@ -4,49 +4,25 @@
 namespace tc {
 
 ConnectedInfoTag::ConnectedInfoTag(QWidget* parent) {
-	setWindowFlags(Qt::FramelessWindowHint);
+	setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 	setAttribute(Qt::WA_TranslucentBackground);
-    setFixedSize(48, 48);
+    setFixedSize(28, 32);
 }
 
 void ConnectedInfoTag::paintEvent(QPaintEvent* event)
 {
-    //Q_UNUSED(event);
-    //QPainter painter(this);
-    //painter.setRenderHint(QPainter::Antialiasing);  // 抗锯齿
-
-    //// 1. 清除背景（透明）
-    //painter.fillRect(rect(), Qt::transparent);
-
-    // 2. 绘制半圆（上半圆示例）
-    //QRect circleRect = rect();
-    //painter.setPen(Qt::NoPen);
-    //painter.setBrush(QColor(52, 152, 219));  // 蓝色填充
-
-    //// 角度单位：1/16度（90° * 16 = 1440, 180° * 16 = 2880）
-    //painter.drawPie(circleRect, 90 * 16, 180 * 16);  // 从90°开始画180°（上半圆）
-
-    /* 其他方向半圆：
-      下半圆：painter.drawPie(rect(), 270 * 16, 180 * 16);
-      左半圆：painter.drawPie(rect(), 180 * 16, 180 * 16);
-      右半圆：painter.drawPie(rect(), 0 * 16, 180 * 16);
-    */
-
     Q_UNUSED(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), Qt::transparent);
-
-    // 设置形状颜色
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(52, 152, 219));
+    painter.setBrush(QColor(0x29, 0x79, 0xff));
 
-    QPainterPath path;/*
-    CreateLeftPath(path);*/
+    QPainterPath path;
 
-    const int w = width();
-    const int h = height();
-    const int radius = h / 2;
+    int width = this->width();
+    int height = this->height();
+    const int radius = height / 2;
 
     // 添加0.5像素偏移以获得完美抗锯齿
     const qreal offset = 0.5;
@@ -55,35 +31,39 @@ void ConnectedInfoTag::paintEvent(QPaintEvent* event)
     path.moveTo(offset, offset);
 
     // 绘制左侧半圆 (考虑抗锯齿偏移)
-    path.arcTo(QRectF(offset, offset,
-        2 * radius - 1, h - 1),
-        90, 180);
+    path.arcTo(QRectF(offset, offset,2 * radius - 1, height - 1), 90, 180);
 
     // 绘制右侧矩形部分
-    path.lineTo(w - offset, h - offset);  // 右下角
-    path.lineTo(w - offset, offset);      // 右上角
+    path.lineTo(width - offset, height - offset);  // 右下角
+    path.lineTo(width - offset, offset);      // 右上角
     path.lineTo(radius + offset, offset); // 回到半圆顶部端点
 
     path.closeSubpath();
-
-
     painter.drawPath(path);
+
+    QPen pen(Qt::white, 2);  
+    painter.setPen(pen);
+    QPolygonF shape;
+    if (expanded) {
+        // 计算大于号的坐标
+        QPointF point1(width * 0.5, height * 0.3);  // 左上点
+        QPointF point2(width * 0.7, height * 0.5);  // 中心点
+        QPointF point3(width * 0.5, height * 0.7);  // 左下点
+        shape << point1 << point2 << point3;
+    }
+    else {
+        // 计算小于号的坐标
+        QPointF point1(width * 0.7, height * 0.3);  // 左上点
+        QPointF point2(width * 0.5, height * 0.5);  // 中心点
+        QPointF point3(width * 0.7, height * 0.7);  // 左下点
+        shape << point1 << point2 << point3;
+    }
+    painter.drawPolyline(shape);
 }
 
+void ConnectedInfoTag::mousePressEvent(QMouseEvent* event) {
 
-
-void ConnectedInfoTag::CreateLeftPath(QPainterPath& path) {
-    const int w = width();
-    const int h = height();
-    const int radius = qMin(w, h) / 2;
-
-    // 左半圆部分
-    path.moveTo(0, h / 2);
-    path.arcTo(QRectF(0, h / 2 - radius, 2 * radius, 2 * radius), 90, 180);
-
-    // 延伸的矩形部分
-    path.lineTo(w, h);
-    path.lineTo(w, 0);
-    path.closeSubpath();
+    QWidget::mousePressEvent(event);
 }
+
 }

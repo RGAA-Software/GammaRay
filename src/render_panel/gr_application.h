@@ -28,6 +28,7 @@ namespace tc
     class GrAccountManager;
     class MgrDeviceOperator;
     class WinMessageLoop;
+    class GrConnectedManager;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -94,6 +95,8 @@ namespace tc
         // window messages looping
         std::shared_ptr<Thread> win_msg_thread_ = nullptr;
         std::shared_ptr<WinMessageLoop> win_msg_loop_ = nullptr;
+        // listen connect info and show connect panel
+        std::shared_ptr<GrConnectedManager> gr_connected_manager_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;
