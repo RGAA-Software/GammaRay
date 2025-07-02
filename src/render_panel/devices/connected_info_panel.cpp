@@ -16,8 +16,19 @@ namespace tc {
 	}
 	
 	void ConnectedInfoPanel::InitView() {
-		setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
-		setAttribute(Qt::WA_TranslucentBackground);
+		setAttribute(Qt::WA_StyledBackground);
+		setAttribute(Qt::WA_OpaquePaintEvent); // 不受父widget透明影响
+		this->setStyleSheet(
+			".QWidget {"
+			"   background-color: white;"  
+			"   border-style: solid;"      
+			"   border-width: 1px;"        
+			"   border-color: black;"      
+			"   border-radius: 0px;"       
+			"   padding: 0px;"             
+			"}"
+		);
+
 		setFixedSize(500, 200);
 		root_vbox_layout_ = new NoMarginVLayout();
 		setLayout(root_vbox_layout_);
@@ -116,19 +127,8 @@ namespace tc {
 	}
 
 	void ConnectedInfoPanel::paintEvent(QPaintEvent* event) {
-		QPainter painter(this);
-		painter.setRenderHint(QPainter::Antialiasing);
-
-		painter.setPen(Qt::NoPen);
-		painter.setBrush(QBrush(0xffffff));
-
-		int radius = 4;
-		QRect rect(rect_offset_, rect_offset_, this->width() - rect_offset_ * 2, this->height() - rect_offset_ * 2);
-		painter.drawRoundedRect(rect, radius, radius);
+		QWidget::paintEvent(event);
 	}
 
-	int ConnectedInfoPanel::GetRectOffset() const {
-		return rect_offset_;
-	}
 }
 

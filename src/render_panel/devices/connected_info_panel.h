@@ -18,7 +18,6 @@ namespace tc {
     public:
         ConnectedInfoPanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent* event) override;
-        int GetRectOffset() const;
     private:
         void InitView();
     private:
@@ -52,8 +51,6 @@ namespace tc {
         TcLabel* file_lab_ = nullptr;
 
         std::shared_ptr<GrContext> ctx_ = nullptr;
-
-        int rect_offset_ = 8;
     };
 
 

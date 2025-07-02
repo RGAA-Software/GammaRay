@@ -1,10 +1,9 @@
-#include "connected_info_tag.h"
+ï»¿#include "connected_info_tag.h"
 #include <QPainterPath>
 
 namespace tc {
 
 ConnectedInfoTag::ConnectedInfoTag(QWidget* parent) {
-	setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 	setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(28, 32);
 }
@@ -24,19 +23,19 @@ void ConnectedInfoTag::paintEvent(QPaintEvent* event)
     int height = this->height();
     const int radius = height / 2;
 
-    // Ìí¼Ó0.5ÏñËØÆ«ÒÆÒÔ»ñµÃÍêÃÀ¿¹¾â³İ
+    // æ·»åŠ 0.5åƒç´ åç§»ä»¥è·å¾—å®Œç¾æŠ—é”¯é½¿
     const qreal offset = 0.5;
 
-    // Æğµã£º×ó²à°ëÔ²¶¥²¿¶Ëµã
+    // èµ·ç‚¹ï¼šå·¦ä¾§åŠåœ†é¡¶éƒ¨ç«¯ç‚¹
     path.moveTo(offset, offset);
 
-    // »æÖÆ×ó²à°ëÔ² (¿¼ÂÇ¿¹¾â³İÆ«ÒÆ)
+    // ç»˜åˆ¶å·¦ä¾§åŠåœ† (è€ƒè™‘æŠ—é”¯é½¿åç§»)
     path.arcTo(QRectF(offset, offset,2 * radius - 1, height - 1), 90, 180);
 
-    // »æÖÆÓÒ²à¾ØĞÎ²¿·Ö
-    path.lineTo(width - offset, height - offset);  // ÓÒÏÂ½Ç
-    path.lineTo(width - offset, offset);      // ÓÒÉÏ½Ç
-    path.lineTo(radius + offset, offset); // »Øµ½°ëÔ²¶¥²¿¶Ëµã
+    // ç»˜åˆ¶å³ä¾§çŸ©å½¢éƒ¨åˆ†
+    path.lineTo(width - offset, height - offset);  // å³ä¸‹è§’
+    path.lineTo(width - offset, offset);      // å³ä¸Šè§’
+    path.lineTo(radius + offset, offset); // å›åˆ°åŠåœ†é¡¶éƒ¨ç«¯ç‚¹
 
     path.closeSubpath();
     painter.drawPath(path);
@@ -44,26 +43,33 @@ void ConnectedInfoTag::paintEvent(QPaintEvent* event)
     QPen pen(Qt::white, 2);  
     painter.setPen(pen);
     QPolygonF shape;
-    if (expanded) {
-        // ¼ÆËã´óÓÚºÅµÄ×ø±ê
-        QPointF point1(width * 0.5, height * 0.3);  // ×óÉÏµã
-        QPointF point2(width * 0.7, height * 0.5);  // ÖĞĞÄµã
-        QPointF point3(width * 0.5, height * 0.7);  // ×óÏÂµã
+    if (expanded_) {
+        // è®¡ç®—å¤§äºå·çš„åæ ‡
+        QPointF point1(width * 0.5, height * 0.3);  // å·¦ä¸Šç‚¹
+        QPointF point2(width * 0.7, height * 0.5);  // ä¸­å¿ƒç‚¹
+        QPointF point3(width * 0.5, height * 0.7);  // å·¦ä¸‹ç‚¹
         shape << point1 << point2 << point3;
     }
     else {
-        // ¼ÆËãĞ¡ÓÚºÅµÄ×ø±ê
-        QPointF point1(width * 0.7, height * 0.3);  // ×óÉÏµã
-        QPointF point2(width * 0.5, height * 0.5);  // ÖĞĞÄµã
-        QPointF point3(width * 0.7, height * 0.7);  // ×óÏÂµã
+        // è®¡ç®—å°äºå·çš„åæ ‡
+        QPointF point1(width * 0.7, height * 0.3);  // å·¦ä¸Šç‚¹
+        QPointF point2(width * 0.5, height * 0.5);  // ä¸­å¿ƒç‚¹
+        QPointF point3(width * 0.7, height * 0.7);  // å·¦ä¸‹ç‚¹
         shape << point1 << point2 << point3;
     }
     painter.drawPolyline(shape);
 }
 
 void ConnectedInfoTag::mousePressEvent(QMouseEvent* event) {
-
     QWidget::mousePressEvent(event);
+}
+
+bool ConnectedInfoTag::GetExpanded() const {
+    return expanded_;
+}
+
+void ConnectedInfoTag::SetExpanded(bool expanded) {
+    expanded_ = expanded;
 }
 
 }

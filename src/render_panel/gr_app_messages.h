@@ -1,4 +1,4 @@
-#ifndef APP_MESSAGES_H
+﻿#ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
 #include <QVariantMap>

@@ -76,6 +76,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_state_checker.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/connected_info_panel.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/connected_info_tag.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/devices/connected_info_sliding_window.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
 

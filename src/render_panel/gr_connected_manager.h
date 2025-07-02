@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 #include <map>
 
@@ -7,6 +7,7 @@ namespace tc {
 	class MessageListener;
 	class ConnectedInfoTag;
 	class ConnectedInfoPanel;
+	class ConnectedInfoSlidingWindow;
 
 	class ConnectedPair {
 	public:
@@ -25,8 +26,10 @@ namespace tc {
 		std::shared_ptr<GrContext> gr_ctx_ = nullptr;
 		std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 
-		//Ä¬ÈÏ×î¶àÏÔÊ¾Á½¸öÔÚÏßµÄÁ¬½Ó
-		std::map<int, ConnectedPair> connected_panel_group_;
+		//é»˜è®¤æœ€å¤šæ˜¾ç¤ºä¸¤ä¸ªåœ¨çº¿çš„è¿æ¥
+		//std::map<int, ConnectedPair> connected_panel_group_;
+
+		std::map<int, ConnectedInfoSlidingWindow*> connected_info_panel_group_;
 
 	};
 }

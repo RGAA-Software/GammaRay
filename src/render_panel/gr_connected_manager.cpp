@@ -8,6 +8,7 @@
 #include "tc_common_new/client_id_extractor.h"
 #include "devices/connected_info_panel.h"
 #include "devices/connected_info_tag.h"
+#include "devices/connected_info_sliding_window.h"
 
 namespace tc { 
 	GrConnectedManager::GrConnectedManager(const std::shared_ptr<GrContext>& ctx) : gr_ctx_(ctx) {
@@ -18,10 +19,14 @@ namespace tc {
 
         const int kMaxCount = 2;
         for (int index = 0; index < kMaxCount; ++index) {
-            ConnectedPair pair;
+            /*ConnectedPair pair;
             pair.tag_ = new ConnectedInfoTag(nullptr);
             pair.panel_ = new ConnectedInfoPanel(nullptr);
-            connected_panel_group_[index] = pair;
+            connected_panel_group_[index] = pair;*/
+
+            ConnectedInfoSlidingWindow* sliding_window = new ConnectedInfoSlidingWindow(gr_ctx_);
+
+            connected_info_panel_group_[index] = sliding_window;
         }
 
         RegisterMessageListener();
@@ -39,24 +44,7 @@ namespace tc {
 
     void GrConnectedManager::TestShowPanel() {
         // test
-        ConnectedInfoPanel* connected_info_panel = new ConnectedInfoPanel(nullptr);
-        connected_info_panel->show();
-
-        // test
-        ConnectedInfoTag* tag = new ConnectedInfoTag(nullptr);
-        tag->show();
-        auto screen_rect = QApplication::primaryScreen()->availableGeometry();
-
-        int screen_width = screen_rect.width();
-        int screen_height = screen_rect.height();
-
-        int panel_x = screen_width - connected_info_panel->width();
-        int panel_y = screen_height - connected_info_panel->height();
-
-        connected_info_panel->move(panel_x, panel_y);
-        int panel_rect_offset = connected_info_panel->GetRectOffset();
-
-        tag->move(panel_x + panel_rect_offset - tag->width(), panel_y + panel_rect_offset);
+       
 
     }
 
@@ -65,15 +53,14 @@ namespace tc {
         int screen_width = screen_rect.width();
         int screen_height = screen_rect.height();
 
-        for (auto& item: connected_panel_group_) {
-            int panel_x = screen_width - item.second.panel_->width();
-            int panel_y = screen_height - item.second.panel_->height() - 40 - item.first * item.second.panel_->height();
-            item.second.panel_->move(panel_x, panel_y);
-            int panel_rect_offset = item.second.panel_->GetRectOffset();
-            item.second.tag_->move(panel_x + panel_rect_offset - item.second.tag_->width(), panel_y + panel_rect_offset);
+        for (auto& item: connected_info_panel_group_) {
+            int panel_x = screen_width - item.second->width();
+            int panel_y = screen_height - item.second->height() - 80 - item.first * item.second->height();
+            item.second->move(panel_x, panel_y);
+            int panel_rect_offset = item.second->GetRectOffset();
 
-            item.second.panel_->show();
-            item.second.tag_->show();
+            item.second->show();
+            
         }
     }
 }

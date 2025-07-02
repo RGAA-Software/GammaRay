@@ -1,0 +1,72 @@
+﻿#include "connected_info_sliding_window.h"
+#include <qtimer.h>
+#include "no_margin_layout.h"
+#include "render_panel/gr_context.h"
+#include "tc_qt_widget/widget_helper.h"
+#include "connected_info_panel.h"
+#include "connected_info_tag.h"
+#include "tc_common_new/log.h"
+
+namespace tc {
+
+	ConnectedInfoSlidingWindow::ConnectedInfoSlidingWindow(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent), ctx_(ctx) {
+		InitView();
+		WidgetHelper::AddShadow(this, 0x666666, 8);
+	}
+
+	void ConnectedInfoSlidingWindow::InitView() {
+		setWindowFlags(Qt::FramelessWindowHint | Qt::Tool /* | Qt::WindowStaysOnTopHint */ );
+		setAttribute(Qt::WA_TranslucentBackground);
+		setFixedSize(528, 200);
+		main_hbox_layout_ = new NoMarginHLayout();
+		setLayout(main_hbox_layout_);
+
+		main_hbox_layout_->addStretch(1);
+
+        tag_ = new ConnectedInfoTag(this);
+        main_hbox_layout_->addWidget(tag_, 0, Qt::AlignTop);
+
+        panel_ = new ConnectedInfoPanel(ctx_, this);
+        main_hbox_layout_->addWidget(panel_);
+
+		tag_->installEventFilter(this);
+
+		QTimer::singleShot(3000, [=, this]() {
+			panel_->hide();
+		});
+	}
+
+	void ConnectedInfoSlidingWindow::paintEvent(QPaintEvent* event) {
+		QWidget::paintEvent(event);
+	}
+
+	int ConnectedInfoSlidingWindow::GetRectOffset() const {
+		return rect_offset_;
+	}
+
+	bool ConnectedInfoSlidingWindow::eventFilter(QObject* obj, QEvent* event) {
+		if (obj == tag_) {  
+			if (event->type() == QEvent::MouseButtonRelease) {
+				bool current_state = tag_->GetExpanded();
+				LOGI("ConnectedInfoSlidingWindow tag_ MouseButtonRelease");
+				if (current_state) {
+					//panel_->hide();
+					//panel_->setVisible(false);
+					panel_->setFixedWidth(0);
+					LOGI("ConnectedInfoSlidingWindow panel_->hide()");
+				}
+				else {
+					LOGI("ConnectedInfoSlidingWindow panel_->show()");
+					panel_->setFixedWidth(500);
+					//panel_->show();
+					//panel_->setVisible(true);
+
+				}
+				tag_->SetExpanded(!current_state);
+				return true; // 事件已处理，不再传递
+			}
+		}
+		return QWidget::eventFilter(obj, event);
+	}
+}
+
