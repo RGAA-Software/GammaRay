@@ -39,10 +39,6 @@ namespace tc {
 		QWidget::paintEvent(event);
 	}
 
-	int ConnectedInfoSlidingWindow::GetRectOffset() const {
-		return rect_offset_;
-	}
-
 	bool ConnectedInfoSlidingWindow::eventFilter(QObject* obj, QEvent* event) {
 		if (obj == tag_) {
 			if (event->type() == QEvent::MouseButtonRelease) {
@@ -62,6 +58,10 @@ namespace tc {
 			}
 		}
 		return QWidget::eventFilter(obj, event);
+	}
+
+	void ConnectedInfoSlidingWindow::UpdateInfo(const QString& device_id, const QString& device_name) {
+		panel_->UpdateInfo(device_id, device_name);
 	}
 }
 

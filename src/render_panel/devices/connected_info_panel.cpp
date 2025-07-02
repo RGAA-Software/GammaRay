@@ -7,6 +7,7 @@
 #include "tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/widget_helper.h"
+#include "render_panel/gr_settings.h"
 
 namespace tc {
 
@@ -27,13 +28,13 @@ namespace tc {
 		logo_hbox_layout_ = new NoMarginHLayout();
 		logo_lab_ = new TcLabel(this);
 		QPixmap logo_pixmap(":/resources/tc_icon.png");
-		logo_pixmap = logo_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		logo_pixmap = logo_pixmap.scaled(20, 20, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		logo_lab_->setPixmap(logo_pixmap);
-		logo_lab_->setFixedSize(30, 30);
+		logo_lab_->setFixedSize(20, 20);
 		logo_name_lab_ = new TcLabel(this);
 		logo_name_lab_->setText("GammaRay");
-		logo_name_lab_->setStyleSheet("font-size: 18px; font-weight: 500; color: #2979FF;");
-		logo_hbox_layout_->addSpacing(30);
+		logo_name_lab_->setStyleSheet("font-size: 14px; font-weight: 500; color: #2979FF;");
+		logo_hbox_layout_->addSpacing(10);
 		logo_hbox_layout_->addWidget(logo_lab_);
 		logo_hbox_layout_->addSpacing(6);
 		logo_hbox_layout_->addWidget(logo_name_lab_);
@@ -46,9 +47,20 @@ namespace tc {
 		QPixmap avatar_pixmap(":/resources/avatar.png");
 		avatar_pixmap = avatar_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		avatar_lab_->setPixmap(avatar_pixmap);
-		name_lab_ = new TcLabel(this);
-		name_lab_->setStyleSheet("font-size: 14px; font-weight: 500;");
-		name_lab_->setText("Test");
+
+		auto info_vbox_layout = new NoMarginVLayout();
+		key_1_lab_ = new TcLabel(this);
+		key_1_lab_->setStyleSheet("font-size: 14px; font-weight: 800;");
+		key_1_lab_->setText("");
+
+		key_2_lab_ = new TcLabel(this);
+		key_2_lab_->setStyleSheet("font-size: 12px; font-weight: 500;");
+		key_2_lab_->setText("");
+
+		info_vbox_layout->addWidget(key_1_lab_);
+		info_vbox_layout->addSpacing(4);
+		info_vbox_layout->addWidget(key_2_lab_);
+
 		conn_prompt_lab_ = new TcLabel(this);
 		conn_prompt_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
 		conn_prompt_lab_->SetTextId("id_remote_local_machine");
@@ -59,9 +71,9 @@ namespace tc {
 		avatar_name_hbox_layout_->addSpacing(30);
 		avatar_name_hbox_layout_->addWidget(avatar_lab_);
 		avatar_name_hbox_layout_->addSpacing(6);
-		avatar_name_hbox_layout_->addWidget(name_lab_);
+		avatar_name_hbox_layout_->addLayout(info_vbox_layout);
 		avatar_name_hbox_layout_->addSpacing(6);
-		avatar_name_hbox_layout_->addWidget(conn_prompt_lab_);
+		avatar_name_hbox_layout_->addWidget(conn_prompt_lab_, 0, Qt::AlignTop);
 		avatar_name_hbox_layout_->addSpacing(6);
 		avatar_name_hbox_layout_->addStretch(1);
 		avatar_name_hbox_layout_->addWidget(disconnect_btn_);
@@ -123,5 +135,30 @@ namespace tc {
         painter.drawRoundedRect(0, 5, this->width(), this->height()-10, 5, 5);
 	}
 
+	void ConnectedInfoPanel::UpdateInfo(const QString& device_id, const QString& device_name) {
+		key_1_lab_->setText(device_id);
+		key_1_lab_->adjustSize();
+		key_2_lab_->setText(device_name);
+		key_2_lab_->adjustSize();
+	}
+
+	void ConnectedInfoPanel::InitData() {
+		GrSettings* settings = GrSettings::Instance();
+		if (!settings) {
+			return;
+		}
+		bool audio_access = settings->IsCaptureAudioEnabled();
+		voice_cbox_->setChecked(audio_access);
+
+		bool file_access = settings->IsFileTransferEnabled();
+		file_cbox_->setChecked(file_access);
+
+		bool key_mouse_access = settings->IsBeingOperatedEnabled();
+		key_mouse_cbox_->setChecked(key_mouse_access);
+	}
+
+	void ConnectedInfoPanel::InitSigChannel() {
+	
+	}
 }
 

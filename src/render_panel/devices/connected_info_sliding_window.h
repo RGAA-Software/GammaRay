@@ -17,7 +17,7 @@ namespace tc {
         ConnectedInfoSlidingWindow(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent* event) override;
         bool eventFilter(QObject* obj, QEvent* event) override;
-        int GetRectOffset() const;
+        void UpdateInfo(const QString& device_id, const QString& device_name);
     private:
         void InitView();
     private:
@@ -26,8 +26,6 @@ namespace tc {
         ConnectedInfoPanel* panel_ = nullptr;
 
         std::shared_ptr<GrContext> ctx_ = nullptr;
-
-        int rect_offset_ = 8;
     };
 
 

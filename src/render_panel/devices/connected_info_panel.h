@@ -15,11 +15,15 @@ namespace tc {
 
     // 被客户端连接上来后，显示连接者的一些信息
     class ConnectedInfoPanel : public QWidget {
+        Q_OBJECT
     public:
         ConnectedInfoPanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent* event) override;
+        void UpdateInfo(const QString& device_id, const QString& device_name);
     private:
         void InitView();
+        void InitData();
+        void InitSigChannel();
     private:
         NoMarginVLayout* root_vbox_layout_ = nullptr;
 
@@ -31,7 +35,8 @@ namespace tc {
         // 头像
         TcLabel* avatar_lab_ = nullptr;
         // 名字
-        TcLabel* name_lab_ = nullptr;
+        TcLabel* key_1_lab_ = nullptr;
+        TcLabel* key_2_lab_ = nullptr;
         TcLabel* conn_prompt_lab_ = nullptr;
         // 断开连接
         TcPushButton* disconnect_btn_ = nullptr;

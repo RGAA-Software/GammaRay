@@ -17,35 +17,54 @@ namespace tc {
 			return;
 		}
 
-        const int kMaxCount = 1;
+        const int kMaxCount = 2;
         for (int index = 0; index < kMaxCount; ++index) {
-            /*ConnectedPair pair;
-            pair.tag_ = new ConnectedInfoTag(nullptr);
-            pair.panel_ = new ConnectedInfoPanel(nullptr);
-            connected_panel_group_[index] = pair;*/
-
             ConnectedInfoSlidingWindow* sliding_window = new ConnectedInfoSlidingWindow(gr_ctx_);
-
             connected_info_panel_group_[index] = sliding_window;
         }
 
         RegisterMessageListener();
         AdjustPanelPosition();
-        //TestShowPanel();
 	}
 
     void GrConnectedManager::RegisterMessageListener() {
         msg_listener_ = gr_ctx_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgUpdateConnectedClientsInfo>([=, this](const MsgUpdateConnectedClientsInfo& msg) {
-            // to do
-            msg.clients_info_;
+
+            if (!gr_ctx_) {
+                LOGE("gr_ctx_ is nullptr.");
+                return;
+            }
+
+            gr_ctx_->PostUITask([=, this]() { 
+                int client_size = msg.clients_info_.size();
+                if (0 == client_size) {
+                    HideAllPanels();
+                    return;
+                }
+
+                for (int index = 0; index < client_size; ++index) {
+                    auto client_info = msg.clients_info_[index];
+                    if (connected_info_panel_group_.count(index) > 0) {
+                        connected_info_panel_group_[index]->show();
+                        connected_info_panel_group_[index]->UpdateInfo(QString::fromStdString(client_info->device_id()), QString::fromStdString(client_info->device_name()));
+                    }
+                }
+
+                int group_index = -1;
+                for (auto& item : connected_info_panel_group_) {
+                    ++group_index;
+                    if (group_index < client_size) {
+                        continue;
+                    }
+                    item.second->hide();
+                }
+            });
         });
     }
 
     void GrConnectedManager::TestShowPanel() {
         // test
-       
-
     }
 
     void GrConnectedManager::AdjustPanelPosition() {
@@ -55,12 +74,21 @@ namespace tc {
 
         for (auto& item: connected_info_panel_group_) {
             int panel_x = screen_width - item.second->width();
-            int panel_y = screen_height - item.second->height() - 80 - item.first * item.second->height();
+            int panel_y = screen_height - item.second->height() - 80 - item.first * item.second->height() * 1.2;
             item.second->move(panel_x, panel_y);
-            int panel_rect_offset = item.second->GetRectOffset();
+            item.second->hide();        
+        }
+    }
 
+    void GrConnectedManager::HideAllPanels() {
+        for (auto& item : connected_info_panel_group_) {
+            item.second->hide();
+        }
+    }
+
+    void GrConnectedManager::ShowAllPanels() {
+        for (auto& item : connected_info_panel_group_) {
             item.second->show();
-            
         }
     }
 }
