@@ -106,11 +106,6 @@ target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::Op
         tc_rtc_client Dwmapi.lib tc_client_plugin
 )
 
-#if(TC_USE_FILE_TRANSMISSION) #file_transfer
-#    target_link_libraries(GammaRayClientInner PRIVATE file_transfer
-#    )
-#endif()
-
 if(QT_VERSION_MAJOR EQUAL 6)
 #    qt_finalize_executable(${PROJECT_NAME})
 #    qt_finalize_executable(${PROJECT_NAME}Inner)
