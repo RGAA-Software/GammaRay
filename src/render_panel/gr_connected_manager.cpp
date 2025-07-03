@@ -47,7 +47,8 @@ namespace tc {
                     auto client_info = msg.clients_info_[index];
                     if (connected_info_panel_group_.count(index) > 0) {
                         connected_info_panel_group_[index]->show();
-                        connected_info_panel_group_[index]->UpdateInfo(QString::fromStdString(client_info->device_id()), QString::fromStdString(client_info->device_name()));
+                        auto client_id = ExtractClientId(client_info->device_id());
+                        connected_info_panel_group_[index]->UpdateInfo(QString::fromStdString(client_id), QString::fromStdString(client_info->device_name()));
                     }
                 }
 

@@ -18,6 +18,8 @@ namespace tc {
         void paintEvent(QPaintEvent* event) override;
         bool eventFilter(QObject* obj, QEvent* event) override;
         void UpdateInfo(const QString& device_id, const QString& device_name);
+
+		
     private:
         void InitView();
     private:
@@ -27,6 +29,4 @@ namespace tc {
 
         std::shared_ptr<GrContext> ctx_ = nullptr;
     };
-
-
 }

@@ -252,6 +252,7 @@
   "id_voice":"voice",
   "id_file":"file",
   "id_key_mouse":"keyboard mouse",
+  "id_access_hint":"go to the settings interface to set the relevant permissions",
 
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",

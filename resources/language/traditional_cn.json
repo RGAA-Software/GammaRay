@@ -198,6 +198,7 @@
   "id_voice":"聲音",
   "id_file":"文件",
   "id_key_mouse":"鍵鼠",
+  "id_access_hint":"請到設置界面去設置相關權限",
 
   "id_gr_client": "GammaRay客戶端",
   "id_control": "控制",
