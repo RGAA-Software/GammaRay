@@ -61,6 +61,7 @@ namespace tc
         auto fn_send_text = [=, this]() {
             LOGI("info: {}, remote: {}", text.toStdString(), remote_info_.toStdString());
             if (text == remote_info_) {
+                LOGI("Same with remote, ignore.");
                 return;
             }
             LOGI("===> new Text: {}", text.toStdString());
@@ -69,8 +70,6 @@ namespace tc
             event->type_ = ClipboardType::kClipboardText;
             event->text_msg_ = text.toStdString();
             plugin_->CallbackEvent(event);
-
-            remote_info_ = text;
         };
 
         if (has_urls) {
@@ -176,17 +175,18 @@ namespace tc
         auto info = msg->clipboard_info();
         if (info.type() == ClipboardType::kClipboardText) {
             auto in_text = QString::fromStdString(info.msg());
-            auto updated = false;
+            auto is_same = false;
             auto count = 0;
             for (int i = 0; i < 50; i++) {
                 QClipboard *board = QGuiApplication::clipboard();
                 if (board->text() == in_text) {
+                    is_same = true;
                     LOGI("Already same with clipboard, ignore: {}", in_text.toStdString());
-                    return;
+                    break;
                 }
                 board->setText(in_text);
                 if (board->ownsClipboard() && board->text() == in_text) {
-                    updated = true;
+                    is_same = true;
                     LOGI("*** update remote clipboard info: {}", in_text.toStdString());
                     break;
                 } else {
@@ -196,8 +196,14 @@ namespace tc
                 TimeUtil::DelayBySleep(5);
             }
             LOGI("update remote clipboard info used count: {}", count);
-            if (updated) {
+            if (is_same) {
                 remote_info_ = in_text;
+                // send back
+                auto event = std::make_shared<ClientPluginRemoteClipboardResp>();
+                event->content_type_ = 0;
+                event->remote_info_ = in_text.toStdString();
+                plugin_->CallbackEvent(event);
+                LOGI("send back, generate : ClientPluginRemoteClipboardResp");
             }
         }
         else if (info.type() == ClipboardType::kClipboardFiles) {
@@ -247,6 +253,21 @@ namespace tc
             }
 
             virtual_file_->OnClipboardFilesInfo(target_files);
+        }
+    }
+
+    void ClipboardManager::OnRemoteClipboardRespMessage(std::shared_ptr<tc::Message> msg) {
+        if (!plugin_->IsClipboardEnabled()) {
+            LOGI("clipboard is off!");
+            return;
+        }
+        if (msg->type() != MessageType::kClipboardInfoResp) {
+            return;
+        }
+        auto sub = msg->clipboard_info_resp();
+        if (sub.type() == ClipboardType::kClipboardText) {
+            remote_info_ = QString::fromStdString(sub.msg());
+            LOGI("CBK ===> remote clipboard text resp: {}", remote_info_.toStdString());
         }
     }
 

@@ -141,7 +141,8 @@ namespace tc {
                     ProcessClientStatistics(std::move(msg));
                     break;
                 }
-                case kClipboardInfo: {
+                case kClipboardInfo:
+                case kClipboardInfoResp: {
                     ProcessClipboardInfo(std::move(msg));
                     break;
                 }

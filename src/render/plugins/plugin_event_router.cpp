@@ -136,6 +136,10 @@ namespace tc
             auto target_event = std::dynamic_pointer_cast<GrPluginDataSent>(event);
             stat_->AppendMediaBytes(target_event->size_);
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginRemoteClipboardResp) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginRemoteClipboardResp>(event);
+            ReportRemoteClipboardResp(target_event);
+        }
     }
 
     void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
@@ -208,6 +212,17 @@ namespace tc
             sub->set_the_file_id(event->the_file_id_);
             sub->set_end_timestamp(event->end_timestamp_);
             sub->set_success(event->success_);
+            app_->PostPanelMessage(msg.SerializeAsString());
+        });
+    }
+
+    void PluginEventRouter::ReportRemoteClipboardResp(const std::shared_ptr<GrPluginRemoteClipboardResp>& event) {
+        app_->PostGlobalTask([=, this]() {
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpRemoteClipboardResp);
+            auto sub = msg.mutable_remote_clipboard_resp();
+            sub->set_content_type(event->content_type_);
+            sub->set_msg(event->remote_info_);
             app_->PostPanelMessage(msg.SerializeAsString());
         });
     }

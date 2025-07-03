@@ -31,9 +31,6 @@
 #include "ui/float_button_state_indicator.h"
 #include "ct_main_progress.h"
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
-#ifdef TC_ENABLE_FILE_TRANSMISSION
-#include "core/file_trans_interface.h"
-#endif // TC_ENABLE_FILE_TRANSMISSION
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "ct_game_view.h"

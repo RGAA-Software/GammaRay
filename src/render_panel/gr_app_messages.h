@@ -12,6 +12,7 @@ namespace tcrp
     class RpPluginsInfo;
     class RpServerAudioSpectrum;
     class RpConnectedClientInfo;
+    class RpRemoteClipboardResp;
 }
 
 namespace tc
@@ -194,6 +195,12 @@ namespace tc
     class MsgUpdateConnectedClientsInfo {
     public:
         std::vector<std::shared_ptr<tcrp::RpConnectedClientInfo>> clients_info_;
+    };
+
+    // remote clipboard resp
+    class MsgRemoteClipboardResp {
+    public:
+        std::shared_ptr<tcrp::RpRemoteClipboardResp> resp_ = nullptr;
     };
 }
 

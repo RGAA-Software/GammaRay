@@ -39,6 +39,9 @@ namespace tc
 
         // file transfer end
         kPluginFileTransferEndEvent,
+
+        // remote clipboard resp
+        kPluginRemoteClipboardResp,
     };
 
     class ClientPluginBaseEvent {
@@ -128,6 +131,17 @@ namespace tc
         std::string file_path_;
         std::string direction_;
         bool success_;
+    };
+
+    // kPluginRemoteClipboardResp
+    class ClientPluginRemoteClipboardResp : public ClientPluginBaseEvent {
+    public:
+        ClientPluginRemoteClipboardResp() : ClientPluginBaseEvent() {
+            event_type_ = ClientPluginEventType::kPluginRemoteClipboardResp;
+        }
+    public:
+        int content_type_{0};
+        std::string remote_info_;
     };
 }
 

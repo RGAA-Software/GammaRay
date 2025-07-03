@@ -120,6 +120,15 @@ namespace tc
                 });
             }
         }
+        else if (msg->type() == MessageType::kClipboardInfoResp) {
+            // tell the panel, remote info
+            auto event = std::make_shared<GrPluginRemoteClipboardResp>();
+            auto sub = msg->clipboard_info_resp();
+            event->content_type_ = (int)sub.type();
+            event->remote_info_ = sub.msg();
+            CallbackEvent(event);
+            LOGI("received clipboard resp: {}", sub.msg());
+        }
         else if (msg->type() == MessageType::kClipboardRespBuffer) {
             if (virtual_file_) {
                 virtual_file_->OnClipboardRespBuffer(msg->cp_resp_buffer());

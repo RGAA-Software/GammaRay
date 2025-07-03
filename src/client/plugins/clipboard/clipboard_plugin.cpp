@@ -61,6 +61,13 @@ namespace tc
                 }
             });
         }
+        else if (msg->type() == tc::kClipboardInfoResp) {
+            plugin_context_->PostUITask([=, this]() {
+                if (clipboard_mgr_) {
+                    clipboard_mgr_->OnRemoteClipboardRespMessage(msg);
+                }
+            });
+        }
         else if (msg->type() == tc::kClipboardReqBuffer) {
             // server -> request a part of data in the file -> client -> response -> server
             plugin_context_->PostWorkTask([=, this]() {

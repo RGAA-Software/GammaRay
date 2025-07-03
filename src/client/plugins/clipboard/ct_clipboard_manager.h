@@ -25,6 +25,7 @@ namespace tc
         void Start();
         void Stop();
         void OnRemoteClipboardMessage(std::shared_ptr<tc::Message> msg);
+        void OnRemoteClipboardRespMessage(std::shared_ptr<tc::Message> msg);
         void OnRemoteFileRespMessage(std::shared_ptr<tc::Message> msg);
         void OnLocalClipboardUpdated();
 

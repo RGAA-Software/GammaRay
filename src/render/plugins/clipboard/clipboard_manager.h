@@ -25,7 +25,6 @@ namespace tc
         void OnRemoteClipboardInfo(const std::shared_ptr<Message>& msg);
 
     private:
-        QString remote_info_;
         ClipboardPlugin* plugin_ = nullptr;
     };
 

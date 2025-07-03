@@ -10,6 +10,7 @@
 #include "tc_common_new/log.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
+#include "render_panel/gr_app_messages.h"
 #include "win_panel_message_window.h"
 #include "tc_render_panel_message.pb.h"
 #include "tc_common_new/folder_util.h"
@@ -33,6 +34,13 @@ namespace tc
     WinMessageLoop::WinMessageLoop(const std::shared_ptr<GrApplication>& app) {
         app_ = app;
         context_ = app_->GetContext();
+        msg_listener_ = context_->ObtainMessageListener();
+        msg_listener_->Listen<MsgRemoteClipboardResp>([=, this](const MsgRemoteClipboardResp& msg) {
+            if (msg.resp_) {
+                remote_info_ = QString::fromStdString(msg.resp_->msg());
+                LOGI("===> Remote is :{}", remote_info_.toStdString());
+            }
+        });
     }
 
     WinMessageLoop::~WinMessageLoop() {
@@ -68,7 +76,6 @@ namespace tc
             sub->set_msg(text.toStdString());
             app_->PostMessage2Renderer(msg.SerializeAsString());
 
-            remote_info_ = text;
         };
 
         if (has_urls) {

@@ -10,6 +10,7 @@ namespace tc
     class GrContext;
     class GrApplication;
     class WinMessageWindow;
+    class MessageListener;
 
     class WinMessageLoop : public std::enable_shared_from_this<WinMessageLoop> {
     public:
@@ -31,6 +32,7 @@ namespace tc
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<WinMessageWindow> message_window_ = nullptr;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
 }

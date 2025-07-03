@@ -41,6 +41,7 @@ namespace tc
         kPluginFileTransferBegin,
         kPluginFileTransferEnd,
         kPluginDataSent,
+        kPluginRemoteClipboardResp,
     };
 
     class GrPluginBaseEvent {
@@ -298,6 +299,19 @@ namespace tc
         }
     public:
         int size_ = 0;
+    };
+
+    // remote clipboard resp
+    class GrPluginRemoteClipboardResp : public GrPluginBaseEvent {
+    public:
+        GrPluginRemoteClipboardResp() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRemoteClipboardResp;
+        }
+    public:
+        // text / file
+        int content_type_ {0};
+        // text content
+        std::string remote_info_;
     };
 }
 
