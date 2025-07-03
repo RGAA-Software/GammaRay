@@ -185,6 +185,16 @@ namespace tc
 
         if (!dxgi_output_duplication_.duplication_) {
             LOGI("Init DDA failed.");
+            if (last_list_texture_) {
+                last_list_texture_->Exit();
+                last_list_texture_ = nullptr;
+            }
+            if (d3d11_device_) {
+                d3d11_device_.Release();
+            }
+            if (d3d11_device_context_) {
+                d3d11_device_context_.Release();
+            }
             return false;
         }
 
@@ -209,6 +219,7 @@ namespace tc
         }
         if (last_list_texture_) {
             last_list_texture_->Exit();
+            last_list_texture_ = nullptr;
         }
         dxgi_output_duplication_.Exit();
         d3d11_device_.Release();
