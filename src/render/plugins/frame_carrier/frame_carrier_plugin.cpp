@@ -99,38 +99,15 @@ namespace tc
         }
 
         // create a new one
-        if (params.frame_resize_) {
-            frame_carrier = std::make_shared<VideoFrameCarrier>(this,
-                                                                params.d3d_device_,
-                                                                params.d3d_device_context_,
-                                                                params.adapter_uid_,
-                                                                params.mon_name_,
-                                                                params.frame_resize_,
-                                                                params.encode_width_,
-                                                                params.encode_height_,
-                                                                params.enable_full_color_mode_);
-        }
-        else {
-            frame_carrier = std::make_shared<VideoFrameCarrier>(this,
-                                                                params.d3d_device_,
-                                                                params.d3d_device_context_,
-                                                                params.adapter_uid_,
-                                                                params.mon_name_,
-                                                                false,
-                                                                -1,
-                                                                -1,
-                                                                params.enable_full_color_mode_);
-        }
+        frame_carrier = std::make_shared<VideoFrameCarrier>(this,
+                                                            params.d3d_device_,
+                                                            params.d3d_device_context_,
+                                                            params.adapter_uid_,
+                                                            params.mon_name_,
+                                                            params.enable_full_color_mode_);
         frame_carriers_[params.mon_name_] = frame_carrier;
-        LOGI("Create frame carrier for monitor: {}, resize?: {}", params.mon_name_, params.frame_resize_);
+        LOGI("Create frame carrier for monitor: {},", params.mon_name_);
         return true;
-    }
-
-    GrFrameProcessorPlugin* FrameCarrierPlugin::GetFrameResizePlugin(const std::string& mon_name) {
-        if (carrier_params_.contains(mon_name)) {
-            return carrier_params_[mon_name].frame_resize_plugin_;
-        }
-        return nullptr;
     }
 
     std::shared_ptr<GrCarriedFrame> FrameCarrierPlugin::CopyTexture(const std::string& mon_name, uint64_t handle, uint64_t frame_index) {
@@ -154,7 +131,7 @@ namespace tc
         return nullptr;
     }
 
-    bool FrameCarrierPlugin::MapRawTexture(const std::string& mon_name, ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
+    bool FrameCarrierPlugin::MapRawTexture(const std::string& mon_name, const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture, DXGI_FORMAT format, int height,
                        std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                        std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
         if (auto frame_carrier = GetFrameCarrier(mon_name); frame_carrier) {
@@ -170,17 +147,6 @@ namespace tc
             return frame_carrier->ConvertRawImage(image, std::move(rgba_cbk), std::move(yuv_cbk));
         }
         return false;
-    }
-
-    std::optional<GrFrameResizeInfo> FrameCarrierPlugin::GetFrameResizeInfo(const std::string &mon_name) {
-        if (auto frame_carrier = GetFrameCarrier(mon_name); frame_carrier) {
-            return GrFrameResizeInfo {
-                .mon_name_ = mon_name,
-                .resize_width_ = frame_carrier->GetResizeWidth(),
-                .resize_height_ = frame_carrier->GetResizeHeight(),
-            };
-        }
-        return std::nullopt;
     }
 
     std::shared_ptr<Image> FrameCarrierPlugin::GetLogoImage() {

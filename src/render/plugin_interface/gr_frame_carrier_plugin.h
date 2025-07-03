@@ -19,14 +19,10 @@ namespace tc
     class GrCarrierParams {
     public:
         std::string mon_name_;
-        bool frame_resize_ = false;
         Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_ = nullptr;
         Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d_device_context_ = nullptr;
         int64_t adapter_uid_ = 0;
-        int encode_width_ = 0;
-        int encode_height_ = 0;
         bool enable_full_color_mode_ = false;
-        GrFrameProcessorPlugin* frame_resize_plugin_ = nullptr;
     };
 
     // After copied
@@ -35,16 +31,8 @@ namespace tc
         std::string mon_name_;
         uint64_t frame_index_ = 0;
 #ifdef WIN32
-        ID3D11Texture2D* texture_ = nullptr;
+        Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_ = nullptr;
 #endif
-    };
-
-    // Resize Info
-    class GrFrameResizeInfo {
-    public:
-        std::string mon_name_;
-        int resize_width_ = 0;
-        int resize_height_ = 0;
     };
 
     class GrFrameCarrierPlugin : public GrPluginInterface {
@@ -61,7 +49,7 @@ namespace tc
         }
 
         // Map Texture from GPU -> CPU
-        virtual bool MapRawTexture(const std::string& mon_name, ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
+        virtual bool MapRawTexture(const std::string& mon_name, const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                            std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
             return false;
@@ -72,10 +60,6 @@ namespace tc
                              std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                              std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
             return false;
-        }
-
-        virtual std::optional<GrFrameResizeInfo> GetFrameResizeInfo(const std::string& mon_name) {
-            return std::nullopt;
         }
 
     protected:

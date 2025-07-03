@@ -36,24 +36,19 @@ namespace tc
                                    const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
                                    uint64_t adapter_uid,
                                    const std::string& monitor_name,
-                                   bool resize,
-                                   int resize_width,
-                                   int resize_height,
                                    bool enable_full_color_mode);
 
-        bool MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
+        bool MapRawTexture(const ComPtr<ID3D11Texture2D>& texture, DXGI_FORMAT format, int height,
                            std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                            std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
 
-        ID3D11Texture2D* CopyTexture(const std::string& mon_name, uint64_t handle, uint64_t frame_index);
+        ComPtr<ID3D11Texture2D> CopyTexture(const std::string& mon_name, uint64_t handle, uint64_t frame_index);
 
         bool ConvertRawImage(const std::shared_ptr<Image> image,
                             std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                             std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk);
 
         void Exit();
-        int GetResizeWidth();
-        int GetResizeHeight();
         void SetFullColorModeEnabled(bool enabled);
 
     private:
@@ -82,10 +77,6 @@ namespace tc
         // async yuv converter
         std::shared_ptr<Thread> yuv_converter_thread_ = nullptr;
 
-        bool resize_ = false;
-        int resize_width_ = 0;
-        int resize_height_ = 0;
-
         uint64_t adapter_uid_ = 0;
         std::string monitor_name_;
 
@@ -96,7 +87,7 @@ namespace tc
         // big log points
         std::vector<QPoint> big_logo_points_;
 
-        ID3D11Texture2D* logo_point_texture_ = nullptr;
+        ComPtr<ID3D11Texture2D> logo_point_texture_ = nullptr;
     };
 
 }

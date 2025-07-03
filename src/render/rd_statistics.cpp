@@ -20,6 +20,7 @@
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_frame_carrier_plugin.h"
+#include "plugin_interface/gr_frame_processor_plugin.h"
 
 namespace tc
 {
@@ -113,6 +114,7 @@ namespace tc
         auto video_capture_plugin = app_->GetWorkingMonitorCapturePlugin();
         auto video_encoder_plugins = app_->GetWorkingVideoEncoderPlugins();
         auto frame_carrier_plugin = plugin_mgr_->GetFrameCarrierPlugin();
+        auto frame_resize_plugin = plugin_mgr_->GetFrameResizePlugin();
         if (video_capture_plugin && !video_encoder_plugins.empty()) {
             // encoder info
 
@@ -173,7 +175,7 @@ namespace tc
                     item->set_resize_frame_height(0);
                 }
                 else {
-                    if (auto resize_info = frame_carrier_plugin->GetFrameResizeInfo(info->target_name_); resize_info.has_value()) {
+                    if (auto resize_info = frame_resize_plugin->GetFrameResizeInfo(info->target_name_); resize_info.has_value()) {
                         auto frame_resize_info = resize_info.value();
                         item->set_resize_frame_width(frame_resize_info.resize_width_);
                         item->set_resize_frame_height(frame_resize_info.resize_height_);

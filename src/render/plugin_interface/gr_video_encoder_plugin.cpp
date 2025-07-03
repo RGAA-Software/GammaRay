@@ -35,8 +35,6 @@ namespace tc
         out_width_ = config.encode_width;
         out_height_ = config.encode_height;
         refresh_rate_ = config.fps;
-        //d3d11_device_ = config.d3d11_device_;
-        //d3d11_device_context_ = config.d3d11_device_context_;
         return true;
     }
 

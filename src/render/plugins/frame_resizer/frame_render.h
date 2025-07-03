@@ -33,6 +33,14 @@ namespace tc
             return m_SrcTexture;
         }
 
+        int GetTargetWidth() {
+            return target_size_.cx;
+        }
+
+        int GetTargetHeight() {
+            return target_size_.cy;
+        }
+
     private:
         HRESULT InitializeDesc(_In_ SIZE size, _Out_ D3D11_TEXTURE2D_DESC *pTargetDesc, int format);
         HRESULT MakeRTV();
@@ -53,8 +61,8 @@ namespace tc
         ID3D11Texture2D *m_SrcTexture;
         ID3D11ShaderResourceView *m_SrcSrv;
         ID3D11Texture2D *m_FinalTexture{nullptr};
-
         ID3D11Buffer *VertexBuffer = nullptr;
+        SIZE target_size_{};
     };
 
 }

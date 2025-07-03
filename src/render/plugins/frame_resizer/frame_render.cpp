@@ -47,6 +47,7 @@ namespace tc
 
     HRESULT FrameRender::Prepare(SIZE targetSize, SIZE originSize, int format) {
         HRESULT hr;
+        target_size_ = targetSize;
         // Create target texture
         D3D11_TEXTURE2D_DESC targetDesc;
         InitializeDesc(targetSize, &targetDesc, format);

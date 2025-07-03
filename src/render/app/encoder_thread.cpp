@@ -28,15 +28,13 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_frame_carrier_plugin.h"
+#include "plugin_interface/gr_frame_processor_plugin.h"
 
 #define DEBUG_FILE 0
-#define DEBUG_SAVE_D3D11TEXTURE_TO_FILE 0
 
 namespace tc
 {
-#if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
-    std::shared_ptr<D3DRender> g_render;
-#endif
+
     std::shared_ptr<EncoderThread> EncoderThread::Make(const std::shared_ptr<RdApplication>& app) {
         return std::make_shared<EncoderThread>(app);
     }
@@ -129,23 +127,6 @@ namespace tc
             auto settings = RdSettings::Instance();
             auto frame_index = cap_video_msg.frame_index_;
             auto adapter_uid = cap_video_msg.adapter_uid_;
-#if DEBUG_SAVE_D3D11TEXTURE_TO_FILE
-            Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
-        if(g_render) {
-            shared_texture = g_render->OpenSharedTexture(reinterpret_cast<HANDLE>(handle));
-            if(!shared_texture) {
-                g_render = nullptr;
-            }
-        }
-
-        if(!g_render) {
-            g_render = D3DRender::Create(reinterpret_cast<HANDLE>(handle), shared_texture.ReleaseAndGetAddressOf());
-        }
-
-        if(shared_texture) {
-            CopyID3D11Texture2D(shared_texture);
-        }
-#endif
             auto monitor_name = std::string(cap_video_msg.display_name_);
             bool frame_meta_info_changed = [&]() {
                 auto last_video_frame_exists = last_video_frames_.contains(monitor_name);
@@ -206,7 +187,7 @@ namespace tc
                 encoder_config.enable_adaptive_quantization = true;
                 encoder_config.gop_size = -1;
                 encoder_config.quality_preset = 1;
-                //encoder_config.fps = -1; // fps 如果设置为-1, nvenc 1060 显卡无法编码hevc(265), 提示编码器初始化失败，无效参数
+                // MUST have a value > 0
                 encoder_config.fps = settings_->encoder_.fps_;
                 if (encoder_config.fps < 15 || encoder_config.fps > 120) {
                     encoder_config.fps = 60;
@@ -218,10 +199,7 @@ namespace tc
                 encoder_config.texture_format = cap_video_msg.frame_format_;
                 encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
                 encoder_config.adapter_uid_ = cap_video_msg.adapter_uid_;
-
                 encoder_config.enable_full_color_mode_ = settings_->EnableFullColorMode();
-
-                LOGI("encoder_config.enable_full_color_mode_ : {}, encoder_config.codec_type: {}", encoder_config.enable_full_color_mode_, (int)encoder_config.codec_type);
 
                 PrintEncoderConfig(encoder_config);
 
@@ -243,46 +221,21 @@ namespace tc
                 });
 
                 // video frame carrier
-                if (encoder_config.frame_resize) {
-                    auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
-                        .mon_name_ = monitor_name,
-                        .frame_resize_ = true,
-                        .d3d_device_ = app_->GetD3DDevice(adapter_uid),
-                        .d3d_device_context_ = app_->GetD3DContext(adapter_uid),
-                        .adapter_uid_ = cap_video_msg.adapter_uid_,
-                        .encode_width_ = encoder_config.encode_width,
-                        .encode_height_ = encoder_config.encode_height,
-                        .enable_full_color_mode_ = encoder_config.enable_full_color_mode_,
-                        .frame_resize_plugin_ = plugin_manager_->GetFrameResizePlugin(),
-                    });
-                    if (!r) {
-                        LOGE("Init Frame Carrier failed, resize");
-                    }
+                auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
+                    .mon_name_ = monitor_name,
+                    .d3d_device_ = app_->GetD3DDevice(adapter_uid),
+                    .d3d_device_context_ = app_->GetD3DContext(adapter_uid),
+                    .adapter_uid_ = cap_video_msg.adapter_uid_,
+                    .enable_full_color_mode_ = encoder_config.enable_full_color_mode_,
+                });
+                if (!r) {
+                    LOGE("Init Frame Carrier failed");
                 }
-                else {
-                    auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
-                        .mon_name_ = monitor_name,
-                        .frame_resize_ = false,
-                        .d3d_device_ = app_->GetD3DDevice(adapter_uid),
-                        .d3d_device_context_ = app_->GetD3DContext(adapter_uid),
-                        .adapter_uid_ = cap_video_msg.adapter_uid_,
-                        .encode_width_ = -1,
-                        .encode_height_ = -1,
-                        .enable_full_color_mode_ = encoder_config.enable_full_color_mode_,
-                        .frame_resize_plugin_ = plugin_manager_->GetFrameResizePlugin(),
-                    });
-                    if (!r) {
-                        LOGE("Init Frame Carrier failed");
-                    }
-                }
-                //frame_carriers_[monitor_name] = frame_carrier;
-                //LOGI("Create frame carrier for monitor: {}", monitor_name);
 
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
                 bool is_mocking = settings_->capture_.mock_video_;
-
-                // 因为英伟达encode sdk 264编码不支持yuv444输出,所以目前用户设置了yuv444时, 优先使用ffmpeg, to do: 研究下英伟达硬编码,支持yuv444
+                // TODO::Fixme use Hardware
                 if (encoder_config.enable_full_color_mode_) {
                     auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
                     if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
@@ -342,21 +295,33 @@ namespace tc
                 last_video_frames_[monitor_name] = cap_video_msg;
             }
 
-            //auto frame_carrier = GetFrameCarrier(monitor_name);
-            //if (frame_carrier == nullptr) {
-            //    LOGI("Don't have frame carrier for monitor: {}", monitor_name);
-            //    return;
-            //}
-            // from texture
-            if (cap_video_msg.handle_ > 0 /*&& frame_carrier*/) {
-                // copy shared texture
+            // from texture handle
+            if (cap_video_msg.handle_ > 0 && frame_carrier_plugin_) {
+                // 1. copy shared texture
                 auto beg = TimeUtil::GetCurrentTimestamp();
-                //auto target_texture = frame_carrier->CopyTexture(cap_video_msg.handle_, frame_index);
                 auto cp_result = frame_carrier_plugin_->CopyTexture(monitor_name, cap_video_msg.handle_, frame_index);
                 if (cp_result->texture_ == nullptr) {
                     LOGI("Don't have target texture, frame carrier copies texture failed!");
                     return;
                 }
+
+                ComPtr<ID3D11Texture2D> target_texture = cp_result->texture_;
+                // 2. resize ?
+                if (auto opt_config = target_encoder_plugin->GetEncoderConfig(monitor_name);
+                    opt_config.has_value() && opt_config.value().frame_resize) {
+                    auto config = opt_config.value();
+                    if (auto resize_plugin = plugin_manager_->GetFrameResizePlugin(); resize_plugin) {
+                        auto t = resize_plugin->Process(cp_result->texture_, adapter_uid, monitor_name, config.encode_width, config.encode_height);
+                        if (t) {
+                            target_texture = t;
+                        }
+                        else {
+                            LOGE("Resize failed!");
+                            return;
+                        }
+                    }
+                }
+
                 auto copy_texture_end = TimeUtil::GetCurrentTimestamp();
                 auto diff_copy_texture = copy_texture_end - beg;
                 stat_->CaptureInfo(monitor_name)->AppendCopyTextureDuration((int32_t)diff_copy_texture);
@@ -366,7 +331,7 @@ namespace tc
                 if (target_encoder_plugin && target_encoder_plugin->CanEncodeTexture()) {
                     can_encode_texture = true;
                     // plugins: EncodeTexture
-                    target_encoder_plugin->Encode(cp_result->texture_, frame_index, cap_video_msg);
+                    target_encoder_plugin->Encode(target_texture.Get(), frame_index, cap_video_msg);
                 }
 
                 // TODO: Add Texture Mapping duration
@@ -377,7 +342,7 @@ namespace tc
                     auto beg_map_texture = TimeUtil::GetCurrentTimestamp();
 
                     D3D11_TEXTURE2D_DESC desc;
-                    cp_result->texture_->GetDesc(&desc);
+                    target_texture->GetDesc(&desc);
                     auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
                         // callback in Enc thread
                         context_->PostStreamPluginTask([=, this]() {

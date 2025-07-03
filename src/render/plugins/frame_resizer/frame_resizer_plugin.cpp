@@ -43,7 +43,7 @@ namespace tc
 
     }
 
-    ComPtr<ID3D11Texture2D> FrameResizerPlugin::Process(ID3D11Texture2D* input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) {
+    ComPtr<ID3D11Texture2D> FrameResizerPlugin::Process(const ComPtr<ID3D11Texture2D>& input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) {
         if (!input) {
             return nullptr;
         }
@@ -63,7 +63,7 @@ namespace tc
 
         auto resize_ctx = frame_render->GetD3D11DeviceContext();
         auto pre_texture = frame_render->GetSrcTexture();
-        resize_ctx->CopyResource(pre_texture, input);
+        resize_ctx->CopyResource(pre_texture, input.Get());
 
         //DebugOutDDS(pre_texture, "2.dds");
 
@@ -72,5 +72,22 @@ namespace tc
         return final_texture;
     }
 
+    std::optional<GrFrameResizeInfo> FrameResizerPlugin::GetFrameResizeInfo(const std::string& mon_name) {
+        if (auto frame_render = GetFrameRender(mon_name); frame_render) {
+            return GrFrameResizeInfo {
+                .mon_name_ = mon_name,
+                .resize_width_ = frame_render->GetTargetWidth(),
+                .resize_height_ = frame_render->GetTargetHeight(),
+            };
+        }
+        return std::nullopt;
+    }
+
+    std::shared_ptr<FrameRender> FrameResizerPlugin::GetFrameRender(const std::string& mon_name) {
+        if (frame_renders_.contains(mon_name)) {
+            return frame_renders_[mon_name];
+        }
+        return nullptr;
+    }
 
 }

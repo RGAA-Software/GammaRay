@@ -20,7 +20,12 @@ namespace tc
         uint32_t GetVersionCode() override;
         std::string GetPluginDescription() override;
         void On1Second() override;
-        ComPtr<ID3D11Texture2D> Process(ID3D11Texture2D* input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) override;
+        ComPtr<ID3D11Texture2D> Process(const ComPtr<ID3D11Texture2D>& input, uint64_t adapter_uid, const std::string& monitor_name, int target_width, int target_height) override;
+
+        std::optional<GrFrameResizeInfo> GetFrameResizeInfo(const std::string& mon_name) override;
+
+    private:
+        std::shared_ptr<FrameRender> GetFrameRender(const std::string& mon_name);
 
     private:
         std::map<std::string, std::shared_ptr<FrameRender>> frame_renders_;

@@ -49,7 +49,6 @@ namespace tc
         // encoding information for monitors/hook
         virtual std::map<std::string, WorkingEncoderInfoPtr> GetWorkingCapturesInfo() = 0;
 
-        
         std::optional<EncoderConfig> GetEncoderConfig(const std::string& monitor_name);
 
         // 如果客户端开始录屏，则需要设置此参数为true

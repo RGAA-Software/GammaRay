@@ -26,9 +26,6 @@ namespace tc
                                          const ComPtr<ID3D11DeviceContext>& d3d11_device_context,
                                          uint64_t adapter_uid,
                                          const std::string& monitor_name,
-                                         bool resize,
-                                         int resize_width,
-                                         int resize_height,
                                          bool enable_full_color_mode)
     {
         plugin_ = plugin;
@@ -36,9 +33,6 @@ namespace tc
         d3d11_device_context_ = d3d11_device_context;
         adapter_uid_ = adapter_uid;
         monitor_name_ = monitor_name;
-        resize_ = resize;
-        resize_width_ = resize_width;
-        resize_height_ = resize_height;
         enable_full_color_mode_ = enable_full_color_mode;
         yuv_converter_thread_ = Thread::Make("video frame carrier", 1024);
         yuv_converter_thread_->Poll();
@@ -149,7 +143,7 @@ namespace tc
         return sharedTexture;
     }
 
-    ID3D11Texture2D* VideoFrameCarrier::CopyTexture(const std::string& mon_name, uint64_t handle, uint64_t frame_index) {
+    ComPtr<ID3D11Texture2D> VideoFrameCarrier::CopyTexture(const std::string& mon_name, uint64_t handle, uint64_t frame_index) {
         ComPtr<ID3D11Texture2D> shared_texture;
         shared_texture = OpenSharedTexture(reinterpret_cast<HANDLE>(handle));
         if (!shared_texture) {
@@ -157,44 +151,19 @@ namespace tc
             return nullptr;
         }
 
-        auto frame_resize_plugin = plugin_->GetFrameResizePlugin(mon_name);
-        if (!frame_resize_plugin && resize_) {
-            LOGE("You want to resize, but there is not a resize plugin.");
-            return nullptr;
-        }
-
         D3D11_TEXTURE2D_DESC desc;
         shared_texture->GetDesc(&desc);
-        if (resize_) {
-            //if (!D3D11Texture2DLockMutex(shared_texture)) {
-            //    LOGE("D3D11Texture2DLockMutex error\n");
-            //    return nullptr;
-            //}
-            //std::shared_ptr<void> auto_release_texture2D_mutex((void *) nullptr, [=, this](void *temp) {
-            //    D3D11Texture2DReleaseMutex(shared_texture);
-            //});
 
-            auto final_texture
-                = frame_resize_plugin->Process(shared_texture.Get(), adapter_uid_, monitor_name_, resize_width_, resize_height_);
-            if (!final_texture) {
-                LOGE("Frame resize failed!");
-                return nullptr;
-            }
-            //DebugOutDDS(final_texture.Get(), "3.dds");
-            StampLogoOnTexture(final_texture, desc.Width, desc.Height);
-            return final_texture.Get();
-        } else {
-            if (!CopyID3D11Texture2D(shared_texture)) {
-                LOGE("CopyID3D11Texture2D failed.");
-                return nullptr;
-            }
-            //DebugOutDDS(texture2d_.Get(), "2.dds");
-            //PrintD3DTexture2DDesc("frame carrier, texture2d", texture2d_.Get());
-
-            // logo
-            StampLogoOnTexture(texture2d_, desc.Width, desc.Height);
-            return texture2d_.Get();
+        if (!CopyID3D11Texture2D(shared_texture)) {
+            LOGE("CopyID3D11Texture2D failed.");
+            return nullptr;
         }
+        //DebugOutDDS(texture2d_.Get(), "2.dds");
+        //PrintD3DTexture2DDesc("frame carrier, texture2d", texture2d_.Get());
+
+        // logo
+        StampLogoOnTexture(texture2d_, desc.Width, desc.Height);
+        return texture2d_;
     }
 
     void VideoFrameCarrier::StampLogoOnTexture(const ComPtr<ID3D11Texture2D>& texture, int tex_width, int tex_height) {
@@ -215,7 +184,7 @@ namespace tc
             };
 
             d3d11_device_->CreateTexture2D(&logo_desc, nullptr, &logo_point_texture_);
-            d3d11_device_context_->UpdateSubresource(logo_point_texture_, 0, nullptr, logo_image->data->DataAddr(), logo_image->GetWidth() * 4, 0);
+            d3d11_device_context_->UpdateSubresource(logo_point_texture_.Get(), 0, nullptr, logo_image->data->DataAddr(), logo_image->GetWidth() * 4, 0);
         }
 
         auto big_picture = tex_width > 1920 && tex_height > 1080;
@@ -228,7 +197,7 @@ namespace tc
                 texture.Get(),
                 0,
                 tex_width - right_offset + point.x(), point.y(), 0,
-                logo_point_texture_,
+                logo_point_texture_.Get(),
                 0,
                 &srcBox
             );
@@ -275,7 +244,7 @@ namespace tc
         }
     }
 
-    bool VideoFrameCarrier::MapRawTexture(ID3D11Texture2D* texture, DXGI_FORMAT format, int height,
+    bool VideoFrameCarrier::MapRawTexture(const ComPtr<ID3D11Texture2D>& texture, DXGI_FORMAT format, int height,
                                           std::function<void(const std::shared_ptr<Image>&)>&& rgba_cbk,
                                           std::function<void(const std::shared_ptr<Image>&)>&& yuv_cbk) {
         CComPtr<IDXGISurface> staging_surface = nullptr;
@@ -445,14 +414,6 @@ namespace tc
         if (logo_point_texture_) {
             logo_point_texture_->Release();
         }
-    }
-
-    int VideoFrameCarrier::GetResizeWidth() {
-        return resize_width_;
-    }
-
-    int VideoFrameCarrier::GetResizeHeight() {
-        return resize_height_;
     }
 
     void VideoFrameCarrier::SetFullColorModeEnabled(bool enabled) {
