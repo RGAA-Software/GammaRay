@@ -59,8 +59,7 @@ namespace tc
             LOGI("Adapter Index:{} Name:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str());
             auto adapter_uid = adapter_desc.AdapterLuid.LowPart;
             res = D3D11CreateDevice(adapter1, D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-                                    nullptr, 0, D3D11_SDK_VERSION, &d3d11_device, &feature_level,
-                                    &d3d11_device_context);
+                                    nullptr, 0, D3D11_SDK_VERSION, &d3d11_device, &feature_level, &d3d11_device_context);
             if (res != S_OK || !d3d11_device) {
                 LOGE("D3D11CreateDevice failed: {}", StringUtil::GetErrorStr(res).c_str());
                 break;
@@ -177,7 +176,7 @@ namespace tc
                 adapter_index++;
                 continue;
             }
-            last_list_texture_ = SharedD3d11Texture2D{};
+            last_list_texture_ = std::make_shared<SharedD3d11Texture2D>();
             d3d11_device_ = d3d11_device;
             d3d11_device_context_ = d3d11_device_context;
             break;
@@ -205,10 +204,13 @@ namespace tc
     }
 
     bool DDACapture::Exit() {
-        if (dxgi_output_duplication_.duplication_) {
-            dxgi_output_duplication_.duplication_->ReleaseFrame();
-            dxgi_output_duplication_.duplication_.Release();
+        if (cached_texture_) {
+            cached_texture_.Release();
         }
+        if (last_list_texture_) {
+            last_list_texture_->Exit();
+        }
+        dxgi_output_duplication_.Exit();
         d3d11_device_.Release();
         d3d11_device_context_.Release();
         return true;
@@ -252,7 +254,7 @@ namespace tc
             int try_count = -1;
             bool dda_init_res = false;
 
-            do  { 
+            do {
                 ++try_count;
                 dda_init_res = this->Init();
                 if (!dda_init_res) {
@@ -366,7 +368,7 @@ namespace tc
         }
     }
 
-    void DDACapture::OnCaptureFrame(ID3D11Texture2D *texture, bool is_cached) {
+    void DDACapture::OnCaptureFrame(const CComPtr<ID3D11Texture2D>& texture, bool is_cached) {
         HRESULT result;
         // input texture info
         D3D11_TEXTURE2D_DESC input_desc;
@@ -381,7 +383,7 @@ namespace tc
         UINT shared_width = 0;
         UINT shared_height = 0;
         DXGI_FORMAT shared_format = DXGI_FORMAT_UNKNOWN;
-        auto shared_texture = last_list_texture_.texture2d_;
+        auto shared_texture = last_list_texture_->texture2d_;
         if (shared_texture) {
             D3D11_TEXTURE2D_DESC shared_desc;
             shared_texture->GetDesc(&shared_desc);
@@ -399,7 +401,7 @@ namespace tc
             LOGI("texture changed, current: {}x{}, format: {}", input_width, input_height, (int)input_format);
             if (shared_texture) {
                 shared_texture->Release();
-                last_list_texture_.texture2d_ = nullptr;
+                last_list_texture_->texture2d_ = nullptr;
             }
             D3D11_TEXTURE2D_DESC create_desc;
             ZeroMemory(&create_desc, sizeof(create_desc));
@@ -414,14 +416,14 @@ namespace tc
             //create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
             create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
 
-            result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &last_list_texture_.texture2d_);
+            result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &last_list_texture_->texture2d_);
             if (FAILED(result)) {
                 LOGE("desktop capture create texture failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
 
             ComPtr<IDXGIResource> dxgiResource;
-            result = last_list_texture_.texture2d_.As<IDXGIResource>(&dxgiResource);
+            result = last_list_texture_->texture2d_.As<IDXGIResource>(&dxgiResource);
             if (FAILED(result)) {
                 LOGE("desktop capture as IDXGIResource failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
@@ -432,7 +434,7 @@ namespace tc
                 LOGI("desktop capture get shared handle failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
-            last_list_texture_.shared_handle_ = handle;
+            last_list_texture_->shared_handle_ = handle;
 
             // cached textures
             if (cached_texture_ != nullptr) {
@@ -461,7 +463,7 @@ namespace tc
         //    return;
         //}
 
-        d3d11_device_context_->CopyResource(last_list_texture_.texture2d_.Get(), texture);
+        d3d11_device_context_->CopyResource(last_list_texture_->texture2d_.Get(), texture);
         if (!is_cached) {
             d3d11_device_context_->CopyResource(cached_texture_, texture);
         }
@@ -470,7 +472,7 @@ namespace tc
         //    keyMutex->ReleaseSync(0x0);
         //}
 
-        SendTextureHandle(last_list_texture_.shared_handle_, input_width, input_height, input_format);
+        SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
     }
 
     void DDACapture::SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format) {
@@ -506,7 +508,7 @@ namespace tc
 
     }
 
-    int DDACapture::GetFrameIndex() {
+    int64_t DDACapture::GetFrameIndex() {
         monitor_frame_index_++;
         return monitor_frame_index_;
     }

@@ -12,11 +12,8 @@
 #include <memory>
 #include <map>
 #include <functional>
-
-//#include "desktop_capture.h"
 #include "tc_common_new/monitors.h"
 #include "tc_common_new/fps_stat.h"
-
 #include "plugins/plugin_desktop_capture.h"
 
 using namespace Microsoft::WRL;
@@ -37,9 +34,27 @@ namespace tc
             DXGIOutputDuplication() {
                 memset(&output_desc_, 0, sizeof(DXGI_OUTPUT_DESC));
             }
+
+            void Exit() {
+                if (duplication_) {
+                    duplication_->ReleaseFrame();
+                    duplication_.Release();
+                    duplication_ = nullptr;
+                }
+                memset(&output_desc_, 0, sizeof(DXGI_OUTPUT_DESC));
+                monitor_win_info_ = CaptureMonitorInfo{};
+            }
         };
 
         class SharedD3d11Texture2D {
+        public:
+            void Exit() {
+                if (texture2d_) {
+                    texture2d_->Release();
+                }
+                shared_handle_ = nullptr;
+            }
+
         public:
             HANDLE shared_handle_ = nullptr;
             ComPtr<ID3D11Texture2D> texture2d_ = nullptr;
@@ -67,9 +82,9 @@ namespace tc
         bool Exit();
         void Capture();
         HRESULT CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex);
-        void OnCaptureFrame(ID3D11Texture2D *texture, bool is_cached);
+        void OnCaptureFrame(const CComPtr<ID3D11Texture2D>& texture, bool is_cached);
         void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
-        int GetFrameIndex();
+        int64_t GetFrameIndex();
     private:
         DDACapturePlugin* plugin_ = nullptr;
 
@@ -80,7 +95,7 @@ namespace tc
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
         int64_t last_captured_timestamp_ = 0;
 
-        SharedD3d11Texture2D last_list_texture_;
+        std::shared_ptr<SharedD3d11Texture2D> last_list_texture_ = nullptr;
         DXGIOutputDuplication dxgi_output_duplication_;
         CComPtr<ID3D11Texture2D> cached_texture_ = nullptr;
 
@@ -88,6 +103,5 @@ namespace tc
         CComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
         CComPtr<ID3D11Texture2D> shared_texture_ = nullptr;
 
-        
     };
 }
