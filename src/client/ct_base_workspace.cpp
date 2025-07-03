@@ -948,7 +948,11 @@ namespace tc
         if (msg->type() == MessageType::kDisconnectConnection) {
             const auto& sub = msg->disconnect_connection();
             LOGI("DISCONNECT, device id: {}, stream id: {}", sub.device_id(), sub.stream_id());
-
+            context_->PostUITask([=, this]() {
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_remote_disconnected"), this);
+                dialog.exec();
+                Exit();
+            });
         }
     }
 }

@@ -45,7 +45,7 @@ namespace tc {
 		logo_name_lab_ = new TcLabel(this);
 		logo_name_lab_->setText("GammaRay");
 		logo_name_lab_->setStyleSheet("font-size: 14px; font-weight: 500; color: #2979FF;");
-		logo_hbox_layout_->addSpacing(30);
+		logo_hbox_layout_->addSpacing(18);
 		logo_hbox_layout_->addWidget(logo_lab_);
 		logo_hbox_layout_->addSpacing(6);
 		logo_hbox_layout_->addWidget(logo_name_lab_);
@@ -75,8 +75,9 @@ namespace tc {
 		conn_prompt_lab_ = new TcLabel(this);
 		conn_prompt_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
 		conn_prompt_lab_->SetTextId("id_remote_local_machine");
+		conn_prompt_lab_->adjustSize();
 		disconnect_btn_ = new TcPushButton(this);
-		disconnect_btn_->setFixedWidth(100);
+		disconnect_btn_->setFixedWidth(90);
 		disconnect_btn_->SetTextId("id_disconncet");
         connect(disconnect_btn_, &QPushButton::clicked, this, [=, this]() {
             if (!info_) {
@@ -93,7 +94,7 @@ namespace tc {
         });
 		disconnect_btn_->setProperty("class", "danger");
 
-		avatar_name_hbox_layout_->addSpacing(30);
+		avatar_name_hbox_layout_->addSpacing(18);
 		avatar_name_hbox_layout_->addWidget(avatar_lab_);
 		avatar_name_hbox_layout_->addSpacing(6);
 		avatar_name_hbox_layout_->addLayout(info_vbox_layout);
@@ -102,18 +103,27 @@ namespace tc {
 		avatar_name_hbox_layout_->addSpacing(6);
 		avatar_name_hbox_layout_->addStretch(1);
 		avatar_name_hbox_layout_->addWidget(disconnect_btn_);
-		avatar_name_hbox_layout_->addSpacing(20);
+		avatar_name_hbox_layout_->addSpacing(14);
 		root_vbox_layout_->addSpacing(12);
 		root_vbox_layout_->addLayout(avatar_name_hbox_layout_);
 		root_vbox_layout_->addStretch(1);
 
 		// 允许访问
 		promtp_hbox_layout_ = new NoMarginHLayout();
+		promtp_hbox_layout_->setAlignment(Qt::AlignLeft);
 		prompt_lab_ = new TcLabel(this);
 		prompt_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
 		prompt_lab_->SetTextId("id_allow_access_to");
-		promtp_hbox_layout_->addSpacing(30);
+
+		access_hint_lab_ = new TcLabel(this);
+		access_hint_lab_->SetTextId("id_access_hint");
+		access_hint_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
+		access_hint_lab_->hide();
+
+		promtp_hbox_layout_->addSpacing(18);
 		promtp_hbox_layout_->addWidget(prompt_lab_);
+		promtp_hbox_layout_->addSpacing(12);
+		promtp_hbox_layout_->addWidget(access_hint_lab_);
 		root_vbox_layout_->addLayout(promtp_hbox_layout_);
 
 		// 权限控制
@@ -133,12 +143,7 @@ namespace tc {
 		file_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
 		file_cbox_ = new QCheckBox(this);
 
-		access_hint_lab_ = new TcLabel(this);
-		access_hint_lab_->SetTextId("id_access_hint");
-		access_hint_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
-		access_hint_lab_->hide();
-
-		access_control_hbox_layout_->addSpacing(30);
+		access_control_hbox_layout_->addSpacing(18);
 		access_control_hbox_layout_->addWidget(voice_lab_);
 		access_control_hbox_layout_->addSpacing(4);
 		access_control_hbox_layout_->addWidget(voice_cbox_);
@@ -151,7 +156,6 @@ namespace tc {
 		access_control_hbox_layout_->addSpacing(4);
 		access_control_hbox_layout_->addWidget(file_cbox_);
 		access_control_hbox_layout_->addSpacing(6);
-		access_control_hbox_layout_->addWidget(access_hint_lab_);
 		access_control_hbox_layout_->addStretch(1);
 		root_vbox_layout_->addSpacing(8);
 		root_vbox_layout_->addLayout(access_control_hbox_layout_);

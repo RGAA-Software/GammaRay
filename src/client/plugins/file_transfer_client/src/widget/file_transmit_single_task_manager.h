@@ -5,6 +5,7 @@
 #include <atomic>
 #include <queue>
 #include <mutex>
+#include <optional>
 #include "file_transmit_task_state.h"
 
 namespace tc {
@@ -29,9 +30,9 @@ public:
 
 	void DeleteFileTransmitSingleTask(const QString& task_id);
 
-	bool IsDelete(const QString& task_id);
+	std::optional<bool> IsDelete(const QString& task_id);
 
-	bool IsEnded(const QString& task_id);
+	std::optional<bool> IsEnded(const QString& task_id);
 
 	std::shared_ptr<FileTransmitSingleTask> GetTaskById(const QString& task_id);
 

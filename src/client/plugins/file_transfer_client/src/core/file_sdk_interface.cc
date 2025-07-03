@@ -193,7 +193,14 @@ void FileSDKInterface::RegisterFileOperateCallback() {
 
 		file_transmit_sdk_->RegOnFileDownloadCallback(std::move([=](ETcFileTransmitState state, std::string task_id, uint64_t download_size, uint64_t file_size) {
 			QString task_id_qstr = QString::fromStdString(task_id);
-			if (FileTransmitSingleTaskManager::Instance()->IsEnded(task_id_qstr)) {
+
+			std::optional<bool> ended_res = FileTransmitSingleTaskManager::Instance()->IsEnded(task_id_qstr);
+			if (!ended_res.has_value()) {
+				LOGW("can not find task id: {}", task_id_qstr.toStdString());
+				return;
+			}
+			bool ended = ended_res.value();
+			if (ended) {
 				std::cout << task_id << " IsEnded = " << true << std::endl;
 				return;
 			}
