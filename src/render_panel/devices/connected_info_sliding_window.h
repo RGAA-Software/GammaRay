@@ -32,6 +32,4 @@ namespace tc {
         std::shared_ptr<tcrp::RpConnectedClientInfo> info_ = nullptr;
         std::shared_ptr<GrContext> ctx_ = nullptr;
     };
-
-
 }

@@ -2,6 +2,7 @@
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qpixmap.h>
+#include <qtimer.h>
 #include "no_margin_layout.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
@@ -15,8 +16,15 @@
 namespace tc {
 
 	ConnectedInfoPanel::ConnectedInfoPanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent), ctx_(ctx) {
+		GrSettings* settings = GrSettings::Instance();
+		if (!settings) {
+			return;
+		}
+		settings_ = settings;
 		InitView();
 		WidgetHelper::AddShadow(this, 0xbbbbbb, 8);
+		InitData();
+		InitSigChannel();
 	}
 	
 	void ConnectedInfoPanel::InitView() {
@@ -25,7 +33,7 @@ namespace tc {
 		setFixedSize(500, 200);
 		root_vbox_layout_ = new NoMarginVLayout();
 		setLayout(root_vbox_layout_);
-		root_vbox_layout_->addSpacing(30);
+		root_vbox_layout_->addSpacing(20);
 
 		// logo标识
 		logo_hbox_layout_ = new NoMarginHLayout();
@@ -37,7 +45,7 @@ namespace tc {
 		logo_name_lab_ = new TcLabel(this);
 		logo_name_lab_->setText("GammaRay");
 		logo_name_lab_->setStyleSheet("font-size: 14px; font-weight: 500; color: #2979FF;");
-		logo_hbox_layout_->addSpacing(10);
+		logo_hbox_layout_->addSpacing(30);
 		logo_hbox_layout_->addWidget(logo_lab_);
 		logo_hbox_layout_->addSpacing(6);
 		logo_hbox_layout_->addWidget(logo_name_lab_);
@@ -83,6 +91,7 @@ namespace tc {
             sub->set_device_name(info_->device_name());
             ctx_->GetApplication()->PostMessage2Renderer(msg.SerializeAsString());
         });
+		disconnect_btn_->setProperty("class", "danger");
 
 		avatar_name_hbox_layout_->addSpacing(30);
 		avatar_name_hbox_layout_->addWidget(avatar_lab_);
@@ -124,6 +133,11 @@ namespace tc {
 		file_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
 		file_cbox_ = new QCheckBox(this);
 
+		access_hint_lab_ = new TcLabel(this);
+		access_hint_lab_->SetTextId("id_access_hint");
+		access_hint_lab_->setStyleSheet("font-size: 14px; font-weight: 400;");
+		access_hint_lab_->hide();
+
 		access_control_hbox_layout_->addSpacing(30);
 		access_control_hbox_layout_->addWidget(voice_lab_);
 		access_control_hbox_layout_->addSpacing(4);
@@ -136,6 +150,8 @@ namespace tc {
 		access_control_hbox_layout_->addWidget(file_lab_);
 		access_control_hbox_layout_->addSpacing(4);
 		access_control_hbox_layout_->addWidget(file_cbox_);
+		access_control_hbox_layout_->addSpacing(6);
+		access_control_hbox_layout_->addWidget(access_hint_lab_);
 		access_control_hbox_layout_->addStretch(1);
 		root_vbox_layout_->addSpacing(8);
 		root_vbox_layout_->addLayout(access_control_hbox_layout_);
@@ -160,22 +176,47 @@ namespace tc {
 	}
 
 	void ConnectedInfoPanel::InitData() {
-		GrSettings* settings = GrSettings::Instance();
-		if (!settings) {
+		if (!settings_) {
 			return;
 		}
-		bool audio_access = settings->IsCaptureAudioEnabled();
+		bool audio_access = settings_->IsCaptureAudioEnabled();
 		voice_cbox_->setChecked(audio_access);
 
-		bool file_access = settings->IsFileTransferEnabled();
+		bool file_access = settings_->IsFileTransferEnabled();
 		file_cbox_->setChecked(file_access);
 
-		bool key_mouse_access = settings->IsBeingOperatedEnabled();
+		bool key_mouse_access = settings_->IsBeingOperatedEnabled();
 		key_mouse_cbox_->setChecked(key_mouse_access);
 	}
 
 	void ConnectedInfoPanel::InitSigChannel() {
-	
+		if (!settings_) {
+			return;
+		}
+		connect(voice_cbox_, &QCheckBox::toggled, this, [=] {
+			bool audio_access = settings_->IsCaptureAudioEnabled();
+			voice_cbox_->setChecked(audio_access);
+			ShowAccessHint();
+		});
+		
+		connect(file_cbox_, &QCheckBox::toggled, this, [=] {
+			bool file_access = settings_->IsFileTransferEnabled();
+			file_cbox_->setChecked(file_access);
+			ShowAccessHint();
+		});
+
+		connect(key_mouse_cbox_, &QCheckBox::toggled, this, [=] {
+			bool key_mouse_access = settings_->IsBeingOperatedEnabled();
+			key_mouse_cbox_->setChecked(key_mouse_access);
+			ShowAccessHint();
+		});
+	}
+
+	void ConnectedInfoPanel::ShowAccessHint() {
+		access_hint_lab_->show();
+		QTimer::singleShot(3000, this, [=, this] {
+			access_hint_lab_->hide();
+		});
 	}
 }
 

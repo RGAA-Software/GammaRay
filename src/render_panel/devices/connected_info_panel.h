@@ -17,6 +17,7 @@ namespace tc {
     class TcLabel;
     class TcPushButton;
     class GrContext;
+    class GrSettings;
 
     // 被客户端连接上来后，显示连接者的一些信息
     class ConnectedInfoPanel : public QWidget {
@@ -29,6 +30,7 @@ namespace tc {
         void InitView();
         void InitData();
         void InitSigChannel();
+        void ShowAccessHint();
     private:
         NoMarginVLayout* root_vbox_layout_ = nullptr;
 
@@ -59,9 +61,12 @@ namespace tc {
         // 文件
         QCheckBox* file_cbox_ = nullptr;
         TcLabel* file_lab_ = nullptr;
+        // 提示用户去设置面板界面
+        TcLabel* access_hint_lab_ = nullptr;
 
         std::shared_ptr<GrContext> ctx_ = nullptr;
         std::shared_ptr<tcrp::RpConnectedClientInfo> info_ = nullptr;
+        GrSettings* settings_ = nullptr;
     };
 
 

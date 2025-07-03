@@ -253,6 +253,7 @@
   "id_voice":"声音",
   "id_file":"文件",
   "id_key_mouse":"键鼠",
+  "id_access_hint":"请到设置界面去设置相关权限",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文档",

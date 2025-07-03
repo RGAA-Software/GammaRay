@@ -1,5 +1,6 @@
 ﻿#include "connected_info_sliding_window.h"
 #include <qtimer.h>
+#include <qapplication.h>
 #include "no_margin_layout.h"
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/widget_helper.h"
@@ -33,7 +34,6 @@ namespace tc {
         }
         panel_ = new ConnectedInfoPanel(ctx_);
         main_hbox_layout_->addWidget(panel_);
-
 		tag_->installEventFilter(this);
 	}
 
@@ -43,17 +43,13 @@ namespace tc {
 
 	bool ConnectedInfoSlidingWindow::eventFilter(QObject* obj, QEvent* event) {
 		if (obj == tag_) {
-			if (event->type() == QEvent::MouseButtonRelease) {
+			if (event->type() == QEvent::MouseButtonRelease && !tag_->generate_movement_) {
 				bool current_state = tag_->GetExpanded();
-				LOGI("ConnectedInfoSlidingWindow tag_ MouseButtonRelease");
 				if (current_state) {
 					panel_->hide();
-					LOGI("ConnectedInfoSlidingWindow panel_->hide()");
 				}
 				else {
-					LOGI("ConnectedInfoSlidingWindow panel_->show()");
 					panel_->show();
-
 				}
 				tag_->SetExpanded(!current_state);
 				return true; // 事件已处理，不再传递
@@ -65,5 +61,6 @@ namespace tc {
 	void ConnectedInfoSlidingWindow::UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info) {
 		panel_->UpdateInfo(info);
 	}
+
 }
 
