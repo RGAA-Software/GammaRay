@@ -50,6 +50,8 @@ namespace tc {
 
         NoMarginHLayout* promtp_hbox_layout_ = nullptr;
         TcLabel* prompt_lab_ = nullptr;
+        // 提示用户去设置面板界面
+        TcLabel* access_hint_lab_ = nullptr;
 
         NoMarginHLayout* access_control_hbox_layout_ = nullptr;
         // 声音
@@ -61,9 +63,7 @@ namespace tc {
         // 文件
         QCheckBox* file_cbox_ = nullptr;
         TcLabel* file_lab_ = nullptr;
-        // 提示用户去设置面板界面
-        TcLabel* access_hint_lab_ = nullptr;
-
+        
         std::shared_ptr<GrContext> ctx_ = nullptr;
         std::shared_ptr<tcrp::RpConnectedClientInfo> info_ = nullptr;
         GrSettings* settings_ = nullptr;

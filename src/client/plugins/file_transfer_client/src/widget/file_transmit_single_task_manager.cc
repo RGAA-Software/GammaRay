@@ -206,18 +206,20 @@ void FileTransmitSingleTaskManager::DeleteFileTransmitSingleTask(const QString& 
 	}
 }
 
-bool FileTransmitSingleTaskManager::IsDelete(const QString& task_id) {
+std::optional<bool> FileTransmitSingleTaskManager::IsDelete(const QString& task_id) {
 	std::lock_guard<std::mutex> lck{ mutex_ };
 	if (all_tasks_.count(task_id) > 0) {
 		return all_tasks_[task_id]->is_delete_;
 	}
+	return std::nullopt;
 }
 
-bool FileTransmitSingleTaskManager::IsEnded(const QString& task_id) {
+std::optional<bool> FileTransmitSingleTaskManager::IsEnded(const QString& task_id) {
 	std::lock_guard<std::mutex> lck{ mutex_ };
 	if (all_tasks_.count(task_id) > 0) {
 		return all_tasks_[task_id]->is_ended_;
 	}
+	return std::nullopt;
 }
 
 std::shared_ptr<FileTransmitSingleTask> FileTransmitSingleTaskManager::GetTaskById(const QString& task_id) {
