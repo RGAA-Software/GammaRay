@@ -400,7 +400,7 @@ namespace tc
             LOGI("texture changed, origin: {}x{}, format: {}", shared_width, shared_height, (int)shared_format);
             LOGI("texture changed, current: {}x{}, format: {}", input_width, input_height, (int)input_format);
             if (shared_texture) {
-                shared_texture->Release();
+                shared_texture.Release();
                 last_list_texture_->texture2d_ = nullptr;
             }
             D3D11_TEXTURE2D_DESC create_desc;
@@ -422,8 +422,9 @@ namespace tc
                 return;
             }
 
-            ComPtr<IDXGIResource> dxgiResource;
-            result = last_list_texture_->texture2d_.As<IDXGIResource>(&dxgiResource);
+            CComPtr<IDXGIResource> dxgiResource;
+            result = last_list_texture_->texture2d_->QueryInterface(__uuidof(IDXGIResource), (void**)&dxgiResource);
+            //result = last_list_texture_->texture2d_.As<IDXGIResource>(&dxgiResource);
             if (FAILED(result)) {
                 LOGE("desktop capture as IDXGIResource failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
@@ -463,7 +464,7 @@ namespace tc
         //    return;
         //}
 
-        d3d11_device_context_->CopyResource(last_list_texture_->texture2d_.Get(), texture);
+        d3d11_device_context_->CopyResource(last_list_texture_->texture2d_, texture);
         if (!is_cached) {
             d3d11_device_context_->CopyResource(cached_texture_, texture);
         }

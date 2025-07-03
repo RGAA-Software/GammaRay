@@ -89,7 +89,7 @@ namespace tc
         return true;
     }
 
-    void AmfEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
+    void AmfEncoderPlugin::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra) {
         auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
         if (IsWorking()) {
             auto monitor_name = std::string(cap_video_msg.display_name_);

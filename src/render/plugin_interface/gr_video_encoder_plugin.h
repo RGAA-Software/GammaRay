@@ -42,7 +42,7 @@ namespace tc
         virtual bool CanEncodeTexture();
         virtual bool HasEncoderForMonitor(const std::string& monitor_name) = 0;
         virtual bool Init(const EncoderConfig& config, const std::string& monitor_name);
-        virtual void Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra);
+        virtual void Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra);
         virtual void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
         virtual void Exit(const std::string& monitor_name);
         virtual void ExitAll();

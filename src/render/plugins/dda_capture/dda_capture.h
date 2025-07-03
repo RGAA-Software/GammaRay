@@ -50,14 +50,15 @@ namespace tc
         public:
             void Exit() {
                 if (texture2d_) {
-                    texture2d_->Release();
+                    texture2d_.Release();
+                    texture2d_ = nullptr;
                 }
                 shared_handle_ = nullptr;
             }
 
         public:
             HANDLE shared_handle_ = nullptr;
-            ComPtr<ID3D11Texture2D> texture2d_ = nullptr;
+            CComPtr<ID3D11Texture2D> texture2d_ = nullptr;
         };
 
         explicit DDACapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info);

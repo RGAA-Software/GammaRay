@@ -286,7 +286,7 @@ namespace tc
         return true;
     }
 
-    void VideoEncoderVCE::Encode(ID3D11Texture2D *tex2d, uint64_t frame_index, std::any extra) {
+    void VideoEncoderVCE::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, std::any extra) {
         extra_ = extra;
         D3D11_TEXTURE2D_DESC desc;
         tex2d->GetDesc(&desc);
@@ -309,7 +309,7 @@ namespace tc
         LOGI("Successfully shutdown VideoEncoderVCE.");
     }
 
-    void VideoEncoderVCE::EncodeTexture(ID3D11Texture2D* texture, int width, int height, int64_t frame_idx) {
+    void VideoEncoderVCE::EncodeTexture(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, int width, int height, int64_t frame_idx) {
         amf::AMFSurfacePtr surface = nullptr;
         // Surface is cached by AMF.
         AMF_LOG_ERR_IF(amf_context_->AllocSurface(amf::AMF_MEMORY_DX11, convert_input_format_, width, height, &surface));
@@ -318,7 +318,7 @@ namespace tc
             return;
         }
         auto textureDX11 = (ID3D11Texture2D*)surface->GetPlaneAt(0)->GetNative(); // no reference counting - do not Release()
-        d3d11_device_context_->CopyResource(textureDX11, texture);
+        d3d11_device_context_->CopyResource(textureDX11, tex2d.Get());
 
         //DebugOutDDS(textureDX11, "1-encoder");
         //DebugOutDDS(texture, "2-resource");

@@ -88,7 +88,7 @@ namespace tc
         return ok;
     }
 
-    void NvencEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
+    void NvencEncoderPlugin::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra) {
         auto cap_video_msg = std::any_cast<CaptureVideoFrame>(extra);
         auto monitor_name = std::string(cap_video_msg.display_name_);
         if (HasEncoderForMonitor(monitor_name)) {

@@ -91,16 +91,16 @@ namespace tc
         }
     }
 
-    bool NVENCVideoEncoder::Encode(ID3D11Texture2D *tex, uint64_t frame_index, std::any extra) {
-        return Transmit(tex, frame_index, extra);
+    bool NVENCVideoEncoder::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, std::any extra) {
+        return Transmit(tex2d, frame_index, extra);
     }
 
-    bool NVENCVideoEncoder::Transmit(ID3D11Texture2D* texture, uint64_t frame_index, std::any extra) {
+    bool NVENCVideoEncoder::Transmit(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, std::any extra) {
         auto beg = TimeUtil::GetCurrentTimestamp();
         std::vector<std::vector<uint8_t>> out_packet;
         const NvEncInputFrame *input_frame = nv_encoder_->GetNextInputFrame();
         auto pInputTexture = reinterpret_cast<ID3D11Texture2D*>(input_frame->inputPtr);
-        d3d11_device_context_->CopyResource(pInputTexture, texture);
+        d3d11_device_context_->CopyResource(pInputTexture, tex2d.Get());
 
         bool is_key_frame = false;
         NV_ENC_PIC_PARAMS picParams = {};
@@ -117,7 +117,7 @@ namespace tc
         }
 
         CD3D11_TEXTURE2D_DESC desc;
-        texture->GetDesc(&desc);
+        tex2d->GetDesc(&desc);
 
         for (std::vector<uint8_t> &packet: out_packet) {
             auto encoded_data = Data::Make((char *) packet.data(), packet.size());

@@ -331,7 +331,7 @@ namespace tc
                 if (target_encoder_plugin && target_encoder_plugin->CanEncodeTexture()) {
                     can_encode_texture = true;
                     // plugins: EncodeTexture
-                    target_encoder_plugin->Encode(target_texture.Get(), frame_index, cap_video_msg);
+                    target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
                 }
 
                 // TODO: Add Texture Mapping duration

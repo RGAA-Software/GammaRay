@@ -38,7 +38,7 @@ namespace tc
         return true;
     }
 
-    void GrVideoEncoderPlugin::Encode(ID3D11Texture2D* tex2d, uint64_t frame_index, const std::any& extra) {
+    void GrVideoEncoderPlugin::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra) {
 
     }
 
