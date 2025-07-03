@@ -113,7 +113,6 @@ namespace tc
 
                     if (!plugin->IsPluginEnabled()) {
                         LOGW("Plugin: {} is disabled!", plugin->GetPluginName());
-                        //continue;
                     }
 
                     plugins_.insert({plugin_id, plugin});
