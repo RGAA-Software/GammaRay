@@ -9,9 +9,11 @@
 #include "render/settings/rd_settings.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/message_notifier.h"
+#include "tc_message.pb.h"
 #include "tc_render_panel_message.pb.h"
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_plugin_interface.h"
+#include "plugin_interface/gr_net_plugin.h"
 
 namespace tc
 {
@@ -190,6 +192,25 @@ namespace tc
                     });
                 }
                 context_->DispatchAppEvent2Plugins(event);
+            }
+            else if (m.type() == tcrp::RpMessageType::kRpDisconnectConnection) {
+                const auto& sub = m.disconnect_connection();
+                // 1. make disconnect message in tc_messages.proto
+                auto resp_msg = std::make_shared<tc::Message>();
+                resp_msg->set_device_id(sub.device_id());
+                resp_msg->set_stream_id(sub.stream_id());
+                resp_msg->set_type(kDisconnectConnection);
+                auto resp_sub = resp_msg->mutable_disconnect_connection();
+                resp_sub->set_device_id(sub.device_id());
+                resp_sub->set_stream_id(sub.stream_id());
+                resp_sub->set_room_id(sub.room_id());
+                resp_sub->set_device_name(sub.device_name());
+                auto target_msg = resp_msg->SerializeAsString();
+
+                // 2. send it to net plugins
+                plugin_mgr_->VisitNetPlugins([=, this](GrNetPlugin* plugin) {
+                    plugin->PostTargetStreamProtoMessage(sub.stream_id(), target_msg, true);
+                });
             }
 
         } catch(std::exception& e) {

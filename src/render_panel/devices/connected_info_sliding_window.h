@@ -3,6 +3,11 @@
 #include <qpainter.h>
 #include <qevent.h>
 
+namespace tcrp
+{
+    class RpConnectedClientInfo;
+}
+
 namespace tc {
 
     class NoMarginVLayout;
@@ -17,14 +22,14 @@ namespace tc {
         ConnectedInfoSlidingWindow(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent* event) override;
         bool eventFilter(QObject* obj, QEvent* event) override;
-        void UpdateInfo(const QString& device_id, const QString& device_name);
+        void UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info);
     private:
         void InitView();
     private:
         NoMarginHLayout* main_hbox_layout_ = nullptr;
         ConnectedInfoTag* tag_ = nullptr;
         ConnectedInfoPanel* panel_ = nullptr;
-
+        std::shared_ptr<tcrp::RpConnectedClientInfo> info_ = nullptr;
         std::shared_ptr<GrContext> ctx_ = nullptr;
     };
 

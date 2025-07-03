@@ -370,6 +370,9 @@ namespace tc
             plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
                 plugin->OnMessage(msg);
             });
+
+            // parse it
+            this->ProcessNetworkMessage(msg);
         });
 
         media_record_plugin_ = plugin_manager_->GetMediaRecordPlugin();
@@ -942,5 +945,13 @@ namespace tc
                 dis_conn_dialog_->Done();
             }
         });
+    }
+
+    void BaseWorkspace::ProcessNetworkMessage(const std::shared_ptr<tc::Message>& msg) {
+        if (msg->type() == MessageType::kDisconnectConnection) {
+            const auto& sub = msg->disconnect_connection();
+            LOGI("DISCONNECT, device id: {}, stream id: {}", sub.device_id(), sub.stream_id());
+
+        }
     }
 }

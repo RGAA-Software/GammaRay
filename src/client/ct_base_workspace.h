@@ -105,6 +105,9 @@ namespace tc
         // dismiss connecting dialog
         void DismissConnectingDialog();
 
+        // messages defined in tc_message.proto
+        void ProcessNetworkMessage(const std::shared_ptr<tc::Message>& msg);
+
     protected:
         Settings* settings_ = nullptr;
         std::shared_ptr<ThunderSdkParams> params_ = nullptr;

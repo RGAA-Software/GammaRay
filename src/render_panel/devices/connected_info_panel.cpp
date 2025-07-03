@@ -8,6 +8,9 @@
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/widget_helper.h"
 #include "render_panel/gr_settings.h"
+#include "tc_render_panel_message.pb.h"
+#include "render_panel/gr_application.h"
+#include "tc_common_new/client_id_extractor.h"
 
 namespace tc {
 
@@ -67,6 +70,19 @@ namespace tc {
 		disconnect_btn_ = new TcPushButton(this);
 		disconnect_btn_->setFixedWidth(100);
 		disconnect_btn_->SetTextId("id_disconncet");
+        connect(disconnect_btn_, &QPushButton::clicked, this, [=, this]() {
+            if (!info_) {
+                return;
+            }
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpDisconnectConnection);
+            auto sub = msg.mutable_disconnect_connection();
+            sub->set_device_id(info_->device_id());
+            sub->set_stream_id(info_->stream_id());
+            sub->set_room_id(info_->room_id());
+            sub->set_device_name(info_->device_name());
+            ctx_->GetApplication()->PostMessage2Renderer(msg.SerializeAsString());
+        });
 
 		avatar_name_hbox_layout_->addSpacing(30);
 		avatar_name_hbox_layout_->addWidget(avatar_lab_);
@@ -135,10 +151,11 @@ namespace tc {
         painter.drawRoundedRect(0, 5, this->width(), this->height()-10, 5, 5);
 	}
 
-	void ConnectedInfoPanel::UpdateInfo(const QString& device_id, const QString& device_name) {
-		key_1_lab_->setText(device_id);
+	void ConnectedInfoPanel::UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info) {
+        info_ = info;
+		key_1_lab_->setText(ExtractClientId(info_->device_id()).c_str());
 		key_1_lab_->adjustSize();
-		key_2_lab_->setText(device_name);
+		key_2_lab_->setText(info_->device_name().c_str());
 		key_2_lab_->adjustSize();
 	}
 

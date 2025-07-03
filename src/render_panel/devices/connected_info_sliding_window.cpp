@@ -6,6 +6,8 @@
 #include "connected_info_panel.h"
 #include "connected_info_tag.h"
 #include "tc_common_new/log.h"
+#include "tc_render_panel_message.pb.h"
+#include "tc_common_new/client_id_extractor.h"
 
 namespace tc {
 
@@ -60,8 +62,8 @@ namespace tc {
 		return QWidget::eventFilter(obj, event);
 	}
 
-	void ConnectedInfoSlidingWindow::UpdateInfo(const QString& device_id, const QString& device_name) {
-		panel_->UpdateInfo(device_id, device_name);
+	void ConnectedInfoSlidingWindow::UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info) {
+		panel_->UpdateInfo(info);
 	}
 }
 

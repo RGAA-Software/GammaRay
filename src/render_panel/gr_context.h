@@ -76,6 +76,7 @@ namespace tc
 
         std::shared_ptr<DBGameOperator> GetDBGameManager();
         std::shared_ptr<ServiceManager> GetServiceManager();
+        std::shared_ptr<GrApplication> GetApplication();
 
         template<typename T>
         void SendAppMessage(const T& m) {

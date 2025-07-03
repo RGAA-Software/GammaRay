@@ -46,8 +46,12 @@ namespace tc
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
         std::shared_ptr<GrAccountManager> GetAccountManager() { return account_mgr_; }
         bool IsServiceConnected();
+        // panel -> service
+        // msg: protobuf message
         bool PostMessage2Service(const std::string& msg);
         bool IsRendererConnected();
+        // panel -> render
+        // msg: protobuf message
         bool PostMessage2Renderer(const std::string& msg);
         void RequestNewClientId(bool force_update);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();

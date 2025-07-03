@@ -223,6 +223,10 @@ namespace tc
         return service_manager_;
     }
 
+    std::shared_ptr<GrApplication> GrContext::GetApplication() {
+        return app_;
+    }
+
     std::shared_ptr<StreamDBOperator> GrContext::GetStreamDBManager() {
         return stream_db_mgr_;
     }

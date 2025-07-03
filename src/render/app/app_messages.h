@@ -210,7 +210,7 @@ namespace tc
         std::string ref_path_;
     };
 
-    // render panel -> network -> render -> plugins
+    // render panel -> ipc -> render -> plugins
     class MsgClipboardEvent : public AppBaseEvent {
     public:
         MsgClipboardEvent() : AppBaseEvent() {
@@ -225,7 +225,6 @@ namespace tc
         std::vector<MsgClipboardFile> files_;
     };
 
-    //
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H
