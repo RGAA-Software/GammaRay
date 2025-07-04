@@ -60,6 +60,9 @@ namespace tc
         // client -> render 修改帧率
         void ProcessModifyFps(std::shared_ptr<Message>&& msg);
 
+        // client -> render 窗口失焦
+        void ProcessFocusOutEvent();
+
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
 
         // report client connect/disconnect state
