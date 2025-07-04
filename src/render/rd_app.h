@@ -78,9 +78,6 @@ namespace tc
         void PostNetMessage(const std::string& msg);
         std::shared_ptr<RdContext> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
-        //std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
-        // DesktopCapture is null in plugin mode
-        std::shared_ptr<DesktopCapture> GetDesktopCapture() { return nullptr/*desktop_capture_*/; }
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
         void ProcessGamepadState(const MsgGamepadState& state);
         void ResetMonitorResolution(const std::string& name, int w, int h);
@@ -112,7 +109,10 @@ namespace tc
 
         void InitVigemController();
         void ReleaseVigemController();
-        void ReportAudioSpectrum();
+        // to panel
+        void ReportAudioSpectrum2Panel();
+        // to clients
+        void SendAudioSpectrumMessage();
         void SendClipboardMessage(const std::string& msg);
         void SendConfigurationBack();
         void RequestRestartMe();

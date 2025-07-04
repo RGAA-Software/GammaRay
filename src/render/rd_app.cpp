@@ -196,12 +196,15 @@ namespace tc
 
         msg_listener_->Listen<MsgTimer16>([=, this](const MsgTimer16& msg) {
             this->PostGlobalTask([=, this]() {
-                this->ReportAudioSpectrum();
+                this->SendAudioSpectrumMessage();
             });
         });
 
         msg_listener_->Listen<MsgTimer100>([=, this](const MsgTimer100& msg) {
-
+            this->PostGlobalTask([=, this]() {
+                // If you want a much smoother spectrum, report it quicker, post it in MsgTimer16 callback
+                this->ReportAudioSpectrum2Panel();
+            });
         });
 
         msg_listener_->Listen<MsgTimer1000>([=, this](const MsgTimer1000& msg) {
@@ -530,7 +533,7 @@ namespace tc
         }));
     }
 
-    void RdApplication::ReportAudioSpectrum() {
+    void RdApplication::SendAudioSpectrumMessage() {
         auto st = RdStatistics::Instance();
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kRendererAudioSpectrum);
@@ -547,6 +550,20 @@ namespace tc
 
         // audio spectrum
         PostNetMessage(net_msg);
+    }
+
+    void RdApplication::ReportAudioSpectrum2Panel() {
+        auto st = RdStatistics::Instance();
+        auto msg = std::make_shared<tcrp::RpMessage>();
+        msg->set_type(tcrp::kRpServerAudioSpectrum);
+        auto sas = msg->mutable_renderer_audio_spectrum();
+        sas->set_samples(st->audio_samples_);
+        sas->set_bits(st->audio_bits_);
+        sas->set_channels(st->audio_channels_);
+        sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
+        sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
+        auto net_msg = msg->SerializeAsString();
+        PostPanelMessage(net_msg);
     }
 
     void RdApplication::SendClipboardMessage(const std::string& msg) {
