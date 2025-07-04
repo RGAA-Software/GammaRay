@@ -218,13 +218,13 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
 
                 if (path == kUrlMedia) {
-                    auto router = WsStreamRouter::Make(ws_data_, only_audio, server_device_id, stream_id);
+                    auto router = WsStreamRouter::Make(ws_data_, only_audio, visitor_device_id, stream_id);
                     stream_routers_.Insert(socket_fd, router);
                     NotifyMediaClientConnected(router->the_conn_id_, visitor_device_id);
                     router->OnOpen(sess_ptr);
                 }
                 else if (path == kUrlFileTransfer) {
-                    auto router = WsFileTransferRouter::Make(ws_data_, only_audio, server_device_id, stream_id);
+                    auto router = WsFileTransferRouter::Make(ws_data_, only_audio, visitor_device_id, stream_id);
                     ft_routers_.Insert(socket_fd, router);
                     router->OnOpen(sess_ptr);
                 }

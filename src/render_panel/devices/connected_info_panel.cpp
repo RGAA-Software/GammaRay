@@ -175,7 +175,8 @@ namespace tc {
 	void ConnectedInfoPanel::UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info) {
         info_ = info;
         auto device_id = ExtractClientId(info_->device_id());
-        if (info_->device_id().starts_with("client_")) {
+        if (info_->device_id().starts_with("client_")
+            || (device_id.size() == 9 && device_id.find(".") == std::string::npos)) {
             device_id = tc::SpaceId(device_id);
         }
 		key_1_lab_->setText(device_id.c_str());
