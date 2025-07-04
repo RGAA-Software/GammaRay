@@ -1,19 +1,23 @@
 ﻿#pragma once
 #include <memory>
 #include <map>
+#include <qobject.h>
+#include <qabstractnativeeventfilter.h>
 
 namespace tc { 
 	class GrContext;
 	class MessageListener;
 	class ConnectedInfoSlidingWindow;
 	
-	class GrConnectedManager {
+	class GrConnectedManager : public QObject, public QAbstractNativeEventFilter {
 	public:
 		GrConnectedManager(const std::shared_ptr<GrContext>& ctx);
 		void RegisterMessageListener();
 		void TestShowPanel();
+		bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 	private:
 		void AdjustPanelPosition();
+		void InitPanel();
 		void HideAllPanels();
 		void ShowAllPanels();
 	private:

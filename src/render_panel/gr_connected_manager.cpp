@@ -1,4 +1,4 @@
-#include "gr_connected_manager.h"
+﻿#include "gr_connected_manager.h"
 #include <qapplication.h>
 #include "gr_context.h"
 #include "tc_common_new/message_notifier.h"
@@ -24,8 +24,20 @@ namespace tc {
         }
 
         RegisterMessageListener();
-        AdjustPanelPosition();
+        InitPanel();
 	}
+
+    bool GrConnectedManager::nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) {
+        MSG* msg = static_cast<MSG*>(message);
+        if (msg->message == WM_DISPLAYCHANGE) {
+            if (gr_ctx_) {
+                gr_ctx_->PostUITask([=, this]() {
+                    AdjustPanelPosition(); // to do,待测试,因为远程修改分辨率等，不方面
+                });
+            }
+        }
+        return false;
+    }
 
     void GrConnectedManager::RegisterMessageListener() {
         msg_listener_ = gr_ctx_->GetMessageNotifier()->CreateListener();
@@ -68,7 +80,11 @@ namespace tc {
     }
 
     void GrConnectedManager::AdjustPanelPosition() {
-        auto screen_rect = QApplication::primaryScreen()->availableGeometry();
+        auto primary_screen = QApplication::primaryScreen();
+        if (!primary_screen) {
+            return;
+        }
+        auto screen_rect = primary_screen->availableGeometry();
         int screen_width = screen_rect.width();
         int screen_height = screen_rect.height();
 
@@ -76,7 +92,6 @@ namespace tc {
             int panel_x = screen_width - item.second->width();
             int panel_y = screen_height - item.second->height() - 80 - item.first * item.second->height() * 1.2;
             item.second->move(panel_x, panel_y);
-            item.second->hide();        
         }
     }
 
@@ -89,6 +104,13 @@ namespace tc {
     void GrConnectedManager::ShowAllPanels() {
         for (auto& item : connected_info_panel_group_) {
             item.second->show();
+        }
+    }
+
+    void GrConnectedManager::InitPanel() {
+        AdjustPanelPosition();
+        for (auto& item : connected_info_panel_group_) {
+            item.second->hide();
         }
     }
 }

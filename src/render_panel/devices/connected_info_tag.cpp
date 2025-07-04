@@ -1,5 +1,6 @@
 ﻿#include "connected_info_tag.h"
 #include <QPainterPath>
+#include <qapplication.h>
 
 namespace tc {
 
@@ -58,6 +59,19 @@ namespace tc {
             shape << point1 << point2 << point3;
         }
         painter.drawPolyline(shape);
+
+        if (parentWidget()) {
+            auto screen_rect = QApplication::primaryScreen()->availableGeometry();
+            int screen_height = screen_rect.height();
+            auto curent_pos = parentWidget()->pos();
+            if (curent_pos.y() + 70 + 130 > screen_height) {
+                curent_pos.setY(screen_height - 70 - 130);
+            }
+            else if (curent_pos.y() < 6) {
+                curent_pos.setY(6);
+            }
+            parentWidget()->move(curent_pos);
+        }
     }
 
     bool ConnectedInfoTag::GetExpanded() const {
@@ -81,7 +95,16 @@ namespace tc {
         if (m_dragging && (event->buttons() & Qt::LeftButton)) {
             QPoint delta = event->globalPos() - m_dragStartPos;
             delta.setX(0);
-            if (parentWidget()) {
+            auto primary_screen =  QApplication::primaryScreen();
+            if (parentWidget() && primary_screen) {
+                auto screen_rect = primary_screen->availableGeometry();
+                int screen_height = screen_rect.height();
+                if (parentWidget()->pos().y() + 70 + 130 > screen_height && delta.y() > 0) {
+                    delta.setY(0);
+                }
+                if (parentWidget()->pos().y() < 6 && delta.y() < 0) {
+                    delta.setY(0);
+                }
                 parentWidget()->move(parentWidget()->pos() + delta);
                 generate_movement_ = true;
             }
