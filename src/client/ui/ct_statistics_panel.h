@@ -40,6 +40,7 @@ namespace tc
         Settings* settings_ = nullptr;
         QLabel* lbl_data_speed_ = nullptr;
         QLabel* lbl_received_data_ = nullptr;
+        QLabel* lbl_sent_data_ = nullptr;
         QLabel* lbl_video_format_ = nullptr;
         QLabel* lbl_video_color_ = nullptr;
         QLabel* lbl_video_capture_type_ = nullptr;

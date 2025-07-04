@@ -20,7 +20,8 @@
 namespace tc
 {
 
-    const QString kChartDataSpeed = "Video&Audio Data Speed";
+    const QString kChartRecvDataSpeed = "Receive Data Speed";
+    const QString kChartSendDataSpeed = "Send Data Speed";
     const QString kChartNetworkDelay = "Network Delay";
     const QString kChartDecodeDuration = "Decode Duration(ms)";
     const QString kChartVideoFrameGap = "Video Frame Gap(ms)";
@@ -64,7 +65,7 @@ namespace tc
                     layout->addSpacing(10);
 
                     data_speed_stat_chart_ = new CtStatChart(context_, tcTr("id_data_speed"), {
-                            kChartDataSpeed,
+                            kChartSendDataSpeed, kChartRecvDataSpeed
                         }, CtStatChartAxisSettings {
                             .count_ = 15,
                             .rng_beg_ = 0,
@@ -195,17 +196,17 @@ namespace tc
                 {
                     //
                     auto layout = new NoMarginHLayout();
-                    // video decoder
+                    // send data
                     {
                         auto item_layout = new NoMarginHLayout();
                         auto label = new TcLabel(this);
                         label->setFixedSize(label_size);
-                        label->SetTextId("id_video_decoder");
+                        label->SetTextId("id_sent_data");
                         label->setStyleSheet("font-size: 13px;");
                         item_layout->addWidget(label);
 
                         auto op = new QLabel(this);
-                        lbl_video_decoder_ = op;
+                        lbl_sent_data_ = op;
                         op->setText("");
                         op->setFixedSize(value_size);
                         op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
@@ -259,6 +260,24 @@ namespace tc
                 {
                     //
                     auto layout = new NoMarginHLayout();
+                    // video decoder
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new TcLabel(this);
+                        label->setFixedSize(label_size);
+                        label->SetTextId("id_video_decoder");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_video_decoder_ = op;
+                        op->setText("");
+                        op->setFixedSize(value_size);
+                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
                     // audio encode type
                     {
                         auto item_layout = new NoMarginHLayout();
@@ -312,23 +331,23 @@ namespace tc
                         layout->addLayout(item_layout);
                     }
 
-                    {
-                        auto item_layout = new NoMarginHLayout();
-                        auto label = new QLabel(this);
-                        label->setFixedSize(label_size);
-                        label->setText("");
-                        label->setStyleSheet("font-size: 13px;");
-                        item_layout->addWidget(label);
-
-                        auto op = new QLabel(this);
-                        //lbl_audio_capture_type_ = op;
-                        op->setText("");
-                        op->setFixedSize(value_size);
-                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
-                        item_layout->addWidget(op);
-                        item_layout->addStretch();
-                        layout->addLayout(item_layout);
-                    }
+//                    {
+//                        auto item_layout = new NoMarginHLayout();
+//                        auto label = new QLabel(this);
+//                        label->setFixedSize(label_size);
+//                        label->setText("");
+//                        label->setStyleSheet("font-size: 13px;");
+//                        item_layout->addWidget(label);
+//
+//                        auto op = new QLabel(this);
+//                        //lbl_audio_capture_type_ = op;
+//                        op->setText("");
+//                        op->setFixedSize(value_size);
+//                        op->setStyleSheet("font-size: 13px; font-weight:500; color: #2979ff;");
+//                        item_layout->addWidget(op);
+//                        item_layout->addStretch();
+//                        layout->addLayout(item_layout);
+//                    }
                     right_layout->addLayout(layout);
 
                 } // end line 3
@@ -519,11 +538,14 @@ namespace tc
         // data speed
         {
             std::map<QString, std::vector<float>> stat_value;
-            stat_value.insert({kChartDataSpeed, sdk_stat_->data_speeds_});
+            stat_value.insert({kChartSendDataSpeed, sdk_stat_->send_data_speeds_});
+            stat_value.insert({kChartRecvDataSpeed, sdk_stat_->recv_data_speeds_});
             data_speed_stat_chart_->UpdateLines(stat_value);
-            if (!sdk_stat_->data_speeds_.empty()) {
-                auto value = sdk_stat_->data_speeds_[sdk_stat_->data_speeds_.size() - 1] * 1024 * 1024;
-                lbl_data_speed_->setText(tcTr("id_media_data_speed") + std::format("({})", NumFormatter::FormatSpeed(value)).c_str());
+            if (!sdk_stat_->recv_data_speeds_.empty() && !sdk_stat_->send_data_speeds_.empty()) {
+                auto send_value = sdk_stat_->send_data_speeds_[sdk_stat_->send_data_speeds_.size() - 1] * 1024 * 1024;
+                auto recv_value = sdk_stat_->recv_data_speeds_[sdk_stat_->recv_data_speeds_.size() - 1] * 1024 * 1024;
+                lbl_data_speed_->setText(tcTr("id_media_data_speed")
+                    + std::format("( Out[ {} ]  In[ {} ])", NumFormatter::FormatSpeed(send_value), NumFormatter::FormatSpeed(recv_value)).c_str());
             }
         }
 
@@ -535,10 +557,10 @@ namespace tc
         }
 
         {
-            lbl_received_data_->setText(NumFormatter::FormatStorageSize(sdk_stat_->recv_data_).c_str());
+            lbl_received_data_->setText(NumFormatter::FormatStorageSize(sdk_stat_->recv_data_size_).c_str());
             lbl_video_format_->setText(sdk_stat_->video_format_.c_str());
             lbl_video_color_->setText(sdk_stat_->video_color_.c_str());
-
+            lbl_sent_data_->setText(NumFormatter::FormatStorageSize(sdk_stat_->send_data_size_).c_str());
             lbl_video_decoder_->setText(sdk_stat_->video_decoder_.c_str());
             lbl_video_capture_type_->setText(sdk_stat_->video_capture_type_.c_str());
             lbl_audio_capture_type_->setText(sdk_stat_->audio_capture_type_.c_str());
