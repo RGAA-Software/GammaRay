@@ -58,7 +58,7 @@ namespace tc
         this->settings_ = Settings::Instance();
         this->params_ = params;
         cursor_ = QCursor(Qt::ArrowCursor);
-        dis_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_tips"));
+        retry_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_warning"));
     }
 
     void BaseWorkspace::Init() {
@@ -196,11 +196,13 @@ namespace tc
         });
 
         msg_listener_->Listen<SdkMsgNetworkDisConnected>([=, this](const SdkMsgNetworkDisConnected& msg) {
-            //
+            if (remote_force_closed_) {
+                return;
+            }
             context_->PostUITask([=, this]() {
-                if (dis_conn_dialog_->isHidden()) {
-                    WidgetHelper::SetTitleBarColor((QWidget*)(dis_conn_dialog_.get()));
-                    dis_conn_dialog_->Exec();
+                if (retry_conn_dialog_->isHidden()) {
+                    WidgetHelper::SetTitleBarColor((QWidget*)(retry_conn_dialog_.get()));
+                    retry_conn_dialog_->Exec();
                 }
             });
         });
@@ -242,23 +244,23 @@ namespace tc
     }
 
     void BaseWorkspace::RegisterSdkMsgCallbacks() {
-        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
-            if (!has_frame_arrived_) {
-                has_frame_arrived_ = true;
-                UpdateVideoWidgetSize();
-            }
-
-            if (game_view_) {
-                game_view_->RefreshCapturedMonitorInfo(info);
-                game_view_->RefreshImage(image);
-            }
-
-            context_->UpdateCapturingMonitorInfo(info);
-        });
+//        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
+//            if (!has_frame_arrived_) {
+//                has_frame_arrived_ = true;
+//                UpdateVideoWidgetSize();
+//            }
+//
+//            if (game_view_) {
+//                game_view_->RefreshCapturedMonitorInfo(info);
+//                game_view_->RefreshImage(image);
+//            }
+//
+//            context_->UpdateCapturingMonitorInfo(info);
+//        });
 
         // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm
         sdk_->SetOnAudioFrameDecodedCallback([=, this](const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
-            if (!settings_->IsAudioEnabled()) {
+            if (!settings_->IsAudioEnabled() || remote_force_closed_) {
                 return;
             }
             if (!audio_player_) {
@@ -364,6 +366,9 @@ namespace tc
         });
 
         sdk_->SetOnRawMessageCallback([=, this](const std::shared_ptr<tc::Message>& msg) {
+            if (remote_force_closed_) {
+                return;
+            }
             plugin_manager_->VisitAllPlugins([=, this](ClientPluginInterface* plugin) {
                 plugin->OnMessage(msg);
             });
@@ -466,6 +471,9 @@ namespace tc
 
         // relay error callback
         msg_listener_->Listen<SdkMsgRelayError>([=, this](const SdkMsgRelayError& msg) {
+            if (remote_force_closed_) {
+                return;
+            }
             context_->PostUITask([=, this]() {
                 TcDialog dialog(tcTr("id_error"), msg.msg_.c_str());
                 dialog.exec();
@@ -474,6 +482,9 @@ namespace tc
 
         // remote device offline
         msg_listener_->Listen<SdkMsgRelayRemoteDeviceOffline>([=, this](const SdkMsgRelayRemoteDeviceOffline& msg) {
+            if (remote_force_closed_) {
+                return;
+            }
             context_->PostUITask([=, this]() {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_remote_device_offline"));
                 if (dialog.exec() == kDoneOk) {
@@ -650,7 +661,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendClipboardMessage(const MsgClientClipboard& msg) {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
@@ -675,7 +686,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendSwitchMonitorMessage(const std::string& name) {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
@@ -687,7 +698,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendUpdateDesktopMessage() {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
@@ -696,7 +707,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendModifyFpsMessage() {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         int fps = settings_->fps_;
@@ -708,7 +719,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendHardUpdateDesktopMessage() {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
@@ -733,7 +744,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendSwitchFullColorMessage(bool enable) {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
@@ -768,7 +779,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendChangeMonitorResolutionMessage(const MsgClientChangeMonitorResolution& msg) {
-        if (!sdk_) {
+        if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
@@ -811,6 +822,9 @@ namespace tc
     }
 
     void BaseWorkspace::UpdateGameViewsStatus() {
+        if (!game_view_) {
+            return;
+        }
         QList<QScreen*> screens = QGuiApplication::screens();
         if (full_screen_) {
             WidgetSelectMonitor(this, screens);
@@ -836,7 +850,9 @@ namespace tc
     }
 
     void BaseWorkspace::OnGetCaptureMonitorName(std::string monitor_name) {
-        LOGI("OnGetCaptureMonitorName monitor_name: {}", monitor_name);
+        if (!game_view_) {
+            return;
+        }
         if (kCaptureAllMonitorsSign == monitor_name) {
             if (monitor_index_map_name_.size() > 0) {
                 SendSwitchMonitorMessage(monitor_index_map_name_[0]);
@@ -861,7 +877,6 @@ namespace tc
             this->move(x, y);
         });
     }
-
 
     bool BaseWorkspace::eventFilter(QObject* watched, QEvent* event) {
         return QMainWindow::eventFilter(watched, event);
@@ -893,7 +908,7 @@ namespace tc
     }
 
     void BaseWorkspace::ReconnectInRelayMode() {
-        if (!settings_->IsRelayMode()) {
+        if (!settings_->IsRelayMode() || remote_force_closed_) {
             return;
         }
         // Reconnect
@@ -928,9 +943,9 @@ namespace tc
 
         // show dialog
         context_->PostUITask([=, this]() {
-            if (dis_conn_dialog_->isHidden()) {
-                WidgetHelper::SetTitleBarColor((QWidget*)(dis_conn_dialog_.get()));
-                dis_conn_dialog_->Exec();
+            if (retry_conn_dialog_->isHidden()) {
+                WidgetHelper::SetTitleBarColor((QWidget*)(retry_conn_dialog_.get()));
+                retry_conn_dialog_->Exec();
             }
         });
     }
@@ -938,8 +953,8 @@ namespace tc
     void BaseWorkspace::DismissConnectingDialog() {
         context_->PostUITask([=, this]() {
             // dismiss dialog
-            if (dis_conn_dialog_ && !dis_conn_dialog_->isHidden()) {
-                dis_conn_dialog_->Done();
+            if (retry_conn_dialog_ && !retry_conn_dialog_->isHidden()) {
+                retry_conn_dialog_->Done();
             }
         });
     }
@@ -948,6 +963,7 @@ namespace tc
         if (msg->type() == MessageType::kDisconnectConnection) {
             const auto& sub = msg->disconnect_connection();
             LOGI("DISCONNECT, device id: {}, stream id: {}", sub.device_id(), sub.stream_id());
+            remote_force_closed_ = true;
             context_->PostUITask([=, this]() {
                 TcDialog dialog(tcTr("id_warning"), tcTr("id_remote_disconnected"), this);
                 dialog.exec();

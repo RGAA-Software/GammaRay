@@ -155,8 +155,8 @@ namespace tc
         QSize def_window_size_ = QSize(1366, 768);
 
         // disconnected dialog
-        std::shared_ptr<RetryConnDialog> dis_conn_dialog_ = nullptr;
-
+        std::shared_ptr<RetryConnDialog> retry_conn_dialog_ = nullptr;
+        std::atomic_bool remote_force_closed_ = false;
     private:
         GameView* game_view_ = nullptr;
     };
