@@ -93,6 +93,8 @@ namespace tc
         std::string GetFileId();
         std::string GetDeviceId();
         std::string GetFileName();
+        std::string GetFullPath();
+        std::string GetStreamId();
 
     private:
         ClipboardPlugin* plugin_ = nullptr;

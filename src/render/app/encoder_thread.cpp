@@ -60,65 +60,6 @@ namespace tc
         });
     }
 
-    void EncoderThread::Encode(const std::shared_ptr<Image>& image, uint64_t frame_index) {
-//        if (frame_width_ != image->width || frame_height_ != image->height || !video_encoder_) {
-//            auto settings = RdSettings::Instance();
-//            if (video_encoder_) {
-//                video_encoder_->Exit();
-//                video_encoder_.reset();
-//            }
-//            tc::EncoderConfig encoder_config;
-//            encoder_config.width = image->width;
-//            encoder_config.height = image->height;
-//            encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
-//            encoder_config.gop_size = -1;
-//            encoder_config.fps = 60;
-//            encoder_config.bitrate = settings->encoder_.bitrate_ * 1000000;
-//            EncoderFeature encoder_feature{-1, 0};
-//            video_encoder_ = VideoEncoderFactory::CreateEncoder(context_->GetMessageNotifier(),
-//                                                                encoder_feature,
-//                                                                settings_->encoder_.encoder_select_type_,
-//                                                                encoder_config,
-//                                                                ECreateEncoderName::kFFmpeg);
-//            if (!video_encoder_) {
-//                LOGE("Create encoder failed, width: {}, height: {}, select type : {}, encoder name: {}",
-//                     image->width, image->height, (int)settings->encoder_.encoder_select_type_, (int)settings->encoder_.encoder_name_);
-//                return;
-//            }
-//
-//            static uint64_t write_buffer = 0;
-//            video_encoder_->RegisterEncodeCallback([=, this](const std::shared_ptr<Image>& frame, uint64_t frame_index, bool key) {
-//                LOGI("Encoded: frame size:{}, frame index: {}, key frame: {}", frame->data->Size(), frame_index, key);
-//                if (debug_file_) {
-//                    debug_file_->Write(write_buffer, frame->data);
-//                    write_buffer += frame->data->Size();
-//                }
-//
-//                //
-//                MsgVideoFrameEncoded msg {
-//                    .frame_width_ = static_cast<uint32_t>(frame->width),
-//                    .frame_height_ = static_cast<uint32_t>(frame->height),
-//                    .frame_format_ = (uint32_t )settings->encoder_.encoder_format_,
-//                    .frame_index_ = frame_index,
-//                    .key_frame_ = key,
-//                    .image_ = frame,
-//                };
-//                context_->SendAppMessage(msg);
-//            });
-//
-//            frame_width_ = image->width;
-//            frame_height_ = image->height;
-//        }
-//
-//        enc_thread_->Post(SimpleThreadTask::Make([=, this]() {
-//            auto beg = TimeUtil::GetCurrentTimestamp();
-//            video_encoder_->Encode(image, frame_index);
-//            auto end = TimeUtil::GetCurrentTimestamp();
-//            auto diff = end - beg;
-//            RdStatistics::Instance()->AppendEncodeDuration(diff);
-//        }));
-    }
-
     void EncoderThread::Encode(const CaptureVideoFrame& cap_video_msg) {
         if (!frame_carrier_plugin_) {
             return;
@@ -400,8 +341,8 @@ namespace tc
                     context_->PostStreamPluginTask([=, this]() {
                         plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin* plugin) {
                             plugin->OnRawVideoFrameRgba(monitor_name, image);
-                            });
                         });
+                    });
                 };
 
                 auto yuv_cbk = [=, this](const std::shared_ptr<Image>& image) {
@@ -414,12 +355,12 @@ namespace tc
                     if (target_encoder_plugin) {
                         PostEncTask([=, this]() {
                             target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
-                            });
+                        });
                     }
                     context_->PostStreamPluginTask([=, this]() {
                         plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin* plugin) {
                             plugin->OnRawVideoFrameYuv(monitor_name, image);
-                            });
+                        });
                     });
                 };
                 frame_carrier_plugin_->ConvertRawImage(monitor_name, cap_video_msg.raw_image_, rgba_cbk, yuv_cbk);

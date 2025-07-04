@@ -134,4 +134,12 @@ namespace tc
     std::string CpFileStream::GetFileName() {
         return cp_file_.file_.file_name();
     }
+
+    std::string CpFileStream::GetFullPath() {
+        return cp_file_.file_.full_path();
+    }
+
+    std::string CpFileStream::GetStreamId() {
+        return cp_file_.stream_id_;
+    }
 }

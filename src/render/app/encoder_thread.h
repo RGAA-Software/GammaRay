@@ -34,7 +34,6 @@ namespace tc
         explicit EncoderThread(const std::shared_ptr<RdApplication>& app);
         ~EncoderThread() = default;
 
-        void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index);
         void Encode(const CaptureVideoFrame& msg);
         void Exit();
         std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();

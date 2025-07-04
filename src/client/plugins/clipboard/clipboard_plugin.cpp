@@ -12,6 +12,7 @@
 #include "client/plugins/ct_app_events.h"
 #include "ct_clipboard_manager.h"
 #include "plugin_interface/ct_plugin_context.h"
+#include "tc_common_new/md5.h"
 
 namespace tc
 {
@@ -68,10 +69,25 @@ namespace tc
                 }
             });
         }
+        else if (msg->type() == tc::kClipboardReqAtBegin) {
+            // begin; server -> client
+            // copy files from client -> server
+            plugin_context_->PostWorkTask([=, this]() {
+                this->OnRequestFileBegin(msg);
+            });
+        }
         else if (msg->type() == tc::kClipboardReqBuffer) {
+            // transferring
             // server -> request a part of data in the file -> client -> response -> server
             plugin_context_->PostWorkTask([=, this]() {
                 this->OnRequestFileBuffer(msg);
+            });
+        }
+        else if (msg->type() == tc::kClipboardReqAtEnd) {
+            // end; server -> client
+            // copy files from client -> server
+            plugin_context_->PostWorkTask([=, this]() {
+                this->OnRequestFileEnd(msg);
             });
         }
         else if (msg->type() == MessageType::kClipboardRespBuffer) {
@@ -97,8 +113,17 @@ namespace tc
     bool ClientClipboardPlugin::IsClipboardEnabled() {
         return plugin_settings_.clipboard_enabled_;
     }
-    
-    void ClientClipboardPlugin::OnRequestFileBuffer(std::shared_ptr<Message> in_msg) {
+
+    void ClientClipboardPlugin::OnRequestFileBegin(const std::shared_ptr<Message>& msg) {
+        auto sub = msg->cp_req_at_begin();
+        auto event = std::make_shared<ClientPluginFileTransferBeginEvent>();
+        event->task_id_ = MD5::Hex(sub.full_name());
+        event->file_path_ = sub.full_name();
+        event->direction_ = "Out";
+        CallbackEvent(event);
+    }
+
+    void ClientClipboardPlugin::OnRequestFileBuffer(const std::shared_ptr<Message>& in_msg) {
         const auto& buffer = in_msg->cp_req_buffer();
         auto req_index = buffer.req_index();
         auto req_start = buffer.req_start();
@@ -129,6 +154,16 @@ namespace tc
         auto event = std::make_shared<ClientPluginNetworkEvent>();
         event->media_channel_ = false;
         event->buf_ = msg.SerializeAsString();
+        CallbackEvent(event);
+    }
+
+    void ClientClipboardPlugin::OnRequestFileEnd(const std::shared_ptr<Message>& msg) {
+        auto sub = msg->cp_req_at_end();
+        auto event = std::make_shared<ClientPluginFileTransferEndEvent>();
+        event->task_id_ = MD5::Hex(sub.full_name());
+        event->file_path_ = sub.full_name();
+        event->direction_ = "Out";
+        event->success_ = sub.success();
         CallbackEvent(event);
     }
 }

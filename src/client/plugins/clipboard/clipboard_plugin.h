@@ -28,7 +28,9 @@ namespace tc
         bool IsClipboardEnabled();
 
     private:
-        void OnRequestFileBuffer(std::shared_ptr<Message> msg);
+        void OnRequestFileBegin(const std::shared_ptr<Message>& msg);
+        void OnRequestFileBuffer(const std::shared_ptr<Message>& msg);
+        void OnRequestFileEnd(const std::shared_ptr<Message>& msg);
 
     private:
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;

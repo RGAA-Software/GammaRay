@@ -225,6 +225,16 @@ namespace tc
         event->direction_ = "In";
         event->file_detail_ = file_stream_->GetFileName();
         plugin_->CallbackEvent(event);
+
+        // send begin message to client
+        // send end message to client
+        tc::Message msg;
+        msg.set_device_id(file_stream_->GetDeviceId());
+        msg.set_stream_id(file_stream_->GetStreamId());
+        msg.set_type(MessageType::kClipboardReqAtBegin);
+        auto req_buffer = msg.mutable_cp_req_at_begin();
+        req_buffer->set_full_name(file_stream_->GetFullPath());
+        plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), msg.SerializeAsString(), false);
     }
 
     void CpVirtualFile::ReportFileTransferEnd() {
@@ -237,6 +247,15 @@ namespace tc
         event->success_ = true;
         plugin_->CallbackEvent(event);
 
+        // send end message to client
+        tc::Message msg;
+        msg.set_device_id(file_stream_->GetDeviceId());
+        msg.set_stream_id(file_stream_->GetStreamId());
+        msg.set_type(MessageType::kClipboardReqAtEnd);
+        auto req_buffer = msg.mutable_cp_req_at_end();
+        req_buffer->set_full_name(file_stream_->GetFullPath());
+        req_buffer->set_success(true);
+        plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), msg.SerializeAsString(), false);
     }
 
     CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClipboardPlugin* plugin) {
