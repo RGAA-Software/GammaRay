@@ -253,7 +253,7 @@
   "id_file":"File",
   "id_key_mouse":"Keyboard/Mouse",
   "id_access_hint":"Go to the settings interface to adjust",
-  "id_remote_disconnected":"The remote connection has been disconnected",
+  "id_remote_disconnected":"The remote host has disconnected the session.",
 
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",

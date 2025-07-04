@@ -12,6 +12,7 @@
 #include "tc_render_panel_message.pb.h"
 #include "render_panel/gr_application.h"
 #include "tc_common_new/client_id_extractor.h"
+#include "tc_common_new/uid_spacer.h"
 
 namespace tc {
 
@@ -173,7 +174,11 @@ namespace tc {
 
 	void ConnectedInfoPanel::UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info) {
         info_ = info;
-		key_1_lab_->setText(ExtractClientId(info_->device_id()).c_str());
+        auto device_id = ExtractClientId(info_->device_id());
+        if (info_->device_id().starts_with("client_")) {
+            device_id = tc::SpaceId(device_id);
+        }
+		key_1_lab_->setText(device_id.c_str());
 		key_1_lab_->adjustSize();
 		key_2_lab_->setText(info_->device_name().c_str());
 		key_2_lab_->adjustSize();
