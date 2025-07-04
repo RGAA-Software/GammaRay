@@ -11,6 +11,10 @@
 #include <QFileInfo>
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/time_util.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "render/plugins/clipboard/clipboard_plugin.h"
 
 #pragma comment(lib, "Wininet.lib")
 
@@ -28,15 +32,15 @@ namespace tc
     }
 
     void CpVirtualFile::Init() {
-        clip_format_filedesc_ = RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
-        clip_format_filecontent_ = RegisterClipboardFormat(CFSTR_FILECONTENTS);
+        clip_format_file_desc_ = RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
+        clip_format_file_content_ = RegisterClipboardFormat(CFSTR_FILECONTENTS);
     }
 
     STDMETHODIMP CpVirtualFile::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
         ZeroMemory(pmedium, sizeof(*pmedium));
 
         HRESULT hr = DATA_E_FORMATETC;
-        if (pformatetcIn->cfFormat == clip_format_filedesc_) {
+        if (pformatetcIn->cfFormat == clip_format_file_desc_) {
             uint32_t file_count = menu_files_.size();
             LOGI("GetData file format, file count: {}", file_count);
             if (file_count <= 0) {
@@ -88,7 +92,7 @@ namespace tc
                 pmedium->tymed = TYMED_HGLOBAL;
                 hr = S_OK;
             }
-        } else if (pformatetcIn->cfFormat == clip_format_filecontent_) {
+        } else if (pformatetcIn->cfFormat == clip_format_file_content_) {
             if ((pformatetcIn->tymed & TYMED_ISTREAM)) {
                 auto file_index = pformatetcIn->lindex;
                 if (task_files_.size() <= file_index) {
@@ -101,9 +105,13 @@ namespace tc
                 LOGI("Will get data stream for index: {}, name: {}", file_index, fw.file_.file_name());
 
                 if (file_stream_) {
+                    // report
+                    this->ReportFileTransferEnd();
                     file_stream_->Exit();
                 }
                 file_stream_ = std::make_shared<CpFileStream>(plugin_, fw);
+                // report
+                this->ReportFileTransferBegin();
 
                 pmedium->pstm = (IStream *)file_stream_.get();
                 pmedium->pstm->AddRef();
@@ -118,8 +126,8 @@ namespace tc
 
     STDMETHODIMP CpVirtualFile::QueryGetData(FORMATETC *pformatetc) {
         HRESULT hr = S_FALSE;
-        if (pformatetc->cfFormat == clip_format_filedesc_ ||
-            pformatetc->cfFormat == clip_format_filecontent_) {
+        if (pformatetc->cfFormat == clip_format_file_desc_ ||
+            pformatetc->cfFormat == clip_format_file_content_) {
             hr = S_OK;
         } else if (SUCCEEDED(_EnsureShellDataObject())) {
             hr = _pdtobjShell->QueryGetData(pformatetc);
@@ -133,8 +141,8 @@ namespace tc
         if (dwDirection == DATADIR_GET) {
             FORMATETC rgfmtetc[] = {
                 // the order here defines the accuarcy of rendering
-                {(CLIPFORMAT) clip_format_filedesc_, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
-                {(CLIPFORMAT) clip_format_filecontent_, NULL, DVASPECT_CONTENT, -1, TYMED_ISTREAM},
+                {(CLIPFORMAT) clip_format_file_desc_, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
+                {(CLIPFORMAT) clip_format_file_content_, NULL, DVASPECT_CONTENT, -1, TYMED_ISTREAM},
             };
             hr = SHCreateStdEnumFmtEtc(ARRAYSIZE(rgfmtetc), rgfmtetc, ppenumFormatEtc);
         }
@@ -168,6 +176,9 @@ namespace tc
         in_async_op_ = false;
         LOGI("EndOperation....");
         if (file_stream_) {
+            // report
+            this->ReportFileTransferEnd();
+
             file_stream_->Exit();
             file_stream_.reset();
         }
@@ -179,13 +190,14 @@ namespace tc
         return S_OK;
     }
 
-    void CpVirtualFile::OnClipboardFilesInfo(const std::string& stream_id, const std::vector<ClipboardFile>& files) {
+    void CpVirtualFile::OnClipboardFilesInfo(const std::string& device_id, const std::string& stream_id, const std::vector<ClipboardFile>& files) {
         menu_files_ = files;
         task_files_.clear();
         for (const auto& file : files) {
             ClipboardFile cpy_file;
             cpy_file.CopyFrom(file);
             task_files_.push_back(ClipboardFileWrapper {
+                .device_id_ = device_id,
                 .stream_id_ = stream_id,
                 .file_ = cpy_file,
             });
@@ -200,6 +212,31 @@ namespace tc
         if (file_stream_) {
             file_stream_->OnClipboardRespBuffer(resp_buffer);
         }
+    }
+
+    void CpVirtualFile::ReportFileTransferBegin() {
+        if (!file_stream_) {
+            return;
+        }
+        auto event = std::make_shared<GrPluginFileTransferBegin>();
+        event->the_file_id_ = file_stream_->GetFileId();
+        event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        event->visitor_device_id_ = file_stream_->GetDeviceId();
+        event->direction_ = "In";
+        event->file_detail_ = file_stream_->GetFileName();
+        plugin_->CallbackEvent(event);
+    }
+
+    void CpVirtualFile::ReportFileTransferEnd() {
+        if (!file_stream_) {
+            return;
+        }
+        auto event = std::make_shared<GrPluginFileTransferEnd>();
+        event->the_file_id_ = file_stream_->GetFileId();
+        event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        event->success_ = true;
+        plugin_->CallbackEvent(event);
+
     }
 
     CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClipboardPlugin* plugin) {

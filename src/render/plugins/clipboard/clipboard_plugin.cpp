@@ -115,8 +115,9 @@ namespace tc
                     }
 
                     LOGI("Data obj ref count: {}", virtual_file_->GetRefCount());
+                    auto device_id = msg->device_id();
                     auto stream_id = msg->stream_id();
-                    virtual_file_->OnClipboardFilesInfo(stream_id, target_files);
+                    virtual_file_->OnClipboardFilesInfo(device_id, stream_id, target_files);
                 });
             }
         }

@@ -21,7 +21,7 @@ namespace tc
 
     public:
         int id_{};
-        std::string the_conn_id_;
+        std::string stream_id_;
         std::string conn_type_;
         // unit: ms
         int64_t begin_{0};

@@ -38,7 +38,7 @@ namespace tc
             // notify
             if (this->name_ == "media_data_channel") {
                 auto event = std::make_shared<GrPluginClientConnectedEvent>();
-                event->the_conn_id_ = this->the_conn_id_;
+                event->stream_id_ = this->the_conn_id_;
                 event->visitor_device_id_ = name_;
                 event->conn_type_ = "P2P";
                 event->begin_timestamp_ = created_timestamp_;

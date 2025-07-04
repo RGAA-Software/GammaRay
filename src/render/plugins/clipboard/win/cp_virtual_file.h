@@ -63,12 +63,16 @@ namespace tc
                 /* [unique][in] */ __RPC__in_opt IBindCtx *pbcReserved,
                 /* [in] */ DWORD dwEffects);
 
-        void OnClipboardFilesInfo(const std::string& stream_id, const std::vector<ClipboardFile>& files);
+        void OnClipboardFilesInfo(const std::string& device_id, const std::string& stream_id, const std::vector<ClipboardFile>& files);
         void OnClipboardRespBuffer(const ClipboardRespBuffer& resp_buffer);
 
     private:
-        uint32_t clip_format_filedesc_ = 0;
-        uint32_t clip_format_filecontent_ = 0;
+        void ReportFileTransferBegin();
+        void ReportFileTransferEnd();
+
+    private:
+        uint32_t clip_format_file_desc_ = 0;
+        uint32_t clip_format_file_content_ = 0;
         BOOL in_async_op_ = false;
         std::shared_ptr<CpFileStream> file_stream_ = nullptr;
         ClipboardPlugin* plugin_ = nullptr;

@@ -50,7 +50,7 @@ namespace tc
         //LOGI("request index: {}, current position: {}, req size: {}", req_index_, current_position_, cb);
 
         std::unique_lock lk(wait_data_mtx_);
-        data_cv_.wait(lk, [this]() -> bool {
+        data_cv_.wait_for(lk, std::chrono::seconds(10), [this]() -> bool {
             return resp_buffer_.has_value();
         });
 

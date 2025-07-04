@@ -14,6 +14,7 @@ namespace tc
 
     class ClipboardFileWrapper {
     public:
+        std::string device_id_;
         std::string stream_id_;
         ClipboardFile file_;
     };

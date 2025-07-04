@@ -454,7 +454,7 @@ namespace tc
                     return;
                 }
                 visit_record_op_->InsertVisitRecord(std::make_shared<VisitRecord>(VisitRecord {
-                    .the_conn_id_ = sub.the_conn_id(),
+                    .stream_id_ = sub.stream_id(),
                     .conn_type_ = sub.conn_type(),
                     .begin_ = sub.begin_timestamp(),
                     .end_ = 0,
@@ -467,7 +467,7 @@ namespace tc
         else if (proto_msg->type() == tcrp::kRpClientDisConnected) {
             context_->PostDBTask([=, this]() {
                 auto sub = proto_msg->client_disconnected();
-                visit_record_op_->UpdateVisitRecord(sub.the_conn_id(), sub.end_timestamp(), sub.duration());
+                visit_record_op_->UpdateVisitRecord(sub.stream_id(), sub.end_timestamp(), sub.duration());
             });
         }
         else if (proto_msg->type() == tcrp::kRpFileTransferBegin) {

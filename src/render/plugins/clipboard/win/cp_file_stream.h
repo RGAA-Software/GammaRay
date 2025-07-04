@@ -24,10 +24,7 @@ namespace tc
     class CpFileStream : public IStream {
     public:
 
-        CpFileStream(ClipboardPlugin* plugin, const ClipboardFileWrapper& fw) : ref_(1) {
-            plugin_ = plugin;
-            cp_file_ = fw;
-        }
+        CpFileStream(ClipboardPlugin* plugin, const ClipboardFileWrapper& fw);
 
         virtual ~CpFileStream() {
 
@@ -93,6 +90,9 @@ namespace tc
 
         void OnClipboardRespBuffer(const ClipboardRespBuffer& rb);
         void Exit();
+        std::string GetFileId();
+        std::string GetDeviceId();
+        std::string GetFileName();
 
     private:
         ClipboardPlugin* plugin_ = nullptr;
@@ -101,7 +101,7 @@ namespace tc
         std::atomic_int64_t current_position_ = 0;
         std::atomic_int64_t req_index_ = 0;
         ClipboardFileWrapper cp_file_;
-
+        std::string gen_file_id_;
         std::atomic_bool exit_ = false;
         std::mutex wait_data_mtx_;
         std::condition_variable data_cv_;

@@ -4,10 +4,20 @@
 
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
-#include "../clipboard_plugin.h"
+#include "tc_common_new/md5.h"
+#include "tc_common_new/time_util.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "render/plugins/clipboard/clipboard_plugin.h"
 
 namespace tc
 {
+
+    CpFileStream::CpFileStream(ClipboardPlugin* plugin, const ClipboardFileWrapper& fw) : ref_(1) {
+        plugin_ = plugin;
+        cp_file_ = fw;
+        gen_file_id_ = MD5::Hex(cp_file_.file_.file_name());
+        LOGI("**** Start: {}", cp_file_.file_.file_name());
+    }
 
     HRESULT STDMETHODCALLTYPE CpFileStream::QueryInterface(REFIID riid, void **ppvObject) {
         if (ppvObject == nullptr)
@@ -36,10 +46,10 @@ namespace tc
         req_buffer->set_req_start(current_position_);
         req_buffer->set_full_name(cp_file_.file_.full_path());
 
-        plugin_->DispatchTargetFileTransferMessage(cp_file_.stream_id_, msg.SerializeAsString());
+        plugin_->DispatchTargetFileTransferMessage(cp_file_.stream_id_, msg.SerializeAsString(), false);
 
         std::unique_lock lk(wait_data_mtx_);
-        data_cv_.wait(lk, [this]() -> bool {
+        data_cv_.wait_for(lk, std::chrono::seconds(10), [this]() -> bool {
             return resp_buffer_.has_value();
         });
 
@@ -110,6 +120,18 @@ namespace tc
     void CpFileStream::Exit() {
         exit_ = true;
         data_cv_.notify_all();
+        LOGI("**** Exit: {}", cp_file_.file_.file_name());
     }
 
+    std::string CpFileStream::GetFileId() {
+        return gen_file_id_;
+    }
+
+    std::string CpFileStream::GetDeviceId() {
+        return cp_file_.device_id_;
+    }
+
+    std::string CpFileStream::GetFileName() {
+        return cp_file_.file_.file_name();
+    }
 }

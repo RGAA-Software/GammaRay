@@ -27,6 +27,7 @@ namespace tc
             kClipboardEvent,
             kClientHello,
             kClientHeartbeat,
+            kClientDisconnected,
         };
         EType type_ = EType::kUnknown;
     public:
@@ -107,14 +108,20 @@ namespace tc
     class MsgClientConnected {
     public:
         std::string conn_type_;
+        std::string stream_id_;
         std::string visitor_device_id_;
         int64_t begin_timestamp_{0};
     };
 
-    //
-    class MsgClientDisconnected {
+    // render -> plugins
+    class MsgClientDisconnected : public AppBaseEvent {
+    public:
+        MsgClientDisconnected() {
+            type_ = EType::kClientDisconnected;
+        }
     public:
         std::string visitor_device_id_;
+        std::string stream_id_;
         int64_t end_timestamp_{0};
         int64_t duration_{0};
     };
@@ -187,6 +194,7 @@ namespace tc
     };
 
     // numbers of connected clients
+    // render -> plugins
     class MsgConnectedClientCount : public AppBaseEvent {
     public:
         MsgConnectedClientCount() {

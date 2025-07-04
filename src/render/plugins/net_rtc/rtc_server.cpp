@@ -107,7 +107,7 @@ namespace tc
         peer_callback_->SetOnIceDisConnectedCallback([=, this]() {
             if (!media_data_channel_) {return;}
             auto event = std::make_shared<GrPluginClientDisConnectedEvent>();
-            event->the_conn_id_ = media_data_channel_->the_conn_id_;
+            event->stream_id_ = media_data_channel_->the_conn_id_;
             event->end_timestamp_ = (int64_t) TimeUtil::GetCurrentTimestamp();
             event->duration_ =   event->end_timestamp_ - media_data_channel_->created_timestamp_;
             this->plugin_->CallbackEvent(event);

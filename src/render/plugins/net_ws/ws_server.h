@@ -45,8 +45,8 @@ namespace tc
         void AddHttpRouter(const std::string& path,
                            std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback);
 
-        void NotifyMediaClientConnected(const std::string& the_conn_id, const std::string& visitor_device_id);
-        void NotifyMediaClientDisConnected(const std::string& the_conn_id, const std::string& visitor_device_id, int64_t begin_timestamp);
+        void NotifyMediaClientConnected(const std::string& stream_id, const std::string& visitor_device_id);
+        void NotifyMediaClientDisConnected(const std::string& stream_id, const std::string& visitor_device_id, int64_t begin_timestamp);
 
     private:
         tc::WsPlugin* plugin_ = nullptr;

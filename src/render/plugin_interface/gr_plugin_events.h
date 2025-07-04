@@ -78,8 +78,7 @@ namespace tc
             event_type_ = GrPluginEventType::kPluginClientConnectedEvent;
         }
     public:
-        // a random id
-        std::string the_conn_id_;
+        std::string stream_id_;
         std::string conn_type_;
         std::string visitor_device_id_;
         int64_t begin_timestamp_ = 0;
@@ -92,8 +91,7 @@ namespace tc
             event_type_ = GrPluginEventType::kPluginClientDisConnectedEvent;
         }
     public:
-        // a random id
-        std::string the_conn_id_;
+        std::string stream_id_;
         std::string visitor_device_id_;
         int64_t end_timestamp_ = 0;
         int64_t duration_ = 0;

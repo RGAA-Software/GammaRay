@@ -62,6 +62,7 @@ namespace tc {
         // notify
         context_->SendAppMessage(MsgClientConnected {
             .conn_type_ = event->conn_type_,
+            .stream_id_ = event->stream_id_,
             .visitor_device_id_ = event->visitor_device_id_,
             .begin_timestamp_ = event->begin_timestamp_,
         });
@@ -71,11 +72,12 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event) {
-        context_->SendAppMessage(MsgClientDisconnected {
-            .visitor_device_id_ = event->visitor_device_id_,
-            .end_timestamp_ = event->end_timestamp_,
-            .duration_ = event->duration_,
-        });
+        MsgClientDisconnected msg{};
+        msg.visitor_device_id_ = event->visitor_device_id_;
+        msg.stream_id_ = event->stream_id_;
+        msg.end_timestamp_ = event->end_timestamp_;
+        msg.duration_ = event->duration_;
+        context_->SendAppMessage(msg);
 
         // report it
         ReportClientDisConnected(event);
@@ -525,7 +527,7 @@ namespace tc {
             tcrp::RpMessage msg;
             msg.set_type(tcrp::kRpClientConnected);
             auto sub = msg.mutable_client_connected();
-            sub->set_the_conn_id(event->the_conn_id_);
+            sub->set_stream_id(event->stream_id_);
             sub->set_conn_type(event->conn_type_);
             sub->set_visitor_device_id(event->visitor_device_id_);
             sub->set_begin_timestamp(event->begin_timestamp_);
@@ -538,7 +540,7 @@ namespace tc {
             tcrp::RpMessage msg;
             msg.set_type(tcrp::kRpClientDisConnected);
             auto sub = msg.mutable_client_disconnected();
-            sub->set_the_conn_id(event->the_conn_id_);
+            sub->set_stream_id(event->stream_id_);
             sub->set_visitor_device_id(event->visitor_device_id_);
             sub->set_end_timestamp(event->end_timestamp_);
             sub->set_duration(event->duration_);

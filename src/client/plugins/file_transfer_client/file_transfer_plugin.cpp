@@ -69,7 +69,7 @@ namespace tc
             auto event = std::make_shared<ClientPluginFileTransferBeginEvent>();
             event->task_id_ = task_id;
             event->file_path_ = file_path;
-            event->direction_ = "Upload";
+            event->direction_ = "Out";
             CallbackEvent(event);
         });
 
@@ -78,7 +78,7 @@ namespace tc
             auto event = std::make_shared<ClientPluginFileTransferEndEvent>();
             event->task_id_ = task_id;
             event->file_path_ = file_path;
-            event->direction_ = "Upload";
+            event->direction_ = "Out";
             event->success_ = success;
             CallbackEvent(event);
         });
@@ -88,7 +88,7 @@ namespace tc
             auto event = std::make_shared<ClientPluginFileTransferBeginEvent>();
             event->task_id_ = task_id;
             event->file_path_ = remote_file_path;
-            event->direction_ = "Download";
+            event->direction_ = "In";
             CallbackEvent(event);
         });
 
@@ -97,7 +97,7 @@ namespace tc
             auto event = std::make_shared<ClientPluginFileTransferEndEvent>();
             event->task_id_ = task_id;
             event->file_path_ = remote_file_path;
-            event->direction_ = "Download";
+            event->direction_ = "In";
             event->success_ = success;
             CallbackEvent(event);
         });
