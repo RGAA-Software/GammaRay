@@ -1,4 +1,4 @@
-//
+ï»¿//
 // Created by RGAA  on 2024/2/12.
 //
 
@@ -301,7 +301,7 @@ namespace tc
     }
 
     void WinEventReplayer::HandleFocusOutEvent() {
-        // to do£¬´ı²âÊÔ£¬Ô¶³ÌÌ×Ô¶³Ì²âÊÔĞ§¹û²»ĞĞ
+        // to doï¼Œå¾…æµ‹è¯•ï¼Œè¿œç¨‹å¥—è¿œç¨‹æµ‹è¯•æ•ˆæœä¸è¡Œ
         std::array<int, 11> keys = {
             VK_CONTROL,
             VK_RCONTROL,
