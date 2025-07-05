@@ -19,6 +19,7 @@ namespace tc
     class SdkStatistics;
     class CtStatFrameInfoItem;
     class Settings;
+    class Message;
 
     class CtStatisticsPanel : public BaseWidget {
     public:
@@ -27,7 +28,7 @@ namespace tc
         void resizeEvent(QResizeEvent *event) override;
         void paintEvent(QPaintEvent *event) override;
         bool eventFilter(QObject* object, QEvent* event) override;
-        void UpdateOnHeartBeat(const OnHeartBeat& hb);
+        void UpdateOnHeartBeat(std::shared_ptr<tc::Message> msg);
     private:
         void UpdateDataSpeedChart();
 

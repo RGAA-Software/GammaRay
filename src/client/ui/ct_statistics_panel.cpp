@@ -518,8 +518,9 @@ namespace tc
         return QObject::eventFilter(object, event);
     }
 
-    void CtStatisticsPanel::UpdateOnHeartBeat(const OnHeartBeat& hb) {
+    void CtStatisticsPanel::UpdateOnHeartBeat(std::shared_ptr<tc::Message> msg) {
         context_->PostUITask([=, this]() {
+            auto hb = msg->on_heartbeat();
             key_state_panel_->alt_item_->UpdateState(hb.alt_pressed());
             key_state_panel_->shift_item_->UpdateState(hb.shift_pressed());
             key_state_panel_->control_item_->UpdateState(hb.control_pressed());
@@ -540,7 +541,7 @@ namespace tc
             std::map<QString, std::vector<float>> stat_value;
             stat_value.insert({kChartSendDataSpeed, sdk_stat_->send_data_speeds_});
             stat_value.insert({kChartRecvDataSpeed, sdk_stat_->recv_data_speeds_});
-            data_speed_stat_chart_->UpdateLines(stat_value);
+            //data_speed_stat_chart_->UpdateLines(stat_value);
             if (!sdk_stat_->recv_data_speeds_.empty() && !sdk_stat_->send_data_speeds_.empty()) {
                 auto send_value = sdk_stat_->send_data_speeds_[sdk_stat_->send_data_speeds_.size() - 1] * 1024 * 1024;
                 auto recv_value = sdk_stat_->recv_data_speeds_[sdk_stat_->recv_data_speeds_.size() - 1] * 1024 * 1024;
@@ -553,7 +554,7 @@ namespace tc
         {
             std::map<QString, std::vector<float>> stat_value;
             stat_value.insert({kChartNetworkDelay, sdk_stat_->net_delays_});
-            durations_stat_chart_->UpdateLines(stat_value);
+            //durations_stat_chart_->UpdateLines(stat_value);
         }
 
         {
@@ -630,7 +631,7 @@ namespace tc
 
                 // update
                 stat_charts_[index]->UpdateTitle(mon_name.c_str());
-                stat_charts_[index]->UpdateLines(stat_value);
+                //stat_charts_[index]->UpdateLines(stat_value);
 
                 index++;
             }

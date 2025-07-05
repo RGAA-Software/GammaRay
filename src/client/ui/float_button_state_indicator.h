@@ -19,7 +19,7 @@ namespace tc
     public:
         explicit FloatButtonStateIndicator(const std::shared_ptr<ClientContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent *event) override;
-        void UpdateOnHeartBeat(const OnHeartBeat& hb);
+        void UpdateOnHeartBeat(std::shared_ptr<tc::Message> msg);
         int GetPressedCount();
 
     private:

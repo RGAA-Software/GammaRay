@@ -89,7 +89,7 @@ namespace tc
     void Workspace::RegisterSdkMsgCallbacks() {
         BaseWorkspace::RegisterSdkMsgCallbacks();
 
-        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
+        sdk_->SetOnVideoFrameDecodedCallback([=, this](std::shared_ptr<RawImage> image, const SdkCaptureMonitorInfo& info) {
             if (remote_force_closed_) {
                 return;
             }

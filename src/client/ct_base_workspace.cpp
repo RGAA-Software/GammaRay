@@ -259,7 +259,7 @@ namespace tc
 //        });
 
         // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm
-        sdk_->SetOnAudioFrameDecodedCallback([=, this](const std::shared_ptr<Data>& data, int samples, int channels, int bits) {
+        sdk_->SetOnAudioFrameDecodedCallback([=, this](std::shared_ptr<Data> data, int samples, int channels, int bits) {
             if (!settings_->IsAudioEnabled() || remote_force_closed_) {
                 return;
             }
@@ -273,11 +273,12 @@ namespace tc
             audio_player_->Write(data);
         });
 
-        sdk_->SetOnAudioSpectrumCallback([=](const tc::RendererAudioSpectrum& spectrum) {
+        sdk_->SetOnAudioSpectrumCallback([=](std::shared_ptr<tc::Message> msg) {
 
         });
 
-        sdk_->SetOnCursorInfoCallback([=, this](const CursorInfoSync& cursor_info) {
+        sdk_->SetOnCursorInfoCallback([=, this](std::shared_ptr<tc::Message> msg) {
+            const auto& cursor_info = msg->cursor_info_sync();
             // remote cursor's bitmap
             std::string bitmap_data = cursor_info.bitmap();
             bool change = false;
@@ -298,12 +299,12 @@ namespace tc
             }
         });
 
-        sdk_->SetOnHeartBeatCallback([=, this](const OnHeartBeat& hb) {
+        sdk_->SetOnHeartBeatCallback([=, this](std::shared_ptr<tc::Message> msg) {
             if (st_panel_) {
-                st_panel_->UpdateOnHeartBeat(hb);
+                st_panel_->UpdateOnHeartBeat(msg);
             }
             if (btn_indicator_) {
-                btn_indicator_->UpdateOnHeartBeat(hb);
+                btn_indicator_->UpdateOnHeartBeat(msg);
             }
         });
 
@@ -311,15 +312,16 @@ namespace tc
             // See: RawMessageCallback
         });
 
-        sdk_->SetOnServerConfigurationCallback([=, this](const ServerConfiguration& config) {
+        sdk_->SetOnServerConfigurationCallback([=, this](std::shared_ptr<tc::Message> in_msg) {
             monitor_index_map_name_.clear();
+            const auto& config = in_msg->config();
 
             MsgClientCaptureMonitor msg;
             msg.capturing_monitor_name_ = config.capturing_monitor_name();
             LOGI("capturing monitor name: {}", msg.capturing_monitor_name_);
             int monitor_index = 0;
             for (const auto& item : config.monitors_info()) {
-                std::string monitor_name = item.name();
+                const std::string& monitor_name = item.name();
                 //LOGI("monitor name: {}", item.name());
                 monitor_index_map_name_[monitor_index] = monitor_name;
                 std::vector<MsgClientCaptureMonitor::Resolution> resolutions;
@@ -358,14 +360,15 @@ namespace tc
             });
         });
 
-        sdk_->SetOnMonitorSwitchedCallback([=, this](const MonitorSwitched& ms) {
+        sdk_->SetOnMonitorSwitchedCallback([=, this](std::shared_ptr<tc::Message> msg) {
+            const auto& ms = msg->monitor_switched();
             context_->SendAppMessage(MsgClientMonitorSwitched {
                 .name_ = ms.name(),
                 .index_ = ms.index()
             });
         });
 
-        sdk_->SetOnRawMessageCallback([=, this](const std::shared_ptr<tc::Message>& msg) {
+        sdk_->SetOnRawMessageCallback([=, this](std::shared_ptr<tc::Message> msg) {
             if (remote_force_closed_) {
                 return;
             }

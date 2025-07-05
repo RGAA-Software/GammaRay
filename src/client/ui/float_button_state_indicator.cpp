@@ -43,8 +43,9 @@ namespace tc
         setLayout(layout);
     }
 
-    void FloatButtonStateIndicator::UpdateOnHeartBeat(const OnHeartBeat& hb) {
+    void FloatButtonStateIndicator::UpdateOnHeartBeat(std::shared_ptr<tc::Message> msg) {
         context_->PostUITask([=, this]() {
+            auto hb = msg->on_heartbeat();
             if (!hb.alt_pressed() && !hb.shift_pressed() && !hb.control_pressed() && !hb.win_pressed()) {
                 this->hide();
             } else {
