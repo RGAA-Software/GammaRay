@@ -10,6 +10,7 @@
 #include "client/ct_app_message.h"
 #include "client/ct_settings.h"
 #include "tc_common_new/time_util.h"
+#include "tc_message_new/proto_converter.h"
 #ifdef WIN32
 #include <Windows.h>
 #endif
@@ -183,8 +184,8 @@ namespace tc
         key_event->set_timestamp(cur_time);
         msg->set_allocated_key_event(key_event);
 
-        if(this->sdk_) {
-            this->sdk_->PostMediaMessage(msg->SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(msg); buffer && sdk_) {
+            this->sdk_->PostMediaMessage(buffer);
         }
     }
 
@@ -218,7 +219,9 @@ namespace tc
                 TimeUtil::DelayBySleep(1);
                 queuing_count = this->sdk_->GetQueuingMediaMsgCount();
             }
-            sdk_->PostMediaMessage(msg->SerializeAsString());
+            if (auto buffer = tc::ProtoAsData(msg); buffer && sdk_) {
+                sdk_->PostMediaMessage(buffer);
+            }
         });
     }
 }

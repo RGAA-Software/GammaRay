@@ -48,6 +48,7 @@
 #include "plugin_interface/ct_media_record_plugin_interface.h"
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "tc_relay_client/relay_api.h"
+#include "tc_message_new/proto_converter.h"
 
 namespace tc
 {
@@ -231,7 +232,9 @@ namespace tc
             m.set_device_id(settings_->device_id_);
             m.set_stream_id(settings_->stream_id_);
             auto _ = m.mutable_req_ctrl_alt_delete();
-            sdk_->PostMediaMessage(m.SerializeAsString());
+            if (auto buffer = tc::ProtoAsData(&m); buffer) {
+                sdk_->PostMediaMessage(buffer);
+            }
         });
 
         msg_listener_->Listen<MsgClientHardUpdateDesktop>([=, this](const MsgClientHardUpdateDesktop& msg) {
@@ -451,7 +454,9 @@ namespace tc
                 m.set_type(tc::kStopMediaRecordClientSide);
                 media_record_plugin_->EndRecord();
             }
-            sdk_->PostMediaMessage(m.SerializeAsString());
+            if (auto buffer = tc::ProtoAsData(&m); buffer) {
+                sdk_->PostMediaMessage(buffer);
+            }
         });
 
         msg_listener_->Listen<MsgClientModifyFps>([=, this](const MsgClientModifyFps& msg) {
@@ -567,7 +572,9 @@ namespace tc
         m.set_type(tc::kFocusOutEvent);
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SendWindowsKey(unsigned long vk, bool down) {
@@ -696,7 +703,9 @@ namespace tc
                 pf->set_total_size(file.total_size());
             }
         }
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SendSwitchMonitorMessage(const std::string& name) {
@@ -708,7 +717,9 @@ namespace tc
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
         m.mutable_switch_monitor()->set_name(name);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SendUpdateDesktopMessage() {
@@ -717,7 +728,9 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kUpdateDesktop);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SendModifyFpsMessage() {
@@ -729,7 +742,9 @@ namespace tc
         m.set_type(tc::kModifyFps);
         auto mf = m.mutable_modify_fps();
         mf->set_fps(fps);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SendHardUpdateDesktopMessage() {
@@ -738,7 +753,9 @@ namespace tc
         }
         tc::Message m;
         m.set_type(tc::kHardUpdateDesktop);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode) {
@@ -767,7 +784,9 @@ namespace tc
         m.set_stream_id(settings_->stream_id_);
         auto wm = m.mutable_switch_full_color_mode();
         wm->set_enable(enable);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::SwitchScaleMode(const tc::ScaleMode& mode) {
@@ -804,7 +823,9 @@ namespace tc
         cmr->set_monitor_name(msg.monitor_name_);
         cmr->set_target_width(msg.width_);
         cmr->set_target_height(msg.height_);
-        sdk_->PostMediaMessage(m.SerializeAsString());
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
     }
 
     void BaseWorkspace::UpdateVideoWidgetSize() {

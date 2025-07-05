@@ -103,7 +103,7 @@ namespace tc
     public:
         // sent message via media channel ?
         bool media_channel_ = false;
-        std::string buf_;
+        std::shared_ptr<Data> buf_ = nullptr;
     };
 
     // file transfer begin

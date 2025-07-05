@@ -6,6 +6,7 @@
 #include "ct_settings.h"
 #include "tc_common_new/log.h"
 #include "ct_base_workspace.h"
+#include "tc_message_new/proto_converter.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
 #include "client/plugins/ct_plugin_events.h"
 #include "client/plugins/clipboard/clipboard_plugin.h"
@@ -45,7 +46,7 @@ namespace tc
 
         auto event = std::make_shared<ClientPluginNetworkEvent>();
         event->media_channel_ = false;
-        event->buf_ = msg.SerializeAsString();
+        event->buf_ = tc::ProtoAsData(&msg);
         plugin_->CallbackEvent(event);
         //LOGI("request index: {}, current position: {}, req size: {}", req_index_, current_position_, cb);
 

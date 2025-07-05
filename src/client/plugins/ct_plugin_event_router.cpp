@@ -11,6 +11,7 @@
 #include "ct_base_workspace.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
 #include "tc_common_new/md5.h"
+#include "tc_message_new/proto_converter.h"
 
 namespace tc
 {
@@ -92,7 +93,8 @@ namespace tc
             auto resp_sub = resp_msg.mutable_clipboard_info_resp();
             resp_sub->set_type(ClipboardType::kClipboardText);
             resp_sub->set_msg(target_event->remote_info_);
-            thunder_sdk_->PostMediaMessage(resp_msg.SerializeAsString());
+            auto buffer = tc::ProtoAsData(&resp_msg);
+            thunder_sdk_->PostMediaMessage(buffer);
             LOGI("send clipboard info resp.");
         }
     }

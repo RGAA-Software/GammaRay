@@ -13,6 +13,7 @@
 #include "ct_clipboard_manager.h"
 #include "plugin_interface/ct_plugin_context.h"
 #include "tc_common_new/md5.h"
+#include "tc_message_new/proto_converter.h"
 
 namespace tc
 {
@@ -153,7 +154,7 @@ namespace tc
         //LOGI("Req, index: {}, start: {}, size: {}, read size: {}", req_index, req_start, req_size, data ? data->Size() : 0);
         auto event = std::make_shared<ClientPluginNetworkEvent>();
         event->media_channel_ = false;
-        event->buf_ = msg.SerializeAsString();
+        event->buf_ = tc::ProtoAsData(&msg);
         CallbackEvent(event);
     }
 

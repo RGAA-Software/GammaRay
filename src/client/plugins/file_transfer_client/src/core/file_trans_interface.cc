@@ -6,8 +6,10 @@
 #include "ct_plugin_events.h"
 #include "file_sdk_interface.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/data.h"
 #include "tc_common_new/time_util.h"
 #include "widget/file_log_manager.h"
+#include "tc_message_new/proto_converter.h"
 #include "file_transfer_client/file_transfer_plugin.h"
 #include "file_transfer_client/src/widget/file_trans_widget.h"
 #include "file_transfer_client/src/widget/file_transmit_single_task_manager.h"
@@ -50,13 +52,10 @@ namespace tc
     }
 
     void FileTransInterface::SendProtoMessage(const std::string& msg_str) {
-        // TODO:///
-        //if (sdk_ptr_) {
-        //	sdk_ptr_->PostFileTransferMessage(msg_str);
-        //}
         auto event = std::make_shared<ClientPluginNetworkEvent>();
         event->media_channel_ = false;
-        event->buf_ = msg_str;
+        //event->buf_ = msg_str;
+        event->buf_ = Data::From(msg_str);
         plugin_->CallbackEvent(event);
     }
 
