@@ -562,14 +562,14 @@ namespace tc
 
         {
             lbl_received_data_->setText(NumFormatter::FormatStorageSize(sdk_stat_->recv_data_size_).c_str());
-            lbl_video_format_->setText(sdk_stat_->video_format_.c_str());
-            lbl_video_color_->setText(sdk_stat_->video_color_.c_str());
+            lbl_video_format_->setText(sdk_stat_->video_format_.Load().c_str());
+            lbl_video_color_->setText(sdk_stat_->video_color_.Load().c_str());
             lbl_sent_data_->setText(NumFormatter::FormatStorageSize(sdk_stat_->send_data_size_).c_str());
-            lbl_video_decoder_->setText(sdk_stat_->video_decoder_.c_str());
-            lbl_video_capture_type_->setText(sdk_stat_->video_capture_type_.c_str());
-            lbl_audio_capture_type_->setText(sdk_stat_->audio_capture_type_.c_str());
+            lbl_video_decoder_->setText(sdk_stat_->video_decoder_.Load().c_str());
+            lbl_video_capture_type_->setText(sdk_stat_->video_capture_type_.Load().c_str());
+            lbl_audio_capture_type_->setText(sdk_stat_->audio_capture_type_.Load().c_str());
 
-            lbl_audio_encode_type_->setText(sdk_stat_->audio_encode_type_.c_str());
+            lbl_audio_encode_type_->setText(sdk_stat_->audio_encode_type_.Load().c_str());
 
             auto hardware = Hardware::Instance();
             std::stringstream ss;
@@ -585,7 +585,7 @@ namespace tc
             lbl_local_computer_info_->setText(std::format("{} / {} / {}", cpu_name.toStdString(), NumFormatter::FormatStorageSize(hardware->memory_size_), ss.str()).c_str());
             lbl_local_computer_info_->setToolTip(lbl_local_computer_info_->text());
 
-            lbl_remote_computer_info_->setText(sdk_stat_->remote_pc_info_.c_str());
+            lbl_remote_computer_info_->setText(sdk_stat_->remote_pc_info_.Load().c_str());
             lbl_remote_computer_info_->setToolTip(lbl_remote_computer_info_->text());
 
         }
