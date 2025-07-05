@@ -538,13 +538,15 @@ namespace tc
         }
         // data speed
         {
+            auto recv_data_speeds = sdk_stat_->GetRecvDataSpeeds();
+            auto send_data_speeds = sdk_stat_->GetSendDataSpeeds();
             std::map<QString, std::vector<float>> stat_value;
-            stat_value.insert({kChartSendDataSpeed, sdk_stat_->send_data_speeds_});
-            stat_value.insert({kChartRecvDataSpeed, sdk_stat_->recv_data_speeds_});
-            //data_speed_stat_chart_->UpdateLines(stat_value);
-            if (!sdk_stat_->recv_data_speeds_.empty() && !sdk_stat_->send_data_speeds_.empty()) {
-                auto send_value = sdk_stat_->send_data_speeds_[sdk_stat_->send_data_speeds_.size() - 1] * 1024 * 1024;
-                auto recv_value = sdk_stat_->recv_data_speeds_[sdk_stat_->recv_data_speeds_.size() - 1] * 1024 * 1024;
+            stat_value.insert({kChartSendDataSpeed, send_data_speeds});
+            stat_value.insert({kChartRecvDataSpeed, recv_data_speeds});
+            data_speed_stat_chart_->UpdateLines(stat_value);
+            if (!recv_data_speeds.empty() && !send_data_speeds.empty()) {
+                auto send_value = send_data_speeds[send_data_speeds.size() - 1] * 1024 * 1024;
+                auto recv_value = recv_data_speeds[recv_data_speeds.size() - 1] * 1024 * 1024;
                 lbl_data_speed_->setText(tcTr("id_media_data_speed")
                     + std::format("( Out[ {} ]  In[ {} ])", NumFormatter::FormatSpeed(send_value), NumFormatter::FormatSpeed(recv_value)).c_str());
             }
@@ -553,8 +555,9 @@ namespace tc
         //
         {
             std::map<QString, std::vector<float>> stat_value;
-            stat_value.insert({kChartNetworkDelay, sdk_stat_->net_delays_});
-            //durations_stat_chart_->UpdateLines(stat_value);
+            auto delays = sdk_stat_->GetNetDelays();
+            stat_value.insert({kChartNetworkDelay, delays});
+            durations_stat_chart_->UpdateLines(stat_value);
         }
 
         {
@@ -589,20 +592,26 @@ namespace tc
 
         {
             int index = 0;
-            for (const auto& [mon_name, value] : sdk_stat_->decode_durations_) {
+            auto dss = sdk_stat_->GetDecodeDurations();
+            auto video_recv_gaps = sdk_stat_->GetVideoRecvGaps();
+            auto video_recv_fps = sdk_stat_->GetVideoRecvFps();
+            auto frames_size = sdk_stat_->GetFramesSize();
+            auto render_monitors_stat = sdk_stat_->GetRenderMonitorsStat();
+
+            for (const auto& [mon_name, value] : dss) {
                 if (index >= 4) {
                     break;
                 }
 
-                if (sdk_stat_->frames_size_.contains(mon_name) && sdk_stat_->render_monitor_stat_.contains(mon_name)) {
-                    auto& frame_size = sdk_stat_->frames_size_[mon_name];
+                if (frames_size.contains(mon_name) && render_monitors_stat.contains(mon_name)) {
+                    auto& frame_size = frames_size[mon_name];
                     float target_recv_fps = 0;
-                    if (sdk_stat_->video_recv_fps_.contains(mon_name)) {
-                        if (auto& recv_fps = sdk_stat_->video_recv_fps_[mon_name]; !recv_fps.empty()) {
+                    if (video_recv_fps.contains(mon_name)) {
+                        if (auto& recv_fps = video_recv_fps[mon_name]; !recv_fps.empty()) {
                             target_recv_fps = recv_fps[recv_fps.size()-1];
                         }
                     }
-                    auto render_monitor_stat = sdk_stat_->render_monitor_stat_[mon_name];
+                    auto render_monitor_stat = render_monitors_stat[mon_name];
                     frame_info_items_[index]->UpdateInfo(CtStatItemInfo{
                         .name_ = mon_name,
                         .frame_width_ = frame_size.width_,
@@ -620,23 +629,26 @@ namespace tc
                 stat_value.insert({kChartDecodeDuration, value});
 
                 // gaps
-                if (sdk_stat_->video_recv_gaps_.contains(mon_name)) {
-                    stat_value.insert({kChartVideoFrameGap, sdk_stat_->video_recv_gaps_[mon_name]});
+                if (video_recv_gaps.contains(mon_name)) {
+                    stat_value.insert({kChartVideoFrameGap, video_recv_gaps[mon_name]});
                 }
 
                 // video receive fps
-                if (sdk_stat_->video_recv_fps_.contains(mon_name)) {
-                    stat_value.insert({kChartVideoFrameFps, sdk_stat_->video_recv_fps_[mon_name]});
+                if (video_recv_fps.contains(mon_name)) {
+                    stat_value.insert({kChartVideoFrameFps, video_recv_fps[mon_name]});
                 }
 
                 // update
                 stat_charts_[index]->UpdateTitle(mon_name.c_str());
-                //stat_charts_[index]->UpdateLines(stat_value);
+                stat_charts_[index]->UpdateLines(stat_value);
 
                 index++;
             }
 
             for (int i = index; i < 4; i++) {
+                if (i >= frame_info_items_.size()) {
+                    continue;
+                }
                 frame_info_items_[index]->ClearInfo();
             }
         }
