@@ -30,8 +30,8 @@ namespace tc
 
         // 先初始化InitFileTransSDK, 再设置回调
         FileSDKInterface::Instance()->RegSendMessageFunc([=, this](std::shared_ptr<tc::Message> msg) {
-            std::string msg_str = msg->SerializeAsString();
-            this->SendProtoMessage(msg_str);
+            auto buffer = tc::ProtoAsData(msg);
+            this->SendProtoMessage(buffer);
             return true;
         });
         // widget
@@ -45,17 +45,17 @@ namespace tc
 
     }
 
-    void FileTransInterface::OnProtoMessage(const std::shared_ptr<Message>& msg) {
+    void FileTransInterface::OnProtoMessage(std::shared_ptr<Message> msg) {
         //
         //LOGI("OnMessage: {}", (int)msg->type());
         FileSDKInterface::Instance()->OnMessage(msg);
     }
 
-    void FileTransInterface::SendProtoMessage(const std::string& msg_str) {
+    void FileTransInterface::SendProtoMessage(std::shared_ptr<Data> msg) {
         auto event = std::make_shared<ClientPluginNetworkEvent>();
         event->media_channel_ = false;
         //event->buf_ = msg_str;
-        event->buf_ = Data::From(msg_str);
+        event->buf_ = msg;
         plugin_->CallbackEvent(event);
     }
 

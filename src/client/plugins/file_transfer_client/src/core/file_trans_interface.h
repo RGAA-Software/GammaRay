@@ -13,8 +13,9 @@ namespace tc
     #define TC_FILE_TRANS_DLL_API __declspec(dllimport)
     #endif
 
-    class FileTransWidget;
+    class Data;
     class Message;
+    class FileTransWidget;
     class FileTransferPlugin;
 
     class TC_FILE_TRANS_DLL_API FileTransInterface {
@@ -24,8 +25,8 @@ namespace tc
 
         void ShowFileTrans();
 
-        void OnProtoMessage(const std::shared_ptr<Message>& msg);
-        void SendProtoMessage(const std::string& msg_str);
+        void OnProtoMessage(std::shared_ptr<Message> msg);
+        void SendProtoMessage(std::shared_ptr<Data> msg);
         void Exit();
         bool HasTransTask();
 
