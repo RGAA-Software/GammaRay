@@ -234,6 +234,10 @@ namespace tc {
                     ProcessModifyFps(std::move(msg));
                     break;
                 }
+                case kFocusOutEvent: {
+                    ProcessFocusOutEvent();
+                    break;
+                }
                 default: {
                    
                 }
@@ -555,5 +559,9 @@ namespace tc {
         if (context_) {
             context_->SendAppMessage(MsgModifyFps{.fps_ = fps});
         }
+    }
+
+    void PluginNetEventRouter::ProcessFocusOutEvent() {
+        win_event_replayer_->HandleFocusOutEvent();
     }
 }

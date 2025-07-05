@@ -54,6 +54,7 @@ namespace tc
         void dragMoveEvent(QDragMoveEvent *event) override;
         void dropEvent(QDropEvent *event) override;
         bool eventFilter(QObject* watched, QEvent* event) override;
+        void focusOutEvent(QFocusEvent* event) override;
         virtual void SendWindowsKey(unsigned long vk, bool down);
 
         std::shared_ptr<ThunderSdk> GetThunderSdk();

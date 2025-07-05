@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA on 18/02/2025.
 //
 
@@ -59,6 +59,7 @@ namespace tc
         LOGI("refresh rate(fps): {}", encoder_config_.fps);
         LOGI("thread count: {}", codec_ctx_->thread_count);
         LOGI("gop size: {}", codec_ctx_->gop_size);
+        LOGI("encoder width: {}, encoder height: {}", encoder_config_.encode_width, encoder_config_.encode_height);
 
         AVDictionary* param = nullptr;
         if(encoder_id == AV_CODEC_ID_H264) {

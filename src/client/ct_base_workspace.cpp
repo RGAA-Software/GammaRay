@@ -559,6 +559,17 @@ namespace tc
         }
     }
 
+    void BaseWorkspace::focusOutEvent(QFocusEvent* event) {
+        if (!sdk_ || remote_force_closed_) {
+            return;
+        }
+        tc::Message m;
+        m.set_type(tc::kFocusOutEvent);
+        m.set_device_id(settings_->device_id_);
+        m.set_stream_id(settings_->stream_id_);
+        sdk_->PostMediaMessage(m.SerializeAsString());
+    }
+
     void BaseWorkspace::SendWindowsKey(unsigned long vk, bool down) {
         if (game_view_) {
             game_view_->SendKeyEvent(vk, down);

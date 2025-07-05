@@ -311,7 +311,7 @@ namespace tc
                         });
                     };
                     // map the texture from GPU -> CPU
-                    frame_carrier_plugin_->MapRawTexture(monitor_name, cp_result->texture_, desc.Format, (int) desc.Height, rgba_cbk, yuv_cbk);
+                    frame_carrier_plugin_->MapRawTexture(monitor_name, target_texture, desc.Format, (int)desc.Height, rgba_cbk, yuv_cbk);
                 }
 
                 auto end = TimeUtil::GetCurrentTimestamp();

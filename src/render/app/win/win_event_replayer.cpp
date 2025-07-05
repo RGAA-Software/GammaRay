@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA  on 2024/2/12.
 //
 
@@ -298,5 +298,29 @@ namespace tc
         evt.mi.mouseData = data;
         evt.mi.time = 0;
         WinSendEvent(&evt);
+    }
+
+    void WinEventReplayer::HandleFocusOutEvent() {
+        // to do，待测试，远程套远程测试效果不行
+        std::array<int, 11> keys = {
+            VK_CONTROL,
+            VK_RCONTROL,
+            VK_LCONTROL,
+            VK_SHIFT,
+            VK_RSHIFT,
+            VK_LSHIFT,
+            VK_MENU,
+            VK_RMENU,
+            VK_LMENU,
+            VK_LWIN,
+            VK_RWIN,
+        };
+        
+        for (auto key : keys) {
+            tc::KeyEvent event;
+            event.set_down(false);
+            event.set_key_code(key);
+            HandleKeyEvent(event);
+        }
     }
 }
