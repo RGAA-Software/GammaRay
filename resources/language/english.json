@@ -45,6 +45,11 @@
   "id_capture_video": "Capture Video",
   "id_capture_audio": "Capture Audio",
   "id_capture_audio_device": "Capture Audio Device",
+  "id_resize_resolution_even_number_requirement": "The width and height of the resolution must be even numbers",
+  "id_resize_resolution_minimum_hint": "The minimum video width must not be less than 600, and the minimum height must not be less than 200",
+  "id_resize_resolution_h264_hint": "In the 264 encoding format, the width cannot exceed 3840, and the height cannot exceed 2160",
+  "id_resize_resolution_h265_hint": "In the 264 encoding format, the width cannot exceed 7680, and the height cannot exceed 4320",
+  "id_resize_resolution_ration_hint": "The ratio between the width and height (or height and width) of the video cannot exceed 4",
 
   "id_screen_recording_settings": "Screen Recording Settings",
 

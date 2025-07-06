@@ -469,20 +469,55 @@ namespace tc
                 settings_->SetFPS(fps);
 
                 if (cb_resize_res_->isChecked()) {
+                    const std::string cur_enc_format = settings_->GetEncoderFormat();
+
                     // resize width
                     auto res_width = et_res_width_->text().toInt();
                     if (res_width == 0) {
                         func_show_err(tr("Resolution width is none!"));
                         return;
                     }
-                    settings_->SetResWidth(res_width);
-
+                    
                     // resize height
                     auto res_height = et_res_height_->text().toInt();
                     if (res_height == 0) {
                         func_show_err(tr("Resolution height is none!"));
                         return;
                     }
+                    
+                    if (res_width %2 !=0 || res_height %2 != 0) {
+                        func_show_err(tcTr("id_resize_resolution_even_number_requirement"));
+                        return;
+                    }
+
+                    if (cur_enc_format == "h264") {
+                        if (res_width > 3840 || res_height > 2160) {
+                            func_show_err(tcTr("id_resize_resolution_h264_hint"));
+                            return;
+                        }
+                    }
+                    else if(cur_enc_format == "h265") {
+                        if (res_width > 7680 || res_height > 4320) {
+                            func_show_err(tcTr("id_resize_resolution_h265_hint"));
+                            return;
+                        }
+                    }
+
+                    if (res_width < 600 || res_height < 200) {
+                        func_show_err(tcTr("id_resize_resolution_minimum_hint"));
+                        return;
+                    }
+
+                    auto get_ration_cbk = [=](int width, int height) ->float {
+                        return static_cast<float>(std::max(width, height)) / std::min(width, height);
+                    };
+                    float ration = get_ration_cbk(res_width, res_height);
+                    if (ration > 4) {
+                        func_show_err(tcTr("id_resize_resolution_ration_hint"));
+                        return;
+                    }
+
+                    settings_->SetResWidth(res_width);
                     settings_->SetResHeight(res_height);
                 }
 

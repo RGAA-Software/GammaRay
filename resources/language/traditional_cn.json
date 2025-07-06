@@ -45,6 +45,11 @@
   "id_capture_video": "採集視頻",
   "id_capture_audio": "採集音頻",
   "id_capture_audio_device": "採集音頻設備",
+  "id_resize_resolution_even_number_requirement": "解析度的寬和高必須是偶數",
+  "id_resize_resolution_minimum_hint": "視頻寬度最小不能低於600,高度最小不能低於200",
+  "id_resize_resolution_h264_hint": "264編碼格式下,寬度不能超過3840,高度不能超過2160",
+  "id_resize_resolution_h265_hint": "265編碼格式下,寬度不能超過7680,高度不能超過4320",
+  "id_resize_resolution_ration_hint": "視頻寬度與高度之間(或者高度與寬度)的比例不能大於4",
 
   "id_screen_recording_settings": "錄屏設置",
 
