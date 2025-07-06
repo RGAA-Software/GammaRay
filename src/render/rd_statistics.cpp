@@ -94,10 +94,36 @@ namespace tc
     }
 
     void RdStatistics::AppendAudioFrameGap(uint32_t time) {
-        if (audio_frame_gaps_.size() >= kMaxStatCounts) {
-            audio_frame_gaps_.erase(audio_frame_gaps_.begin());
+        if (audio_frame_gaps_.Size() >= kMaxStatCounts) {
+            audio_frame_gaps_.RemoveFirst();
         }
-        audio_frame_gaps_.push_back(time);
+        audio_frame_gaps_.PushBack(time);
+    }
+
+    void RdStatistics::CopyLeftSpectrum(const std::vector<double>& sp) {
+        if (left_spectrum_.Size() < sp.size()) {
+            left_spectrum_.Resize(sp.size());
+        }
+        left_spectrum_.CopyMemFrom(sp);
+    }
+
+    std::vector<double> RdStatistics::GetLeftSpectrum() {
+        std::vector<double> out;
+        left_spectrum_.CopyMemTo(out);
+        return out;
+    }
+
+    void RdStatistics::CopyRightSpectrum(const std::vector<double>& sp) {
+        if (right_spectrum_.Size() < sp.size()) {
+            right_spectrum_.Resize(sp.size());
+        }
+        right_spectrum_.CopyMemFrom(sp);
+    }
+
+    std::vector<double> RdStatistics::GetRightSpectrum() {
+        std::vector<double> out;
+        right_spectrum_.CopyMemTo(out);
+        return out;
     }
 
     std::shared_ptr<Data> RdStatistics::AsProtoMessage() {
@@ -105,7 +131,9 @@ namespace tc
         msg.set_type(tcrp::RpMessageType::kRpCaptureStatistics);
 
         auto cst = msg.mutable_capture_statistics();
-        cst->mutable_audio_frame_gaps()->Add(audio_frame_gaps_.begin(), audio_frame_gaps_.end());
+        audio_frame_gaps_.Visit([&](auto& v) {
+            cst->mutable_audio_frame_gaps()->Add(v);
+        });
 
         // from inner server
         cst->set_app_running_time(running_time_);
@@ -151,7 +179,7 @@ namespace tc
 
                 // capture info
                 //LOGI("Target name: {}", info->target_name_);
-                if (app_captures_info_.contains(info->target_name_)) {
+                if (app_captures_info_.HasKey(info->target_name_)) {
                     auto app_cp_info = CaptureInfo(info->target_name_);
                     //LOGI("copy texture durations: {}", app_cp_info->copy_texture_durations_.size());
                     //LOGI("map&cvt texture durations: {}", app_cp_info->map_cvt_texture_durations_.size());
@@ -234,18 +262,18 @@ namespace tc
     void RdStatistics::OnChecking() {
         monitor_thread_->Post([=, this]() {
             //TimeDuration td("ProcessUtil::GetThreadCount");
-            auto thread_count = ProcessUtil::GetThreadCount();
+            //auto thread_count = ProcessUtil::GetThreadCount();
             //TODO:
             //LOGI("Thread count: {}", thread_count);
         });
     }
 
     std::shared_ptr<MsgWorkingCaptureInfo> RdStatistics::CaptureInfo(const std::string& name) {
-        if (app_captures_info_.contains(name)) {
-            return app_captures_info_[name];
+        if (app_captures_info_.HasKey(name)) {
+            return app_captures_info_.Get(name);
         }
         auto info = std::make_shared<MsgWorkingCaptureInfo>();
-        app_captures_info_[name] = info;
+        app_captures_info_.Insert(name, info);
         return info;
     }
 

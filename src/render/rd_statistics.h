@@ -12,6 +12,8 @@
 #include <atomic>
 #include "tc_common_new/fps_stat.h"
 #include "settings/rd_settings.h"
+#include "tc_common_new/concurrent_vector.h"
+#include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
@@ -56,8 +58,28 @@ namespace tc
         void AppendMediaBytes(int bytes);
         void AppendAudioFrameGap(uint32_t time);
         void IncreaseDDAFailedCount();
-        std::shared_ptr<MsgWorkingCaptureInfo> CaptureInfo(const std::string& name);
+        void CopyLeftSpectrum(const std::vector<double>& sp);
+        std::vector<double> GetLeftSpectrum();
+        void CopyRightSpectrum(const std::vector<double>& sp);
+        std::vector<double> GetRightSpectrum();
 
+        template<typename Collection>
+        void CopyDecodeDurations(const Collection& ds) {
+            if (decode_durations_.Size() < ds.size()) {
+                decode_durations_.Resize(ds.size());
+            };
+            decode_durations_.CopyMemFrom(ds);
+        }
+
+        template<typename Collection>
+        void CopyClientVideoRecvGaps(const Collection& gaps) {
+            if (client_video_recv_gaps_.Size() < gaps.size()) {
+                client_video_recv_gaps_.Resize(gaps.size());
+            }
+            client_video_recv_gaps_.CopyMemFrom(gaps);
+        }
+
+        std::shared_ptr<MsgWorkingCaptureInfo> CaptureInfo(const std::string& name);
         std::shared_ptr<Data> AsProtoMessage();
 
     private:
@@ -69,35 +91,36 @@ namespace tc
         std::shared_ptr<Thread> monitor_thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_mgr_ = nullptr;
+        RdSettings* settings_ = nullptr;
         // unit: S
-        int64_t running_time_{};
+        std::atomic_int64_t running_time_{};
         std::atomic_int64_t send_media_bytes_{};
 
         Encoder::EncoderFormat video_encoder_format_;
 
-        std::vector<uint32_t> audio_frame_gaps_;
-        std::vector<double> left_spectrum_;
-        std::vector<double> right_spectrum_;
+        std::atomic_uint32_t client_fps_video_recv_ = 0;
+        std::atomic_uint32_t client_fps_render_ = 0;
+        std::atomic_int64_t client_recv_media_data_ = 0;
+        std::atomic_int32_t render_width_ = 0;
+        std::atomic_int32_t render_height_ = 0;
 
-        // from client
-        std::vector<uint32_t> decode_durations_;
-        std::vector<uint32_t> client_video_recv_gaps_;
-        uint32_t client_fps_video_recv_ = 0;
-        uint32_t client_fps_render_ = 0;
-        int64_t client_recv_media_data_ = 0;
-        int render_width_ = 0;
-        int render_height_ = 0;
-
-        int32_t audio_samples_{0};
-        int32_t audio_channels_{0};
-        int32_t audio_bits_{0};
+        std::atomic_int32_t audio_samples_{0};
+        std::atomic_int32_t audio_channels_{0};
+        std::atomic_int32_t audio_bits_{0};
 
         std::atomic_int dda_failed_count_{0};
 
-        // in renderer app level not in plugins
-        std::map<std::string, std::shared_ptr<MsgWorkingCaptureInfo>> app_captures_info_;
+    private:
+        ConcurrentVector<uint32_t> audio_frame_gaps_;
+        ConcurrentVector<double> left_spectrum_;
+        ConcurrentVector<double> right_spectrum_;
 
-        RdSettings* settings_ = nullptr;
+        // from client
+        ConcurrentVector<uint32_t> decode_durations_;
+        ConcurrentVector<uint32_t> client_video_recv_gaps_;
+
+        // in renderer app level not in plugins
+        ConcurrentHashMap<std::string, std::shared_ptr<MsgWorkingCaptureInfo>> app_captures_info_;
 
     };
 

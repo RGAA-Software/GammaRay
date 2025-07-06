@@ -347,12 +347,9 @@ namespace tc
                     if (fft_left_.size() < cpy_size || fft_right_.size() < cpy_size) {
                         return;
                     }
-                    if (statistics_->left_spectrum_.size() != cpy_size) {
-                        statistics_->left_spectrum_.resize(cpy_size);
-                        statistics_->right_spectrum_.resize(cpy_size);
-                    }
-                    memcpy(statistics_->left_spectrum_.data(), fft_left_.data(), sizeof(double)*cpy_size);
-                    memcpy(statistics_->right_spectrum_.data(), fft_right_.data(), sizeof(double)*cpy_size);
+
+                    statistics_->CopyLeftSpectrum(fft_left_);
+                    statistics_->CopyRightSpectrum(fft_right_);
                 });
 
                 context_->PostStreamPluginTask([=, this]() {
@@ -547,8 +544,10 @@ namespace tc
         sas->set_samples(st->audio_samples_);
         sas->set_bits(st->audio_bits_);
         sas->set_channels(st->audio_channels_);
-        sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
-        sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
+        auto left_spectrum = st->GetLeftSpectrum();
+        auto right_spectrum = st->GetRightSpectrum();
+        sas->mutable_left_spectrum()->Add(left_spectrum.begin(), left_spectrum.end());
+        sas->mutable_right_spectrum()->Add(right_spectrum.begin(), right_spectrum.end());
         auto net_msg = ProtoAsData(msg);
         if (ws_panel_client_) {
             ws_panel_client_->PostNetMessage(net_msg);
@@ -566,8 +565,10 @@ namespace tc
         sas->set_samples(st->audio_samples_);
         sas->set_bits(st->audio_bits_);
         sas->set_channels(st->audio_channels_);
-        sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
-        sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
+        auto left_spectrum = st->GetLeftSpectrum();
+        auto right_spectrum = st->GetRightSpectrum();
+        sas->mutable_left_spectrum()->Add(left_spectrum.begin(), left_spectrum.end());
+        sas->mutable_right_spectrum()->Add(right_spectrum.begin(), right_spectrum.end());
         auto buffer = RpProtoAsData(msg);
         PostPanelMessage(buffer);
     }
