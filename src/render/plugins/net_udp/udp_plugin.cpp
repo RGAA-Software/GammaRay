@@ -47,22 +47,22 @@ namespace tc
         return true;
     }
 
-    void UdpPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
+    void UdpPlugin::PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) {
         sessions_.VisitAll([=, this](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
-            us->sess_->async_send(msg, [=](std::size_t bytes_sent) {
-                if (bytes_sent != msg.size()) {
-                    LOGI("Sent UDP Message error, origin size: {}, but only {} sent.", msg.size(), bytes_sent);
+            us->sess_->async_send(msg->CStr(), msg->Size(), [=](std::size_t bytes_sent) {
+                if (bytes_sent != msg->Size()) {
+                    LOGI("Sent UDP Message error, origin size: {}, but only {} sent.", msg->Size(), bytes_sent);
                 }
             });
         });
     }
 
-    bool UdpPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
+    bool UdpPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
         bool found_target_stream = false;
         sessions_.VisitAll([=, &found_target_stream](int64_t socket_fd, const std::shared_ptr<UdpSession>& us) {
             if (us->stream_id_ == stream_id) {
                 found_target_stream = true;
-                us->sess_->async_send(msg, [](std::size_t bytes_sent) {
+                us->sess_->async_send(msg->CStr(), msg->Size(), [](std::size_t bytes_sent) {
 
                 });
             }
@@ -78,7 +78,7 @@ namespace tc
 
         server_ = std::make_shared<asio2::udp_server>();
         server_->bind_recv([=, this](std::shared_ptr<asio2::udp_session>& session_ptr, std::string_view data) {
-            auto msg = std::string(data.data(), data.size());
+            auto msg = Data::Make(data.data(), data.size());
             auto socket_fd = fn_get_socket_fd(session_ptr);
             this->OnClientEventCame(true, socket_fd, NetPluginType::kUdpKcp, msg);
 

@@ -16,19 +16,19 @@ namespace tc
 
     }
 
-    void GrNetPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
+    void GrNetPlugin::PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) {
 
     }
 
-    bool GrNetPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
+    bool GrNetPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
         return false;
     }
 
-    bool GrNetPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
+    bool GrNetPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
         return false;
     }
 
-    void GrNetPlugin::OnClientEventCame(bool is_proto, int64_t socket_fd, const NetPluginType& nt_plugin_type, const std::string& msg) {
+    void GrNetPlugin::OnClientEventCame(bool is_proto, int64_t socket_fd, const NetPluginType& nt_plugin_type, std::shared_ptr<Data> msg) {
         auto event = std::make_shared<GrPluginNetClientEvent>();
         event->is_proto_ = is_proto;
         event->socket_fd_ = socket_fd;

@@ -72,23 +72,23 @@ namespace tc
         return ws_server_ && ws_server_->IsWorking();
     }
 
-    void WsPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
-        if (IsWorking() && HasConnectedClients()) {
+    void WsPlugin::PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) {
+        if (IsWorking() && HasConnectedClients() && msg) {
             plugin_context_->PostWorkTask([=, this]() {
                 ws_server_->PostNetMessage(msg);
             });
         }
     }
 
-    bool WsPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
-        if (IsWorking() && HasConnectedClients()) {
+    bool WsPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
+        if (IsWorking() && HasConnectedClients() && msg) {
             return ws_server_->PostTargetStreamMessage(stream_id, msg);
         }
         return false;
     }
 
-    bool WsPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
-        if (IsWorking() && HasConnectedClients()) {
+    bool WsPlugin::PostTargetFileTransferProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
+        if (IsWorking() && HasConnectedClients() && msg) {
             return ws_server_->PostTargetFileTransferMessage(stream_id, msg);
         }
         return false;

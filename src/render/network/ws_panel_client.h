@@ -13,6 +13,7 @@
 namespace tc
 {
 
+    class Data;
     class RdContext;
     class RdStatistics;
     class MessageListener;
@@ -24,7 +25,7 @@ namespace tc
         explicit WsPanelClient(const std::shared_ptr<RdContext>& ctx);
         void Start();
         void Exit();
-        void PostNetMessage(const std::string& msg);
+        void PostNetMessage(std::shared_ptr<Data> msg);
 
     private:
         void ReportStatistics();

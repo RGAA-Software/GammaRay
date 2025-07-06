@@ -10,6 +10,7 @@
 #include "tc_capture_new/desktop_capture_factory.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
+#include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/thread.h"
@@ -53,6 +54,8 @@
 #include "app/monitor_refresher.h"
 #include "app/win/win_desktop_manager.h"
 #include "app/win/d3d11_wrapper.h"
+#include "tc_message_new/proto_converter.h"
+#include "tc_message_new/rp_proto_converter.h"
 
 namespace tc
 {
@@ -384,11 +387,14 @@ namespace tc
 
     void RdApplication::PostIpcMessage(const std::string& msg) {
         if (settings_->capture_.IsVideoHook()) {
-            PostNetMessage(msg);
+            PostNetMessage(Data::From(msg));
         }
     }
 
-    void RdApplication::PostNetMessage(const std::string& msg) {
+    void RdApplication::PostNetMessage(std::shared_ptr<Data> msg) {
+        if (!msg) {
+            return;
+        }
         plugin_manager_->VisitNetPlugins([=](GrNetPlugin* plugin) {
             plugin->PostProtoMessage(msg, true);
         });
@@ -543,7 +549,7 @@ namespace tc
         sas->set_channels(st->audio_channels_);
         sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
         sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
-        auto net_msg = msg->SerializeAsString();
+        auto net_msg = ProtoAsData(msg);
         if (ws_panel_client_) {
             ws_panel_client_->PostNetMessage(net_msg);
         }
@@ -562,15 +568,16 @@ namespace tc
         sas->set_channels(st->audio_channels_);
         sas->mutable_left_spectrum()->Add(st->left_spectrum_.begin(), st->left_spectrum_.end());
         sas->mutable_right_spectrum()->Add(st->right_spectrum_.begin(), st->right_spectrum_.end());
-        auto net_msg = msg->SerializeAsString();
-        PostPanelMessage(net_msg);
+        auto buffer = RpProtoAsData(msg);
+        PostPanelMessage(buffer);
     }
 
     void RdApplication::SendClipboardMessage(const std::string& msg) {
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
         m.mutable_clipboard_info()->set_msg(msg);
-        PostNetMessage(m.SerializeAsString());
+        auto buffer = ProtoAsData(&m);
+        PostNetMessage(buffer);
     }
 
     void RdApplication::SendConfigurationBack() {
@@ -605,14 +612,16 @@ namespace tc
         config->set_audio_enabled(settings_->audio_enabled_);
         config->set_can_be_operated(settings_->can_be_operated_);
         //
-        PostNetMessage(m.SerializeAsString());
+        auto buffer = ProtoAsData(&m);
+        PostNetMessage(buffer);
     }
 
     void RdApplication::RequestRestartMe() {
         tcrp::RpMessage m;
         m.set_type(tcrp::kRpRestartServer);
         m.mutable_restart_server()->set_reason("restart");
-        ws_panel_client_->PostNetMessage(m.SerializeAsString());
+        auto buffer = RpProtoAsData(&m);
+        ws_panel_client_->PostNetMessage(buffer);
     }
 
     void RdApplication::ResetMonitorResolution(const std::string& name, int w, int h) {
@@ -631,7 +640,8 @@ namespace tc
         auto r = m.mutable_change_monitor_resolution_result();
         r->set_monitor_name(name);
         r->set_result(ok);
-        PostNetMessage(m.SerializeAsString());
+        auto buffer = ProtoAsData(&m);
+        PostNetMessage(buffer);
     }
 
     std::shared_ptr<PluginManager> RdApplication::GetPluginManager() {
@@ -741,8 +751,8 @@ namespace tc
         LOGI("Use gdi capture plugin.");
     }
 
-    void RdApplication::PostPanelMessage(const std::string& msg) {
-        if (ws_panel_client_) {
+    void RdApplication::PostPanelMessage(std::shared_ptr<Data> msg) {
+        if (ws_panel_client_ && msg) {
             ws_panel_client_->PostNetMessage(msg);
         }
     }

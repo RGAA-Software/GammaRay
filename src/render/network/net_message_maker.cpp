@@ -15,6 +15,7 @@
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "tc_common_new/num_formatter.h"
+#include "tc_message_new/proto_converter.h"
 
 #include <QSysInfo>
 
@@ -45,7 +46,7 @@ namespace tc
         return msg->SerializeAsString();
     }
 
-    std::string NetMessageMaker::MakeOnHeartBeatMsg(const std::shared_ptr<RdApplication>& app, uint64_t index, int64_t timestamp) {
+    std::shared_ptr<Data> NetMessageMaker::MakeOnHeartBeatMsg(const std::shared_ptr<RdApplication>& app, uint64_t index, int64_t timestamp) {
         auto stat = RdStatistics::Instance();
 
         auto msg = std::make_shared<Message>();
@@ -170,10 +171,10 @@ namespace tc
             }
         }
 
-        return msg->SerializeAsString();
+        return ProtoAsData(msg);
     }
 
-    std::string NetMessageMaker::MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
+    std::shared_ptr<Data> NetMessageMaker::MakeVideoFrameMsg(const tc::VideoType& vt, const std::shared_ptr<Data>& data,
                                                    uint64_t frame_index, int frame_width, int frame_height, bool key,
                                                    const std::string& display_name, int mon_left,
                                                    int mon_top, int mon_right, int mon_bottom, const tc::EImageFormat& img_format, int mon_index) {
@@ -194,10 +195,10 @@ namespace tc
         frame->set_mon_index(mon_index);
         frame->set_image_format(img_format);
         msg->set_allocated_video_frame(frame);
-        return msg->SerializeAsString();
+        return ProtoAsData(msg);
     }
 
-    std::string NetMessageMaker::MakeAudioFrameMsg(const std::shared_ptr<Data>& data,
+    std::shared_ptr<Data> NetMessageMaker::MakeAudioFrameMsg(const std::shared_ptr<Data>& data,
                                                    int samples, int channels, int bits, int frame_size) {
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kAudioFrame);
@@ -208,10 +209,10 @@ namespace tc
         frame->set_bits(bits);
         frame->set_frame_size(frame_size);
         msg->set_allocated_audio_frame(frame);
-        return msg->SerializeAsString();
+        return ProtoAsData(msg);
     }
 
-    std::string NetMessageMaker::MakeCursorInfoSyncMsg(uint32_t x, uint32_t y, uint32_t hotspot_x, uint32_t hotspot_y,
+    std::shared_ptr<Data> NetMessageMaker::MakeCursorInfoSyncMsg(uint32_t x, uint32_t y, uint32_t hotspot_x, uint32_t hotspot_y,
                                                        uint32_t  width, uint32_t height, bool visable,
                                                        const std::shared_ptr<Data>& data, uint32_t type) {
         auto msg = std::make_shared<Message>();
@@ -229,15 +230,15 @@ namespace tc
         }
         cursor_info->set_type((CursorInfoSync::CursorType)type);
         msg->set_allocated_cursor_info_sync(cursor_info);
-        return msg->SerializeAsString();
+        return ProtoAsData(msg);
     }
 
-    std::string NetMessageMaker::MakeMonitorSwitched(const std::string& name, const int& mon_index) {
+    std::shared_ptr<Data> NetMessageMaker::MakeMonitorSwitched(const std::string& name, const int& mon_index) {
         tc::Message msg;
         msg.set_type(kMonitorSwitched);
         msg.mutable_monitor_switched()->set_name(name);
         msg.mutable_monitor_switched()->set_index(mon_index);
-        return msg.SerializeAsString();
+        return ProtoAsData(&msg);
     }
 
 }

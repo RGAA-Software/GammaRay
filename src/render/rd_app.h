@@ -75,7 +75,7 @@ namespace tc
         void PostGlobalTask(std::function<void()>&& task);
         void PostIpcMessage(std::shared_ptr<Data>&& msg);
         void PostIpcMessage(const std::string& msg);
-        void PostNetMessage(const std::string& msg);
+        void PostNetMessage(std::shared_ptr<Data> msg);
         std::shared_ptr<RdContext> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
@@ -91,7 +91,7 @@ namespace tc
         void ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id);
         std::shared_ptr<WinDesktopManager> GetDesktopManager();
         // post to panel process
-        void PostPanelMessage(const std::string& msg);
+        void PostPanelMessage(std::shared_ptr<Data> msg);
 
     public:
         template<typename T>

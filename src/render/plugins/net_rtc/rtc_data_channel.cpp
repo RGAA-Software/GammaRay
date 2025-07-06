@@ -4,6 +4,7 @@
 
 #include "rtc_data_channel.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/data.h"
 #include "rtc_server.h"
 #include "tc_common_new/net_tlv_header.h"
 #include "tc_common_new/time_util.h"
@@ -142,29 +143,29 @@ namespace tc
         data_cbk_ = cbk;
     }
 
-    void RtcDataChannel::SendData(const std::string& msg) {
+    void RtcDataChannel::SendData(std::shared_ptr<Data> msg) {
         if (!connected_) {
             LOGW("DataChannel is invalid, name: {}", name_);
             return;
         }
 
-        total_send_content_bytes_ += msg.size();
+        total_send_content_bytes_ += msg->Size();
 
-        if (msg.size() <= kSplitBufferSize) {
+        if (msg->Size() <= kSplitBufferSize) {
             // wrap message
             auto header = NetTlvHeader {
                 .type_ = kNetTlvFull,
-                .this_buffer_length_ = (uint32_t)msg.size(),
+                .this_buffer_length_ = (uint32_t)msg->Size(),
                 .this_buffer_begin_ = 0,
-                .this_buffer_end_ = (uint32_t)msg.size(),
+                .this_buffer_end_ = (uint32_t)msg->Size(),
                 .pkt_index_ = send_pkt_index_++,
-                .parent_buffer_length_ = (uint32_t)msg.size(),
+                .parent_buffer_length_ = (uint32_t)msg->Size(),
             };
 
             std::string buffer;
-            buffer.resize(sizeof(NetTlvHeader) + msg.size());
+            buffer.resize(sizeof(NetTlvHeader) + msg->Size());
             memcpy((char*)buffer.data(), (char*)&header, sizeof(NetTlvHeader));
-            memcpy((char*)buffer.data() + sizeof(NetTlvHeader), msg.data(), msg.size());
+            memcpy((char*)buffer.data() + sizeof(NetTlvHeader), msg->CStr(), msg->Size());
 
             ++pending_data_count_;
             auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);
@@ -197,7 +198,7 @@ namespace tc
             }
         }
         else {
-            auto size = (uint32_t)msg.size();
+            auto size = (uint32_t)msg->Size();
             auto pieces = [&]() {
                 auto full_part_size = size / kSplitBufferSize;
                 auto left_size = size % kSplitBufferSize;
@@ -213,7 +214,7 @@ namespace tc
                 //LOGI("[ {} ]message size: {}KB, to pieces: {}, base: {}", name_, msg.size() / 1024, pieces, kSplitBufferSize);
             }
 
-            auto total_size = (uint32_t)msg.size();
+            auto total_size = (uint32_t)msg->Size();
             for (int i = 0; i < pieces; i++) {
                 auto type = kNetTlvBegin;
                 if (i == 0) {
@@ -245,7 +246,7 @@ namespace tc
                 std::string buffer;
                 buffer.resize(sizeof(NetTlvHeader) + this_buffer_length);
                 memcpy((char*)buffer.data(), (char*)&header, sizeof(NetTlvHeader));
-                memcpy((char*)buffer.data() + sizeof(NetTlvHeader), (char*)msg.data()+this_buffer_begin, this_buffer_length);
+                memcpy((char*)buffer.data() + sizeof(NetTlvHeader), (char*)msg->CStr()+this_buffer_begin, this_buffer_length);
 
                 ++pending_data_count_;
                 auto rtc_buffer = webrtc::DataBuffer(rtc::CopyOnWriteBuffer(buffer), true);

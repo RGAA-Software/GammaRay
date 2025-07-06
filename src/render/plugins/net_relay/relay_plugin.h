@@ -22,9 +22,9 @@ namespace tc
         void On1Second() override;
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
-        void PostProtoMessage(const std::string &msg, bool run_through) override;
-        bool PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) override;
-        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
+        void PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) override;
+        bool PostTargetStreamProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) override;
+        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) override;
         int GetConnectedClientsCount() override;
         bool IsOnlyAudioClients() override;
         bool IsWorking() override;

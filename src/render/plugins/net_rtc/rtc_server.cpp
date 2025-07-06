@@ -84,7 +84,7 @@ namespace tc
 
                 // data callback
                 media_data_channel_->SetOnDataCallback([=, this](const std::string& data) {
-                    auto payload_msg = std::string(data.data(), data.size());
+                    auto payload_msg = Data::Make(data.data(), data.size());
                     plugin_->OnClientEventCame(true, 0, NetPluginType::kWebRtc, payload_msg);
                 });
             }
@@ -93,7 +93,7 @@ namespace tc
 
                 // data callback
                 ft_data_channel_->SetOnDataCallback([=, this](const std::string& data) {
-                    auto payload_msg = std::string(data.data(), data.size());
+                    auto payload_msg = Data::Make(data.data(), data.size());
                     plugin_->OnClientEventCame(true, 0, NetPluginType::kWebRtc, payload_msg);
                 });
             }
@@ -250,7 +250,7 @@ namespace tc
         plugin_->CallbackEvent(event);
     }
 
-    void RtcServer::PostProtoMessage(const std::string &msg, bool run_through) {
+    void RtcServer::PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) {
         if (network_thread_ && media_data_channel_ && !exit_) {
             network_thread_->PostTask([=, this]() {
                 media_data_channel_->SendData(msg);
@@ -258,7 +258,7 @@ namespace tc
         }
     }
 
-    bool RtcServer::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+    bool RtcServer::PostTargetStreamProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) {
         if (network_thread_ && media_data_channel_ && !exit_) {
             network_thread_->PostTask([=, this]() {
                 media_data_channel_->SendData(msg);
@@ -267,7 +267,7 @@ namespace tc
         return true;
     }
 
-    bool RtcServer::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+    bool RtcServer::PostTargetFileTransferProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) {
         if (ft_data_channel_ && !exit_) {
             ft_data_channel_->SendData(msg);
         }

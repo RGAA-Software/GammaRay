@@ -5,6 +5,7 @@
 #include "relay_plugin.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/file.h"
+#include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_common_new/hardware.h"
@@ -172,7 +173,7 @@ namespace tc
                         auto sub = msg->relay();
                         auto relay_msg_index = sub.relay_msg_index();
                         const auto &payload = sub.payload();
-                        auto payload_msg = std::string(payload.data(), payload.size());
+                        auto payload_msg = Data::Make(payload.data(), payload.size());
                         this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                         //LOGI("Relay in-message size: {}", payload_msg.size());
                     }
@@ -211,7 +212,7 @@ namespace tc
                                 recv_relay_ft_msg_index_ = relay_msg_index;
                             }
                             const auto &payload = sub.payload();
-                            auto payload_msg = std::string(payload.data(), payload.size());
+                            auto payload_msg = Data::Make((char*)payload.data(), payload.size());
                             this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                         }
                     });
@@ -237,8 +238,8 @@ namespace tc
         return true;
     }
 
-    void RelayPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
-        if (!IsWorking()) {
+    void RelayPlugin::PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) {
+        if (!IsWorking() || !msg) {
             return;
         }
         if (!paused_stream || run_through) {
@@ -248,13 +249,13 @@ namespace tc
             });
 
             // report sent size
-            ReportSentDataSize((int)msg.size());
+            ReportSentDataSize((int)msg->Size());
         }
     }
 
-    bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
+    bool RelayPlugin::PostTargetStreamProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
         // todo: stream id --> device id
-        if (!IsWorking()) {
+        if (!IsWorking() || !msg) {
             return false;
         }
         if (!paused_stream || run_through) {
@@ -263,21 +264,21 @@ namespace tc
                 relay_media_sdk_->RelayProtoMessage(stream_id, msg);
             });
             // report sent size
-            ReportSentDataSize(msg.size());
+            ReportSentDataSize(msg->Size());
 
         }
         return true;
     }
 
-    bool RelayPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
-        if (!IsWorking()) {
+    bool RelayPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) {
+        if (!IsWorking() || !msg) {
             return false;
         }
         if ((relay_ft_sdk_ && !paused_stream) || run_through) {
             relay_ft_sdk_->RelayProtoMessage(stream_id, msg);
 
             // report sent size
-            ReportSentDataSize(msg.size());
+            ReportSentDataSize(msg->Size());
         }
         return true;
     }

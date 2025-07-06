@@ -29,6 +29,7 @@
 #include "plugins/net_rtc/rtc_messages.h"
 #include "net_rtc/rtc_report_event.h"
 #include "tc_render_panel_message.pb.h"
+#include "tc_message_new/rp_proto_converter.h"
 
 namespace tc {
 
@@ -103,9 +104,9 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {
-        if (event->is_proto_) {
+        if (event->is_proto_ && event->message_) {
             auto msg = std::make_shared<Message>();
-            auto parse_res = msg->ParseFromString(event->message_);
+            auto parse_res = msg->ParsePartialFromArray(event->message_->CStr(), event->message_->Size());
             if (!parse_res) {
                 std::cout << "PluginNetEventRouter HandleMessage parse error" << std::endl;
                 return;
@@ -535,7 +536,8 @@ namespace tc {
             sub->set_conn_type(event->conn_type_);
             sub->set_visitor_device_id(event->visitor_device_id_);
             sub->set_begin_timestamp(event->begin_timestamp_);
-            app_->PostPanelMessage(msg.SerializeAsString());
+            auto buffer = RpProtoAsData(&msg);
+            app_->PostPanelMessage(buffer);
         });
     }
 
@@ -548,7 +550,8 @@ namespace tc {
             sub->set_visitor_device_id(event->visitor_device_id_);
             sub->set_end_timestamp(event->end_timestamp_);
             sub->set_duration(event->duration_);
-            app_->PostPanelMessage(msg.SerializeAsString());
+            auto buffer = RpProtoAsData(&msg);
+            app_->PostPanelMessage(buffer);
         });
     }
 

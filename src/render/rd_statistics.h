@@ -18,8 +18,9 @@ namespace tc
 
     constexpr auto kMaxStatCounts = 180;
 
-    class RdContext;
+    class Data;
     class Thread;
+    class RdContext;
     class MessageListener;
     class PluginManager;
     class RdApplication;
@@ -57,7 +58,7 @@ namespace tc
         void IncreaseDDAFailedCount();
         std::shared_ptr<MsgWorkingCaptureInfo> CaptureInfo(const std::string& name);
 
-        std::string AsProtoMessage();
+        std::shared_ptr<Data> AsProtoMessage();
 
     private:
         void OnChecking();

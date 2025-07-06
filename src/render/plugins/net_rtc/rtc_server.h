@@ -10,7 +10,7 @@
 
 namespace tc
 {
-
+    class Data;
     class PeerCallback;
     class CreateSessCallback;
     class SetSessCallback;
@@ -30,9 +30,9 @@ namespace tc
         void OnRemoteIce(const std::string& ice, const std::string& mid, int sdp_mline_index);
         bool IsDataChannelConnected();
 
-        void PostProtoMessage(const std::string &msg, bool run_through = false);
-        bool PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through = false);
-        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through = false);
+        void PostProtoMessage(std::shared_ptr<Data> msg, bool run_through = false);
+        bool PostTargetStreamProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through = false);
+        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through = false);
 
         uint32_t GetMediaPendingMessages();
         uint32_t GetFtPendingMessages();

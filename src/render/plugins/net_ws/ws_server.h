@@ -28,9 +28,9 @@ namespace tc
         void Start();
         void Exit();
 
-        void PostNetMessage(const std::string& data);
-        bool PostTargetStreamMessage(const std::string& stream_id, const std::string& data);
-        bool PostTargetFileTransferMessage(const std::string& stream_id, const std::string& data);
+        void PostNetMessage(std::shared_ptr<Data> msg);
+        bool PostTargetStreamMessage(const std::string& stream_id, std::shared_ptr<Data> msg);
+        bool PostTargetFileTransferMessage(const std::string& stream_id, std::shared_ptr<Data> msg);
         int GetConnectedClientsCount();
         bool IsOnlyAudioClients();
         bool IsWorking();

@@ -14,6 +14,7 @@
 #include "tc_message.pb.h"
 #include "win/cp_virtual_file.h"
 #include "plugin_interface/gr_plugin_context.h"
+#include "tc_message_new/proto_converter.h"
 
 void* GetInstance() {
     static tc::ClipboardPlugin plugin;
@@ -177,7 +178,8 @@ namespace tc
             sub->set_read_size(data->Size());
             sub->set_buffer(data->AsString());
         }
-        this->DispatchTargetFileTransferMessage(in_msg->stream_id(), msg.SerializeAsString());
+        auto mb = ProtoAsData(&msg);
+        this->DispatchTargetFileTransferMessage(in_msg->stream_id(), mb);
         //LOGI("Req, index: {}, start: {}, size: {}, read size: {}", req_index, req_start, req_size, data ? data->Size() : 0);
     }
 }

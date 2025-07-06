@@ -119,31 +119,28 @@ namespace tc
 
     }
 
-    void WsPluginServer::PostNetMessage(const std::string& data) {
+    void WsPluginServer::PostNetMessage(std::shared_ptr<Data> msg) {
         stream_routers_.ApplyAll([=](const uint64_t& socket_fd, const std::shared_ptr<WsStreamRouter>& router) {
-//            if (!router->enable_video_) {
-//                return;
-//            }
-            router->PostBinaryMessage(data);
+            router->PostBinaryMessage(msg);
         });
     }
 
-    bool WsPluginServer::PostTargetStreamMessage(const std::string& stream_id, const std::string& data) {
+    bool WsPluginServer::PostTargetStreamMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
         bool found_target_stream = false;
         stream_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsStreamRouter>& router) {
             if (stream_id == router->stream_id_) {
-                router->PostBinaryMessage(data);
+                router->PostBinaryMessage(msg);
                 found_target_stream = true;
             }
         });
         return found_target_stream;
     }
 
-    bool WsPluginServer::PostTargetFileTransferMessage(const std::string& stream_id, const std::string& data) {
+    bool WsPluginServer::PostTargetFileTransferMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
         bool found_target_stream = false;
         ft_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsFileTransferRouter>& router) {
             if (stream_id == router->stream_id_) {
-                router->PostBinaryMessage(data);
+                router->PostBinaryMessage(msg);
                 found_target_stream = true;
             }
         });

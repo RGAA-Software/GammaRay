@@ -14,6 +14,7 @@ namespace tc
 {
     using OnDataCallback = std::function<void(const std::string&)>;
 
+    class Data;
     class RtcServer;
     class RtcPlugin;
     class GrPluginContext;
@@ -27,7 +28,7 @@ namespace tc
         void OnMessage(const webrtc::DataBuffer& buffer) override;
         void OnBufferedAmountChange(uint64_t sent_data_size) override;
         bool IsConnected();
-        void SendData(const std::string& data);
+        void SendData(std::shared_ptr<Data> msg);
         int GetPendingDataCount();
         void Close();
 

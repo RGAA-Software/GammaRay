@@ -47,7 +47,7 @@ namespace tc
 
         }
 
-        virtual void PostBinaryMessage(const std::shared_ptr<Data>& data) {
+        virtual void PostBinaryMessage(std::shared_ptr<Data> data) {
 
         }
 

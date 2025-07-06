@@ -132,17 +132,17 @@ namespace tc
         //                       -> client 3
         // run_through: send the message even if stream was paused
         // !! Call this function in a NON-NET-PLUGIN !!
-        void DispatchAllStreamMessage(const std::string& msg, bool run_through = false);
+        void DispatchAllStreamMessage(std::shared_ptr<Data> msg, bool run_through = false);
 
         // Serialized proto message from Renderer
         // to a specific stream
         // !! Call this function in a NON-NET-PLUGIN !!
-        void DispatchTargetStreamMessage(const std::string& stream_id, const std::string& msg, bool run_through = false);
+        void DispatchTargetStreamMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through = false);
 
         // Serialized proto message from Renderer
         // to file transfer
         // !! Call this function in a NON-NET-PLUGIN !!
-        void DispatchTargetFileTransferMessage(const std::string& stream_id, const std::string& msg, bool run_through = false);
+        void DispatchTargetFileTransferMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through = false);
 
         // messages from remote
         virtual void OnMessage(const std::shared_ptr<Message>& msg);

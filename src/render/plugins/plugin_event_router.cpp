@@ -4,21 +4,23 @@
 
 #include "plugin_event_router.h"
 #include <fstream>
+#include "rd_app.h"
+#include "rd_context.h"
+#include "tc_message.pb.h"
+#include "rd_statistics.h"
+#include "plugin_manager.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
+#include "plugin_net_event_router.h"
+#include "tc_render_panel_message.pb.h"
+#include "tc_message_new/proto_converter.h"
+#include "tc_message_new/rp_proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
-#include "plugin_manager.h"
 #include "plugin_stream_event_router.h"
-#include "plugin_net_event_router.h"
 #include "tc_capture_new/capture_message.h"
-#include "rd_context.h"
-#include "rd_app.h"
-#include "tc_message.pb.h"
-#include "tc_render_panel_message.pb.h"
-#include "rd_statistics.h"
 
 namespace tc
 {
@@ -150,7 +152,7 @@ namespace tc
         pt_msg.set_type(MessageType::kSigAnswerSdpMessage);
         auto sub = pt_msg.mutable_sig_answer_sdp();
         sub->set_sdp(target_event->sdp_);
-        auto msg = pt_msg.SerializeAsString();
+        auto msg = ProtoAsData(&pt_msg);
 
         plugin_manager_->VisitNetPlugins([=, this](GrNetPlugin* plugin) {
             if (plugin->GetPluginId() == kRelayPluginId) {
@@ -175,7 +177,7 @@ namespace tc
         sub->set_ice(target_event->ice_);
         sub->set_mid(target_event->mid_);
         sub->set_sdp_mline_index(target_event->sdp_mline_index_);
-        auto msg = pt_msg.SerializeAsString();
+        auto msg = ProtoAsData(&pt_msg);//.SerializeAsString();
 
         plugin_manager_->VisitNetPlugins([=, this](GrNetPlugin* plugin) {
             if (plugin->GetPluginId() == kRelayPluginId) {
@@ -200,7 +202,8 @@ namespace tc
             sub->set_direction(event->direction_);
             sub->set_file_detail(event->file_detail_);
             sub->set_visitor_device_id(event->visitor_device_id_);
-            app_->PostPanelMessage(msg.SerializeAsString());
+            auto buffer = RpProtoAsData(&msg);
+            app_->PostPanelMessage(buffer);
         });
     }
 
@@ -212,7 +215,8 @@ namespace tc
             sub->set_the_file_id(event->the_file_id_);
             sub->set_end_timestamp(event->end_timestamp_);
             sub->set_success(event->success_);
-            app_->PostPanelMessage(msg.SerializeAsString());
+            auto buffer = RpProtoAsData(&msg);
+            app_->PostPanelMessage(buffer);
         });
     }
 
@@ -223,7 +227,8 @@ namespace tc
             auto sub = msg.mutable_remote_clipboard_resp();
             sub->set_content_type(event->content_type_);
             sub->set_msg(event->remote_info_);
-            app_->PostPanelMessage(msg.SerializeAsString());
+            auto buffer = RpProtoAsData(&msg);
+            app_->PostPanelMessage(buffer);
         });
     }
 

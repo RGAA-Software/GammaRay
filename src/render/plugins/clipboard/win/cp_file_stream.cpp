@@ -6,6 +6,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/time_util.h"
+#include "tc_message_new/proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "render/plugins/clipboard/clipboard_plugin.h"
 
@@ -45,8 +46,8 @@ namespace tc
         req_buffer->set_req_size(cb);
         req_buffer->set_req_start(current_position_);
         req_buffer->set_full_name(cp_file_.file_.full_path());
-
-        plugin_->DispatchTargetFileTransferMessage(cp_file_.stream_id_, msg.SerializeAsString(), false);
+        auto buffer = ProtoAsData(&msg);
+        plugin_->DispatchTargetFileTransferMessage(cp_file_.stream_id_, buffer, false);
 
         std::unique_lock lk(wait_data_mtx_);
         data_cv_.wait_for(lk, std::chrono::seconds(10), [this]() -> bool {

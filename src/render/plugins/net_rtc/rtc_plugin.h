@@ -23,9 +23,9 @@ namespace tc
         std::string GetPluginDescription() override;
         bool OnCreate(const tc::GrPluginParam &param) override;
         void OnMessageRaw(const std::any &msg) override;
-        void PostProtoMessage(const std::string &msg, bool run_through) override;
-        bool PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
-        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) override;
+        void PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) override;
+        bool PostTargetStreamProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) override;
+        bool PostTargetFileTransferProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) override;
         int GetConnectedClientsCount() override;
         int64_t GetQueuingMediaMsgCount() override;
         int64_t GetQueuingFtMsgCount() override;

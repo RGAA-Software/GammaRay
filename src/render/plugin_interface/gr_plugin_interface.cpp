@@ -229,19 +229,19 @@ namespace tc
         return !net_plugins_.empty();
     }
 
-    void GrPluginInterface::DispatchAllStreamMessage(const std::string& msg, bool run_through) {
+    void GrPluginInterface::DispatchAllStreamMessage(std::shared_ptr<Data> msg, bool run_through) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             plugin->PostProtoMessage(msg, run_through);
         }
     }
 
-    void GrPluginInterface::DispatchTargetStreamMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
+    void GrPluginInterface::DispatchTargetStreamMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             plugin->PostTargetStreamProtoMessage(stream_id, msg, run_through);
         }
     }
 
-    void GrPluginInterface::DispatchTargetFileTransferMessage(const std::string& stream_id, const std::string& msg, bool run_through) {
+    void GrPluginInterface::DispatchTargetFileTransferMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through) {
         for (const auto& [plugin_id, plugin] : net_plugins_) {
             plugin->PostTargetFileTransferProtoMessage(stream_id, msg, run_through);
         }

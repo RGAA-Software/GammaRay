@@ -21,6 +21,7 @@
 #include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_frame_carrier_plugin.h"
 #include "plugin_interface/gr_frame_processor_plugin.h"
+#include "tc_message_new/rp_proto_converter.h"
 
 namespace tc
 {
@@ -99,7 +100,7 @@ namespace tc
         audio_frame_gaps_.push_back(time);
     }
 
-    std::string RdStatistics::AsProtoMessage() {
+    std::shared_ptr<Data> RdStatistics::AsProtoMessage() {
         tcrp::RpMessage msg;
         msg.set_type(tcrp::RpMessageType::kRpCaptureStatistics);
 
@@ -222,7 +223,8 @@ namespace tc
 
         cst->set_audio_encode_type(tcrp::AudioEncodeType::kNetOpus);
 
-        return msg.SerializeAsString();
+        auto buffer = RpProtoAsData(&msg);
+        return buffer;
     }
 
     void RdStatistics::IncreaseDDAFailedCount() {

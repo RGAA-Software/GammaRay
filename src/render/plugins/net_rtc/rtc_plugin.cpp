@@ -58,7 +58,7 @@ namespace tc
         }
     }
 
-    void RtcPlugin::PostProtoMessage(const std::string& msg, bool run_through) {
+    void RtcPlugin::PostProtoMessage(std::shared_ptr<Data> msg, bool run_through) {
         WaitForMediaChannelActive();
 
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
@@ -66,7 +66,7 @@ namespace tc
         });
     }
 
-    bool RtcPlugin::PostTargetStreamProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+    bool RtcPlugin::PostTargetStreamProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) {
         WaitForMediaChannelActive();
 
         rtc_servers_.ApplyAll([=, this](const std::string& k, const std::shared_ptr<RtcServer>& srv) {
@@ -75,7 +75,7 @@ namespace tc
         return true;
     }
 
-    bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, const std::string &msg, bool run_through) {
+    bool RtcPlugin::PostTargetFileTransferProtoMessage(const std::string &stream_id, std::shared_ptr<Data> msg, bool run_through) {
         auto queuing_msg_count = GetQueuingFtMsgCount();
         auto has_buffer = this->HasEnoughBufferForQueuingFtMessages();
         auto wait_count = 0;

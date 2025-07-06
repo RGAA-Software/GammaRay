@@ -23,7 +23,7 @@ namespace tc
     void WsStreamRouter::OnMessage(std::shared_ptr<asio2::https_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
         WssRouter::OnMessage(sess_ptr, socket_fd, data);
         auto plugin = Get<WsPlugin*>("plugin");
-        auto msg = std::string(data.data(), data.size());
+        auto msg = Data::Make(data.data(), data.size());
         plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, msg);
     }
 
@@ -35,11 +35,7 @@ namespace tc
         WssRouter::OnPong(sess_ptr);
     }
 
-    void WsStreamRouter::PostBinaryMessage(const std::shared_ptr<Data> &data) {
-        this->PostBinaryMessage(data->AsString());
-    }
-
-    void WsStreamRouter::PostBinaryMessage(const std::string &data) {
+    void WsStreamRouter::PostBinaryMessage(std::shared_ptr<Data> data) {
         if (!session_ || !session_->is_started()) {
             return;
         }
@@ -54,7 +50,7 @@ namespace tc
 
         session_->ws_stream().binary(true);
         queuing_message_count_++;
-        session_->async_send(data, [=, this](size_t byte_sent) {
+        session_->async_send(data->CStr(), data->Size(), [=, this](size_t byte_sent) {
             queuing_message_count_--;
 
             // report data size
@@ -63,8 +59,8 @@ namespace tc
         });
     }
 
-    bool WsStreamRouter::IsVideoEnabled() {
-        return enable_video_;
+    void WsStreamRouter::PostBinaryMessage(const std::string &data) {
+        this->PostBinaryMessage(Data::From(data));
     }
 
     void WsStreamRouter::PostTextMessage(const std::string &data) {

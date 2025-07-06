@@ -17,6 +17,7 @@
 #include "tc_common_new/folder_util.h"
 #include "tc_message.pb.h"
 #include "clipboard_plugin.h"
+#include "tc_message_new/proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
 
 namespace tc
@@ -64,7 +65,8 @@ namespace tc
             auto sub = m.mutable_clipboard_info();
             sub->set_type(ClipboardType::kClipboardText);
             sub->set_msg(msg->text_msg_);
-            plugin_->DispatchAllStreamMessage(m.SerializeAsString());
+            auto buffer = ProtoAsData(&m);
+            plugin_->DispatchAllStreamMessage(buffer);
         }
         else if (msg->clipboard_type_ == MsgClipboardType::kFiles && !msg->files_.empty()) {
             tc::Message m;
@@ -78,7 +80,8 @@ namespace tc
                 pf->set_ref_path(file.ref_path_);
                 pf->set_total_size(file.total_size_);
             }
-            plugin_->DispatchAllStreamMessage(m.SerializeAsString());
+            auto buffer = ProtoAsData(&m);
+            plugin_->DispatchAllStreamMessage(buffer);
         }
     }
 
@@ -118,7 +121,8 @@ namespace tc
                 auto resp_sub = resp_msg.mutable_clipboard_info_resp();
                 resp_sub->set_type(ClipboardType::kClipboardText);
                 resp_sub->set_msg(in_text);
-                plugin_->DispatchAllStreamMessage(resp_msg.SerializeAsString());
+                auto buffer = ProtoAsData(&resp_msg);
+                plugin_->DispatchAllStreamMessage(buffer);
             }
         }
         else if (sub.type() == ClipboardType::kClipboardImage) {

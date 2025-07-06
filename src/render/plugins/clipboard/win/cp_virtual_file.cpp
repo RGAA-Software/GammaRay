@@ -13,6 +13,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/time_util.h"
+#include "tc_message_new/proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "render/plugins/clipboard/clipboard_plugin.h"
 
@@ -234,7 +235,8 @@ namespace tc
         msg.set_type(MessageType::kClipboardReqAtBegin);
         auto req_buffer = msg.mutable_cp_req_at_begin();
         req_buffer->set_full_name(file_stream_->GetFullPath());
-        plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), msg.SerializeAsString(), false);
+        auto buffer = ProtoAsData(&msg);
+        plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), buffer, false);
     }
 
     void CpVirtualFile::ReportFileTransferEnd() {
@@ -255,7 +257,8 @@ namespace tc
         auto req_buffer = msg.mutable_cp_req_at_end();
         req_buffer->set_full_name(file_stream_->GetFullPath());
         req_buffer->set_success(true);
-        plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), msg.SerializeAsString(), false);
+        auto buffer = ProtoAsData(&msg);
+        plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), buffer, false);
     }
 
     CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClipboardPlugin* plugin) {

@@ -25,7 +25,7 @@ namespace tc
     void WsFileTransferRouter::OnMessage(std::shared_ptr<asio2::https_session>& sess_ptr, int64_t socket_fd, std::string_view data) {
         WssRouter::OnMessage(sess_ptr, socket_fd, data);
         auto plugin = Get<WsPlugin*>("plugin");
-        auto msg = std::string(data.data(), data.size());
+        auto msg = Data::Make(data.data(), data.size());
         plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, msg);
     }
 
@@ -37,7 +37,7 @@ namespace tc
         WssRouter::OnPong(sess_ptr);
     }
 
-    void WsFileTransferRouter::PostBinaryMessage(const std::string &data) {
+    void WsFileTransferRouter::PostBinaryMessage(std::shared_ptr<Data> msg) {
         if (!session_ || !session_->is_started()) {
             return;
         }
@@ -51,12 +51,12 @@ namespace tc
 
         session_->ws_stream().binary(true);
         queuing_message_count_++;
-        session_->async_send(data, [=, this](size_t byte_sent) {
+        session_->async_send(msg->CStr(), msg->Size(), [=, this](size_t byte_sent) {
             queuing_message_count_--;
 
             // report data size
             auto plugin = Get<WsPlugin*>("plugin");
-            plugin->ReportSentDataSize(byte_sent);
+            plugin->ReportSentDataSize((int)byte_sent);
         });
     }
 
