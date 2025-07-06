@@ -39,7 +39,6 @@ namespace tc
         AVFrame* frame_ = nullptr;
         AVPacket* packet_ = nullptr;
         int gop_size_ = 60;
-        int bitrate_ = 10000000; // 10Mbps
         bool insert_idr_ = false;
         EncoderConfig encoder_config_;
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;

@@ -33,9 +33,11 @@ namespace tc
             return false;
         }
 
-        // test
         if (encoder_config_.fps  <= 0) {
             encoder_config_.fps = 60;
+        }
+        if (encoder_config_.bitrate < 1000000) {
+            encoder_config_.bitrate = 1000000;
         }
 
         codec_ctx_->width = encoder_config_.encode_width;
@@ -51,7 +53,7 @@ namespace tc
         codec_ctx_->thread_type = FF_THREAD_SLICE;
         codec_ctx_->gop_size = gop_size_;
         codec_ctx_->max_b_frames = 0;
-        codec_ctx_->bit_rate = bitrate_;
+        codec_ctx_->bit_rate = encoder_config_.bitrate;
 
         LOGI("ffmpeg encoder config:");
         LOGI("bitrate: {}", codec_ctx_->bit_rate);
@@ -121,7 +123,7 @@ namespace tc
             uv_size = img_width * img_height / 4;
         }
         else if (RawImageType::kI444 == image->raw_img_type_) {
-            LOGI("RawImageType::kI444");
+            //LOGI("RawImageType::kI444");
             uv_size = img_width * img_height;
         }
         memcpy(frame_->data[0], image_data->CStr(), y_size);
