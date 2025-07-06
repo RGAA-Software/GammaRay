@@ -28,10 +28,11 @@ namespace tc
     }
 
     void GrStatistics::ProcessCaptureStatistics(const MsgCaptureStatistics& msg) {
-        this->audio_frame_gaps_.clear();
-        this->audio_frame_gaps_.insert(this->audio_frame_gaps_.begin(),
-                                       msg.statistics_->audio_frame_gaps().begin(),
-                                       msg.statistics_->audio_frame_gaps().end());
+//        this->audio_frame_gaps_.Clear();
+//        for (auto& v : msg.statistics_->audio_frame_gaps()) {
+//            this->audio_frame_gaps_.PushBack(v);
+//        }
+        this->audio_frame_gaps_.CopyFrom<>(msg.statistics_->audio_frame_gaps());
 
         // from inner server
         this->app_running_time = msg.statistics_->app_running_time();
@@ -39,18 +40,18 @@ namespace tc
         this->server_send_media_bytes = msg.statistics_->server_send_media_data();
 
         // captures information
-        this->encode_durations_.clear();
-        this->video_capture_gaps_.clear();
-        this->copy_texture_durations_.clear();
-        this->map_cvt_texture_durations_.clear();
+        this->encode_durations_.Clear();
+        this->video_capture_gaps_.Clear();
+        this->copy_texture_durations_.Clear();
+        this->map_cvt_texture_durations_.Clear();
         {
-            captures_info_.clear();
+            captures_info_.Clear();
             int size = msg.statistics_->working_captures_info_size();
             for (int i = 0; i < size; i++) {
                 auto info = msg.statistics_->working_captures_info(i);
                 auto cpy_info = std::make_shared<tcrp::RpMsgWorkingCaptureInfo>();
                 cpy_info->CopyFrom(info);
-                captures_info_.push_back(cpy_info);
+                captures_info_.PushBack(cpy_info);
 
                 if (video_capture_type_ != info.capture_type()) {
                     video_capture_type_ = info.capture_type();
@@ -61,41 +62,41 @@ namespace tc
                 for (const auto& v : info.encode_durations()) {
                     encode_durations.push_back(v);
                 }
-                encode_durations_.insert({info.target_name(), encode_durations});
+                encode_durations_.Insert(info.target_name(), encode_durations);
 
                 // video capture gaps
                 std::vector<int32_t> video_capture_gaps;
                 for (const auto& v : info.video_capture_gaps()) {
                     video_capture_gaps.push_back(v);
                 }
-                video_capture_gaps_.insert({info.target_name(), video_capture_gaps});
+                video_capture_gaps_.Insert(info.target_name(), video_capture_gaps);
 
                 // copy texture durations
                 std::vector<int32_t> copy_texture_durations;
                 for (const auto& v : info.copy_texture_durations()) {
                     copy_texture_durations.push_back(v);
                 }
-                copy_texture_durations_.insert({info.target_name(), copy_texture_durations});
+                copy_texture_durations_.Insert(info.target_name(), copy_texture_durations);
 
                 // map cvt texture durations
                 std::vector<int32_t> map_cvt_texture_durations;
                 for (const auto& v : info.map_cvt_texture_durations()) {
                     map_cvt_texture_durations.push_back(v);
                 }
-                map_cvt_texture_durations_.insert({info.target_name(), map_cvt_texture_durations});
+                map_cvt_texture_durations_.Insert(info.target_name(), map_cvt_texture_durations);
             }
         }
 
         connected_clients_ = msg.statistics_->connected_clients_count();
-        connected_clients_info_.clear();
+        connected_clients_info_.Clear();
         for (const auto& item : msg.statistics_->connected_clients()) {
             auto info = std::make_shared<tcrp::RpConnectedClientInfo>();
             info->CopyFrom(item);
-            connected_clients_info_.push_back(info);
+            connected_clients_info_.PushBack(info);
         }
         context_->PostTask([=, this]() {
             context_->SendAppMessage(MsgUpdateConnectedClientsInfo {
-                .clients_info_ = connected_clients_info_,
+                .clients_info_ = GetConnectedClientsInfo(),
             });
             // test beg //
             //LOGI("*** Connected client count: {}", connected_clients_info_.size());
@@ -130,23 +131,102 @@ namespace tc
         this->audio_samples_ = msg.spectrum_->samples();
         this->audio_channels_ = msg.spectrum_->channels();
         this->audio_bits_ = msg.spectrum_->bits();
-        if (this->left_spectrum_.size() != msg.spectrum_->left_spectrum().size()) {
-            this->left_spectrum_.resize(msg.spectrum_->left_spectrum().size());
+        if (this->left_spectrum_.Size() != msg.spectrum_->left_spectrum().size()) {
+            this->left_spectrum_.Resize(msg.spectrum_->left_spectrum().size());
         }
-        memcpy(this->left_spectrum_.data(), msg.spectrum_->left_spectrum().data(), msg.spectrum_->left_spectrum().size() * sizeof(double));
+        //memcpy(this->left_spectrum_.data(), msg.spectrum_->left_spectrum().data(), msg.spectrum_->left_spectrum().size() * sizeof(double));
+        if (!this->left_spectrum_.CopyMemFrom<>(msg.spectrum_->left_spectrum())) {
+            LOGE("copy left spectrum failed.");
+        }
 
-        if (this->right_spectrum_.size() != msg.spectrum_->right_spectrum().size()) {
-            this->right_spectrum_.resize(msg.spectrum_->right_spectrum().size());
+        if (this->right_spectrum_.Size() != msg.spectrum_->right_spectrum().size()) {
+            this->right_spectrum_.Resize(msg.spectrum_->right_spectrum().size());
         }
-        memcpy(this->right_spectrum_.data(), msg.spectrum_->right_spectrum().data(), msg.spectrum_->right_spectrum().size() * sizeof(double));
+        if (!this->right_spectrum_.CopyMemFrom<>(msg.spectrum_->right_spectrum())) {
+            LOGE("copy left spectrum failed.");
+        }
+        //memcpy(this->right_spectrum_.data(), msg.spectrum_->right_spectrum().data(), msg.spectrum_->right_spectrum().size() * sizeof(double));
     }
 
     void GrStatistics::Process1SCalculation() {
         // speed
         send_speed_bytes = server_send_media_bytes - last_server_send_media_bytes;
-        last_server_send_media_bytes = server_send_media_bytes;
+        last_server_send_media_bytes = server_send_media_bytes.load();
 
         //
     }
+
+    std::map<std::string, std::vector<int32_t>> GrStatistics::GetEncodeDurations() {
+        std::map<std::string, std::vector<int32_t>> r;
+        encode_durations_.VisitAll([&](auto k, auto& v) {
+            r.insert({k, v});
+        });
+        return r;
+    }
+
+    std::map<std::string, std::vector<int32_t>> GrStatistics::GetVideoCaptureGaps() {
+        std::map<std::string, std::vector<int32_t>> r;
+        video_capture_gaps_.VisitAll([&](auto k, auto& v) {
+            r.insert({k, v});
+        });
+        return r;
+    }
+
+    std::map<std::string, std::vector<int32_t>> GrStatistics::GetCopyTextureDurations() {
+        std::map<std::string, std::vector<int32_t>> r;
+        copy_texture_durations_.VisitAll([&](auto k, auto& v) {
+            r.insert({k, v});
+        });
+        return r;
+    }
+
+    std::map<std::string, std::vector<int32_t>> GrStatistics::GetMapCvtTextureDurations() {
+        std::map<std::string, std::vector<int32_t>> r;
+        map_cvt_texture_durations_.ApplyAll([&](auto k, auto& v) {
+            r.insert({k, v});
+        });
+        return r;
+    }
+
+    std::vector<int32_t> GrStatistics::GetAudioFrameGaps() {
+        std::vector<int32_t> r;
+        audio_frame_gaps_.Visit([&](auto& v) {
+            r.push_back((int32_t)v);
+        });
+        return r;
+    }
+
+    std::vector<double> GrStatistics::GetLeftSpectrum() {
+        std::vector<double> r;
+        left_spectrum_.Visit([&](auto& v) {
+            r.push_back(v);
+        });
+        return r;
+    }
+
+    std::vector<double> GrStatistics::GetRightSpectrum() {
+        std::vector<double> r;
+        right_spectrum_.Visit([&](auto& v) {
+            r.push_back(v);
+        });
+        return r;
+    }
+
+    std::vector<std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>> GrStatistics::GetCapturesInfo() {
+        std::vector<std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>> r;
+        captures_info_.Visit([&](auto& v) {
+            r.push_back(v);
+        });
+        return r;
+    }
+
+    std::vector<std::shared_ptr<tcrp::RpConnectedClientInfo>> GrStatistics::GetConnectedClientsInfo() {
+        std::vector<std::shared_ptr<tcrp::RpConnectedClientInfo>> r;
+        connected_clients_info_.Visit([&](auto& v) {
+            r.push_back(v);
+        });
+        return r;
+    }
+
 
 }

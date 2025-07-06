@@ -519,7 +519,8 @@ namespace tc
         if (!this->lbl_audio_format_) {
             return;
         }
-        this->lbl_audio_format_->setText(std::format("Format: {}/{}/{}", statistics_->audio_samples_, statistics_->audio_channels_, statistics_->audio_bits_).c_str());
+        this->lbl_audio_format_->setText(
+                std::format("Format: {}/{}/{}", statistics_->audio_samples_.load(), statistics_->audio_channels_.load(), statistics_->audio_bits_.load()).c_str());
     }
 
 

@@ -327,19 +327,20 @@ namespace tc
 
         // column 2
         lbl_connected_clients_->setText(std::to_string(stat->connected_clients_).c_str());
-        lbl_video_capture_type_->setText(stat->video_capture_type_.c_str());
-        lbl_video_encode_type_->setText(stat->video_encode_type_.c_str());
+        lbl_video_capture_type_->setText(stat->video_capture_type_.Load().c_str());
+        lbl_video_encode_type_->setText(stat->video_encode_type_.Load().c_str());
 
         // column 3
         lbl_relay_connected_->setText(stat->relay_connected_ ? "Online" : "Offline");
-        lbl_audio_capture_type_->setText(stat->audio_capture_type_.c_str());
+        lbl_audio_capture_type_->setText(stat->audio_capture_type_.Load().c_str());
         lbl_audio_encode_type_->setText("OPUS");
 
 //        for (const auto& cp : frame_info_items_) {
 //            cp->ClearInfo();
 //        }
         int index = 0;
-        for (const auto& info : stat->captures_info_) {
+        auto captures_info = stat->GetCapturesInfo();
+        for (const auto& info : captures_info) {
             if (index >= 4) {
                 break;
             }
@@ -348,27 +349,32 @@ namespace tc
 
             std::map<QString, std::vector<int32_t>> stat_value;
             // update video frame gap
-            if (stat->video_capture_gaps_.contains(info->target_name())) {
-                stat_value.insert({kChartVideoFrameGap, stat->video_capture_gaps_[info->target_name()]});
+            auto video_capture_gaps = stat->GetVideoCaptureGaps();
+            if (video_capture_gaps.contains(info->target_name())) {
+                stat_value.insert({kChartVideoFrameGap, video_capture_gaps[info->target_name()]});
             }
 
             // update encode durations
-            if (stat->encode_durations_.contains(info->target_name())) {
-                stat_value.insert({kChartEncode, stat->encode_durations_[info->target_name()]});
+            auto encode_durations = stat->GetEncodeDurations();
+            if (encode_durations.contains(info->target_name())) {
+                stat_value.insert({kChartEncode, encode_durations[info->target_name()]});
             }
 
             // copy / resize texture
-            if (stat->copy_texture_durations_.contains(info->target_name())) {
-                stat_value.insert({kChartCopyTexture, stat->copy_texture_durations_[info->target_name()]});
+            auto copy_texture_durations = stat->GetCopyTextureDurations();
+            if (copy_texture_durations.contains(info->target_name())) {
+                stat_value.insert({kChartCopyTexture, copy_texture_durations[info->target_name()]});
             }
 
-            if (stat->map_cvt_texture_durations_.contains(info->target_name())) {
-                stat_value.insert({kChartMapCvtTexture, stat->map_cvt_texture_durations_[info->target_name()]});
+            auto map_cvt_texture_durations = stat->GetMapCvtTextureDurations();
+            if (map_cvt_texture_durations.contains(info->target_name())) {
+                stat_value.insert({kChartMapCvtTexture, map_cvt_texture_durations[info->target_name()]});
             }
 
             if (index == 0) {
                 // update audio frame gap
-                stat_value.insert({kChartAudioFrameGap, stat->audio_frame_gaps_});
+                auto audio_frame_gaps = stat->GetAudioFrameGaps();
+                stat_value.insert({kChartAudioFrameGap, audio_frame_gaps});
             }
             stat_charts_[index]->UpdateLines(stat_value);
 

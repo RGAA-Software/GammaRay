@@ -24,7 +24,7 @@ namespace tc
             timer->setInterval(17);
             QObject::connect(timer, &QTimer::timeout, this, [this] {
                 auto st = GrStatistics::Instance();
-                this->OnDataComing(st->left_spectrum_, st->right_spectrum_);
+                this->OnDataComing(st->GetLeftSpectrum(), {}/*st->GetRightSpectrum()*/);
                 this->repaint();
             });
             timer->start();
