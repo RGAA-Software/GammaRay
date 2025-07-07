@@ -136,7 +136,8 @@ namespace tc
                                     const ACCESS_MASK ac = GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE;
                                     HDESK desk = ::OpenInputDesktop(0, 0, ac);
                                     if (desk) {
-                                        SetThreadDesktop(desk);
+                                        auto r = SetThreadDesktop(desk);
+                                        LOGW("SetThreadDesktop, r: {}", r);
                                     }
                                     CloseDesktop(desk);
                                     continue;
@@ -327,10 +328,10 @@ namespace tc
                     last_captured_timestamp_ = curr_timestamp;
                 }
                 auto diff = curr_timestamp - last_captured_timestamp_;
-                if (capture_gaps_.size() >= 180) {
-                    capture_gaps_.pop_front();
+                if (capture_gaps_.Size() >= 180) {
+                    capture_gaps_.PopFront();
                 }
-                capture_gaps_.push_back((int32_t)diff);
+                capture_gaps_.PushBack((int32_t)diff);
                 last_captured_timestamp_ = curr_timestamp;
             }
             else if (res == S_FALSE || res == DXGI_ERROR_ACCESS_LOST || res == DXGI_ERROR_INVALID_CALL) {
@@ -559,6 +560,13 @@ namespace tc
 
     int DDACapture::GetCapturingFps() {
         return fps_stat_->value();
+    }
+
+    void DDACapture::TryWakeOs() {
+        PluginDesktopCapture::TryWakeOs();
+        if (d3d11_device_context_) {
+            d3d11_device_context_->Flush();
+        }
     }
 
 } // tc

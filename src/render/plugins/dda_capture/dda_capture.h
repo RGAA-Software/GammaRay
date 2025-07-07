@@ -72,6 +72,7 @@ namespace tc
         bool IsPrimaryMonitor() override;
         bool IsInitSuccess() override;
         int GetCapturingFps() override;
+        void TryWakeOs() override;
 
         using DDAInitCallback = std::function<void(bool)>;
         DDAInitCallback dda_init_callback_ = nullptr;

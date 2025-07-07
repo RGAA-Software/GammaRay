@@ -2,13 +2,11 @@
 #include "tc_common_new/log.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include <Shlobj.h>
-//#include "dda_capture_plugin.h"
 
 namespace tc
 {
 
-    PluginDesktopCapture::PluginDesktopCapture(/*DDACapturePlugin* plugin,*/ const CaptureMonitorInfo& my_monitor_info) {
-        //plugin_ = plugin;
+    PluginDesktopCapture::PluginDesktopCapture(const CaptureMonitorInfo& my_monitor_info) {
         my_monitor_info_ = my_monitor_info;
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     }
@@ -26,11 +24,28 @@ namespace tc
     }
 
     std::vector<int32_t> PluginDesktopCapture::GetCaptureGaps() {
-        std::vector<int32_t> result;
-        for (const auto& item : capture_gaps_) {
-            result.push_back(item);
-        }
-        return result;
+        return capture_gaps_.ToVector();
+    }
+
+    void PluginDesktopCapture::TryWakeOs() {
+        // mock 1 pixel mouse move
+        INPUT input = {0};
+        input.type = INPUT_MOUSE;
+        input.mi.dx = 1;
+        input.mi.dy = 1;
+        input.mi.dwFlags = MOUSEEVENTF_MOVE;
+        SendInput(1, &input, sizeof(INPUT));
+
+        // mock a keyboard event
+        INPUT inputs[2] = {0};
+        inputs[0].type = INPUT_KEYBOARD;
+        inputs[0].ki.wVk = VK_SHIFT;
+        inputs[0].ki.dwFlags = 0;
+
+        inputs[1].type = INPUT_KEYBOARD;
+        inputs[1].ki.wVk = VK_SHIFT;
+        inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(2, inputs, sizeof(INPUT));
     }
 
 }

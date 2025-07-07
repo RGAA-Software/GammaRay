@@ -148,10 +148,10 @@ namespace tc
             last_captured_timestamp_ = curr_timestamp;
         }
         auto diff = curr_timestamp - last_captured_timestamp_;
-        if (capture_gaps_.size() >= 180) {
-            capture_gaps_.pop_front();
+        if (capture_gaps_.Size() >= 180) {
+            capture_gaps_.PopFront();
         }
-        capture_gaps_.push_back((int32_t)diff);
+        capture_gaps_.PushBack((int32_t)diff);
         last_captured_timestamp_ = curr_timestamp;
 
 #if 0   // save rgb to file
