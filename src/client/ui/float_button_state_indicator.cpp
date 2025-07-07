@@ -15,7 +15,7 @@ namespace tc
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
         auto layout = new NoMarginHLayout();
-        auto size = QSize(65, 30);
+        auto size = QSize(60, 25);
         {
             auto item = new KeyItem("ALT");
             item->setFixedSize(size);
@@ -76,7 +76,7 @@ namespace tc
             control_item_->UpdateState(hb.control_pressed());
             win_item_->UpdateState(hb.win_pressed());
 
-            setFixedSize(QSize(65*GetPressedCount(), 30));
+            setFixedSize(QSize(alt_item_->width()*GetPressedCount(), alt_item_->height()));
         });
     }
 

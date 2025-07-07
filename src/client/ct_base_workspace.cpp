@@ -306,7 +306,7 @@ namespace tc
             if (st_panel_) {
                 st_panel_->UpdateOnHeartBeat(msg);
             }
-            if (btn_indicator_) {
+            if (btn_indicator_ && settings_->develop_mode_) {
                 btn_indicator_->UpdateOnHeartBeat(msg);
             }
         });

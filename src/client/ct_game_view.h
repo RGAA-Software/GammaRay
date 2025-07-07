@@ -20,7 +20,7 @@ class Settings;
 class GameView : public QWidget {
 public:
 	GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent);
-	~GameView();
+	~GameView() override;
 	void resizeEvent(QResizeEvent* event) override;
 	void enterEvent(QEnterEvent* event) override;
 	void leaveEvent(QEvent* event) override;
@@ -69,7 +69,7 @@ private:
     std::shared_ptr<ThunderSdkParams> params_;
 	std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 	int monitor_index_ = 0;
-	std::string monitor_name_ = "";
+	std::string monitor_name_;
 	bool active_ = false;
 	bool is_main_view_ = false;
 

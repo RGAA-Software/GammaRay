@@ -122,6 +122,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_display_logo("display_logo", "display logo", "value", "");
     parser.addOption(opt_display_logo);
 
+    QCommandLineOption opt_develop_mode("develop_mode", "develop mode", "value", "");
+    parser.addOption(opt_develop_mode);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -248,6 +251,14 @@ void ParseCommandLine(QApplication& app) {
         auto value = parser.value(opt_display_logo);
         if (!value.isEmpty()) {
             settings->display_logo_ = value.toInt() == 1;
+        }
+    }
+
+    // develop mode
+    {
+        auto value = parser.value(opt_develop_mode);
+        if (!value.isEmpty()) {
+            settings->develop_mode_ = value.toInt() == 1;
         }
     }
 }

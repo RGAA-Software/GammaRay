@@ -116,6 +116,9 @@ namespace tc
         // display logo
         bool display_logo_ = false;
 
+        // develop mode
+        bool develop_mode_ = false;
+
         ///////
         ///////
         // from render //

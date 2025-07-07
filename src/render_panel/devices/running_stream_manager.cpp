@@ -102,6 +102,7 @@ namespace tc
             << std::format("--split_windows={}", item->split_windows_).c_str()
             << std::format("--max_num_of_screen={}", settings_->GetMaxNumOfScreen()).c_str()
             << std::format("--display_logo={}", settings_->IsClientLogoDisplaying() ? 1 : 0).c_str()
+            << std::format("--develop_mode={}", settings_->IsDevelopMode() ? 1 : 0).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {
