@@ -100,11 +100,11 @@ namespace tc
         audio_frame_gaps_.PushBack(time);
     }
 
-    void RdStatistics::CopyLeftSpectrum(const std::vector<double>& sp) {
-        if (left_spectrum_.Size() < sp.size()) {
-            left_spectrum_.Resize(sp.size());
+    void RdStatistics::CopyLeftSpectrum(const std::vector<double>& sp, int cpy_size) {
+        if (left_spectrum_.Size() < cpy_size) {
+            left_spectrum_.Resize(cpy_size);
         }
-        left_spectrum_.CopyMemFrom(sp);
+        left_spectrum_.CopyMemPartialFrom(sp, cpy_size);
     }
 
     std::vector<double> RdStatistics::GetLeftSpectrum() {
@@ -113,11 +113,11 @@ namespace tc
         return out;
     }
 
-    void RdStatistics::CopyRightSpectrum(const std::vector<double>& sp) {
-        if (right_spectrum_.Size() < sp.size()) {
-            right_spectrum_.Resize(sp.size());
+    void RdStatistics::CopyRightSpectrum(const std::vector<double>& sp, int cpy_size) {
+        if (right_spectrum_.Size() < cpy_size) {
+            right_spectrum_.Resize(cpy_size);
         }
-        right_spectrum_.CopyMemFrom(sp);
+        right_spectrum_.CopyMemPartialFrom(sp, cpy_size);
     }
 
     std::vector<double> RdStatistics::GetRightSpectrum() {

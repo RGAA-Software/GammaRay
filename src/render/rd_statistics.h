@@ -58,9 +58,9 @@ namespace tc
         void AppendMediaBytes(int bytes);
         void AppendAudioFrameGap(uint32_t time);
         void IncreaseDDAFailedCount();
-        void CopyLeftSpectrum(const std::vector<double>& sp);
+        void CopyLeftSpectrum(const std::vector<double>& sp, int size);
         std::vector<double> GetLeftSpectrum();
-        void CopyRightSpectrum(const std::vector<double>& sp);
+        void CopyRightSpectrum(const std::vector<double>& sp, int size);
         std::vector<double> GetRightSpectrum();
 
         template<typename Collection>

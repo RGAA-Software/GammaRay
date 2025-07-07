@@ -343,13 +343,13 @@ namespace tc
                     }
                     FFT32::DoFFT(fft_left_, frame.left_ch_data_, 960, true);
                     FFT32::DoFFT(fft_right_, frame.right_ch_data_, 960, true);
-                    int cpy_size = 120;
+                    int cpy_size = 150;
                     if (fft_left_.size() < cpy_size || fft_right_.size() < cpy_size) {
                         return;
                     }
 
-                    statistics_->CopyLeftSpectrum(fft_left_);
-                    statistics_->CopyRightSpectrum(fft_right_);
+                    statistics_->CopyLeftSpectrum(fft_left_, cpy_size);
+                    statistics_->CopyRightSpectrum(fft_right_, cpy_size);
                 });
 
                 context_->PostStreamPluginTask([=, this]() {
@@ -549,9 +549,9 @@ namespace tc
         sas->mutable_left_spectrum()->Add(left_spectrum.begin(), left_spectrum.end());
         sas->mutable_right_spectrum()->Add(right_spectrum.begin(), right_spectrum.end());
         auto net_msg = ProtoAsData(msg);
-        if (ws_panel_client_) {
-            ws_panel_client_->PostNetMessage(net_msg);
-        }
+//        if (ws_panel_client_) {
+//            ws_panel_client_->PostNetMessage(net_msg);
+//        }
 
         // audio spectrum
         PostNetMessage(net_msg);
