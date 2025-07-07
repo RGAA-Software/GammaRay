@@ -357,6 +357,8 @@ namespace tc
                     }
                     texture = cached_texture_;
                     is_cached = true;
+
+                    TryWakeOs();
                     LOGI("Use cached texture!");
                 } else {
                     continue;
