@@ -29,13 +29,22 @@ namespace tc
 
     void PluginDesktopCapture::TryWakeOs() {
         // mock 1 pixel mouse move
-        INPUT input = {0};
-        input.type = INPUT_MOUSE;
-        input.mi.dx = 1;
-        input.mi.dy = 1;
-        input.mi.dwFlags = MOUSEEVENTF_MOVE;
-        SendInput(1, &input, sizeof(INPUT));
-
+        {
+            INPUT input = {0};
+            input.type = INPUT_MOUSE;
+            input.mi.dx = 1;
+            input.mi.dy = 1;
+            input.mi.dwFlags = MOUSEEVENTF_MOVE;
+            SendInput(1, &input, sizeof(INPUT));
+        }
+        {
+            INPUT input = {0};
+            input.type = INPUT_MOUSE;
+            input.mi.dx = -1;
+            input.mi.dy = -1;
+            input.mi.dwFlags = MOUSEEVENTF_MOVE;
+            SendInput(1, &input, sizeof(INPUT));
+        }
         // mock a keyboard event
         INPUT inputs[2] = {0};
         inputs[0].type = INPUT_KEYBOARD;
