@@ -50,6 +50,7 @@ namespace tc
         QLabel* lbl_conn_type_ = nullptr;
         QLabel* lbl_remote_computer_info_ = nullptr;
         QLabel* lbl_local_computer_info_ = nullptr;
+        QLabel* lbl_network_ = nullptr;
 
         QLabel* lbl_video_decoder_ = nullptr;
         std::vector<CtStatFrameInfoItem*> frame_info_items_;

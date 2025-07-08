@@ -86,6 +86,7 @@ namespace tc
             {
                 layout->addSpacing(20);
                 auto lbl = new TcLabel(this);
+                lbl_network_ = lbl;
                 lbl->setStyleSheet(R"(font-size: 16px; font-weight: bold;)");
                 lbl->SetTextId("id_network");
                 layout->addWidget(lbl);
@@ -552,10 +553,14 @@ namespace tc
             }
         }
 
-        //
+        // network
         {
             std::map<QString, std::vector<float>> stat_value;
             auto delays = sdk_stat_->GetNetDelays();
+            if (!delays.empty()) {
+                auto delay = delays[delays.size() - 1];
+                lbl_network_->setText(tcTr("id_network") + std::format(" ( Delay[ {}ms ] ) ", delay).c_str());
+            }
             stat_value.insert({kChartNetworkDelay, delays});
             durations_stat_chart_->UpdateLines(stat_value);
         }
