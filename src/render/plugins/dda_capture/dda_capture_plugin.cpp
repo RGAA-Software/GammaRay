@@ -333,6 +333,7 @@ namespace tc
         GrPluginInterface::OnNewClientIn();
         for (const auto& [k, capture] : captures_) {
             capture->RefreshScreen();
+            capture->TryWakeOs();
         }
         LOGI("OnNewClientIn!");
         NotifyCaptureMonitorInfo();
