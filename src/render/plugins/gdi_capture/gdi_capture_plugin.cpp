@@ -126,6 +126,9 @@ namespace tc
     }
 
     void GdiCapturePlugin::RestartCapturing() {
+        if (!IsPluginEnabled()) {
+            return;
+        }
         LOGI("GdiCapturePlugin RestartCapturing");
         StopCapturing();
         gdi_capture_ = nullptr;
@@ -134,7 +137,7 @@ namespace tc
     }
 
     void GdiCapturePlugin::StopCapturing() {
-        if (!gdi_capture_) {
+        if (gdi_capture_) {
             gdi_capture_->StopCapture();
         }
     }

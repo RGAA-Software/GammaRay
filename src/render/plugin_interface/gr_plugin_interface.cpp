@@ -60,7 +60,7 @@ namespace tc
     }
 
     bool GrPluginInterface::IsWorking() {
-        return false;
+        return plugin_enabled_;
     }
 
     bool GrPluginInterface::OnCreate(const GrPluginParam& param) {

@@ -487,7 +487,9 @@ namespace tc
         //    keyMutex->ReleaseSync(0x0);
         //}
 
-        SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
+        if (plugin_->IsPluginEnabled()) {
+            SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
+        }
     }
 
     void DDACapture::SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format) {

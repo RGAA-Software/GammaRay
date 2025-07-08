@@ -750,7 +750,7 @@ namespace tc
         }
         monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
         monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
-        monitor_capture_plugin_->EnablePlugin();
+        //monitor_capture_plugin_->EnablePlugin();
         LOGI("Use gdi capture plugin.");
     }
 

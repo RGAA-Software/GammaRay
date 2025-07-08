@@ -134,10 +134,12 @@ namespace tc
         cap_video_frame.frame_index_ = GetFrameIndex();
         cap_video_frame.raw_image_ = Image::Make(data_ptr, bmp.bmWidth, bmp.bmHeight, RawImageType::kBGRA);
         memcpy(cap_video_frame.display_name_, kVirtualDesktopNameSign.c_str(), kVirtualDesktopNameSign.size());
-        
-        auto event = std::make_shared<GrPluginCapturedVideoFrameEvent>();
-        event->frame_ = cap_video_frame;
-        this->plugin_->CallbackEvent(event);
+
+        if (plugin_->IsPluginEnabled()) {
+            auto event = std::make_shared<GrPluginCapturedVideoFrameEvent>();
+            event->frame_ = cap_video_frame;
+            this->plugin_->CallbackEvent(event);
+        }
 
         // fps tick
         fps_stat_->Tick();
