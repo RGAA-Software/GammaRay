@@ -107,6 +107,7 @@ namespace tc
     //
     class MsgClientConnected {
     public:
+        std::string conn_id_;
         std::string conn_type_;
         std::string stream_id_;
         std::string visitor_device_id_;
@@ -120,6 +121,7 @@ namespace tc
             type_ = EType::kClientDisconnected;
         }
     public:
+        std::string conn_id_;
         std::string visitor_device_id_;
         std::string stream_id_;
         int64_t end_timestamp_{0};

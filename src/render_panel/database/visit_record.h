@@ -21,6 +21,7 @@ namespace tc
 
     public:
         int id_{};
+        std::string conn_id_;
         std::string stream_id_;
         std::string conn_type_;
         // unit: ms

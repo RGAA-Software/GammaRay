@@ -75,6 +75,7 @@ namespace tc
                 make_table("visit_record",
                     make_column("id", &VisitRecord::id_, primary_key()),
                     make_column("stream_id", &VisitRecord::stream_id_),
+                    make_column("conn_id", &VisitRecord::conn_id_),
                     make_column("conn_type", &VisitRecord::conn_type_),
                     make_column("begin", &VisitRecord::begin_),
                     make_column("end", &VisitRecord::end_),

@@ -37,8 +37,8 @@ namespace tc
         std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo() override;
 
     private:
-        void NotifyMediaClientConnected(const std::string& stream_id, const std::string& visitor_device_id);
-        void NotifyMediaClientDisConnected(const std::string& stream_id, const std::string& visitor_device_id, int64_t begin_timestamp);
+        void NotifyMediaClientConnected(const std::string& conn_id, const std::string& stream_id, const std::string& visitor_device_id);
+        void NotifyMediaClientDisConnected(const std::string& conn_id, const std::string& stream_id, const std::string& visitor_device_id, int64_t begin_timestamp);
 
     private:
         std::shared_ptr<RelayServerSdk> relay_media_sdk_ = nullptr;

@@ -20,8 +20,8 @@ namespace tc
         storage.insert(*record);
     }
 
-    void VisitRecordOperator::UpdateVisitRecord(const std::string& stream_id, int64_t end_timestamp, int64_t duration) {
-        auto opt_record = GetVisitRecordByStreamId(stream_id);
+    void VisitRecordOperator::UpdateVisitRecord(const std::string& conn_id, int64_t end_timestamp, int64_t duration) {
+        auto opt_record = GetVisitRecordConnId(conn_id);
         if (!opt_record.has_value()) {
             return;
         }
@@ -31,16 +31,16 @@ namespace tc
         record->duration_ = duration;
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all<VisitRecord>(where(c(&VisitRecord::stream_id_) == stream_id));
+        auto streams = storage.get_all<VisitRecord>(where(c(&VisitRecord::conn_id_) == conn_id));
         if (!streams.empty()) {
             storage.update(*record);
         }
     }
 
-    std::optional<std::shared_ptr<VisitRecord>> VisitRecordOperator::GetVisitRecordByStreamId(const std::string& stream_id) {
+    std::optional<std::shared_ptr<VisitRecord>> VisitRecordOperator::GetVisitRecordConnId(const std::string& conn_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto records = storage.get_all_pointer<VisitRecord>(where(c(&VisitRecord::stream_id_) == stream_id));
+        auto records = storage.get_all_pointer<VisitRecord>(where(c(&VisitRecord::conn_id_) == conn_id));
         if (records.empty()) {
             return std::nullopt;
         }
