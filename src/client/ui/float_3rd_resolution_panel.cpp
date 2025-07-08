@@ -44,12 +44,13 @@ namespace tc
                 LOGE("Error monitor resolution size: {}", item->name_.toStdString());
                 return;
             }
-            auto monitor_name = context_->GetCapturingMonitorInfo().mon_name_;
+
+            auto monitor_name = monitor_.name_;
             if (monitor_name.empty()) {
                 LOGE("Target monitor name is empty");
                 return;
             }
-            context_->SendAppMessage(MsgClientChangeMonitorResolution {
+            context_->SendAppMessage(MsgClientChangeMonitorResolution{
                 .monitor_name_ = monitor_name,
                 .width_ = width,
                 .height_ = height,
@@ -57,7 +58,6 @@ namespace tc
         });
 
         root_layout->addWidget(listview_);
-
         root_layout->addStretch();
         setLayout(root_layout);
 
@@ -90,14 +90,9 @@ namespace tc
     }
 
     void ThirdResolutionPanel::SelectCapturingMonitorSize() {
-        auto monitor_info = context_->GetCapturingMonitorInfo();
-        if (monitor_info.frame_width_ <= 0 || monitor_info.frame_height_ <= 0) {
-            LOGE("Error, capturing monitor size is {}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
-            return;
-        }
-        auto res_name = std::format("{}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
+        auto res_name = std::format("{}x{}", monitor_.current_width_, monitor_.current_height_);
         listview_->SelectByName(res_name);
-        LOGI("Capturing monitor size is {}x{}", monitor_info.frame_width_, monitor_info.frame_height_);
+        LOGI("Capturing monitor name is {}, size is {}x{}", monitor_.name_, monitor_.current_width_, monitor_.current_height_);
     }
 
     void ThirdResolutionPanel::UpdateMonitor(const MsgClientCaptureMonitor::CaptureMonitor& m) {

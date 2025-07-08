@@ -474,6 +474,15 @@ namespace tc
             this->capture_monitor_ = msg;
             context_->PostUITask([=, this]() {
                 UpdateCaptureMonitorInfo();
+                //继续向下层panel传递显示器信息
+                auto panel = GetSubPanel(SubPanelType::kDisplay);
+                if (!panel) {
+                    panel = (BaseWidget*)(new SubDisplayPanel(ctx, (QWidget*)this->parent()));
+                    sub_panels_[SubPanelType::kDisplay] = panel;
+                    WidgetHelper::AddShadow(panel, 0xbbbbbb);
+                }
+                ((SubDisplayPanel*)panel)->SetCaptureMonitorName(monitor_name_);
+                ((SubDisplayPanel*)panel)->UpdateMonitorInfo(this->capture_monitor_);
             });
         });
 

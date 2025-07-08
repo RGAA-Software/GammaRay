@@ -73,9 +73,20 @@ namespace tc
                     else {
                         setWindowTitle(origin_title_name_);
                     }
+
+                    for (const auto& index_name : monitor_index_map_name_) {
+                        if (game_views_.size() > index_name.first) {
+                            if (game_views_[index_name.first]) {
+                                game_views_[index_name.first]->SetMonitorName(index_name.second);
+                            }
+                        }
+                    }
                 }
                 else if (EMultiMonDisplayMode::kTab == multi_display_mode_) {
                     setWindowTitle(origin_title_name_);
+                    if (monitor_index_map_name_.count(msg.current_cap_mon_index_)) {
+                        game_views_[kMainGameViewIndex]->SetMonitorName(monitor_index_map_name_[msg.current_cap_mon_index_]);
+                    }
                 }
             });
             this->SendUpdateDesktopMessage();
@@ -249,8 +260,7 @@ namespace tc
             multi_display_mode_ = EMultiMonDisplayMode::kSeparate;
             if (monitors_count_ > 1) {
                 setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));
-            }
-            
+            } 
         }
         else {
             multi_display_mode_ = EMultiMonDisplayMode::kTab;

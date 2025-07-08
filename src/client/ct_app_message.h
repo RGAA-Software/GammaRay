@@ -77,6 +77,8 @@ namespace tc
         public:
             std::string name_;
             std::vector<Resolution> resolutions_;
+            int current_width_ = 0;
+            int current_height_ = 0;
         };
 
         CaptureMonitor GetCaptureMonitorByName(const std::string& name) {

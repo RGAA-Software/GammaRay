@@ -256,6 +256,23 @@ namespace tc
                 return left.width_ > right.width_;
             });
         }
+
+        //将当前分辨率同步给分辨率面板,这样才会更新显示出正确的当前分辨率
+        auto panel = GetSubPanel(SubDisplayType::kResolution);
+        if (!panel) {
+            panel = (BaseWidget*)(new ThirdResolutionPanel(context_, (QWidget*)this->parent()));
+            sub_panels_[SubDisplayType::kResolution] = panel;
+            WidgetHelper::AddShadow(panel, 0xbbbbbb);
+        }
+        auto capturing_monitor_name = context_->GetCapturingMonitorName();
+        if (cap_monitors_info_.monitors_.empty() || capturing_monitor_name.empty()) {
+            LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_name, cap_monitors_info_.monitors_.size());
+            return;
+        }
+        auto capture_monitor = cap_monitors_info_.GetCaptureMonitorByName(capture_monitor_name_);
+        if (capture_monitor.IsValid()) {
+            ((ThirdResolutionPanel*)panel)->UpdateMonitor(capture_monitor);
+        }
     }
 
     void SubDisplayPanel::SetCaptureMonitorName(const std::string& name) {

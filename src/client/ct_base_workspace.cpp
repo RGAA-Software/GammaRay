@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA on 2023-12-27.
 //
 #include "client/ct_base_workspace.h"
@@ -159,7 +159,7 @@ namespace tc
             this->SendSwitchMonitorMessage(msg.name_);
             this->SendUpdateDesktopMessage();
             context_->PostTask([=, this]() {
-                std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 this->SendUpdateDesktopMessage();
             });
         });
@@ -325,7 +325,7 @@ namespace tc
             int monitor_index = 0;
             for (const auto& item : config.monitors_info()) {
                 const std::string& monitor_name = item.name();
-                //LOGI("monitor name: {}", item.name());
+                //LOGI("monitor name: {}, width: {}, height: {}", item.name(), item.current_width(), item.current_height());
                 monitor_index_map_name_[monitor_index] = monitor_name;
                 std::vector<MsgClientCaptureMonitor::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
@@ -337,6 +337,9 @@ namespace tc
                 msg.monitors_.push_back(MsgClientCaptureMonitor::CaptureMonitor {
                     .name_ = item.name(),
                     .resolutions_ = resolutions,
+                    //当前显示器分辨率
+                    .current_width_ = item.current_width(),
+                    .current_height_ = item.current_height(),
                 });
                 ++monitor_index;
             }

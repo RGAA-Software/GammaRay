@@ -92,7 +92,6 @@ void GameView::resizeEvent(QResizeEvent* event) {
         CalculateAspectRatio();
     }
 
-
     if (float_controller_) {
         float_controller_->ReCalculatePosition();
     }

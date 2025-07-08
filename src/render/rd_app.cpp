@@ -604,6 +604,8 @@ namespace tc
                 mr.set_height(res.height_);
                 info.mutable_resolutions()->Add(std::move(mr));
             }
+            info.set_current_width(monitor.Width());
+            info.set_current_height(monitor.Height());
             monitors_info->Add(std::move(info));
         }
         LOGI("Will send configuration back, fps: {}", settings_->encoder_.fps_);
