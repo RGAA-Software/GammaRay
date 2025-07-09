@@ -84,6 +84,8 @@ namespace tc
         void SendUpdateDesktopMessage();
         // client->render 发送修改帧率的消息
         void SendModifyFpsMessage();
+        // client->render 发送退出被控端的消息
+        void SendExitControlledEndMessage();
         void SendHardUpdateDesktopMessage();
         void SwitchScaleMode(const ScaleMode& mode);
         virtual void CalculateAspectRatio();

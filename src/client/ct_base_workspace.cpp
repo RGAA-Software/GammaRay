@@ -240,6 +240,10 @@ namespace tc
         msg_listener_->Listen<MsgClientHardUpdateDesktop>([=, this](const MsgClientHardUpdateDesktop& msg) {
             this->SendHardUpdateDesktopMessage();
         });
+
+        msg_listener_->Listen<MsgExitControlledEndExe>([=, this](const MsgExitControlledEndExe& msg) {
+            this->SendExitControlledEndMessage();
+        });
     }
 
     BaseWorkspace::~BaseWorkspace() {
@@ -745,6 +749,17 @@ namespace tc
         m.set_type(tc::kModifyFps);
         auto mf = m.mutable_modify_fps();
         mf->set_fps(fps);
+        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            sdk_->PostMediaMessage(buffer);
+        }
+    }
+
+    void BaseWorkspace::SendExitControlledEndMessage() {
+        if (!sdk_ || remote_force_closed_) {
+            return;
+        }
+        tc::Message m;
+        m.set_type(tc::kExitControlledEnd);
         if (auto buffer = tc::ProtoAsData(&m); buffer) {
             sdk_->PostMediaMessage(buffer);
         }

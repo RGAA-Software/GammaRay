@@ -63,6 +63,9 @@ namespace tc
         // client -> render 窗口失焦
         void ProcessFocusOutEvent();
 
+        // client -> render 退出
+        void ProcessExitControlledEnd();
+
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
 
         // report client connect/disconnect state

@@ -19,6 +19,7 @@ namespace tc
     class Settings;
     class ClientContext;
     class MessageListener;
+    class TcPushButton;
 
     class MainProgress : public QLabel {
     public:
@@ -36,6 +37,7 @@ namespace tc
         QPixmap bg_pixmap_;
         TcLabel* lbl_sub_message_ = nullptr;
         QProgressBar* progress_bar_ = nullptr;
+        TcPushButton* retry_btn_ = nullptr;
         std::atomic_int progress_steps_ = { 0 };
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };

@@ -57,6 +57,7 @@
 
   "id_cancel": "Cancel",
   "id_ok": "Ok",
+  "id_retry_conn": "Reconnect",
 
   "id_set" : "Set",
   "id_save": "Save",

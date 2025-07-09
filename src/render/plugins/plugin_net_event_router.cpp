@@ -241,6 +241,10 @@ namespace tc {
                     ProcessFocusOutEvent();
                     break;
                 }
+                case kExitControlledEnd: {
+                    ProcessExitControlledEnd();
+                    break;
+                }
                 default: {
                    
                 }
@@ -564,5 +568,10 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessFocusOutEvent() {
         win_event_replayer_->HandleFocusOutEvent();
+    }
+
+    void PluginNetEventRouter::ProcessExitControlledEnd() {
+        LOGI("recv exit controlled end msg, render will exit and restart.");
+        exit(0);
     }
 }

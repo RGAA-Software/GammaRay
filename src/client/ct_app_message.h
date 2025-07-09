@@ -193,6 +193,10 @@ namespace tc
     public:
     };
 
+    class MsgExitControlledEndExe : public MsgClientBase {
+    public:
+    };
+
     // file transmission begins
     class MsgClientFileTransmissionBegin {
     public:

@@ -80,25 +80,43 @@ namespace tc
             layout->addStretch();
             layout->addWidget(lbl);
             layout->addStretch();
-            root_layout->addSpacing(20);
+            root_layout->addSpacing(30);
             root_layout->addLayout(layout);
         }
 
-        // cancel button
+        // retry button and cancel button
         {
             auto layout = new NoMarginHLayout();
-            auto lbl = new TcPushButton(this);
-            lbl->setFixedSize(150, 30);
-            lbl->SetTextId("id_cancel");
-            layout->addStretch();
-            layout->addWidget(lbl);
-            layout->addStretch();
-            root_layout->addSpacing(20);
-            root_layout->addLayout(layout);
 
-            connect(lbl, &QPushButton::clicked, this, [=, this]() {
-                context_->SendAppMessage(MsgClientExitApp{});
-            });
+            //retry button
+            {
+                retry_btn_ = new TcPushButton(this);
+                retry_btn_->setFixedSize(150, 30);
+                retry_btn_->SetTextId("id_retry_conn");
+                layout->addStretch();
+                layout->addWidget(retry_btn_);
+                root_layout->addSpacing(20);
+                root_layout->addLayout(layout);
+                retry_btn_->hide();
+                connect(retry_btn_, &QPushButton::clicked, this, [=, this]() {
+                    context_->SendAppMessage(MsgExitControlledEndExe{});
+                });
+            }
+
+            //cancel button
+            {
+                auto lbl = new TcPushButton(this);
+                lbl->setFixedSize(150, 30);
+                lbl->SetTextId("id_cancel");
+                layout->addSpacing(30);
+                layout->addWidget(lbl);
+                layout->addStretch();
+                root_layout->addSpacing(30);
+                root_layout->addLayout(layout);
+                connect(lbl, &QPushButton::clicked, this, [=, this]() {
+                    context_->SendAppMessage(MsgClientExitApp{});
+                });
+            }
         }
 
         root_layout->addStretch(5);
@@ -130,6 +148,9 @@ namespace tc
         msg_listener_->Listen<SdkMsgFirstConfigInfoCallback>([=, this](const SdkMsgFirstConfigInfoCallback& msg) {
             context_->PostUITask([=, this]() {
                 lbl_sub_message_->SetTextId("id_has_connection");
+                QTimer::singleShot(3000, [this]() {
+                    retry_btn_->show();
+                });
             });
         });
 
@@ -143,6 +164,9 @@ namespace tc
 
     void MainProgress::ResetProgress() {
         progress_steps_ = 0;
+        if (retry_btn_) {
+            retry_btn_->hide();
+        }
         context_->PostUITask([this]() {
             auto parent = (QWidget*)this->parent();
             this->resize(parent->size());
@@ -162,7 +186,6 @@ namespace tc
         progress_steps_ = progress_bar_->maximum();
         context_->PostUITask([this]() {
             progress_bar_->setValue(progress_steps_);
-
             QTimer::singleShot(150, [this]() {
                 this->hide();
             });
