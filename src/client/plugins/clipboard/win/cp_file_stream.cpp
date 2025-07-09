@@ -121,4 +121,15 @@ namespace tc
         data_cv_.notify_all();
     }
 
+    std::string CpFileStream::GetFileId() {
+        return gen_file_id_;
+    }
+
+    std::string CpFileStream::GetFileName() {
+        return cp_file_.file_.file_name();
+    }
+
+    std::string CpFileStream::GetFullPath() {
+        return cp_file_.file_.full_path();
+    }
 }

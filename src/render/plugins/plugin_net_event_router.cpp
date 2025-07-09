@@ -182,6 +182,8 @@ namespace tc {
                     break;
                 }
                 // file transmit end
+                case MessageType::kClipboardReqAtBegin:
+                case MessageType::kClipboardReqAtEnd:
                 case MessageType::kClipboardReqBuffer:
                 case MessageType::kClipboardRespBuffer: {
                     if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {

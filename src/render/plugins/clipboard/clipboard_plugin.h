@@ -33,6 +33,10 @@ namespace tc
         void OnRequestFileBuffer(std::shared_ptr<Message> in_msg);
 
     private:
+        void OnRequestFileBegin(std::shared_ptr<Message> msg);
+        void OnRequestFileEnd(std::shared_ptr<Message> msg);
+
+    private:
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
         CpVirtualFile* virtual_file_ = nullptr;
         IDataObject* data_object_ = nullptr;

@@ -14,6 +14,7 @@
 #include "cp_data_object.h"
 #include "cp_file_struct.h"
 #include "tc_message.pb.h"
+#include "tc_common_new/md5.h"
 
 namespace tc
 {
@@ -26,6 +27,7 @@ namespace tc
         CpFileStream(ClientClipboardPlugin* plugin, const ClipboardFileWrapper& fw) : ref_(1) {
             plugin_ = plugin;
             cp_file_ = fw;
+            gen_file_id_ = MD5::Hex(cp_file_.file_.file_name());
         }
 
         virtual ~CpFileStream() {
@@ -86,6 +88,9 @@ namespace tc
 
         void OnClipboardRespBuffer(const ClipboardRespBuffer& rb);
         void Exit();
+        std::string GetFileId();
+        std::string GetFileName();
+        std::string GetFullPath();
 
     private:
         ClientClipboardPlugin* plugin_ = nullptr;
@@ -100,7 +105,7 @@ namespace tc
         std::condition_variable data_cv_;
 
         std::optional<ClipboardRespBuffer> resp_buffer_;
-
+        std::string gen_file_id_;
     };
 
 

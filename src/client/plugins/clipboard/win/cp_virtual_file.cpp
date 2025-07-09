@@ -14,6 +14,9 @@
 #include "cp_file_stream.h"
 #include "tc_common_new/log.h"
 #include "ct_base_workspace.h"
+#include "plugins/ct_plugin_events.h"
+#include "clipboard/clipboard_plugin.h"
+#include "tc_message_new/proto_converter.h"
 
 #pragma comment(lib, "Wininet.lib")
 
@@ -103,9 +106,13 @@ namespace tc
                 LOGI("Will get data stream for index: {}, name: {}", file_index, fw.file_.file_name());
 
                 if (file_stream_) {
+                    // report
+                    this->ReportFileTransferEnd();
                     file_stream_->Exit();
                 }
                 file_stream_ = std::make_shared<CpFileStream>(plugin_, fw);
+                // report
+                this->ReportFileTransferBegin();
 
                 pmedium->pstm = (IStream *)file_stream_.get();
                 pmedium->pstm->AddRef();
@@ -167,6 +174,8 @@ namespace tc
     }
 
     HRESULT STDMETHODCALLTYPE CpVirtualFile::EndOperation(HRESULT hResult, IBindCtx *pbcReserved, DWORD dwEffects) {
+        // report
+        this->ReportFileTransferEnd();
         in_async_op_ = false;
         LOGI("EndOperation....");
         if (file_stream_) {
@@ -196,6 +205,77 @@ namespace tc
         if (file_stream_) {
             file_stream_->OnClipboardRespBuffer(resp_buffer);
         }
+    }
+
+    void CpVirtualFile::ReportFileTransferBegin() {
+        if (!file_stream_) {
+            return;
+        }
+
+        const auto& settings = plugin_->GetPluginSettings();
+
+//        auto event = std::make_shared<GrPluginFileTransferBegin>();
+//        event->the_file_id_ = file_stream_->GetFileId();
+//        event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+//        event->visitor_device_id_ = settings.device_id_;
+//        event->direction_ = "In";
+//        event->file_detail_ = file_stream_->GetFileName();
+//        plugin_->CallbackEvent(event);
+
+        auto event = std::make_shared<ClientPluginFileTransferBeginEvent>();
+        event->task_id_ = file_stream_->GetFileId();
+        event->file_path_ = file_stream_->GetFileName();
+        event->direction_ = "In";
+        plugin_->CallbackEvent(event);
+
+        // send begin message to render
+        tc::Message msg;
+        msg.set_device_id(settings.device_id_);
+        msg.set_stream_id(settings.stream_id_);
+        msg.set_type(MessageType::kClipboardReqAtBegin);
+        auto req_buffer = msg.mutable_cp_req_at_begin();
+        req_buffer->set_full_name(file_stream_->GetFullPath());
+        auto buffer= ProtoAsData(&msg);
+        auto net_event = std::make_shared<ClientPluginNetworkEvent>();
+        net_event->media_channel_ = true;
+        net_event->buf_ = buffer;
+        plugin_->CallbackEvent(net_event);
+        //plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), buffer, false);
+    }
+
+    void CpVirtualFile::ReportFileTransferEnd() {
+        if (!file_stream_) {
+            return;
+        }
+//        auto event = std::make_shared<GrPluginFileTransferEnd>();
+//        event->the_file_id_ = file_stream_->GetFileId();
+//        event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+//        event->success_ = true;
+//        plugin_->CallbackEvent(event);
+
+        const auto& settings = plugin_->GetPluginSettings();
+
+        auto event = std::make_shared<ClientPluginFileTransferEndEvent>();
+        event->task_id_ = file_stream_->GetFileId();
+        event->file_path_ = file_stream_->GetFullPath();
+        event->direction_ = "In";
+        event->success_ = true;
+        plugin_->CallbackEvent(event);
+
+        // send end message to client
+        tc::Message msg;
+        msg.set_device_id(settings.device_id_);
+        msg.set_stream_id(settings.stream_id_);
+        msg.set_type(MessageType::kClipboardReqAtEnd);
+        auto req_buffer = msg.mutable_cp_req_at_end();
+        req_buffer->set_full_name(file_stream_->GetFullPath());
+        req_buffer->set_success(true);
+        auto buffer = ProtoAsData(&msg);
+        auto net_event = std::make_shared<ClientPluginNetworkEvent>();
+        net_event->media_channel_ = true;
+        net_event->buf_ = buffer;
+        plugin_->CallbackEvent(net_event);
+        //plugin_->DispatchTargetFileTransferMessage(file_stream_->GetStreamId(), buffer, false);
     }
 
     CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, ClientClipboardPlugin* plugin) {

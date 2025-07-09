@@ -65,6 +65,10 @@ namespace tc
         void OnClipboardRespBuffer(const ClipboardRespBuffer& resp_buffer);
 
     private:
+        void ReportFileTransferBegin();
+        void ReportFileTransferEnd();
+
+    private:
         uint32_t clip_format_filedesc_ = 0;
         uint32_t clip_format_filecontent_ = 0;
         BOOL in_async_op_ = false;

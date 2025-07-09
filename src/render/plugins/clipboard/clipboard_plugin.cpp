@@ -15,6 +15,7 @@
 #include "win/cp_virtual_file.h"
 #include "plugin_interface/gr_plugin_context.h"
 #include "tc_message_new/proto_converter.h"
+#include "tc_common_new/md5.h"
 
 void* GetInstance() {
     static tc::ClipboardPlugin plugin;
@@ -131,14 +132,48 @@ namespace tc
             CallbackEvent(event);
             LOGI("received clipboard resp: {}", sub.msg());
         }
+        else if (msg->type() == tc::kClipboardReqAtBegin) {
+            // begin; server -> client
+            // copy files from client -> server
+            plugin_context_->PostWorkTask([=, this]() {
+                this->OnRequestFileBegin(msg);
+            });
+        }
         else if (msg->type() == MessageType::kClipboardRespBuffer) {
             if (virtual_file_) {
                 virtual_file_->OnClipboardRespBuffer(msg->cp_resp_buffer());
             }
         }
+        else if (msg->type() == tc::kClipboardReqAtEnd) {
+            // end; server -> client
+            // copy files from client -> server
+            plugin_context_->PostWorkTask([=, this]() {
+                this->OnRequestFileEnd(msg);
+            });
+        }
         else if (msg->type() == MessageType::kClipboardReqBuffer) {
             this->OnRequestFileBuffer(msg);
         }
+    }
+
+    void ClipboardPlugin::OnRequestFileBegin(std::shared_ptr<Message> msg) {
+        auto sub = msg->cp_req_at_begin();
+        auto event = std::make_shared<GrPluginFileTransferBegin>();
+        event->the_file_id_ = MD5::Hex(sub.full_name());
+        event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        event->visitor_device_id_ = msg->device_id();
+        event->direction_ = "Out";
+        event->file_detail_ = sub.full_name();
+        CallbackEvent(event);
+    }
+
+    void ClipboardPlugin::OnRequestFileEnd(std::shared_ptr<Message> msg) {
+        auto sub = msg->cp_req_at_end();
+        auto event = std::make_shared<GrPluginFileTransferEnd>();
+        event->the_file_id_ = MD5::Hex(sub.full_name());
+        event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        event->success_ = true;
+        CallbackEvent(event);
     }
 
     void ClipboardPlugin::DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) {
