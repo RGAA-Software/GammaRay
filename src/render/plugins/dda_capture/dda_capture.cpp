@@ -149,6 +149,7 @@ namespace tc
                                      StringUtil::GetErrorStr(error).c_str(), (uint32_t) error);
                                 continue;
                             } else {
+                                dxgi_output_duplication_.output1_ = output1;
                                 init_dda_success = true;
                                 LOGI("Init DDA mode success, monitor_index: {}, monitor_name: {}", monitor_index, my_monitor_info_.name_);
                                 break;
@@ -335,7 +336,19 @@ namespace tc
                 last_captured_timestamp_ = curr_timestamp;
             }
             else if (res == S_FALSE || res == DXGI_ERROR_ACCESS_LOST || res == DXGI_ERROR_INVALID_CALL) {
-                LOGE("CaptureNextFrame reinit, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringUtil::GetErrorStr(res));
+                LOGE("CaptureNextFrame, monitor: {}, err: {:x}, duplicate retry? : {}", my_monitor_info_.name_, (uint32_t)res, dxgi_output_duplication_.has_retry_);
+                if (res == DXGI_ERROR_ACCESS_LOST && dxgi_output_duplication_.output1_ && !dxgi_output_duplication_.has_retry_) {
+                    dxgi_output_duplication_.has_retry_ = true;
+                    HRESULT error = dxgi_output_duplication_.output1_->DuplicateOutput(d3d11_device_, &dxgi_output_duplication_.duplication_);
+                    if (error == S_OK) {
+                        LOGW("Re-DuplicateOutput success, will continue to try capturing.");
+                        continue;
+                    }
+                    else {
+                        LOGW("Re-DuplicateOutput failed, will Re-Init.");
+                    }
+                }
+                LOGE("CaptureNextFrame Re-Init, name = {}, err: {:x}, msg: {}", my_monitor_info_.name_, (uint32_t)res, StringUtil::GetErrorStr(res));
                 Exit();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 auto init_ok = Init();

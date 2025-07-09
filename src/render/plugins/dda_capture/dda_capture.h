@@ -27,15 +27,22 @@ namespace tc
 
         class DXGIOutputDuplication {
         public:
-            CComPtr<IDXGIOutputDuplication> duplication_;
+            CComPtr<IDXGIOutput1> output1_ = nullptr;
+            CComPtr<IDXGIOutputDuplication> duplication_ = nullptr;
             DXGI_OUTPUT_DESC output_desc_{};
             CaptureMonitorInfo monitor_win_info_{};
+            bool has_retry_ = false;
 
             DXGIOutputDuplication() {
                 memset(&output_desc_, 0, sizeof(DXGI_OUTPUT_DESC));
             }
 
             void Exit() {
+                has_retry_ = false;
+                if (output1_) {
+                    output1_.Release();
+                    output1_ = nullptr;
+                }
                 if (duplication_) {
                     duplication_->ReleaseFrame();
                     duplication_.Release();
@@ -103,7 +110,6 @@ namespace tc
 
         CComPtr<ID3D11Device> d3d11_device_ = nullptr;
         CComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
-        CComPtr<ID3D11Texture2D> shared_texture_ = nullptr;
 
     };
 }
