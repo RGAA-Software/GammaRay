@@ -489,10 +489,11 @@ namespace tc
             if (remote_force_closed_) {
                 return;
             }
-            context_->PostUITask([=, this]() {
-                TcDialog dialog(tcTr("id_error"), msg.msg_.c_str());
-                dialog.exec();
-            });
+            //TODO: record it in event center
+            //context_->PostUITask([=, this]() {
+            //    TcDialog dialog(tcTr("id_error"), msg.msg_.c_str());
+            //    dialog.exec();
+            //});
         });
 
         // remote device offline
@@ -500,14 +501,14 @@ namespace tc
             if (remote_force_closed_) {
                 return;
             }
-            context_->PostUITask([=, this]() {
+            context_->PostDelayUITask([=, this]() {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_remote_device_offline"));
                 if (dialog.exec() == kDoneOk) {
                     context_->PostTask([=, this]() {
                         ReconnectInRelayMode();
                     });
                 }
-            });
+            }, 1000);
         });
     }
 
