@@ -122,14 +122,14 @@ namespace tc
             }
         )");
 
-        QObject::connect(stream_list_, &QListWidget::customContextMenuRequested, this, [=, this](const QPoint& pos) {
+        connect(stream_list_, &QListWidget::customContextMenuRequested, this, [=, this](const QPoint& pos) {
             QListWidgetItem* cur_item = stream_list_->itemAt(pos);
             if (cur_item == nullptr) { return; }
             int index = stream_list_->row(cur_item);
             RegisterActions(index);
         });
 
-        QObject::connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
+        connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
             int index = stream_list_->row(item);
             auto stream_item = streams_.at(index);
             StartStream(stream_item);
@@ -239,17 +239,17 @@ namespace tc
             "",
             tcTr("id_settings"),
         };
-        QMenu* menu = new QMenu();
+        auto menu = new QMenu();
         for (int i = 0; i < actions.size(); i++) {
-            QString action_name = actions.at(i);
+            const QString& action_name = actions.at(i);
             if (action_name.isEmpty()) {
                 menu->addSeparator();
                 continue;
             }
 
-            QAction* action = new QAction(action_name, menu);
+            auto action = new QAction(action_name, menu);
             menu->addAction(action);
-            QObject::connect(action, &QAction::triggered, this, [=, this]() {
+            connect(action, &QAction::triggered, this, [=, this]() {
                 ProcessAction(i, streams_.at(index));
             });
         }
@@ -288,7 +288,7 @@ namespace tc
             return;
         }
 
-        auto target_item = si.value();
+        const auto& target_item = si.value();
 
         // verify in profile server
         if (target_item->IsRelay()) {

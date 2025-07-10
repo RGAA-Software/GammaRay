@@ -113,6 +113,32 @@ namespace tc
                 segment_layout->addLayout(layout);
             }
 
+            // colorful titlebar
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_colorful_titlebar");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setChecked(settings_->IsColorfulTitleBarEnabled());
+                layout->addWidget(edit);
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    if (state == Qt::CheckState::Checked) {
+                        settings_->SetColorfulTitleBar(true);
+                    }
+                    else {
+                        settings_->SetColorfulTitleBar(false);
+                    }
+                });
+
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+            }
+
             {
                 //最多允许的屏幕数量
                 auto layout = new NoMarginHLayout();

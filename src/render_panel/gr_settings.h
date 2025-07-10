@@ -62,6 +62,7 @@ namespace tc
     static const std::string kStDevelopMode = "develop_mode";
     static const std::string kStDisplayClientLogo = "display_client_logo";
     static const std::string kStFileTransferEnabled = "file_transfer_enabled";
+    static const std::string kStColorfulTitlebar = "colorful_titlebar";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -232,6 +233,9 @@ namespace tc
         // Settings -> Security Settings
         void SetFileTransferEnabled(bool enable);
         bool IsFileTransferEnabled();
+
+        void SetColorfulTitleBar(bool enable);
+        bool IsColorfulTitleBarEnabled();
 
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;

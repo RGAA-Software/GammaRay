@@ -13,7 +13,6 @@
 namespace tc
 {
 
-    class Thread;
     class GrContext;
     class StreamItem;
     class MessageListener;
@@ -31,7 +30,6 @@ namespace tc
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
-        std::shared_ptr<Thread> thread_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::vector<std::shared_ptr<StreamItem>> items_;
         OnStreamStateCheckedCallback on_checked_cbk_;

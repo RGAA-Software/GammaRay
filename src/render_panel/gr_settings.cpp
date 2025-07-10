@@ -480,4 +480,13 @@ namespace tc
         return value.empty() || value == kStTrue;
     }
 
+    void GrSettings::SetColorfulTitleBar(bool enable) {
+        sp_->Put(kStColorfulTitlebar, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsColorfulTitleBarEnabled() {
+        auto value = sp_->Get(kStColorfulTitlebar);
+        return !value.empty() && value == kStTrue;
+    }
+
 }

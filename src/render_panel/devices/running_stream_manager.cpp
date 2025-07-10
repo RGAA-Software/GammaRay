@@ -103,6 +103,7 @@ namespace tc
             << std::format("--max_num_of_screen={}", settings_->GetMaxNumOfScreen()).c_str()
             << std::format("--display_logo={}", settings_->IsClientLogoDisplaying() ? 1 : 0).c_str()
             << std::format("--develop_mode={}", settings_->IsDevelopMode() ? 1 : 0).c_str()
+            << std::format("--titlebar_color={}", settings_->IsColorfulTitleBarEnabled() ? item->bg_color_ : -1).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

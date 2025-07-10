@@ -118,6 +118,9 @@ namespace tc
 
         // develop mode
         bool develop_mode_ = false;
+		
+		// titlebar color
+		int titlebar_color_ = -1;
 
         ///////
         ///////

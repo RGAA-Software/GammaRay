@@ -19,29 +19,23 @@ namespace tc
         context_ = ctx;
         msg_listener_ = context_->ObtainMessageListener();
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
-            if (!thread_) {
-                return;
-            }
-            thread_->Post([this]() {
+            context_->PostTask([this]() {
                 this->CheckState();
             });
         });
     }
 
     void StreamStateChecker::Start() {
-        thread_ = Thread::Make("stream_state_checker", 120);
-        thread_->Poll();
+
     }
 
     void StreamStateChecker::Exit() {
-        if (thread_) {
-            thread_->Exit();
-        }
+
     }
 
     void StreamStateChecker::UpdateCurrentStreamItems(const std::vector<std::shared_ptr<StreamItem>>& items) {
         items_ = items;
-        thread_->Post([this]() {
+        context_->PostTask([this]() {
             this->CheckState();
         });
     }
