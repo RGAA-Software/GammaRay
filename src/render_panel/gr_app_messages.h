@@ -202,6 +202,12 @@ namespace tc
     public:
         std::shared_ptr<tcrp::RpRemoteClipboardResp> resp_ = nullptr;
     };
+
+    // one client disconnect
+    class MsgOneClientDisconnect {
+    public:
+        
+    };
 }
 
 #endif // APP_MESSAGES_H

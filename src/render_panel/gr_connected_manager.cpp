@@ -1,5 +1,6 @@
 ﻿#include "gr_connected_manager.h"
 #include <qapplication.h>
+#include <Windows.h>
 #include "gr_context.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/log.h"
@@ -9,6 +10,7 @@
 #include "devices/connected_info_panel.h"
 #include "devices/connected_info_tag.h"
 #include "devices/connected_info_sliding_window.h"
+#include "gr_settings.h"
 
 namespace tc { 
 	GrConnectedManager::GrConnectedManager(const std::shared_ptr<GrContext>& ctx) : gr_ctx_(ctx) {
@@ -48,6 +50,8 @@ namespace tc {
                 return;
             }
 
+            client_connected_count_ = msg.clients_info_.size();
+
             gr_ctx_->PostUITask([=, this]() { 
                 int client_size = msg.clients_info_.size();
                 if (0 == client_size) {
@@ -72,6 +76,22 @@ namespace tc {
                     item.second->hide();
                 }
             });
+        });
+
+        msg_listener_->Listen<MsgOneClientDisconnect>([=, this](const MsgOneClientDisconnect& msg) {
+
+            if (!gr_ctx_) {
+                LOGE("gr_ctx_ is nullptr.");
+                return;
+            }
+
+            gr_ctx_->PostUIDelayTask([=, this]() {
+                auto settings = GrSettings::Instance();
+                if (0 == client_connected_count_ && settings->IsDisconnectAutoLockScreenEnabled()) {
+                    LockWorkStation();
+                }
+
+            }, 6000);
         });
     }
 

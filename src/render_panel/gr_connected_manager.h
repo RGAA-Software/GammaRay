@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include <map>
+#include <atomic>
 #include <qobject.h>
 #include <qabstractnativeeventfilter.h>
 
@@ -26,5 +27,6 @@ namespace tc {
 
 		std::map<int, ConnectedInfoSlidingWindow*> connected_info_panel_group_;
 
+		std::atomic<int> client_connected_count_{0};
 	};
 }

@@ -470,6 +470,7 @@ namespace tc
                 auto sub = proto_msg->client_disconnected();
                 visit_record_op_->UpdateVisitRecord(sub.conn_id(), sub.end_timestamp(), sub.duration());
             });
+            context_->SendAppMessage(MsgOneClientDisconnect{});
         }
         else if (proto_msg->type() == tcrp::kRpFileTransferBegin) {
             context_->PostDBTask([=, this]() {

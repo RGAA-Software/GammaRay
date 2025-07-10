@@ -78,6 +78,7 @@
   "id_ssl_enabled": "SSL安全链接(始终启用)",
   "id_record_visitor": "记录访问历史",
   "id_record_file_transfer": "记录文件传输历史",
+  "id_disconnect_auto_lock_screen": "断开连接后,自动锁屏",
   "id_tips": "提示",
   "id_dialog_ssl_always_on": "SSL将一直启用.",
   "id_dialog_record_visitor_always_on": "记录访问者将一直启用.",

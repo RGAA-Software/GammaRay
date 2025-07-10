@@ -453,6 +453,15 @@ namespace tc
         return value.empty() || value == kStTrue;
     }
 
+    void GrSettings::SetDisconnectAutoLockScreen(bool enable) {
+        sp_->Put(kStDisconnectAutoLockScreen, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsDisconnectAutoLockScreenEnabled() {
+        auto value = sp_->Get(kStDisconnectAutoLockScreen);
+        return !value.empty() && value == kStTrue;
+    }
+
     void GrSettings::SetRelayEnabled(bool enabled) {
         sp_->Put(kStRelayEnabled, enabled ? kStTrue : kStFalse);
     }

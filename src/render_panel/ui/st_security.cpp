@@ -211,6 +211,28 @@ namespace tc
                 });
             }
 
+            // disconnected auto lock screen
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_disconnect_auto_lock_screen");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QCheckBox(this);
+                edit->setFixedSize(input_size);
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                edit->setChecked(settings_->IsDisconnectAutoLockScreenEnabled());
+
+                connect(edit, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                    settings_->SetDisconnectAutoLockScreen(state == Qt::CheckState::Checked);
+                });
+            }
+
             ///
             {
                 // title
