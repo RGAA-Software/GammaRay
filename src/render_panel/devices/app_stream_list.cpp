@@ -15,6 +15,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "widget_helper.h"
+#include "stream_messages.h"
 #include "stream_item_widget.h"
 #include "create_stream_dialog.h"
 #include "stream_content.h"
@@ -231,8 +232,12 @@ namespace tc
 
     void AppStreamList::RegisterActions(int index) {
         std::vector<QString> actions = {
-            tcTr("id_start"),
+            tcTr("id_connect"),
             tcTr("id_stop"),
+            tcTr("id_only_viewing"),
+            tcTr("id_lock_device"),
+            tcTr("id_restart_device"),
+            tcTr("id_shutdown_device"),
             "",
             tcTr("id_edit"),
             tcTr("id_delete"),
@@ -259,24 +264,37 @@ namespace tc
 
     void AppStreamList::ProcessAction(int index, const std::shared_ptr<StreamItem>& item) {
         if (index == 0) {
-            // start
+            // connect
             StartStream(item);
         }
         else if (index == 1) {
             // stop
             StopStream(item);
         }
-        // "" 2
+        else if (index == 2) {
+            // only viewing
+        }
         else if (index == 3) {
+            // lock device
+            LockDevice(item);
+        }
+        else if (index == 4) {
+            // restart device
+        }
+        else if (index == 5) {
+            // shutdown device
+        }
+        // "" 6
+        else if (index == 7) {
             // edit
             EditStream(item);
         }
-        else if (index == 4) {
+        else if (index == 8) {
             // delete
             DeleteStream(item);
         }
-        // "" 5
-        else if (index == 6) {
+        // "" 9
+        else if (index == 10) {
             ShowSettings(item);
         }
     }
@@ -442,6 +460,12 @@ namespace tc
             return;
         }
         running_stream_mgr_->StopStream(si.value());
+    }
+
+    void AppStreamList::LockDevice(const std::shared_ptr<StreamItem>& item) {
+        auto msg = std::make_shared<GrSmLockScreen>();
+        msg->stream_item_ = item;
+        grApp->PostMessage2RemoteRender(msg);
     }
 
     void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {

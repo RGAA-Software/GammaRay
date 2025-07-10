@@ -29,6 +29,7 @@ namespace tc
     class MgrDeviceOperator;
     class WinMessageLoop;
     class GrConnectedManager;
+    class GrBaseStreamMessage;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -70,6 +71,9 @@ namespace tc
         // 1. when the app starts and has pr server info
         // 2. when pr server info is obtained
         void UpdateServerSecurityPasswordIfNeeded();
+
+        // send the message to remote render in json format
+        bool PostMessage2RemoteRender(const std::shared_ptr<GrBaseStreamMessage>& msg);
 
     private:
         void RefreshSigServerSettings();

@@ -6,6 +6,7 @@
 #define GAMMARAY_STREAM_MESSAGES_H
 
 #include <string>
+#include <memory>
 
 // send from panel -> remote render
 // 1. direct: http request -> remote render
@@ -21,12 +22,16 @@ namespace tc
        kShutdownDevice,
     };
 
+    // stream
+    class StreamItem;
+
     // base
     class GrBaseStreamMessage {
     public:
         virtual std::string AsJson() = 0;
     public:
         GrStreamMessageType type_;
+        std::shared_ptr<StreamItem> stream_item_ = nullptr;
     };
 
     //
@@ -63,7 +68,7 @@ namespace tc
     class GrSmShutdownDevice : public GrBaseStreamMessage {
     public:
         GrSmShutdownDevice() {
-            type_ = GrStreamMessageType::kLockScreen;
+            type_ = GrStreamMessageType::kShutdownDevice;
         }
 
         std::string AsJson() override;

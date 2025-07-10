@@ -159,6 +159,16 @@ namespace tc
         return ips_;
     }
 
+    std::string GrContext::GetDeviceIdOrIpAddress() {
+        auto ips = this->GetIps();
+        std::string ip_address;
+        if (!ips.empty()) {
+            ip_address = ips[0].ip_addr_;
+        }
+        auto device_id = settings_->GetDeviceId();
+        return device_id.empty() ? device_id : ip_address;
+    }
+
     std::string GrContext::MakeBroadcastMessage() {
         json obj;
         // device

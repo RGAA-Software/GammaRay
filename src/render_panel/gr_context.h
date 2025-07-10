@@ -93,6 +93,8 @@ namespace tc
         std::shared_ptr<RunningStreamManager> GetRunningStreamManager();
         std::shared_ptr<GrDatabase> GetDatabase();
         std::shared_ptr<AccountSdk> GetAccSdk();
+        // return ip address if device id is empty
+        std::string GetDeviceIdOrIpAddress();
 
         // Display a message on right-bottom
         std::shared_ptr<NotifyManager> GetNotifyManager();

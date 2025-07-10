@@ -609,7 +609,7 @@ QComboBox::indicator:checked:selected {
 QComboBox::item,
 QCalendarWidget QMenu::item,
 QMenu::item {
-  height: 26px;
+  height: 24px;
   border: 8px solid transparent;
   color: {{secondaryTextColor}};
   font-size: 12px;

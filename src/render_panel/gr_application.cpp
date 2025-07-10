@@ -26,13 +26,16 @@
 #include "tc_manager_client/mgr_client_sdk.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_common_new/folder_util.h"
+#include "tc_common_new/http_client.h"
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
+#include "render_panel/database/stream_item.h"
 #include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"
 #include "render_panel/network/gr_service_client.h"
 #include "render_panel/network/ws_sig_client.h"
+#include "render_panel/devices/stream_messages.h"
 #include "render_panel/system/win/win_panel_message_loop.h"
 
 #include <shellapi.h>
@@ -309,6 +312,35 @@ namespace tc
             win_msg_loop_ = std::make_shared<WinMessageLoop>(shared_from_this());
             win_msg_loop_->Start();
         }, "", false);
+    }
+
+    bool GrApplication::PostMessage2RemoteRender(const std::shared_ptr<GrBaseStreamMessage>& msg) {
+        if (!msg || !msg->stream_item_) {
+            return false;
+        }
+
+        auto& item = msg->stream_item_;
+        if (item->IsRelay()) {
+            // to check in server
+//            auto device_info = context_->GetRelayServerSideDeviceInfo(item->stream_host_, item->stream_port_, item->remote_device_id_, false);
+//            if (device_info && relay::RelayApi::IsRelayDeviceValid(device_info)) {
+//                online = true;
+//            }
+        }
+        else {
+            // host & port mode
+            auto client = HttpClient::MakeSSL(item->stream_host_, item->stream_port_, "/panel/stream/message", 3000);
+            auto res = client->Post({}, msg->AsJson());
+            LOGI("res: {} {}", res.status, res.body);
+            if (res.status == 200) {
+
+            }
+            else {
+
+            }
+        }
+
+        return true;
     }
 
 }
