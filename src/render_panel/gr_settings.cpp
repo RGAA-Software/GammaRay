@@ -486,7 +486,7 @@ namespace tc
 
     bool GrSettings::IsColorfulTitleBarEnabled() {
         auto value = sp_->Get(kStColorfulTitlebar);
-        return !value.empty() && value == kStTrue;
+        return value.empty() || value == kStTrue;
     }
 
 }
