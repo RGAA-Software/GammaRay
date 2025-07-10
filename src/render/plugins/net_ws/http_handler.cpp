@@ -71,4 +71,12 @@ namespace tc
         obj["relay_port"] = std::atoi(settings.relay_port_.c_str());
         SendOkJson(resp, obj.dump());
     }
+
+    void HttpHandler::HandlePanelStreamMessage(http::web_request& req, http::web_response& resp) {
+        auto& body = req.body();
+        auto target = req.target();
+        LOGI("Body: {}", body);
+        LOGI("Target: {}", target);
+        SendOkJson(resp, "");
+    }
 }

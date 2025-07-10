@@ -22,13 +22,16 @@ namespace tc
         std::string GetErrorMessage(int code) override;
 
         // /api/ping
-        void HandlePing(http::web_request &req, http::web_response &rep);
+        void HandlePing(http::web_request &req, http::web_response &resp);
 
         // /verify/security/password
-        void HandleVerifySecurityPassword(http::web_request& req, http::web_response& rep);
+        void HandleVerifySecurityPassword(http::web_request& req, http::web_response& resp);
 
         // /get/render/configuration
-        void HandleGetRenderConfiguration(http::web_request& req, http::web_response& rep);
+        void HandleGetRenderConfiguration(http::web_request& req, http::web_response& resp);
+
+        // /panel/stream/message
+        void HandlePanelStreamMessage(http::web_request& req, http::web_response& resp);
 
     private:
         WsPlugin* plugin_ = nullptr;

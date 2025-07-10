@@ -23,6 +23,7 @@ static std::string kUrlFileTransfer = "/file/transfer";
 static std::string kApiPing = "/api/ping";
 static std::string kApiVerifySecurityPassword = "/verify/security/password";
 static std::string kApiGetRenderConfiguration = "/get/render/configuration";
+static std::string kApiPanelStreamMessage = "/panel/stream/message";
 
 namespace tc
 {
@@ -106,6 +107,11 @@ namespace tc
         // get render configuration
         AddHttpRouter(kApiGetRenderConfiguration, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
             http_handler_->HandleGetRenderConfiguration(req, rep);
+        });
+
+        //
+        AddHttpRouter(kApiPanelStreamMessage, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+            http_handler_->HandlePanelStreamMessage(req, rep);
         });
 
         if (listen_port_ <= 0) {
