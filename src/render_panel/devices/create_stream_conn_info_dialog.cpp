@@ -204,6 +204,7 @@ namespace tc
             item->encode_bps_ = 0;
             item->encode_fps_ = 0;
             item->network_type_ = has_device_id ? kStreamItemNtTypeRelay : kStreamItemNtTypeWebSocket;
+            item->clipboard_enabled_ = true;
         };
 
         std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();

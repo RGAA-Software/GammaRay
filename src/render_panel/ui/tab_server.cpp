@@ -424,6 +424,7 @@ namespace tc
                         item->encode_fps_ = 0;
                         item->network_type_ = kStreamItemNtTypeRelay;
                         item->remote_device_id_ = remote_device_id;
+                        item->clipboard_enabled_ = true;
                         if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd
                             || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                             item->remote_device_random_pwd_ = random_password;

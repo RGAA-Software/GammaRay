@@ -232,8 +232,8 @@ namespace tc
 
     void AppStreamList::RegisterActions(int index) {
         std::vector<QString> actions = {
-            tcTr("id_connect"),
-            tcTr("id_stop"),
+            tcTr("id_start_control"),
+            tcTr("id_stop_control"),
             tcTr("id_only_viewing"),
             tcTr("id_lock_device"),
             tcTr("id_restart_device"),

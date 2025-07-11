@@ -331,6 +331,7 @@ namespace tc
             item->encode_bps_ = bitrate;
             item->encode_fps_ = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
             item->network_type_ = kStreamItemNtTypeWebSocket;
+            item->clipboard_enabled_ = true;
         };
 
         if (stream_item_ && stream_item_->IsValid()) {
