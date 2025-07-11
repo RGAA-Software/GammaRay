@@ -13,6 +13,7 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/image.h"
 #include "plugin_net_event_router.h"
+#include "tc_3rdparty/json/json.hpp"
 #include "tc_render_panel_message.pb.h"
 #include "tc_message_new/proto_converter.h"
 #include "tc_message_new/rp_proto_converter.h"
@@ -21,6 +22,8 @@
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_stream_event_router.h"
 #include "tc_capture_new/capture_message.h"
+
+using namespace nlohmann;
 
 namespace tc
 {
@@ -142,6 +145,12 @@ namespace tc
             auto target_event = std::dynamic_pointer_cast<GrPluginRemoteClipboardResp>(event);
             ReportRemoteClipboardResp(target_event);
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginPanelStreamMessage) {
+            app_->PostGlobalTask([=, this]() {
+                auto target_event = std::dynamic_pointer_cast<GrPluginPanelStreamMessage>(event);
+                ProcessPanelStreamMessage(target_event);
+            });
+        }
     }
 
     void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
@@ -230,6 +239,42 @@ namespace tc
             auto buffer = RpProtoAsData(&msg);
             app_->PostPanelMessage(buffer);
         });
+    }
+
+    void PluginEventRouter::ProcessPanelStreamMessage(const std::shared_ptr<GrPluginPanelStreamMessage>& event) {
+        if (!event->body_) {
+            return;
+        }
+
+        try {
+            LOGI("ProcessPanelStreamMessage: {}", event->body_->AsString());
+            json obj = json::parse(event->body_->AsString());
+            auto type = obj["type"].get<std::string>();
+            auto from_device = obj["from_device"].get<std::string>();
+            if (type == "restart_render") {
+                app_->SendAppMessage(MsgPanelStreamRestartRender {
+                    .from_device_ = from_device,
+                });
+            }
+            else if (type == "lock_screen") {
+                app_->SendAppMessage(MsgPanelStreamLockScreen {
+                    .from_device_ = from_device,
+                });
+            }
+            else if (type == "restart_device") {
+                app_->SendAppMessage(MsgPanelStreamRestartDevice {
+                    .from_device_ = from_device,
+                });
+            }
+            else if (type == "shutdown_device") {
+                app_->SendAppMessage(MsgPanelStreamShutdownDevice {
+                    .from_device_ = from_device,
+                });
+            }
+        }
+        catch(const std::exception& e) {
+            LOGE("ProcessPanelStreamMessage failed: {}", e.what());
+        }
     }
 
 }

@@ -133,7 +133,7 @@ namespace tc
         connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
             int index = stream_list_->row(item);
             auto stream_item = streams_.at(index);
-            StartStream(stream_item);
+            StartStream(stream_item, false);
         });
 
         root_layout->addSpacing(10);
@@ -196,7 +196,7 @@ namespace tc
             LOGI("Auto start stream: {}", msg.auto_start_);
             context_->PostUITask([=, this]() {
                 if (msg.auto_start_) {
-                    StartStream(exist_stream_item);
+                    StartStream(exist_stream_item, false);
                 }
             });
         });
@@ -265,7 +265,7 @@ namespace tc
     void AppStreamList::ProcessAction(int index, const std::shared_ptr<StreamItem>& item) {
         if (index == 0) {
             // connect
-            StartStream(item);
+            StartStream(item, false);
         }
         else if (index == 1) {
             // stop
@@ -273,6 +273,7 @@ namespace tc
         }
         else if (index == 2) {
             // only viewing
+            StartStream(item, true);
         }
         else if (index == 3) {
             // lock device
@@ -280,9 +281,11 @@ namespace tc
         }
         else if (index == 4) {
             // restart device
+            RestartDevice(item);
         }
         else if (index == 5) {
             // shutdown device
+            ShutdownDevice(item);
         }
         // "" 6
         else if (index == 7) {
@@ -299,7 +302,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::StartStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::StartStream(const std::shared_ptr<StreamItem>& item, bool force_only_viewing) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -307,6 +310,10 @@ namespace tc
         }
 
         const auto& target_item = si.value();
+        // may start with [Only Viewing]
+        if (force_only_viewing) {
+            target_item->only_viewing_ = true;
+        }
 
         // verify in profile server
         if (target_item->IsRelay()) {
@@ -382,7 +389,7 @@ namespace tc
                 db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, "");
                 db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, "");
                 context_->PostUIDelayTask([=, this]() {
-                    StartStream(item);
+                    StartStream(item, false);
                 }, 100);
                 return;
             }
@@ -468,6 +475,18 @@ namespace tc
         grApp->PostMessage2RemoteRender(msg);
     }
 
+    void AppStreamList::RestartDevice(const std::shared_ptr<StreamItem>& item) {
+        auto msg = std::make_shared<GrSmRestartDevice>();
+        msg->stream_item_ = item;
+        grApp->PostMessage2RemoteRender(msg);
+    }
+
+    void AppStreamList::ShutdownDevice(const std::shared_ptr<StreamItem>& item) {
+        auto msg = std::make_shared<GrSmShutdownDevice>();
+        msg->stream_item_ = item;
+        grApp->PostMessage2RemoteRender(msg);
+    }
+
     void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
@@ -513,7 +532,7 @@ namespace tc
         widget->setObjectName(stream->stream_id_.c_str());
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
         widget->SetOnConnectListener([=, this]() {
-            StartStream(stream);
+            StartStream(stream, false);
         });
         widget->SetOnMenuListener([=, this]() {
             RegisterActions(index);

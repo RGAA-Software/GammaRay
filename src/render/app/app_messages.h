@@ -235,6 +235,29 @@ namespace tc
         std::vector<MsgClipboardFile> files_;
     };
 
+    //
+    class MsgPanelStreamRestartRender {
+    public:
+        std::string from_device_;
+    };
+
+    //
+    class MsgPanelStreamLockScreen {
+    public:
+        std::string from_device_;
+    };
+
+    //
+    class MsgPanelStreamRestartDevice  {
+    public:
+        std::string from_device_;
+    };
+
+    //
+    class MsgPanelStreamShutdownDevice {
+    public:
+        std::string from_device_;
+    };
 }
 
 #endif //TC_APPLICATION_APP_MESSAGES_H

@@ -42,6 +42,7 @@ namespace tc
         kPluginFileTransferEnd,
         kPluginDataSent,
         kPluginRemoteClipboardResp,
+        kPluginPanelStreamMessage,
     };
 
     class GrPluginBaseEvent {
@@ -312,6 +313,17 @@ namespace tc
         int content_type_ {0};
         // text content
         std::string remote_info_;
+    };
+
+    // panel stream message
+    // request from remote panel
+    class GrPluginPanelStreamMessage : public GrPluginBaseEvent {
+    public:
+        GrPluginPanelStreamMessage() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginPanelStreamMessage;
+        }
+    public:
+        std::shared_ptr<Data> body_ = nullptr;
     };
 }
 

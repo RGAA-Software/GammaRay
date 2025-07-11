@@ -52,9 +52,11 @@ namespace tc
         void Init();
 
         void DeleteStream(const std::shared_ptr<StreamItem>& item);
-        void StartStream(const std::shared_ptr<StreamItem>& item);
+        void StartStream(const std::shared_ptr<StreamItem>& item, bool force_only_viewing);
         void StopStream(const std::shared_ptr<StreamItem>& item);
         void LockDevice(const std::shared_ptr<StreamItem>& item);
+        void RestartDevice(const std::shared_ptr<StreamItem>& item);
+        void ShutdownDevice(const std::shared_ptr<StreamItem>& item);
         void EditStream(const std::shared_ptr<StreamItem>& item);
         void ShowSettings(const std::shared_ptr<StreamItem>& item);
 

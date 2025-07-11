@@ -4,8 +4,10 @@
 #include "http_handler.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
+#include "tc_common_new/data.h"
 #include "rd_app.h"
 #include "ws_plugin.h"
+#include "plugin_interface/gr_plugin_events.h"
 
 namespace tc
 {
@@ -75,8 +77,15 @@ namespace tc
     void HttpHandler::HandlePanelStreamMessage(http::web_request& req, http::web_response& resp) {
         auto& body = req.body();
         auto target = req.target();
-        LOGI("Body: {}", body);
-        LOGI("Target: {}", target);
+        if (body.empty()) {
+            SendErrorJson(resp, kHandlerErrBody);
+            return;
+        }
+
+        auto event = std::make_shared<GrPluginPanelStreamMessage>();
+        event->body_ = Data::From(body);
+        this->plugin_->CallbackEvent(event);
+
         SendOkJson(resp, "");
     }
 }

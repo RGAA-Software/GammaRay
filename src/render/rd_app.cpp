@@ -281,6 +281,22 @@ namespace tc
                 monitor_capture_plugin_->SetCaptureFps(msg.fps_);
             }
         });
+
+        // request from Remote Panel's context menu or same function
+        msg_listener_->Listen<MsgPanelStreamLockScreen>([=, this](const MsgPanelStreamLockScreen& msg) {
+            LOGI(" ** Panel request LockScreen from device: {}", msg.from_device_);
+        });
+
+        // request from Remote Panel's context menu or same function
+        msg_listener_->Listen<MsgPanelStreamRestartDevice>([=, this](const MsgPanelStreamRestartDevice& msg) {
+            LOGI(" ** Panel request RestartDevice from device: {}", msg.from_device_);
+        });
+
+        // request from Remote Panel's context menu or same function
+        msg_listener_->Listen<MsgPanelStreamShutdownDevice>([=, this](const MsgPanelStreamShutdownDevice& msg) {
+            LOGI(" ** Panel request ShutdownDevice from device: {}", msg.from_device_);
+        });
+
     }
 
     void RdApplication::InitAudioCapture() {

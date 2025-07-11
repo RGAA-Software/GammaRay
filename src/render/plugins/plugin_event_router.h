@@ -21,6 +21,7 @@ namespace tc
     class GrPluginFileTransferBegin;
     class GrPluginFileTransferEnd;
     class GrPluginRemoteClipboardResp;
+    class GrPluginPanelStreamMessage;
 
     class PluginEventRouter {
     public:
@@ -33,6 +34,8 @@ namespace tc
         void ReportFileTransferBegin(const std::shared_ptr<GrPluginFileTransferBegin>& event);
         void ReportFileTransferEnd(const std::shared_ptr<GrPluginFileTransferEnd>& event);
         void ReportRemoteClipboardResp(const std::shared_ptr<GrPluginRemoteClipboardResp>& event);
+        // from remote panel
+        void ProcessPanelStreamMessage(const std::shared_ptr<GrPluginPanelStreamMessage>& event);
 
     private:
         std::shared_ptr<RdApplication> app_ = nullptr;
