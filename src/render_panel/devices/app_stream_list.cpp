@@ -327,7 +327,7 @@ namespace tc
             LOGI("Will check remote device: {} on relay server: {}:{}", item->remote_device_id_, item->stream_host_, item->stream_port_);
             auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id);
             if (!relay_device_info.has_value()) {
-                if (relay_device_info.error() == relay::RelayError::kRelayRequestFailed) {
+                if (relay_device_info.error() == relay::kRelayRequestFailed) {
                     // network failed
                     TcDialog dialog(tcTr("id_error"), tcTr("id_relay_network_unavailable_recreate"));
                     dialog.exec();

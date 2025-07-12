@@ -154,7 +154,16 @@ namespace tc
                     btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
                     btn_refresh->SetRoundRadius(15);
                     btn_refresh->setFixedSize(30, 30);
+                    pwd_layout->addSpacing(10);
                     pwd_layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
+
+                    auto btn_hide_pwd = new TcImageButton(":/resources/image/ic_key_blue.svg", QSize(20, 20));
+                    btn_hide_pwd->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+                    btn_hide_pwd->SetRoundRadius(15);
+                    btn_hide_pwd->setFixedSize(30, 30);
+                    pwd_layout->addSpacing(2);
+                    pwd_layout->addWidget(btn_hide_pwd, 0, Qt::AlignVCenter);
+
                     pwd_layout->addStretch();
 
                     layout->addSpacing(5);

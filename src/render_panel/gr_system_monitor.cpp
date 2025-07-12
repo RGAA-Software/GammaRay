@@ -377,7 +377,7 @@ namespace tc
                 LOGE("***UpdateSafetyPwd failed for : {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
             }
             else {
-                LOGE("***UpdateSafetyPwd success {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
+                LOGI("***UpdateSafetyPwd success {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
             }
         }
     }

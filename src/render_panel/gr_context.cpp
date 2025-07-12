@@ -293,7 +293,7 @@ namespace tc
         auto srv_remote_device_id = "server_" + device_id;
         auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id);
         if (!relay_result) {
-            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, RelayError2String(relay_result.error()));
+            LOGE("Get device info for: {} failed: {}", srv_remote_device_id, relay::RelayError2String(relay_result.error()));
             if (show_dialog) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
                 dialog.exec();
