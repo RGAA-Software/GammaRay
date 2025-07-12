@@ -181,6 +181,7 @@ namespace tc {
         }
 		key_1_lab_->setText(device_id.c_str());
 		key_1_lab_->adjustSize();
+		key_1_lab_->setMinimumWidth(160);
 		key_2_lab_->setText(info_->device_name().c_str());
 		key_2_lab_->adjustSize();
 	}

@@ -181,7 +181,7 @@ void FileTransWidget::Init() {
 	clear_completed_btn_ = new QPushButton(this);
 	//clear_completed_btn_->setText(QStringLiteral("清除已完成"));
 	clear_completed_btn_->setText(tcTr("id_file_trans_clear_completed"));
-	clear_completed_btn_->setFixedSize(90, 24);
+	clear_completed_btn_->setFixedSize(126, 24);
 	clear_completed_btn_->setStyleSheet(R"(
 		QPushButton {border:0px;font-family:Microsoft YaHei;font-size:10px; color:#000000;background-color:#ffffff;}
 		QPushButton::hover {border:0px;font-family:Microsoft YaHei;font-size:10px; color:#000000;background-color:#f0f0f0;}

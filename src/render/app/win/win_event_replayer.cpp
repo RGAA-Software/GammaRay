@@ -301,7 +301,7 @@ namespace tc
     }
 
     void WinEventReplayer::HandleFocusOutEvent() {
-        // to do，待测试，远程套远程测试效果不行
+
         std::array<int, 11> keys = {
             VK_CONTROL,
             VK_RCONTROL,
