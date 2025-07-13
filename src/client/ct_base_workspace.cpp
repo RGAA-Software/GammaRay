@@ -482,6 +482,17 @@ namespace tc
             context_->PostUITask([=, this]() {
                 this->UpdateLocalCursor();
             });
+
+            if (!sdk_ || remote_force_closed_) {
+                return;
+            }
+            tc::Message m;
+            m.set_type(tc::kFocusOutEvent);
+            m.set_device_id(settings_->device_id_);
+            m.set_stream_id(settings_->stream_id_);
+            if (auto buffer = tc::ProtoAsData(&m); buffer) {
+                sdk_->PostMediaMessage(buffer);
+            }
         });
 
         // relay error callback
@@ -515,6 +526,7 @@ namespace tc
     void BaseWorkspace::changeEvent(QEvent* event) {
         is_window_active_ = isActiveWindow() && !(windowState() & Qt::WindowMinimized);
         qDebug() << "window state: " << is_window_active_;
+        QMainWindow::changeEvent(event);
     }
 
     bool BaseWorkspace::IsActiveNow() const {
@@ -569,19 +581,6 @@ namespace tc
         std::vector<QString> files;
         for (const auto& url : urls) {
             files.push_back(url.toLocalFile());
-        }
-    }
-
-    void BaseWorkspace::focusOutEvent(QFocusEvent* event) {
-        if (!sdk_ || remote_force_closed_) {
-            return;
-        }
-        tc::Message m;
-        m.set_type(tc::kFocusOutEvent);
-        m.set_device_id(settings_->device_id_);
-        m.set_stream_id(settings_->stream_id_);
-        if (auto buffer = tc::ProtoAsData(&m); buffer) {
-            sdk_->PostMediaMessage(buffer);
         }
     }
 
