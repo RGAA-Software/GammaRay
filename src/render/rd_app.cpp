@@ -39,6 +39,7 @@
 #include "app/win/dx_address_loader.h"
 #include "tc_common_new/win32/win_helper.h"
 #include "tc_common_new/fft_32.h"
+#include "tc_common_new/hardware.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_controller/vigem/vigem_controller.h"
 #include "tc_controller/vigem_driver_manager.h"
@@ -285,16 +286,19 @@ namespace tc
         // request from Remote Panel's context menu or same function
         msg_listener_->Listen<MsgPanelStreamLockScreen>([=, this](const MsgPanelStreamLockScreen& msg) {
             LOGI(" ** Panel request LockScreen from device: {}", msg.from_device_);
+            Hardware::LockScreen();
         });
 
         // request from Remote Panel's context menu or same function
         msg_listener_->Listen<MsgPanelStreamRestartDevice>([=, this](const MsgPanelStreamRestartDevice& msg) {
             LOGI(" ** Panel request RestartDevice from device: {}", msg.from_device_);
+            Hardware::RestartDevice();
         });
 
         // request from Remote Panel's context menu or same function
         msg_listener_->Listen<MsgPanelStreamShutdownDevice>([=, this](const MsgPanelStreamShutdownDevice& msg) {
             LOGI(" ** Panel request ShutdownDevice from device: {}", msg.from_device_);
+            Hardware::ShutdownDevice();
         });
 
     }

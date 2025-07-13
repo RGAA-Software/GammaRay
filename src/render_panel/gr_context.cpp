@@ -166,7 +166,7 @@ namespace tc
             ip_address = ips[0].ip_addr_;
         }
         auto device_id = settings_->GetDeviceId();
-        return device_id.empty() ? device_id : ip_address;
+        return !device_id.empty() ? device_id : ip_address;
     }
 
     std::string GrContext::MakeBroadcastMessage() {

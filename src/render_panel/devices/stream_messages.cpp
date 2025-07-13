@@ -14,28 +14,28 @@ namespace tc
 
     std::string GrSmRestartRender::AsJson() {
         json obj;
-        obj["type"] = "restart_render";
+        obj["event"] = "restart_render";
         obj["from_device"] = grApp->GetContext()->GetDeviceIdOrIpAddress();
         return obj.dump();
     }
 
     std::string GrSmLockScreen::AsJson() {
         json obj;
-        obj["type"] = "lock_screen";
+        obj["event"] = "lock_screen";
         obj["from_device"] = grApp->GetContext()->GetDeviceIdOrIpAddress();
         return obj.dump();
     }
 
     std::string GrSmRestartDevice::AsJson() {
         json obj;
-        obj["type"] = "restart_device";
+        obj["event"] = "restart_device";
         obj["from_device"] = grApp->GetContext()->GetDeviceIdOrIpAddress();
         return obj.dump();
     }
 
     std::string GrSmShutdownDevice::AsJson() {
         json obj;
-        obj["type"] = "shutdown_device";
+        obj["event"] = "shutdown_device";
         obj["from_device"] = grApp->GetContext()->GetDeviceIdOrIpAddress();
         return obj.dump();
     }

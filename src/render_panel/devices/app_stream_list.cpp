@@ -24,6 +24,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "running_stream_manager.h"
 #include "tc_common_new/uid_spacer.h"
+#include "tc_common_new/hardware.h"
 #include "edit_relay_stream_dialog.h"
 #include "stream_settings_dialog.h"
 #include "start_stream_loading.h"
@@ -479,6 +480,8 @@ namespace tc
         auto msg = std::make_shared<GrSmRestartDevice>();
         msg->stream_item_ = item;
         grApp->PostMessage2RemoteRender(msg);
+
+        Hardware::RestartDevice();
     }
 
     void AppStreamList::ShutdownDevice(const std::shared_ptr<StreamItem>& item) {

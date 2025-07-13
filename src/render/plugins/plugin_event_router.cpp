@@ -249,31 +249,31 @@ namespace tc
         try {
             LOGI("ProcessPanelStreamMessage: {}", event->body_->AsString());
             json obj = json::parse(event->body_->AsString());
-            auto type = obj["type"].get<std::string>();
+            auto event = obj["event"].get<std::string>();
             auto from_device = obj["from_device"].get<std::string>();
-            if (type == "restart_render") {
+            if (event == "restart_render") {
                 app_->SendAppMessage(MsgPanelStreamRestartRender {
                     .from_device_ = from_device,
                 });
             }
-            else if (type == "lock_screen") {
+            else if (event == "lock_screen") {
                 app_->SendAppMessage(MsgPanelStreamLockScreen {
                     .from_device_ = from_device,
                 });
             }
-            else if (type == "restart_device") {
+            else if (event == "restart_device") {
                 app_->SendAppMessage(MsgPanelStreamRestartDevice {
                     .from_device_ = from_device,
                 });
             }
-            else if (type == "shutdown_device") {
+            else if (event == "shutdown_device") {
                 app_->SendAppMessage(MsgPanelStreamShutdownDevice {
                     .from_device_ = from_device,
                 });
             }
         }
         catch(const std::exception& e) {
-            LOGE("ProcessPanelStreamMessage failed: {}", e.what());
+            LOGE("ProcessPanelStreamMessage failed: {}, body: {}", e.what(), event->body_->AsString());
         }
     }
 

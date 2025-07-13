@@ -22,6 +22,7 @@
 #include "ui/input_safety_pwd_dialog.h"
 #include "tc_manager_client/mgr_device.h"
 #include "tc_3rdparty/json/json.hpp"
+#include "tc_relay_client/relay_api.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_manager_client/mgr_client_sdk.h"
 #include "tc_manager_client/mgr_device_operator.h"
@@ -321,11 +322,17 @@ namespace tc
 
         auto& item = msg->stream_item_;
         if (item->IsRelay()) {
-            // to check in server
-//            auto device_info = context_->GetRelayServerSideDeviceInfo(item->stream_host_, item->stream_port_, item->remote_device_id_, false);
-//            if (device_info && relay::RelayApi::IsRelayDeviceValid(device_info)) {
-//                online = true;
-//            }
+            auto srv_remote_device_id = "server_" + item->remote_device_id_;
+            auto res = relay::RelayApi::NotifyEvent(item->stream_host_, item->stream_port_, context_->GetDeviceIdOrIpAddress(), srv_remote_device_id, msg->AsJson());
+            if (res.has_value()) {
+                if (res.value() == relay::kRelayOk) {
+                    return true;
+                }
+                else {
+                    LOGE("NotifyEvent failed, res: {}", res.value());
+                }
+            }
+            return false;
         }
         else {
             // host & port mode
@@ -333,14 +340,21 @@ namespace tc
             auto res = client->Post({}, msg->AsJson());
             LOGI("res: {} {}", res.status, res.body);
             if (res.status == 200) {
-
+                try {
+                    auto obj = json::parse(res.body);
+                    auto code = obj["code"].get<int>();
+                    if (code == 200) {
+                        return true;
+                    }
+                    else {
+                        LOGE("NotifyEvent failed, error code: {}", code);
+                    }
+                } catch(std::exception& e) {
+                    LOGE("NotifyEvent, parse json failed: {}, body: {}", e.what(), res.body);
+                }
             }
-            else {
-
-            }
+            return false;
         }
-
-        return true;
     }
 
 }

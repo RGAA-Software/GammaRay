@@ -331,7 +331,7 @@ namespace tc
     }
 
     void GrSystemMonitor::CheckThisDeviceInfo() {
-        LOGI("CheckThisDeviceInfo...");
+        //LOGI("CheckThisDeviceInfo...");
         auto dev_opt = app_->GetDeviceOperator();
         if (!dev_opt) {
             return;

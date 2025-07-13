@@ -109,7 +109,7 @@ namespace tc
 
                 });
 
-                relay_media_sdk_->SetOnRoomPreparedCallback([this](const std::shared_ptr<relay::RelayMessage>& msg) {
+                relay_media_sdk_->SetOnRoomPreparedCallback([this](std::shared_ptr<RelayMessage> msg) {
                     auto sub = msg->room_prepared();
                     const auto& room_id = sub.room_id();
 
@@ -132,7 +132,7 @@ namespace tc
                     this->NotifyMediaClientConnected(room->conn_id_, room->creator_stream_id_, visitor_device_id);
                 });
 
-                relay_media_sdk_->SetOnRoomDestroyedCallback([this](const std::shared_ptr<relay::RelayMessage>& msg) {
+                relay_media_sdk_->SetOnRoomDestroyedCallback([this](std::shared_ptr<RelayMessage> msg) {
                     auto sub = msg->room_destroyed();
                     const auto& room_id = sub.room_id();
                     auto room = relay_media_sdk_->GetRoomById(room_id);
@@ -168,7 +168,7 @@ namespace tc
                     LOGI("==> Resume stream.");
                 });
 
-                relay_media_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
+                relay_media_sdk_->SetOnRelayProtoMessageCallback([this](std::shared_ptr<RelayMessage> msg) {
                     auto type = msg->type();
                     if (type == RelayMessageType::kRelayTargetMessage) {
                         auto sub = msg->relay();
@@ -178,6 +178,13 @@ namespace tc
                         this->OnClientEventCame(true, 0, NetPluginType::kWebSocket, payload_msg);
                         //LOGI("Relay in-message size: {}", payload_msg.size());
                     }
+                });
+
+                relay_media_sdk_->SetOnNotificationCallback([this](std::shared_ptr<RelayMessage> msg) {
+                    const auto sub = msg->notification();
+                    auto event = std::make_shared<GrPluginPanelStreamMessage>();
+                    event->body_ = Data::From(sub.body());
+                    CallbackEvent(event);
                 });
 
                 relay_media_sdk_->Start();
@@ -197,7 +204,7 @@ namespace tc
                         .stream_id_ = ft_device_id, //
                     });
 
-                    relay_ft_sdk_->SetOnRelayProtoMessageCallback([this](const std::shared_ptr<RelayMessage> &msg) {
+                    relay_ft_sdk_->SetOnRelayProtoMessageCallback([this](std::shared_ptr<RelayMessage> msg) {
                         auto type = msg->type();
                         if (type == RelayMessageType::kRelayTargetMessage) {
                             auto sub = msg->relay();
