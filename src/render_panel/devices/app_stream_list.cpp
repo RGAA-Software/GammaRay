@@ -480,8 +480,6 @@ namespace tc
         auto msg = std::make_shared<GrSmRestartDevice>();
         msg->stream_item_ = item;
         grApp->PostMessage2RemoteRender(msg);
-
-        Hardware::RestartDevice();
     }
 
     void AppStreamList::ShutdownDevice(const std::shared_ptr<StreamItem>& item) {
