@@ -77,7 +77,7 @@
   "id_ssl_enabled": "SSL Connection(Always Enabled)",
   "id_record_visitor": "Record Visiting",
   "id_record_file_transfer": "Record File Transferring",
-  "id_disconnect_auto_lock_screen": "Disconnect to automatically lock the screen.",
+  "id_disconnect_auto_lock_screen": "Lock screen on disconnect",
   "id_tips": "Tips",
   "id_dialog_ssl_always_on": "SSL will always be enabled.",
   "id_dialog_record_visitor_always_on": "Recording visitors is always on.",

@@ -46,7 +46,7 @@ namespace tc
         root_layout->addStretch();
 
         // segment encoder
-        auto tips_label_width = 240;
+        auto tips_label_width = 300;
         auto tips_label_height = 35;
         auto tips_label_size = QSize(tips_label_width, tips_label_height);
         auto input_size = QSize(280, tips_label_height);
