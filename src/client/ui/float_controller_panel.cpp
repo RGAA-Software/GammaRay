@@ -470,10 +470,6 @@ namespace tc
             this->Hide();
         });
 
-        msg_listener_->Listen<MsgHideAllPanels>([=, this](const MsgHideAllPanels& msg) {
-            this->Hide();
-        });
-
         msg_listener_->Listen<MsgClientCaptureMonitor>([=, this](const MsgClientCaptureMonitor& msg) {
             this->capture_monitor_ = msg;
             context_->PostUITask([=, this]() {
