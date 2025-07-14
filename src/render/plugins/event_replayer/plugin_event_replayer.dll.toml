@@ -2,7 +2,7 @@
 author = "RGAA"
 
 #
-description = "Joystick Impl"
+description = "Mouse/Keyboard Events Replayer"
 
 #
 version_name = "1.2.0"
