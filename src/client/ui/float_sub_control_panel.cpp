@@ -106,6 +106,7 @@ namespace tc
 
             widget->SetOnClickListener([=, this](QWidget* w) {
                 RequestCtrlAltDelete();
+                context_->SendAppMessage(MsgClientHidePanel{});
             });
         }
 
@@ -129,6 +130,7 @@ namespace tc
 
             widget->SetOnClickListener([=, this](QWidget* w) {
                 RequestRefreshDesktop();
+                context_->SendAppMessage(MsgClientHidePanel{});
             });
         
         }
