@@ -62,7 +62,7 @@ namespace tc
         return true;
     }
 
-    void ClipboardPlugin::OnMessage(const std::shared_ptr<Message>& msg) {
+    void ClipboardPlugin::OnMessage(std::shared_ptr<Message> msg) {
         if (msg->type() == MessageType::kClipboardInfo) {
             if (msg->clipboard_info().type() == ClipboardType::kClipboardText && clipboard_mgr_) {
                 plugin_context_->PostUITask([=, this]() {

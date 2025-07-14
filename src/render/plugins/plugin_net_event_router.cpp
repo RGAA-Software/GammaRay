@@ -52,10 +52,13 @@ namespace tc {
         context_->SendAppMessage(MsgInsertIDR {});
         context_->SendAppMessage(MsgRefreshScreen{});
         LOGI("New connection established!");
-        //
+
+        // tell all plugins that a client connected
         plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
-            plugin->OnNewClientIn();
+            plugin->OnNewClientConnected(event->visitor_device_id_, event->stream_id_, event->conn_type_);
         });
+
+        // tell encoder plugins to insert an I Frame
         plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
             plugin->InsertIdr();
         });
@@ -81,6 +84,11 @@ namespace tc {
         msg.end_timestamp_ = event->end_timestamp_;
         msg.duration_ = event->duration_;
         context_->SendAppMessage(msg);
+
+        // tell all plugins that a client disconnected
+        plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
+            plugin->OnClientDisconnected(event->visitor_device_id_, event->stream_id_);
+        });
 
         // report it
         ReportClientDisConnected(event);
@@ -113,6 +121,12 @@ namespace tc {
                 std::cout << "PluginNetEventRouter HandleMessage parse error" << std::endl;
                 return;
             }
+
+            // notify to all plugins
+            plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                plugin->OnMessage(msg);
+            });
+
             switch (msg->type()) {
                 case kHello: {
                     this->ProcessHelloEvent(std::move(msg));
@@ -148,7 +162,7 @@ namespace tc {
                 }
                 case kClipboardInfo:
                 case kClipboardInfoResp: {
-                    ProcessClipboardInfo(std::move(msg));
+                    //ProcessClipboardInfo(std::move(msg));
                     break;
                 }
                 case kSwitchMonitor: {
@@ -175,10 +189,10 @@ namespace tc {
                 case MessageType::kFileOperationEvent:
                 case MessageType::kFileTransDataPacket:
                 case MessageType::kFileTransSaveFileException: {
-                    auto file_trans_plugin = plugin_manager_->GetFileTransferPlugin();
-                    if (file_trans_plugin) {
-                        file_trans_plugin->OnMessage(msg);
-                    }
+                    //auto file_trans_plugin = plugin_manager_->GetFileTransferPlugin();
+                    //if (file_trans_plugin) {
+                    //    file_trans_plugin->OnMessage(msg);
+                    //}
                     break;
                 }
                 // file transmit end
@@ -186,9 +200,9 @@ namespace tc {
                 case MessageType::kClipboardReqAtEnd:
                 case MessageType::kClipboardReqBuffer:
                 case MessageType::kClipboardRespBuffer: {
-                    if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
-                        plugin->OnMessage(msg);
-                    }
+                    //if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
+                    //    plugin->OnMessage(msg);
+                    //}
                     break;
                 }
                 case MessageType::kUpdateDesktop: {
@@ -384,11 +398,9 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessClipboardInfo(std::shared_ptr<Message>&& msg) {
-        //auto clipboard_mgr = app_->GetClipboardManager();
-        //clipboard_mgr->UpdateRemoteInfo(std::move(msg));
-        if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
-            plugin->OnMessage(msg);
-        }
+        //if (auto plugin = plugin_manager_->GetClipboardPlugin(); plugin) {
+        //    plugin->OnMessage(msg);
+        //}
     }
 
     void PluginNetEventRouter::ProcessSwitchMonitor(std::shared_ptr<Message>&& msg) {

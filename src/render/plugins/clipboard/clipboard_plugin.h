@@ -26,7 +26,7 @@ namespace tc
         bool OnCreate(const tc::GrPluginParam& param) override;
         bool OnDestroy() override;
 
-        void OnMessage(const std::shared_ptr<Message> &msg) override;
+        void OnMessage(std::shared_ptr<Message> msg) override;
         void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override;
 
         // client -> request buffer

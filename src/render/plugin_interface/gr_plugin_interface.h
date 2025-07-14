@@ -112,7 +112,10 @@ namespace tc
 
         virtual void OnCommand(const std::string& command);
 
-        virtual void OnNewClientIn();
+        // new client connected
+        virtual void OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type);
+        // client disconnected
+        virtual void OnClientDisconnected(const std::string& visitor_device_id, const std::string& stream_id);
 
         // widget
         QWidget* GetRootWidget();
@@ -145,7 +148,7 @@ namespace tc
         void DispatchTargetFileTransferMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through = false);
 
         // messages from remote
-        virtual void OnMessage(const std::shared_ptr<Message>& msg);
+        virtual void OnMessage(std::shared_ptr<Message> msg);
         // msg: Parsed messages
         virtual void OnMessageRaw(const std::any& msg);
 

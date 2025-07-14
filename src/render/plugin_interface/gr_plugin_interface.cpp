@@ -193,8 +193,12 @@ namespace tc
 
     }
 
-    void GrPluginInterface::OnNewClientIn() {
+    void GrPluginInterface::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
         no_connected_clients_counter_ = 0;
+    }
+
+    void GrPluginInterface::OnClientDisconnected(const std::string& visitor_device_id, const std::string& stream_id) {
+
     }
 
     QWidget* GrPluginInterface::GetRootWidget() {
@@ -247,7 +251,7 @@ namespace tc
         }
     }
 
-    void GrPluginInterface::OnMessage(const std::shared_ptr<Message>& msg) {
+    void GrPluginInterface::OnMessage(std::shared_ptr<Message> msg) {
 
     }
 

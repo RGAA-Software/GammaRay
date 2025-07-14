@@ -329,13 +329,13 @@ namespace tc
         //}
     }
 
-    void DDACapturePlugin::OnNewClientIn() {
-        GrPluginInterface::OnNewClientIn();
+    void DDACapturePlugin::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
+        GrPluginInterface::OnNewClientConnected(visitor_device_id, stream_id, conn_type);
         for (const auto& [k, capture] : captures_) {
             capture->RefreshScreen();
             capture->TryWakeOs();
         }
-        LOGI("OnNewClientIn!");
+        LOGI("OnNewClientConnected!");
         NotifyCaptureMonitorInfo();
     }
 

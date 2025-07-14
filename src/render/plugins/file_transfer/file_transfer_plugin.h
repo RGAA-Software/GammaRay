@@ -23,7 +23,7 @@ namespace tc
         std::string GetPluginDescription() override;
 
         bool OnCreate(const GrPluginParam& param) override;
-        void OnMessage(const std::shared_ptr<tc::Message>& msg) override;
+        void OnMessage(std::shared_ptr<Message> msg) override;
         void OnSyncPluginSettingsInfo(const GrPluginSettingsInfo& settings) override;
         LanguageKind GetCurrentLanguage();
 
