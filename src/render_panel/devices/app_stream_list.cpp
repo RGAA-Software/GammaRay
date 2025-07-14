@@ -471,21 +471,45 @@ namespace tc
     }
 
     void AppStreamList::LockDevice(const std::shared_ptr<StreamItem>& item) {
-        auto msg = std::make_shared<GrSmLockScreen>();
-        msg->stream_item_ = item;
-        grApp->PostMessage2RemoteRender(msg);
+        if (!item->online_) {
+            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
+            return;
+        }
+
+        TcDialog dialog(tcTr("id_warning"), tcTr("id_ask_lock_screen"));
+        if (dialog.exec() == kDoneOk) {
+            auto msg = std::make_shared<GrSmLockScreen>();
+            msg->stream_item_ = item;
+            grApp->PostMessage2RemoteRender(msg);
+        }
     }
 
     void AppStreamList::RestartDevice(const std::shared_ptr<StreamItem>& item) {
-        auto msg = std::make_shared<GrSmRestartDevice>();
-        msg->stream_item_ = item;
-        grApp->PostMessage2RemoteRender(msg);
+        if (!item->online_) {
+            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
+            return;
+        }
+
+        TcDialog dialog(tcTr("id_warning"), tcTr("id_ask_restart_device"));
+        if (dialog.exec() == kDoneOk) {
+            auto msg = std::make_shared<GrSmRestartDevice>();
+            msg->stream_item_ = item;
+            grApp->PostMessage2RemoteRender(msg);
+        }
     }
 
     void AppStreamList::ShutdownDevice(const std::shared_ptr<StreamItem>& item) {
-        auto msg = std::make_shared<GrSmShutdownDevice>();
-        msg->stream_item_ = item;
-        grApp->PostMessage2RemoteRender(msg);
+        if (!item->online_) {
+            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
+            return;
+        }
+
+        TcDialog dialog(tcTr("id_warning"), tcTr("id_ask_shutdown_device"));
+        if (dialog.exec() == kDoneOk) {
+            auto msg = std::make_shared<GrSmShutdownDevice>();
+            msg->stream_item_ = item;
+            grApp->PostMessage2RemoteRender(msg);
+        }
     }
 
     void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {

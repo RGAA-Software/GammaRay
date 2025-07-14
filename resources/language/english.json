@@ -214,6 +214,10 @@
   "id_remote_device_offline": "Remote device is offline. Do you want to reconnect ?",
   "id_start_control": "Start Control",
   "id_stop_control": "Stop Control",
+  "id_device_offline": "Device is offline",
+  "id_ask_lock_screen": "Do you want to lock the screen?",
+  "id_ask_restart_device": "Do you want to restart the device?",
+  "id_ask_shutdown_device": "Do you want to shutdown the device?",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",
