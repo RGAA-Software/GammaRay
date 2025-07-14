@@ -106,6 +106,9 @@ namespace tc
 
             widget->SetOnClickListener([=, this](QWidget* w) {
                 RequestCtrlAltDelete();
+                context_->PostUITask([=, this]() {
+                    context_->SendAppMessage(MsgHideAllPanels{});
+                });
             });
         }
 
@@ -129,8 +132,10 @@ namespace tc
 
             widget->SetOnClickListener([=, this](QWidget* w) {
                 RequestRefreshDesktop();
+                context_->PostUITask([=, this]() {
+                    context_->SendAppMessage(MsgHideAllPanels{});
+                });
             });
-        
         }
 
         root_layout->addStretch();
