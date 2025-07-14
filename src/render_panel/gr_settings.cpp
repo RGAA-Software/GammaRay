@@ -498,4 +498,13 @@ namespace tc
         return value.empty() || value == kStTrue;
     }
 
+    void GrSettings::SetDisplayRandomPwd(bool enable) {
+        sp_->Put(kStDisplayRandomPwd, enable ? kStTrue : kStFalse);
+    }
+
+    bool GrSettings::IsDisplayRandomPwd() {
+        auto value = sp_->Get(kStDisplayRandomPwd);
+        return value.empty() || value == kStTrue;
+    }
+
 }

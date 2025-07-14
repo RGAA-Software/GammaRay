@@ -78,6 +78,8 @@
         <file>resources/image/ic_clear.svg</file>
         <file>resources/image/ic_android.svg</file>
         <file>resources/image/ic_ios.svg</file>
+        <file>resources/image/ic_pwd_visibility_on.svg</file>
+        <file>resources/image/ic_pwd_visibility_off.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

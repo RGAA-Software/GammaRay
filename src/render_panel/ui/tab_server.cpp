@@ -143,7 +143,7 @@ namespace tc
 
                     auto pwd_layout = new NoMarginHLayout();
                     auto msg = new QLabel(this);
-                    msg->setFixedWidth(130);
+                    msg->setFixedWidth(140);
                     lbl_machine_random_pwd_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     msg->setText("********");
@@ -157,7 +157,8 @@ namespace tc
                     pwd_layout->addSpacing(10);
                     pwd_layout->addWidget(btn_refresh, 0, Qt::AlignVCenter);
 
-                    auto btn_hide_pwd = new TcImageButton(":/resources/image/ic_key_blue.svg", QSize(20, 20));
+                    auto btn_hide_pwd = new TcImageButton(":/resources/image/ic_pwd_visibility_on.svg", ":/resources/image/ic_pwd_visibility_off.svg", QSize(20, 20));
+                    btn_hide_random_pwd_ = btn_hide_pwd;
                     btn_hide_pwd->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
                     btn_hide_pwd->SetRoundRadius(15);
                     btn_hide_pwd->setFixedSize(30, 30);
@@ -194,6 +195,14 @@ namespace tc
 
                             context_->SendAppMessage(MsgSyncSettingsToRender{});
                         });
+                    });
+
+                    btn_hide_pwd->SetOnImageButtonClicked([=, this]() {
+                        if (settings_->GetDeviceRandomPwd().empty()) {
+                            return;
+                        }
+                        settings_->SetDisplayRandomPwd(!settings_->IsDisplayRandomPwd());
+                        SetDeviceRandomPwdVisibility();
                     });
                 }
             }
@@ -434,6 +443,7 @@ namespace tc
                         item->network_type_ = kStreamItemNtTypeRelay;
                         item->remote_device_id_ = remote_device_id;
                         item->clipboard_enabled_ = true;
+                        item->bg_color_ = 0xffffff;
                         if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd
                             || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                             item->remote_device_random_pwd_ = random_password;
@@ -468,7 +478,8 @@ namespace tc
         // set client id by settings
         if (!settings_->GetDeviceId().empty() && !settings_->GetDeviceRandomPwd().empty()) {
             lbl_machine_code_->setText(tc::SpaceId(settings_->GetDeviceId()).c_str());
-            lbl_machine_random_pwd_->setText(settings_->GetDeviceRandomPwd().c_str());
+            //lbl_machine_random_pwd_->setText(settings_->GetDeviceRandomPwd().c_str());
+            SetDeviceRandomPwdVisibility();
         }
 
         RegisterMessageListener();
@@ -491,7 +502,8 @@ namespace tc
         msg_listener_->Listen<MsgRequestedNewDevice>([=, this](const MsgRequestedNewDevice& msg) {
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
-                lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                //lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                SetDeviceRandomPwdVisibility();
                 this->UpdateQRCode();
             });
         });
@@ -500,7 +512,8 @@ namespace tc
         msg_listener_->Listen<MsgRandomPasswordUpdated>([=, this](const MsgRandomPasswordUpdated& msg) {
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
-                lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                //lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                SetDeviceRandomPwdVisibility();
                 this->UpdateQRCode();
             });
         });
@@ -522,5 +535,16 @@ namespace tc
 
     void TabServer::resizeEvent(QResizeEvent *event) {
         TabBase::resizeEvent(event);
+    }
+
+    void TabServer::SetDeviceRandomPwdVisibility() {
+        if (settings_->IsDisplayRandomPwd() && !settings_->GetDeviceRandomPwd().empty()) {
+            lbl_machine_random_pwd_->setText(settings_->GetDeviceRandomPwd().c_str());
+            btn_hide_random_pwd_->ToImage1();
+        }
+        else {
+            lbl_machine_random_pwd_->setText("********");
+            btn_hide_random_pwd_->ToImage2();
+        }
     }
 }
