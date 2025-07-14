@@ -118,15 +118,33 @@ namespace tc
                     //layout->addSpacing(2);
                     layout->addWidget(title, 0, Qt::AlignLeft);
 
+                    auto code_layout = new NoMarginHLayout();
+
                     auto msg = new QLabel(this);
                     lbl_machine_code_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
                     msg->setText(tc::SpaceId("---------").c_str());
                     msg->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
+                    code_layout->addWidget(msg);
+
+                    auto btn_cpy = new TcImageButton(":/resources/image/ic_copy.svg", QSize(20, 20));
+                    btn_cpy->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+                    btn_cpy->SetRoundRadius(15);
+                    btn_cpy->setFixedSize(30, 30);
+                    code_layout->addSpacing(10);
+                    code_layout->addWidget(btn_cpy, 0, Qt::AlignVCenter);
+                    code_layout->addStretch();
+
                     layout->addSpacing(5);
-                    layout->addWidget(msg, 0, Qt::AlignLeft);
+                    layout->addLayout(code_layout);
                     machine_code_qr_layout->addLayout(layout);
+
+                    btn_cpy->SetOnImageButtonClicked([=, this]() {
+                        QClipboard* clipboard = QApplication::clipboard();
+                        clipboard->setText(msg->text());
+                        context_->NotifyAppMessage(tcTr("id_copy_success"), tcTr("id_copy_success_clipboard"));
+                    });
                 }
 
                 // Temporary Password
