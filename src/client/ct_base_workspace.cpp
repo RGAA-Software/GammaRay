@@ -60,6 +60,10 @@ namespace tc
         this->params_ = params;
         cursor_ = QCursor(Qt::ArrowCursor);
         retry_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_warning"));
+        QTimer::singleShot(1000, this, [this]() {
+            this->raise();
+            this->activateWindow();
+        });
     }
 
     void BaseWorkspace::Init() {

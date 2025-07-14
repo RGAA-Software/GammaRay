@@ -77,6 +77,13 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
             need_recalculate_aspect_ = true;
         }
     });
+
+
+    msg_listener_->Listen<MsgClientHidePanel>([=, this](const MsgClientHidePanel& msg) {
+        ctx_->PostUITask([=]() {
+            controller_panel_->Hide();
+        });
+    });
 }
 
 GameView::~GameView() {

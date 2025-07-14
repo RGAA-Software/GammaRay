@@ -398,9 +398,7 @@ namespace tc
                 }
                 context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kMediaRecordStatus });
                 context_->SendAppMessage(MsgClientMediaRecord{});
-                if (media_record_listener_) {
-                    media_record_listener_(widget);
-                }
+                context_->SendAppMessage(MsgClientHidePanel{});
             });
         }
 
