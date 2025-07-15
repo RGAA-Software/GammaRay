@@ -45,6 +45,7 @@ namespace tc
 
         void PostTask(std::function<void()>&& task);
         void PostUITask(std::function<void()>&& task);
+        void PostDelayTask(std::function<void()>&& task, int delay);
         void PostStreamPluginTask(std::function<void()>&& task);
         static std::string GetCurrentExeFolder();
         // dispatch app event

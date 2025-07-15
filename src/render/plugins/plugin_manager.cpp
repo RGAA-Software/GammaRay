@@ -290,6 +290,14 @@ namespace tc
         return nullptr;
     }
 
+    GrPluginInterface* PluginManager::GetEventsReplayerPlugin() {
+        auto plugin = GetPluginById(kEventReplayerPluginId);
+        if (plugin) {
+            return plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

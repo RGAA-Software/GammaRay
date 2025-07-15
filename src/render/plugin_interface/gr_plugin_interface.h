@@ -21,6 +21,7 @@
 #include <wrl/client.h>
 #include "gr_plugin_settings_info.h"
 #include "app/app_messages.h"
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {
@@ -167,6 +168,9 @@ namespace tc
         GrPluginSettingsInfo GetPluginSettingsInfo();
 
         bool DontHaveConnectedClientsNow();
+
+        // update capturing monitors information
+        virtual void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg);
 
     protected:
         bool HasParam(const std::string& k) {

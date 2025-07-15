@@ -5,6 +5,7 @@
 #include "gr_plugin_context.h"
 #include "tc_common_new/thread.h"
 #include "asio2/asio2.hpp"
+#include <QTimer>
 
 namespace tc
 {
@@ -33,6 +34,12 @@ namespace tc
 
     void GrPluginContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [t = std::move(task)]() {
+            t();
+        });
+    }
+
+    void GrPluginContext::PostDelayTask(std::function<void()>&& task, int delay) {
+        QTimer::singleShot(delay, [t = std::move(task)]() {
             t();
         });
     }

@@ -3,6 +3,7 @@
 //
 
 #include "rd_context.h"
+#include <QTimer>
 #include <QApplication>
 #include "tc_common_new/task_runtime.h"
 #include "tc_common_new/message_notifier.h"
@@ -50,6 +51,12 @@ namespace tc
     void RdContext::PostUITask(std::function<void()>&& task) {
         QMetaObject::invokeMethod(this, [=]() {
             task();
+        });
+    }
+
+    void RdContext::PostDelayTask(std::function<void()>&& task, int delay) {
+        QTimer::singleShot(delay, [t = std::move(task)]() {
+            t();
         });
     }
 

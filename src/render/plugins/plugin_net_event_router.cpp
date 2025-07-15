@@ -6,30 +6,32 @@
 #include <memory>
 #include <iostream>
 #include <thread>
+#include <QApplication>
 #include "rd_app.h"
 #include "rd_context.h"
 #include "rd_statistics.h"
-#include "settings/rd_settings.h"
-#include "app/win/win_event_replayer.h"
-#include "tc_common_new/log.h"
-#include "tc_common_new/data.h"
-#include "tc_capture_new/capture_message_maker.h"
-#include "app_global_messages.h"
-#include "app/app_manager.h"
-#include "tc_common_new/win32/process_helper.h"
-#include "app/app_messages.h"
-#include "network/net_message_maker.h"
-#include "tc_capture_new/desktop_capture.h"
-#include "tc_encoder_new/encoder_messages.h"
 #include "tc_message.pb.h"
 #include "plugin_manager.h"
-#include "plugin_interface/gr_video_encoder_plugin.h"
-#include "plugin_interface/gr_monitor_capture_plugin.h"
+#include "app/app_manager.h"
+#include "app/app_messages.h"
+#include "tc_common_new/log.h"
+#include "tc_common_new/data.h"
+#include "app_global_messages.h"
+#include "settings/rd_settings.h"
+#include "net_rtc/rtc_report_event.h"
+#include "network/net_message_maker.h"
+#include "app/win/win_event_replayer.h"
+#include "tc_common_new/process_util.h"
+#include "tc_render_panel_message.pb.h"
 #include "app/win/win_desktop_manager.h"
 #include "plugins/net_rtc/rtc_messages.h"
-#include "net_rtc/rtc_report_event.h"
-#include "tc_render_panel_message.pb.h"
+#include "tc_capture_new/desktop_capture.h"
+#include "tc_encoder_new/encoder_messages.h"
 #include "tc_message_new/rp_proto_converter.h"
+#include "tc_common_new/win32/process_helper.h"
+#include "tc_capture_new/capture_message_maker.h"
+#include "plugin_interface/gr_video_encoder_plugin.h"
+#include "plugin_interface/gr_monitor_capture_plugin.h"
 
 namespace tc {
 
@@ -39,11 +41,14 @@ namespace tc {
         this->plugin_manager_ = app->GetPluginManager();
         this->settings_ = RdSettings::Instance();
         this->statistics_ = RdStatistics::Instance();
-        win_event_replayer_ = std::make_shared<WinEventReplayer>();
+        //win_event_replayer_ = std::make_shared<WinEventReplayer>();
         msg_notifier_ = this->app_->GetContext()->GetMessageNotifier();
         msg_listener_ = this->app_->GetContext()->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
-            win_event_replayer_->UpdateCaptureMonitorInfo(msg);
+            //win_event_replayer_->UpdateCaptureMonitorInfo(msg);
+            if (auto plugin = plugin_manager_->GetEventsReplayerPlugin(); plugin) {
+                plugin->UpdateCaptureMonitorInfo(msg);
+            }
         });
     }
 
@@ -107,7 +112,10 @@ namespace tc {
         };
       
         // to event replayer
-        win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+        //win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+        if (auto erp_plugin = plugin_manager_->GetEventsReplayerPlugin(); erp_plugin) {
+            erp_plugin->UpdateCaptureMonitorInfo(cm_msg);
+        }
 
         // to other listeners
         msg_notifier_->SendAppMessage(cm_msg);
@@ -144,14 +152,14 @@ namespace tc {
                     }
                     break;
                 }
-                case MessageType::kKeyEvent: {
-                    ProcessKeyboardEvent(std::move(msg));
-                    break;
-                }
-                case MessageType::kMouseEvent: {
-                    ProcessMouseEvent(std::move(msg));
-                    break;
-                }
+                //case MessageType::kKeyEvent: {
+                //    ProcessKeyboardEvent(std::move(msg));
+                //    break;
+                //}
+                //case MessageType::kMouseEvent: {
+                //    ProcessMouseEvent(std::move(msg));
+                //    break;
+                //}
                 case MessageType::kClientStatistics: {
                     ProcessClientStatistics(std::move(msg));
                     break;
@@ -249,14 +257,14 @@ namespace tc {
                     ProcessModifyFps(std::move(msg));
                     break;
                 }
-                case kFocusOutEvent: {
-                    ProcessFocusOutEvent();
-                    break;
-                }
-                case kExitControlledEnd: {
-                    ProcessExitControlledEnd();
-                    break;
-                }
+//                case kFocusOutEvent: {
+//                    ProcessFocusOutEvent();
+//                    break;
+//                }
+//                case kExitControlledEnd: {
+//                    ProcessExitControlledEnd();
+//                    break;
+//                }
                 default: {
                    
                 }
@@ -287,7 +295,7 @@ namespace tc {
     void PluginNetEventRouter::ProcessMouseEvent(std::shared_ptr<Message>&& msg) {
         if (settings_->app_.IsGlobalReplayMode()) {
             if (settings_->can_be_operated_) {
-                win_event_replayer_->HandleMessage(msg);
+                //win_event_replayer_->HandleMessage(msg);
             }
         } else {
             //1. convert to ipc message
@@ -322,7 +330,7 @@ namespace tc {
         bool global_events = settings_->app_.event_replay_mode_ == TargetApplication::EventReplayMode::kGlobal;
         if (global_events) {
             if (settings_->can_be_operated_) {
-                win_event_replayer_->HandleMessage(msg);
+                //win_event_replayer_->HandleMessage(msg);
             }
         } else {
             // 1. convert to ipc message
@@ -401,7 +409,10 @@ namespace tc {
                 .capturing_monitor_name_ = capture_plugin->GetCapturingMonitorName(),
             };
             //msg_notifier_->SendAppMessage(msg);
-            win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+            //win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
+            if (auto erp_plugin = plugin_manager_->GetEventsReplayerPlugin(); erp_plugin) {
+                erp_plugin->UpdateCaptureMonitorInfo(cm_msg);
+            }
 
             int mon_index = 0;
             auto mon_index_res = capture_plugin->GetMonIndexByName(sm.name());
@@ -556,13 +567,13 @@ namespace tc {
         }
     }
 
-    void PluginNetEventRouter::ProcessFocusOutEvent() {
-        win_event_replayer_->HandleFocusOutEvent();
-    }
+//    void PluginNetEventRouter::ProcessFocusOutEvent() {
+//        win_event_replayer_->HandleFocusOutEvent();
+//    }
 
-    void PluginNetEventRouter::ProcessExitControlledEnd() {
-        LOGI("recv exit controlled end msg, render will exit and restart.");
-        win_event_replayer_->SimulateCtrlWinShiftB();
-        exit(0);
-    }
+//    void PluginNetEventRouter::ProcessExitControlledEnd() {
+//        LOGI("recv exit controlled end msg, render will exit and restart.");
+//        //win_event_replayer_->SimulateCtrlWinShiftB();
+//        //exit(0);
+//    }
 }

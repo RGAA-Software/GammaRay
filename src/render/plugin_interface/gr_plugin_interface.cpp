@@ -333,4 +333,8 @@ namespace tc
         return dont_have;
     }
 
+    void GrPluginInterface::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
+
+    }
+
 }

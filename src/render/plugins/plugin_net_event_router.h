@@ -60,10 +60,10 @@ namespace tc
         void ProcessModifyFps(std::shared_ptr<Message>&& msg);
 
         // client -> render 窗口失焦
-        void ProcessFocusOutEvent();
+        //void ProcessFocusOutEvent();
 
         // client -> render 退出
-        void ProcessExitControlledEnd();
+        //void ProcessExitControlledEnd();
 
         void SyncInfoToUdpPlugin(int64_t socket_fd, const std::string& device_id, const std::string& stream_id);
 
@@ -76,7 +76,7 @@ namespace tc
         RdStatistics* statistics_ = nullptr;
         std::shared_ptr<RdApplication> app_ = nullptr;
         std::shared_ptr<RdContext> context_ = nullptr;
-        std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;
+        //std::shared_ptr<WinEventReplayer> win_event_replayer_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;

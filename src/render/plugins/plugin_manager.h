@@ -58,6 +58,7 @@ namespace tc
         GrNetPlugin* GetRelayPlugin();
         GrFrameCarrierPlugin* GetFrameCarrierPlugin();
         GrFrameProcessorPlugin* GetFrameResizePlugin();
+        GrPluginInterface* GetEventsReplayerPlugin();
         int64_t GetQueuingMediaMsgCountInNetPlugins();
         int64_t GetQueuingFtMsgCountInNetPlugins();
         int GetTotalConnectedClientsCount();

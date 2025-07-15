@@ -11,6 +11,8 @@
 namespace tc
 {
 
+    class WinEventReplayer;
+
     class EventReplayerPlugin : public GrPluginInterface {
     public:
         std::string GetPluginId() override;
@@ -22,8 +24,14 @@ namespace tc
         void On1Second() override;
         void OnMessage(std::shared_ptr<Message> msg) override;
         void OnClientDisconnected(const std::string &visitor_device_id, const std::string &stream_id) override;
+        void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) override;
 
     private:
+        void ProcessMouseEvent(std::shared_ptr<Message> msg);
+        void ProcessKeyboardEvent(std::shared_ptr<Message> msg);
+
+    private:
+        std::shared_ptr<WinEventReplayer> replayer_ = nullptr;
 
     };
 
