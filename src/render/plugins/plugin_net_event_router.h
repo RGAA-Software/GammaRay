@@ -38,7 +38,6 @@ namespace tc
         void ProcessMouseEvent(std::shared_ptr<Message>&& msg);
         void ProcessKeyboardEvent(std::shared_ptr<Message>&& msg);
         void PostIpcMessage(const std::string& msg);
-        void ProcessGamepadState(std::shared_ptr<Message>&& msg);
         void ProcessClientStatistics(std::shared_ptr<Message>&& msg);
         void ProcessHeartBeat(std::shared_ptr<Message>&& msg);
         void ProcessClipboardInfo(std::shared_ptr<Message>&& msg);

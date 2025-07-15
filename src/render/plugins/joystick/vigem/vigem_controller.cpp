@@ -10,8 +10,10 @@
 namespace tc
 {
 
-    std::shared_ptr<VigemController> VigemController::Make() {
-        return std::make_shared<VigemController>();
+    VigemController::VigemController(const JoystickType js_type, const std::string& stream_id) {
+        js_type_ = js_type;
+        stream_id_ = stream_id;
+        LOGI("Joystick type: {}, stream id: {}", (int)js_type_, stream_id_);
     }
 
     bool VigemController::Connect() {
@@ -30,16 +32,24 @@ namespace tc
     }
 
     bool VigemController::AllocController() {
-        target_ = vigem_target_x360_alloc();
-        //target_ = vigem_target_ds4_alloc();
-
-        const auto pir = vigem_target_add(client_, target_);
-        if (!VIGEM_SUCCESS(pir)) {
-            LOGE("");
+        if (js_type_ == JoystickType::kJsX360) {
+            target_ = vigem_target_x360_alloc();
+        }
+        else {
+            target_ = vigem_target_ds4_alloc();
+        }
+        if (!target_) {
+            LOGE("Alloc joystick failed.");
             return false;
         }
 
-        vigem_target_x360_register_notification(client_, target_, [](PVIGEM_CLIENT Client,
+        auto err = vigem_target_add(client_, target_);
+        if (!VIGEM_SUCCESS(err)) {
+            LOGE("vigem_target_add joystick failed: 0x{:x}", (int32_t)err);
+            return false;
+        }
+
+        err = vigem_target_x360_register_notification(client_, target_, [](PVIGEM_CLIENT Client,
                                                                      PVIGEM_TARGET Target,
                                                                      UCHAR LargeMotor,
                                                                      UCHAR SmallMotor,
@@ -54,9 +64,19 @@ namespace tc
 //            g_pXInputSetState(pad->userIndex, &vibration);
         }, this);
 
+        if (!VIGEM_SUCCESS(err)) {
+            LOGE("vigem_target_x360_register_notification x360 failed: 0x{:x}", (int32_t)err);
+            return false;
+        }
+
         target_connected_ = vigem_target_is_attached(target_);
         LOGI("target connected: {}", target_connected_);
-        return true;
+        return target_connected_;
+    }
+
+    void VigemController::SendGamepadState(int index, const XInputGamepadState &state) {
+        XInputGamepadState* gs = const_cast<XInputGamepadState*>(&state);
+        vigem_target_x360_update(client_, target_, *reinterpret_cast<XUSB_REPORT*>(gs));
     }
 
     void VigemController::Exit() {
@@ -86,11 +106,6 @@ namespace tc
         pad.wButtons &= ~XINPUT_GAMEPAD_B;
         vigem_target_x360_update(client_, target_, *reinterpret_cast<XUSB_REPORT*>(&pad));
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    void VigemController::SendGamepadState(int index, const XInputGamepadState &state) {
-        XInputGamepadState* gs = const_cast<XInputGamepadState*>(&state);
-        vigem_target_x360_update(client_, target_, *reinterpret_cast<XUSB_REPORT*>(gs));
     }
 
 }

@@ -152,10 +152,6 @@ namespace tc {
                     ProcessMouseEvent(std::move(msg));
                     break;
                 }
-                case MessageType::kGamepadState: {
-                    ProcessGamepadState(std::move(msg));
-                    break;
-                }
                 case MessageType::kClientStatistics: {
                     ProcessClientStatistics(std::move(msg));
                     break;
@@ -347,26 +343,6 @@ namespace tc {
             this->app_->PostIpcMessage(msg);
         });
         app_->PostGlobalAppMessage(std::move(task_msg));
-    }
-
-    void PluginNetEventRouter::ProcessGamepadState(std::shared_ptr<Message>&& msg) {
-        const auto& gamepad_state = msg->gamepad_state();
-        // convert to XINPUT_STATE
-//        LOGI("----Gamepad state----");
-//        LOGI("button: {:x}, left trigger: {}, right trigger: {}", gamepad_state.buttons(), gamepad_state.left_trigger(), gamepad_state.right_trigger());
-//        LOGI("Left thumb: {},{}", gamepad_state.thumb_lx(), gamepad_state.thumb_ly());
-//        LOGI("Right thumb: {},{}", gamepad_state.thumb_rx(), gamepad_state.thumb_ry());
-
-        MsgGamepadState msg_ctrl_state{};
-        msg_ctrl_state.state_.wButtons = gamepad_state.buttons();
-        msg_ctrl_state.state_.bLeftTrigger = gamepad_state.left_trigger();
-        msg_ctrl_state.state_.bRightTrigger = gamepad_state.right_trigger();
-        msg_ctrl_state.state_.sThumbLX = gamepad_state.thumb_lx();
-        msg_ctrl_state.state_.sThumbLY = gamepad_state.thumb_ly();
-        msg_ctrl_state.state_.sThumbRX = gamepad_state.thumb_rx();
-        msg_ctrl_state.state_.sThumbRY = gamepad_state.thumb_ry();
-        //app_->GetContext()->SendAppMessage(msg_ctrl_state);
-        app_->ProcessGamepadState(msg_ctrl_state);
     }
 
     void PluginNetEventRouter::ProcessClientStatistics(std::shared_ptr<Message>&& msg) {

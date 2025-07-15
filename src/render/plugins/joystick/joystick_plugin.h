@@ -2,14 +2,16 @@
 // Created by RGAA on 15/11/2024.
 //
 
-#ifndef GAMMARAY_MEDIA_RECORDER_PLUGIN_H
-#define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
+#ifndef GAMMARAY_JOYSTICK_PLUGIN_H
+#define GAMMARAY_JOYSTICK_PLUGIN_H
 
-#include "plugin_interface/gr_plugin_interface.h"
 #include <map>
+#include "plugin_interface/gr_plugin_interface.h"
 
 namespace tc
 {
+
+    class VigemController;
 
     class JoystickPlugin : public GrPluginInterface {
     public:
@@ -24,11 +26,17 @@ namespace tc
         void OnClientDisconnected(const std::string &visitor_device_id, const std::string &stream_id) override;
 
     private:
+        std::shared_ptr<VigemController> FindController(const std::string& stream_id);
+        std::shared_ptr<VigemController> RemoveController(const std::string& stream_id);
+        void InitJoystick(const std::string& stream_id);
+        void ReplayJoystickEvent(const std::string& stream_id, std::shared_ptr<Message> msg);
 
+    private:
+        std::map<std::string, std::shared_ptr<VigemController>> controllers_;
     };
 
 }
 
 extern "C" __declspec(dllexport) void* GetInstance();
 
-#endif //GAMMARAY_UDP_PLUGIN_H
+#endif

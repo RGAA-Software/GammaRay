@@ -2,8 +2,8 @@
 // Created by RGAA on 15/11/2024.
 //
 
-#ifndef GAMMARAY_MEDIA_RECORDER_PLUGIN_H
-#define GAMMARAY_MEDIA_RECORDER_PLUGIN_H
+#ifndef GAMMARAY_EVENT_REPLAYER_PLUGIN_H
+#define GAMMARAY_EVENT_REPLAYER_PLUGIN_H
 
 #include "plugin_interface/gr_plugin_interface.h"
 #include <map>

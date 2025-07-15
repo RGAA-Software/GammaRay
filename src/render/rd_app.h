@@ -79,7 +79,6 @@ namespace tc
         std::shared_ptr<RdContext> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
         void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
-        void ProcessGamepadState(const MsgGamepadState& state);
         void ResetMonitorResolution(const std::string& name, int w, int h);
         std::shared_ptr<PluginManager> GetPluginManager();
         tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin();
@@ -107,8 +106,6 @@ namespace tc
         void StartProcessWithScreenCapture();
         bool HasConnectedPeer();
 
-        void InitVigemController();
-        void ReleaseVigemController();
         // to panel
         void ReportAudioSpectrum2Panel();
         // to clients
@@ -135,8 +132,8 @@ namespace tc
         std::shared_ptr<Thread> audio_capture_thread_ = nullptr;
         std::shared_ptr<AppSharedInfo> app_shared_info_ = nullptr;
 
-        std::shared_ptr<Thread> control_thread_ = nullptr;
-        std::shared_ptr<VigemController> vigem_controller_ = nullptr;
+        //std::shared_ptr<Thread> control_thread_ = nullptr;
+        //std::shared_ptr<VigemController> vigem_controller_ = nullptr;
 
         uint64_t last_post_audio_time_ = 0;
         RdStatistics* statistics_ = nullptr;

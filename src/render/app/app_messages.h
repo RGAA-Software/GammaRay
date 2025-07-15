@@ -98,13 +98,6 @@ namespace tc
     };
 
     //
-    class MsgGamepadState {
-    public:
-        int index_{};
-        XInputGamepadState state_{};
-    };
-
-    //
     class MsgClientConnected {
     public:
         std::string conn_id_;

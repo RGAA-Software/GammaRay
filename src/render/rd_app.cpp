@@ -128,8 +128,8 @@ namespace tc
         }
 
         // vigem control thread
-        control_thread_ = Thread::Make("control", 16);
-        control_thread_->Poll();
+        //control_thread_ = Thread::Make("control", 16);
+        //control_thread_->Poll();
         // desktop capture
         if (settings_->capture_.mock_video_) {
             LOGI("Use mocking video plugin.");
@@ -218,10 +218,6 @@ namespace tc
             plugin_manager->On1Second();
         });
 
-        msg_listener_->Listen<MsgGamepadState>([=, this](const MsgGamepadState& state) {
-            this->ProcessGamepadState(state);
-        });
-
         msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {
             this->PostGlobalTask([=, this]() {
 
@@ -230,10 +226,6 @@ namespace tc
 
         msg_listener_->Listen<MsgClientHello>([=, this](const MsgClientHello& msg) {
             this->PostGlobalTask([=, this]() {
-                if (msg.enable_controller) {
-                    InitVigemController();
-                }
-
                 // send configuration back to client
                 this->SendConfigurationBack();
             });
@@ -241,10 +233,7 @@ namespace tc
 
         msg_listener_->Listen<MsgClientDisconnected>([=, this](const MsgClientDisconnected& msg) {
             this->PostGlobalTask([=, this]() {
-                // TODO: Release controller when Android client disconnected
-                //if (msg.client_size_ <= 0) {
-                    ReleaseVigemController();
-                //}
+
             });
         });
 
@@ -530,30 +519,6 @@ namespace tc
         shm_buffer.resize(sizeof(AppSharedMessage));
         memcpy(shm_buffer.data(), app_shared_message_.get(), sizeof(AppSharedMessage));
         app_shared_info_->WriteData(shm_name, shm_buffer);
-    }
-
-    void RdApplication::InitVigemController() {
-        vigem_controller_ = VigemController::Make();
-        if (!vigem_controller_->Connect()) {
-            return;
-        }
-        vigem_controller_->AllocController();
-    }
-
-    void RdApplication::ReleaseVigemController() {
-        if (vigem_controller_) {
-            vigem_controller_->Exit();
-            vigem_controller_.reset();
-        }
-    }
-
-    void RdApplication::ProcessGamepadState(const tc::MsgGamepadState &state) {
-        if (!vigem_controller_) {
-            return;
-        }
-        control_thread_->Post(SimpleThreadTask::Make([=, this]() {
-            vigem_controller_->SendGamepadState(0,state.state_);
-        }));
     }
 
     void RdApplication::SendAudioSpectrumMessage() {
