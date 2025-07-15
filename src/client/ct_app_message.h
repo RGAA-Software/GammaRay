@@ -225,6 +225,10 @@ namespace tc
     class MsgClientHidePanel : public MsgClientBase {
     public:
     };
+
+    class MsgClientFocusOutEvent : public MsgClientBase {
+    public:
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

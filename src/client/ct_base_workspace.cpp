@@ -486,7 +486,9 @@ namespace tc
             context_->PostUITask([=, this]() {
                 this->UpdateLocalCursor();
             });
+        });
 
+        msg_listener_->Listen<MsgClientFocusOutEvent>([=, this](const MsgClientFocusOutEvent& msg) {
             if (!sdk_ || remote_force_closed_) {
                 return;
             }
@@ -1027,5 +1029,21 @@ namespace tc
                 Exit();
             });
         }
+    }
+
+    bool BaseWorkspace::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
+        if (eventType == "windows_generic_MSG") {
+            MSG* msg = static_cast<MSG*>(message);
+            if (msg->message == WM_ACTIVATE) {
+                if (LOWORD(msg->wParam) == WA_INACTIVE) {
+                    qDebug() << "Window lost focus!";
+                    context_->SendAppMessage(MsgClientFocusOutEvent{});
+                }
+                else {
+                    qDebug() << "Window gained focus!";
+                }
+            }
+        }
+        return QWidget::nativeEvent(eventType, message, result);
     }
 }

@@ -54,6 +54,7 @@ namespace tc
         void dragMoveEvent(QDragMoveEvent *event) override;
         void dropEvent(QDropEvent *event) override;
         bool eventFilter(QObject* watched, QEvent* event) override;
+        bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;
         // virtual void focusOutEvent(QFocusEvent* event) override; 此窗口接收不到, 原因未知
         virtual void SendWindowsKey(unsigned long vk, bool down);
 

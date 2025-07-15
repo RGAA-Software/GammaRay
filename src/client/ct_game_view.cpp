@@ -302,4 +302,20 @@ bool GameView::eventFilter(QObject* watched, QEvent* event) {
     return QWidget::eventFilter(watched, event);
 }
 
+bool GameView::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
+    if (eventType == "windows_generic_MSG") {
+        MSG* msg = static_cast<MSG*>(message);
+        if (msg->message == WM_ACTIVATE) {
+            if (LOWORD(msg->wParam) == WA_INACTIVE) {
+                qDebug() << "Window lost focus!";
+                ctx_->SendAppMessage(MsgClientFocusOutEvent{});
+            }
+            else {
+                qDebug() << "Window gained focus!";
+            }
+        }
+    }
+    return QWidget::nativeEvent(eventType, message, result);
+}
+
 }
