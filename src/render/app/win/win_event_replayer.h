@@ -21,6 +21,7 @@ namespace tc
         void ReplayMouseEvent(const std::string& monitor_name, float x_ratio, float y_ratio, int buttons, int data);
         void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg);
 
+        void SimulateCtrlWinShiftB();
     private:
         bool IsKeyPermitted(uint32_t vk);
         void ResetKey();

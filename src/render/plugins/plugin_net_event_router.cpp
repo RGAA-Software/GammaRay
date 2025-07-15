@@ -586,6 +586,7 @@ namespace tc {
 
     void PluginNetEventRouter::ProcessExitControlledEnd() {
         LOGI("recv exit controlled end msg, render will exit and restart.");
+        win_event_replayer_->SimulateCtrlWinShiftB();
         exit(0);
     }
 }

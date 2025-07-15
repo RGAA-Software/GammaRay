@@ -323,4 +323,52 @@ namespace tc
             HandleKeyEvent(event);
         }
     }
+
+    void WinEventReplayer::SimulateCtrlWinShiftB() {
+        INPUT inputs[8] = {};
+        ZeroMemory(inputs, sizeof(inputs));
+
+        // 按下Ctrl
+        inputs[0].type = INPUT_KEYBOARD;
+        inputs[0].ki.wVk = VK_CONTROL;
+        inputs[0].ki.dwFlags = 0;
+
+        // 按下Shift
+        inputs[1].type = INPUT_KEYBOARD;
+        inputs[1].ki.wVk = VK_SHIFT;
+        inputs[1].ki.dwFlags = 0;
+
+        // 按下Win
+        inputs[2].type = INPUT_KEYBOARD;
+        inputs[2].ki.wVk = VK_LWIN;
+        inputs[2].ki.dwFlags = 0;
+
+        // 按下B
+        inputs[3].type = INPUT_KEYBOARD;
+        inputs[3].ki.wVk = 'B';
+        inputs[3].ki.dwFlags = 0;
+
+        // 释放B
+        inputs[4].type = INPUT_KEYBOARD;
+        inputs[4].ki.wVk = 'B';
+        inputs[4].ki.dwFlags = KEYEVENTF_KEYUP;
+
+        // 释放Win
+        inputs[5].type = INPUT_KEYBOARD;
+        inputs[5].ki.wVk = VK_LWIN;
+        inputs[5].ki.dwFlags = KEYEVENTF_KEYUP;
+
+        // 释放Shift
+        inputs[6].type = INPUT_KEYBOARD;
+        inputs[6].ki.wVk = VK_SHIFT;
+        inputs[6].ki.dwFlags = KEYEVENTF_KEYUP;
+
+        // 释放Ctrl
+        inputs[7].type = INPUT_KEYBOARD;
+        inputs[7].ki.wVk = VK_CONTROL;
+        inputs[7].ki.dwFlags = KEYEVENTF_KEYUP;
+
+        // 发送所有输入事件
+        SendInput(8, inputs, sizeof(INPUT));
+    }
 }
