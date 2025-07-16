@@ -91,6 +91,7 @@ namespace tc
         void Load();
         void Dump();
         [[nodiscard]] std::vector<std::string> GetArgs();
+        void ClearData();
 
         // Settings -> General
         void SetBitrate(int br);

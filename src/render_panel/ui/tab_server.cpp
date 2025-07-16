@@ -121,6 +121,7 @@ namespace tc
                     auto code_layout = new NoMarginHLayout();
 
                     auto msg = new QLabel(this);
+                    msg->setFixedWidth(140);
                     lbl_machine_code_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
@@ -141,6 +142,9 @@ namespace tc
                     machine_code_qr_layout->addLayout(layout);
 
                     btn_cpy->SetOnImageButtonClicked([=, this]() {
+                        if (settings_->GetDeviceId().empty()) {
+                            return;
+                        }
                         QClipboard* clipboard = QApplication::clipboard();
                         clipboard->setText(msg->text());
                         context_->NotifyAppMessage(tcTr("id_copy_success"), tcTr("id_copy_success_clipboard"));
@@ -531,6 +535,15 @@ namespace tc
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
                 //lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
+                SetDeviceRandomPwdVisibility();
+                this->UpdateQRCode();
+            });
+        });
+
+        // program data cleared
+        msg_listener_->Listen<MsgForceClearProgramData>([=, this](const MsgForceClearProgramData& msg) {
+            context_->PostUITask([=, this]() {
+                lbl_machine_code_->setText(tc::SpaceId("---------").c_str());
                 SetDeviceRandomPwdVisibility();
                 this->UpdateQRCode();
             });

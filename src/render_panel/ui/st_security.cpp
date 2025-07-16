@@ -233,6 +233,34 @@ namespace tc
                 });
             }
 
+            // clear all data
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_clear_data");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new TcPushButton(this);
+                edit->setProperty("class", "danger");
+                edit->SetTextId("id_clear");
+                edit->setFixedSize(QSize(80, 30));
+                edit->setEnabled(true);
+                layout->addWidget(edit, 0, Qt::AlignVCenter);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                connect(edit, &QPushButton::clicked, this, [=, this]() {
+                    TcDialog dialog(tcTr("id_clear"), tcTr("id_ask_clear_data"), this);
+                    if (dialog.exec() == kDoneOk) {
+                        // clear
+                        settings_->ClearData();
+                        context_->SendAppMessage(MsgForceClearProgramData{});
+                    }
+                });
+            }
+
             ///
             {
                 // title

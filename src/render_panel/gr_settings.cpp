@@ -137,6 +137,18 @@ namespace tc
         return args;
     }
 
+    void GrSettings::ClearData() {
+        this->SetDeviceId("");
+        this->SetDeviceRandomPwd("");
+        this->SetDeviceSecurityPwd("");
+        this->SetSpvrServerHost("");
+        this->SetSpvrServerPort("");
+        this->SetRelayServerHost("");
+        this->SetRelayServerPort("");
+        this->SetProfileServerHost("");
+        this->SetProfileServerPort("");
+    }
+
     void GrSettings::SetEnableResResize(bool enabled) {
         sp_->Put(kStEncoderResResize, enabled ? kStTrue : kStFalse);
     }

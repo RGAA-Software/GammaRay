@@ -218,6 +218,9 @@
   "id_ask_lock_screen": "Do you want to lock the screen?",
   "id_ask_restart_device": "Do you want to restart the device?",
   "id_ask_shutdown_device": "Do you want to shutdown the device?",
+  "id_clear_data": "Clear program data",
+  "id_clear": "Clear",
+  "id_ask_clear_data": "Do you want to CLEAR program data?",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

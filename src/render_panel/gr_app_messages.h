@@ -208,6 +208,11 @@ namespace tc
     public:
         
     };
+
+    // clear program data
+    class MsgForceClearProgramData {
+    public:
+    };
 }
 
 #endif // APP_MESSAGES_H
