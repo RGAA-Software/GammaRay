@@ -17,6 +17,7 @@ namespace tc {
 		void TestShowPanel();
 		bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 	private:
+		void CreatePanel();
 		void AdjustPanelPosition();
 		void InitPanel();
 		void HideAllPanels();

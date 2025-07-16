@@ -19,12 +19,7 @@ namespace tc {
 			return;
 		}
 
-        const int kMaxCount = 2;
-        for (int index = 0; index < kMaxCount; ++index) {
-            ConnectedInfoSlidingWindow* sliding_window = new ConnectedInfoSlidingWindow(gr_ctx_);
-            connected_info_panel_group_[index] = sliding_window;
-        }
-
+        CreatePanel();
         RegisterMessageListener();
         InitPanel();
 	}
@@ -33,9 +28,10 @@ namespace tc {
         MSG* msg = static_cast<MSG*>(message);
         if (msg->message == WM_DISPLAYCHANGE) {
             if (gr_ctx_) {
-                gr_ctx_->PostUITask([=, this]() {
-                    AdjustPanelPosition(); // to do,待测试,因为远程修改分辨率等，不方面
-                });
+                gr_ctx_->PostUIDelayTask([=, this]() {
+                    LOGI("nativeEventFilter WM_DISPLAYCHANGE");
+                    AdjustPanelPosition();
+                }, 4000);
             }
         }
         return false;
@@ -58,7 +54,7 @@ namespace tc {
                     HideAllPanels();
                     return;
                 }
-
+                //LOGI("MsgUpdateConnectedClientsInfo, client_size: {} ", client_size);
                 for (int index = 0; index < client_size; ++index) {
                     auto client_info = msg.clients_info_[index];
                     if (connected_info_panel_group_.count(index) > 0) {
@@ -90,7 +86,6 @@ namespace tc {
                 if (0 == client_connected_count_ && settings->IsDisconnectAutoLockScreenEnabled()) {
                     LockWorkStation();
                 }
-
             }, 6000);
         });
     }
@@ -107,11 +102,13 @@ namespace tc {
         auto screen_rect = primary_screen->availableGeometry();
         int screen_width = screen_rect.width();
         int screen_height = screen_rect.height();
-
+        int index = 0;
         for (auto& item: connected_info_panel_group_) {
             int panel_x = screen_width - item.second->width();
-            int panel_y = screen_height - item.second->height() - 80 - item.first * item.second->height() * 1.2;
+            int panel_y = screen_height - item.second->height() - 8 - item.first * item.second->height() * 1.1;
             item.second->move(panel_x, panel_y);
+            LOGI("index: {}, panel_x: {}, panel_y: {}", index, panel_x, panel_y);
+            ++index;
         }
     }
 
@@ -129,8 +126,18 @@ namespace tc {
 
     void GrConnectedManager::InitPanel() {
         AdjustPanelPosition();
+    }
+
+    void GrConnectedManager::CreatePanel() {
         for (auto& item : connected_info_panel_group_) {
-            item.second->hide();
+            delete item.second;
+        }
+        connected_info_panel_group_.clear();
+        const int kMaxCount = 2;
+        for (int index = 0; index < kMaxCount; ++index) {
+            ConnectedInfoSlidingWindow* sliding_window = new ConnectedInfoSlidingWindow(gr_ctx_);
+            connected_info_panel_group_[index] = sliding_window;
+            sliding_window->hide();
         }
     }
 }

@@ -104,6 +104,8 @@ namespace tc
 
         gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
 
+        QCoreApplication::instance()->installNativeEventFilter(gr_connected_manager_.get());
+
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;
         LOGI("** Connection used: {}ms", conn_diff);
 
