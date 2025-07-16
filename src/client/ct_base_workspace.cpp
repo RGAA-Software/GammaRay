@@ -1037,7 +1037,9 @@ namespace tc
             if (msg->message == WM_ACTIVATE) {
                 if (LOWORD(msg->wParam) == WA_INACTIVE) {
                     qDebug() << "Window lost focus!";
-                    context_->SendAppMessage(MsgClientFocusOutEvent{});
+                    context_->PostTask([this]() {
+                        context_->SendAppMessage(MsgClientFocusOutEvent{});
+                    });
                 }
                 else {
                     qDebug() << "Window gained focus!";

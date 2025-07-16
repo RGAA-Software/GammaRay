@@ -308,7 +308,9 @@ bool GameView::nativeEvent(const QByteArray& eventType, void* message, qintptr* 
         if (msg->message == WM_ACTIVATE) {
             if (LOWORD(msg->wParam) == WA_INACTIVE) {
                 qDebug() << "Window lost focus!";
-                ctx_->SendAppMessage(MsgClientFocusOutEvent{});
+                ctx_->PostTask([this]() {
+                    ctx_->SendAppMessage(MsgClientFocusOutEvent{});
+                });
             }
             else {
                 qDebug() << "Window gained focus!";
