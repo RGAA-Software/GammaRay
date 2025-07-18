@@ -67,10 +67,11 @@ namespace tc
 
                 for (uint32_t index = 0; index < file_count; ++index) {
                     auto clipboard_file = menu_files_.at(index);
-                    auto target_filename = QString::fromStdString(clipboard_file.file_name()).toStdWString();
+                    // use ref_path to process folder
+                    auto target_filename = QString::fromStdString(clipboard_file.ref_path()).toStdWString();
                     LOGI("GetData, file: {}, name: {}", clipboard_file.file_name(), QString::fromStdWString(target_filename).toStdString());
+                    wcsncpy_s(fd_array[index].cFileName, _countof(fd_array[index].cFileName), target_filename.c_str(), _TRUNCATE);
 
-                    wmemcpy(fd_array[index].cFileName, target_filename.c_str(), target_filename.size());
                     fd_array[index].dwFlags = FD_FILESIZE | FD_ATTRIBUTES | FD_CREATETIME | FD_WRITESTIME | FD_PROGRESSUI;
                     uint64_t file_size = static_cast<uint64_t>(clipboard_file.total_size());
                     fd_array[index].nFileSizeLow = static_cast<DWORD>(file_size & 0xFFFFFFFF);
