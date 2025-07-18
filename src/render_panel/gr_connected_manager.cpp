@@ -59,7 +59,11 @@ namespace tc {
                     auto client_info = msg.clients_info_[index];
                     if (connected_info_panel_group_.count(index) > 0) {
                         connected_info_panel_group_[index]->show();
+                        const std::string old_stream_id =  connected_info_panel_group_[index]->GetStreamId();
                         connected_info_panel_group_[index]->UpdateInfo(client_info);
+                        if (old_stream_id != client_info->stream_id()) {
+                            connected_info_panel_group_[index]->Expand();
+                        }
                     }
                 }
 

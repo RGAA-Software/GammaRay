@@ -229,5 +229,9 @@ namespace tc {
 			access_hint_lab_->hide();
 		});
 	}
+
+	std::string ConnectedInfoPanel::GetStreamId() const {
+		return info_->stream_id();
+	}
 }
 

@@ -26,6 +26,7 @@ namespace tc {
         ConnectedInfoPanel(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent* event) override;
         void UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info);
+        std::string GetStreamId() const;
     private:
         void InitView();
         void InitData();

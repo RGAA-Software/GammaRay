@@ -23,6 +23,8 @@ namespace tc {
         void paintEvent(QPaintEvent* event) override;
         bool eventFilter(QObject* obj, QEvent* event) override;
         void UpdateInfo(const std::shared_ptr<tcrp::RpConnectedClientInfo>& info);
+        void Expand();
+        std::string GetStreamId() const;
     private:
         void InitView();
     private:

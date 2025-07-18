@@ -62,5 +62,13 @@ namespace tc {
 		panel_->UpdateInfo(info);
 	}
 
+	void ConnectedInfoSlidingWindow::Expand() {
+		tag_->SetExpanded(true);
+		panel_->show();
+	}
+
+	std::string ConnectedInfoSlidingWindow::GetStreamId() const {
+		return panel_->GetStreamId();
+	}
 }
 
