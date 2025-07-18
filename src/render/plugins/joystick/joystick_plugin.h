@@ -26,13 +26,11 @@ namespace tc
         void OnClientDisconnected(const std::string &visitor_device_id, const std::string &stream_id) override;
 
     private:
-        std::shared_ptr<VigemController> FindController(const std::string& stream_id);
-        std::shared_ptr<VigemController> RemoveController(const std::string& stream_id);
-        void InitJoystick(const std::string& stream_id);
+        void PrepareConnection();
         void ReplayJoystickEvent(const std::string& stream_id, std::shared_ptr<Message> msg);
 
     private:
-        std::map<std::string, std::shared_ptr<VigemController>> controllers_;
+        std::shared_ptr<VigemController> controller_;
     };
 
 }

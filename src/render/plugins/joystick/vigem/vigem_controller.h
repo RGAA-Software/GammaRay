@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <unordered_map>
 #include <Windows.h>
 #include "sdk/ViGEm/Client.h"
 #include "vigem_defs.h"
@@ -20,22 +21,29 @@ namespace tc
         kJsDs4
     };
 
+    //
+    class VigemJoystick {
+    public:
+        std::string stream_id_;
+        PVIGEM_TARGET target_ =  nullptr;
+    };
+
     class VigemController {
     public:
-        VigemController(const JoystickType js_type, const std::string& stream_id);
+        explicit VigemController(const JoystickType& js_type);
         bool Connect();
-        bool AllocController();
-        void SendGamepadState(int index, const XInputGamepadState& state);
+        bool IsConnected();
+        bool AllocController(const std::string& stream_id);
+        bool RemoveController(const std::string& stream_id);
+        void SendGamepadState(const std::string& stream_id, const XInputGamepadState& state);
         void Exit();
 
         void MockPressB();
 
     private:
         JoystickType js_type_;
-        std::string stream_id_;
         PVIGEM_CLIENT client_ = nullptr;
-        PVIGEM_TARGET target_ = nullptr;
-        bool target_connected_ = false;
+        std::unordered_map<std::string, std::shared_ptr<VigemJoystick>> targets_;
     };
 
 }

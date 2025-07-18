@@ -52,6 +52,8 @@ namespace tc
         }
         root_widget_->hide();
 
+        PrepareConnection();
+
         return true;
     }
 
@@ -62,7 +64,12 @@ namespace tc
             auto sub = msg->hello();
             if (sub.enable_controller()) {
                 plugin_context_->PostWorkTask([=, this]() {
-                    InitJoystick(stream_id);
+                    PrepareConnection();
+                    if (controller_->IsConnected()) {
+                        if (!controller_->AllocController(stream_id)) {
+                            LOGE("Alloc controller failed: {}", stream_id);
+                        }
+                    }
                 });
             }
         }
@@ -75,50 +82,29 @@ namespace tc
     }
 
     void JoystickPlugin::OnClientDisconnected(const std::string &visitor_device_id, const std::string &stream_id) {
-        if (auto controller = RemoveController(stream_id); controller) {
-            LOGW("will release joystick controller for stream: {}, device id: {}", stream_id, visitor_device_id);
-            controller->Exit();
+        LOGW("will release joystick controller for stream: {}, device id: {}", stream_id, visitor_device_id);
+        if (controller_) {
+            controller_->RemoveController(stream_id);
         }
     }
 
-    std::shared_ptr<VigemController> JoystickPlugin::FindController(const std::string& stream_id) {
-        if (controllers_.contains(stream_id)) {
-            return controllers_[stream_id];
-        }
-        return nullptr;
-    }
-
-    std::shared_ptr<VigemController> JoystickPlugin::RemoveController(const std::string& stream_id) {
-        if (auto it = controllers_.find(stream_id); it != controllers_.end()) {
-            auto c = std::move(it->second);
-            controllers_.erase(it);
-            return c;
-        }
-        return nullptr;
-    }
-
-    void JoystickPlugin::InitJoystick(const std::string& stream_id) {
-        // remove old
-        if (auto controller = RemoveController(stream_id); controller) {
-            controller->Exit();
-        }
-
+    void JoystickPlugin::PrepareConnection() {
         // create controller
-        auto controller = std::make_shared<VigemController>(JoystickType::kJsX360, stream_id);
-        if (!controller->Connect()) {
+        if (controller_ && !controller_->IsConnected()) {
+            controller_->Exit();
+            controller_ = nullptr;
+        }
+        if (!controller_) {
+            controller_ = std::make_shared<VigemController>(JoystickType::kJsX360);
+        }
+        if (!controller_->Connect()) {
+            LOGE("Connect VIGEM failed!");
             return;
         }
-        if (controller->AllocController()) {
-            controllers_[stream_id] = controller;
-        }
+        LOGI("Connect VIGEM success.");
     }
 
     void JoystickPlugin::ReplayJoystickEvent(const std::string& stream_id, std::shared_ptr<Message> msg) {
-        auto controller = FindController(stream_id);
-        if (!controller) {
-            LOGE("Can't find joystick controller for stream: {}", stream_id);
-            return;
-        }
         const auto& gamepad_state = msg->gamepad_state();
         // convert to XINPUT_STATE
         // LOGI("----Gamepad state----");
@@ -134,7 +120,7 @@ namespace tc
         state.sThumbLY = gamepad_state.thumb_ly();
         state.sThumbRX = gamepad_state.thumb_rx();
         state.sThumbRY = gamepad_state.thumb_ry();
-        controller->SendGamepadState(0, state);
+        controller_->SendGamepadState(stream_id, state);
     }
 
 }
