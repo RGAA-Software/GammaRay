@@ -3,8 +3,8 @@ project(plugin_ffmpeg_encoder)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(FFMPEG_LIB_PATH ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64)
-include_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/include)
+set(FFMPEG_LIB_PATH ${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64)
+include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/include)
 link_directories(${FFMPEG_LIB_PATH})
 
 set(PLUGIN_SRCS

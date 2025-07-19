@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/core)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/common)
-include_directories(${CMAKE_SOURCE_DIR}/deps/tc_qt_widget)
+include_directories(${GR_PROJECT_PATH}/deps/tc_qt_widget)
 
 set(FILE_TRANSFER_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/widget/base_file_util.cc

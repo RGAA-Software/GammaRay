@@ -4,14 +4,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-message("Client ==> CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-message("Client ==> BUILD_FROM: ${BUILD_FROM}")
-set(CLIENT_BUILD_TYPE_PATH "src/")
-if(${BUILD_FROM} STREQUAL "CMD")
-    set(CLIENT_BUILD_TYPE_PATH "${CMAKE_BUILD_TYPE}/")
-else ()
-
-endif()
+message("Client => CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Svg Charts)
 find_package(OpenSSL REQUIRED)
@@ -21,7 +14,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/plugins)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/plugins/file_transfer_client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/plugins/file_transfer_client/src)
 
-qt_add_resources(RES ${CMAKE_SOURCE_DIR}/resources/main.qrc resources.qrc)
+qt_add_resources(RES ${GR_PROJECT_PATH}/resources/main.qrc resources.qrc)
 add_compile_options(/bigobj)
 
 set(SRCS_MAIN ct_main.cpp)
@@ -115,14 +108,14 @@ if (WIN32)
     add_custom_command(TARGET GammaRayClientInner POST_BUILD
             COMMAND ${QT_ROOT}/bin/windeployqt.exe $<TARGET_FILE:GammaRayClientInner> --no-translations --release
             #COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources/qt_material"  "${CMAKE_CURRENT_BINARY_DIR}/resources/qt_material"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/avcodec-59.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/avdevice-59.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/avfilter-8.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/avutil-57.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/avformat-59.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/postproc-56.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/swresample-4.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg/lib/x64/swscale-6.dll"  "${CMAKE_BINARY_DIR}/${CLIENT_BUILD_TYPE_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avcodec-59.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avdevice-59.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avfilter-8.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avutil-57.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avformat-59.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/postproc-56.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/swresample-4.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/swscale-6.dll"  "${GR_PROJECT_BINARY_PATH}"
     )
 
 elseif (APPLE)

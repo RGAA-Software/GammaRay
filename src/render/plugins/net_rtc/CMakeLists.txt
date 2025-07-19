@@ -14,13 +14,13 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 #        $<$<CXX_COMPILER_ID:MSVC>:/bigobj>
 #        $<$<CXX_COMPILER_ID:GNU>:-Wa,-mbig-obj>)
 include_directories()
-set(WEBRTC_ROOT ${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc)
+set(WEBRTC_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc)
 include_directories(${WEBRTC_ROOT}/)
 include_directories(${WEBRTC_ROOT}/include)
 include_directories(${WEBRTC_ROOT}/include/third_party/abseil-cpp)
 include_directories(${WEBRTC_ROOT}/include/third_party/jsoncpp/source/include/)
 include_directories(${WEBRTC_ROOT}/include/base)
-link_directories(${CMAKE_SOURCE_DIR}/deps/tc_3rdparty/webrtc/x64)
+link_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc/x64)
 
 set(PLUGIN_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/rtc_plugin.cpp

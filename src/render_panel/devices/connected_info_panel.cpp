@@ -231,7 +231,7 @@ namespace tc {
 	}
 
 	std::string ConnectedInfoPanel::GetStreamId() const {
-		return info_->stream_id();
+		return info_ ? info_->stream_id() : "";
 	}
 }
 
