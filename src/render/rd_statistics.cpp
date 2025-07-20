@@ -227,7 +227,8 @@ namespace tc
         }
 
         auto relay_plugin = plugin_mgr_->GetRelayPlugin();
-        if (relay_plugin &&relay_plugin->IsWorking()) {
+
+        if (relay_plugin->IsWorking()) {
             cst->set_relay_connected(true);
         }
         else {
