@@ -1,29 +1,20 @@
 ![](docs/images/GammaRay.png)
 
 #### [简体中文](docs/Readme_CN.md)
-#### [技术文档](docs/Dev_CN.md)
-#### Showcase【演示地址 B站】
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)
 
 ### GammaRay
 ##### GammaRay is a set of tools for streaming your games and desktop to other devices, and replaying gamepad/keyboard/mouse events in the host PC.
-##### Attention: Please make sure that your clients can connect to your server，eg: same domain network or deploy server at public network.
-### Client Repos
-[PC Client Repo is here](https://github.com/RGAA-Software/GammaRayPC)  
-[Android Client Repo is here](https://github.com/RGAA-Software/GammaRayAndroid)
 
-### Main features
-- Game streaming, Stream desktop & Replay events, with Android client
-- Remote desktop, such as TeamViewer VNC, with PC Client
-- Music visualizer
-- Screen extension, by (Graphics Card Spoof)/(HDMI DDC EDID Dummy Plug)
-- Support Steam "Big Picture Mode"
-- Mock "XBox Game Controller" By ViGEm
 
-### Supported Encoders
-- NVENC (Nvidia GPU)
-- AMF (AMD GPU)
-- x264/x265 (FFmpeg)
+### Screenshots
+![](docs/images/main.jpg)
+![](docs/images/status.jpg)
+![](docs/images/game.jpg)
+![](docs/images/security.jpg)
+![](docs/images/client.jpg)
+![](docs/images/file_transfer.jpg)
+![](docs/images/client_status.jpg)
 
 ### Recordings
 #### Test Wukong
