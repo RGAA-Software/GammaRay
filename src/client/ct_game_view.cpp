@@ -80,7 +80,7 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
 
 
     msg_listener_->Listen<MsgClientHidePanel>([=, this](const MsgClientHidePanel& msg) {
-        ctx_->PostUITask([=]() {
+        ctx_->PostUITask([=, this]() {
             controller_panel_->Hide();
         });
     });

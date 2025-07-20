@@ -155,10 +155,10 @@ namespace tc
         return plugins_.at(id);
     }
 
-    MediaRecordPluginClient* ClientPluginManager::GetMediaRecordPlugin() {
+    MediaRecordPluginClientInterface* ClientPluginManager::GetMediaRecordPlugin() {
         auto plugin = GetPluginById(kClientMediaRecordPluginId);
         if (plugin) {
-            return (MediaRecordPluginClient*)plugin;
+            return (MediaRecordPluginClientInterface*)plugin;
         }
         return nullptr;
     }

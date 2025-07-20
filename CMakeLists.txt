@@ -25,10 +25,18 @@ if (BUILD_PREMIUM)
     message("==> Build Premium <==")
     set(GR_PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
     set(GR_PROJECT_BINARY_PATH ${CMAKE_CURRENT_BINARY_DIR})
+    set(WEBRTC_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc)
+    message("Webrtc Root: ${WEBRTC_ROOT}")
 else()
     message("==> Build OpenSource <==")
     set(GR_PROJECT_PATH ${CMAKE_SOURCE_DIR})
     set(GR_PROJECT_BINARY_PATH ${CMAKE_BINARY_DIR})
+    set(WEBRTC_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc)
+
+    file(COPY ${GR_PROJECT_PATH}/src/render/plugins/frame_carrier/plugin_frame_carrier.dll DESTINATION ${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH})
+    file(COPY ${GR_PROJECT_PATH}/src/render/plugins/frame_carrier/plugin_frame_carrier.dll.toml DESTINATION ${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH})
+
+    message("Webrtc Root: ${WEBRTC_ROOT}")
 endif ()
 
 set(CMAKE_AUTOUIC ON)
@@ -123,8 +131,6 @@ set(OpenCV_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/opencv_410)
 set(OpenCV_Libs ${OpenCV_ROOT}/x64/vc16/lib/opencv_world4100.lib)
 include_directories(${OpenCV_ROOT}/include)
 
-set(WEBRTC_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc)
-
 add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(src/tests)
@@ -212,12 +218,12 @@ endif ()
 #
 
 # gdi 
-add_dependencies(tc_build_all plugin_net_udp plugin_net_rtc plugin_net_ws plugin_media_recorder  plugin_ffmpeg_encoder
-        plugin_amf_encoder plugin_frame_debugger plugin_nvenc_encoder plugin_dda_capture plugin_frame_resizer
-        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_file_transfer #tc_signaling_sdk #lib_GammaRayClient
-        plugin_mock_video_stream plugin_obj_detector plugin_net_relay plugin_gdi_capture tc_translator tc_spv_client #QWindowKit::Widgets TC_WidgetFrame
-        plugin_clipboard tc_account_sdk tc_rp_message tc_profile_client plugin_frame_carrier plugin_file_transfer_client
-        plugin_vr_manager plugin_joystick plugin_event_replayer
+add_dependencies(tc_build_all   plugin_net_ws   plugin_ffmpeg_encoder
+         plugin_frame_debugger  plugin_dda_capture
+        plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget
+        plugin_mock_video_stream    tc_translator tc_spv_client
+         tc_account_sdk tc_rp_message tc_profile_client  plugin_file_transfer_client
+         plugin_event_replayer
 )
 
 # client plugins
@@ -242,38 +248,17 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
         ###### Renderer Plugins ######
 
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_net_udp.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_udp.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/net_udp/plugin_net_udp.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_udp.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_net_rtc.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_rtc.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/net_rtc/plugin_net_rtc.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_rtc.dll.toml"
-
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_net_ws.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_ws.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/net_ws/plugin_net_ws.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_ws.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_media_recorder.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_media_recorder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/media_recorder/plugin_media_recorder.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_media_recorder.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_obj_detector.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_obj_detector.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/obj_detector/plugin_obj_detector.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_obj_detector.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_ffmpeg_encoder.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_ffmpeg_encoder.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/ffmpeg_encoder/plugin_ffmpeg_encoder.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_ffmpeg_encoder.dll.toml"
 
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_amf_encoder.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_amf_encoder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/amf_encoder/plugin_amf_encoder.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_amf_encoder.dll.toml"
-
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_frame_debugger.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_debugger.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/frame_debugger/plugin_frame_debugger.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_debugger.dll.toml"
 
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_nvenc_encoder.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_nvenc_encoder.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/nvenc_encoder/plugin_nvenc_encoder.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_nvenc_encoder.dll.toml"
-
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_dda_capture.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_dda_capture.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/dda_capture/plugin_dda_capture.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_dda_capture.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_frame_resizer.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_resizer.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/frame_resizer/plugin_frame_resizer.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_resizer.dll.toml"
 
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_mock_video_stream.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_mock_video_stream.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/mock_video_stream/plugin_mock_video_stream.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_mock_video_stream.dll.toml"
@@ -284,42 +269,12 @@ add_custom_command(TARGET tc_build_all POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_opus_encoder.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_opus_encoder.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/opus_encoder/plugin_opus_encoder.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_opus_encoder.dll.toml"
 
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_file_transfer.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_file_transfer.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/file_transfer/plugin_file_transfer.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_file_transfer.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_net_relay.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_relay.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/net_relay/plugin_net_relay.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_net_relay.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_clipboard.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_clipboard.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/clipboard/plugin_clipboard.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_clipboard.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_gdi_capture.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_gdi_capture.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/gdi_capture/plugin_gdi_capture.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_gdi_capture.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_frame_carrier.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_carrier.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/frame_carrier/plugin_frame_carrier.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_frame_carrier.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_vr_manager.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_vr_manager.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/tc_vr_plugin/plugin_vr_manager.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_vr_manager.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_joystick.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_joystick.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/joystick/plugin_joystick.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_joystick.dll.toml"
-
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_event_replayer.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_event_replayer.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/plugins/event_replayer/plugin_event_replayer.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins/plugin_event_replayer.dll.toml"
 
         ###### Client Plugins ######
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_multi_screens.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll"
         COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/client/plugins/multi_screens/plugin_multi_screens.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_multi_screens.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_media_record_client.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_media_record_client.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/client/plugins/media_record/plugin_media_record_client.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_media_record_client.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_client_clipboard.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_client_clipboard.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/client/plugins/clipboard/plugin_client_clipboard.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_client_clipboard.dll.toml"
-
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}plugin_file_transfer_client.dll"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_file_transfer_client.dll"
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/client/plugins/file_transfer_client/plugin_file_transfer_client.dll.toml"  "${GR_PROJECT_BINARY_PATH}/${BUILD_TYPE_PATH}gr_plugins_client/plugin_file_transfer_client.dll.toml"
 
 )
 

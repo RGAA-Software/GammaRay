@@ -18,8 +18,8 @@ namespace tc
     class BaseWorkspace;
     class ClientPluginInterface;
     class ClientPluginEventRouter;
-    class MediaRecordPluginClient;
     class ClientClipboardPlugin;
+    class MediaRecordPluginClientInterface;
 
     class ClientPluginManager {
     public:
@@ -33,7 +33,7 @@ namespace tc
         void ReleasePlugin(const std::string& name);
 
         ClientPluginInterface* GetPluginById(const std::string& id);
-        MediaRecordPluginClient* GetMediaRecordPlugin();
+        MediaRecordPluginClientInterface* GetMediaRecordPlugin();
         ClientClipboardPlugin* GetClipboardPlugin();
         ClientPluginInterface* GetFileTransferPlugin();
 

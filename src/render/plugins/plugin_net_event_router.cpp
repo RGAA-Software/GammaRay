@@ -18,13 +18,11 @@
 #include "tc_common_new/data.h"
 #include "app_global_messages.h"
 #include "settings/rd_settings.h"
-#include "net_rtc/rtc_report_event.h"
 #include "network/net_message_maker.h"
 #include "app/win/win_event_replayer.h"
 #include "tc_common_new/process_util.h"
 #include "tc_render_panel_message.pb.h"
 #include "app/win/win_desktop_manager.h"
-#include "plugins/net_rtc/rtc_messages.h"
 #include "tc_capture_new/desktop_capture.h"
 #include "tc_encoder_new/encoder_messages.h"
 #include "tc_message_new/rp_proto_converter.h"
@@ -215,30 +213,6 @@ namespace tc {
                 }
                 case MessageType::kHardUpdateDesktop: {
                     ProcessHardUpdateDesktop();
-                    break;
-                }
-                // offer sdp / ice
-                case MessageType::kSigOfferSdpMessage: {
-                    if (auto plugin = plugin_manager_->GetRtcPlugin(); plugin) {
-                        plugin->OnMessageRaw(MsgRtcRemoteSdp {
-                            .stream_id_ = msg->stream_id(),
-                            .device_id_ = msg->device_id(),
-                            .sdp_ = msg->sig_offer_sdp().sdp(),
-                        });
-                    }
-                    break;
-                }
-                case MessageType::kSigIceMessage: {
-                    if (auto plugin = plugin_manager_->GetRtcPlugin(); plugin) {
-                        auto sub = msg->sig_ice();
-                        plugin->OnMessageRaw(MsgRtcRemoteIce {
-                            .stream_id_ = msg->stream_id(),
-                            .device_id_ = msg->device_id(),
-                            .ice_ = sub.ice(),
-                            .mid_ = sub.mid(),
-                            .sdp_mline_index_ = sub.sdp_mline_index(),
-                        });
-                    }
                     break;
                 }
                 case kSwitchFullColorMode: {
@@ -514,18 +488,7 @@ namespace tc {
     }
 
     void PluginNetEventRouter::ProcessRtcReportEvent(const std::shared_ptr<GrPluginRtcReportEvent>& event) {
-        if (event->evt_name_ == kDataChannelOpen) {
 
-        }
-        else if (event->evt_name_ == kDataChannelClose) {
-
-        }
-        else if (event->evt_name_ == kDataChannelSendError) {
-
-        }
-        else if (event->evt_name_ == kDataChannelRecvError) {
-
-        }
     }
 
     void PluginNetEventRouter::ReportClientConnected(const std::shared_ptr<GrPluginClientConnectedEvent>& event) {

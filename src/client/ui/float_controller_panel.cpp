@@ -396,9 +396,12 @@ namespace tc
                     media_record_lab_->setText(tcTr("id_screen_recording"));
                     text->setStyleSheet(R"(font-weight: bold;)");
                 }
+
                 context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kMediaRecordStatus });
                 context_->SendAppMessage(MsgClientMediaRecord{});
-                context_->SendAppMessage(MsgClientHidePanel{});
+                context_->PostTask([=, this]() {
+                    context_->SendAppMessage(MsgClientHidePanel{});
+                });
             });
         }
 

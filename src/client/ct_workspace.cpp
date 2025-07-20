@@ -42,7 +42,6 @@
 #include "plugins/ct_plugin_manager.h"
 #include "plugins/ct_app_events.h"
 #include "plugin_interface/ct_plugin_interface.h"
-#include "plugins/media_record/media_record_plugin.h"
 #include "plugin_interface/ct_media_record_plugin_interface.h"
 #include "tc_qt_widget/notify/notifymanager.h"
 
