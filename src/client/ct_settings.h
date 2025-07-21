@@ -28,8 +28,7 @@ namespace tc
             return &sts;
         }
 
-        void LoadMainSettings();
-        void LoadRenderSettings();
+        void LoadSettings();
         bool IsAudioEnabled() const;
         bool IsFullColorEnabled() const;
         void SetAudioEnabled(bool enabled);

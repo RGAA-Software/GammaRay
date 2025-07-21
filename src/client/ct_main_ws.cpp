@@ -348,7 +348,7 @@ int main(int argc, char** argv) {
         }
     } ();
     auto ctx = std::make_shared<ClientContext>(name);
-    ctx->Init(true);
+    ctx->Init();
 
     LOGI("host: {}", g_remote_host_);
     LOGI("port: {}", g_remote_port_);

@@ -33,9 +33,7 @@ namespace tc
         Exit();
     }
 
-    void ClientContext::Init(bool render) {
-        render_ = render;
-
+    void ClientContext::Init() {
         sp_ = SharedPreference::Instance();
         auto sp_name = std::format("./gr_data/app.{}.dat", this->name_);
         if (!sp_->Init("", sp_name)) {
@@ -58,11 +56,11 @@ namespace tc
         LOGI("ClientContext in {}", this->name_);
 
         auto settings = Settings::Instance();
-        if (!render) {
-            settings->LoadMainSettings();
-        } else {
-            settings->LoadRenderSettings();
-        }
+        //if (!render) {
+        //    settings->LoadMainSettings();
+        //} else {
+            settings->LoadSettings();
+        //}
 
         task_thread_ = Thread::Make("context_thread", 128);
         task_thread_->Poll();
@@ -141,6 +139,10 @@ namespace tc
 
     void ClientContext::SetPluginManager(const std::shared_ptr<ClientPluginManager>& mgr) {
         plugin_mgr_ = mgr;
+    }
+
+    std::shared_ptr<ClientPluginManager> ClientContext::GetPluginManager() {
+        return plugin_mgr_;
     }
 
     void ClientContext::SetRecording(bool recording) {

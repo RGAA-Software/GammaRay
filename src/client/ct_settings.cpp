@@ -19,24 +19,24 @@ namespace tc
     const std::string kKeyScaleMode = "key_scale_mode";
     const std::string kKeyDeviceId = "key_device_id";
 
-    void Settings::LoadMainSettings() {
-        version_ = std::format("V {}", PROJECT_VERSION);
-        sp_ = SharedPreference::Instance();
-        auto init = sp_->Get(kKeyInit);
-        if (init.empty()) {
-            sp_->Put(kKeyInit, "inited");
-            sp_->Put(kKeyAudioStatus, std::to_string(audio_on_));
-            sp_->Put(kKeyClipboardStatus, std::to_string(clipboard_on_));
-            sp_->Put(kKeyWorkMode, std::to_string((int)work_mode_));
-        } else {
-            audio_on_ = std::atoi(sp_->Get(kKeyAudioStatus).c_str());
-            clipboard_on_ = std::atoi(sp_->Get(kKeyClipboardStatus).c_str());
-        }
+//    void Settings::LoadMainSettings() {
+//        version_ = std::format("V {}", PROJECT_VERSION);
+//        sp_ = SharedPreference::Instance();
+//        auto init = sp_->Get(kKeyInit);
+//        if (init.empty()) {
+//            sp_->Put(kKeyInit, "inited");
+//            sp_->Put(kKeyAudioStatus, std::to_string(audio_on_));
+//            sp_->Put(kKeyClipboardStatus, std::to_string(clipboard_on_));
+//            sp_->Put(kKeyWorkMode, std::to_string((int)work_mode_));
+//        } else {
+//            audio_on_ = std::atoi(sp_->Get(kKeyAudioStatus).c_str());
+//            clipboard_on_ = std::atoi(sp_->Get(kKeyClipboardStatus).c_str());
+//        }
+//
+//        device_id_ = sp_->Get(kKeyDeviceId, "");
+//    }
 
-        device_id_ = sp_->Get(kKeyDeviceId, "");
-    }
-
-    void Settings::LoadRenderSettings() {
+    void Settings::LoadSettings() {
         version_ = std::format("V {}", PROJECT_VERSION);
         sp_ = SharedPreference::Instance();
         auto work_mode = sp_->Get(kKeyWorkMode);

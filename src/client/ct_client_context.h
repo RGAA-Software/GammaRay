@@ -25,7 +25,7 @@ namespace tc
     public:
         explicit ClientContext(const std::string& name, QObject* parent = nullptr);
         ~ClientContext() override;
-        void Init(bool render);
+        void Init();
         void PostTask(std::function<void()>&& task);
         void PostUITask(std::function<void()>&& task);
         void PostDelayUITask(std::function<void()>&& task, int ms);
@@ -38,6 +38,7 @@ namespace tc
         std::string GetCapturingMonitorName() const;
 
         void SetPluginManager(const std::shared_ptr<ClientPluginManager>& mgr);
+        std::shared_ptr<ClientPluginManager> GetPluginManager();
 
         template<class T>
         void SendAppMessage(const T& msg) {
@@ -60,11 +61,8 @@ namespace tc
         SharedPreference* sp_ = nullptr;
         std::shared_ptr<Thread> task_thread_ = nullptr;
         std::string name_;
-        bool render_ = false;
         std::atomic_int capturing_monitor_index_ = -1;
         std::string capturing_monitor_name_;
-        int capturing_width_ = 0;
-        int capturing_height_ = 0;
         SdkCaptureMonitorInfo capturing_info_;
         // plugin manager
         std::shared_ptr<ClientPluginManager> plugin_mgr_ = nullptr;

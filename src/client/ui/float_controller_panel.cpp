@@ -3,24 +3,25 @@
 //
 
 #include "float_controller_panel.h"
-#include "float_icon.h"
-#include "tc_common_new/message_notifier.h"
-#include "tc_qt_widget/tc_dialog.h"
-#include "client/ct_client_context.h"
-#include "client/ct_app_message.h"
-#include "sized_msg_box.h"
-#include "client/ct_settings.h"
-#include "no_margin_layout.h"
-#include "background_widget.h"
-#include "float_sub_control_panel.h"
-#include "tc_common_new/log.h"
-#include "computer_icon.h"
-#include "float_sub_mode_panel.h"
-#include "float_sub_display_panel.h"
-#include "ct_app_message.h"
+#include "tc_label.h"
 #include "tc_dialog.h"
 #include "ct_const_def.h"
-#include "tc_label.h"
+#include "float_icon.h"
+#include "sized_msg_box.h"
+#include "computer_icon.h"
+#include "ct_app_message.h"
+#include "no_margin_layout.h"
+#include "background_widget.h"
+#include "tc_common_new/log.h"
+#include "client/ct_settings.h"
+#include "float_sub_mode_panel.h"
+#include "float_sub_display_panel.h"
+#include "float_sub_control_panel.h"
+#include "client/ct_app_message.h"
+#include "tc_qt_widget/tc_dialog.h"
+#include "client/ct_client_context.h"
+#include "plugins/ct_plugin_manager.h"
+#include "tc_common_new/message_notifier.h"
 
 namespace tc
 {
@@ -355,6 +356,11 @@ namespace tc
             root_layout->addWidget(widget);
 
             widget->SetOnClickListener([=, this](QWidget* w) {
+                auto plugin_mgr = context_->GetPluginManager();
+                if (auto plugin = plugin_mgr->GetFileTransferPlugin(); !plugin) {
+                    context_->NotifyAppMessage("Warning", "Don't have file transfer plugin.");
+                    return;
+                }
                 if (file_trans_listener_) {
                     file_trans_listener_(widget);
                 }
@@ -386,6 +392,12 @@ namespace tc
             root_layout->addWidget(widget);
 
             widget->SetOnClickListener([=, this](QWidget* w) {
+                auto plugin_mgr = context_->GetPluginManager();
+                if (auto plugin = plugin_mgr->GetMediaRecordPlugin(); !plugin) {
+                    context_->NotifyAppMessage("Warning", "Don't have media record plugin.");
+                    return;
+                }
+
                 bool res = context_->GetRecording();
                 context_->SetRecording(!res);
                 if (!res) {
