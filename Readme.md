@@ -1,11 +1,14 @@
 ![](docs/images/GammaRay.png)
-### This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free)](https://store.steampowered.com/app/2947460/GammaRay/)
+#### 💖 This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free)](https://store.steampowered.com/app/2947460/GammaRay/).
+#### 💖 这是GammaRay的开源版, 全功能版移步[Steam](https://store.steampowered.com/app/2947460/GammaRay/), 免费.
 
+### Showcases
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)  
 [Youtube Introduce](..)
 
 ### GammaRay
-##### ⚡️Stream your games and desktop to other devices, and replay gamepad,keyboard,mouse events on the host PC. In a word, It's a alternative of TeamViewer, ToDesk, RustDesk, etc.
+#### ⚡️Stream your games and desktop to other devices, and replay gamepad,keyboard,mouse events on the host PC. In a word, It's a alternative of TeamViewer, ToDesk, RustDesk, etc.
+#### ⚡️类似ToDesk, 向日葵, RustDesk, TeamViewer的工具，可远程操作电脑，模拟手柄玩游戏
 
 ### Screenshots
 ![](docs/images/main.jpg)
