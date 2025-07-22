@@ -10,13 +10,13 @@ def collceion_program_files(type, force_update, publish, in_target_path):
     base_path = ""
     #target_folder_suffix = ""
     if type == "debug":
-        base_path = "./../../cmake-build-debug/"
+        base_path = "./../"
         #target_folder_suffix = "_debug"
     elif type == "release":
-        base_path = "./../../cmake-build-release/"
+        base_path = "./../"
         #target_folder_suffix = "_server_windows"
     elif type == "rel-debug":
-        base_path = "./../../cmake-build-relwithdebinfo/"
+        base_path = "./../"
         #target_folder_suffix = "_server_windows_dbginfo"
     else:
         print("don't known the mode : {}, must debug/release".format(sys.argv[1]))
