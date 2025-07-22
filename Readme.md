@@ -29,6 +29,7 @@
 
 #### 1. [How To Use](docs/How_to_use.md)
 #### 2. [How To Build](docs/How_to_build.md)
+#### 2. [How To Deploy](docs/How_to_deploy.md)
 
 ### License
 ##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact me at: hollow.ichigo.yoo@gmail.com   
