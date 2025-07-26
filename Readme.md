@@ -1,3 +1,6 @@
+#### Warning
+> In developing, please wait until 15/08/2025.
+
 ![](docs/images/GammaRay.png)
 #### 💖 This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free)](https://store.steampowered.com/app/2947460/GammaRay/).
 #### 💖 这是GammaRay的开源版, 全功能版移步[Steam](https://store.steampowered.com/app/2947460/GammaRay/)或者[Release](https://github.com/RGAA-Software/GammaRay/releases), 免费.
