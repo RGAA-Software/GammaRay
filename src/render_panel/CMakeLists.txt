@@ -59,6 +59,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_running_pipe.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_account_manager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gr_connected_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_render_msg_processor.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/transfer/file_transfer.cpp
 
@@ -80,6 +81,10 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_messages.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/panel_clipboard_manager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/win/panel_cp_file_stream.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/win/panel_cp_virtual_file.cpp
 
         PARENT_SCOPE
 )

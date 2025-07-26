@@ -9,6 +9,7 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_app_messages.h"
+#include "tc_message_new/rp_proto_converter.h"
 #include <QLabel>
 #include <QPushButton>
 
@@ -169,7 +170,7 @@ namespace tc
         auto sub = pt_msg.mutable_command_renderer();
         sub->set_command(enabled ? tcrp::RpPanelCommand::kEnablePlugin : tcrp::RpPanelCommand::kDisablePlugin);
         sub->set_plugin_id(item_info_->id_);
-        app_->PostMessage2Renderer(pt_msg.SerializeAsString());
+        app_->PostMessage2Renderer(tc::RpProtoAsData(&pt_msg));
     }
 
 }

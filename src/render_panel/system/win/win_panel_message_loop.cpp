@@ -14,6 +14,7 @@
 #include "win_panel_message_window.h"
 #include "tc_render_panel_message.pb.h"
 #include "tc_common_new/folder_util.h"
+#include "tc_message_new/rp_proto_converter.h"
 
 using namespace tcrp;
 
@@ -74,7 +75,7 @@ namespace tc
             auto sub = msg.mutable_clipboard_info();
             sub->set_type(RpClipboardType::kRpClipboardText);
             sub->set_msg(text.toStdString());
-            app_->PostMessage2Renderer(msg.SerializeAsString());
+            app_->PostMessage2Renderer(tc::RpProtoAsData(&msg));
 
         };
 
@@ -159,7 +160,7 @@ namespace tc
                     auto target_file = sub->mutable_files()->Add();
                     target_file->CopyFrom(file);
                 }
-                app_->PostMessage2Renderer(msg.SerializeAsString());
+                app_->PostMessage2Renderer(tc::RpProtoAsData(&msg));
             }
             else {
                 if (!text.isEmpty()) {

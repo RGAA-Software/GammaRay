@@ -8,6 +8,7 @@
 #include "tc_common_new/base64.h"
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/hardware.h"
+#include "tc_common_new/process_util.h"
 #include "gflags/gflags.h"
 
 #include <QLockFile>
@@ -216,9 +217,6 @@ std::shared_ptr<QLockFile> g_instance_lock = nullptr;
 bool CanWeRun(const QString& lock_path) {
     g_instance_lock = std::make_shared<QLockFile>(lock_path);
     bool is_locked = g_instance_lock->isLocked();
-//    if (!is_locked) {
-//        return true;
-//    }
     (void)is_locked;
     if (!g_instance_lock->tryLock(1000)) {
         return false;
@@ -230,6 +228,9 @@ int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     // dump
     CaptureDump();
+
+    // run in high level
+    tc::ProcessUtil::SetProcessInHighLevel();
 
     // 1. load from config.toml
     auto settings = RdSettings::Instance();

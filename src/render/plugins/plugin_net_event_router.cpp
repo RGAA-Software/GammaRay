@@ -39,11 +39,10 @@ namespace tc {
         this->plugin_manager_ = app->GetPluginManager();
         this->settings_ = RdSettings::Instance();
         this->statistics_ = RdStatistics::Instance();
-        //win_event_replayer_ = std::make_shared<WinEventReplayer>();
+
         msg_notifier_ = this->app_->GetContext()->GetMessageNotifier();
         msg_listener_ = this->app_->GetContext()->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<CaptureMonitorInfoMessage>([=, this](const CaptureMonitorInfoMessage& msg) {
-            //win_event_replayer_->UpdateCaptureMonitorInfo(msg);
             if (auto plugin = plugin_manager_->GetEventsReplayerPlugin(); plugin) {
                 plugin->UpdateCaptureMonitorInfo(msg);
             }
@@ -133,6 +132,16 @@ namespace tc {
                 plugin->OnMessage(msg);
             });
 
+            // notify to panel
+            context_->PostTask([=, this]() {
+                tcrp::RpMessage msg;
+                msg.set_type(tcrp::kRpRawRenderMessage);
+                auto sub = msg.mutable_raw_render_msg();
+                sub->set_msg(event->message_->AsString());
+                auto buffer = RpProtoAsData(&msg);
+                app_->PostPanelMessage(buffer);
+            });
+
             switch (msg->type()) {
                 case kHello: {
                     this->ProcessHelloEvent(std::move(msg));
@@ -150,14 +159,6 @@ namespace tc {
                     }
                     break;
                 }
-                //case MessageType::kKeyEvent: {
-                //    ProcessKeyboardEvent(std::move(msg));
-                //    break;
-                //}
-                //case MessageType::kMouseEvent: {
-                //    ProcessMouseEvent(std::move(msg));
-                //    break;
-                //}
                 case MessageType::kClientStatistics: {
                     ProcessClientStatistics(std::move(msg));
                     break;

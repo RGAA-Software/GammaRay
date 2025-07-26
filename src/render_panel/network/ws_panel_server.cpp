@@ -5,20 +5,24 @@
 #include "ws_panel_server.h"
 #include "apis.h"
 #include "http_handler.h"
+#include "tc_message.pb.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/data.h"
 #include "tc_common_new/file.h"
 #include "tc_render_panel_message.pb.h"
 #include "tc_client_panel_message.pb.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_application.h"
+#include "render_panel/gr_render_msg_processor.h"
 #include "render_panel/transfer/file_transfer.h"
 #include "render_panel/database/gr_database.h"
 #include "render_panel/database/visit_record.h"
 #include "render_panel/database/visit_record_operator.h"
 #include "render_panel/database/file_transfer_record.h"
 #include "render_panel/database/file_transfer_record_operator.h"
+#include "tc_message_new/rp_proto_converter.h"
 #include "tc_common_new/url_helper.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_qt_widget/translator/tc_translator.h"
@@ -389,7 +393,7 @@ namespace tc
         sub->set_language((int)tcTrMgr()->GetSelectedLanguage());
         sub->set_file_transfer_enabled(settings_->IsFileTransferEnabled());
         sub->set_audio_enabled(settings_->IsCaptureAudioEnabled());
-        PostRendererMessage(m.SerializeAsString());
+        PostRendererMessage(tc::RpProtoAsData(&m));
     }
 
     void WsPanelServer::ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg) {
@@ -400,10 +404,10 @@ namespace tc
     }
 
     // to /panel/renderer socket
-    void WsPanelServer::PostRendererMessage(const std::string& msg) {
-        renderer_sessions_.VisitAll([=, this](uint64_t fd, std::shared_ptr<WSSession>& sess) {
+    void WsPanelServer::PostRendererMessage(std::shared_ptr<Data> msg) {
+        renderer_sessions_.VisitAll([=](uint64_t fd, std::shared_ptr<WSSession>& sess) {
             if (sess->session_) {
-                sess->session_->async_send(msg);
+                sess->session_->async_send(msg->AsString());
             }
         });
     }
@@ -504,6 +508,16 @@ namespace tc
             context_->SendAppMessage(MsgRemoteClipboardResp {
                 .resp_ = resp,
             });
+        }
+        else if (proto_msg->type() == tcrp::kRpRawRenderMessage) {
+            auto sub = proto_msg->raw_render_msg();
+            auto rd_proto_msg = std::make_shared<tc::Message>();
+            if (!rd_proto_msg->ParseFromString(sub.msg())) {
+                LOGE("kRpRawRenderMessage parse failed");
+                return;
+            }
+            auto processor = app_->GetRenderMsgProcessor();
+            processor->OnMessage(rd_proto_msg);
         }
     }
 

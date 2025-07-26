@@ -41,7 +41,36 @@ bool PrepareDirs(const QString& base_path) {
 
 std::shared_ptr<GrWorkspace> g_workspace = nullptr;
 
+static bool AcquirePermissionForRestartDevice() {
+    HANDLE hToken;
+    TOKEN_PRIVILEGES tkp;
+    // Get a token for this process.
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
+        LOGE("AcquirePermissionForRestartDevice, OpenProcessToken failed.");
+        return false;
+    }
+
+    // Get the LUID for the shutdown privilege.
+    if (!LookupPrivilegeValueW(NULL, SE_SHUTDOWN_NAME, &tkp.Privileges[0].Luid)) {
+        LOGE("AcquirePermissionForRestartDevice, LookupPrivilegeValueW failed.");
+        return false;
+    }
+
+    tkp.PrivilegeCount = 1;  // one privilege to set
+    tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+    // Get the shutdown privilege for this process.
+    if (!AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0)) {
+        LOGE("AcquirePermissionForRestartDevice, AdjustTokenPrivileges failed.");
+        return false;
+    }
+    return true;
+}
+
 int main(int argc, char *argv[]) {
+
+    AcquirePermissionForRestartDevice();
+
     ::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
     ::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
     ::ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);  // WM_COPYGLOBALDATA

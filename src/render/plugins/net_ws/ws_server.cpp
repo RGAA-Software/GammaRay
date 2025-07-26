@@ -134,7 +134,7 @@ namespace tc
     bool WsPluginServer::PostTargetStreamMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
         bool found_target_stream = false;
         stream_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsStreamRouter>& router) {
-            if (stream_id == router->stream_id_) {
+            if (stream_id == router->stream_id_ || stream_id.empty()) {
                 router->PostBinaryMessage(msg);
                 found_target_stream = true;
             }
@@ -145,7 +145,7 @@ namespace tc
     bool WsPluginServer::PostTargetFileTransferMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
         bool found_target_stream = false;
         ft_routers_.ApplyAll([=, &found_target_stream](const uint64_t& socket_fd, const std::shared_ptr<WsFileTransferRouter>& router) {
-            if (stream_id == router->stream_id_) {
+            if (stream_id == router->stream_id_ || stream_id.empty()) {
                 router->PostBinaryMessage(msg);
                 found_target_stream = true;
             }

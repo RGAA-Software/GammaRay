@@ -13,6 +13,7 @@
 #include "render_panel/gr_application.h"
 #include "tc_common_new/client_id_extractor.h"
 #include "tc_common_new/uid_spacer.h"
+#include "tc_message_new/rp_proto_converter.h"
 
 namespace tc {
 
@@ -91,7 +92,7 @@ namespace tc {
             sub->set_stream_id(info_->stream_id());
             sub->set_room_id(info_->room_id());
             sub->set_device_name(info_->device_name());
-            ctx_->GetApplication()->PostMessage2Renderer(msg.SerializeAsString());
+            ctx_->GetApplication()->PostMessage2Renderer(tc::RpProtoAsData(&msg));
         });
 		disconnect_btn_->setProperty("class", "danger");
 

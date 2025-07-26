@@ -16,6 +16,7 @@
 
 namespace tc
 {
+    class Data;
     class GrContext;
     class GrApplication;
     class HttpHandler;
@@ -55,7 +56,7 @@ namespace tc
         bool ParsePanelMessage(uint64_t socket_fd, std::string_view msg);
 
         // to /panel/renderer socket
-        void PostRendererMessage(const std::string& msg);
+        void PostRendererMessage(std::shared_ptr<Data> msg);
 
         // parse /panel/renderer socket
         void ParseRendererMessage(uint64_t socket_fd, std::string_view msg);

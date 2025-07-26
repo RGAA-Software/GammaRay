@@ -215,6 +215,19 @@ namespace tc
                     plugin->PostTargetStreamProtoMessage(sub.stream_id(), buffer, true);
                 });
             }
+            else if (m.type() == tcrp::RpMessageType::kRpRawRenderMessage) {
+                plugin_mgr_->VisitNetPlugins([=](GrNetPlugin* plugin) {
+                    const auto& sub = m.raw_render_msg();
+                    auto data = Data::From(sub.msg());
+                    LOGI("==> RawRenderMessage--> stream id: {}, data ch: {}", sub.stream_id(), sub.data_channel());
+                    if (sub.data_channel()) {
+                        plugin->PostTargetFileTransferProtoMessage(sub.stream_id(), data, sub.run_through());
+                    }
+                    else {
+                        plugin->PostProtoMessage(data, sub.run_through());
+                    }
+                });
+            }
 
         } catch(std::exception& e) {
             LOGE("ParseNetMessage failed: {}", e.what());

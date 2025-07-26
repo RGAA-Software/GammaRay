@@ -32,12 +32,14 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
 #include "render_panel/database/stream_item.h"
+#include "render_panel/gr_render_msg_processor.h"
 #include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"
 #include "render_panel/network/gr_service_client.h"
 #include "render_panel/network/ws_sig_client.h"
 #include "render_panel/devices/stream_messages.h"
 #include "render_panel/system/win/win_panel_message_loop.h"
+#include "render_panel/clipboard/panel_clipboard_manager.h"
 
 #include <shellapi.h>
 
@@ -103,7 +105,8 @@ namespace tc
         sig_client_->Start();
 
         gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
-
+        rd_msg_processor_ = std::make_shared<GrRenderMsgProcessor>(context_);
+        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
         QCoreApplication::instance()->installNativeEventFilter(gr_connected_manager_.get());
 
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;
@@ -169,7 +172,7 @@ namespace tc
         return ws_panel_server_ && ws_panel_server_->IsAlive();
     }
 
-    bool GrApplication::PostMessage2Renderer(const std::string& msg) {
+    bool GrApplication::PostMessage2Renderer(std::shared_ptr<Data> msg) {
         if (!IsRendererConnected()) {
             return false;
         }

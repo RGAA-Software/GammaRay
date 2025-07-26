@@ -14,6 +14,7 @@
 namespace tc
 {
 
+    class Data;
     class Thread;
     class GrContext;
     class WsPanelServer;
@@ -30,6 +31,8 @@ namespace tc
     class WinMessageLoop;
     class GrConnectedManager;
     class GrBaseStreamMessage;
+    class GrRenderMsgProcessor;
+    class ClipboardManager;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -46,6 +49,8 @@ namespace tc
         std::shared_ptr<WsPanelServer> GetWsPanelServer() { return ws_panel_server_; }
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
         std::shared_ptr<GrAccountManager> GetAccountManager() { return account_mgr_; }
+        std::shared_ptr<GrRenderMsgProcessor> GetRenderMsgProcessor() { return rd_msg_processor_; }
+        std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
         bool IsServiceConnected();
         // panel -> service
         // msg: protobuf message
@@ -53,7 +58,7 @@ namespace tc
         bool IsRendererConnected();
         // panel -> render
         // msg: protobuf message
-        bool PostMessage2Renderer(const std::string& msg);
+        bool PostMessage2Renderer(std::shared_ptr<Data> msg);
         void RequestNewClientId(bool force_update);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
 
@@ -103,8 +108,16 @@ namespace tc
         // window messages looping
         std::shared_ptr<Thread> win_msg_thread_ = nullptr;
         std::shared_ptr<WinMessageLoop> win_msg_loop_ = nullptr;
-        // listen connect info and show connect panel
+        // listen connections info and show the info panel
         std::shared_ptr<GrConnectedManager> gr_connected_manager_ = nullptr;
+
+        // render messages processor
+        // message from render -> panel
+        std::shared_ptr<GrRenderMsgProcessor> rd_msg_processor_ = nullptr;
+
+        // clipboard manager
+        std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
+
     };
 
     extern std::shared_ptr<GrApplication> grApp;
