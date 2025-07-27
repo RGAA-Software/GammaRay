@@ -9,12 +9,17 @@
 #include <memory>
 #include <mutex>
 #include <condition_variable>
+#include <windows.h>
+#include <shlwapi.h>
+#include <strsafe.h>
+#include <shlobj.h>
 #include <QFile>
 #include <QFileInfo>
-#include "panel_cp_data_object.h"
 #include "panel_cp_file_struct.h"
 #include "tc_message.pb.h"
 #include "tc_common_new/log.h"
+
+#pragma comment(lib, "shlwapi.lib")
 
 namespace tc
 {
