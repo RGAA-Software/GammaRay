@@ -29,7 +29,7 @@ namespace tc {
         if (msg->message == WM_DISPLAYCHANGE) {
             if (gr_ctx_) {
                 gr_ctx_->PostUIDelayTask([=, this]() {
-                    LOGI("nativeEventFilter WM_DISPLAYCHANGE");
+                    //LOGI("nativeEventFilter WM_DISPLAYCHANGE");
                     AdjustPanelPosition();
                 }, 4000);
             }
@@ -111,7 +111,7 @@ namespace tc {
             int panel_x = screen_width - item.second->width();
             int panel_y = screen_height - item.second->height() - 8 - item.first * item.second->height() * 1.1;
             item.second->move(panel_x, panel_y);
-            LOGI("index: {}, panel_x: {}, panel_y: {}", index, panel_x, panel_y);
+            //LOGI("index: {}, panel_x: {}, panel_y: {}", index, panel_x, panel_y);
             ++index;
         }
     }

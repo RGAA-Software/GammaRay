@@ -21,6 +21,7 @@
 #include "plugin_interface/gr_plugin_events.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
+#include "render_panel/gr_app_messages.h"
 #include "render_panel/clipboard/win/panel_cp_file_stream.h"
 #include "render_panel/clipboard/win/panel_cp_virtual_file.h"
 
@@ -29,11 +30,6 @@ namespace tc
 
     ClipboardManager::ClipboardManager(const std::shared_ptr<GrContext>& ctx) : QObject(nullptr) {
         context_ = ctx;
-
-        ::OleInitialize(nullptr);
-
-        // todo:
-        //::OleUninitialize();
     }
 
 //    static bool GetClipboardFiles(HWND hwnd, std::vector<std::wstring>& files) {
@@ -121,12 +117,17 @@ namespace tc
                 }
                 if (is_same) {
                     // to panel
-                    auto event = std::make_shared<GrPluginRemoteClipboardResp>();
-                    auto sub = msg->clipboard_info_resp();
-                    event->content_type_ = (int)sub.type();
-                    event->remote_info_ = sub.msg();
+                    //auto event = std::make_shared<GrPluginRemoteClipboardResp>();
+                    //event->content_type_ = (int)sub.type();
+                    //event->remote_info_ = sub.msg();
                     // todo::
                     //plugin_->CallbackEvent(event);
+
+                    // notify clipboard monitor
+                    auto sub_resp = msg->clipboard_info_resp();
+                    context_->SendAppMessage(MsgRemoteClipboardResp {
+                        .text_msg_ = sub_resp.msg(),
+                    });
 
                     // send back
                     tc::Message resp_msg;
@@ -135,10 +136,12 @@ namespace tc
                     resp_sub->set_type(ClipboardType::kClipboardText);
                     resp_sub->set_msg(in_text);
                     auto buffer = ProtoAsData(&resp_msg);
-                    // todo::
-                    //plugin_->DispatchAllStreamMessage(buffer);
+                    // now
                     auto rp_msg = tc::MakeRpRawRenderMessage(msg->stream_id(), msg->device_id(), resp_msg.SerializeAsString(), true);
                     context_->GetApplication()->PostMessage2Renderer(rp_msg);
+
+                    // before
+                    //plugin_->DispatchAllStreamMessage(buffer);
                 }
             }/*
             else if (sub.type() == ClipboardType::kClipboardImage) {
@@ -180,6 +183,8 @@ namespace tc
                         return;
                     }
 
+                    ::OleInitialize(nullptr);
+
                     bool cleared_clipboard = false;
                     for (int i = 0; i < 100; i++) {
                         auto hr = ::OleSetClipboard(nullptr);
@@ -196,10 +201,6 @@ namespace tc
 
                     TimeUtil::DelayBySleep(10);
 
-                    // 关键：设置延迟渲染标记
-                    ::SetClipboardData(RegisterClipboardFormat(CFSTR_FILEDESCRIPTORW), NULL);
-                    ::SetClipboardData(RegisterClipboardFormat(CFSTR_PREFERREDDROPEFFECT), NULL);
-
                     bool set_clipboard = false;
                     for (int i = 0; i < 100; i++) {
                         auto hr = ::OleSetClipboard(data_object_);
@@ -213,8 +214,8 @@ namespace tc
                         return;
                     }
                     ::CloseClipboard();
+                    ::OleUninitialize();
 
-                    LOGI("Data obj ref count: {}", virtual_file_->GetRefCount());
                     auto device_id = msg->device_id();
                     auto stream_id = msg->stream_id();
                     virtual_file_->OnClipboardFilesInfo(device_id, stream_id, target_files);
@@ -222,7 +223,6 @@ namespace tc
             }
         }
         else if (msg->type() == MessageType::kClipboardRespBuffer) {
-            LOGI("ClipboardRespBuffer...");
             if (virtual_file_) {
                 virtual_file_->OnClipboardRespBuffer(msg->cp_resp_buffer());
             }

@@ -200,7 +200,7 @@ namespace tc
     // remote clipboard resp
     class MsgRemoteClipboardResp {
     public:
-        std::shared_ptr<tcrp::RpRemoteClipboardResp> resp_ = nullptr;
+        std::string text_msg_;
     };
 
     // one client disconnect

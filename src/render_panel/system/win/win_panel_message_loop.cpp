@@ -37,10 +37,8 @@ namespace tc
         context_ = app_->GetContext();
         msg_listener_ = context_->ObtainMessageListener();
         msg_listener_->Listen<MsgRemoteClipboardResp>([=, this](const MsgRemoteClipboardResp& msg) {
-            if (msg.resp_) {
-                remote_info_ = QString::fromStdString(msg.resp_->msg());
-                LOGI("===> Remote is :{}", remote_info_.toStdString());
-            }
+            remote_info_ = QString::fromStdString(msg.text_msg_);
+            LOGI("===> Remote is :{}", remote_info_.toStdString());
         });
     }
 
@@ -97,7 +95,14 @@ namespace tc
                         LOGE("not same folder, {} => {}", base_folder_path.toStdString(), full_path.toStdString());
                         return std::nullopt;
                     }
-                    auto ref_path = cpy_full_path.mid(base_folder_path.size()+1);
+
+                    // C:/ or C:/Users/xx/Documents
+                    int mid_idx_offset = 1;
+                    if (base_folder_path.lastIndexOf("/") == base_folder_path.size()-1) {
+                        mid_idx_offset = 0;
+                    }
+
+                    auto ref_path = cpy_full_path.mid(base_folder_path.size() + mid_idx_offset);
 
                     auto cp_file = RpClipboardFile();
                     cp_file.set_full_path(full_path.toStdString());
@@ -196,7 +201,7 @@ namespace tc
     }
 
     void WinMessageLoop::ThreadFunc() {
-        // 为了获取windows消息，创建创建一个窗口，参考 https://github.com/dchapyshev/aspia
+        // https://github.com/dchapyshev/aspia
         if (!message_window_->Create(kWindowName)) {
             LOGE("WinMessageLoop create window error.");
             return;

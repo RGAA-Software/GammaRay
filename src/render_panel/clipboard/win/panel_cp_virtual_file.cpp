@@ -14,11 +14,18 @@
 #include "panel_cp_file_stream.h"
 #include "tc_common_new/time_util.h"
 #include "render_panel/gr_context.h"
+#include "render_panel/gr_settings.h"
 #include "render_panel/gr_application.h"
 #include "tc_message_new/proto_converter.h"
 #include "tc_message_new/rp_proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "render_plugins/clipboard/clipboard_plugin.h"
+#include "render_panel/transfer/file_transfer.h"
+#include "render_panel/database/gr_database.h"
+#include "render_panel/database/visit_record.h"
+#include "render_panel/database/visit_record_operator.h"
+#include "render_panel/database/file_transfer_record.h"
+#include "render_panel/database/file_transfer_record_operator.h"
 
 #pragma comment(lib, "Wininet.lib")
 
@@ -39,9 +46,8 @@ namespace tc
     void CpVirtualFile::Init() {
         clip_format_file_desc_ = RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
         clip_format_file_content_ = RegisterClipboardFormat(CFSTR_FILECONTENTS);
-        m_cfHdrop = CF_HDROP;
-        m_cfPreferredDropEffect = RegisterClipboardFormat(CFSTR_PREFERREDDROPEFFECT);
-        LOGI("CpVirtualFile, register, file desc: {}, file content: {}", clip_format_file_desc_, clip_format_file_content_);
+        clip_format_drop_ = CF_HDROP;
+        clip_format_preferred_drop_effect_ = RegisterClipboardFormat(CFSTR_PREFERREDDROPEFFECT);
     }
 
     HRESULT CpVirtualFile::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium) {
@@ -135,18 +141,14 @@ namespace tc
     }
 
     HRESULT CpVirtualFile::QueryGetData(FORMATETC *pformatetc) {
-        LOGI("CpVirtualFile, QueryGetData, format: {}", pformatetc->cfFormat);
         HRESULT hr = S_FALSE;
         if (pformatetc->cfFormat == clip_format_file_desc_ ||
             pformatetc->cfFormat == clip_format_file_content_ ||
-            pformatetc->cfFormat == m_cfHdrop ||
-            pformatetc->cfFormat == m_cfPreferredDropEffect) {
+            pformatetc->cfFormat == clip_format_drop_ ||
+            pformatetc->cfFormat == clip_format_preferred_drop_effect_) {
             hr = S_OK;
             return S_OK;
-        }/* else if (SUCCEEDED(_EnsureShellDataObject())) {
-            hr = _pdtobjShell->QueryGetData(pformatetc);
-        }*/
-        //return hr;
+        }
         return E_NOTIMPL;
     }
 
@@ -154,13 +156,12 @@ namespace tc
         *ppenumFormatEtc = NULL;
         HRESULT hr = E_NOTIMPL;
         if (dwDirection == DATADIR_GET) {
-            LOGI("Set format ...");
             FORMATETC rgfmtetc[] = {
                 // the order here defines the accuarcy of rendering
-                {(CLIPFORMAT) clip_format_file_desc_, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
-                {(CLIPFORMAT) clip_format_file_content_, NULL, DVASPECT_CONTENT, -1, TYMED_ISTREAM},
-                { (CLIPFORMAT)m_cfHdrop, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL },
-                { (CLIPFORMAT)m_cfPreferredDropEffect, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL }
+                { (CLIPFORMAT) clip_format_file_desc_, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
+                { (CLIPFORMAT) clip_format_file_content_, NULL, DVASPECT_CONTENT, -1, TYMED_ISTREAM},
+                { (CLIPFORMAT) clip_format_drop_, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL },
+                { (CLIPFORMAT) clip_format_preferred_drop_effect_, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL }
             };
             hr = SHCreateStdEnumFmtEtc(ARRAYSIZE(rgfmtetc), rgfmtetc, ppenumFormatEtc);
             if (hr != S_OK) {
@@ -170,46 +171,46 @@ namespace tc
         return hr;
     }
 
-//    HRESULT STDMETHODCALLTYPE CpVirtualFile::SetAsyncMode(BOOL fDoOpAsync) {
-//        return S_OK;
-//    }
-//
-//    HRESULT STDMETHODCALLTYPE CpVirtualFile::GetAsyncMode(BOOL *pfIsOpAsync) {
-//        *pfIsOpAsync = true;// VARIANT_TRUE;
-//        return S_OK;
-//    }
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::SetAsyncMode(BOOL fDoOpAsync) {
+        return S_OK;
+    }
 
-//    HRESULT STDMETHODCALLTYPE CpVirtualFile::StartOperation(IBindCtx *pbcReserved) {
-//        in_async_op_ = true;
-//        IOperationsProgressDialog *pDlg = nullptr;
-//        ::CoCreateInstance(CLSID_ProgressDialog, NULL, CLSCTX_INPROC_SERVER, IID_IOperationsProgressDialog, (LPVOID *) &pDlg);
-//        LOGI("StartOperation....");
-//        return S_OK;
-//    }
-//
-//    HRESULT STDMETHODCALLTYPE CpVirtualFile::InOperation(BOOL *pfInAsyncOp) {
-//        *pfInAsyncOp = in_async_op_;
-//        LOGI("InOperation....");
-//        return S_OK;
-//    }
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::GetAsyncMode(BOOL *pfIsOpAsync) {
+        *pfIsOpAsync = true;
+        return S_OK;
+    }
 
-//    HRESULT STDMETHODCALLTYPE CpVirtualFile::EndOperation(HRESULT hResult, IBindCtx *pbcReserved, DWORD dwEffects) {
-//        in_async_op_ = false;
-//        LOGI("EndOperation....");
-//        if (file_stream_) {
-//            // report
-//            this->ReportFileTransferEnd();
-//
-//            file_stream_->Exit();
-//            file_stream_.reset();
-//        }
-//
-//        ::OleFlushClipboard();
-//        ::OleSetClipboard(nullptr);
-//        menu_files_.clear();
-//        task_files_.clear();
-//        return S_OK;
-//    }
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::StartOperation(IBindCtx *pbcReserved) {
+        in_async_op_ = true;
+        //IOperationsProgressDialog *pDlg = nullptr;
+        //::CoCreateInstance(CLSID_ProgressDialog, NULL, CLSCTX_INPROC_SERVER, IID_IOperationsProgressDialog, (LPVOID *) &pDlg);
+        LOGI("StartOperation....");
+        return S_OK;
+    }
+
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::InOperation(BOOL *pfInAsyncOp) {
+        *pfInAsyncOp = in_async_op_;
+        LOGI("InOperation....");
+        return S_OK;
+    }
+
+    HRESULT STDMETHODCALLTYPE CpVirtualFile::EndOperation(HRESULT hResult, IBindCtx *pbcReserved, DWORD dwEffects) {
+        in_async_op_ = false;
+        LOGI("EndOperation....");
+        if (file_stream_) {
+            // report
+            this->ReportFileTransferEnd();
+
+            file_stream_->Exit();
+            file_stream_.reset();
+        }
+
+        ::OleFlushClipboard();
+        ::OleSetClipboard(nullptr);
+        menu_files_.clear();
+        task_files_.clear();
+        return S_OK;
+    }
 
     void CpVirtualFile::OnClipboardFilesInfo(const std::string& device_id, const std::string& stream_id, const std::vector<ClipboardFile>& files) {
         menu_files_ = files;
@@ -239,17 +240,11 @@ namespace tc
         if (!file_stream_) {
             return;
         }
-        auto event = std::make_shared<GrPluginFileTransferBegin>();
-        event->the_file_id_ = file_stream_->GetFileId();
-        event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
-        event->visitor_device_id_ = file_stream_->GetDeviceId();
-        event->direction_ = "In";
-        event->file_detail_ = file_stream_->GetFileName();
-        // todo::
-        //plugin_->CallbackEvent(event);
+
+        // record in database
+        this->RecordFileTransferBegin();
 
         // send begin message to client
-        // send end message to client
         tc::Message msg;
         msg.set_device_id(file_stream_->GetDeviceId());
         msg.set_stream_id(file_stream_->GetStreamId());
@@ -262,18 +257,16 @@ namespace tc
 
         auto rp_msg = tc::MakeRpRawRenderMessage(msg.stream_id(), msg.device_id(), msg.SerializeAsString(), true);
         context_->GetApplication()->PostMessage2Renderer(rp_msg);
+        // send end message to client
     }
 
     void CpVirtualFile::ReportFileTransferEnd() {
         if (!file_stream_) {
             return;
         }
-        auto event = std::make_shared<GrPluginFileTransferEnd>();
-        event->the_file_id_ = file_stream_->GetFileId();
-        event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
-        event->success_ = true;
-        // todo::
-        //plugin_->CallbackEvent(event);
+
+        // record in database
+        this->RecordFileTransferEnd();
 
         // send end message to client
         tc::Message msg;
@@ -289,6 +282,48 @@ namespace tc
 
         auto rp_msg = tc::MakeRpRawRenderMessage(msg.stream_id(), msg.device_id(), msg.SerializeAsString(), true);
         context_->GetApplication()->PostMessage2Renderer(rp_msg);
+    }
+
+    void CpVirtualFile::RecordFileTransferBegin() {
+        context_->PostDBTask([=, this]() {
+//            auto event = std::make_shared<GrPluginFileTransferBegin>();
+//            event->the_file_id_ = file_stream_->GetFileId();
+//            event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+//            event->visitor_device_id_ = file_stream_->GetDeviceId();
+//            event->direction_ = "In";
+//            event->file_detail_ = file_stream_->GetFileName();
+
+            auto ips = context_->GetIps();
+            std::string ip_address;
+            if (!ips.empty()) {
+                ip_address = ips[0].ip_addr_;
+            }
+
+            auto settings = GrSettings::Instance();
+            auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
+            ft_record_op->InsertFileTransferRecord(std::make_shared<FileTransferRecord>(FileTransferRecord {
+                .the_file_id_ = file_stream_->GetFileId(),
+                .begin_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+                .end_ = 0,
+                .visitor_device_ = file_stream_->GetDeviceId(),
+                .target_device_ = settings->GetDeviceId().empty() ? ip_address : settings->GetDeviceId(),
+                .direction_ = "In",
+                .file_detail_ = file_stream_->GetFileName(),
+            }));
+        });
+    }
+
+    void CpVirtualFile::RecordFileTransferEnd() {
+        context_->PostDBTask([=, this]() {
+//            auto event = std::make_shared<GrPluginFileTransferEnd>();
+//            event->the_file_id_ = file_stream_->GetFileId();
+//            event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+//            event->success_ = true;
+
+            auto settings = GrSettings::Instance();
+            auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
+            ft_record_op->UpdateVisitRecord(file_stream_->GetFileId(), (int64_t)TimeUtil::GetCurrentTimestamp(), true);
+        });
     }
 
     CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<GrContext>& ctx) {

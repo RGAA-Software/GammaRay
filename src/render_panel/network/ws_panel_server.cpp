@@ -502,13 +502,6 @@ namespace tc
                 ft_record_op_->UpdateVisitRecord(sub.the_file_id(), sub.end_timestamp(), sub.success());
             });
         }
-        else if (proto_msg->type() == tcrp::kRpRemoteClipboardResp) {
-            auto resp = std::make_shared<tcrp::RpRemoteClipboardResp>();
-            resp->CopyFrom(proto_msg->remote_clipboard_resp());
-            context_->SendAppMessage(MsgRemoteClipboardResp {
-                .resp_ = resp,
-            });
-        }
         else if (proto_msg->type() == tcrp::kRpRawRenderMessage) {
             auto sub = proto_msg->raw_render_msg();
             auto rd_proto_msg = std::make_shared<tc::Message>();
