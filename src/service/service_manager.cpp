@@ -333,11 +333,8 @@ namespace tc
 
         // Send a stop code to the service.
 
-        if (!ControlService(
-                schService,
-                SERVICE_CONTROL_STOP,
-                (LPSERVICE_STATUS) &ssp)) {
-            printf("ControlService failed (%d)\n", GetLastError());
+        if (!ControlService(schService, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS) &ssp)) {
+            LOGE("ControlService failed: {}", GetLastError());
             return;
         }
 

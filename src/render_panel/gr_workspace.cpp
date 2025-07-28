@@ -31,6 +31,7 @@
 #include "tc_qt_widget/widgetframe/titlebar_messages.h"
 #include "tc_qt_widget/tc_dialog.h"
 #include "app_config.h"
+#include "tc_common_new/win32/process_helper.h"
 
 namespace tc
 {
@@ -372,6 +373,21 @@ namespace tc
         if (dialog.exec() == kDoneOk) {
             auto srv_mgr = this->app_->GetContext()->GetServiceManager();
             srv_mgr->Remove();
+
+            // kill all if service not work
+            app_->GetContext()->PostDelayTask([=, this]() {
+                auto processes = tc::ProcessHelper::GetProcessList(false);
+                for (auto& process : processes) {
+                    if (process->exe_full_path_.find(kGammaRayName) != std::string::npos
+                        || process->exe_full_path_.find(kGammaRayGuardName) != std::string::npos
+                        || process->exe_full_path_.find(kGammaRayRenderName) != std::string::npos
+                        || process->exe_full_path_.find(kGammaRayClient) != std::string::npos
+                        || process->exe_full_path_.find(kGammaRayClientInner) != std::string::npos) {
+                        LOGI("Kill exe: {}", process->exe_full_path_);
+                        tc::ProcessHelper::CloseProcess(process->pid_);
+                    }
+                }
+            }, 2000);
         }
     }
 
