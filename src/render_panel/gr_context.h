@@ -62,6 +62,7 @@ namespace tc
 
         // Post in Qt UI Thread(Windows messages looping thread), task will exec after specific milliseconds
         void PostUIDelayTask(std::function<void()>&& task, int ms);
+        void PostDelayTask(std::function<void()>&& task, int ms);
 
         // Like PostTask, but always in a fixed thread
         void PostDBTask(std::function<void()>&& task);

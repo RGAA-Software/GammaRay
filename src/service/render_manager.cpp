@@ -13,6 +13,9 @@
 #include "service_context.h"
 
 #include <QCoreApplication>
+#include <TlHelp32.h>
+#include <wtsapi32.h>
+#include <UserEnv.h>
 
 static const std::string kKeyWorkDir = "render_work_dir";
 static const std::string kKeyAppPath = "render_app_path";
@@ -32,13 +35,14 @@ namespace tc
                     StartServerInternal(this->work_dir_, this->app_path_, this->app_args_);
                 }
 
-                if (!this->CheckPanelAlive(processes)) {
-                    LOGI("GammaRay.exe not exist!, Will start it");
-                    QString work_dir = QString::fromStdString(this->work_dir_);
-                    QString current_path = QString::fromStdString(std::format("{}/{}", this->work_dir_, kGammaRayName));
-                    //ProcessUtil::StartProcessInSameUser(current_path.toStdWString(), work_dir.toStdWString(), false);
-                    ProcessUtil::StartProcessInCurrentUser(current_path.toStdWString(), work_dir.toStdWString(), false);
-                }
+                //if (!this->CheckPanelAlive(processes)) {
+                //    LOGI("GammaRay.exe not exist!, Will start it");
+                //    QString work_dir = QString::fromStdString(this->work_dir_);
+                //    QString current_path = QString::fromStdString(std::format("{}/{}", this->work_dir_, kGammaRayName));
+                //    ProcessUtil::StartProcessInCurrentUser(current_path.toStdWString(), work_dir.toStdWString(), false);
+                //    //CreateProcessByToken();
+                //    //LaunchProcess(current_path);
+                //}
             });
         });
 

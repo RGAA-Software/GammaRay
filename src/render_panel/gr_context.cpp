@@ -141,6 +141,13 @@ namespace tc
         });
     }
 
+    void GrContext::PostDelayTask(std::function<void()>&& task, int ms) {
+        this->PostUIDelayTask([=, this]() {
+            auto t = task;
+            this->PostTask(std::move(t));
+        }, ms);
+    }
+
     void GrContext::PostDBTask(std::function<void()>&& task) {
         task_rt_->GetLastThread()->Post(SimpleThreadTask::Make(std::move(task)));
     }

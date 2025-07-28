@@ -31,6 +31,7 @@
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
+#include "render_panel/gr_guard_starter.h"
 #include "render_panel/database/stream_item.h"
 #include "render_panel/gr_render_msg_processor.h"
 #include "render_panel/network/ws_panel_server.h"
@@ -107,6 +108,7 @@ namespace tc
         gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
         rd_msg_processor_ = std::make_shared<GrRenderMsgProcessor>(context_);
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
+        guard_starter_ = std::make_shared<GrGuardStarter>(context_);
         QCoreApplication::instance()->installNativeEventFilter(gr_connected_manager_.get());
 
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;

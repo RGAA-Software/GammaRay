@@ -5,8 +5,8 @@
 #include <QDir>
 #include <QLockFile>
 #include <QMessageBox>
-
 #include "tc_common_new/log.h"
+#include "tc_common_new/auto_start.h"
 #include "tc_common_new/folder_util.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
@@ -68,7 +68,6 @@ static bool AcquirePermissionForRestartDevice() {
 }
 
 int main(int argc, char *argv[]) {
-
     AcquirePermissionForRestartDevice();
 
     ::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
@@ -79,6 +78,19 @@ int main(int argc, char *argv[]) {
 
     auto base_dir = QApplication::applicationDirPath();
     PrepareDirs(base_dir);
+
+    // init sp
+    auto sp_dir = qApp->applicationDirPath() + "/gr_data";
+    if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
+        //QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
+        return -1;
+    }
+
+    {
+        auto auto_start = std::make_shared<tc::AutoStart>();
+        auto path = QApplication::applicationFilePath().toStdString();
+        auto_start->NewTask((char*)"GammaRay_Panel_Start", (char*)path.c_str(), NULL, (char*)"GR");
+    }
 
     auto log_path = base_dir + "/gr_logs/gammaray.log";
     std::cout << "log path: " << log_path.toStdString() << std::endl;
@@ -99,13 +111,6 @@ int main(int argc, char *argv[]) {
     mon_detector->PrintAdapters();
 
     tcFontMgr()->InitFont(":/src/client/resources/font/ms_yahei.ttf");
-
-    // init sp
-    auto sp_dir = qApp->applicationDirPath() + "/gr_data";
-    if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
-        QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
-        return -1;
-    }
 
     // init language
     tcTrMgr()->InitLanguage();

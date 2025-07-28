@@ -86,5 +86,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/win/panel_cp_file_stream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/win/panel_cp_virtual_file.cpp
 
+        ${CMAKE_CURRENT_SOURCE_DIR}/gr_guard_starter.cpp
+
         PARENT_SCOPE
 )

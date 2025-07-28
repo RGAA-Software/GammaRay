@@ -145,6 +145,14 @@ add_executable(${PROJECT_NAME} WIN32
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\" /SUBSYSTEM:WINDOWS")
 
+#### GUARD BEG ####
+add_subdirectory(src/render_panel/guard)
+message("===> Guard SRCS: ${GUARD_SRCS}")
+add_executable(GammaRayGuard WIN32 ${GUARD_SRCS})
+target_link_libraries(GammaRayGuard PRIVATE Qt6::Widgets Qt6::Core Qt6::Core5Compat tc_common_new winmm.lib SetupAPI.lib comsuppw.lib)
+SET_TARGET_PROPERTIES(GammaRayGuard PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+#### GUARD END ####
+
 file(COPY ${GR_PROJECT_PATH}/src/render/settings.toml DESTINATION ${GR_PROJECT_BINARY_PATH}/)
 file(COPY ${GR_PROJECT_PATH}/certs DESTINATION ${GR_PROJECT_BINARY_PATH}/)
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${GR_PROJECT_BINARY_PATH}/www)
@@ -201,7 +209,7 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client tc_rtc_client tc_cp_message) #GammaRayClient
+        uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client tc_rtc_client tc_cp_message GammaRayGuard)
 if(ENABLE_HOOK_CAPTURE)
     add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()
@@ -217,7 +225,7 @@ add_dependencies(tc_build_all   plugin_net_ws   plugin_ffmpeg_encoder  plugin_fr
 #add_dependencies(tc_build_all plugin_multi_screens plugin_media_record_client plugin_client_clipboard)
 
 add_custom_target(tc_build_client ALL COMMENT "Build client")
-add_dependencies(tc_build_client GammaRayClientInner)#GammaRayClient
+add_dependencies(tc_build_client GammaRayClientInner)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
 # gdi 

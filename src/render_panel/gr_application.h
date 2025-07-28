@@ -33,6 +33,7 @@ namespace tc
     class GrBaseStreamMessage;
     class GrRenderMsgProcessor;
     class ClipboardManager;
+    class GrGuardStarter;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -117,6 +118,9 @@ namespace tc
 
         // clipboard manager
         std::shared_ptr<ClipboardManager> clipboard_mgr_ = nullptr;
+
+        // guard starter
+        std::shared_ptr<GrGuardStarter> guard_starter_ = nullptr;
 
     };
 
