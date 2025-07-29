@@ -163,9 +163,16 @@ namespace tc {
                     ProcessClientStatistics(std::move(msg));
                     break;
                 }
-                case kClipboardInfo:
+                case kClipboardInfo: {
+                    const auto& sub = msg->clipboard_info();
+                    LOGI("Clipboard msg: {}", sub.msg());
+                    LOGI("Clipboard files: {}", sub.files_size());
+                    for (const auto& file : sub.files()) {
+                        LOGI("File: {}", file.full_path());
+                    }
+                    break;
+                }
                 case kClipboardInfoResp: {
-                    //ProcessClipboardInfo(std::move(msg));
                     break;
                 }
                 case kSwitchMonitor: {
