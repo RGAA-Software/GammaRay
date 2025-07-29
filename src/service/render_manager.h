@@ -20,7 +20,6 @@ namespace tc
     static const std::string kGammaRayName = "GammaRay.exe";
     static const std::string kGammaRayGuardName = "GammaRayGuard.exe";
     static const std::string kGammaRayRenderName = "GammaRayRender.exe";
-    static const std::string kGammaRayClient = "GammaRayClient.exe";
     static const std::string kGammaRayClientInner = "GammaRayClientInner.exe";
 
     class ServiceContext;

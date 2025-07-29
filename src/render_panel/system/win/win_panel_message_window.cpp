@@ -8,7 +8,7 @@
 namespace tc
 {
 
-    constexpr char kWindowClassName[] = "GammaRay_render_MessageWindowClass";
+    constexpr char kWindowClassName[] = "GammaRay_render_panel_MessageWindowClass";
 
     std::atomic<int> WinMessageWindow::current_create_window_count_ = 0;
     std::string WinMessageWindow::class_name_;
@@ -130,8 +130,6 @@ namespace tc
         }
 
         case WM_DISPLAYCHANGE: {
-            LOGI("WM_DISPLAYCHANGE");
-            self->OnDisplayChange();
             break;
         }
 
@@ -223,13 +221,6 @@ namespace tc
             return;
         }
         message_loop_->OnClipboardUpdate(hwnd);
-    }
-
-    void WinMessageWindow::OnDisplayChange() {
-        if (!message_loop_) {
-            return;
-        }
-        message_loop_->OnDisplayDeviceChange();
     }
 
 }

@@ -24,12 +24,7 @@ namespace tc
     private:
         static bool registerWindowClass(HINSTANCE instance);
         static LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
-
-        /*剪切板更新*/
         void OnClipboardUpdate(HWND hwnd);
-
-        /*显示设备变化消息*/
-        void OnDisplayChange();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;

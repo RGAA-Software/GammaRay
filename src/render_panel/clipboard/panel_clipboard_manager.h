@@ -20,9 +20,7 @@ namespace tc
     class ClipboardManager : public QObject {
     public:
         explicit ClipboardManager(const std::shared_ptr<GrContext>& ctx);
-        // Render Panel -> Local Network -> Render -> This Plugin
-        //void OnLocalClipboardUpdated(const std::shared_ptr<MsgClipboardEvent>& msg);
-        // Client -> Network -> Render -> This Plugin
+        // Client -> Network -> Render -> Render Panel
         void OnRemoteClipboardInfo(std::shared_ptr<Message> msg);
 
     private:

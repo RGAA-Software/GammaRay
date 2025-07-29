@@ -205,8 +205,19 @@ namespace tc
             file_stream_.reset();
         }
 
+        ::OleInitialize(nullptr);
         ::OleFlushClipboard();
-        ::OleSetClipboard(nullptr);
+        bool cleared_clipboard = false;
+        for (int i = 0; i < 100; i++) {
+            auto hr = ::OleSetClipboard(nullptr);
+            if (hr == S_OK) {
+                cleared_clipboard = true;
+                break;
+            }
+            TimeUtil::DelayBySleep(10);
+        }
+        ::OleUninitialize();
+
         menu_files_.clear();
         task_files_.clear();
         return S_OK;

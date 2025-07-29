@@ -96,7 +96,7 @@ namespace tc
     }
 
     void WinMessageLoop::ThreadFunc() {
-        // 为了获取windows消息，创建创建一个窗口，参考 https://github.com/dchapyshev/aspia
+        // https://github.com/dchapyshev/aspia
         if (!message_window_->Create(kWindowName)) {
             LOGE("WinMessageLoop create window error.");
             return;
@@ -109,8 +109,8 @@ namespace tc
             return;
         }
 
-        AddClipboardFormatListener(hwnd);
-        LOGI("AddClipboardFormatListener already add WinMessageWindow");
+        //AddClipboardFormatListener(hwnd);
+        //LOGI("AddClipboardFormatListener already add WinMessageWindow");
 
         if (!WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS)) {
             LOGE("WTSRegisterSessionNotification error: %d", GetLastError());
@@ -118,10 +118,7 @@ namespace tc
         }
 
         HWINEVENTHOOK hEventHook = SetWinEventHook(EVENT_SYSTEM_DESKTOPSWITCH, EVENT_SYSTEM_DESKTOPSWITCH, nullptr, &WinMessageLoop::WinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
-
-        if (hEventHook == nullptr)
-        {
-            std::cout << "Failed to set event hook." << std::endl;
+        if (hEventHook == nullptr) {
             return;
         }
 

@@ -95,6 +95,7 @@ namespace tc
     void ClipboardManager::OnRemoteClipboardInfo(std::shared_ptr<Message> msg) {
         if (msg->type() == MessageType::kClipboardInfo) {
             auto sub = msg->clipboard_info();
+            LOGI("Remote Clipboard info, type : {}", (int)sub.type());
             if (sub.type() == ClipboardType::kClipboardText) {
                 auto in_text = sub.msg();
                 auto is_same = false;
@@ -172,6 +173,7 @@ namespace tc
                     ClipboardFile cpy_file;
                     cpy_file.CopyFrom(file);
                     target_files.push_back(file);
+                    LOGI("Clipboard file: {}", file.file_name());
                 }
 
                 context_->PostUITask([=, this]() {

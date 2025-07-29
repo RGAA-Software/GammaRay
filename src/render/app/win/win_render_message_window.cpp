@@ -37,9 +37,7 @@ namespace tc
 
         switch (msg)
         {
-            // Set up the self before handling WM_CREATE.
         case WM_CREATE: {
-            // lParam from function CreateWindowA(..., this)
             auto cs = reinterpret_cast<LPCREATESTRUCT>(lParam);
             self = reinterpret_cast<WinMessageWindow*>(cs->lpCreateParams);
 
@@ -67,10 +65,10 @@ namespace tc
             break;
         }
 
-        case WM_CLIPBOARDUPDATE: {
-            //self->OnClipboardUpdate(window);
-            break;
-        }
+        // case WM_CLIPBOARDUPDATE: {
+        //     self->OnClipboardUpdate(window);
+        //     break;
+        // }
 
         case WM_WTSSESSION_CHANGE: {
             if (wParam == WTS_CONSOLE_CONNECT)
@@ -163,9 +161,8 @@ namespace tc
         window_class.hInstance = instance;
         window_class.lpfnWndProc = windowProc;
 
-        if (!RegisterClassExA(&window_class))
-        {
-            std::cout << "RegisterClassExW failed GetLastError = " << GetLastError() << std::endl;
+        if (!RegisterClassExA(&window_class)) {
+            LOGE("RegisterClassExW failed GetLastError = {}", GetLastError());
             return false;
         }
 
@@ -182,7 +179,7 @@ namespace tc
             reinterpret_cast<char*>(&windowProc),
             &instance))
         {
-            std::cout << "GetModuleHandleExA failed" << std::endl;
+            LOGE("GetModuleHandleExA failed");
             return false;
         }
 
@@ -198,9 +195,8 @@ namespace tc
             instance,
             this);
 
-        if (!mHwnd)
-        {
-            std::cout << "CreateWindowA failed" << std::endl;
+        if (!mHwnd) {
+            LOGE("CreateWindowA failed");
             return false;
         }
         ++current_create_window_count_;

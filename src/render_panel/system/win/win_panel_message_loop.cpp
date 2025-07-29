@@ -182,10 +182,6 @@ namespace tc
 
     }
 
-    void WinMessageLoop::OnDisplayDeviceChange() {
-
-    }
-
     void WinMessageLoop::Start() {
         CreateMessageWindow();
         thread_ = std::thread(std::bind(&WinMessageLoop::ThreadFunc, this));
