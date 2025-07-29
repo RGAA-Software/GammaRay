@@ -30,6 +30,9 @@ namespace tc
             if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
                 codec_name = "hevc_nvenc";
             }
+            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
+                codec_name = "hevc_amf";
+            }
             else {
                 codec_name = "libx265";
             }
@@ -37,6 +40,9 @@ namespace tc
         else if (EVideoCodecType::kH264 == config.codec_type) {
             if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
                 codec_name = "h264_nvenc";
+            }
+            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
+                codec_name = "h264_amf";
             }
             else {
                 codec_name = "libx264";
@@ -85,42 +91,48 @@ namespace tc
         LOGI("encoder width: {}, encoder height: {}", encoder_config_.encode_width, encoder_config_.encode_height);
 
         AVDictionary* param = nullptr;
-        if (encoder_id == AV_CODEC_ID_H264) {
-            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
-                av_dict_set(&param, "preset", "llhp", 0);
-                av_dict_set(&param, "tune", "ull", 0);
-                av_dict_set(&param, "zerolatency", "1", 0);
-            }
-            else {
-                av_dict_set(&param, "preset", "ultrafast", 0);
-                av_dict_set(&param, "tune", "zerolatency", 0);
-            }
-
-            if (encoder_id == AV_CODEC_ID_H264) {
-                av_dict_set(&param, "crf", "23", 0);
-                av_dict_set(&param, "forced-idr", "1", 0);
-            }
-            if (encoder_id == AV_CODEC_ID_H265) {
-                av_dict_set(&param, "x265-params", "qp=20", 0);
-                av_dict_set(&param, "tune", "zero-latency", 0);
-            }
-
-            auto ret = avcodec_open2(codec_ctx_, encoder, &param);
-            if (ret != 0) {
-                LOGE("avcodec_open2 error : {}", ret);
-                return false;
-            }
-
-            frame_ = av_frame_alloc();
-            frame_->width = codec_ctx_->width;
-            frame_->height = codec_ctx_->height;
-            frame_->format = codec_ctx_->pix_fmt;
-
-            av_frame_get_buffer(frame_, 0);
-            packet_ = av_packet_alloc();
-            LOGI("Line 1: {} 2: {} 3: {}", frame_->linesize[0], frame_->linesize[1], frame_->linesize[2]);
-            return true;
+        if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
+            av_dict_set(&param, "preset", "llhp", 0);
+            av_dict_set(&param, "tune", "ull", 0);
+            av_dict_set(&param, "zerolatency", "1", 0);
         }
+        else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
+            av_dict_set(&param, "quality", "speed", 0);
+            av_dict_set(&param, "bf_ref", "0", 0);
+            av_dict_set(&param, "header_insertion_mode", "idr", 0);
+            av_dict_set(&param, "rc", "cqp", 0);
+            av_dict_set(&param, "profile", "main", 0);
+            av_dict_set(&param, "usage", "ultralowlatency", 0);
+        }
+        else {
+            av_dict_set(&param, "preset", "ultrafast", 0);
+            av_dict_set(&param, "tune", "zerolatency", 0);
+        }
+
+        if (encoder_id == AV_CODEC_ID_H264) {
+            av_dict_set(&param, "crf", "23", 0);
+            av_dict_set(&param, "forced-idr", "1", 0);
+        }
+        if (encoder_id == AV_CODEC_ID_H265) {
+            av_dict_set(&param, "x265-params", "qp=20", 0);
+            av_dict_set(&param, "tune", "zero-latency", 0);
+        }
+
+        auto ret = avcodec_open2(codec_ctx_, encoder, &param);
+        if (ret != 0) {
+            LOGE("avcodec_open2 error : {}", ret);
+            return false;
+        }
+
+        frame_ = av_frame_alloc();
+        frame_->width = codec_ctx_->width;
+        frame_->height = codec_ctx_->height;
+        frame_->format = codec_ctx_->pix_fmt;
+
+        av_frame_get_buffer(frame_, 0);
+        packet_ = av_packet_alloc();
+        LOGI("Line 1: {} 2: {} 3: {}", frame_->linesize[0], frame_->linesize[1], frame_->linesize[2]);
+        return true;
     }
 
     void FFmpegEncoder::Encode(const std::shared_ptr<Image>&image, uint64_t frame_index, const std::any & extra) {

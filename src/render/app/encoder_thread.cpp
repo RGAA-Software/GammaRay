@@ -204,14 +204,19 @@ namespace tc
                                 target_encoder_plugin = ffmpeg_encoder;
                             }
                             else {
-                                //让ffmpeg尝试软件编码初始化
-                                encoder_config.Hardware = EHardwareEncoder::kNone;
+                                encoder_config.Hardware = EHardwareEncoder::kAmf;
                                 if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
                                     target_encoder_plugin = ffmpeg_encoder;
                                 }
                                 else {
-                                    LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
-                                    return;
+                                    //让ffmpeg尝试软件编码初始化
+                                    encoder_config.Hardware = EHardwareEncoder::kNone;
+                                    if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                                        target_encoder_plugin = ffmpeg_encoder;
+                                    } else {
+                                        LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                                        return;
+                                    }
                                 }
                             }
                         }
