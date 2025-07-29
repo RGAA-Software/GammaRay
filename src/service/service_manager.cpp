@@ -11,6 +11,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/defer.h"
+#include "tc_common_new/win32/process_helper.h"
 
 #pragma comment(lib, "Advapi32.lib")
 
@@ -227,7 +228,7 @@ namespace tc
         }
     }
 
-    void ServiceManager::Remove() {
+    void ServiceManager::Remove(bool uninstall_service) {
         SC_HANDLE schSCManager = nullptr;
         SC_HANDLE schService = nullptr;
         SERVICE_STATUS_PROCESS ssp;
@@ -242,11 +243,11 @@ namespace tc
                 DoDeleteSvc(schSCManager, schService);
             }
             if (schService) {
-                LOGI("Close service.");
+                LOGI("Remove Service, Close service.");
                 CloseServiceHandle(schService);
             }
             if (schSCManager) {
-                LOGI("Close SCManager.");
+                LOGI("Remove Service, Close SCManager.");
                 CloseServiceHandle(schSCManager);
             }
         });
@@ -257,21 +258,20 @@ namespace tc
             LOGE("OpenSCManager failed {}", GetLastError());
             return;
         }
+        LOGI("Remove Service, OpenSCManager success.");
 
         // Get a handle to the service.
         schService = OpenService(
-                schSCManager,         // SCM database
-                QString::fromStdString(this->srv_name_).toStdWString().c_str(),            // name of service
-                SERVICE_STOP |
-                SERVICE_QUERY_STATUS |
-                SERVICE_ENUMERATE_DEPENDENTS |
-                DELETE);
+                schSCManager,
+                QString::fromStdString(this->srv_name_).toStdWString().c_str(),
+                SERVICE_STOP | SERVICE_QUERY_STATUS | SERVICE_ENUMERATE_DEPENDENTS | DELETE);
 
         if (schService == nullptr) {
             LOGE("OpenService failed {}", GetLastError());
             CloseServiceHandle(schSCManager);
             return;
         }
+        LOGI("Remove Service, OpenService success.");
 
         // Make sure the service is not already stopped.
         if (!QueryServiceStatusEx(
@@ -283,6 +283,7 @@ namespace tc
             LOGE("QueryServiceStatusEx failed {}", GetLastError());
             return;
         }
+        LOGI("Remove Service, QueryServiceStatusEx success, state: {}", ssp.dwCurrentState);
 
         if (ssp.dwCurrentState == SERVICE_STOPPED) {
             LOGI("Service is already stopped, will delete it");
@@ -331,13 +332,27 @@ namespace tc
         // If the service is running, dependencies must be stopped first.
         StopDependentServices(schSCManager, schService);
 
+        LOGI("Remove Service, Send stop command.");
         // Send a stop code to the service.
-
         if (!ControlService(schService, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS) &ssp)) {
-            LOGE("ControlService failed: {}", GetLastError());
+            LOGE("Remove Service, ControlService failed: {}", GetLastError());
             return;
         }
 
+        if (!uninstall_service) {
+            // kill GammaRay.exe directly
+            auto processes = tc::ProcessHelper::GetProcessList(false);
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find("GammaRay.exe") != std::string::npos) {
+                    std::cout << "Kill exe: " << process->exe_full_path_ << std::endl;
+                    tc::ProcessHelper::CloseProcess(process->pid_);
+                    break;
+                }
+            }
+            return;
+        }
+
+        LOGI("Remove Service, will wait for service stopped.");
         // Wait for the service to stop.
         while (ssp.dwCurrentState != SERVICE_STOPPED) {
             Sleep(ssp.dwWaitHint);
@@ -347,19 +362,21 @@ namespace tc
                     (LPBYTE) &ssp,
                     sizeof(SERVICE_STATUS_PROCESS),
                     &dwBytesNeeded)) {
-                printf("QueryServiceStatusEx failed (%d)\n", GetLastError());
+                LOGE("Remove Service, QueryServiceStatusEx failed {}", GetLastError());
                 return;
             }
 
-            if (ssp.dwCurrentState == SERVICE_STOPPED)
+            if (ssp.dwCurrentState == SERVICE_STOPPED) {
+                LOGI("Remove Service, Service is stopped.");
                 break;
+            }
 
             if (GetTickCount() - dwStartTime > dwTimeout) {
-                printf("Wait timed out\n");
-                return;
+                LOGE("Remove Service, Wait timed out.");
+                break;
             }
         }
-        LOGI("Service stopped successfully\n");
+        LOGI("Remove Service, Service stopped successfully\n");
     }
 
 

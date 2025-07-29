@@ -315,7 +315,34 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
                 connect(edit, &QPushButton::clicked, this, [=, this]() {
-                    context_->SendAppMessage(MsgForceStopAllPrograms{});
+                    context_->SendAppMessage(MsgForceStopAllPrograms{
+                        .uninstall_service_ = false,
+                    });
+                });
+            }
+
+            // Uninstall Programs
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_uninstall_all_programs");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new TcPushButton(this);
+                edit->setProperty("class", "danger");
+                edit->SetTextId("id_uninstall");
+                edit->setFixedSize(QSize(80, 30));
+                edit->setEnabled(true);
+                layout->addWidget(edit, 0, Qt::AlignVCenter);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                connect(edit, &QPushButton::clicked, this, [=, this]() {
+                    context_->SendAppMessage(MsgForceStopAllPrograms{
+                        .uninstall_service_ = true,
+                    });
                 });
             }
 

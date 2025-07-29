@@ -5,6 +5,7 @@
 #include <format>
 #include <iostream>
 #include "service/service_manager.h"
+#include "tc_common_new/win32/process_helper.h"
 #include <Windows.h>
 #include <QApplication>
 #include <QProcess>
@@ -39,7 +40,15 @@ int main(int argc, char** argv) {
             g_service_manager->Install();
         }
         else if (command == "remove" || command == "sr") {
-            g_service_manager->Remove();
+            g_service_manager->Remove(true);
+            auto processes = tc::ProcessHelper::GetProcessList(false);
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find("GammaRay.exe") != std::string::npos) {
+                    std::cout << "Kill exe: " << process->exe_full_path_ << std::endl;
+                    tc::ProcessHelper::CloseProcess(process->pid_);
+                    break;
+                }
+            }
         }
         else if (command == "query" || command == "qr") {
             auto status = g_service_manager->QueryStatus();

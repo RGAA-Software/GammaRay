@@ -58,7 +58,7 @@ namespace tc
         });
 
         connect(ac_exit, &QAction::triggered, this, [=, this](bool) {
-            this->ForceStopAllPrograms();
+            this->ForceStopAllPrograms(false);
         });
 
         menu->addAction(ac_show);
@@ -222,6 +222,7 @@ namespace tc
 
             layout->addStretch();
 
+            auto exit_btn_size = QSize(btn_size.width(), btn_size.height() - 5);
             // stop all
             {
                 auto btn = new QPushButton(this);
@@ -229,12 +230,29 @@ namespace tc
                 btn->setText(tcTr("id_exit_all_programs"));
                 btn->setProperty("class", "danger");
                 //btn->setProperty("flat", true);
-                btn->setFixedSize(btn_size);
+                btn->setFixedSize(exit_btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
-                    this->ForceStopAllPrograms();
+                    this->ForceStopAllPrograms(false);
                 });
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
-                layout->addSpacing(15);
+                layout->addSpacing(5);
+
+                btn->setHidden(!settings_->IsDevelopMode());
+            }
+
+            // uninstall all
+            {
+                auto btn = new QPushButton(this);
+                btn_uninstall_ = btn;
+                btn->setText(tcTr("id_uninstall_all_programs"));
+                btn->setProperty("class", "danger");
+                //btn->setProperty("flat", true);
+                btn->setFixedSize(exit_btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    this->ForceStopAllPrograms(true);
+                });
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+                layout->addSpacing(5);
 
                 btn->setHidden(!settings_->IsDevelopMode());
             }
@@ -356,38 +374,55 @@ namespace tc
         msg_listener_->Listen<MsgDevelopModeUpdated>([=, this](const MsgDevelopModeUpdated& msg) {
             app_->GetContext()->PostUITask([=, this]() {
                 btn_exit_->setHidden(!msg.enabled_);
+                btn_uninstall_->setHidden(!msg.enabled_);
             });
         });
 
         // force stop all programs
         msg_listener_->Listen<MsgForceStopAllPrograms>([=, this](const MsgForceStopAllPrograms& msg) {
             app_->GetContext()->PostUITask([=, this]() {
-                this->ForceStopAllPrograms();
+                this->ForceStopAllPrograms(msg.uninstall_service_);
             });
         });
 
     }
 
-    void GrWorkspace::ForceStopAllPrograms() {
-        TcDialog dialog(tcTr("id_exit"), tcTr("id_exit_gammaray_msg"), this);
+    void GrWorkspace::ForceStopAllPrograms(bool uninstall_service) {
+        TcDialog dialog(tcTr("id_exit"), uninstall_service ? tcTr("id_uninstall_gammaray_msg") : tcTr("id_exit_gammaray_msg"), this);
         if (dialog.exec() == kDoneOk) {
             auto srv_mgr = this->app_->GetContext()->GetServiceManager();
-            srv_mgr->Remove();
+            srv_mgr->Remove(uninstall_service);
 
-            // kill all if service not work
             app_->GetContext()->PostDelayTask([=, this]() {
                 auto processes = tc::ProcessHelper::GetProcessList(false);
                 for (auto& process : processes) {
-                    if (process->exe_full_path_.find(kGammaRayName) != std::string::npos
-                        || process->exe_full_path_.find(kGammaRayGuardName) != std::string::npos
-                        || process->exe_full_path_.find(kGammaRayRenderName) != std::string::npos
-                        || process->exe_full_path_.find(kGammaRayClient) != std::string::npos
-                        || process->exe_full_path_.find(kGammaRayClientInner) != std::string::npos) {
+                    if (process->exe_full_path_.find(kGammaRayGuardName) != std::string::npos) {
+                        LOGI("Kill exe: {}", process->exe_full_path_);
+                        tc::ProcessHelper::CloseProcess(process->pid_);
+                        break;
+                    }
+                }
+                for (auto& process : processes) {
+                    if (process->exe_full_path_.find(kGammaRayClientInner) != std::string::npos) {
+                        LOGI("Kill exe: {}", process->exe_full_path_);
+                        tc::ProcessHelper::CloseProcess(process->pid_);
+                        break;
+                    }
+                }
+                for (auto& process : processes) {
+                    if (process->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
+                        LOGI("Kill exe: {}", process->exe_full_path_);
+                        tc::ProcessHelper::CloseProcess(process->pid_);
+                        break;
+                    }
+                }
+                for (auto& process : processes) {
+                    if (process->exe_full_path_.find(kGammaRayName) != std::string::npos) {
                         LOGI("Kill exe: {}", process->exe_full_path_);
                         tc::ProcessHelper::CloseProcess(process->pid_);
                     }
                 }
-            }, 2000);
+            }, 1000);
         }
     }
 

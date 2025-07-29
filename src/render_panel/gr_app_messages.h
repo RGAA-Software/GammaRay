@@ -183,6 +183,7 @@ namespace tc
     // exit all programs
     class MsgForceStopAllPrograms {
     public:
+        bool uninstall_service_ = false;
     };
 
     // notification clicked

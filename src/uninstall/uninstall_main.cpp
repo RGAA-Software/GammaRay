@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         QObject::connect(btn_stop, &QPushButton::clicked, &widget, [=]() {
             auto mbox = SizedMessageBox::MakeOkCancelBox("STOP All Processes", "Do you want to stop all relative processes?");
             if (mbox->exec() == 0) {
-                service_manager->Remove();
+                service_manager->Remove(false);
             }
         });
         btn_stop->setText("STOP ALL");
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
         QObject::connect(btn_uninstall, &QPushButton::clicked, &widget, [=]() {
             auto mbox = SizedMessageBox::MakeOkCancelBox("** UnInstall **", "Do you want to  UNINSTALL the software?");
             if (mbox->exec() == 0) {
-                service_manager->Remove();
+                service_manager->Remove(true);
                 QTimer::singleShot(1000, [=]() {
                     QString path = QCoreApplication::applicationDirPath();
                     path += "/shadow_deleter.exe";

@@ -47,7 +47,7 @@ namespace tc
     private:
         void ChangeTab(const TabName& tn);
         void InitListeners();
-        void ForceStopAllPrograms();
+        void ForceStopAllPrograms(bool uninstall_service);
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;
@@ -64,6 +64,7 @@ namespace tc
         MainWindowPrivate* theme_ = nullptr;
         QSystemTrayIcon* sys_tray_icon_ = nullptr;
         QPushButton* btn_exit_ = nullptr;
+        QPushButton* btn_uninstall_ = nullptr;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;
