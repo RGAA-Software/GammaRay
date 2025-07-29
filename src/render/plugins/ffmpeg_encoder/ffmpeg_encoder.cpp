@@ -25,7 +25,28 @@ namespace tc
         InitLog();
         encoder_config_ = config;
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
-        const AVCodec* encoder = avcodec_find_encoder(encoder_id);
+        const char* codec_name = nullptr;
+        if (EVideoCodecType::kHEVC == config.codec_type) {
+            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
+                codec_name = "hevc_nvenc";
+            }
+            else {
+                codec_name = "libx265";
+            }
+        }
+        else if (EVideoCodecType::kH264 == config.codec_type) {
+            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
+                codec_name = "h264_nvenc";
+            }
+            else {
+                codec_name = "libx264";
+            }
+        }
+        const AVCodec* encoder = avcodec_find_encoder_by_name(codec_name);
+        if (nullptr == encoder) {
+            LOGE("Could not find encoder for:{}", codec_name);
+            return false;
+        }
 
         codec_ctx_ = avcodec_alloc_context3(encoder);
         if (!codec_ctx_) {
@@ -33,7 +54,7 @@ namespace tc
             return false;
         }
 
-        if (encoder_config_.fps  <= 0) {
+        if (encoder_config_.fps <= 0) {
             encoder_config_.fps = 60;
         }
         if (encoder_config_.bitrate < 1000000) {
@@ -43,7 +64,7 @@ namespace tc
         codec_ctx_->width = encoder_config_.encode_width;
         codec_ctx_->height = encoder_config_.encode_height;
         codec_ctx_->time_base = { 1, encoder_config_.fps };
-        codec_ctx_->framerate = { encoder_config_.fps, 1};
+        codec_ctx_->framerate = { encoder_config_.fps, 1 };
         codec_ctx_->flags |= AV_CODEC_FLAG_LOW_DELAY;
         codec_ctx_->pix_fmt = AV_PIX_FMT_YUV420P;
         if (encoder_config_.enable_full_color_mode_) {
@@ -64,42 +85,50 @@ namespace tc
         LOGI("encoder width: {}, encoder height: {}", encoder_config_.encode_width, encoder_config_.encode_height);
 
         AVDictionary* param = nullptr;
-        if(encoder_id == AV_CODEC_ID_H264) {
-            //av_dict_set(&param, "preset", "superfast",   0);
-            av_dict_set(&param, "preset", "ultrafast",   0);
-            av_dict_set(&param, "tune",   "zerolatency", 0);
-            av_dict_set(&param, "crf", "23", 0);
-            av_dict_set(&param, "forced-idr", "1", 0);
-        }
-        if(encoder_id == AV_CODEC_ID_H265) {
-            av_dict_set(&param, "x265-params", "qp=20", 0);
-            av_dict_set(&param, "preset", "ultrafast", 0);
-            av_dict_set(&param, "tune", "zero-latency", 0);
-        }
+        if (encoder_id == AV_CODEC_ID_H264) {
+            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
+                av_dict_set(&param, "preset", "llhp", 0);
+                av_dict_set(&param, "tune", "ull", 0);
+                av_dict_set(&param, "zerolatency", "1", 0);
+            }
+            else {
+                av_dict_set(&param, "preset", "ultrafast", 0);
+                av_dict_set(&param, "tune", "zerolatency", 0);
+            }
 
-        auto ret = avcodec_open2(codec_ctx_, encoder, &param);
-        if (ret != 0) {
-            LOGE("avcodec_open2 error : {}", ret);
-            return false;
+            if (encoder_id == AV_CODEC_ID_H264) {
+                av_dict_set(&param, "crf", "23", 0);
+                av_dict_set(&param, "forced-idr", "1", 0);
+            }
+            if (encoder_id == AV_CODEC_ID_H265) {
+                av_dict_set(&param, "x265-params", "qp=20", 0);
+                av_dict_set(&param, "tune", "zero-latency", 0);
+            }
+
+            auto ret = avcodec_open2(codec_ctx_, encoder, &param);
+            if (ret != 0) {
+                LOGE("avcodec_open2 error : {}", ret);
+                return false;
+            }
+
+            frame_ = av_frame_alloc();
+            frame_->width = codec_ctx_->width;
+            frame_->height = codec_ctx_->height;
+            frame_->format = codec_ctx_->pix_fmt;
+
+            av_frame_get_buffer(frame_, 0);
+            packet_ = av_packet_alloc();
+            LOGI("Line 1: {} 2: {} 3: {}", frame_->linesize[0], frame_->linesize[1], frame_->linesize[2]);
+            return true;
         }
-
-        frame_ = av_frame_alloc();
-        frame_->width = codec_ctx_->width;
-        frame_->height = codec_ctx_->height;
-        frame_->format = codec_ctx_->pix_fmt;
-
-        av_frame_get_buffer(frame_, 0);
-        packet_ = av_packet_alloc();
-        LOGI("Line 1: {} 2: {} 3: {}", frame_->linesize[0], frame_->linesize[1], frame_->linesize[2]);
-        return true;
     }
 
-    void FFmpegEncoder::Encode(const std::shared_ptr<Image>& image, uint64_t frame_index, const std::any& extra) {
+    void FFmpegEncoder::Encode(const std::shared_ptr<Image>&image, uint64_t frame_index, const std::any & extra) {
         if (!image) {
             LOGE("image is nullptr!");
             return;
         }
-		auto beg = TimeUtil::GetCurrentTimestamp();
+        auto beg = TimeUtil::GetCurrentTimestamp();
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
         auto img_width = image->width;
         auto img_height = image->height;
@@ -117,7 +146,7 @@ namespace tc
             frame_->key_frame = 0;
             frame_->pict_type = AV_PICTURE_TYPE_NONE;
         }
-        int y_size =  img_width * img_height;
+        int y_size = img_width * img_height;
         int uv_size = img_width * img_height / 4;
         if (RawImageType::kI420 == image->raw_img_type_) {
             uv_size = img_width * img_height / 4;
@@ -153,7 +182,7 @@ namespace tc
                 } else {
                     return GrPluginEncodedVideoType::kH264;
                 }
-            }();
+                }();
             event->data_ = encoded_data;
             event->frame_width_ = img_width;
             event->frame_height_ = img_height;
@@ -200,7 +229,7 @@ namespace tc
         }
         return result;
     }
-	
+
     void FFmpegEncoder::InitLog() {
         std::call_once(init_log_flag_, []() {
             av_log_set_level(AV_LOG_WARNING);
@@ -215,6 +244,6 @@ namespace tc
                         LOGI("ffmpeg_wlog:{}", line.c_str());
                 }
             );
-        });
+            });
     }
 }
