@@ -713,6 +713,7 @@ namespace tc
                 pf->set_full_path(file.full_path());
                 pf->set_ref_path(file.ref_path());
                 pf->set_total_size(file.total_size());
+                LOGI("SendClipboardMessage, file: {}", file.file_name());
             }
         }
         if (auto buffer = tc::ProtoAsData(&m); buffer) {
