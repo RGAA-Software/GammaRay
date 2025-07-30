@@ -6,34 +6,24 @@ from shutil import copy2
 from shutil import copyfile
 from shutil import copytree
 
-def collceion_program_files(type, force_update, publish, in_target_path):
-    base_path = ""
-    #target_folder_suffix = ""
-    if type == "debug":
-        base_path = "./../"
-        #target_folder_suffix = "_debug"
-    elif type == "release":
-        base_path = "./../"
-        #target_folder_suffix = "_server_windows"
-    elif type == "rel-debug":
-        base_path = "./../"
-        #target_folder_suffix = "_server_windows_dbginfo"
-    else:
-        print("don't known the mode : {}, must debug/release".format(sys.argv[1]))
-        return
-
+def collceion_program_files(force_update, in_target_path):
+    
+    base_path = "./../"
+    
     print("the path is : {}".format(base_path))
 
     ignore_files = [
         "plugin_amf_encoder.dll",
         "plugin_clipboard.dll",
         "plugin_dda_capture.dll",
+        "plugin_event_replayer.dll",
         "plugin_ffmpeg_encoder.dll",
         "plugin_file_transfer.dll",
         "plugin_frame_debugger.dll",
         "plugin_frame_resizer.dll",
         "plugin_media_recorder.dll",
         "plugin_mock_video_stream.dll",
+        "plugin_multi_screens.dll",
         "plugin_net_relay.dll",
         "plugin_net_rtc.dll",
         "plugin_net_udp.dll",
@@ -44,7 +34,25 @@ def collceion_program_files(type, force_update, publish, in_target_path):
         "plugin_was_audio_capture.dll",
         "plugin_vr_manager.dll",
         "tc_rtc_client.dll",
-        "protoc.exe"
+        "protoc.exe",
+        "tc_graphics_helper.exe",
+        "tc_graphics_util.exe",
+        "test_audio_capture.exe",
+        "test_common.exe",
+        "test_http_client.exe",
+        "test_opus_api.exe",
+        "test_opus_decode.exe",
+        "test_opus_encode.exe",
+        "test_opus_extensions.exe",
+        "test_opus_padding.exe",
+        "test_resolutions.exe",
+        "yuvconstants.exe",
+        "yuvconvert.exe",
+        "protoc-gen-upbdefs.exe",
+        "protoc-gen-upb_minitable.exe",
+        "protoc-gen-upb.exe",
+        "cpuid.exe",
+        "shadow_deleter.exe",
     ]
 
     files_with_ref_path = []
@@ -63,7 +71,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
             files_with_ref_path.append(file_path)
         if ".DLL" in file:
             files_with_ref_path.append(file_path)
-        if ".exe" in file  and "vc_redist.x64.exe" not in file:
+        if ".exe" in file:
             files_with_ref_path.append(file_path)
         if ".key" in file:
             files_with_ref_path.append(file_path)
@@ -71,10 +79,7 @@ def collceion_program_files(type, force_update, publish, in_target_path):
             files_with_ref_path.append(file_path)
         if ".ico" in file:
             files_with_ref_path.append(file_path)
-        if not publish:
-            if "data.dat" in file:
-                files_with_ref_path.append(file_path)
-
+        
     resources_file_path = []
     #resources_file_path.append("resources/MicrosoftYaqiHei-2.ttf")
 
@@ -130,28 +135,14 @@ def collceion_program_files(type, force_update, publish, in_target_path):
         except:
             print("3rd libs folder already exists, use : force-update if you want to update them.")
 
-# python install.py release/debug/rel-debug
-# gen publish folder at : out/build/{x64-debug/x64-release/x64-rel-debug}/publish
+# python install.py target_path
+
 if __name__ == "__main__":
-    # param 1. release / debug
-    #
     print("arg : {}".format(sys.argv))
     force_update = True
-    publish = False
-    compile_type = sys.argv[1]
-    if len(sys.argv) >= 2:
-        if sys.argv[1] == "force-update":
-            force_update = True
-        if sys.argv[1] == "pub-rel-debug":
-            force_update = True
-            publish = True
-            compile_type = "rel-debug"
-        if sys.argv[1] == "publish":
-            force_update = True
-            publish = True
-            compile_type = "release"
+    
     target_path = ""
-    if len(sys.argv) >= 3:
-        target_path = sys.argv[2]
+    if len(sys.argv) >= 2:
+        target_path = sys.argv[1]
 
-    collceion_program_files(compile_type, force_update, publish, target_path)
+    collceion_program_files(force_update, target_path)
