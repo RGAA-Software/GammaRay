@@ -82,7 +82,7 @@ namespace tc
         codec_ctx_->max_b_frames = 0;
         codec_ctx_->bit_rate = encoder_config_.bitrate;
 
-        LOGI("ffmpeg encoder config:");
+        LOGI("ffmpeg encoder config: {}", codec_name);
         LOGI("bitrate: {}", codec_ctx_->bit_rate);
         LOGI("format: {}", (config.codec_type == EVideoCodecType::kHEVC ? "HEVC" : "H264"));
         LOGI("refresh rate(fps): {}", encoder_config_.fps);
@@ -102,7 +102,7 @@ namespace tc
             av_dict_set(&param, "header_insertion_mode", "idr", 0);
             av_dict_set(&param, "rc", "cqp", 0);
             av_dict_set(&param, "profile", "main", 0);
-            av_dict_set(&param, "usage", "ultralowlatency", 0);
+            // av_dict_set(&param, "usage", "ultralowlatency", 0);
         }
         else {
             av_dict_set(&param, "preset", "ultrafast", 0);
