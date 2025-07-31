@@ -6,10 +6,23 @@ from shutil import copy2
 from shutil import copyfile
 from shutil import copytree
 
+import re
+
+def extract_project_version(file_path):
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    # 使用正则表达式匹配 #define PROJECT_VERSION "x.x.x"
+    match = re.search(r'#define\s+PROJECT_VERSION\s+"([0-9.]+)"', content)
+    if match:
+        return match.group(1)
+    return None
+
+
 def collceion_program_files(force_update, in_target_path):
-    
+
     base_path = "./../"
-    
+
     print("the path is : {}".format(base_path))
 
     ignore_files = [
@@ -79,7 +92,7 @@ def collceion_program_files(force_update, in_target_path):
             files_with_ref_path.append(file_path)
         if ".ico" in file:
             files_with_ref_path.append(file_path)
-        
+
     resources_file_path = []
     #resources_file_path.append("resources/MicrosoftYaqiHei-2.ttf")
 
@@ -140,9 +153,12 @@ def collceion_program_files(force_update, in_target_path):
 if __name__ == "__main__":
     print("arg : {}".format(sys.argv))
     force_update = True
-    
+
     target_path = ""
     if len(sys.argv) >= 2:
         target_path = sys.argv[1]
+    else:
+        target_path = "release_" + extract_project_version("../app_config.h")
+        target_path = target_path.replace(".", "_")
 
     collceion_program_files(force_update, target_path)
