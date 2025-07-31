@@ -1,5 +1,7 @@
-rmdir /s /q packages\com.rgaa.gammaray\data
+@echo off
 
-python install.py release
+for /d %%d in (release_*) do rmdir /s /q "%%d"
 
-binarycreator.exe -c config/config.xml -p packages GammaRaySetup.exe -v
+python install.py
+
+rem binarycreator.exe -c config/config.xml -p packages GammaRaySetup.exe -v
