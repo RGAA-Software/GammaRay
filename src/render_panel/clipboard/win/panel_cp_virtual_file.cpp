@@ -19,7 +19,6 @@
 #include "tc_message_new/proto_converter.h"
 #include "tc_message_new/rp_proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
-#include "render_plugins/clipboard/clipboard_plugin.h"
 #include "render_panel/transfer/file_transfer.h"
 #include "render_panel/database/gr_database.h"
 #include "render_panel/database/visit_record.h"

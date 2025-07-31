@@ -8,7 +8,6 @@
 #include "tc_common_new/time_util.h"
 #include "tc_message_new/proto_converter.h"
 #include "plugin_interface/gr_plugin_events.h"
-#include "render_plugins/clipboard/clipboard_plugin.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_application.h"
 #include "tc_message_new/proto_converter.h"
