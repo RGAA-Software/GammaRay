@@ -32,6 +32,7 @@ namespace tc
         void Exit();
         int32_t GetEncodeFps();
         std::vector<int32_t> GetEncodeDurations();
+        std::string GetDisplayEncoderName();
 
     private:
         FFmpegEncoderPlugin* plugin_ = nullptr;
@@ -44,6 +45,7 @@ namespace tc
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;
         std::deque<int32_t> encode_durations_;
         std::once_flag init_log_flag_;
+        std::string display_encoder_name_;
     private:
         void InitLog();
     };
