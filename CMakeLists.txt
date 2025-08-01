@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 include(env_settings.cmake)
+include(version.cmake)
 
 set(CMAKE_PREFIX_PATH ${QT_ROOT}/lib/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)

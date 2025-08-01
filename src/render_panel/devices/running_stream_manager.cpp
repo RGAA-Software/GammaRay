@@ -3,6 +3,7 @@
 //
 
 #include "running_stream_manager.h"
+#include <QApplication>
 #include <qstandardpaths.h>
 #include "tc_common_new/base64.h"
 #include "render_panel/gr_settings.h"
@@ -112,9 +113,11 @@ namespace tc
         LOGI("MY RDM PWD: {}", item->device_random_pwd_);
         LOGI("RE RDM PWD: {}", item->remote_device_random_pwd_);
 
-        process->start("./GammaRayClientInner.exe", arguments);
+        auto client_inner_path = qApp->applicationDirPath() + "/" + kGammaRayClientInner.c_str();
+        process->start(client_inner_path, arguments);
         running_processes_.erase(item->stream_id_);
         running_processes_.insert({item->stream_id_, process});
+        LOGI("After start client: {}", client_inner_path.toStdString());
     }
 
     void RunningStreamManager::StopStream(const std::shared_ptr<StreamItem>& item) {
