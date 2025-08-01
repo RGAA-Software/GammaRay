@@ -8,10 +8,22 @@
 ### Showcases
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)  
 [Youtube Introduce](..)
-
+### Usage
+##### 1. [How To Use](docs/How_to_use.md)
+##### 2. [How To Build](docs/How_to_build.md)
+##### 2. [How To Deploy](docs/How_to_deploy.md)
 ### GammaRay
 #### ⚡️Stream your games and desktop to other devices, and replay gamepad,keyboard,mouse events on the host PC. In a word, It's a alternative of TeamViewer, ToDesk, RustDesk, etc.
 #### ⚡️类似ToDesk, 向日葵, RustDesk, TeamViewer的工具，可远程操作电脑，模拟手柄玩游戏
+
+### Support Platforms
+✅  Ready  
+⌛  Developing
+
+| Platform | Client | Server  |
+|----------|--------|---------|
+| Windows  | ✅      | ✅       |
+| Android  | ✅      | ⌛       |
 
 ### Screenshots
 ![](docs/images/main.jpg)
@@ -30,9 +42,6 @@
 #### Test (Elden Ring)
 ![](docs/images/test2.gif)
 
-#### 1. [How To Use](docs/How_to_use.md)
-#### 2. [How To Build](docs/How_to_build.md)
-#### 2. [How To Deploy](docs/How_to_deploy.md)
-
 ### License
-##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact me at: hollow.ichigo.yoo@gmail.com   
+##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact us at: hollow.ichigo.yoo@gmail.com 
+##### 个人免费使用，请勿私自商用，如有商用需求，请联系我们。

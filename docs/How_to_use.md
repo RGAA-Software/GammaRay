@@ -1,3 +1,35 @@
+### Installation
+> There are two ways to achieve this
+#### Method 1. Extract the zip and double-click GammaRay.exe
+#### Method 2. Double-click installer to install it
+
+### Windows
+#### 1. Direct Mode(By Connect Information)
+> You can access the machine directly, eg:  
+> a. You are in the same router  
+> b. The server has an External IP
+##### 1.1 Copy the server information
+![](usage/use_1.png)
+
+##### 1.2 Paste it in
+![](usage/use_3.png)
+
+##### 1.3 Click OK to connect
+> You can leave the **Device Name** empty
+
+![](usage/use_4.png)
+
+#### 2. Direct Mode(By IP/Port)
+> You can access the machine directly, eg:  
+> a. You are in the same router  
+> b. The server has an External IP
+
+##### 2.1 Input your server's IP
+> Using the default port is ok
+
+![](usage/use_5.png)
+![](usage/use_6.png)
+
 ### Android
 #### 3-2 Run a Android Client
 Firstly, download and install the GammaRay_Official_xxx.apk
