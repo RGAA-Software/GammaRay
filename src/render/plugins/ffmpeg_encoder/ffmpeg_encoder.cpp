@@ -29,23 +29,29 @@ namespace tc
         if (EVideoCodecType::kHEVC == config.codec_type) {
             if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
                 codec_name = "hevc_nvenc";
+                display_encoder_name_ = "F_NVENC";
             }
             else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
                 codec_name = "hevc_amf";
+                display_encoder_name_ = "F_AMF";
             }
             else {
                 codec_name = "libx265";
+                display_encoder_name_ = "S/W";
             }
         }
         else if (EVideoCodecType::kH264 == config.codec_type) {
             if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
                 codec_name = "h264_nvenc";
+                display_encoder_name_ = "F_NVENC";
             }
             else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
                 codec_name = "h264_amf";
+                display_encoder_name_ = "F_AMF";
             }
             else {
                 codec_name = "libx264";
+                display_encoder_name_ = "S/W";
             }
         }
         const AVCodec* encoder = avcodec_find_encoder_by_name(codec_name);
@@ -256,6 +262,10 @@ namespace tc
                         LOGI("ffmpeg_wlog:{}", line.c_str());
                 }
             );
-            });
+        });
+    }
+
+    std::string FFmpegEncoder::GetDisplayEncoderName() {
+        return display_encoder_name_;
     }
 }
