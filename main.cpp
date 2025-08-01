@@ -16,6 +16,7 @@
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_common_new/shared_preference.h"
+#include "tc_common_new/dump_helper.h"
 
 using namespace tc;
 
@@ -70,9 +71,11 @@ static bool AcquirePermissionForRestartDevice() {
 int main(int argc, char *argv[]) {
     AcquirePermissionForRestartDevice();
 
-    ::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
-    ::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
-    ::ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);  // WM_COPYGLOBALDATA
+    CaptureDump();
+
+    //::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
+    //::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
+    //::ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);  // WM_COPYGLOBALDATA
 
     QApplication app(argc, argv);
 
@@ -119,8 +122,6 @@ int main(int argc, char *argv[]) {
     g_workspace->Init();
     g_workspace->setFixedSize(1450, 800);
     g_workspace->show();
-
-   
 
     return app.exec();
 }

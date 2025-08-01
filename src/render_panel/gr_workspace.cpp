@@ -39,7 +39,13 @@ namespace tc
     std::shared_ptr<GrWorkspace> grWorkspace;
 
     GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
-        setWindowTitle(std::format("GammaRay(V{})", PROJECT_VERSION).c_str());
+        auto version = "";
+#if PREMIUM_VERSION
+        version = "Premium";
+#else
+        version = "Freemium";
+#endif
+        setWindowTitle(std::format("GammaRay(V{} {})", PROJECT_VERSION, version).c_str());
         settings_ = GrSettings::Instance();
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
