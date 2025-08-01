@@ -93,7 +93,7 @@
   "id_file_name": "File Name",
   "id_server_status": "Server Status",
   "id_joystick_driver": "Joystick Driver Status",
-  "id_renderer_status": "Renderer Status",
+  "id_renderer_status": "Render Status",
   "id_service_status": "Service Status",
   "id_host_address": "Host Address",
   "id_panel_tcp_port": "Panel TCP Port",

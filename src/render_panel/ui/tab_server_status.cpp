@@ -76,6 +76,7 @@ namespace tc
                 layout->addSpacing(8);
             }
 
+#if PREMIUM_VERSION
             // driver status
             {
                 auto item_layout = new NoMarginHLayout();
@@ -121,6 +122,7 @@ namespace tc
 
                 layout->addLayout(item_layout);
             }
+#endif
 
             // server status
             {
@@ -494,7 +496,9 @@ namespace tc
     }
 
     void TabServerStatus::RefreshVigemState(bool ok) {
-        RefreshIndicatorState(lbl_vigem_state_, ok);
+        if (lbl_vigem_state_) {
+            RefreshIndicatorState(lbl_vigem_state_, ok);
+        }
     }
 
     void TabServerStatus::RefreshServerState(bool ok) {

@@ -232,7 +232,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgInstallViGEm>([=, this](const MsgInstallViGEm& msg) {
             context_->PostTask([this]() {
-                tc::GrSystemMonitor::InstallViGem(false);
+                tc::GrSystemMonitor::InstallViGem(true);
             });
         });
 
