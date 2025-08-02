@@ -193,6 +193,9 @@ add_executable(uninstall WIN32
         icon.rc
         ${UNINSTALL_SRCS}
         ${SERVICE_MGR_SRCS})
+
+target_link_libraries(uninstall PRIVATE gflags)
+
 SET_TARGET_PROPERTIES(uninstall PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 add_executable(shadow_deleter ${SHADOW_DELETER_SRCS})
 SET_TARGET_PROPERTIES(shadow_deleter PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")

@@ -14,12 +14,42 @@
 #include <windows.h>
 #include "service/service_manager.h"
 #include "tc_qt_widget/sized_msg_box.h"
+#include "gflags/gflags.h"
 
 using namespace tc;
 
+DEFINE_string(option, "null", "uninstall/stop");
+
 int main(int argc, char** argv) {
+
     QApplication app(argc, argv);
 
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+
+    auto service_manager = ServiceManager::Make();
+    service_manager->Init("GammaRayService", "", "GammaRat Service", "** GammaRay Service **");
+    
+    if (FLAGS_option == "uninstall") {
+        service_manager->Remove(true);
+        QString path = QCoreApplication::applicationDirPath();
+        path += "/shadow_deleter.exe";
+        auto process = new QProcess();
+        QStringList args;
+        args.append(path);
+        process->startDetached(path, args);
+        qApp->exit(0);
+    }
+    else if (FLAGS_option == "stop") {
+        service_manager->Remove(false);
+    }
+    else if (FLAGS_option == "null") {
+        return 0;
+    }
+    else {
+        return 0;
+    }
+
+#if 0
     auto service_manager = ServiceManager::Make();
     service_manager->Init("GammaRayService", "", "GammaRat Service", "** GammaRay Service **");
 
@@ -76,6 +106,7 @@ int main(int argc, char** argv) {
     layout->addSpacing(20);
 
     widget.show();
+#endif
 
-    return app.exec();
+    return 0;
 }
