@@ -64,8 +64,7 @@ def collceion_program_files(force_update, in_target_path):
         "protoc-gen-upbdefs.exe",
         "protoc-gen-upb_minitable.exe",
         "protoc-gen-upb.exe",
-        "cpuid.exe",
-        "shadow_deleter.exe",
+        "cpuid.exe"
     ]
 
     files_with_ref_path = []
