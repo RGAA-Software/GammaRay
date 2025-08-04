@@ -12,6 +12,7 @@ namespace tc
 
     class GrGuardContext;
     class GrPanelGuard;
+    class GrPanelClient;
 
     class GrGuardApp {
     public:
@@ -20,6 +21,7 @@ namespace tc
     private:
         std::shared_ptr<GrGuardContext> context_ = nullptr;
         std::shared_ptr<GrPanelGuard> panel_guard_ = nullptr;
+        std::shared_ptr<GrPanelClient> panel_client_ = nullptr;
     };
 
 }

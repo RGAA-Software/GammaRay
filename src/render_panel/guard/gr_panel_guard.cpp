@@ -48,8 +48,9 @@ namespace tc
     }
 
     void GrPanelGuard::StartPanel() {
-        auto exe_path = QCoreApplication::applicationDirPath().toStdString() + "/" + kGammaRayName;
-        ProcessUtil::StartProcess(exe_path, {}, true, false);
+        auto cmdline = QCoreApplication::applicationDirPath() + "/" + kGammaRayName;
+        ProcessUtil::StartProcess(cmdline.toStdString(), {}, true, false);
+        //ProcessUtil::StartProcessInWorkDir(QCoreApplication::applicationDirPath().toStdString(), cmdline.toStdString(), {});
     }
 
 }

@@ -82,6 +82,10 @@ int main(int argc, char *argv[]) {
     auto base_dir = QApplication::applicationDirPath();
     PrepareDirs(base_dir);
 
+    auto log_path = base_dir + "/gr_logs/gammaray.log";
+    std::cout << "log path: " << log_path.toStdString() << std::endl;
+    Logger::InitLog(log_path.toStdString(), true);
+
     // init sp
     auto sp_dir = qApp->applicationDirPath() + "/gr_data";
     if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
@@ -92,12 +96,11 @@ int main(int argc, char *argv[]) {
     {
         auto auto_start = std::make_shared<tc::AutoStart>();
         auto path = QApplication::applicationFilePath().toStdString();
-        auto_start->NewTask((char*)"GammaRay_Panel_Start", (char*)path.c_str(), NULL, (char*)"GR");
-    }
+        auto_start->NewLogonTask((char*)"GammaRay_Panel_Start", (char*)path.c_str(), NULL, (char*)"GR");
 
-    auto log_path = base_dir + "/gr_logs/gammaray.log";
-    std::cout << "log path: " << log_path.toStdString() << std::endl;
-    Logger::InitLog(log_path.toStdString(), true);
+        //auto guard_path = QApplication::applicationDirPath() + "/" + kGammaRayGuardName.c_str();
+        //auto_start->NewTimeTask((char*)"GammaRay_Guard_Time_02", (char*)guard_path.toStdString().c_str(), NULL, (char*)"GR");
+    }
 
     // pipe
     auto rn_pipe = std::make_shared<GrRunningPipe>();

@@ -62,17 +62,23 @@ namespace tc
                 )
             );
 
-        }).bind_connect([&]() {
+        })
+        .bind_connect([&]() {
             if (asio2::get_last_error()) {
-                LOGE("WsPanelClient,connect failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
+                LOGE("WsPanelClient,connect failure : {} {}", asio2::last_error_val(), QString::fromStdString(asio2::last_error_msg()).toStdString().c_str());
             } else {
                 LOGI("WsPanelClient,connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }
-        }).bind_upgrade([&]() {
+        })
+        .bind_disconnect([]() {
+            LOGE("WsPanelClient disconnected");
+        })
+        .bind_upgrade([]() {
             if (asio2::get_last_error()) {
                 LOGE("WsPanelClient,upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
             }
-        }).bind_recv([this](std::string_view data) {
+        })
+        .bind_recv([this](std::string_view data) {
             ParseNetMessage(data);
         });
 

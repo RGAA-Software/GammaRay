@@ -11,6 +11,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QProcess>
+#include <QLabel>
 
 namespace tc
 {
@@ -26,6 +27,9 @@ namespace tc
 
         void OnTabShow() override;
         void OnTabHide() override;
+
+        void resizeEvent(QResizeEvent *event) override;
+
     private:
         void ScanInstalledGames();
         QListWidgetItem* AddItem(const TcDBGamePtr& game);
@@ -36,11 +40,14 @@ namespace tc
         void VisitListWidget(std::function<void(QListWidgetItem* item, QWidget* item_widget)>&& cbk);
         void ShowAddGamePanel();
         void RefreshGames();
+        void ShowEmptyTip();
+        void HideEmptyTip();
 
     private:
         QListWidget* list_widget_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::vector<TcDBGamePtr> games_;
+        QLabel* empty_tip_ = nullptr;
     };
 
 }
