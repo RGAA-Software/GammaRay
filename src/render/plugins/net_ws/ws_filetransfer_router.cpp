@@ -46,7 +46,7 @@ namespace tc
             post_thread_id_ = tid;
         }
         if (tid != post_thread_id_) {
-            LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
+            //LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
         }
 
         session_->ws_stream().binary(true);

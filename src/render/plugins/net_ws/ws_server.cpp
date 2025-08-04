@@ -51,7 +51,7 @@ namespace tc
         server_ = std::make_shared<asio2::https_server>();
         server_->bind_disconnect([=, this](std::shared_ptr<asio2::https_session>& sess_ptr) {
             auto socket_fd = (uint64_t)sess_ptr->socket().native_handle();
-            LOGI("client disconnected: {}", socket_fd);
+            //LOGI("client disconnected: {}", socket_fd);
             if (stream_routers_.HasKey(socket_fd)) {
                 if (auto opt_val = stream_routers_.Remove(socket_fd); opt_val.has_value()) {
                     const auto& val = opt_val.value();

@@ -211,6 +211,14 @@ namespace tc
             });
         });
 
+        empty_tip_ = new QLabel(this);
+        int empty_size = 64;
+        empty_tip_->resize(empty_size, empty_size);
+        auto pixmap = QPixmap::fromImage(QImage(":/resources/image/empty.svg"));
+        pixmap = pixmap.scaled(empty_size, empty_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        empty_tip_->setPixmap(pixmap);
+
+        ShowEmptyTip();
         ScanInstalledGames();
     }
 
@@ -253,8 +261,14 @@ namespace tc
 
             if (games_.empty() && scan_games.empty()) {
                 // todo 2.show empty
+                context_->PostUITask([=, this]() {
+                    this->ShowEmptyTip();
+                });
             } else {
                 // todo 3.hide loading
+                context_->PostUITask([=, this]() {
+                    this->HideEmptyTip();
+                });
             }
 
             if (games_.empty()) {
@@ -427,6 +441,20 @@ namespace tc
                 }
             }
         });
+    }
+
+    void TabGame::resizeEvent(QResizeEvent *event) {
+        int width = event->size().width();
+        int height = event->size().height();
+        empty_tip_->setGeometry((width - empty_tip_->width())/2, (height - empty_tip_->height())/2, empty_tip_->width(), empty_tip_->height());
+    }
+
+    void TabGame::ShowEmptyTip() {
+        empty_tip_->show();
+    }
+
+    void TabGame::HideEmptyTip() {
+        empty_tip_->hide();
     }
 
 }

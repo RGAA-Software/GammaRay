@@ -3,11 +3,17 @@
 //
 
 #include "gr_guard_starter.h"
+#include <QApplication>
+#include <shlobj.h>
+#include <shlwapi.h>
+#include <objbase.h>
+#include <shellapi.h>
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/process_util.h"
+#include "tc_common_new/auto_start.h"
 
 namespace tc
 {
@@ -38,8 +44,8 @@ namespace tc
     }
 
     void GrGuardStarter::StartGuard() {
-        auto exe_path = context_->GetCurrentExeFolder() + "/" + kGammaRayGuardName;
-        ProcessUtil::StartProcess(exe_path, {}, true, false);
+        auto cmdline = context_->GetCurrentExeFolder() + "/" + kGammaRayGuardName;
+        ProcessUtil::RunAsAdminWithShell(QString::fromStdString(cmdline).toStdWString().c_str());
     }
 
 }
