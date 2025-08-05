@@ -157,7 +157,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         target_path = sys.argv[1]
     else:
-        target_path = "release_" + extract_project_version("../app_config.h")
+        target_path = "release_" + extract_project_version("../version_config.h")
         target_path = target_path.replace(".", "_")
 
     collceion_program_files(force_update, target_path)

@@ -5,7 +5,7 @@
 #include "gr_settings.h"
 #include <sstream>
 #include <QApplication>
-#include "app_config.h"
+#include "version_config.h"
 #include "gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
