@@ -48,8 +48,6 @@ def collceion_program_files(force_update, in_target_path):
         "plugin_vr_manager.dll",
         "tc_rtc_client.dll",
         "protoc.exe",
-        "tc_graphics_helper.exe",
-        "tc_graphics_util.exe",
         "test_audio_capture.exe",
         "test_common.exe",
         "test_http_client.exe",
