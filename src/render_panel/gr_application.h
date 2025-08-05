@@ -38,7 +38,7 @@ namespace tc
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
 
-        explicit GrApplication(QWidget* main_window);
+        explicit GrApplication(QWidget* main_window, bool run_automatically);
         ~GrApplication() override;
 
         bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) override;
@@ -121,6 +121,9 @@ namespace tc
 
         // guard starter
         std::shared_ptr<GrGuardStarter> guard_starter_ = nullptr;
+
+        // is started by OS when logon?
+        bool run_automatically_ = false;
 
     };
 

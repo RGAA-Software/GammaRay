@@ -51,8 +51,9 @@ namespace tc
 
     std::shared_ptr<GrApplication> grApp;
 
-    GrApplication::GrApplication(QWidget* main_window) : QObject(main_window) {
+    GrApplication::GrApplication(QWidget* main_window, bool run_automatically) : QObject(main_window) {
         main_window_ = main_window;
+        run_automatically_ = run_automatically;
     }
 
     GrApplication::~GrApplication() = default;
@@ -118,10 +119,12 @@ namespace tc
         RegisterMessageListener();
         StartWindowsMessagesLooping();
 
-        context_->PostUIDelayTask([=, this]() {
-            this->UpdateServerSecurityPasswordIfNeeded();
-            CheckSecurityPassword();
-        }, 500);
+        if (!run_automatically_) {
+            context_->PostUIDelayTask([=, this]() {
+                this->UpdateServerSecurityPasswordIfNeeded();
+                CheckSecurityPassword();
+            }, 500);
+        }
     }
 
     void GrApplication::Exit() {
