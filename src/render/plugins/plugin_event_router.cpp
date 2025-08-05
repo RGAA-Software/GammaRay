@@ -21,7 +21,7 @@
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_video_encoder_plugin.h"
 #include "plugin_stream_event_router.h"
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 
 using namespace nlohmann;
 

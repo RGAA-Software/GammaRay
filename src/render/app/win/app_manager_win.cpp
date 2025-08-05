@@ -88,7 +88,7 @@ namespace tc
         std::string folder_path = GetExeFolderPath();
         memcpy(inject_params.host_exe_folder, folder_path.c_str(), folder_path.size());
         inject_params.listening_port = settings_->transmission_.listening_port_;
-        inject_params.shm_client_to_host_buffer_size = settings_->GetShmBufferSize();
+        inject_params.shm_client_to_host_buffer_size = 0;//settings_->GetShmBufferSize();
         inject_params.send_video_frame_by_shm = settings_->capture_.send_video_frame_by_shm_;
 
         // steam prefix

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "tc_capture_new/win/inject_params.h"
+#include "hook_capture/win/inject_params.h"
 
 namespace tc
 {

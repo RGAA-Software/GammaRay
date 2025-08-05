@@ -453,7 +453,7 @@ namespace tc
         RestartCapturing();
     }
 
-    VirtulDesktopBoundRectangleInfo DDACapturePlugin::GetVirtualDesktopBoundRectangleInfo() {
+    VirtualDesktopBoundRectangleInfo DDACapturePlugin::GetVirtualDesktopBoundRectangleInfo() {
         return virtual_desktop_bound_rectangle_info_;
     }
 

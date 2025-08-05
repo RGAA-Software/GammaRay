@@ -32,7 +32,7 @@
 //    private:
 //        // capturing monitors
 //        std::vector<CaptureMonitorInfo> monitors_;
-//        VirtulDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
+//        VirtualDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
 //
 //        bool current_key_status_[256] = {false, };
 //        bool control_pressed_ = false;

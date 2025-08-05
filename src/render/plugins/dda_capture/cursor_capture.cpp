@@ -7,7 +7,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/time_util.h"
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 #include "tc_common_new/log.h"
 #include "tc_message.pb.h"
 #include "plugin_interface/gr_plugin_events.h"

@@ -9,7 +9,6 @@
 #include "toml/toml.hpp"
 #include "tc_common_new/string_util.h"
 #include "tc_common_new/log.h"
-#include "tc_capture_new/win/client_ipc_manager.h"
 #include "tc_common_new/shared_preference.h"
 
 namespace tc
@@ -28,31 +27,31 @@ namespace tc
         desc_.version_ = result["description"]["version"].value_or("0.0.1");
 
         // encoder
-        auto encoder_select_type = result["encoder"]["select-type"].value_or("auto");
-        encoder_.encoder_select_type_ = [&]() -> ECreateEncoderPolicy {
-            if (std::string(encoder_select_type) == std::string("auto")) {
-                return ECreateEncoderPolicy::kAuto;
-            }
-            else if (std::string(encoder_select_type) == std::string("specify")) {
-                return ECreateEncoderPolicy::kSpecify;
-            }
-            else {
-                return ECreateEncoderPolicy::kAuto;
-            }
-        }();
-
-        auto encoder_name = result["encoder"]["name"].value_or("nvenc");
-        encoder_.encoder_name_ = [&]() {
-            if (std::string(encoder_name) == std::string("nvenc")) {
-                return ECreateEncoderName::kNVENC;
-            }
-            else if (std::string(encoder_name) == std::string("amf")) {
-                return ECreateEncoderName::kAMF;
-            }
-            else {
-                return ECreateEncoderName::kFFmpeg;
-            }
-        } ();
+//        auto encoder_select_type = result["encoder"]["select-type"].value_or("auto");
+//        encoder_.encoder_select_type_ = [&]() -> ECreateEncoderPolicy {
+//            if (std::string(encoder_select_type) == std::string("auto")) {
+//                return ECreateEncoderPolicy::kAuto;
+//            }
+//            else if (std::string(encoder_select_type) == std::string("specify")) {
+//                return ECreateEncoderPolicy::kSpecify;
+//            }
+//            else {
+//                return ECreateEncoderPolicy::kAuto;
+//            }
+//        }();
+//
+//        auto encoder_name = result["encoder"]["name"].value_or("nvenc");
+//        encoder_.encoder_name_ = [&]() {
+//            if (std::string(encoder_name) == std::string("nvenc")) {
+//                return ECreateEncoderName::kNVENC;
+//            }
+//            else if (std::string(encoder_name) == std::string("amf")) {
+//                return ECreateEncoderName::kAMF;
+//            }
+//            else {
+//                return ECreateEncoderName::kFFmpeg;
+//            }
+//        } ();
 
         auto encoder_format = result["encoder"]["format"].value_or("h264");
         encoder_.encoder_format_ = [&]() {
@@ -130,12 +129,12 @@ namespace tc
         return true;
     }
 
-    uint32_t RdSettings::GetShmBufferSize() const {
-        auto frame_buffer_size = 1920 * 1080 * 4 ;
-        auto default_buffer_size = kHostToClientShmSize;//2 * 1024 * 1024;
-        auto shm_size = (this->encoder_.encoder_select_type_ == ECreateEncoderPolicy::kSpecify && this->encoder_.encoder_name_ == ECreateEncoderName::kFFmpeg) ? frame_buffer_size : default_buffer_size;
-        return shm_size;
-    }
+//    uint32_t RdSettings::GetShmBufferSize() const {
+//        auto frame_buffer_size = 1920 * 1080 * 4 ;
+//        auto default_buffer_size = kHostToClientShmSize;//2 * 1024 * 1024;
+//        auto shm_size = (this->encoder_.encoder_select_type_ == ECreateEncoderPolicy::kSpecify && this->encoder_.encoder_name_ == ECreateEncoderName::kFFmpeg) ? frame_buffer_size : default_buffer_size;
+//        return shm_size;
+//    }
 
     std::string RdSettings::Dump() {
         std::stringstream ss;
@@ -143,8 +142,8 @@ namespace tc
         ss << "  - author: " << desc_.author_ << std::endl;
         ss << "  - version: " << desc_.version_ << std::endl;
         ss << "Encoder: \n";
-        ss << "  - select type: " << (int)encoder_.encoder_select_type_ << " (0 => auto, 1 => specify)" << std::endl;
-        ss << "  - encoder name: " << (int)encoder_.encoder_name_ << " (0=> Unknown, 1 => NVENC, 2 => AMF, 3 => FFmpeg)" << std::endl;
+//        ss << "  - select type: " << (int)encoder_.encoder_select_type_ << " (0 => auto, 1 => specify)" << std::endl;
+//        ss << "  - encoder name: " << (int)encoder_.encoder_name_ << " (0=> Unknown, 1 => NVENC, 2 => AMF, 3 => FFmpeg)" << std::endl;
         ss << "  - encoder format: " << encoder_.encoder_format_ << " (0 => H264, 1 => HEVC)" << std::endl;
         ss << "  - bitrate: " << encoder_.bitrate_ << std::endl;
         ss << "  - encode resolution type: " << (int)encoder_.encode_res_type_ << " (0 => origin, 1=> specify) " <<  std::endl;

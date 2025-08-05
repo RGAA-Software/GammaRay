@@ -7,7 +7,6 @@
 
 #include <map>
 #include <string>
-#include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_steam_manager_new/steam_entities.h"
 
 namespace tc
@@ -32,8 +31,8 @@ namespace tc
             kSpecify,
         };
 
-        ECreateEncoderPolicy encoder_select_type_;
-        ECreateEncoderName encoder_name_;
+//        ECreateEncoderPolicy encoder_select_type_;
+//        ECreateEncoderName encoder_name_;
         EncoderFormat encoder_format_;
         int fps_ = 30;
         int bitrate_;
@@ -124,7 +123,7 @@ namespace tc
 
         bool LoadSettings(const std::string& path);
         std::string Dump();
-        uint32_t GetShmBufferSize() const;
+//        uint32_t GetShmBufferSize() const;
         void LoadSettingsFromDatabase();
         bool EnableFullColorMode();
         void SetFullColorMode(bool enable);
