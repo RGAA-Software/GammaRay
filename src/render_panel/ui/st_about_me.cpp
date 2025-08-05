@@ -8,7 +8,7 @@
 #include <QDesktopServices>
 
 #include "tc_label.h"
-#include "app_config.h"
+#include "version_config.h"
 #include "tc_image_button.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_context.h"

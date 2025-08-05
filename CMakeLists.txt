@@ -21,6 +21,9 @@ if (BUILD_PREMIUM)
     set(GR_PROJECT_BINARY_PATH ${CMAKE_CURRENT_BINARY_DIR})
     set(WEBRTC_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc)
     add_definitions(-DPREMIUM_VERSION=1)
+
+    configure_file(${CMAKE_SOURCE_DIR}/app_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/app_config.h)
+
     message("Webrtc Root: ${WEBRTC_ROOT}")
 else()
     message("==> Build OpenSource <==")
@@ -28,6 +31,9 @@ else()
     set(GR_PROJECT_BINARY_PATH ${CMAKE_BINARY_DIR})
     set(WEBRTC_ROOT ${GR_PROJECT_PATH}/deps/tc_3rdparty/webrtc)
     add_definitions(-DPREMIUM_VERSION=0)
+
+    configure_file(${CMAKE_SOURCE_DIR}/app_config.h.in ${CMAKE_BINARY_DIR}/app_config.h)
+
     message("Webrtc Root: ${WEBRTC_ROOT}")
 endif ()
 
@@ -48,7 +54,7 @@ find_package(SDL2 CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/app_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/app_config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/version_config.h)
 configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/icon.rc.in"
         "${CMAKE_CURRENT_BINARY_DIR}/icon.rc"

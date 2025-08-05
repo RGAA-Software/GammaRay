@@ -30,7 +30,7 @@
 #include "tc_qt_widget/widgetframe/mainwindow_wrapper.h"
 #include "tc_qt_widget/widgetframe/titlebar_messages.h"
 #include "tc_qt_widget/tc_dialog.h"
-#include "app_config.h"
+#include "version_config.h"
 #include "tc_common_new/win32/process_helper.h"
 
 namespace tc

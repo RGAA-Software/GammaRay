@@ -7,7 +7,7 @@
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
-#include "app_config.h"
+#include "version_config.h"
 
 namespace tc
 {

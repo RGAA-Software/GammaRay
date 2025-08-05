@@ -259,12 +259,6 @@ namespace tc
         std::string log_file_;
         std::string encoder_select_type_;
         std::string encoder_name_;
-        //std::string encoder_format_;
-        //std::string encoder_bitrate_;
-        //std::string encoder_fps_;
-        //std::string encoder_resolution_type_;
-        //std::string encoder_width_;
-        //std::string encoder_height_;
 
         std::string capture_audio_type_;
         std::string capture_video_;

@@ -33,6 +33,7 @@
 #include "tc_account_sdk/acc_sdk.h"
 #include "tc_relay_client/relay_api.h"
 #include "relay_message.pb.h"
+#include "app_config.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -71,8 +72,8 @@ namespace tc
         msg_notifier_ = app_->GetMessageNotifier();
 
         acc_sdk_ = std::make_shared<AccountSdk>(msg_notifier_, std::make_shared<AccountParams>(AccountParams {
-            .host_ = "rgaa.vip",
-            .port_ = 5566,
+            .host_ = ACC_HOST,
+            .port_ = ACC_PORT,
         }));
 
         // ips
