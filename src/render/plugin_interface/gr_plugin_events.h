@@ -11,7 +11,7 @@
 #include "gr_plugin_interface.h"
 #include "tc_common_new/image.h"
 #include "tc_common_new/time_util.h"
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 
 namespace tc
 {

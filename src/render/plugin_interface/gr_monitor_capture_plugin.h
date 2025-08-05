@@ -7,7 +7,7 @@
 
 #include "gr_plugin_interface.h"
 #include <optional>
-#include "tc_capture_new/win/desktop_capture/monitor_util.h"
+#include "hook_capture/win/desktop_capture/monitor_util.h"
 
 namespace tc
 {
@@ -53,7 +53,7 @@ namespace tc
         virtual void StopCapturing();
 
         virtual std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo();
-        virtual VirtulDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() { return VirtulDesktopBoundRectangleInfo{}; };
+        virtual VirtualDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() { return VirtualDesktopBoundRectangleInfo{}; };
         virtual void SetCaptureMonitor(const std::string& name);
         // capturing monitor
         std::string GetCapturingMonitor();

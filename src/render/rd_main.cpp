@@ -83,20 +83,20 @@ void UpdateSettings(RdSettings* settings) {
         settings->app_.steam_app_.steam_url_ = std::format("steam://rungameid/{}", FLAGS_steam_app_id);
     }
 
-    // encoder
-    if (FLAGS_encoder_select_type == "auto") {
-        settings->encoder_.encoder_select_type_ = ECreateEncoderPolicy::kAuto;
-    } else {
-        settings->encoder_.encoder_select_type_ = ECreateEncoderPolicy::kSpecify;
-    }
-
-    if (FLAGS_encoder_name == "nvenc") {
-        settings->encoder_.encoder_name_ = ECreateEncoderName::kNVENC;
-    } else if (FLAGS_encoder_name == "amf") {
-        settings->encoder_.encoder_name_ = ECreateEncoderName::kAMF;
-    } else {
-        settings->encoder_.encoder_name_ = ECreateEncoderName::kFFmpeg;
-    }
+//    // encoder
+//    if (FLAGS_encoder_select_type == "auto") {
+//        settings->encoder_.encoder_select_type_ = ECreateEncoderPolicy::kAuto;
+//    } else {
+//        settings->encoder_.encoder_select_type_ = ECreateEncoderPolicy::kSpecify;
+//    }
+//
+//    if (FLAGS_encoder_name == "nvenc") {
+//        settings->encoder_.encoder_name_ = ECreateEncoderName::kNVENC;
+//    } else if (FLAGS_encoder_name == "amf") {
+//        settings->encoder_.encoder_name_ = ECreateEncoderName::kAMF;
+//    } else {
+//        settings->encoder_.encoder_name_ = ECreateEncoderName::kFFmpeg;
+//    }
 
     if (FLAGS_encoder_format == "h264") {
         settings->encoder_.encoder_format_ = Encoder::EncoderFormat::kH264;

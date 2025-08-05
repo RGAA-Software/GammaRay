@@ -40,7 +40,7 @@ namespace tc
 
         void DispatchAppEvent(const std::shared_ptr<AppBaseEvent>& event) override;
 
-        VirtulDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() override;
+        VirtualDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() override;
 
         // Capturing target <==> information
         std::map<std::string, WorkingCaptureInfoPtr> GetWorkingCapturesInfo() override;
@@ -65,7 +65,7 @@ namespace tc
         std::shared_ptr<CursorCapture> cursor_capture_ = nullptr;
         std::shared_ptr<Thread> cursor_capture_thread_ = nullptr;
 
-        VirtulDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
+        VirtualDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
     };
 
 }

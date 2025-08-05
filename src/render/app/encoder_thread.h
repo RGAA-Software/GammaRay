@@ -9,8 +9,9 @@
 #include <memory>
 #include <functional>
 #include <optional>
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 #include "settings/rd_settings.h"
+#include "tc_encoder_new/encoder_config.h"
 
 namespace tc
 {

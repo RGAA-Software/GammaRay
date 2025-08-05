@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "tc_message.pb.h"
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 
 namespace tc
 {
@@ -32,7 +32,7 @@ namespace tc
     private:
         // capturing monitors
         std::vector<CaptureMonitorInfo> monitors_;
-        VirtulDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
+        VirtualDesktopBoundRectangleInfo virtual_desktop_bound_rectangle_info_;
 
         bool current_key_status_[256] = {false, };
         bool control_pressed_ = false;

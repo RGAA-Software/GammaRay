@@ -13,7 +13,7 @@
 #include "tc_common_new/concurrent_queue.h"
 #include "app_global_messages.h"
 #include "app/app_messages.h"
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 #include "rd_context.h"
 #include <QApplication>
 #include <d3d11.h>
@@ -27,7 +27,6 @@ namespace tc
     class Data;
     class Connection;
     class AppManager;
-    class HostIpcManager;
     class EncoderThread;
     class MessageListener;
     class DesktopCapture;

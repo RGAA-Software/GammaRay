@@ -3,7 +3,7 @@
 //
 
 #include "dx_address_loader.h"
-#include "tc_capture_new/capture_message.h"
+#include "hook_capture/capture_message.h"
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/string_util.h"
