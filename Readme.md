@@ -34,12 +34,12 @@
 ![](docs/images/file_transfer.jpg)
 ![](docs/images/client_status.jpg)
 
-### Recordings
-#### Test Wukong
+### Cloud/Remote Game Recordings
+#### Wukong/黑神话悟空
 ![](docs/images/test3.gif)
-#### Test (Ori)
+#### Ori/奥日
 ![](docs/images/test1.gif)
-#### Test (Elden Ring)
+#### Elden Ring/埃尔登法环
 ![](docs/images/test2.gif)
 
 ### License
