@@ -16,7 +16,7 @@ namespace tc
 
     std::shared_ptr<AppSharedMessage> DxAddressLoader::LoadDxAddress() {
         auto cap_message = std::make_shared<AppSharedMessage>();
-        auto output = ProcessUtil::StartProcessAndOutput("tc_graphics_helper.exe", {});
+        auto output = ProcessUtil::StartProcessAndOutput("tc_graphics_offsets.exe", {});
         if (output.empty()) {
             LOGE("Failed to run ");
             return nullptr;
