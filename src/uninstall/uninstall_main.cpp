@@ -39,6 +39,9 @@ int main(int argc, char** argv) {
     service_manager->Init("GammaRayService", "", "GammaRat Service", "** GammaRay Service **");
     
     if (FLAGS_option == "uninstall") {
+
+        MessageBoxA(0, "the software is about to be uninstalled", "Prompt", 0);
+
         service_manager->Remove(true);    
         std::thread task_thread =  std::thread([=]() {
            
@@ -87,12 +90,15 @@ int main(int argc, char** argv) {
         qApp->exit(0);
     }
     else if (FLAGS_option == "stop") {
+        MessageBoxA(0, "the software will be stopped running", "Prompt", 0);
         service_manager->Remove(false);
     }
     else if (FLAGS_option == "null") {
+        MessageBoxA(0, "there is nothing to do", "Prompt", 0);
         return 0;
     }
     else {
+        MessageBoxA(0, "there is nothing to do", "Prompt", 0);
         return 0;
     }
     return 0;
