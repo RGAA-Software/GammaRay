@@ -39,7 +39,7 @@ namespace tc
 
     class GrWorkspace : public QMainWindow, public std::enable_shared_from_this<GrWorkspace> {
     public:
-        GrWorkspace();
+        GrWorkspace(bool run_automatically);
         void Init();
         void closeEvent(QCloseEvent *event) override;
         void resizeEvent(QResizeEvent *event) override;
@@ -65,6 +65,8 @@ namespace tc
         QSystemTrayIcon* sys_tray_icon_ = nullptr;
         QPushButton* btn_exit_ = nullptr;
         QPushButton* btn_uninstall_ = nullptr;
+        // is started by OS when logon?
+        bool run_automatically_ = false;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;

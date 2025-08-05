@@ -38,7 +38,9 @@ namespace tc
 
     std::shared_ptr<GrWorkspace> grWorkspace;
 
-    GrWorkspace::GrWorkspace() : QMainWindow(nullptr) {
+    GrWorkspace::GrWorkspace(bool run_automatically) : QMainWindow(nullptr) {
+        this->run_automatically_ = run_automatically;
+
         auto version = "";
 #if PREMIUM_VERSION
         version = "Premium";
@@ -89,7 +91,7 @@ namespace tc
         setWindowIcon(theme_->AdvancedStyleSheet->styleIcon());
         qApp->setStyleSheet(theme_->AdvancedStyleSheet->styleSheet());
 
-        app_ = std::make_shared<GrApplication>(this);
+        app_ = std::make_shared<GrApplication>(this, run_automatically);
         app_->Init();
 
         qApp->installNativeEventFilter(app_.get());

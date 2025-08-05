@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QLockFile>
 #include <QMessageBox>
+#include "gflags/gflags.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/auto_start.h"
 #include "tc_common_new/folder_util.h"
@@ -17,8 +18,13 @@
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/dump_helper.h"
+#include "tc_common_new/hardware.h"
 
 using namespace tc;
+
+DEFINE_bool(run_automatically, false, "run when logon");
+
+std::shared_ptr<GrWorkspace> g_workspace = nullptr;
 
 bool PrepareDirs(const QString& base_path) {
     std::vector<QString> dirs = {
@@ -40,37 +46,9 @@ bool PrepareDirs(const QString& base_path) {
     return result;
 }
 
-std::shared_ptr<GrWorkspace> g_workspace = nullptr;
-
-static bool AcquirePermissionForRestartDevice() {
-    HANDLE hToken;
-    TOKEN_PRIVILEGES tkp;
-    // Get a token for this process.
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
-        LOGE("AcquirePermissionForRestartDevice, OpenProcessToken failed.");
-        return false;
-    }
-
-    // Get the LUID for the shutdown privilege.
-    if (!LookupPrivilegeValueW(NULL, SE_SHUTDOWN_NAME, &tkp.Privileges[0].Luid)) {
-        LOGE("AcquirePermissionForRestartDevice, LookupPrivilegeValueW failed.");
-        return false;
-    }
-
-    tkp.PrivilegeCount = 1;  // one privilege to set
-    tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-    // Get the shutdown privilege for this process.
-    if (!AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0)) {
-        LOGE("AcquirePermissionForRestartDevice, AdjustTokenPrivileges failed.");
-        return false;
-    }
-    return true;
-}
-
 int main(int argc, char *argv[]) {
-    AcquirePermissionForRestartDevice();
 
+    tc::Hardware::AcquirePermissionForRestartDevice();
     CaptureDump();
 
     //::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
@@ -83,8 +61,14 @@ int main(int argc, char *argv[]) {
     PrepareDirs(base_dir);
 
     auto log_path = base_dir + "/gr_logs/gammaray.log";
-    std::cout << "log path: " << log_path.toStdString() << std::endl;
     Logger::InitLog(log_path.toStdString(), true);
+
+    // params
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    // run when logon?
+    auto run_automatically = FLAGS_run_automatically;
+    LOGI("Commands:");
+    LOGI("  Run automatically: {}", run_automatically);
 
     // init sp
     auto sp_dir = qApp->applicationDirPath() + "/gr_data";
@@ -96,7 +80,7 @@ int main(int argc, char *argv[]) {
     {
         auto auto_start = std::make_shared<tc::AutoStart>();
         auto path = QApplication::applicationFilePath().toStdString();
-        auto_start->NewLogonTask((char*)"GammaRay_Panel_Start", (char*)path.c_str(), NULL, (char*)"GR");
+        auto_start->NewLogonTask((char*)"GammaRay_Panel_Start", (char*)path.c_str(), (char*)"--run_automatically=true", (char*)"GR");
 
         //auto guard_path = QApplication::applicationDirPath() + "/" + kGammaRayGuardName.c_str();
         //auto_start->NewTimeTask((char*)"GammaRay_Guard_Time_02", (char*)guard_path.toStdString().c_str(), NULL, (char*)"GR");
@@ -121,10 +105,12 @@ int main(int argc, char *argv[]) {
     // init language
     tcTrMgr()->InitLanguage();
 
-    g_workspace = std::make_shared<GrWorkspace>();
+    g_workspace = std::make_shared<GrWorkspace>(run_automatically);
     g_workspace->Init();
     g_workspace->setFixedSize(1450, 800);
-    g_workspace->show();
+    if (!run_automatically) {
+        g_workspace->show();
+    }
 
     return app.exec();
 }

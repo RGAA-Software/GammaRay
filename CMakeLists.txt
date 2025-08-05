@@ -157,7 +157,7 @@ SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"leve
 add_subdirectory(src/render_panel/guard)
 message("===> Guard SRCS: ${GUARD_SRCS}")
 add_executable(GammaRayGuard WIN32 ${GUARD_SRCS})
-target_link_libraries(GammaRayGuard PRIVATE Qt6::Widgets Qt6::Core Qt6::Core5Compat tc_common_new winmm.lib SetupAPI.lib comsuppw.lib)
+target_link_libraries(GammaRayGuard PRIVATE Qt6::Widgets Qt6::Core Qt6::Core5Compat tc_common_new winmm.lib SetupAPI.lib comsuppw.lib gflags::gflags)
 SET_TARGET_PROPERTIES(GammaRayGuard PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 #### GUARD END ####
 
@@ -167,7 +167,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${GR_PRO
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${GR_PROJECT_BINARY_PATH}/www)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
-        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib #tc_signaling_sdk #lib_GammaRayClient
+        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib gflags::gflags#tc_signaling_sdk #lib_GammaRayClient
         tc_relay_client tc_manager_client tc_translator tc_spv_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets TC_WidgetFrame
         tc_account_sdk tc_rp_message tc_profile_client
 )
