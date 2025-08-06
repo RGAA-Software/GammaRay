@@ -74,8 +74,9 @@ namespace tc
         sys_tray_icon_->setContextMenu(menu);
         sys_tray_icon_->show();
         connect(sys_tray_icon_, &QSystemTrayIcon::activated, this, [=, this](QSystemTrayIcon::ActivationReason reason) {
-            if (reason == QSystemTrayIcon::ActivationReason::DoubleClick) {
-                this->show();
+            if (QSystemTrayIcon::ActivationReason::DoubleClick == reason || QSystemTrayIcon::ActivationReason::Trigger == reason) {
+                this->showNormal();
+                this->raise();
             }
         });
 
