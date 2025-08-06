@@ -32,9 +32,9 @@ DEFINE_int32(encoder_height, 720, "");
 
 // capture
 DEFINE_bool(capture_audio, true, "");
-DEFINE_string(capture_audio_type, "global", "hook/global");
+DEFINE_string(capture_audio_type, "global", "inner/global");
 DEFINE_bool(capture_video, true, "");
-DEFINE_string(capture_video_type, "hook", "hook/global");
+DEFINE_string(capture_video_type, "inner", "inner/global");
 
 // network
 DEFINE_bool(webrtc_enabled, true, "");
@@ -77,40 +77,28 @@ DEFINE_bool(relay_enabled, true, "");
 
 DEFINE_int32(language, 0, "");
 
+DEFINE_string(app_mode, "", "app mode");
+
 void UpdateSettings(RdSettings* settings) {
     if (FLAGS_steam_app_id > 0) {
         settings->app_.steam_app_.app_id_ = FLAGS_steam_app_id;
         settings->app_.steam_app_.steam_url_ = std::format("steam://rungameid/{}", FLAGS_steam_app_id);
     }
 
-//    // encoder
-//    if (FLAGS_encoder_select_type == "auto") {
-//        settings->encoder_.encoder_select_type_ = ECreateEncoderPolicy::kAuto;
-//    } else {
-//        settings->encoder_.encoder_select_type_ = ECreateEncoderPolicy::kSpecify;
-//    }
-//
-//    if (FLAGS_encoder_name == "nvenc") {
-//        settings->encoder_.encoder_name_ = ECreateEncoderName::kNVENC;
-//    } else if (FLAGS_encoder_name == "amf") {
-//        settings->encoder_.encoder_name_ = ECreateEncoderName::kAMF;
-//    } else {
-//        settings->encoder_.encoder_name_ = ECreateEncoderName::kFFmpeg;
-//    }
-
     if (FLAGS_encoder_format == "h264") {
         settings->encoder_.encoder_format_ = Encoder::EncoderFormat::kH264;
-    } else {
+    }
+    else {
         settings->encoder_.encoder_format_ = Encoder::EncoderFormat::kHEVC;
     }
 
     settings->encoder_.bitrate_ = FLAGS_encoder_bitrate;
-
     settings->encoder_.fps_ = FLAGS_encoder_fps;
 
     if (FLAGS_encoder_resolution_type == "origin") {
         settings->encoder_.encode_res_type_ = Encoder::EncodeResolutionType::kOrigin;
-    } else {
+    }
+    else {
         settings->encoder_.encode_res_type_ = Encoder::EncodeResolutionType::kSpecify;
     }
     settings->encoder_.encode_width_ = FLAGS_encoder_width;
@@ -120,22 +108,21 @@ void UpdateSettings(RdSettings* settings) {
     settings->capture_.enable_audio_ = FLAGS_capture_audio;
     if (FLAGS_capture_audio_type == "global") {
         settings->capture_.capture_audio_type_ = Capture::CaptureAudioType::kAudioGlobal;
-    } else {
-        settings->capture_.capture_audio_type_ = Capture::CaptureAudioType::kAudioHook;
+    }
+    else {
+        settings->capture_.capture_audio_type_ = Capture::CaptureAudioType::kAudioInner;
     }
 
     settings->capture_.enable_video_ = FLAGS_capture_video;
     if (FLAGS_capture_video_type == "global") {
         settings->capture_.capture_video_type_ = Capture::CaptureVideoType::kCaptureScreen;
-    } else {
-        settings->capture_.capture_video_type_ = Capture::CaptureVideoType::kVideoHook;
+    }
+    else {
+        settings->capture_.capture_video_type_ = Capture::CaptureVideoType::kVideoInner;
     }
     settings->capture_.capture_audio_device_ = Base64::Base64Decode(FLAGS_capture_audio_device);
-
     settings->transmission_.listening_port_ = FLAGS_network_listen_port;
-    settings->transmission_.udp_enabled_ = FLAGS_udp_kcp_enabled;
     settings->transmission_.udp_listen_port_ = FLAGS_udp_listen_port;
-    settings->transmission_.webrtc_enabled_ = FLAGS_webrtc_enabled;
 
     // app
     if (!FLAGS_app_game_path.empty()) {
@@ -167,6 +154,13 @@ void UpdateSettings(RdSettings* settings) {
     settings->relay_enabled_ = FLAGS_relay_enabled;
     // language
     settings->language_ = FLAGS_language;
+    // app mode
+    if (FLAGS_app_mode == "desktop") {
+        settings->app_mode_ = AppMode::kDesktop;
+    }
+    else if (FLAGS_app_mode == "inner_capture") {
+        settings->app_mode_ = AppMode::kInnerCapture;
+    }
 }
 
 void PrintInputArgs() {
@@ -210,6 +204,7 @@ void PrintInputArgs() {
     LOGI("audio enabled: {}", settings->audio_enabled_);
     LOGI("relay enabled: {}", FLAGS_relay_enabled);
     LOGI("language: {}", FLAGS_language);
+    LOGI("app mode: {} => {}", FLAGS_app_mode, (int)settings->app_mode_);
     LOGI("--------------In args end----------------");
 }
 
@@ -238,9 +233,9 @@ int main(int argc, char** argv) {
     if (!FLAGS_isolate) {
         UpdateSettings(settings);
     }
+    settings->LoadSettingsFromDatabase();
 
     // Log
-    std::cout << "logfile: " << FLAGS_logfile << std::endl;
     auto log_file_path = std::format("{}/gr_logs/gammaray_render_{}.log",
          QString::fromStdWString(FolderUtil::GetCurrentFolderPath()).toStdString(), settings->transmission_.listening_port_);
     Logger::InitLog(log_file_path, FLAGS_logfile);
@@ -270,7 +265,6 @@ int main(int argc, char** argv) {
     auto app = tc::RdApplication::Make(params);
     app->Init(argc, argv);
     app->CaptureControlC();
-    settings->LoadSettingsFromDatabase();
 
     // hardware
     auto hardware = Hardware::Instance();

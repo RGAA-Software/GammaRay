@@ -93,7 +93,7 @@ namespace tc
     void GrService::OnConsoleConnect(int id) {
         context_->PostBgTask([=, this]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(150));
-            render_manager_->StopServer();
+            render_manager_->StopDesktopRender();
         });
     }
 
@@ -142,7 +142,7 @@ namespace tc
     void GrService::TaskThread() {
         while (!exit_) {
             std::unique_lock<std::mutex> lk(cv_mtx_);
-            cv_.wait(lk, [=]() -> bool {
+            cv_.wait(lk, [=, this]() -> bool {
                 return !tasks_.empty() || exit_;
             });
             if (exit_) {

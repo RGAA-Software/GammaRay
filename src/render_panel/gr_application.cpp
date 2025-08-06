@@ -37,7 +37,6 @@
 #include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"
 #include "render_panel/network/gr_service_client.h"
-#include "render_panel/network/ws_sig_client.h"
 #include "render_panel/devices/stream_messages.h"
 #include "render_panel/system/win/win_panel_message_loop.h"
 #include "render_panel/clipboard/panel_clipboard_manager.h"
@@ -102,9 +101,6 @@ namespace tc
 
         service_client_ = std::make_shared<GrServiceClient>(shared_from_this());
         service_client_->Start();
-
-        sig_client_ = std::make_shared<WsSigClient>(shared_from_this());
-        sig_client_->Start();
 
         gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
         rd_msg_processor_ = std::make_shared<GrRenderMsgProcessor>(context_);

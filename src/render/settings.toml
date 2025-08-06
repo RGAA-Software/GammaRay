@@ -7,10 +7,6 @@ version = "1.0.1"
 # auto
 # specify
 select-type = "auto"
-# nvenc
-# amf [NOT SUPPORTED NOW]
-# ffmpeg
-name = "ffmpeg"
 # h264
 # hevc
 format = "h264"
@@ -28,20 +24,15 @@ encode-height = 720
 # enable audio capture or not
 enable-audio = true
 # audio capture method
-# hook
+# inner
 # global
 audio-capture-type = "global"
 # enable video capture or not
 enable-video = true
 # video capture method
-# hook
+# inner
 # global
-video-capture-type = "hook"
-# deprecated now
-# send video by shared memory
-# true send I420 format data
-# false send texture handle
-send-video-msg-by-shm = false
+video-capture-type = "inner"
 
 # transmission settings
 [transmission]
@@ -81,5 +72,5 @@ capture-method = "search"
 debug-enabled = false
 
 # global => replay events by SendInput
-# inner-hook => replay events by Hook process
+# inner => replay events in process
 event-replay-mode = "global"

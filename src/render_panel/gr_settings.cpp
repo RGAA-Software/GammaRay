@@ -102,7 +102,7 @@ namespace tc
 
     std::vector<std::string> GrSettings::GetArgs() {
         std::vector<std::string> args;
-        args.push_back(std::format("--{}={}", kStLogFile, log_file_));
+        args.push_back(std::format("--app_mode={}", "desktop"));
         args.push_back(std::format("--{}={}", kStEncoderSelectType, encoder_select_type_));
         args.push_back(std::format("--{}={}", kStEncoderName, encoder_name_));
         args.push_back(std::format("--{}={}", kStEncoderFormat, GetEncoderFormat()));
@@ -121,7 +121,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStUdpKcpEnabled, udp_kcp_enabled_));
         args.push_back(std::format("--{}={}", kStUdpListenPort, udp_listen_port_));
         args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
-        args.push_back(std::format("--{}={}", kStAppGamePath, "desktop"));
+        args.push_back(std::format("--{}={}", kStAppGamePath, ""));
         args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
         args.push_back(std::format("--{}={}", kStDebugBlock, false));
         args.push_back(std::format("--{}={}", kStMockVideo, false));
@@ -134,6 +134,7 @@ namespace tc
         args.push_back(std::format("--{}={}", kStCanBeOperated, this->IsBeingOperatedEnabled()));
         args.push_back(std::format("--{}={}", kStRelayEnabled, this->IsRelayEnabled()));
         args.push_back(std::format("--language={}", (int)tcTrMgr()->GetSelectedLanguage()));
+        args.push_back(std::format("--{}={}", kStLogFile, log_file_));
         return args;
     }
 

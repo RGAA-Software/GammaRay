@@ -148,21 +148,21 @@ namespace tc
     }
 
     void ServiceMsgServer::ProcessStartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args) {
-        if (!render_manager_->StartServer(work_dir, app_path, args)) {
+        if (!render_manager_->StartDesktopRender(work_dir, app_path, args)) {
             LOGE("Start server failed!");
         }
     }
 
     void ServiceMsgServer::ProcessStopRender() {
-        render_manager_->StopServer();
+        render_manager_->StopDesktopRender();
     }
 
     void ServiceMsgServer::ProcessRestartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args) {
-        render_manager_->ReStart(work_dir, app_path, args);
+        render_manager_->ReStartDesktopRender(work_dir, app_path, args);
     }
 
     void ServiceMsgServer::ProcessHeartBeat(int64_t index) {
-        auto is_render_alive = render_manager_->IsRenderAlive();
+        auto is_render_alive = render_manager_->IsDesktopRenderAlive();
         ServiceMessage msg;
         msg.set_type(ServiceMessageType::kSrvHeartBeatResp);
         auto sub = msg.mutable_heart_beat_resp();
