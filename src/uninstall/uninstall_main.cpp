@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA on 22/01/2025.
 //
 
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     
     if (FLAGS_option == "uninstall") {
 
-        MessageBoxA(0, "the software is about to be uninstalled", "Prompt", 0);
+        MessageBoxA(0, "the software is about to be uninstalled", "Prompt", MB_OK | MB_SYSTEMMODAL);
 
         service_manager->Remove(true);    
         std::thread task_thread =  std::thread([=]() {
@@ -90,15 +90,15 @@ int main(int argc, char** argv) {
         qApp->exit(0);
     }
     else if (FLAGS_option == "stop") {
-        MessageBoxA(0, "the software will be stopped running", "Prompt", 0);
+        MessageBoxA(0, "the software will be stopped running", "Prompt", MB_OK | MB_SYSTEMMODAL);
         service_manager->Remove(false);
     }
     else if (FLAGS_option == "null") {
-        MessageBoxA(0, "there is nothing to do", "Prompt", 0);
+        MessageBoxA(0, "there is nothing to do", "Prompt", MB_OK | MB_SYSTEMMODAL);
         return 0;
     }
     else {
-        MessageBoxA(0, "there is nothing to do", "Prompt", 0);
+        MessageBoxA(0, "there is nothing to do, please execute Uninstall GammaRay", "Prompt", MB_OK | MB_SYSTEMMODAL);
         return 0;
     }
     return 0;
