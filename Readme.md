@@ -15,7 +15,7 @@
 ##### 2. [How To Deploy](docs/How_to_deploy.md)
 ### GammaRay
 #### ⚡️Stream your game fame and desktop to other devices, and replay gamepad,keyboard,mouse events on the host PC. In a word, It's a alternative of TeamViewer, ToDesk, RustDesk, etc.
-#### ⚡️类似ToDesk, 向日葵, RustDesk, TeamViewer的工具，可远程操作电脑，模拟手柄玩游戏
+#### ⚡️远程操作电脑，云游戏，模拟手柄等，类似ToDesk, 向日葵, RustDesk, TeamViewer的工具
 
 ### Support Platforms
 ✅  Ready  
