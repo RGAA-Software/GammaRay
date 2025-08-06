@@ -30,13 +30,14 @@ namespace tc
         client_ = std::make_shared<asio2::wss_client>();
         client_->set_auto_reconnect(true);
         client_->keep_alive(true);
-        client_->set_timeout(std::chrono::milliseconds(3000));
+        client_->set_timeout(std::chrono::milliseconds(2000));
 
         client_->bind_init([&]() {
             client_->ws_stream().binary(true);
             client_->set_no_delay(true);
 
-        }).bind_connect([&]() {
+        })
+        .bind_connect([&]() {
             if (asio2::get_last_error()) {
                 LOGE("connect failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
             } else {
@@ -47,16 +48,17 @@ namespace tc
                 context_->SendAppMessage(MsgConnectedToService{});
             });
 
-        }).bind_upgrade([&]() {
+        })
+        .bind_upgrade([&]() {
             if (asio2::get_last_error()) {
                 LOGE("upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
             }
-        }).bind_recv([=, this](std::string_view data) {
+        })
+        .bind_recv([=, this](std::string_view data) {
             auto msg = std::string(data.data(), data.size());
             this->ParseMessage(msg);
         });
 
-        // the /ws is the websocket upgraged target
         if (!client_->async_start("127.0.0.1", 20375, "/service/message?from=panel")) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
@@ -73,11 +75,11 @@ namespace tc
         }
 
         if (sm.type() == ServiceMessageType::kSrvHeartBeatResp) {
-            auto sub = sm.heart_beat_resp();
+            const auto& sub = sm.heart_beat_resp();
             auto hb_idx = sub.index();
             auto is_render_alive = sub.render_status() == RenderStatus::kWorking;
             //LOGI("hb_idx: {}, is render alive: {}", hb_idx, is_render_alive);
-            context_->SendAppMessage(MsgServerAlive{
+            context_->SendAppMessage(MsgServerAlive {
                 .alive_ = is_render_alive,
             });
         }

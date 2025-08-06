@@ -31,35 +31,33 @@ namespace tc
             kSpecify,
         };
 
-//        ECreateEncoderPolicy encoder_select_type_;
-//        ECreateEncoderName encoder_name_;
         EncoderFormat encoder_format_;
-        int fps_ = 30;
+        int fps_ = 60;
         int bitrate_;
-        EncodeResolutionType encode_res_type_;
         int encode_width_;
         int encode_height_;
+        EncodeResolutionType encode_res_type_;
     };
 
     // capture
     struct Capture {
         enum CaptureAudioType {
-            kAudioHook,
+            kAudioInner,
             kAudioGlobal,
         };
 
         enum CaptureVideoType {
-            kVideoHook,
+            kVideoInner,
             kCaptureScreen,
         };
 
     public:
-        bool IsVideoHook() const {
-            return capture_video_type_ == CaptureVideoType::kVideoHook;
+        bool IsVideoInnerCapture() const {
+            return capture_video_type_ == CaptureVideoType::kVideoInner;
         }
 
-        bool IsAudioHook() const {
-            return capture_audio_type_ == CaptureAudioType::kAudioHook;
+        bool IsAudioInnerCapture() const {
+            return capture_audio_type_ == CaptureAudioType::kAudioInner;
         }
 
     public:
@@ -75,8 +73,6 @@ namespace tc
     // Transmission
     struct Transmission {
         int listening_port_ = 0;
-        bool webrtc_enabled_ = true;
-        bool udp_enabled_ = true;
         int udp_listen_port_ = 0;
     };
 
@@ -113,6 +109,12 @@ namespace tc
         }
     };
 
+    // app mode
+    enum class AppMode {
+        kDesktop,
+        kInnerCapture,
+    };
+
     class RdSettings {
     public:
 
@@ -123,7 +125,6 @@ namespace tc
 
         bool LoadSettings(const std::string& path);
         std::string Dump();
-//        uint32_t GetShmBufferSize() const;
         void LoadSettingsFromDatabase();
         bool EnableFullColorMode();
         void SetFullColorMode(bool enable);
@@ -141,8 +142,6 @@ namespace tc
         std::string device_safety_pwd_;
         std::string relay_host_;
         std::string relay_port_;
-        // capturing multiple monitors together
-        bool capturing_multiple_ = false;
         // can be operated
         bool can_be_operated_ = true;
         // relay enabled
@@ -153,6 +152,8 @@ namespace tc
         bool file_transfer_enabled_ = true;
         // audio enabled
         bool audio_enabled_ = true;
+        // app mode
+        AppMode app_mode_ = AppMode::kDesktop;
 
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";

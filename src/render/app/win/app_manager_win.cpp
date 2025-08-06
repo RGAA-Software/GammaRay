@@ -43,7 +43,7 @@ namespace tc
         steam_game_ = std::make_shared<SteamGame>(context_);
         //steam_game_->RequestSteamGames();
 
-        if (settings_->capture_.IsVideoHook()) {
+        if (settings_->capture_.IsVideoInnerCapture()) {
             msg_listener_->Listen<MsgTimer100>([=, this](const auto &msg) {
                 context_->PostTask([=, this]() {
                     this->InjectCaptureDllIfNeeded();
@@ -250,8 +250,7 @@ namespace tc
         }
 
         // inject it
-        // 单独采集的时候才尝试hook
-        if (settings_->capture_.IsVideoHook()) {
+        if (settings_->capture_.IsVideoInnerCapture()) {
             for (const auto &process: processes_info) {
                 auto result = WinHelper::IsDllInjected(process->pid_, kX86DllName, kX64DllName);
                 auto process_exe_name = FileUtil::GetFileNameFromPath(process->exe_full_path_);
@@ -327,8 +326,7 @@ namespace tc
         if (settings_->capture_.capture_video_type_ == Capture::kCaptureScreen) {
             AddFoundPid(target_process_info);
         }
-        if (settings_->capture_.IsVideoHook()){
-            // 单独采集的时候才尝试hook
+        if (settings_->capture_.IsVideoInnerCapture()){
             auto result = WinHelper::IsDllInjected(target_process_info->pid_, kX86DllName, kX64DllName);
             auto process_exe_name = FileUtil::GetFileNameFromPath(target_process_info->exe_full_path_);
             if (result.ok_ && result.value_) {
