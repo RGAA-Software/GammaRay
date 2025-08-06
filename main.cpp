@@ -70,6 +70,17 @@ int main(int argc, char *argv[]) {
     LOGI("Commands:");
     LOGI("  Run automatically: {}", run_automatically);
 
+    // pipe
+    auto rn_pipe = std::make_shared<GrRunningPipe>();
+    if (!rn_pipe->SendHello()) {
+        rn_pipe->StartListening([=]() {
+            if (g_workspace) {
+                g_workspace->showNormal();
+                g_workspace->raise();
+            }
+        });
+    }
+
     // init sp
     auto sp_dir = qApp->applicationDirPath() + "/gr_data";
     if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
@@ -84,16 +95,6 @@ int main(int argc, char *argv[]) {
 
         //auto guard_path = QApplication::applicationDirPath() + "/" + kGammaRayGuardName.c_str();
         //auto_start->NewTimeTask((char*)"GammaRay_Guard_Time_02", (char*)guard_path.toStdString().c_str(), NULL, (char*)"GR");
-    }
-
-    // pipe
-    auto rn_pipe = std::make_shared<GrRunningPipe>();
-    if (!rn_pipe->SendHello()) {
-        rn_pipe->StartListening([=]() {
-            if (g_workspace) {
-                g_workspace->showNormal();
-            }
-        });
     }
 
     auto mon_detector = DxgiMonitorDetector::Instance();
