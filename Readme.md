@@ -1,5 +1,5 @@
 #### Warning
-> In developing, please wait until 15/08/2025.
+> In developing, please wait until 15/08/2025.  
 > 我们将于2025/08/15发布新版本
 
 ![](docs/images/GammaRay.png)
