@@ -66,6 +66,12 @@ namespace tc
                 this->RpSyncPanelInfo();
             });
         });
+
+        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& msg) {
+            context_->PostTask([=, this]() {
+                this->RpSyncPanelInfo();
+            });
+        });
     }
 
     void WsPanelServer::Start() {
@@ -95,10 +101,11 @@ namespace tc
         auto pwd_file = std::format("{}/certs/password", exe_dir);
         auto pwd = tc::File::OpenForRead(pwd_file)->ReadAllAsString();
         server_->set_cert_file(
-                "",
-                std::format("{}/certs/server.crt", exe_dir),
-                std::format("{}/certs/server.key", exe_dir),
-                pwd);
+            "",
+            std::format("{}/certs/server.crt", exe_dir),
+            std::format("{}/certs/server.key", exe_dir),
+            pwd
+        );
 
         if (asio2::get_last_error()) {
             LOGE("load cert files failed: {}", asio2::last_error_msg());
@@ -170,16 +177,24 @@ namespace tc
             http_handler_->HandleSteamCacheFile(req, rep);
         });
 
+        // default
+        server_->bind<http::verb::get, http::verb::post>("/", [](http::web_request& req, http::web_response& rep) {
+            asio2::ignore_unused(req, rep);
+            rep.fill_file("/web/index.html");
+        }, aop_log{});
+
+        // If no method is specified, GET and POST are both enabled by default.
+        server_->bind("*", [](http::web_request& req, http::web_response& rep) {
+            rep.fill_file("/web" + http::url_decode(req.target()));
+            rep.chunked(true);
+        }, aop_log{});
+
         // panel
         AddWebsocketRouter(kUrlPanel);
         // panel/renderer
         AddWebsocketRouter(kUrlPanelRenderer);
         // file transfer
         AddWebsocketRouter(kUrlFileTransfer);
-
-        server_->start_timer("id.sync.info", 1000, [=, this]() {
-            this->RpSyncPanelInfo();
-        });
 
         bool ret = server_->start("0.0.0.0", settings_->GetPanelServerPort());
         LOGI("App server start result: {}, port: {}", ret, settings_->GetPanelServerPort());
