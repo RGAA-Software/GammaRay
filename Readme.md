@@ -45,5 +45,5 @@
 ![](docs/images/test2.gif)
 
 ### License
-##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact us at: hollow.ichigo.yoo@gmail.com 
+##### You are permitted to use these codes free in personal, but DO NOT use it in business. If you want to use it in commerce, please contact us at: hollow.ichigo.yoo@gmail.com chengdudreamer@gmail.com
 ##### 个人免费使用，请勿私自商用，如有商用需求，请联系我们。
