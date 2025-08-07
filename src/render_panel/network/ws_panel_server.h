@@ -75,7 +75,6 @@ namespace tc
         void RpSyncPanelInfo();
 
     private:
-        //std::shared_ptr<asio2::http_server> http_server_ = nullptr;
         std::shared_ptr<asio2::https_server> server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
