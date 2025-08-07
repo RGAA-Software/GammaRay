@@ -116,6 +116,7 @@ def collceion_program_files(force_update, in_target_path):
     folders_path.append(base_path + "gr_plugins_client")
     folders_path.append(base_path + "gr_client")
     folders_path.append(base_path + "certs")
+    folders_path.append(base_path + "web")
 
     target_path = base_path + "package/packages/com.rgaa.gammaray/data"#+ "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:
