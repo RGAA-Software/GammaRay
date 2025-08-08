@@ -490,7 +490,7 @@ namespace tc
 
     bool GrSettings::IsDevelopMode() {
         auto value = sp_->Get(kStDevelopMode);
-        return value == kStTrue;
+        return value.empty() || value == kStTrue;
     }
 
     void GrSettings::SetFileTransferEnabled(bool enable) {
