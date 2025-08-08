@@ -30,7 +30,7 @@ namespace tc
     public:
         uint64_t socket_fd_;
         int session_type_;
-        std::shared_ptr<asio2::http_session> session_ = nullptr;
+        std::shared_ptr<asio2::https_session> session_ = nullptr;
         std::string stream_id_;
     };
 
@@ -75,7 +75,7 @@ namespace tc
         void RpSyncPanelInfo();
 
     private:
-        std::shared_ptr<asio2::http_server> server_ = nullptr;
+        std::shared_ptr<asio2::https_server> server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;

@@ -31,7 +31,7 @@ namespace tc
         WsRouter::OnPong(sess_ptr);
     }
 
-    void WsMediaRouter::PostBinaryMessage(std::shared_ptr<Data> data) {
+    void WsMediaRouter::PostBinaryMessage(const std::shared_ptr<Data> &data) {
         this->PostBinaryMessage(data->AsString());
     }
 

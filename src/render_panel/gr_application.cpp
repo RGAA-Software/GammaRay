@@ -350,7 +350,7 @@ namespace tc
         }
         else {
             // host & port mode
-            auto client = HttpClient::Make(item->stream_host_, item->stream_port_, "/panel/stream/message", 3000);
+            auto client = HttpClient::MakeSSL(item->stream_host_, item->stream_port_, "/panel/stream/message", 3000);
             auto res = client->Post({}, msg->AsJson());
             LOGI("res: {} {}", res.status, res.body);
             if (res.status == 200) {
