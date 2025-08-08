@@ -12,6 +12,8 @@
 #include <functional>
 #include <asio2/asio2.hpp>
 #include "ws_data.h"
+#include "tc_common_new/time_util.h"
+#include "tc_common_new/uuid.h"
 
 namespace tc
 {
@@ -22,6 +24,8 @@ namespace tc
 
         explicit WsRouter(const WsDataPtr& ws_data) {
             ws_data_ = ws_data;
+            created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+            conn_id_ = MD5::Hex(GetUUID());
         }
 
         virtual void OnOpen(std::shared_ptr<asio2::http_session>& sess_ptr) {
@@ -44,7 +48,7 @@ namespace tc
 
         }
 
-        virtual void PostBinaryMessage(const std::shared_ptr<Data>& data) {
+        virtual void PostBinaryMessage(std::shared_ptr<Data> data) {
 
         }
 
@@ -76,7 +80,10 @@ namespace tc
     public:
         bool enable_audio_ = false;
         bool enable_video_ = false;
-
+        int64_t created_timestamp_ = 0;
+        // random id for this connection
+        // 1. used for logging records
+        std::string conn_id_;
     };
 
     using WsRouterPtr = std::shared_ptr<WsRouter>;
