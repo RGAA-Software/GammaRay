@@ -99,7 +99,6 @@ namespace tc
         //std::shared_ptr<UdpBroadcaster> udp_broadcaster_ = nullptr;
         std::shared_ptr<GrSystemMonitor> sys_monitor_ = nullptr;
         std::shared_ptr<GrServiceClient> service_client_ = nullptr;
-        std::shared_ptr<WsSigClient> sig_client_ = nullptr;
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;
         std::shared_ptr<MgrClientSdk> mgr_client_sdk_ = nullptr;

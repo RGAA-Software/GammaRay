@@ -20,7 +20,6 @@ namespace tc
 
     class GrServiceClient {
     public:
-
         explicit GrServiceClient(const std::shared_ptr<GrApplication>& app);
         void Start();
         void Exit();

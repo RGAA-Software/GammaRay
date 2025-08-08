@@ -8,11 +8,10 @@
 #include <memory>
 #include <map>
 #include <mutex>
-
 #include <QProcess>
-
-#include "tc_common_new/concurrent_hashmap.h"
+#include "render_process.h"
 #include "tc_common_new/response.h"
+#include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
@@ -28,29 +27,42 @@ namespace tc
 
     class RenderManager {
     public:
-
         explicit RenderManager(const std::shared_ptr<ServiceContext>& ctx);
         ~RenderManager();
 
-        bool StartServer(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
-        bool StopServer();
-        bool ReStart(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        // desktop
+        bool StartDesktopRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        bool StopDesktopRender();
+        bool ReStartDesktopRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        [[nodiscard]] bool IsDesktopRenderAlive() const;
+
+        // others
+        bool StartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        bool ReStartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
+        bool StopRender(RenderProcessId id);
+
         void Exit();
-        [[nodiscard]] bool IsRenderAlive() const;
 
     private:
-        bool CheckRenderAlive(const std::vector<std::shared_ptr<ProcessInfo>>& processes);
+        void CheckAliveRenders(const std::vector<std::shared_ptr<ProcessInfo>>& processes);
+        // desktop
+        bool StartDesktopRenderInternal(const std::string& work_dir, const std::string& app_path, const std::string& args);
         bool CheckPanelAlive(const std::vector<std::shared_ptr<ProcessInfo>>& processes);
-        bool StartServerInternal(const std::string& work_dir, const std::string& app_path, const std::string& args);
+
+        // others
 
     private:
         std::shared_ptr<ServiceContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        bool is_render_alive_ = false;
-        std::shared_ptr<ProcessInfo> render_process_ = nullptr;
-        std::string app_path_;
-        std::string app_args_;
-        std::string work_dir_;
+        // desktop
+        bool is_desktop_render_alive_ = false;
+        std::shared_ptr<ProcessInfo> desktop_render_process_ = nullptr;
+        std::string desktop_app_path_;
+        std::string desktop_app_args_;
+        std::string desktop_work_dir_;
+
+        // others
+        tc::ConcurrentHashMap<RenderProcessId, std::shared_ptr<RenderProcess>> render_processes_;
     };
 
 }
