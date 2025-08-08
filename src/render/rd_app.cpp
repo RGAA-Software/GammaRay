@@ -135,8 +135,8 @@ namespace tc
             data_provider_plugin = plugin_manager_->GetMockVideoStreamPlugin();
         }
         else {
-            if (settings_->capture_.IsVideoHook()) {
-                LOGI("Use hook.");
+            if (settings_->capture_.IsVideoInnerCapture()) {
+                LOGI("Use inner capture.");
             }
             else {
                 monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
@@ -159,9 +159,10 @@ namespace tc
         }
 
         if (settings_->capture_.enable_video_) {
-            if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoHook) {
+            if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kVideoInner) {
                 StartProcessWithHook();
-            } else if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kCaptureScreen) {
+            }
+            else if (settings_->capture_.capture_video_type_ == Capture::CaptureVideoType::kCaptureScreen) {
                 StartProcessWithScreenCapture();
             }
         }
@@ -188,7 +189,7 @@ namespace tc
 
     void RdApplication::InitMessages() {
         msg_listener_->Listen<MsgBeforeInject>([=, this](const MsgBeforeInject& msg) {
-            if (settings_->capture_.IsVideoHook()) {
+            if (settings_->capture_.IsVideoInnerCapture()) {
                 this->WriteBoostUpInfoForPid(msg.pid_);
             }
         });
@@ -391,7 +392,7 @@ namespace tc
     }
 
     void RdApplication::PostIpcMessage(const std::string& msg) {
-        if (settings_->capture_.IsVideoHook()) {
+        if (settings_->capture_.IsVideoInnerCapture()) {
             PostNetMessage(Data::From(msg));
         }
     }

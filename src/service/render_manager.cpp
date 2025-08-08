@@ -30,74 +30,75 @@ namespace tc
         msg_listener_->Listen<MsgTimer3S>([=, this](const MsgTimer3S& msg) {
             context_->PostBgTask([=, this]() {
                 auto processes = ProcessHelper::GetProcessList(false);
-                if (!this->CheckRenderAlive(processes) && !this->work_dir_.empty() && !this->app_path_.empty() && !this->app_args_.empty()) {
+                if (processes.size() < 10) {
+                    LOGE("To little processes, check your TaskManager.");
+                    return;
+                }
+                this->CheckAliveRenders(processes);
+                if (!IsDesktopRenderAlive() && !this->desktop_work_dir_.empty() && !this->desktop_app_path_.empty() && !this->desktop_app_args_.empty()) {
                     LOGI("GammaRayRender.exe not exist! Will start!");
-                    StartServerInternal(this->work_dir_, this->app_path_, this->app_args_);
+                    StartDesktopRenderInternal(this->desktop_work_dir_, this->desktop_app_path_, this->desktop_app_args_);
                 }
 
-                //if (!this->CheckPanelAlive(processes)) {
-                //    LOGI("GammaRay.exe not exist!, Will start it");
-                //    QString work_dir = QString::fromStdString(this->work_dir_);
-                //    QString current_path = QString::fromStdString(std::format("{}/{}", this->work_dir_, kGammaRayName));
-                //    ProcessUtil::StartProcessInCurrentUser(current_path.toStdWString(), work_dir.toStdWString(), false);
-                //    //CreateProcessByToken();
-                //    //LaunchProcess(current_path);
-                //}
+                if (!this->CheckPanelAlive(processes)) {
+
+                }
+
             });
         });
 
         auto sp = context_->GetSp();
-        this->work_dir_ = sp->Get(kKeyWorkDir);
-        this->app_path_ = sp->Get(kKeyAppPath);
-        this->app_args_ = sp->Get(kKeyAppArgs);
+        this->desktop_work_dir_ = sp->Get(kKeyWorkDir);
+        this->desktop_app_path_ = sp->Get(kKeyAppPath);
+        this->desktop_app_args_ = sp->Get(kKeyAppArgs);
         LOGI("Load render info in storage:");
-        LOGI("Work dir: {}", work_dir_);
-        LOGI("App path: {}", app_path_);
-        LOGI("App args: {}", app_args_);
+        LOGI("Work dir: {}", desktop_work_dir_);
+        LOGI("App path: {}", desktop_app_path_);
+        LOGI("App args: {}", desktop_app_args_);
     }
 
     RenderManager::~RenderManager() {
 
     }
 
-    bool RenderManager::StartServer(const std::string& _work_dir, const std::string& _app_path, const std::vector<std::string>& _args) {
+    bool RenderManager::StartDesktopRender(const std::string& _work_dir, const std::string& _app_path, const std::vector<std::string>& _args) {
         std::stringstream ss;
         for (auto& arg : _args) {
             ss << arg << " ";
         }
         ss << std::endl;
-        LOGI("Start render \nwork_dir: {} \napp_path: {} \nargs:{}", _work_dir, _app_path, ss.str());
+        LOGI("Start desktop render \nwork_dir: {} \napp_path: {} \nargs:{}", _work_dir, _app_path, ss.str());
 
         auto sp = context_->GetSp();
         auto exist_work_dir = sp->Get(kKeyWorkDir);
         auto exist_app_path = sp->Get(kKeyAppPath);
         auto exist_app_args = sp->Get(kKeyAppArgs);
         auto processes = ProcessHelper::GetProcessList(false);
-        CheckRenderAlive(processes);
-        if (render_process_ != nullptr && is_render_alive_) {
+        CheckAliveRenders(processes);
+        if (desktop_render_process_ != nullptr && is_desktop_render_alive_) {
             if (exist_work_dir != _work_dir || exist_app_path != _app_path || exist_app_args != ss.str()) {
-                StopServer();
+                StopDesktopRender();
             }
             else {
-                LOGI("Render is already alive, pid: {}", render_process_->pid_);
+                LOGI("Render is already alive, pid: {}", desktop_render_process_->pid_);
                 return true;
             }
         }
 
-        this->work_dir_ = _work_dir;
-        this->app_path_ = _app_path;
-        this->app_args_ = ss.str();
+        this->desktop_work_dir_ = _work_dir;
+        this->desktop_app_path_ = _app_path;
+        this->desktop_app_args_ = ss.str();
 
-        bool start_result = StartServerInternal(this->work_dir_, this->app_path_, this->app_args_);
+        bool start_result = StartDesktopRenderInternal(this->desktop_work_dir_, this->desktop_app_path_, this->desktop_app_args_);
         processes = ProcessHelper::GetProcessList(false);
-        CheckRenderAlive(processes);
+        CheckAliveRenders(processes);
         return start_result;
     }
 
-    bool RenderManager::StopServer() {
-        if (render_process_) {
-            ProcessHelper::CloseProcess(render_process_->pid_);
-            render_process_ = nullptr;
+    bool RenderManager::StopDesktopRender() {
+        if (desktop_render_process_) {
+            ProcessHelper::CloseProcess(desktop_render_process_->pid_);
+            desktop_render_process_ = nullptr;
         }
 
         // kill all
@@ -111,51 +112,67 @@ namespace tc
         return true;
     }
 
-    bool RenderManager::ReStart(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& _args) {
+    bool RenderManager::ReStartDesktopRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& _args) {
         std::stringstream ss;
         for (auto& arg : _args) {
             ss << arg << " ";
         }
         ss << std::endl;
-        LOGI("ReStart render \nwork_dir: {} \napp_path: {} \nargs:{}", work_dir, app_path, ss.str());
+        LOGI("ReStartDesktopRender render \nwork_dir: {} \napp_path: {} \nargs:{}", work_dir, app_path, ss.str());
 
-        this->work_dir_ = work_dir;
-        this->app_path_ = app_path;
-        this->app_args_ = ss.str();
+        this->desktop_work_dir_ = work_dir;
+        this->desktop_app_path_ = app_path;
+        this->desktop_app_args_ = ss.str();
 
-        this->StopServer();
+        this->StopDesktopRender();
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        if (this->work_dir_.empty() || this->app_path_.empty() || this->app_args_.empty()) {
+        if (this->desktop_work_dir_.empty() || this->desktop_app_path_.empty() || this->desktop_app_args_.empty()) {
             return false;
         }
-        return StartServerInternal(work_dir_, app_path_, app_args_);
+        return StartDesktopRenderInternal(desktop_work_dir_, desktop_app_path_, desktop_app_args_);
     }
 
     void RenderManager::Exit() {
-        StopServer();
+        StopDesktopRender();
     }
 
-    bool RenderManager::CheckRenderAlive(const std::vector<std::shared_ptr<ProcessInfo>>& processes) {
+    void RenderManager::CheckAliveRenders(const std::vector<std::shared_ptr<ProcessInfo>>& processes) {
+        bool found_desktop_render = false;
+        std::map<RenderProcessId, std::shared_ptr<RenderProcess>> ps;
         for (auto& p : processes) {
-            //LOGI("p.exe_name: {}", p->exe_full_path_);
-            if (p->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
-                //LOGI("Yes, find it.");
-                is_render_alive_ = true;
-                render_process_ = p;
+            // not GammaRayRender.exe
+            if (p->exe_full_path_.find(kGammaRayRenderName) == std::string::npos) {
+                continue;
+            }
+
+            // desktop mode
+            if (p->exe_cmdline_.find("--app_mode=desktop") != std::string::npos) {
+                //LOGI("Yes, find it, path with cmdline: {}", p->exe_cmdline_);
+                found_desktop_render = true;
+                is_desktop_render_alive_ = true;
+                desktop_render_process_ = p;
 
                 auto sp = context_->GetSp();
-                sp->Put(kKeyWorkDir, this->work_dir_);
-                sp->Put(kKeyAppPath, this->app_path_);
-                sp->Put(kKeyAppArgs, this->app_args_);
+                sp->Put(kKeyWorkDir, this->desktop_work_dir_);
+                sp->Put(kKeyAppPath, this->desktop_app_path_);
+                sp->Put(kKeyAppArgs, this->desktop_app_args_);
+            }
 
-                return true;
+            // others
+            if (p->exe_cmdline_.find("--app_mode=inner") != std::string::npos) {
+                // TODO: parse ws port
+                auto rd_process = std::make_shared<RenderProcess>();
+                ps.insert({0, rd_process});
             }
         }
-        is_render_alive_ = false;
-        render_process_ = nullptr;
 
-        return false;
+        if (!found_desktop_render) {
+            is_desktop_render_alive_ = false;
+            desktop_render_process_ = nullptr;
+        }
+
+        render_processes_.ClearAndBatchInsert(ps);
     }
 
     bool RenderManager::CheckPanelAlive(const std::vector<std::shared_ptr<ProcessInfo>>& processes) {
@@ -167,14 +184,49 @@ namespace tc
         return false;
     }
 
-    bool RenderManager::StartServerInternal(const std::string& _work_dir, const std::string& _app_path, const std::string& args) {
+    bool RenderManager::StartDesktopRenderInternal(const std::string& _work_dir, const std::string& _app_path, const std::string& args) {
         QString work_dir = QString::fromStdString(_work_dir);
         QString current_path = QString::fromStdString(std::format("{}/{} {}", _work_dir, kGammaRayRenderName, args));
         return ProcessUtil::StartProcessInSameUser(current_path.toStdWString(), work_dir.toStdWString(), false);
     }
 
-    bool RenderManager::IsRenderAlive() const {
-        return is_render_alive_;
+    bool RenderManager::IsDesktopRenderAlive() const {
+        return is_desktop_render_alive_;
     }
+
+    // others
+    bool RenderManager::StartRender(const std::string& _work_dir, const std::string& _app_path, const std::vector<std::string>& args) {
+        std::stringstream ss;
+        for (auto& arg : args) {
+            ss << arg << " ";
+        }
+        ss << std::endl;
+        LOGI("Start render \nwork_dir: {} \napp_path: {} \nargs:{}", _work_dir, _app_path, ss.str());
+
+        auto processes = ProcessHelper::GetProcessList(false);
+        CheckAliveRenders(processes);
+        //todo: alive ? , return true
+
+        QString work_dir = QString::fromStdString(_work_dir);
+        QString current_path = QString::fromStdString(std::format("{}/{} {}", _work_dir, kGammaRayRenderName, ss.str()));
+        return ProcessUtil::StartProcessInSameUser(current_path.toStdWString(), work_dir.toStdWString(), false);
+
+        bool start_result = StartDesktopRenderInternal(this->desktop_work_dir_, this->desktop_app_path_, ss.str());
+        processes = ProcessHelper::GetProcessList(false);
+        CheckAliveRenders(processes);
+
+        // todo: alive ? true : false
+
+        return false;
+    }
+
+    bool RenderManager::ReStartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args) {
+        return false;
+    }
+
+    bool RenderManager::StopRender(RenderProcessId id) {
+        return false;
+    }
+
 
 }
