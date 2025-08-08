@@ -44,7 +44,7 @@ namespace tc
         WsRouter::OnPong(sess_ptr);
     }
 
-    void WsIpcRouter::PostBinaryMessage(const std::shared_ptr<Data> &data) {
+    void WsIpcRouter::PostBinaryMessage(std::shared_ptr<Data> data) {
         session_->async_send(data->AsString());
     }
 

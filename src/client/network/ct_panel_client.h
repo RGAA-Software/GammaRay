@@ -30,7 +30,7 @@ namespace tc
 
     private:
         std::shared_ptr<ClientContext> context_ = nullptr;
-        std::shared_ptr<asio2::wss_client> client_ = nullptr;
+        std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
     };
 
