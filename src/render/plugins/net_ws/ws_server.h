@@ -51,7 +51,8 @@ namespace tc
     private:
         tc::WsPlugin* plugin_ = nullptr;
         uint16_t listen_port_ = 0;
-        std::shared_ptr<asio2::https_server> server_ = nullptr;
+        //std::shared_ptr<asio2::https_server> server_ = nullptr;
+        std::shared_ptr<asio2::http_server> server_ = nullptr;
 
         WsDataPtr ws_data_ = nullptr;
         tc::ConcurrentHashMap<uint64_t, std::shared_ptr<WsStreamRouter>> stream_routers_;

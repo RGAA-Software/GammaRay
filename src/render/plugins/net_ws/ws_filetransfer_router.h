@@ -5,14 +5,15 @@
 #ifndef TC_PLUGIN_WS_FILE_TRANSFER_ROUTER_H
 #define TC_PLUGIN_WS_FILE_TRANSFER_ROUTER_H
 
-#include "render/network/wss_router.h"
+//#include "render/network/wss_router.h"
+#include "render/network/ws_router.h"
 
 namespace tc
 {
 
     class Data;
 
-    class WsFileTransferRouter : public WssRouter, public std::enable_shared_from_this<WsFileTransferRouter> {
+    class WsFileTransferRouter : public WsRouter, public std::enable_shared_from_this<WsFileTransferRouter> {
     public:
 
         static std::shared_ptr<WsFileTransferRouter> Make(const WsDataPtr& data, bool only_audio, const std::string& device_id, const std::string& stream_id) {
@@ -22,12 +23,12 @@ namespace tc
             return router;
         }
 
-        explicit WsFileTransferRouter(const WsDataPtr& data, bool only_audio) : WssRouter(data){}
-        void OnOpen(std::shared_ptr<asio2::https_session> &sess_ptr) override;
-        void OnClose(std::shared_ptr<asio2::https_session> &sess_ptr) override;
-        void OnMessage(std::shared_ptr<asio2::https_session> &sess_ptr, int64_t socket_fd, std::string_view data) override;
-        void OnPing(std::shared_ptr<asio2::https_session> &sess_ptr) override;
-        void OnPong(std::shared_ptr<asio2::https_session> &sess_ptr) override;
+        explicit WsFileTransferRouter(const WsDataPtr& data, bool only_audio) : WsRouter(data){}
+        void OnOpen(std::shared_ptr<asio2::http_session> &sess_ptr) override;
+        void OnClose(std::shared_ptr<asio2::http_session> &sess_ptr) override;
+        void OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, int64_t socket_fd, std::string_view data) override;
+        void OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) override;
+        void OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) override;
         void PostBinaryMessage(std::shared_ptr<Data> msg) override;
 
     public:
