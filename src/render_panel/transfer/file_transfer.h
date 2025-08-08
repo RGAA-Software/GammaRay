@@ -22,7 +22,7 @@ namespace tc
     // Drag & Drop file transferring
     class FileTransferChannel {
     public:
-        explicit FileTransferChannel(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<asio2::https_session>& sess);
+        explicit FileTransferChannel(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<asio2::http_session>& sess);
         void OnConnected();
         void OnDisConnected();
         void ParseBinaryMessage(std::string_view data);
@@ -32,7 +32,7 @@ namespace tc
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<File> transferring_file_ = nullptr;
-        std::shared_ptr<asio2::https_session> sess_ = nullptr;
+        std::shared_ptr<asio2::http_session> sess_ = nullptr;
     };
 
 }
