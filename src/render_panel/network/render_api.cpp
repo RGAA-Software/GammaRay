@@ -17,7 +17,7 @@ namespace tc
     const std::string kApiGetRenderConfiguration = "/get/render/configuration";
 
     Result<RenderConfiguration, int> RenderApi::GetRenderConfiguration(const std::string& host, int port) {
-        auto client = HttpClient::Make(host, port, kApiGetRenderConfiguration);
+        auto client = HttpClient::MakeSSL(host, port, kApiGetRenderConfiguration);
         auto r = client->Request({});
 
         LOGI("code: {}, msg: {}", r.status, r.body);
@@ -42,7 +42,7 @@ namespace tc
     }
 
     Result<bool, int> RenderApi::VerifySecurityPassword(const std::string& host, int port, const std::string& safety_pwd_md5) {
-        auto client = HttpClient::Make(host, port, kApiVerifySecurityPassword);
+        auto client = HttpClient::MakeSSL(host, port, kApiVerifySecurityPassword);
         auto r = client->Request({{
             "safety_pwd_md5", safety_pwd_md5
         }});

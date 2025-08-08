@@ -31,7 +31,7 @@ namespace tc
     }
 
     void CtPanelClient::Start() {
-        client_ = std::make_shared<asio2::ws_client>();
+        client_ = std::make_shared<asio2::wss_client>();
         client_->set_auto_reconnect(true);
         client_->keep_alive(true);
         client_->set_timeout(std::chrono::milliseconds(3000));

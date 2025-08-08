@@ -25,7 +25,7 @@ namespace tc
         void OnMessage(std::shared_ptr<asio2::http_session> &sess_ptr, int64_t socket_fd, std::string_view data) override;
         void OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) override;
         void OnPong(std::shared_ptr<asio2::http_session> &sess_ptr) override;
-        void PostBinaryMessage(std::shared_ptr<Data> data) override;
+        void PostBinaryMessage(const std::shared_ptr<Data> &data) override;
         void PostBinaryMessage(const std::string &data) override;
         void PostTextMessage(const std::string& data) override;
     };
