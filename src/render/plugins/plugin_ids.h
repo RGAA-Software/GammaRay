@@ -34,6 +34,8 @@ namespace tc
     const std::string kFrameCarrierPluginId = "ebde829b-ef0f-4cbc-961a-3cca5f3d646c";
     const std::string kJoystickPluginId = "102a229e-295d-444e-9ca0-b6644f3198f6";
     const std::string kEventReplayerPluginId = "b6cb3d88-f397-4182-863c-2aaed752d1a9";
+    const std::string kNetRtcLocalPluginId = "bea7bf25-d07f-440a-acef-ac845d748958";
+    const std::string kSSLProxyPluginId = "e0c58238-372e-4fa1-aad2-29ffdc458344";
 
 }
 

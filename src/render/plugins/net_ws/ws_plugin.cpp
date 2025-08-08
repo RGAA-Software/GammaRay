@@ -30,7 +30,7 @@ namespace tc
     }
 
     std::string WsPlugin::GetPluginName() {
-        return "Net WebSocket(SSL)";
+        return "Net WebSocket";
     }
 
     std::string WsPlugin::GetVersionName() {
@@ -42,7 +42,7 @@ namespace tc
     }
 
     std::string WsPlugin::GetPluginDescription() {
-        return "Network via webSocket SSL";
+        return "Network via WebSocket";
     }
 
     bool WsPlugin::OnCreate(const tc::GrPluginParam& param) {
