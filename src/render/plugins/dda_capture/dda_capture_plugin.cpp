@@ -113,10 +113,16 @@ namespace tc
                     LOGE("IDXGIAdapter::EnumOutputs returns an unexpected result {} with error code {}", StringUtil::GetErrorStr(res).c_str(), res);
                     break;
                 }
+                if (res == S_OK) {
+                    LOGI("EnumOutputs ok Adapter Index:{} Name:{}, Uid:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str(), adapter_uid);
+                }
+                
                 DXGI_OUTPUT_DESC output_desc{};
                 res = output->GetDesc(&output_desc);
                 if (res == S_OK) {
                     auto dev_name = StringUtil::ToUTF8(output_desc.DeviceName);
+                    LOGI("EnumOutputs S_OK, name_: {}", dev_name);
+                    LOGI("Adapter Index:{} Name:{}, Uid:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str(), adapter_uid);
                     monitors_.insert({dev_name, CaptureMonitorInfo{
                         .name_ = dev_name,
                         .attached_desktop_ = (bool) output_desc.AttachedToDesktop,
