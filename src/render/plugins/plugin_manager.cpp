@@ -133,11 +133,24 @@ namespace tc
             }
         }
 
-        VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+        // net plugins
+        std::vector<GrPluginInterface*> plugins;
+        VisitAllPlugins([&](GrPluginInterface* plugin) {
+            plugins.push_back(plugin);
             if (plugin->GetPluginType() != GrPluginType::kNet) {
                 VisitNetPlugins([=, this](GrNetPlugin* np) {
                     plugin->AttachNetPlugin(np->GetPluginId(), np);
                 });
+            }
+        });
+
+        // total plugins
+        VisitAllPlugins([&](GrPluginInterface* plugin) {
+            for (GrPluginInterface* p : plugins) {
+                if (p->GetPluginId() == plugin->GetPluginId()) {
+                    continue;
+                }
+                plugin->AttachPlugin(p->GetPluginId(), p);
             }
         });
     }

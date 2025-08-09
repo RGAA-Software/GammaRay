@@ -38,10 +38,25 @@ namespace tc
         std::string device_name_;
     };
 
+    // local webrtc request info
+    class GrLocalRtcRequestInfo {
+    public:
+        std::string device_id_;
+        std::string stream_id_;
+        std::string req_ip_;
+        std::string sdp_;
+    };
+
+    // local webrtc reply info
+    class GrLocalRtcReplyInfo {
+    public:
+        std::string answer_sdp_;
+    };
+
     class GrNetPlugin : public GrPluginInterface {
     public:
         GrNetPlugin();
-        virtual ~GrNetPlugin() override;
+        ~GrNetPlugin() override;
 
         // Serialized proto message from Renderer
         // to see format details in tc_message_new/tc_message.proto
@@ -86,6 +101,12 @@ namespace tc
         void ReportSentDataSize(int size);
 
         virtual std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo();
+
+        // alloc a new local rtc server
+        virtual bool AllocNewLocalRtcInstance(const std::shared_ptr<GrLocalRtcRequestInfo>& info,
+                                              std::function<void(const std::shared_ptr<GrLocalRtcReplyInfo>&)>&& callback) {
+            return false;
+        }
 
     protected:
         NetSyncInfo sync_info_{};

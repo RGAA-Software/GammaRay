@@ -33,6 +33,8 @@ namespace tc
         // /panel/stream/message
         void HandlePanelStreamMessage(http::web_request& req, http::web_response& resp);
 
+        // /alloc/local/rtc
+        void HandleAllocLocalRtc(std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& resp);
     private:
         WsPlugin* plugin_ = nullptr;
 
