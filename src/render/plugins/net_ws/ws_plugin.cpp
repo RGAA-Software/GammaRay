@@ -154,4 +154,11 @@ namespace tc
         }
     }
 
+    GrNetPlugin* WsPlugin::GetLocalRtcPlugin() {
+        if (auto plugin = GetPluginById(kNetRtcLocalPluginId); plugin) {
+            return (GrNetPlugin*)plugin;
+        }
+        return nullptr;
+    }
+
 }

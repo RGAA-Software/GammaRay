@@ -229,6 +229,10 @@ namespace tc
         net_plugins_[id] = plugin;
     }
 
+    void GrPluginInterface::AttachPlugin(const std::string& id, GrPluginInterface* plugin) {
+        total_plugins_[id] = plugin;
+    }
+
     bool GrPluginInterface::HasAttachedNetPlugins() {
         return !net_plugins_.empty();
     }
@@ -335,6 +339,15 @@ namespace tc
 
     void GrPluginInterface::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
 
+    }
+
+    GrPluginInterface* GrPluginInterface::GetPluginById(const std::string& plugin_id) {
+        for (const auto& [id, plugin] : total_plugins_) {
+            if (plugin_id == plugin->GetPluginId()) {
+                return plugin;
+            }
+        }
+        return nullptr;
     }
 
 }

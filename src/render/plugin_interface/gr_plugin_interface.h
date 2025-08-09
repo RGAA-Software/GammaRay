@@ -124,7 +124,11 @@ namespace tc
         void ShowRootWidget();
         void HideRootWidget();
 
+        // net plugins
         void AttachNetPlugin(const std::string& id, GrNetPlugin* plugin);
+        // total plugins
+        void AttachPlugin(const std::string& id, GrPluginInterface* plugin);
+
         //
         bool HasAttachedNetPlugins();
         // Serialized proto message from Renderer
@@ -195,6 +199,8 @@ namespace tc
         bool GetConfigBoolParam(const std::string& k) {return GetConfigParam<bool>(k); }
         double GetConfigDoubleParam(const std::string& k) { return GetConfigParam<double>(k); }
 
+        GrPluginInterface* GetPluginById(const std::string& plugin_id);
+
     protected:
         std::shared_ptr<GrPluginContext> plugin_context_ = nullptr;
         std::atomic_bool stopped_ = false;
@@ -213,6 +219,8 @@ namespace tc
         std::string capture_audio_device_id_;
         // active net plugins...
         std::map<std::string, GrNetPlugin*> net_plugins_;
+        // total plugins
+        std::map<std::string, GrPluginInterface*> total_plugins_;
         // settings
         GrPluginSettingsInfo sys_settings_{};
         // no connected clients counter

@@ -14,6 +14,8 @@ namespace tc
 
     constexpr auto kHandlerErrVerifySafetyPasswordFailed = 700;
     constexpr auto kHandlerErrNoSafetyPasswordInRenderer = 701;
+    constexpr auto kHandlerErrNoRtcLocalPlugin = 702;
+    constexpr auto kHandlerErrCreateRtcLocalServerFailed = 703;
 
     HttpHandler::HttpHandler(WsPlugin* plugin) {
         this->plugin_ = plugin;
@@ -25,6 +27,12 @@ namespace tc
         }
         else if (code == kHandlerErrNoSafetyPasswordInRenderer) {
             return "No security password in renderer";
+        }
+        else if (code == kHandlerErrNoRtcLocalPlugin) {
+            return "No RtcLocalPlugin";
+        }
+        else if (code == kHandlerErrCreateRtcLocalServerFailed) {
+            return "Create Rtc local server failed";
         }
         return BaseHandler::GetErrorMessage(code);
     }
@@ -87,5 +95,70 @@ namespace tc
         this->plugin_->CallbackEvent(event);
 
         SendOkJson(resp, "");
+    }
+
+    void HttpHandler::HandleAllocLocalRtc(std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& resp) {
+        auto& body = req.body();
+        auto target = req.target();
+
+        LOGI("req host:port, {}:{}, target: {}", req.host(), req.port(), target);
+        LOGI("body: {}", body);
+        LOGI("req, remote: {} {} , client: {} {}",
+             session_ptr->remote_address().c_str(), session_ptr->remote_port(),
+             session_ptr->local_address().c_str(), session_ptr->local_port());
+
+        std::string sdp;
+        try {
+            auto obj = nlohmann::json::parse(body);
+            sdp = obj["sdp"];
+        } catch(std::exception& e) {
+            SendErrorJson(resp, kHandlerErrParams);
+            return;
+        }
+
+        auto params = GetQueryParams(req.query());
+        auto device_id = GetParam(params, "device_id");
+        auto stream_id = GetParam(params, "stream_id");
+        if (!device_id.has_value() || !stream_id.has_value() || sdp.empty()) {
+            SendErrorJson(resp, kHandlerErrParams);
+            return;
+        }
+
+        auto rtc_plugin = this->plugin_->GetLocalRtcPlugin();
+        if (rtc_plugin == nullptr) {
+            SendErrorJson(resp, kHandlerErrNoRtcLocalPlugin);
+            return;
+        }
+
+        auto rtc_req = std::make_shared<GrLocalRtcRequestInfo>();
+        rtc_req->device_id_ = device_id.value();
+        rtc_req->stream_id_ = stream_id.value();
+        rtc_req->req_ip_ = session_ptr->remote_address();
+        rtc_req->sdp_ = sdp;
+
+        std::mutex cv_mtx;
+        std::condition_variable cv;
+        std::shared_ptr<GrLocalRtcReplyInfo> reply_info = nullptr;
+        auto r = rtc_plugin->AllocNewLocalRtcInstance(rtc_req, [&](const std::shared_ptr<GrLocalRtcReplyInfo>& reply) {
+            reply_info = reply;
+            cv.notify_all();
+        });
+        if (!r) {
+            SendErrorJson(resp, kHandlerErrCreateRtcLocalServerFailed);
+            return;
+        }
+
+        // wait
+        std::unique_lock lk(cv_mtx);
+        cv.wait_for(lk, std::chrono::seconds(10));
+
+        if (!reply_info) {
+            SendErrorJson(resp, kHandlerErrCreateRtcLocalServerFailed);
+            return;
+        }
+
+        nlohmann::json obj;
+        obj["answer_sdp"] = reply_info->answer_sdp_;
+        SendOkJson(static_cast<http::web_response &>(resp), obj.dump());
     }
 }

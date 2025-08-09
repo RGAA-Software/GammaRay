@@ -24,6 +24,7 @@ static std::string kApiPing = "/api/ping";
 static std::string kApiVerifySecurityPassword = "/verify/security/password";
 static std::string kApiGetRenderConfiguration = "/get/render/configuration";
 static std::string kApiPanelStreamMessage = "/panel/stream/message";
+static std::string kApiAllocLocalRtc = "/alloc/local/rtc";
 
 namespace tc
 {
@@ -94,23 +95,28 @@ namespace tc
         AddWebsocketRouter(kUrlFileTransfer);
 
         // ping
-        AddHttpRouter(kApiPing, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+        AddHttpRouter(kApiPing, [=, this](const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep) {
             http_handler_->HandlePing(req, rep);
         });
 
         // verify security pwd
-        AddHttpRouter(kApiVerifySecurityPassword, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+        AddHttpRouter(kApiVerifySecurityPassword, [=, this](const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep) {
             http_handler_->HandleVerifySecurityPassword(req, rep);
         });
 
         // get render configuration
-        AddHttpRouter(kApiGetRenderConfiguration, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+        AddHttpRouter(kApiGetRenderConfiguration, [=, this](const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep) {
             http_handler_->HandleGetRenderConfiguration(req, rep);
         });
 
         //
-        AddHttpRouter(kApiPanelStreamMessage, [=, this](const std::string& path, http::web_request& req, http::web_response& rep) {
+        AddHttpRouter(kApiPanelStreamMessage, [=, this](const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep) {
             http_handler_->HandlePanelStreamMessage(req, rep);
+        });
+
+        // kApiAllocLocalRtc
+        AddHttpRouter(kApiAllocLocalRtc, [=, this](const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep) {
+            http_handler_->HandleAllocLocalRtc(session_ptr, req, rep);
         });
 
         if (listen_port_ <= 0) {
@@ -267,10 +273,10 @@ namespace tc
     }
 
     void WsPluginServer::AddHttpRouter(const std::string &path,
-       std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback) {
+       std::function<void(const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep)>&& callback) {
         // bind it
-        server_->bind<http::verb::get, http::verb::post>(path, [=, this](http::web_request &req, http::web_response &rep) {
-            callback(path, req, rep);
+        server_->bind<http::verb::get, http::verb::post>(path, [=, this](std::shared_ptr<asio2::http_session> &session_ptr, http::web_request &req, http::web_response &rep) {
+            callback(path, session_ptr, req, rep);
         }, aop_log{}); //, http::enable_cache
     }
 

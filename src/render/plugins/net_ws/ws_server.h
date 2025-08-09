@@ -43,7 +43,7 @@ namespace tc
         void AddWebsocketRouter(const std::string& path);
 
         void AddHttpRouter(const std::string& path,
-                           std::function<void(const std::string& path, http::web_request& req, http::web_response& rep)>&& callback);
+                           std::function<void(const std::string& path, std::shared_ptr<asio2::http_session> &session_ptr, http::web_request& req, http::web_response& rep)>&& callback);
 
         void NotifyMediaClientConnected(const std::string& conn_id, const std::string& stream_id, const std::string& visitor_device_id);
         void NotifyMediaClientDisConnected(const std::string& conn_id, const std::string& stream_id, const std::string& visitor_device_id, int64_t begin_timestamp);
