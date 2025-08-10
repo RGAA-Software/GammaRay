@@ -86,6 +86,7 @@ namespace tc
         void SetDDAInitCallback(DDAInitCallback&& cbk){
             dda_init_callback_ = std::move(cbk);
         }
+        int32_t GetContinuousTimeoutTimes();
     private:
         void Start();
         bool Exit();
@@ -111,5 +112,6 @@ namespace tc
         CComPtr<ID3D11Device> d3d11_device_ = nullptr;
         CComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
 
+        std::atomic<int32_t> continuous_timeout_times_ = 0;
     };
 }

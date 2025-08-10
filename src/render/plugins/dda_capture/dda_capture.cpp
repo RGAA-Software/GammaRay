@@ -76,8 +76,9 @@ namespace tc
                 break;
             }
 
-            int monitor_index = 0;
+            int monitor_index = -1;
             do {
+                ++monitor_index;
                 CComPtr<IDXGIOutput> output;
                 res = adapter1->EnumOutputs(monitor_index, &output);
                 if (res == DXGI_ERROR_NOT_FOUND) {
@@ -91,7 +92,6 @@ namespace tc
                 if (res != S_OK || !output) {
                     LOGE("IDXGIAdapter::EnumOutputs returns an unexpected result {} with error code {}",
                          StringUtil::GetErrorStr(res).c_str(), res);
-                    monitor_index++;
                     continue;
                 }
                 DXGI_OUTPUT_DESC output_desc{};
@@ -100,7 +100,6 @@ namespace tc
                     auto dev_name = StringUtil::ToUTF8(output_desc.DeviceName);
                     if (dev_name != my_monitor_info_.name_) {
                         LOGW("My device name is :{}, but your name is : {}, continue to find.", my_monitor_info_.name_, dev_name);
-                        monitor_index++;
                         continue;
                     }
                     LOGI("Yes, found the same device: {}", dev_name);
@@ -119,7 +118,6 @@ namespace tc
                         res = output.QueryInterface(&output1);
                         if (res != S_OK || !output1) {
                             LOGE("Failed to convert IDXGIOutput to IDXGIOutput1, this usually means the system does not support DirectX 11");
-                            monitor_index++;
                             continue;
                         }
 
@@ -168,7 +166,6 @@ namespace tc
                            << output_desc.DesktopCoordinates.right << ") is ignored.";
                         LOGI("MonitorInfo invalid: {}", ss.str());
                     }
-                    monitor_index++;
                 } else {
                     LOGE("Failed to get output description of device :{}", monitor_index);
                 }
@@ -316,6 +313,7 @@ namespace tc
             auto target_duration = 1000 / capture_fps_;
             //LOGI("target_duration: {}, capture_fps_: {}", target_duration, capture_fps_);
             CComPtr<ID3D11Texture2D> texture = nullptr;
+            // do capture
             auto res = CaptureNextFrame(target_duration, texture);
 
             bool is_cached = false;
@@ -361,6 +359,8 @@ namespace tc
                 }
                 continue;
             } else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED)) {
+                ++continuous_timeout_times_;
+                //LOGI("CaptureNextFrame res: {:x}", (uint32_t)res);
                 if (refresh_screen_) {
                     if (cached_texture_ == nullptr) {
                         continue;
@@ -383,6 +383,7 @@ namespace tc
             }
 
             if (texture) {
+                continuous_timeout_times_ = 0;
                 OnCaptureFrame(texture, is_cached);
                 uint64_t end_time = TimeUtil::GetCurrentTimestamp();
                 int cap_use_time = end_time - beg_time;
@@ -583,6 +584,10 @@ namespace tc
         if (d3d11_device_context_) {
             d3d11_device_context_->Flush();
         }
+    }
+
+    int32_t DDACapture::GetContinuousTimeoutTimes() {
+        return continuous_timeout_times_.load();
     }
 
 } // tc

@@ -21,6 +21,8 @@ static void* GetInstance() {
 namespace tc
 {
 
+    static const int32_t kAllowedMaxContinuousTimeoutTimes = 300;
+
     DDACapturePlugin::DDACapturePlugin() : GrMonitorCapturePlugin() {
 
     }
@@ -97,8 +99,9 @@ namespace tc
                 break;
             }
 
-            int monitor_index = 0;
+            int monitor_index = -1;
             do {
+                ++monitor_index;
                 CComPtr<IDXGIOutput> output;
                 res = adapter1->EnumOutputs(monitor_index, &output);
                 if (res == DXGI_ERROR_NOT_FOUND) {
@@ -120,20 +123,30 @@ namespace tc
                 DXGI_OUTPUT_DESC output_desc{};
                 res = output->GetDesc(&output_desc);
                 if (res == S_OK) {
-                    auto dev_name = StringUtil::ToUTF8(output_desc.DeviceName);
-                    LOGI("EnumOutputs S_OK, name_: {}", dev_name);
-                    LOGI("Adapter Index:{} Name:{}, Uid:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str(), adapter_uid);
-                    monitors_.insert({dev_name, CaptureMonitorInfo{
-                        .name_ = dev_name,
-                        .attached_desktop_ = (bool) output_desc.AttachedToDesktop,
-                        .top_ = output_desc.DesktopCoordinates.top,
-                        .left_ = output_desc.DesktopCoordinates.left,
-                        .right_ = output_desc.DesktopCoordinates.right,
-                        .bottom_ = output_desc.DesktopCoordinates.bottom,
-                        .supported_res_ = GetSupportedResolutions(output_desc.DeviceName),
-                        .adapter_uid_ = adapter_uid,
-                    }});
-                    monitor_index++;
+                    if (output_desc.AttachedToDesktop && IsValidRect(output_desc.DesktopCoordinates))
+                    {
+                        auto dev_name = StringUtil::ToUTF8(output_desc.DeviceName);
+                        LOGI("EnumOutputs S_OK, name_: {}", dev_name);
+                        LOGI("Adapter Index:{} Name:{}, Uid:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str(), adapter_uid);
+                        monitors_.insert(
+                            { 
+                                dev_name, CaptureMonitorInfo {
+                                    .name_ = dev_name,
+                                    .attached_desktop_ = (bool)output_desc.AttachedToDesktop,
+                                    .top_ = output_desc.DesktopCoordinates.top,
+                                    .left_ = output_desc.DesktopCoordinates.left,
+                                    .right_ = output_desc.DesktopCoordinates.right,
+                                    .bottom_ = output_desc.DesktopCoordinates.bottom,
+                                    .supported_res_ = GetSupportedResolutions(output_desc.DeviceName),
+                                    .adapter_uid_ = adapter_uid,
+                                } 
+                            }
+                        );
+                    }
+                    else {
+                        LOGI("Adapter index: {}, name: {}; dev_name: {}, AttachedToDesktop: {} is ignored.",adapter_index, StringUtil::ToUTF8(adapter_desc.Description), StringUtil::ToUTF8(output_desc.DeviceName),
+                            (bool)output_desc.AttachedToDesktop);
+                    }
                 } else {
                     LOGE("Failed to get output description of device: {} in adapter index: {}, adaper id: {}",
                          monitor_index, adapter_index, adapter_uid);
@@ -333,6 +346,27 @@ namespace tc
         //for (auto& [k, v] : captures_) {
         //    LOGI("capture name: {}, fps: {}", k, v->GetCapturingFps());
         //}
+
+        if (1 == captures_.size()) {
+
+            int32_t continuous_timeout_times = 0;
+
+            for (const auto& [dev_name, capture] : captures_) {
+                auto dda_capture =  std::dynamic_pointer_cast<DDACapture>(capture);
+                if (dda_capture) {
+                    continuous_timeout_times = dda_capture->GetContinuousTimeoutTimes();
+                }
+            }
+
+            if (continuous_timeout_times > kAllowedMaxContinuousTimeoutTimes) {
+                StopCapturing();
+                captures_.clear();
+                if (capture_init_failed_cbk_) {
+                    capture_init_failed_cbk_();
+                }
+            }
+        }
+
     }
 
     void DDACapturePlugin::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
