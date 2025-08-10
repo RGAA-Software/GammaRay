@@ -457,14 +457,14 @@ namespace tc
                 return;
             }
 
-            // plugins: SharedTexture
-            if (msg.handle_ > 0) {
-                context_->PostStreamPluginTask([=, this]() {
-                    plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
-                        plugin->OnRawVideoFrameSharedTexture(msg.handle_);
-                    });
-                });
-            }
+//            // plugins: SharedTexture
+//            if (msg.handle_ > 0) {
+//                context_->PostStreamPluginTask([=, this]() {
+//                    plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
+//                        plugin->OnRawVideoFrameSharedTexture(msg.display_name_, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.handle_);
+//                    });
+//                });
+//            }
 
             // calculate gaps between 2 captured frames.
             //{

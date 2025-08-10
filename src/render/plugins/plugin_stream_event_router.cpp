@@ -97,9 +97,14 @@ namespace tc
         context_->PostStreamPluginTask([=, this]() {
             plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
                 // stream plugins: Raw frame / Encoded frame
-                plugin->OnEncodedVideoFrame(event->type_, event->data_, event->frame_index_,
+                plugin->OnEncodedVideoFrame(msg.monitor_name_, event->type_, event->data_, event->frame_index_,
                                             event->frame_width_, event->frame_height_, event->key_frame_);
             });
+
+            if (auto plugin = plugin_manager_->GetRtcLocalPlugin(); plugin) {
+                plugin->OnEncodedVideoFrame(msg.monitor_name_, event->type_, event->data_, event->frame_index_,
+                                            event->frame_width_, event->frame_height_, event->key_frame_);
+            }
         });
     }
 

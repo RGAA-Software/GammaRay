@@ -19,24 +19,13 @@ namespace tc
 
     }
 
-    void GrStreamPlugin::OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
-                                                const std::shared_ptr<Data>& data,
-                                                uint64_t frame_index,
-                                                int frame_width,
-                                                int frame_height,
-                                                bool key) {
-
-    }
-
-    void GrStreamPlugin::OnRawVideoFrameSharedTexture(uint64_t handle) {
-
-    }
-
-    void GrStreamPlugin::OnRawVideoFrameRgba(const std::string& name, const std::shared_ptr<Image>& image) {
-
-    }
-
-    void GrStreamPlugin::OnRawVideoFrameYuv(const std::string& name, const std::shared_ptr<Image>& image) {
+    void GrStreamPlugin::OnEncodedVideoFrame(const std::string& mon_name,
+                                            const GrPluginEncodedVideoType& video_type,
+                                            const std::shared_ptr<Data>& data,
+                                            uint64_t frame_index,
+                                            int frame_width,
+                                            int frame_height,
+                                            bool key) {
 
     }
 

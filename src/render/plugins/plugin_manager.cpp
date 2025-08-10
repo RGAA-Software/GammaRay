@@ -311,6 +311,14 @@ namespace tc
         return nullptr;
     }
 
+    GrPluginInterface* PluginManager::GetRtcLocalPlugin() {
+        auto plugin = GetPluginById(kNetRtcLocalPluginId);
+        if (plugin) {
+            return plugin;
+        }
+        return nullptr;
+    }
+
     void PluginManager::VisitAllPlugins(const std::function<void(GrPluginInterface *)>&& visitor) {
         for (const auto& [k, plugin] : plugins_) {
             if (visitor) {

@@ -176,6 +176,38 @@ namespace tc
         // update capturing monitors information
         virtual void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg);
 
+        // stream
+        // video
+        virtual void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {}
+
+        // data: encode video frame, h264/h265/...
+        virtual void OnEncodedVideoFrame(const std::string& mon_name,
+                                         const GrPluginEncodedVideoType& video_type,
+                                         const std::shared_ptr<Data>& data,
+                                         uint64_t frame_index,
+                                         int frame_width,
+                                         int frame_height,
+                                         bool key) {}
+        // raw video frame
+        // handle: D3D Shared texture handle
+        virtual void OnRawVideoFrameSharedTexture(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, uint64_t handle) {}
+
+        // raw video frame in rgba format
+        // image: Raw image
+        virtual void OnRawVideoFrameRgba(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) {}
+
+        // raw video frame in yuv(I420) format
+        // image: Raw image
+        virtual void OnRawVideoFrameYuv(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) {}
+
+        // audio
+        virtual void OnRawAudioData(const std::shared_ptr<Data>& data, int samples, int channels, int bits) {}
+        virtual void OnSplitRawAudioData(const std::shared_ptr<Data>& left_ch_data,
+                                         const std::shared_ptr<Data>& right_ch_data,
+                                         int samples, int channels, int bits) {}
+        virtual void OnSplitFFTAudioData(const std::vector<double>& left_fft, const std::vector<double>& right_fft) {}
+
+
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;
