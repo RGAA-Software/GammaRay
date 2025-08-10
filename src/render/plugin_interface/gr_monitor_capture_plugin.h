@@ -47,6 +47,11 @@ namespace tc
         void SetCaptureInitFailedCallback(CaptureInitFailedCallback&& cbk) {
             capture_init_failed_cbk_ = std::move(cbk);
         }
+
+        bool IsValidRect(const RECT& rect)
+        {
+            return rect.right > rect.left && rect.bottom > rect.top;
+        }
         
         // target: monitor
         virtual bool StartCapturing();
