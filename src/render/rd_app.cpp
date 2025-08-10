@@ -147,6 +147,7 @@ namespace tc
                     monitor_capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
                         monitor_capture_plugin_->StopCapturing();
                         monitor_capture_plugin_->DisablePlugin();
+                        LOGI("Don't use DDA, will switch to GDI.");
                         SwitchGdiCapture();
                         monitor_capture_plugin_->StartCapturing();
                     });
