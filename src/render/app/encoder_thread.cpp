@@ -65,6 +65,19 @@ namespace tc
             return;
         }
         PostEncTask([=, this]() {
+            // plugins: SharedTexture
+            if (cap_video_msg.handle_ > 0) {
+                context_->PostStreamPluginTask([=, this]() {
+                    plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
+                        plugin->OnRawVideoFrameSharedTexture(cap_video_msg.display_name_,
+                                                             cap_video_msg.frame_index_,
+                                                             cap_video_msg.frame_width_,
+                                                             cap_video_msg.frame_height_,
+                                                             cap_video_msg.handle_);
+                    });
+                });
+            }
+
             auto settings = RdSettings::Instance();
             auto frame_index = cap_video_msg.frame_index_;
             auto adapter_uid = cap_video_msg.adapter_uid_;
@@ -301,12 +314,19 @@ namespace tc
                     auto rgba_cbk = [=, this](const std::shared_ptr<Image> &image) {
                         // callback in Enc thread
                         context_->PostStreamPluginTask([=, this]() {
-                            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                                plugin->OnRawVideoFrameRgba(monitor_name, image);
+                            plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                                plugin->OnRawVideoFrameRgba(monitor_name, cap_video_msg.frame_index_, cap_video_msg.frame_width_, cap_video_msg.frame_height_, image);
                             });
                         });
                     };
                     auto yuv_cbk = [=, this](const std::shared_ptr<Image> &image) {
+                        // notify yuv
+                        context_->PostStreamPluginTask([=, this]() {
+                            plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface *plugin) {
+                                plugin->OnRawVideoFrameYuv(monitor_name, cap_video_msg.frame_index_, cap_video_msg.frame_width_, cap_video_msg.frame_height_, image);
+                            });
+                        });
+
                         // calculate used time
                         auto end_map_cvt_texture = TimeUtil::GetCurrentTimestamp();
                         auto diff_map_cvt_texture = end_map_cvt_texture - beg_map_texture;
@@ -318,11 +338,6 @@ namespace tc
                                 target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
                             });
                         }
-                        context_->PostStreamPluginTask([=, this]() {
-                            plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                                plugin->OnRawVideoFrameYuv(monitor_name, image);
-                            });
-                        });
                     };
                     // map the texture from GPU -> CPU
                     frame_carrier_plugin_->MapRawTexture(monitor_name, target_texture, desc.Format, (int)desc.Height, rgba_cbk, yuv_cbk);
@@ -354,7 +369,7 @@ namespace tc
                     // callback in Enc thread
                     context_->PostStreamPluginTask([=, this]() {
                         plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin* plugin) {
-                            plugin->OnRawVideoFrameRgba(monitor_name, image);
+                            plugin->OnRawVideoFrameRgba(monitor_name, cap_video_msg.frame_index_, cap_video_msg.frame_width_, cap_video_msg.frame_height_, image);
                         });
                     });
                 };
@@ -373,7 +388,7 @@ namespace tc
                     }
                     context_->PostStreamPluginTask([=, this]() {
                         plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin* plugin) {
-                            plugin->OnRawVideoFrameYuv(monitor_name, image);
+                            plugin->OnRawVideoFrameYuv(monitor_name, cap_video_msg.frame_index_, cap_video_msg.frame_width_, cap_video_msg.frame_height_, image);
                         });
                     });
                 };

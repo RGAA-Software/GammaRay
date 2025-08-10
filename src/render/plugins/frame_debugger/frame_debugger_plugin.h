@@ -26,12 +26,13 @@ namespace tc
 
         void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) override;
         // data: encode video frame, h264/h265/...
-        void OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
-                                         const std::shared_ptr<Data>& data,
-                                         uint64_t frame_index,
-                                         int frame_width,
-                                         int frame_height,
-                                         bool key) override;
+        void OnEncodedVideoFrame(const std::string& mon_name,
+                                 const GrPluginEncodedVideoType& video_type,
+                                 const std::shared_ptr<Data>& data,
+                                 uint64_t frame_index,
+                                 int frame_width,
+                                 int frame_height,
+                                 bool key) override;
 
     private:
         GrPluginEncodedVideoType encoded_video_type_{};

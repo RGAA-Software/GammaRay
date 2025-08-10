@@ -61,12 +61,13 @@ namespace tc
         }
     }
 
-    void FrameDebuggerPlugin::OnEncodedVideoFrame(const GrPluginEncodedVideoType& video_type,
-                                     const std::shared_ptr<Data>& data,
-                                     uint64_t frame_index,
-                                     int frame_width,
-                                     int frame_height,
-                                     bool key) {
+    void FrameDebuggerPlugin::OnEncodedVideoFrame(const std::string& mon_name,
+                                                  const GrPluginEncodedVideoType& video_type,
+                                                  const std::shared_ptr<Data>& data,
+                                                  uint64_t frame_index,
+                                                  int frame_width,
+                                                  int frame_height,
+                                                  bool key) {
         if (save_encoded_video_) {
             encoded_video_file_->Append(data);
         }
