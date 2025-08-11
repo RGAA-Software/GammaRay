@@ -151,6 +151,15 @@ namespace tc
                 ProcessPanelStreamMessage(target_event);
             });
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginConfigEncoder) {
+            app_->PostGlobalTask([=, this]() {
+                auto plugins = app_->GetWorkingVideoEncoderPlugins();
+                auto target_event = std::dynamic_pointer_cast<GrPluginConfigEncoder>(event);
+                for (const auto& [mon_name, plugin] : plugins) {
+                    plugin->ConfigEncoder(target_event->mon_name_, target_event->bps_, target_event->fps_);
+                }
+            });
+        }
     }
 
     void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {

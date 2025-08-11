@@ -54,6 +54,9 @@ namespace tc
         // 如果客户端开始录屏，则需要设置此参数为true
         void SetClientSideMediaRecording(bool recording);
 
+        virtual void ConfigEncoder(const std::string& mon_name, uint32_t bps, uint32_t fps) {}
+
+
     public:
         int refresh_rate_ = 60;
         uint32_t out_width_ = 0;

@@ -43,6 +43,7 @@ namespace tc
         kPluginDataSent,
         kPluginRemoteClipboardResp,
         kPluginPanelStreamMessage,
+        kPluginConfigEncoder,
     };
 
     class GrPluginBaseEvent {
@@ -324,6 +325,18 @@ namespace tc
         }
     public:
         std::shared_ptr<Data> body_ = nullptr;
+    };
+
+    // config encoder
+    class GrPluginConfigEncoder : public GrPluginBaseEvent {
+    public:
+        GrPluginConfigEncoder() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginConfigEncoder;
+        }
+    public:
+        std::string mon_name_;
+        uint32_t bps_ = 0;
+        uint32_t fps_ = 0;
     };
 }
 
