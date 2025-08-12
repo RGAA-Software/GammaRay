@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QWidget>
+#include <map>
 #include "tc_common_new/message_notifier.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 
@@ -34,8 +35,7 @@ namespace tc
         void SaveKeyValue(const std::string& k, const std::string& v);
         std::string GetValueByKey(const std::string& k);
         void UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info);
-        SdkCaptureMonitorInfo GetCapturingMonitorInfo();
-        std::string GetCapturingMonitorName() const;
+        std::map<std::string, SdkCaptureMonitorInfo> GetCapturingMonitorInfoMap();
 
         void SetPluginManager(const std::shared_ptr<ClientPluginManager>& mgr);
         std::shared_ptr<ClientPluginManager> GetPluginManager();
@@ -61,9 +61,8 @@ namespace tc
         SharedPreference* sp_ = nullptr;
         std::shared_ptr<Thread> task_thread_ = nullptr;
         std::string name_;
-        std::atomic_int capturing_monitor_index_ = -1;
-        std::string capturing_monitor_name_;
-        SdkCaptureMonitorInfo capturing_info_;
+        std::map<std::string, SdkCaptureMonitorInfo> capturing_info_map_;
+
         // plugin manager
         std::shared_ptr<ClientPluginManager> plugin_mgr_ = nullptr;
 

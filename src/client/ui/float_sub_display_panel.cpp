@@ -104,9 +104,8 @@ namespace tc
                 }
                 auto item_pos = this->mapTo((QWidget*)this->parent(), w->pos());
                 HideAllSubPanels();
-                auto capturing_monitor_name = context_->GetCapturingMonitorName();
-                if (cap_monitors_info_.monitors_.empty() || capturing_monitor_name.empty()) {
-                    LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_name, cap_monitors_info_.monitors_.size());
+                if (cap_monitors_info_.monitors_.empty()) {
+                    LOGE("Error monitor index, can not get MsgClientCaptureMonitor.");
                     return;
                 }
                 //auto capture_monitor = cap_monitors_info_.GetCaptureMonitorByName(capturing_monitor_name);
@@ -264,9 +263,8 @@ namespace tc
             sub_panels_[SubDisplayType::kResolution] = panel;
             WidgetHelper::AddShadow(panel, 0xbbbbbb);
         }
-        auto capturing_monitor_name = context_->GetCapturingMonitorName();
-        if (cap_monitors_info_.monitors_.empty() || capturing_monitor_name.empty()) {
-            LOGE("Error monitor index, capturing: {}, total monitor size: {}", capturing_monitor_name, cap_monitors_info_.monitors_.size());
+        if (cap_monitors_info_.monitors_.empty()) {
+            LOGE("Error monitor index, can not get MsgClientCaptureMonitor.");
             return;
         }
         auto capture_monitor = cap_monitors_info_.GetCaptureMonitorByName(capture_monitor_name_);
