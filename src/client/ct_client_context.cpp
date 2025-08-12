@@ -24,9 +24,6 @@ namespace tc
     ClientContext::ClientContext(const std::string& name, QObject* parent) : QObject(parent) {
         this->name_ = name;
         this->msg_notifier_ = std::make_shared<MessageNotifier>();
-        this->capturing_info_ = SdkCaptureMonitorInfo {
-
-        };
     }
 
     ClientContext::~ClientContext() {
@@ -116,25 +113,13 @@ namespace tc
     }
 
     void ClientContext::UpdateCapturingMonitorInfo(const SdkCaptureMonitorInfo& info) {
-        bool new_monitor = info.mon_name_ != capturing_info_.mon_name_;
-        if (new_monitor) {
-            SendAppMessage(MsgClientMonitorChanged{});
-        }
-        else {
-            bool size_changed = capturing_info_.frame_width_ != info.frame_width_ || capturing_info_.frame_height_ != info.frame_height_;
-            if (size_changed) {
-                SendAppMessage(MsgClientMonitorChanged{});
-            }
-        }
-        capturing_info_ = info;
+
+        // save
+        capturing_info_map_[info.mon_name_] = info;
     }
 
-    SdkCaptureMonitorInfo ClientContext::GetCapturingMonitorInfo() {
-        return capturing_info_;
-    }
-
-    std::string ClientContext::GetCapturingMonitorName() const {
-        return capturing_info_.mon_name_;
+    std::map<std::string, SdkCaptureMonitorInfo> ClientContext::GetCapturingMonitorInfoMap() {
+        return capturing_info_map_;
     }
 
     void ClientContext::SetPluginManager(const std::shared_ptr<ClientPluginManager>& mgr) {
