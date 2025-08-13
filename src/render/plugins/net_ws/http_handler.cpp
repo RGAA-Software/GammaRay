@@ -7,6 +7,7 @@
 #include "tc_common_new/data.h"
 #include "rd_app.h"
 #include "ws_plugin.h"
+#include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
 
 namespace tc
@@ -130,11 +131,25 @@ namespace tc
             return;
         }
 
+        // enum class GrLocalRtcContentType {
+        //     kDesktop,
+        //     kGameStream,
+        // };
+        auto content_type = [&]() -> GrLocalRtcContentType {
+            if (auto param = GetParam(params, "content_type"); param.has_value()) {
+                if (param.value() == "game_stream") {
+                    return GrLocalRtcContentType::kGameStream;
+                }
+            }
+            return GrLocalRtcContentType::kDesktop;
+        }();
+
         auto rtc_req = std::make_shared<GrLocalRtcRequestInfo>();
         rtc_req->device_id_ = device_id.value();
         rtc_req->stream_id_ = stream_id.value();
         rtc_req->req_ip_ = session_ptr->remote_address();
         rtc_req->sdp_ = sdp;
+        rtc_req->content_type_ = content_type;
 
         std::mutex cv_mtx;
         std::condition_variable cv;

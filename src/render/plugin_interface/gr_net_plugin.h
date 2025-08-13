@@ -39,12 +39,18 @@ namespace tc
     };
 
     // local webrtc request info
+    enum class GrLocalRtcContentType {
+        kDesktop,
+        kGameStream,
+    };
+
     class GrLocalRtcRequestInfo {
     public:
         std::string device_id_;
         std::string stream_id_;
         std::string req_ip_;
         std::string sdp_;
+        GrLocalRtcContentType content_type_;
     };
 
     // local webrtc reply info
