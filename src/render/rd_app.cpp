@@ -444,6 +444,9 @@ namespace tc
 
     void RdApplication::StartProcessWithScreenCapture() {
         msg_listener_->Listen<CaptureVideoFrame>([=, this](const CaptureVideoFrame& msg) {
+            // todo: RtcLocal process
+            //
+
             if (!HasConnectedPeer()) {
                 return;
             }
@@ -457,15 +460,6 @@ namespace tc
                 LOGI("Only audio clients, ignore video frame.");
                 return;
             }
-
-//            // plugins: SharedTexture
-//            if (msg.handle_ > 0) {
-//                context_->PostStreamPluginTask([=, this]() {
-//                    plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
-//                        plugin->OnRawVideoFrameSharedTexture(msg.display_name_, msg.frame_index_, msg.frame_width_, msg.frame_height_, msg.handle_);
-//                    });
-//                });
-//            }
 
             // calculate gaps between 2 captured frames.
             //{
