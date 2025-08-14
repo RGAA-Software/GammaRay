@@ -40,10 +40,8 @@ namespace tc
         void RegisterMessageListener();
         Response<bool, bool> CheckServerAlive();
         void StartServer();
-        bool VerifyOnlineServers();
-        void CheckOnlineServers();
-
-        //
+        // bool VerifyOnlineServers();
+        // void CheckOnlineServers();
         void CheckThisDeviceInfo();
 
     private:

@@ -94,8 +94,6 @@ namespace tc
         ss << "relay port: " << GetRelayServerPort() << std::endl;
         ss << "spvr server host: " << GetSpvrServerHost() << std::endl;
         ss << "spvr server port: " << GetSpvrServerPort() << std::endl;
-        ss << "pr server host: " << GetProfileServerHost() << std::endl;
-        ss << "pr server port: " << GetProfileServerPort() << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
     }
@@ -146,8 +144,6 @@ namespace tc
         this->SetSpvrServerPort("");
         this->SetRelayServerHost("");
         this->SetRelayServerPort("");
-        this->SetProfileServerHost("");
-        this->SetProfileServerPort("");
     }
 
     void GrSettings::SetEnableResResize(bool enabled) {
@@ -307,31 +303,6 @@ namespace tc
     int GrSettings::GetRenderServerPort() {
         auto value = std::atoi(sp_->Get(kStNetworkListenPort, "").c_str());
         return value > 0 ? value : 20371;
-    }
-
-    // Profile
-    // Host
-    void GrSettings::SetProfileServerHost(const std::string& host) {
-        sp_->Put(kStProfileServerHost, host);
-    }
-
-    std::string GrSettings::GetProfileServerHost() {
-        return sp_->Get(kStProfileServerHost, "");
-    }
-
-    // Profile
-    // Port
-    void GrSettings::SetProfileServerPort(const std::string& port) {
-        sp_->Put(kStProfileServerPort, port);
-    }
-
-    int GrSettings::GetProfileServerPort() {
-        return std::atoi(sp_->Get(kStProfileServerPort, "").c_str());
-    }
-
-    // Profile
-    bool GrSettings::HasProfileServerConfig() {
-        return !GetProfileServerHost().empty() && GetProfileServerPort() > 0;
     }
 
     // Relay

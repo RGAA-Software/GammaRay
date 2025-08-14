@@ -45,8 +45,6 @@ namespace tc
     static const std::string kStDeviceId = "device_id";
     static const std::string kStDeviceRandomPwd = "device_random_pwd";
     static const std::string kStDeviceSafetyPwd = "device_safety_pwd";
-    static const std::string kStProfileServerHost = "profile_server_host";
-    static const std::string kStProfileServerPort = "profile_server_port";
     static const std::string kStRelayServerHost = "relay_server_host";
     static const std::string kStRelayServerPort = "relay_server_port";
     static const std::string kStSpvrServerHost = "spvr_server_host";
@@ -161,17 +159,6 @@ namespace tc
         int GetSpvrServerPort();
 
         bool HasSpvrServerConfig();
-
-        // Profile
-        // Host
-        void SetProfileServerHost(const std::string& host);
-        std::string GetProfileServerHost();
-
-        // Port
-        void SetProfileServerPort(const std::string& port);
-        int GetProfileServerPort();
-
-        bool HasProfileServerConfig();
 
         // Relay
         // Host

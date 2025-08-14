@@ -364,8 +364,8 @@ namespace tc
             // verify remote
             // password from inputting
             // password from database
-            auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetProfileServerHost(),
-                                                              settings_->GetProfileServerPort(),
+            auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetSpvrServerHost(),
+                                                              settings_->GetSpvrServerPort(),
                                                               target_item->remote_device_id_,
                                                               MD5::Hex(remote_random_pwd),
                                                               MD5::Hex(remote_safety_pwd));

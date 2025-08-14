@@ -18,6 +18,7 @@
 #include "tc_label.h"
 #include "tc_pushbutton.h"
 #include "tc_spvr_client/spvr_api.h"
+#include "tc_common_new/message_notifier.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
@@ -248,7 +249,7 @@ namespace tc
                 }
             };
 
-            {
+            if (0) {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
                 label->SetTextId("id_relay");
@@ -276,6 +277,7 @@ namespace tc
                 });
             }
 
+            // Manager Server
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
@@ -311,6 +313,44 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
             }
+
+            // Relay Server
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_relay_host");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                edt_relay_server_host_ = edit;
+                edit->setFixedSize(input_size);
+                edit->setText(settings_->GetRelayServerHost().c_str());
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+            }
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_relay_port");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QLineEdit(this);
+                edt_relay_server_port_ = edit;
+                edit->setFixedSize(input_size);
+                edit->setValidator(new QIntValidator);
+                edit->setText(std::to_string(settings_->GetRelayServerPort()).c_str());
+                layout->addWidget(edit);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+            }
+
             fn_set_spvr_input_state(settings_->IsRelayEnabled());
             
             column1_layout->addLayout(segment_layout);
@@ -326,21 +366,22 @@ namespace tc
             connect(btn, &QPushButton::clicked, this, [=, this]() {
                 auto spvr_host = edt_spvr_server_host_->text().toStdString();
                 auto spvr_port = edt_spvr_server_port_->text().toStdString();
+                auto relay_host = edt_relay_server_host_->text().toStdString();
+                auto relay_port = edt_relay_server_port_->text().toStdString();
                 bool force_update_device_id = false;
                 if (!settings_->GetSpvrServerHost().empty()
                     && (settings_->GetSpvrServerHost() != spvr_host || settings_->GetSpvrServerPort() != std::atoi(spvr_port.c_str()))) {
                     force_update_device_id = true;
                     settings_->SetDeviceId("");
                     settings_->SetDeviceRandomPwd("");
-                    settings_->SetRelayServerHost("");
-                    settings_->SetRelayServerPort("");
-                    settings_->SetProfileServerHost("");
-                    settings_->SetProfileServerPort("");
                     LOGW("Clear old device id, force updating device id.");
                 }
                 settings_->SetSpvrServerHost(spvr_host);
                 settings_->SetSpvrServerPort(spvr_port);
                 settings_->SetPanelServerPort(edt_panel_port_->text().toInt());
+
+                settings_->SetRelayServerHost(relay_host);
+                settings_->SetRelayServerPort(relay_port);
 
                 // Load again
                 settings_->Load();
@@ -365,6 +406,18 @@ namespace tc
         column1_layout->addStretch();
 
         setLayout(root_layout);
+
+        // messages
+        msg_listener_ = app->GetMessageNotifier()->CreateListener();
+        msg_listener_->Listen<MsgForceClearProgramData>([=, this](const MsgForceClearProgramData& msg) {
+            // clear data
+            app_->GetContext()->PostUITask([=, this]() {
+                edt_spvr_server_host_->setText("");
+                edt_spvr_server_port_->setText("");
+                edt_relay_server_host_->setText("");
+                edt_relay_server_port_->setText("");
+            });
+        });
     }
 
     void StNetwork::OnTabShow() {
