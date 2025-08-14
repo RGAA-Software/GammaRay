@@ -57,7 +57,7 @@ namespace tc
                 // check system servers
                 if (settings_->HasSpvrServerConfig()) {
                     context_->PostTask([=, this]() {
-                        this->CheckOnlineServers();
+                        // this->CheckOnlineServers();
                         this->CheckThisDeviceInfo();
                     });
                 }
@@ -266,69 +266,59 @@ namespace tc
         srv_mgr->StartServer();
     }
 
-    void GrSystemMonitor::CheckOnlineServers() {
-        if (!this->VerifyOnlineServers()) {
-            auto ret_online_servers = spvr::SpvrApi::GetOnlineServers(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-            if (!ret_online_servers) {
-                auto err = ret_online_servers.error();
-                LOGE("Can't request online servers: {}:{}, err: {}",
-                     settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), SpvrError2String(err));
-                return;
-            }
-            auto online_servers = ret_online_servers.value();
-            bool settings_changed = false;
-            if (!online_servers->relay_servers_.empty()) {
-                auto srv = online_servers->relay_servers_.at(0);
-                settings_->SetRelayServerHost(srv.srv_w3c_ip_);
-                settings_->SetRelayServerPort(srv.srv_working_port_);
-                LOGI("Got Relay server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
-                settings_changed = true;
-            }
-            if (!online_servers->pr_servers_.empty()) {
-                auto srv = online_servers->pr_servers_.at(0);
-                settings_->SetProfileServerHost(srv.srv_w3c_ip_);
-                settings_->SetProfileServerPort(srv.srv_working_port_);
-                LOGI("Got Profile server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
-                settings_changed = true;
-            }
-            if (settings_changed) {
-                context_->SendAppMessage(MsgSettingsChanged{});
-            }
-        }
-    }
+    // void GrSystemMonitor::CheckOnlineServers() {
+    //     if (!this->VerifyOnlineServers()) {
+    //         auto ret_online_servers = spvr::SpvrApi::GetOnlineServers(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+    //         if (!ret_online_servers) {
+    //             auto err = ret_online_servers.error();
+    //             LOGE("Can't request online servers: {}:{}, err: {}",
+    //                  settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), SpvrError2String(err));
+    //             return;
+    //         }
+    //         auto online_servers = ret_online_servers.value();
+    //         bool settings_changed = false;
+    //         if (!online_servers->relay_servers_.empty()) {
+    //             auto srv = online_servers->relay_servers_.at(0);
+    //             settings_->SetRelayServerHost(srv.srv_w3c_ip_);
+    //             settings_->SetRelayServerPort(srv.srv_working_port_);
+    //             LOGI("Got Relay server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
+    //             settings_changed = true;
+    //         }
+    //         if (!online_servers->pr_servers_.empty()) {
+    //             auto srv = online_servers->pr_servers_.at(0);
+    //             settings_->SetProfileServerHost(srv.srv_w3c_ip_);
+    //             settings_->SetProfileServerPort(srv.srv_working_port_);
+    //             LOGI("Got Profile server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
+    //             settings_changed = true;
+    //         }
+    //         if (settings_changed) {
+    //             context_->SendAppMessage(MsgSettingsChanged{});
+    //         }
+    //     }
+    // }
 
-    bool GrSystemMonitor::VerifyOnlineServers() {
-        if (!settings_->HasSpvrServerConfig()
-            || !settings_->HasRelayServerConfig()
-            || !settings_->HasProfileServerConfig()) {
-            return false;
-        }
-        // check spvr
-        auto ok = HttpBaseOp::CanPingServer(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-        if (!ok) {
-            LOGE("Spvr is not online: {} {} ", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-            return false;
-        }
-        //LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
-
-        // check relay
-        ok = HttpBaseOp::CanPingServer(settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
-        if (!ok) {
-            LOGE("Relay is not online: {} {} ", settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
-            return false;
-        }
-        //LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
-
-        // check profile
-        ok = HttpBaseOp::CanPingServer(settings_->GetProfileServerHost(), settings_->GetProfileServerPort());
-        if (!ok) {
-            LOGE("Profile is not online: {} {} ", settings_->GetProfileServerHost(), settings_->GetProfileServerPort());
-            return false;
-        }
-        //LOGI("Verify Profile ok, address: {}:{}", settings_->profile_server_host_, settings_->profile_server_port_);
-
-        return true;
-    }
+//    bool GrSystemMonitor::VerifyOnlineServers() {
+//        if (!settings_->HasSpvrServerConfig() || !settings_->HasRelayServerConfig()) {
+//            return false;
+//        }
+//        // check spvr
+//        auto ok = HttpBaseOp::CanPingServer(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+//        if (!ok) {
+//            LOGE("Spvr is not online: {} {} ", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+//            return false;
+//        }
+//        //LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
+//
+//        // check relay
+//        ok = HttpBaseOp::CanPingServer(settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
+//        if (!ok) {
+//            LOGE("Relay is not online: {} {} ", settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
+//            return false;
+//        }
+//        //LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
+//
+//        return true;
+//    }
 
     void GrSystemMonitor::CheckThisDeviceInfo() {
         //LOGI("CheckThisDeviceInfo...");
@@ -338,7 +328,7 @@ namespace tc
         }
 
         // profile server
-        auto has_pr_server = HttpBaseOp::CanPingServer(settings_->GetProfileServerHost(), settings_->GetProfileServerPort());
+        auto has_pr_server = HttpBaseOp::CanPingServer(true, settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
         if (!has_pr_server) {
             return;
         }

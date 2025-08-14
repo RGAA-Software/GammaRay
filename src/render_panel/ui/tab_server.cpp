@@ -437,8 +437,8 @@ namespace tc
                         }
 
                         // verify in profile server
-                        auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetProfileServerHost(),
-                                                                          settings_->GetProfileServerPort(),
+                        auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetSpvrServerHost(),
+                                                                          settings_->GetSpvrServerPort(),
                                                                           remote_device_id,
                                                                           MD5::Hex(random_password),
                                                                           MD5::Hex(safety_password));

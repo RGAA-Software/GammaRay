@@ -183,8 +183,8 @@ namespace tc
 
     void GrApplication::RefreshSigServerSettings() {
         mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
-            .host_ = settings_->GetProfileServerHost(),
-            .port_ = settings_->GetProfileServerPort(),
+            .host_ = settings_->GetSpvrServerHost(),
+            .port_ = settings_->GetSpvrServerPort(),
             .ssl_ = false,
         });
     }
@@ -215,7 +215,7 @@ namespace tc
         }
 
         context_->PostTask([=, this]() {
-            if (!settings_->HasProfileServerConfig()) {
+            if (!settings_->HasSpvrServerConfig()) {
                 return;
             }
             auto device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
