@@ -48,7 +48,8 @@ namespace tc
             item_layout->addSpacing(25);
             item_layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=]() {
-                FolderUtil::OpenDir(std::format("{}/clients/android", exeDir));
+                //FolderUtil::OpenDir(std::format("{}/clients/android", exeDir));
+                QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay/releases"));
             });
 
             auto qrcode = new QLabel(this);
@@ -87,7 +88,8 @@ namespace tc
             item_layout->addSpacing(25);
             item_layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=]() {
-                FolderUtil::OpenDir(std::format("{}/clients/windows", exeDir));
+                //FolderUtil::OpenDir(std::format("{}/clients/windows", exeDir));
+                QDesktopServices::openUrl(QUrl("https://github.com/RGAA-Software/GammaRay/releases"));
             });
 
             auto qrcode = new QLabel(this);

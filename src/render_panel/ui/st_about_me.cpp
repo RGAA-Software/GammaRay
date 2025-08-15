@@ -81,7 +81,7 @@ namespace tc
         }
 
         // url
-        {
+        if (0) {
             auto layout = new NoMarginHLayout();
             layout->addStretch();
 

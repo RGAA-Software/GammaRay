@@ -271,7 +271,7 @@
   "id_start_connection": "開始連接, 等待配置資訊",
   "id_has_connection": "已收到配置資訊, 等待視頻幀",
   "id_has_video_frame": "已收到視頻幀, 開始控制",
-  "id_open_directory": "打開路徑",
+  "id_open_directory": "下载",
   "id_remote_local_machine":"正在遠程本機",
   "id_disconncet":"斷開",
   "id_allow_access_to":"允許訪問:",
