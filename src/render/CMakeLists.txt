@@ -57,7 +57,7 @@ target_link_libraries(main Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}:
 add_executable(${PROJECT_NAME} WIN32 rd_main.cpp ${CMAKE_CURRENT_BINARY_DIR}/rd_icon.rc)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 target_link_libraries(${PROJECT_NAME} settings main tc_capture_new tc_common_new tc_message tc_steam_manager_new tc_vigem tc_plugin) # tc_rtc tc_encoder_new legacy_encoder
-target_link_libraries(${PROJECT_NAME} sqlite_orm EasyHook64 gflags::gflags leveldb tc_rp_message tc_qt_widget)
+target_link_libraries(${PROJECT_NAME} sqlite35 EasyHook64 gflags::gflags leveldb tc_rp_message tc_qt_widget)
 #target_link_libraries(${PROJECT_NAME} opencv_ml opencv_dnn opencv_core opencv_flann)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

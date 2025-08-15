@@ -7,6 +7,9 @@
 
 #include <any>
 #include <memory>
+extern "C" {
+#include <sqlite3.h>
+}
 #include <sqlite_orm/sqlite_orm.h>
 #include "db_game.h"
 #include "visit_record.h"

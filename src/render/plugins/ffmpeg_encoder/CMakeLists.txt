@@ -13,7 +13,7 @@ set(PLUGIN_SRCS
 )
 
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS})
-target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_steam_manager_new tc_message tc_plugin sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE tc_common_new tc_message tc_plugin)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FFMPEG_LIB_PATH}/avcodec.lib ${FFMPEG_LIB_PATH}/avdevice.lib ${FFMPEG_LIB_PATH}/avfilter.lib
         ${FFMPEG_LIB_PATH}/avformat.lib ${FFMPEG_LIB_PATH}/avutil.lib ${FFMPEG_LIB_PATH}/swresample.lib ${FFMPEG_LIB_PATH}/swscale.lib
         ${FFMPEG_LIB_PATH}/postproc.lib tc_opus_codec_new yuv)#${FFMPEG_LIBRARIES} frame_render
