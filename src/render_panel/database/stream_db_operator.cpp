@@ -7,10 +7,12 @@
 #include <QUuid>
 #include <QRandomGenerator>
 #include <QApplication>
+extern "C" {
+#include <sqlite3.h>
+}
 #include <sqlite_orm/sqlite_orm.h>
 
 #include <vector>
-#include <sqlite3.h>
 #include <algorithm>
 
 #include "gr_database.h"

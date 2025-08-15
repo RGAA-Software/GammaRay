@@ -11,6 +11,8 @@ set(BUILD_FROM "IDE" CACHE STRING "Build from")
 
 message("==> CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message("==> BUILD_FROM: ${BUILD_FROM}")
+message("==> QT_ROOT:" ${QT_ROOT})
+message("==> VCPKG_ROOT:" ${VCPKG_ROOT})
 
 set(GR_PROJECT_PATH "")
 set(GR_PROJECT_BINARY_PATH "")
@@ -50,7 +52,15 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 #find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Charts Svg)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Charts Svg)
+
 find_package(SDL2 CONFIG REQUIRED)
+set(GFLAGS_USE_TARGET_NAMESPACE ON)
+find_package(gflags CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(unofficial-libvpx CONFIG REQUIRED)
+find_package(FFTW3 CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -77,6 +87,7 @@ include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/asio2/3rd/asio)
 #include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/protobuf/src)
 #include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/abseil-cpp)
 include_directories(${VCPKG_ROOT}/installed/x64-windows/include)
+include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/sqlite35)
 include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/sqlite_orm/include)
 #include_directories(${VCPKG_ROOT}/installed/x64-windows-static/include)
 include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/include)
@@ -114,6 +125,7 @@ add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DNOMINMAX -DENABLE_S
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+set(GFLAGS_USE_TARGET_NAMESPACE ON)
 find_package(gflags CONFIG REQUIRED)
 find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")
 
@@ -166,8 +178,8 @@ file(COPY ${GR_PROJECT_PATH}/certs DESTINATION ${GR_PROJECT_BINARY_PATH}/)
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_client_web/" DESTINATION ${GR_PROJECT_BINARY_PATH}/www)
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${GR_PROJECT_BINARY_PATH}/www)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg
-        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib gflags::gflags#tc_signaling_sdk #lib_GammaRayClient
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg sqlite35
+        tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget winmm.lib SetupAPI.lib gflags::gflags#tc_signaling_sdk #lib_GammaRayClient
         tc_relay_client tc_manager_client tc_translator tc_spv_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets TC_WidgetFrame
         tc_account_sdk tc_rp_message tc_profile_client
 )
@@ -183,7 +195,7 @@ add_executable(GammaRayService ${SERVICE_SRCS})
 SET_TARGET_PROPERTIES(GammaRayService PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 target_link_libraries(GammaRayService PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
-target_link_libraries(GammaRayService PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(GammaRayService PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite35 winmm.lib SetupAPI.lib)
 
 ### Service Manager
 add_executable(GammaRayServiceManager ${SERVICE_MGR_MAIN_SRCS} ${SERVICE_MGR_SRCS})
@@ -191,7 +203,7 @@ SET_TARGET_PROPERTIES(GammaRayServiceManager PROPERTIES LINK_FLAGS "/MANIFESTUAC
 
 target_link_libraries(GammaRayServiceManager PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
-target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(GammaRayServiceManager PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin tc_qt_widget sqlite35 winmm.lib SetupAPI.lib)
 ### Service End
 
 ### Uninstall
@@ -208,7 +220,7 @@ SET_TARGET_PROPERTIES(shadow_deleter PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartu
 
 target_link_libraries(uninstall PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network tc_qt_widget
         Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg)
-target_link_libraries(uninstall PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message tc_plugin sqlite_orm winmm.lib SetupAPI.lib)
+target_link_libraries(uninstall PRIVATE tc_common_new tc_steam_manager_new tc_vigem tc_message sqlite35 tc_plugin winmm.lib SetupAPI.lib)
 ### Uninstall End
 
 include(GNUInstallDirs)
@@ -219,7 +231,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
-add_dependencies(tc_build_all ${PROJECT_NAME} GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
+add_dependencies(tc_build_all ${PROJECT_NAME} sqlite35 GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
         uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client tc_rtc_client tc_cp_message GammaRayGuard)
 if(ENABLE_HOOK_CAPTURE)
     #add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
@@ -227,7 +239,7 @@ endif ()
 #
 
 # gdi 
-add_dependencies(tc_build_all   plugin_net_ws   plugin_ffmpeg_encoder  plugin_frame_debugger  plugin_dda_capture
+add_dependencies(tc_build_all plugin_net_ws plugin_ffmpeg_encoder plugin_frame_debugger plugin_dda_capture
         plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_mock_video_stream tc_translator
         tc_spv_client tc_account_sdk tc_rp_message tc_profile_client plugin_event_replayer
 )
