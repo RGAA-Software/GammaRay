@@ -27,6 +27,25 @@
 | Windows  | ✅      | ✅       |
 | Android  | ✅      | ⌛       |
 
+### Display multiple screens of remote computers
+#### Switch display
+![](docs/images/multi-screen_switch_display.gif)
+#### simultaneous display
+![](docs/images/multi-screen_switch_imultaneous_display.gif)
+### File transfer
+#### The transmission speed is very fast
+![](docs/images/file_trans.gif)
+### Transferring files via clipboard
+#### The transmission speed is very fast
+![](docs/images/clipboard_file_trans.gif)
+
+### Screen Recording
+#### Supports simultaneous recording on multiple screens
+![](docs/images/screen_recording.gif)
+
+### Detailed statistical information
+![](docs/images/statistics.gif)
+
 ### Screenshots
 ![](docs/images/main.jpg)
 ![](docs/images/status.jpg)
