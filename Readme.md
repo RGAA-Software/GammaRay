@@ -55,6 +55,11 @@
 #### Elden Ring/埃尔登法环
 ![](docs/images/test2.gif)
 
+### Music Spectrum
+![](docs/images/spectrum_1.gif)
+![](docs/images/spectrum_2.gif)
+![](docs/images/spectrum_3.gif)
+
 ### Screenshots
 ![](docs/images/main.jpg)
 ![](docs/images/status.jpg)
