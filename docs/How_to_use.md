@@ -2,6 +2,8 @@
 > There are two ways to achieve this
 #### Method 1. Extract the zip and double-click GammaRay.exe
 #### Method 2. Double-click installer to install it
+run GammaRaySetup.exe
+![](images/install_progress.gif)
 
 ### Windows
 #### 1. Direct Mode(By Connect Information)
