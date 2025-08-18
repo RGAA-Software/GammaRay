@@ -3,7 +3,7 @@
 > 我们将于2025/08/18发布新版本
 
 ![](docs/images/GammaRay.png)
-#### 💖 This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free, NOT released now)](https://store.steampowered.com/app/2947460/GammaRay/).
+#### 💖 This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free, NOT released now)](https://store.steampowered.com/app/2947460/GammaRay/), please download at [HERE](https://github.com/RGAA-Software/GammaRay/releases)
 #### 💖 这是GammaRay的开源版, 全功能版移步[Steam(暂未开放下载)](https://store.steampowered.com/app/2947460/GammaRay/)或者[Release](https://github.com/RGAA-Software/GammaRay/releases), 免费.
 
 ### Showcases
@@ -13,7 +13,7 @@
 ## Usage
 ##### 1. [How To Use](docs/How_to_use.md)
 ##### 2. [How To Build](docs/How_to_build.md)
-##### 2. [How To Deploy](docs/How_to_deploy.md)
+##### 3. [How To Deploy](docs/How_to_deploy.md) ---------- [怎样部署服务](docs/How_to_deploy_CN.md)
 ### GammaRay
 #### ⚡️Stream your game fame and desktop to other devices, and replay gamepad,keyboard,mouse events on the host PC. In a word, It's a alternative of TeamViewer, ToDesk, RustDesk, etc.
 #### ⚡️远程操作电脑，云游戏，模拟手柄等，类似ToDesk, 向日葵, RustDesk, TeamViewer的工具
