@@ -1,29 +1,31 @@
-#### 1. Prepare
-> 1.1 Install **Redis**  
-> 1.2 Install **MongoDB**
-> 
+#### 1. 准备工作
+> 1.1 安装 **Redis**  
+> 1.2 安装 **MongoDB**  
+> PS:   
+> Linux下使用命令直接安装即可。  
+> Windows下使用安装包：  
+> Redis下载地址： https://github.com/redis-windows/redis-windows/releases  
+> MongoDB下载地址：https://www.mongodb.com/try/download/community
 
-#### 2. Download server binaries
+
+#### 2. 下载服务端程序
 ##### [Github Link](https://github.com/RGAA-Software/GammaRay/releases)
 
-#### 3. There are 2 binaries
-> 3.1 **Spvr**  ==> ID Generator/Manager.  
-> 3.2 **Relay**  ==>  Relay the media info  
-
+#### 3. 有2个可执行文件，配置好后直接运行即可
 ```
 .
 ├── certs/
 │   ├── cert.pem
 │   └── key.pem
-├── gr_spvr_server
+├── gr_spvr_server --> 生成管理设备ID
 ├── gr_spvr_settings.toml
-├── gr_relay_server
+├── gr_relay_server --> 转发数据
 └── gr_relay_settings.toml
 
 ```
 
-#### 4. Modify the settings
-> You MUST change the **server_w3c_ip** field to your own
+#### 4. 修改配置
+> 必须把这个字段 **server_w3c_ip** 改成自己服务器的外网地址 
 > 
 #### SPVR Server
 ```toml
@@ -85,21 +87,18 @@ redis_url = "redis://127.0.0.1:6379/"
 server_grpc_port = 40600
 ```
 
-#### 5. Run the servers
-> No orders required here, just starting them as you want.  
-> You may start in sequence of gr_profile_server.exe -> gr_relay_server.exe -> gr_supervisor_server.exe
-> 
-#### 6. Set the information in Panel and save it.
+#### 5. 启动服务
+> 没有固定的顺序，先启动哪个服务都可以  
+
+#### 6. 设置服务信息.
 ![](images/server_settings.png)
 
-#### 7. Then, you'll get your device id
+#### 7. 获取到ID即可使用中转服务
 ![](images/server_main.png)
 
-#### 8. There are 2 ways to connect remote devices
-##### 8.1 Use the connect information.
-**The Remote device information**
+#### 8. 有2种方式进行链接
+##### 8.1 使用连接信息, 拷贝想要远程的机器信息，直接在客户端连接即可
 ![](images/connect_1.png)
-**Paste in client and start connection**
 ![](images/connect_1_1.png)
-##### 8.2 Use your ID and password
+##### 8.2 使用ID和密码连接
 ![](images/connect_2.png)
