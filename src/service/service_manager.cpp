@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA on 22/10/2024.
 //
 
@@ -6,6 +6,7 @@
 #include <format>
 #include <iostream>
 #include <QString>
+#include <qdebug.h>
 #include <windows.h>
 
 #include "tc_common_new/log.h"
@@ -411,5 +412,65 @@ namespace tc
         } else {
             return "unknown";
         }
+    }
+
+    std::optional<std::string> ServiceManager::GetServiceExecutablePath() {
+        SC_HANDLE hSCManager = nullptr;
+        SC_HANDLE hService = nullptr;
+        QString executablePath;
+        
+        std::wstring serv_namew = QString::fromStdString(srv_name_).toStdWString();
+
+        // 打开服务控制管理器
+        hSCManager = OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT);
+        if (!hSCManager) {
+            LOGE("Failed to open service manager: {}", GetLastError());
+            return {};
+        }
+
+        // 打开指定的服务
+        hService = OpenServiceW(hSCManager, serv_namew.c_str(), SERVICE_QUERY_CONFIG);
+        if (!hService) {
+            LOGE("Failed to open service: {}", GetLastError());
+            CloseServiceHandle(hSCManager);
+            return {};
+        }
+
+        // 查询服务配置以获取二进制路径信息
+        DWORD bytesNeeded = 0;
+        if (!QueryServiceConfigW(hService, nullptr, 0, &bytesNeeded) && GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+            LOGE("Failed to query service config (buffer size): {}", GetLastError());
+            CloseServiceHandle(hService);
+            CloseServiceHandle(hSCManager);
+            return {};
+        }
+
+        // 分配缓冲区
+        LPQUERY_SERVICE_CONFIG serviceConfig = (LPQUERY_SERVICE_CONFIG)malloc(bytesNeeded);
+        if (!serviceConfig) {
+            LOGE("Failed to allocate memory for service config.");
+            CloseServiceHandle(hService);
+            CloseServiceHandle(hSCManager);
+            return {};
+        }
+
+        // 再次查询服务配置
+        if (!QueryServiceConfigW(hService, serviceConfig, bytesNeeded, &bytesNeeded)) {
+            LOGE("Failed to query service config: {}", GetLastError());
+            free(serviceConfig);
+            CloseServiceHandle(hService);
+            CloseServiceHandle(hSCManager);
+            return {};
+        }
+
+        // 获取服务的二进制路径
+        executablePath = QString::fromWCharArray(serviceConfig->lpBinaryPathName);
+
+        // 清理资源
+        free(serviceConfig);
+        CloseServiceHandle(hService);
+        CloseServiceHandle(hSCManager);
+
+        return executablePath.toStdString();
     }
 }
