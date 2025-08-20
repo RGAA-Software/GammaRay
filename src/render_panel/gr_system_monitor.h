@@ -38,7 +38,8 @@ namespace tc
         static void InstallViGem(bool silent);
         void NotifyViGEnState(bool ok);
         void RegisterMessageListener();
-        Response<bool, bool> CheckServerAlive();
+        Response<bool, bool> CheckRenderAlive();
+        void CheckServiceAlive();
         void StartServer();
         // bool VerifyOnlineServers();
         // void CheckOnlineServers();
