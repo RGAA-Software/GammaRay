@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace tc
 {
@@ -25,6 +26,7 @@ namespace tc
         void Init(const std::string& srv_name, const std::string& path, const std::string& display_name, const std::string& description);
         void Install();
         void Remove(bool uninstall_service);
+        std::optional<std::string> GetServiceExecutablePath();
         ServiceStatus QueryStatus();
 
         static std::string StatusAsString(ServiceStatus status);

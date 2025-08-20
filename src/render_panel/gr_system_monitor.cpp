@@ -24,7 +24,11 @@
 #include "tc_profile_client/profile_api.h"
 #include "tc_manager_client/mgr_device.h"
 #include "tc_manager_client/mgr_device_operator.h"
+#include "tc_qt_widget/tc_dialog.h"
+#include "tc_qt_widget/translator/tc_translator.h"
 #include <QApplication>
+#include <qfileinfo.h>
+#include <qdir.h>
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
@@ -44,6 +48,10 @@ namespace tc
     }
 
     void GrSystemMonitor::Start() {
+        CheckServiceAlive();
+        // install service
+        this->service_manager_->Install();
+
         vigem_driver_manager_ = VigemDriverManager::Make();
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         RegisterMessageListener();
@@ -78,7 +86,7 @@ namespace tc
 
                 // check server alive or not
                 if (false) {
-                    auto resp = this->CheckServerAlive();
+                    auto resp = this->CheckRenderAlive();
                     if (resp.ok_) {
                         if (resp.value_) {
                             //LOGI("server is already running...");
@@ -91,7 +99,7 @@ namespace tc
                             // check again
                             context_->PostUIDelayTask([=, this]() {
                                 context_->PostTask([=, this]() {
-                                    auto resp = this->CheckServerAlive();
+                                    auto resp = this->CheckRenderAlive();
                                     auto started = resp.ok_ && resp.value_;
                                     context_->SendAppMessage(MsgServerAlive{
                                         .alive_ = started,
@@ -241,7 +249,7 @@ namespace tc
         });
     }
 
-    Response<bool, bool> GrSystemMonitor::CheckServerAlive() {
+    Response<bool, bool> GrSystemMonitor::CheckRenderAlive() {
         auto resp = Response<bool, bool>::Make(false, false);
         auto processes = ProcessHelper::GetProcessList(false);
         if (processes.empty()) {
@@ -259,6 +267,78 @@ namespace tc
             }
         }
         return resp;
+    }
+
+    void GrSystemMonitor::CheckServiceAlive() {
+        tc::ServiceStatus serv_status = this->service_manager_->QueryStatus();
+        if (tc::ServiceStatus::kUnknownStatus == serv_status) {
+            return;
+        }
+
+        auto serv_exe_path_res = this->service_manager_->GetServiceExecutablePath();
+
+        if (!serv_exe_path_res.has_value()) {
+            LOGE("cant not get serv_exe_path");
+            return;
+        }
+
+        std::string serv_exe_path = serv_exe_path_res.value();
+
+        QString exe_full_qpath = QString::fromStdString(serv_exe_path);
+        QFileInfo file_info(exe_full_qpath);
+        QDir parent_dir = file_info.dir();
+        std::string serv_parent_path = parent_dir.absolutePath().toStdString();
+        serv_parent_path = StringUtil::StandardizeWinPath(serv_parent_path);
+
+        QDir cur_exe_dir = QCoreApplication::applicationDirPath();
+        std::string cur_exe_parent_path = cur_exe_dir.absolutePath().toStdString();
+        cur_exe_parent_path = StringUtil::StandardizeWinPath(cur_exe_parent_path);
+
+        LOGI("*************************************");
+        LOGI("serv_parent_path: {}", serv_parent_path);
+        LOGI("cur_exe_parent_path: {}", cur_exe_parent_path);
+
+        if (serv_parent_path != cur_exe_parent_path) {
+            uint32_t cur_pid = QCoreApplication::applicationPid();
+            QString msg = QString("{path: %1}").arg(QString::fromStdString(serv_parent_path));
+            TcDialog dialog(tcTr("id_tips"), tcTr("id_run_other_service_instances") + " ? " + msg, nullptr);
+            if (QDialog::Accepted != dialog.exec()) {
+                tc::ProcessHelper::CloseProcess(cur_pid);
+                return;
+            }
+            this->service_manager_->Remove(true);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            auto processes = tc::ProcessHelper::GetProcessList(false);
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find(kGammaRayGuardName) != std::string::npos) {
+                    LOGI("Kill exe: {}", process->exe_full_path_);
+                    tc::ProcessHelper::CloseProcess(process->pid_);
+                    break;
+                }
+            }
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find(kGammaRayClientInner) != std::string::npos) {
+                    LOGI("Kill exe: {}", process->exe_full_path_);
+                    tc::ProcessHelper::CloseProcess(process->pid_);
+                    break;
+                }
+            }
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find(kGammaRayRenderName) != std::string::npos) {
+                    LOGI("Kill exe: {}", process->exe_full_path_);
+                    tc::ProcessHelper::CloseProcess(process->pid_);
+                    break;
+                }
+            }
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find(kGammaRayName) != std::string::npos) {
+                    LOGI("Kill exe: {}", process->exe_full_path_);
+                    if (cur_pid != process->pid_) {
+                        tc::ProcessHelper::CloseProcess(process->pid_);
+                    }
+                }
+            }
+        }
     }
 
     void GrSystemMonitor::StartServer() {

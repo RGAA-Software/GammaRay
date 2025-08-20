@@ -94,7 +94,7 @@ namespace tc
         std::string bin_path = std::format("{}/GammaRayService.exe {}", base_path, settings_->sys_service_port_);
         LOGI("Service path: {}", bin_path);
         service_manager_->Init("GammaRayService", bin_path, "GammaRat Service", "** GammaRay Service **");
-        service_manager_->Install();
+        //service_manager_->Install();
 
         running_stream_mgr_ = std::make_shared<RunningStreamManager>(shared_from_this());
 
