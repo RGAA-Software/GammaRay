@@ -19,6 +19,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/hardware.h"
+#include "tc_common_new/process_util.h"
 
 using namespace tc;
 
@@ -50,6 +51,9 @@ int main(int argc, char *argv[]) {
 
     tc::Hardware::AcquirePermissionForRestartDevice();
     CaptureDump();
+
+    // run in high level
+    tc::ProcessUtil::SetProcessInHighLevel();
 
     //::ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
     //::ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
