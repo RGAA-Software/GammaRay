@@ -97,53 +97,58 @@ namespace tc
             auto sub = msg->clipboard_info();
             LOGI("Remote Clipboard info, type : {}", (int)sub.type());
             if (sub.type() == ClipboardType::kClipboardText) {
-                auto in_text = sub.msg();
-                auto is_same = false;
-                for (int i = 0; i < 100; i++) {
-                    QClipboard *board = QGuiApplication::clipboard();
-                    if (board->text() == in_text) {
-                        is_same = true;
-                        LOGI("Already same with clipboard, ignore: {}", in_text);
-                        break;
+                // qt operate clipboard, need ui thread
+                context_->PostUITask([=, this]() {
+                    auto in_text = sub.msg();
+                    auto is_same = false;
+                    for (int i = 0; i < 100; i++) {
+                        QClipboard* board = QGuiApplication::clipboard();
+                        if (board->text() == in_text) {
+                            is_same = true;
+                            LOGI("Already same with clipboard, ignore: {}", in_text);
+                            break;
+                        }
+                        board->setText(QString::fromStdString(in_text));
+                        TimeUtil::DelayBySleep(5);
+                        if (board->ownsClipboard() && board->text() == QString::fromStdString(in_text)) {
+                            is_same = true;
+                            LOGI("*** update remote clipboard info: {}", in_text);
+                            break;
+                        }
+                        else {
+                            LOGE("Can't update remote clipboard, not own it.");
+                        }
+
                     }
-                    board->setText(QString::fromStdString(in_text));
-                    if (board->ownsClipboard() && board->text() == in_text) {
-                        is_same = true;
-                        LOGI("*** update remote clipboard info: {}", in_text);
-                        break;
-                    } else {
-                        LOGE("Can't update remote clipboard, not own it.");
+                    if (is_same) {
+                        // to panel
+                        //auto event = std::make_shared<GrPluginRemoteClipboardResp>();
+                        //event->content_type_ = (int)sub.type();
+                        //event->remote_info_ = sub.msg();
+                        // todo::
+                        //plugin_->CallbackEvent(event);
+
+                        // notify clipboard monitor
+                        auto sub_resp = msg->clipboard_info_resp();
+                        context_->SendAppMessage(MsgRemoteClipboardResp{
+                            .text_msg_ = sub_resp.msg(),
+                            });
+
+                        // send back
+                        tc::Message resp_msg;
+                        resp_msg.set_type(tc::kClipboardInfoResp);
+                        auto resp_sub = resp_msg.mutable_clipboard_info_resp();
+                        resp_sub->set_type(ClipboardType::kClipboardText);
+                        resp_sub->set_msg(in_text);
+                        auto buffer = ProtoAsData(&resp_msg);
+                        // now
+                        auto rp_msg = tc::MakeRpRawRenderMessage(msg->stream_id(), msg->device_id(), resp_msg.SerializeAsString(), true);
+                        context_->GetApplication()->PostMessage2Renderer(rp_msg);
+                        // before
+                        //plugin_->DispatchAllStreamMessage(buffer);
                     }
-                    TimeUtil::DelayBySleep(5);
-                }
-                if (is_same) {
-                    // to panel
-                    //auto event = std::make_shared<GrPluginRemoteClipboardResp>();
-                    //event->content_type_ = (int)sub.type();
-                    //event->remote_info_ = sub.msg();
-                    // todo::
-                    //plugin_->CallbackEvent(event);
-
-                    // notify clipboard monitor
-                    auto sub_resp = msg->clipboard_info_resp();
-                    context_->SendAppMessage(MsgRemoteClipboardResp {
-                        .text_msg_ = sub_resp.msg(),
-                    });
-
-                    // send back
-                    tc::Message resp_msg;
-                    resp_msg.set_type(tc::kClipboardInfoResp);
-                    auto resp_sub = resp_msg.mutable_clipboard_info_resp();
-                    resp_sub->set_type(ClipboardType::kClipboardText);
-                    resp_sub->set_msg(in_text);
-                    auto buffer = ProtoAsData(&resp_msg);
-                    // now
-                    auto rp_msg = tc::MakeRpRawRenderMessage(msg->stream_id(), msg->device_id(), resp_msg.SerializeAsString(), true);
-                    context_->GetApplication()->PostMessage2Renderer(rp_msg);
-
-                    // before
-                    //plugin_->DispatchAllStreamMessage(buffer);
-                }
+                });
+                
             }/*
             else if (sub.type() == ClipboardType::kClipboardImage) {
                 auto in_image = sub.msg();

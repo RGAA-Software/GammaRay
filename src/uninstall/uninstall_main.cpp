@@ -9,6 +9,8 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <qstandardpaths.h>
+#include <qfile.h>
 #include <QTimer>
 #include <thread>
 #include <chrono>
@@ -21,6 +23,7 @@
 
 using namespace tc;
 
+static const std::string kGammaRay = "GammaRay";
 static const std::string kGammaRayName = "GammaRay.exe";
 static const std::string kGammaRayGuardName = "GammaRayGuard.exe";
 static const std::string kGammaRayRenderName = "GammaRayRender.exe";
