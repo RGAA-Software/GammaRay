@@ -1,6 +1,3 @@
-## Warning
-> In developing, please wait until 20/08/2025.  
-> 我们将于2025/08/20发布新版本
 
 ![](docs/images/GammaRay.png)
 #### 💖 This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free, NOT released now)](https://store.steampowered.com/app/2947460/GammaRay/), please download at [HERE](https://github.com/RGAA-Software/GammaRay/releases)
@@ -8,7 +5,7 @@
 
 ### Showcases
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)  
-[B站演示地址](https://www.bilibili.com/video/BV1qF5NzfENv/)  
+[B站演示地址(远程桌面)](https://www.bilibili.com/video/BV1qF5NzfENv/)  
 [Youtube Introduce](..)
 ## Usage
 ##### 1. [How To Use](docs/How_to_use.md)
