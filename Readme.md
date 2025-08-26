@@ -6,7 +6,7 @@
 ### Showcases
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)  
 [B站演示地址(远程桌面)](https://www.bilibili.com/video/BV1qF5NzfENv/)  
-[Youtube Introduce](..)
+
 ## Usage
 ##### 1. [How To Use](docs/How_to_use.md)
 ##### 2. [How To Build](docs/How_to_build.md)
