@@ -6,6 +6,7 @@
 #define GAMMARAYPREMIUM_PANEL_COMPANION_H
 
 #include <string>
+#include <vector>
 
 namespace tc
 {
@@ -31,6 +32,9 @@ namespace tc
 
         // Spvr
         virtual void UpdateSpvrServerConfig(const std::string& host, int port) = 0;
+
+        // enc
+        virtual bool EcnQRCode(std::string origin_content, std::vector<uint8_t>& cipher_data) = 0;
     };
 
 }

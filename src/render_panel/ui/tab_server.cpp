@@ -7,8 +7,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
 #include <QLineEdit>
@@ -32,7 +30,6 @@
 #include "rn_empty.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/md5.h"
-#include "render_panel/gr_app_messages.h"
 #include "tc_common_new/log.h"
 #include "qt_circle.h"
 #include "tc_dialog.h"
@@ -51,6 +48,7 @@
 #include "tc_qt_widget/tc_password_input.h"
 #include "tc_spvr_client/spvr_api.h"
 #include "tc_common_new/base64.h"
+#include "tc_common_new/tc_aes.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_manager_client/mgr_device.h"
 #include "render_panel/devices/running_stream_manager.h"
@@ -58,6 +56,7 @@
 #include "render_panel/gr_workspace.h"
 #include "relay_message.pb.h"
 #include "tc_profile_client/profile_api.h"
+#include "panel_companion/panel_companion_impl.h"
 
 namespace tc
 {
@@ -233,7 +232,7 @@ namespace tc
                 auto layout = new NoMarginVLayout();
 
                 auto qr_info = new TcQRWidget(this);
-                qr_info->setFixedSize(171, 171);
+                qr_info->setFixedSize(183, 183);
                 lbl_qr_code_ = qr_info;
                 qr_info->SetQRPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
@@ -552,6 +551,15 @@ namespace tc
 
     void TabServer::UpdateQRCode() {
         auto broadcast_msg = context_->MakeBroadcastMessage();
+
+        // companion
+        if (grApp->GetCompanion()) {
+            std::vector<uint8_t> enc_data;
+            if (grApp->GetCompanion()->EcnQRCode(broadcast_msg, enc_data)) {
+                broadcast_msg = Base64::Base64Encode(enc_data.data(), enc_data.size());
+            }
+        }
+
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), -1);
         if (lbl_qr_code_) {
             lbl_qr_code_->SetQRPixmap(qr_pixmap_);
