@@ -8,6 +8,7 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include "ct_opengl_video_widget.h"
+#include "ct_sdl_video_widget.h"
 #include "tc_dialog.h"
 #include "no_margin_layout.h"
 #include "ct_const_def.h"
@@ -31,6 +32,11 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     this->setAttribute(Qt::WA_StyledBackground, true);
     auto beg = TimeUtil::GetCurrentTimestamp();
     video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
+    if (parent) {
+        sdl_video_widget_ = new SDLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, nullptr);
+        sdl_video_widget_->setFixedSize(1280, 768);
+        sdl_video_widget_->show();
+    }
     auto end = TimeUtil::GetCurrentTimestamp();
     LOGI("Create OpenGLWidget used: {}ms", (end-beg));
 
@@ -127,11 +133,16 @@ void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
 }
 
 void GameView::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
-
     if (video_widget_->GetDisplayImageFormat() != kRawImageI420) {
         video_widget_->SetDisplayImageFormat(kRawImageI420);
     }
     video_widget_->RefreshI420Image(image);
+
+    ctx_->PostUITask([=, this]() {
+        if (sdl_video_widget_) {
+            sdl_video_widget_->RefreshI420Image(image);
+        }
+    });
 }
 
 void GameView::RefreshI444Image(const std::shared_ptr<RawImage>& image) {

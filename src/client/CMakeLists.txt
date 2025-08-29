@@ -31,6 +31,7 @@ set(SRCS_WS
         ct_renderer.cpp
         ct_sprite.cpp
         ct_opengl_video_widget.cpp
+        ct_sdl_video_widget.cpp
         ct_qt_key_converter.cpp
         ct_audio_player.cpp
         ct_main_progress.cpp

@@ -9,6 +9,7 @@ class QLabel;
 namespace tc {
 
 class OpenGLVideoWidget;
+class SDLVideoWidget;
 class ClientContext;
 class ThunderSdk;
 class FloatController;
@@ -65,6 +66,7 @@ public:
 private:
     Settings* settings_ = nullptr;
 	OpenGLVideoWidget* video_widget_ = nullptr;
+    SDLVideoWidget* sdl_video_widget_ = nullptr;
 	std::shared_ptr<ClientContext> ctx_ = nullptr;
 	std::shared_ptr<ThunderSdk> sdk_ = nullptr;
     std::shared_ptr<ThunderSdkParams> params_;
