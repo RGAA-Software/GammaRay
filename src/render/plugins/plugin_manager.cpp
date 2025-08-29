@@ -39,7 +39,11 @@ namespace tc
         LOGI("plugin base path: {}", base_path.toStdString());
         QDir plugin_dir(base_path + R"(/gr_plugins)");
         QStringList filters;
+#if WIN32
         filters << QString("*%1").arg(".dll");
+#else
+        filters << QString("*%1").arg(".so");
+#endif
         plugin_dir.setNameFilters(filters);
 
         auto entryInfoList = plugin_dir.entryInfoList();

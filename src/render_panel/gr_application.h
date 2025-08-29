@@ -34,6 +34,7 @@ namespace tc
     class GrRenderMsgProcessor;
     class ClipboardManager;
     class GrGuardStarter;
+    class PanelCompanion;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -81,6 +82,9 @@ namespace tc
         // send the message to remote render in json format
         bool PostMessage2RemoteRender(const std::shared_ptr<GrBaseStreamMessage>& msg);
 
+        // companion for private logics
+        PanelCompanion* GetCompanion();
+
     private:
         void RefreshSigServerSettings();
         void RegisterMessageListener();
@@ -91,6 +95,9 @@ namespace tc
 
         // windows messages looping
         void StartWindowsMessagesLooping();
+
+        // load panel companion
+        void LoadPanelCompanion();
 
     private:
         QWidget* main_window_ = nullptr;
@@ -123,6 +130,9 @@ namespace tc
 
         // is started by OS when logon?
         bool run_automatically_ = false;
+
+        // panel companion
+        PanelCompanion* companion_ = nullptr;
 
     };
 

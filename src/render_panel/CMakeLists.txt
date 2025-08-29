@@ -89,3 +89,5 @@ set(PANEL_SRCS
 
         PARENT_SCOPE
 )
+
+add_subdirectory(companion)

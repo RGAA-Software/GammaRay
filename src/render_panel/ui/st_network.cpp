@@ -13,6 +13,7 @@
 #include "tc_common_new/string_util.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
+#include "panel_companion/panel_companion_impl.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_dialog.h"
 #include "tc_label.h"
@@ -385,6 +386,11 @@ namespace tc
 
                 // Load again
                 settings_->Load();
+
+                // companion
+                if (grApp->GetCompanion()) {
+                    grApp->GetCompanion()->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+                }
 
                 this->context_->SendAppMessage(MsgSettingsChanged {
                     .settings_ = settings_,

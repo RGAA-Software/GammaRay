@@ -19,6 +19,7 @@
 #include "gr_connected_manager.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/time_util.h"
+#include "companion/panel_companion.h"
 #include "ui/input_safety_pwd_dialog.h"
 #include "tc_manager_client/mgr_device.h"
 #include "tc_3rdparty/json/json.hpp"
@@ -42,8 +43,11 @@
 #include "render_panel/clipboard/panel_clipboard_manager.h"
 
 #include <shellapi.h>
+#include <QLibrary>
 
 using namespace nlohmann;
+
+typedef void *(*FnGetInstance)();
 
 namespace tc
 {
@@ -67,6 +71,12 @@ namespace tc
         settings_->Init(msg_notifier_);
         settings_->Load();
         settings_->Dump();
+
+        // panel companion
+        LoadPanelCompanion();
+        if (companion_) {
+            companion_->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+        }
 
         auto exeDir = QApplication::applicationDirPath().toStdString();
         FolderUtil::CreateDir(std::format("{}/clients/windows", exeDir));
@@ -198,9 +208,24 @@ namespace tc
             RequestNewClientId(force_update);
         });
 
+        msg_listener_->Listen<MsgGrTimer100>([=, this](const MsgGrTimer100& msg) {
+            if (companion_) {
+                companion_->OnTimer100ms();
+            }
+        });
+
+        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& msg) {
+            if (companion_) {
+                companion_->OnTimer1S();
+            }
+        });
+
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
             if (settings_->GetDeviceId().empty()) {
                 RequestNewClientId(true);
+            }
+            if (companion_) {
+                companion_->OnTimer5S();
             }
         });
 
@@ -369,6 +394,40 @@ namespace tc
             }
             return false;
         }
+    }
+
+    void GrApplication::LoadPanelCompanion() {
+        auto base_path = QCoreApplication::applicationDirPath();
+#ifdef WIN32
+        auto lib_name = "panel_companion.dll";
+#else
+        auto lib_name = "panel_companion.so";
+#endif
+        auto library = new QLibrary(base_path + "/" + lib_name);
+        library->load();
+        auto fn_get_instance = (FnGetInstance)library->resolve("GetInstance");
+        auto func = (FnGetInstance) fn_get_instance;
+        if (!func) {
+            LOGE("Don't have GetInstance in panel_companion.");
+            return;
+        }
+
+        auto plugin = (PanelCompanion*)func();
+        if (!plugin) {
+            LOGE("Can't exe GetInstance in panel_companion");
+            return;
+        }
+
+        if (!plugin->Init()) {
+            LOGE("Can't init panel_companion");
+            return;
+        }
+        LOGI("Load panel_companion success.");
+        companion_ = plugin;
+    }
+
+    PanelCompanion* GrApplication::GetCompanion() {
+        return companion_;
     }
 
 }

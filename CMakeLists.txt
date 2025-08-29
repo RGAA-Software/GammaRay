@@ -61,6 +61,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(unofficial-libvpx CONFIG REQUIRED)
 find_package(FFTW3 CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(cpr CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
