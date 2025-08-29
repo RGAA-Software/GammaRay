@@ -20,7 +20,6 @@
 #include "tc_encoder_new/nvenc_video_encoder.h"
 #include "settings/rd_settings.h"
 #include "app/app_messages.h"
-#include "settings/rd_settings.h"
 #include "render/rd_statistics.h"
 #include "tc_common_new/win32/d3d_render.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"
@@ -65,22 +64,35 @@ namespace tc
             return;
         }
         PostEncTask([=, this]() {
+
+            auto adapter_uid = cap_video_msg.adapter_uid_;
+
             // plugins: SharedTexture
             if (cap_video_msg.handle_ > 0) {
+
+                // all plugins   // to do 这里要不要考虑adapter_uid不合法的情况
+                plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
+                    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
+                });
+
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
                         plugin->OnRawVideoFrameSharedTexture(cap_video_msg.display_name_,
                                                              cap_video_msg.frame_index_,
                                                              cap_video_msg.frame_width_,
                                                              cap_video_msg.frame_height_,
-                                                             cap_video_msg.handle_);
+                                                             cap_video_msg.handle_,
+                                                             cap_video_msg.adapter_uid_,
+                                                             cap_video_msg.frame_format_
+                                                            );
                     });
                 });
             }
 
             auto settings = RdSettings::Instance();
             auto frame_index = cap_video_msg.frame_index_;
-            auto adapter_uid = cap_video_msg.adapter_uid_;
+            //auto adapter_uid = cap_video_msg.adapter_uid_;
             auto monitor_name = std::string(cap_video_msg.display_name_);
             bool frame_meta_info_changed = [&]() {
                 auto last_video_frame_exists = last_video_frames_.contains(monitor_name);
@@ -169,10 +181,10 @@ namespace tc
                 }
 
                 // all plugins
-                plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
-                    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
-                    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
-                });
+                //plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                //    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
+                //    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
+                //});
 
                 // video frame carrier
                 auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {

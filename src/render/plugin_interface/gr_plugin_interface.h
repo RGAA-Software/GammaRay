@@ -190,7 +190,7 @@ namespace tc
                                          bool key) {}
         // raw video frame
         // handle: D3D Shared texture handle
-        virtual void OnRawVideoFrameSharedTexture(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, uint64_t handle) {}
+        virtual void OnRawVideoFrameSharedTexture(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, uint64_t handle, int64_t adapter_id, uint64_t frame_format) {}
 
         // raw video frame in rgba format
         // image: Raw image
@@ -207,7 +207,7 @@ namespace tc
                                          int samples, int channels, int bits) {}
         virtual void OnSplitFFTAudioData(const std::vector<double>& left_fft, const std::vector<double>& right_fft) {}
 
-
+        GrPluginInterface* GetPluginById(const std::string& plugin_id);
     protected:
         bool HasParam(const std::string& k) {
             return param_.cluster_.count(k) > 0;
@@ -230,8 +230,6 @@ namespace tc
         int64_t GetConfigIntParam(const std::string& k) { return GetConfigParam<int64_t>(k); }
         bool GetConfigBoolParam(const std::string& k) {return GetConfigParam<bool>(k); }
         double GetConfigDoubleParam(const std::string& k) { return GetConfigParam<double>(k); }
-
-        GrPluginInterface* GetPluginById(const std::string& plugin_id);
 
     protected:
         std::shared_ptr<GrPluginContext> plugin_context_ = nullptr;

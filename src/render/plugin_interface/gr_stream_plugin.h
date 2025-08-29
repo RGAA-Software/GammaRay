@@ -27,7 +27,7 @@ namespace tc
                                  bool key) override;
         // raw video frame
         // handle: D3D Shared texture handle
-        void OnRawVideoFrameSharedTexture(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, uint64_t handle) override {}
+        void OnRawVideoFrameSharedTexture(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, uint64_t handle, int64_t adapter_id, uint64_t frame_format) override {}
         // raw video frame in rgba format
         // image: Raw image
         void OnRawVideoFrameRgba(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) override {}
