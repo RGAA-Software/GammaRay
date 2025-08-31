@@ -32,11 +32,13 @@ GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<Th
     this->setAttribute(Qt::WA_StyledBackground, true);
     auto beg = TimeUtil::GetCurrentTimestamp();
     video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
+#if TEST_SDL
     if (parent) {
         sdl_video_widget_ = new SDLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, nullptr);
         sdl_video_widget_->setFixedSize(1280, 768);
         sdl_video_widget_->show();
     }
+#endif
     auto end = TimeUtil::GetCurrentTimestamp();
     LOGI("Create OpenGLWidget used: {}ms", (end-beg));
 
@@ -138,11 +140,13 @@ void GameView::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
     }
     video_widget_->RefreshI420Image(image);
 
+#if TEST_SDL
     ctx_->PostUITask([=, this]() {
         if (sdl_video_widget_) {
             sdl_video_widget_->RefreshI420Image(image);
         }
     });
+#endif
 }
 
 void GameView::RefreshI444Image(const std::shared_ptr<RawImage>& image) {

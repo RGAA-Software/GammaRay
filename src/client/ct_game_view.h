@@ -4,6 +4,8 @@
 #include <qevent.h>
 #include "thunder_sdk.h"
 
+#define TEST_SDL 0
+
 class QLabel;
 
 namespace tc {
@@ -66,7 +68,9 @@ public:
 private:
     Settings* settings_ = nullptr;
 	OpenGLVideoWidget* video_widget_ = nullptr;
+#if TEST_SDL
     SDLVideoWidget* sdl_video_widget_ = nullptr;
+#endif
 	std::shared_ptr<ClientContext> ctx_ = nullptr;
 	std::shared_ptr<ThunderSdk> sdk_ = nullptr;
     std::shared_ptr<ThunderSdkParams> params_;
