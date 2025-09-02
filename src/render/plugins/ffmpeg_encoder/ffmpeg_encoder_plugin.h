@@ -38,6 +38,7 @@ namespace tc
         void ExitAll() override;
         std::map<std::string, WorkingEncoderInfoPtr> GetWorkingCapturesInfo() override;
 
+        std::optional<EncoderCapability> GetEncoderCapability(const std::string& monitor_name) override;
     private:
         std::map<std::string, std::shared_ptr<FFmpegEncoder>> video_encoders_;
     };

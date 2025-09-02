@@ -132,4 +132,10 @@ namespace tc
         return result;
     }
 
+    std::optional<EncoderCapability> FFmpegEncoderPlugin::GetEncoderCapability(const std::string& monitor_name) {
+        EncoderCapability cap;
+        cap.support_h264_yuv444_ = true;
+        cap.support_hevc_yuv444_ = true;
+        return { cap };
+    }
 }

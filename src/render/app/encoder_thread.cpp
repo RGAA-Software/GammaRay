@@ -70,11 +70,11 @@ namespace tc
             // plugins: SharedTexture
             if (cap_video_msg.handle_ > 0) {
 
-                // all plugins   // to do 这里要不要考虑adapter_uid不合法的情况
-                plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
-                    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
-                    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
-                });
+                // all plugins   // to do 这里要不要考虑adapter_uid不合法的情况 
+                //plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                //    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
+                //    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
+                //});
 
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitAllPlugins([=](GrPluginInterface* plugin) {
@@ -181,10 +181,10 @@ namespace tc
                 }
 
                 // all plugins
-                //plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
-                //    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
-                //    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
-                //});
+                plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
+                    plugin->d3d11_devices_[adapter_uid] = app_->GetD3DDevice(adapter_uid);
+                    plugin->d3d11_devices_context_[adapter_uid] = app_->GetD3DContext(adapter_uid);
+                });
 
                 // video frame carrier
                 auto r = frame_carrier_plugin_->InitFrameCarrier(GrCarrierParams {
@@ -201,50 +201,84 @@ namespace tc
                 // plugins: Create encoder plugin
                 // To use FFmpeg encoder if mocking video stream or to implement the hardware encoder to encode raw frame(RGBA)
                 bool is_mocking = settings_->capture_.mock_video_;
-                // TODO::Fixme use Hardware
-                if (encoder_config.enable_full_color_mode_) {
-                    auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                    if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                        target_encoder_plugin = ffmpeg_encoder;
-                    }
-                }
                
+                auto select_encoder_with_capability_func = [=, &target_encoder_plugin](tc::GrVideoEncoderPlugin* encoder_plugin, const std::string& monitor_name) {
+                    if (!encoder_config.enable_full_color_mode_) {
+                        target_encoder_plugin = encoder_plugin;
+                    }
+                    else {
+                        auto cap_res = encoder_plugin->GetEncoderCapability(monitor_name);
+                        if (cap_res.has_value()) {
+                            auto cap = cap_res.value();
+                            if (tc::EVideoCodecType::kH264 == encoder_config.codec_type) {
+                                if (cap.support_h264_yuv444_) {
+                                    target_encoder_plugin = encoder_plugin;
+                                }
+                            }
+                            else if (tc::EVideoCodecType::kHEVC == encoder_config.codec_type) {
+                                if (cap.support_hevc_yuv444_) {
+                                    target_encoder_plugin = encoder_plugin;
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                // to do: GDI 采集的时候 显示器的名字是自定义的，需要测试下
                 if (!target_encoder_plugin) {
                     auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
                     if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_name)) {
-                        target_encoder_plugin = nvenc_encoder;
+                        select_encoder_with_capability_func(nvenc_encoder, monitor_name);
                     }
-                    else {
+
+                    if (!target_encoder_plugin) {
                         LOGW("Init NVENC failed, will try AMF.");
                         auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
                         if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_name)) {
-                            target_encoder_plugin = amf_encoder;
+                            select_encoder_with_capability_func(amf_encoder, monitor_name);
                         }
-                        else {
-                            LOGW("Init AMF failed, will try FFmpeg.");
-                            auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
-                            // 让ffmpeg尝试硬编码初始化
-                            encoder_config.Hardware = EHardwareEncoder::kNvEnc;
-                            if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                                target_encoder_plugin = ffmpeg_encoder;
-                            }
-                            else {
-                                encoder_config.Hardware = EHardwareEncoder::kAmf;
-                                if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                                    target_encoder_plugin = ffmpeg_encoder;
-                                }
-                                else {
-                                    //让ffmpeg尝试软件编码初始化
-                                    encoder_config.Hardware = EHardwareEncoder::kNone;
-                                    if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                                        target_encoder_plugin = ffmpeg_encoder;
-                                    } else {
-                                        LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
-                                        return;
-                                    }
-                                }
-                            }
+                    }
+
+                    auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                    if (!target_encoder_plugin) {
+                        LOGW("Init AMF failed, will try FFmpeg(kNvEnc).");
+                        // 让ffmpeg尝试硬编码初始化 
+                        encoder_config.Hardware = EHardwareEncoder::kNvEnc;
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(ffmpeg_encoder, monitor_name);
                         }
+                    }
+
+                    if (!target_encoder_plugin) {
+                        LOGW("Init FFmpeg(kNvEnc) failed, will try FFmpeg(kAmf).");
+                        // 让ffmpeg尝试硬编码初始化 
+                        encoder_config.Hardware = EHardwareEncoder::kAmf;
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(ffmpeg_encoder, monitor_name);
+                        }
+                    }
+
+                    if (!target_encoder_plugin) {
+                        LOGW("Init FFmpeg(kAmf) failed, will try FFmpeg(kNone).");
+                        //让ffmpeg尝试软件编码初始化
+                        encoder_config.Hardware = EHardwareEncoder::kNone;
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(ffmpeg_encoder, monitor_name);
+                        }
+                    }
+
+                    if (!target_encoder_plugin) {
+                        LOGW("Init FFmpeg(kAmf) failed, will try FFmpeg(kNone). without capability!");
+                        //让ffmpeg尝试软件编码初始化
+                        encoder_config.Hardware = EHardwareEncoder::kNone;
+                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
+                            target_encoder_plugin = ffmpeg_encoder;
+                        }
+                    }
+
+                    if (!target_encoder_plugin) {
+                        LOGE("Init FFmpeg failed, we can't encode frame in this machine!");
+                        return;
                     }
                 }
 

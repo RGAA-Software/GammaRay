@@ -72,6 +72,9 @@ namespace tc
     RdApplication::RdApplication(const AppParams& args) {
         auto settings = RdSettings::Instance();
         settings_ = settings;
+
+        // debug
+        // MessageBoxA(0, "", "debug", 0);
     }
 
     RdApplication::~RdApplication() {

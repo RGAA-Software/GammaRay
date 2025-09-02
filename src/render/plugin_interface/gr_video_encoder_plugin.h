@@ -29,6 +29,13 @@ namespace tc
     };
     using WorkingEncoderInfoPtr = std::shared_ptr<WorkingEncoderInfo>;
 
+    // encoder capability
+    class EncoderCapability {
+    public:
+        bool support_h264_yuv444_ = false;
+        bool support_hevc_yuv444_ = false;
+    };
+
     class GrVideoEncoderPlugin : public GrPluginInterface {
     public:
         GrVideoEncoderPlugin();
@@ -56,7 +63,7 @@ namespace tc
 
         virtual void ConfigEncoder(const std::string& mon_name, uint32_t bps, uint32_t fps) {}
 
-
+        virtual std::optional<EncoderCapability> GetEncoderCapability(const std::string& monitor_name) { return std::nullopt;}
     public:
         int refresh_rate_ = 60;
         uint32_t out_width_ = 0;
