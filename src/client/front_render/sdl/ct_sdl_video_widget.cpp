@@ -11,7 +11,7 @@ namespace tc
 
     SDLVideoWidget::SDLVideoWidget(const std::shared_ptr<ClientContext> &ctx, const std::shared_ptr<ThunderSdk> &sdk,
                                    int dup_idx, RawImageFormat format, QWidget *parent)
-            : VideoWidgetEvent(ctx, sdk, dup_idx) {
+            : VideoWidget(ctx, sdk, dup_idx) {
         this->context = ctx;
         this->format = format;
 
@@ -64,6 +64,12 @@ namespace tc
         sdlRect.h = frame_height;
     }
 
+    void SDLVideoWidget::RefreshImage(const std::shared_ptr<RawImage> &image) {
+        if (image->img_format == RawImageFormat::kRawImageI420) {
+            this->RefreshImage(image);
+        }
+    }
+
     void SDLVideoWidget::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
         Init(image->img_width, image->img_height);
 
@@ -104,41 +110,45 @@ namespace tc
 
     void SDLVideoWidget::mouseMoveEvent(QMouseEvent* e) {
         QWidget::mouseMoveEvent(e);
-        VideoWidgetEvent::OnMouseMoveEvent(e, QWidget::width(), QWidget::height());
+        VideoWidget::OnMouseMoveEvent(e, QWidget::width(), QWidget::height());
     }
 
     void SDLVideoWidget::mousePressEvent(QMouseEvent* e) {
         QWidget::mousePressEvent(e);
-        VideoWidgetEvent::OnMousePressEvent(e, QWidget::width(), QWidget::height());
+        VideoWidget::OnMousePressEvent(e, QWidget::width(), QWidget::height());
     }
 
     void SDLVideoWidget::mouseReleaseEvent(QMouseEvent* e) {
         QWidget::mouseReleaseEvent(e);
-        VideoWidgetEvent::OnMouseReleaseEvent(e, QWidget::width(), QWidget::height());
+        VideoWidget::OnMouseReleaseEvent(e, QWidget::width(), QWidget::height());
     }
 
     void SDLVideoWidget::mouseDoubleClickEvent(QMouseEvent* e) {
         QWidget::mouseDoubleClickEvent(e);
-        VideoWidgetEvent::OnMouseDoubleClickEvent(e);
+        VideoWidget::OnMouseDoubleClickEvent(e);
     }
 
     void SDLVideoWidget::wheelEvent(QWheelEvent* e) {
         QWidget::wheelEvent(e);
-        VideoWidgetEvent::OnWheelEvent(e, QWidget::width(), QWidget::height());
+        VideoWidget::OnWheelEvent(e, QWidget::width(), QWidget::height());
     }
 
     void SDLVideoWidget::keyPressEvent(QKeyEvent* e) {
         QWidget::keyPressEvent(e);
-        VideoWidgetEvent::OnKeyPressEvent(e);
+        VideoWidget::OnKeyPressEvent(e);
     }
 
     void SDLVideoWidget::keyReleaseEvent(QKeyEvent* e) {
         QWidget::keyReleaseEvent(e);
-        VideoWidgetEvent::OnKeyReleaseEvent(e);
+        VideoWidget::OnKeyReleaseEvent(e);
     }
 
     void SDLVideoWidget::closeEvent(QCloseEvent* event) {
         QWidget::closeEvent(event);
+    }
+
+    QWidget* SDLVideoWidget::AsWidget() {
+        return dynamic_cast<QWidget*>(this);
     }
 
 }

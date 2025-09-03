@@ -20,61 +20,69 @@ add_compile_options(/bigobj)
 set(SRCS_MAIN ct_main.cpp)
 
 set(SRCS_WS
-        ct_main_ws.cpp
-        ct_client_context.cpp
-        ct_workspace.cpp
-        ct_base_workspace.cpp
-        ct_director.cpp
-        ct_video_widget_event.cpp
-        ct_shader_program.cpp
-        ct_opengl_image_reader.cpp
-        ct_renderer.cpp
-        ct_sprite.cpp
-        ct_opengl_video_widget.cpp
-        ct_sdl_video_widget.cpp
-        ct_qt_key_converter.cpp
-        ct_audio_player.cpp
-        ct_main_progress.cpp
-        ct_game_view.cpp
-        icon.rc ${RES}
-        ui/switch_button.cpp
-        ui/float_icon.cpp
-        ui/round_rect_widget.cpp
-        ui/app_menu.cpp
-        ui/app_color_theme.cpp
-        ui/app_content.cpp
-        ui/background_widget.cpp
-        ct_settings.cpp
-        ../theme/QtAdvancedStylesheet.cpp
-        ui/float_controller.cpp
-        ui/base_widget.cpp
-        ui/float_controller_panel.cpp
-        ui/float_notification_handle.cpp
-        ui/notification_panel.cpp
-        ui/notification_item.cpp
-        ui/key_state_panel.cpp
-        ui/ct_statistics_panel.cpp
-        ui/ct_stat_chart.cpp
-        ui/ct_stat_frame_info_item.cpp
-        ui/float_sub_control_panel.cpp
-        ui/float_sub_mode_panel.cpp
-        ui/float_sub_fps_panel.cpp
-        ui/float_sub_display_panel.cpp
-        ui/float_3rd_scale_panel.cpp
-        ui/float_3rd_resolution_panel.cpp
-        ui/float_button_state_indicator.cpp
-        ui/computer_icon.cpp
-        ui/svg_lable.cpp
-        ui/retry_conn_dialog.cpp
-        network/ct_dashboard_client.cpp
-        network/ct_panel_client.cpp
-        plugins/ct_plugin_manager.cpp
-        plugins/ct_plugin_event_router.cpp
+    ct_main_ws.cpp
+    ct_client_context.cpp
+    ct_workspace.cpp
+    ct_base_workspace.cpp
+    front_render/ct_video_widget_event.cpp
+    front_render/opengl/ct_director.cpp
+    front_render/opengl/ct_opengl_video_widget.cpp
+    front_render/opengl/ct_shader_program.cpp
+    front_render/opengl/ct_opengl_image_reader.cpp
+    front_render/opengl/ct_renderer.cpp
+    front_render/opengl/ct_sprite.cpp
+    front_render/sdl/ct_sdl_video_widget.cpp
+    ct_qt_key_converter.cpp
+    ct_audio_player.cpp
+    ct_main_progress.cpp
+    ct_game_view.cpp
+    icon.rc ${RES}
+    ui/switch_button.cpp
+    ui/float_icon.cpp
+    ui/round_rect_widget.cpp
+    ui/app_menu.cpp
+    ui/app_color_theme.cpp
+    ui/app_content.cpp
+    ui/background_widget.cpp
+    ct_settings.cpp
+    ../theme/QtAdvancedStylesheet.cpp
+    ui/float_controller.cpp
+    ui/base_widget.cpp
+    ui/float_controller_panel.cpp
+    ui/float_notification_handle.cpp
+    ui/notification_panel.cpp
+    ui/notification_item.cpp
+    ui/key_state_panel.cpp
+    ui/ct_statistics_panel.cpp
+    ui/ct_stat_chart.cpp
+    ui/ct_stat_frame_info_item.cpp
+    ui/float_sub_control_panel.cpp
+    ui/float_sub_mode_panel.cpp
+    ui/float_sub_fps_panel.cpp
+    ui/float_sub_display_panel.cpp
+    ui/float_3rd_scale_panel.cpp
+    ui/float_3rd_resolution_panel.cpp
+    ui/float_button_state_indicator.cpp
+    ui/computer_icon.cpp
+    ui/svg_lable.cpp
+    ui/retry_conn_dialog.cpp
+    network/ct_dashboard_client.cpp
+    network/ct_panel_client.cpp
+    plugins/ct_plugin_manager.cpp
+    plugins/ct_plugin_event_router.cpp
 )
+
+if (WIN32)
+    list(APPEND SRCS_WIN
+        front_render/d3d11/ct_d3d11_video_widget.cpp
+        front_render/d3d11/d3d11_render_manager.cpp
+        front_render/d3d11/raw_sdl_widget.cpp
+    )
+endif ()
 
 add_subdirectory(plugin_interface)
 add_subdirectory(plugins)
-add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS} ${CLIPBOARD_WIN_SRCS}) #WIN32 MANUAL_FINALIZATION
+add_executable(GammaRayClientInner ${SRCS_WS} ${CLIPBOARD_SRCS} ${CLIPBOARD_WIN_SRCS} ${SRCS_WIN}) #WIN32 MANUAL_FINALIZATION
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 #SET_TARGET_PROPERTIES(GammaRayClientInner PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 if (APPLE)

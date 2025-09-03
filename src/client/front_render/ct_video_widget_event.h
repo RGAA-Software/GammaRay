@@ -7,6 +7,9 @@
 #include <memory>
 #include <map>
 #include "sdk_messages.h"
+#include "gl/raw_image.h"
+#include "tc_common_new/fps_stat.h"
+
 namespace tc
 {
 
@@ -31,11 +34,11 @@ namespace tc
         bool released = false;
     };
 
-	class VideoWidgetEvent {
+	class VideoWidget {
 	public:
 
-		VideoWidgetEvent(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx);
-		virtual ~VideoWidgetEvent();
+		VideoWidget(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx);
+		virtual ~VideoWidget();
 
 		void OnWidgetResize(int w, int h);
 		void OnMouseMoveEvent(QMouseEvent*, int widget_width, int widget_height);
@@ -47,6 +50,20 @@ namespace tc
 		void OnKeyReleaseEvent(QKeyEvent* event);
         void RegisterMouseKeyboardEventCallback(const OnMouseKeyboardEventCallback& cbk);
         void SendKeyEvent(quint32 vk, bool down);
+        RawImageFormat GetDisplayImageFormat();
+        void SetDisplayImageFormat(RawImageFormat format);
+        int GetCapturingMonitorWidth();
+        int GetCapturingMonitorHeight();
+        SdkCaptureMonitorInfo GetCaptureMonitorInfo();
+        void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo &mon_info);
+
+        virtual QWidget* AsWidget();
+        virtual void RefreshImage(const std::shared_ptr<RawImage> &image);
+        virtual void OnTimer1S();
+
+#ifdef WIN32
+
+#endif
 
     private:
         void SendCallback(const std::shared_ptr<NetMessage>& msg);
@@ -67,6 +84,8 @@ namespace tc
         int screen_size_ = 0;
         SdkCaptureMonitorInfo cap_mon_info_{};
         std::shared_ptr<Thread> evt_cache_thread_ = nullptr;
+        RawImageFormat raw_image_format_;
+        FpsStat fps_stat_;
 	};
 
 }

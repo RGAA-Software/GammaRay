@@ -11,7 +11,6 @@
 #include <QTimer>
 #include <dwmapi.h>
 #include "thunder_sdk.h"
-#include "ct_opengl_video_widget.h"
 #include "client/ct_client_context.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
@@ -48,6 +47,8 @@
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "tc_relay_client/relay_api.h"
 #include "tc_message_new/proto_converter.h"
+#include "tc_common_new/win32/d3d11_wrapper.h"
+#include "front_render/opengl/ct_opengl_video_widget.h"
 
 namespace tc
 {
@@ -73,9 +74,19 @@ namespace tc
 
         InitTheme();
 
+#ifdef WIN32
+        GenerateD3DDevice();
+        for (const auto& [adapter_uid, wrapper] : d3d11_devices_) {
+            // TODO: find the primary or using d3d11 device
+            this->params_->d3d11_wrapper_ = wrapper;
+            LOGI("Using the D3D11Device, ID: {}", wrapper->adapter_uid_);
+            break;
+        }
+#endif
+
         sdk_ = ThunderSdk::Make(this->context_->GetMessageNotifier());
         sdk_->Init(this->params_, nullptr, DecoderRenderType::kFFmpegI420);
-        
+
         // init game views
         InitGameView(this->params_);
 
@@ -1047,5 +1058,124 @@ namespace tc
             }
         }
         return QWidget::nativeEvent(eventType, message, result);
+    }
+
+    bool BaseWorkspace::GenerateD3DDevice() {
+        auto new_device_wrapper = std::make_shared<D3D11DeviceWrapper>();
+        const D3D_FEATURE_LEVEL supportedFeatureLevels[] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
+
+//        int adapterIndex, outputIndex;
+//        if (!SDL_DXGIGetOutputInfo(SDL_GetWindowDisplayIndex((HWND)winId()),
+//                                   &adapterIndex, &outputIndex)) {
+//            LOGE("SDL_DXGIGetOutputInfo() failed: {}", SDL_GetError());
+//            return false;
+//        }
+
+        ComPtr<IDXGIFactory1> factory1 = nullptr;
+        ComPtr<IDXGIAdapter1> adapter = nullptr;
+
+        HRESULT res = NULL;
+        int adapter_index = 0;
+        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(factory1.GetAddressOf()));
+        if (res != S_OK) {
+            LOGE("CreateDXGIFactory1 failed");
+            return false;
+        }
+
+        ComPtr<IDXGIOutput> output;
+        UINT adapterIndex = 0;
+        uint32_t my_adapter_uid = 0;
+
+        while(factory1->EnumAdapters1(adapterIndex, adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND) {
+            UINT outputIndex = 0;
+            while(adapter->EnumOutputs(outputIndex, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND) {
+                DXGI_OUTPUT_DESC desc;
+                output->GetDesc(&desc);
+
+                // 判断 hwnd 是否属于这个输出
+                auto hwnd = (HWND)this->winId();
+                RECT rect;
+                GetWindowRect(hwnd, &rect);
+                RECT intersect;
+                if (IntersectRect(&intersect, &rect, &desc.DesktopCoordinates)) {
+                    // 找到窗口所在的显示器输出
+                    // 这里 adapterIndex 对应的 Adapter 就是窗口的 GPU
+                    DXGI_ADAPTER_DESC adapter_desc;
+                    adapter->GetDesc(&adapter_desc);
+                    my_adapter_uid = adapter_desc.AdapterLuid.LowPart;
+                    LOGI("Found the display adapter...: {}", my_adapter_uid);
+                    break;
+                }
+                ++outputIndex;
+            }
+            ++adapterIndex;
+        }
+
+        while (true) {
+            res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
+            if (res != S_OK) {
+                LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
+                return false;
+            }
+
+            DXGI_ADAPTER_DESC1 desc1;
+            adapter->GetDesc1(&desc1);
+
+            if (desc1.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
+                LOGI("Skip software adapter: {}", StringUtil::ToUTF8(desc1.Description).c_str());
+                ++adapter_index;
+                continue;
+            }
+
+            if (desc1.VendorId == 0x8086) {
+                LOGI("Skip Microsoft Basic Render Driver (software adapter)");
+                ++adapter_index;
+                continue;
+            }
+
+            auto adapter_uid = desc1.AdapterLuid.LowPart;
+
+            D3D_FEATURE_LEVEL featureLevel;
+            res = D3D11CreateDevice(adapter.Get(),
+                                    D3D_DRIVER_TYPE_UNKNOWN,
+                                    nullptr,
+                                    D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+                                    supportedFeatureLevels,
+                                    ARRAYSIZE(supportedFeatureLevels),
+                                    D3D11_SDK_VERSION,
+                                    &new_device_wrapper->d3d11_device_, &featureLevel, &new_device_wrapper->d3d11_device_context_);
+
+            if (res != S_OK || !new_device_wrapper->d3d11_device_) {
+                LOGE("D3D11CreateDevice failed: {}", res);
+                return false;
+            } else {
+                if (featureLevel < D3D_FEATURE_LEVEL_11_0) {
+                    LOGE("Skip, Feature level < 11 {}");
+                    ++adapter_index;
+                    continue;
+                }
+                if (adapter_uid != my_adapter_uid) {
+                    LOGE("Skip, I want the: {}, but now: {}", my_adapter_uid, adapter_uid);
+                    ++adapter_index;
+                    continue;
+                }
+                new_device_wrapper->adapter_uid_ = adapter_uid;
+                LOGI("** Adapter Index:{}, UID: {}, Name: {}", adapter_index,  adapter_uid, StringUtil::ToUTF8(desc1.Description).c_str());
+                LOGI("** D3D11CreateDevice mDevice = {}", (void *) new_device_wrapper->d3d11_device_.Get());
+                d3d11_devices_[adapter_uid] = new_device_wrapper;
+            }
+            ++adapter_index;
+        }
+
+        if (d3d11_devices_.empty()) {
+            LOGW("Can't create any D3D11Device/D3D11DeviceContext!");
+        }
+    }
+
+    std::shared_ptr<D3D11DeviceWrapper> BaseWorkspace::GetD3D11DeviceWrapper(uint64_t adapter_uid) {
+        if (d3d11_devices_.find(adapter_uid) == d3d11_devices_.end()) {
+            return nullptr;
+        }
+        return d3d11_devices_[adapter_uid];
     }
 }

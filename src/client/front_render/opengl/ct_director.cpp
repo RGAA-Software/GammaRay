@@ -1,4 +1,4 @@
-#include "client/ct_director.h"
+#include "ct_director.h"
 
 namespace tc
 {

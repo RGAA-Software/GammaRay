@@ -16,12 +16,18 @@
 #include "hook_capture/capture_message.h"
 #include "rd_context.h"
 #include <QApplication>
+
+#ifdef WIN32
 #include <d3d11.h>
 #include <wrl/client.h>
 
+using namespace Microsoft::WRL;
+
+#endif
+
 namespace tc
 {
-    using namespace Microsoft::WRL;
+
     using AppParams = std::unordered_map<std::string, std::string>;
 
     class Data;

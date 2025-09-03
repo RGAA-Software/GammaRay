@@ -4,14 +4,22 @@
 #pragma once
 
 #include <QWidget>
-#include <QMainWindow>
 #include <QLibrary>
+#include <QMainWindow>
 #include <map>
 #include <vector>
 #include <qlist.h>
 #include "thunder_sdk.h"
-#include "theme/QtAdvancedStylesheet.h"
 #include "client/ct_app_message.h"
+#include "theme/QtAdvancedStylesheet.h"
+
+#ifdef WIN32
+#include <d3d11.h>
+#include <wrl/client.h>
+
+using namespace Microsoft::WRL;
+
+#endif
 
 namespace tc
 {
@@ -37,6 +45,7 @@ namespace tc
     class ClientPluginManager;
     class MediaRecordPluginClientInterface;
     class RetryConnDialog;
+    class D3D11DeviceWrapper;
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -60,6 +69,7 @@ namespace tc
 
         std::shared_ptr<ThunderSdk> GetThunderSdk();
         std::shared_ptr<ClientContext> GetContext();
+        std::shared_ptr<D3D11DeviceWrapper> GetD3D11DeviceWrapper(uint64_t adapter_uid);
 
     protected:
         void InitPluginsManager();
@@ -112,6 +122,10 @@ namespace tc
         // messages defined in tc_message.proto
         void ProcessNetworkMessage(const std::shared_ptr<tc::Message>& msg);
 
+    private:
+        //uint64_t adapter_uid
+        bool GenerateD3DDevice();
+
     protected:
         Settings* settings_ = nullptr;
         std::shared_ptr<ThunderSdkParams> params_ = nullptr;
@@ -161,6 +175,10 @@ namespace tc
         // disconnected dialog
         std::shared_ptr<RetryConnDialog> retry_conn_dialog_ = nullptr;
         std::atomic_bool remote_force_closed_ = false;
+
+        // uint64_t adapter_uid <==> D3D11Device/D3D11DeviceContext
+         std::map<uint64_t, std::shared_ptr<D3D11DeviceWrapper>> d3d11_devices_;
+
     private:
         GameView* game_view_ = nullptr;
     };

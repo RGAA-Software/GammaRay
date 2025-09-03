@@ -13,7 +13,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
-#include "client/ct_director.h"
+#include "front_render/opengl/ct_director.h"
 #include "ct_sprite.h"
 #include "ct_settings.h"
 #include "tc_common_new/image.h"
@@ -23,7 +23,7 @@ namespace tc
 {
 
 	OpenGLVideoWidget::OpenGLVideoWidget(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx, RawImageFormat format, QWidget* parent)
-		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, sdk, dup_idx) {
+		: QOpenGLWidget(parent), VideoWidget(ctx, sdk, dup_idx) {
 
         TimeDuration dr("OpenGLVideoWidget");
         context_ = ctx;
@@ -121,9 +121,16 @@ namespace tc
         }
 	}
 
-	void OpenGLVideoWidget::RefreshRGBImage(const std::shared_ptr<RawImage>& image) {
-		assert(image->Size() == image->img_width * image->img_height * image->img_ch);
-		RefreshRGBBuffer(image->Data(), image->img_width, image->img_height, image->img_ch);
+	void OpenGLVideoWidget::RefreshImage(const std::shared_ptr<RawImage>& image) {
+		if (image->img_format == RawImageFormat::kRawImageRGB) {
+            RefreshRGBBuffer(image->Data(), image->img_width, image->img_height, image->img_ch);
+        }
+        else if (image->img_format == RawImageFormat::kRawImageI420) {
+            RefreshI420Image(image);
+        }
+        else if (image->img_format == RawImageFormat::kRawImageI444) {
+            RefreshI444Image(image);
+        }
 	}
 
 	void OpenGLVideoWidget::RefreshRGBBuffer(const char* buf, int width, int height, int channel) {
@@ -455,24 +462,8 @@ namespace tc
         //LOGI("xp : {}, yp : {}, size: {}x{}", xp, yp, cursor->img_width, cursor->img_height);
     }
 
-    void OpenGLVideoWidget::RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info) {
-        cap_mon_info_ = mon_info;
-    }
-
-    int OpenGLVideoWidget::GetCapturingMonitorWidth() {
-        return cap_mon_info_.frame_width_;
-    }
-
-    int OpenGLVideoWidget::GetCapturingMonitorHeight() {
-        return cap_mon_info_.frame_height_;
-    }
-
-    SdkCaptureMonitorInfo OpenGLVideoWidget::GetCaptureMonitorInfo() {
-        return cap_mon_info_;
-    }
-
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
-		VideoWidgetEvent::OnWidgetResize(width, height);
+		VideoWidget::OnWidgetResize(width, height);
 		glViewport(0, 0, width, height);
 
         director_->Init(width, height);
@@ -492,37 +483,37 @@ namespace tc
 
 	void OpenGLVideoWidget::mouseMoveEvent(QMouseEvent* e) {
 		QOpenGLWidget::mouseMoveEvent(e);
-		VideoWidgetEvent::OnMouseMoveEvent(e, QWidget::width(), QWidget::height());
+		VideoWidget::OnMouseMoveEvent(e, QWidget::width(), QWidget::height());
 	}
 
 	void OpenGLVideoWidget::mousePressEvent(QMouseEvent* e) {
 		QOpenGLWidget::mousePressEvent(e);
-		VideoWidgetEvent::OnMousePressEvent(e, QWidget::width(), QWidget::height());
+		VideoWidget::OnMousePressEvent(e, QWidget::width(), QWidget::height());
 	}
 
 	void OpenGLVideoWidget::mouseReleaseEvent(QMouseEvent* e) {
 		QOpenGLWidget::mouseReleaseEvent(e);
-		VideoWidgetEvent::OnMouseReleaseEvent(e, QWidget::width(), QWidget::height());
+		VideoWidget::OnMouseReleaseEvent(e, QWidget::width(), QWidget::height());
 	}
 
 	void OpenGLVideoWidget::mouseDoubleClickEvent(QMouseEvent* e) {
 		QOpenGLWidget::mouseDoubleClickEvent(e);
-        VideoWidgetEvent::OnMouseDoubleClickEvent(e);
+        VideoWidget::OnMouseDoubleClickEvent(e);
 	}
 
 	void OpenGLVideoWidget::wheelEvent(QWheelEvent* e) {
 		QOpenGLWidget::wheelEvent(e);
-		VideoWidgetEvent::OnWheelEvent(e, QWidget::width(), QWidget::height());
+		VideoWidget::OnWheelEvent(e, QWidget::width(), QWidget::height());
 	}
 
 	void OpenGLVideoWidget::keyPressEvent(QKeyEvent* e) {
 		QOpenGLWidget::keyPressEvent(e);
-		VideoWidgetEvent::OnKeyPressEvent(e);
+		VideoWidget::OnKeyPressEvent(e);
 	}
 
 	void OpenGLVideoWidget::keyReleaseEvent(QKeyEvent* e) {
 		QOpenGLWidget::keyReleaseEvent(e);
-		VideoWidgetEvent::OnKeyReleaseEvent(e);
+		VideoWidget::OnKeyReleaseEvent(e);
 	}
 
     void OpenGLVideoWidget::Exit() {
@@ -551,12 +542,8 @@ namespace tc
         doneCurrent();
     }
 
+    QWidget* OpenGLVideoWidget::AsWidget() {
+        return dynamic_cast<QWidget*>(this);
+    }
 
-	RawImageFormat OpenGLVideoWidget::GetDisplayImageFormat() {
-		return raw_image_format_;
-	}
-
-	void OpenGLVideoWidget::SetDisplayImageFormat(RawImageFormat format) {
-		raw_image_format_ = format;
-	}
 }

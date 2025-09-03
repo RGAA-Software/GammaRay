@@ -12,7 +12,6 @@
 #include <dwmapi.h>
 #include "client/ct_workspace.h"
 #include "thunder_sdk.h"
-#include "ct_opengl_video_widget.h"
 #include "client/ct_client_context.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
@@ -44,6 +43,7 @@
 #include "plugin_interface/ct_plugin_interface.h"
 #include "plugin_interface/ct_media_record_plugin_interface.h"
 #include "tc_qt_widget/notify/notifymanager.h"
+#include "front_render/opengl/ct_opengl_video_widget.h"
 
 namespace tc
 {

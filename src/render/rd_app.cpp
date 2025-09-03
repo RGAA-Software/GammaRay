@@ -3,7 +3,6 @@
 //
 
 #include "rd_app.h"
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "rd_context.h"
 #include "tc_common_new/log.h"
@@ -53,7 +52,7 @@
 #include "tc_service_message.pb.h"
 #include "app/monitor_refresher.h"
 #include "app/win/win_desktop_manager.h"
-#include "app/win/d3d11_wrapper.h"
+#include "tc_common_new/win32/d3d11_wrapper.h"
 #include "tc_message_new/proto_converter.h"
 #include "tc_message_new/rp_proto_converter.h"
 

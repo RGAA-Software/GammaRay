@@ -1,7 +1,5 @@
 ﻿#include "ct_opengl_image_reader.h"
-
 #include "tc_client_sdk_new/gl/raw_image.h"
-
 #include <QDebug>
 
 namespace tc

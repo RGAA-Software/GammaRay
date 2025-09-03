@@ -19,8 +19,8 @@
 namespace tc
 {
 
-	VideoWidgetEvent::VideoWidgetEvent(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx) {
-        TimeDuration dr("VideoWidgetEvent");
+	VideoWidget::VideoWidget(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx) {
+        TimeDuration dr("VideoWidget");
 		this->context_ = ctx;
         this->dup_idx_ = dup_idx;
         this->key_converter_ = std::make_shared<QtKeyConverter>();
@@ -30,14 +30,14 @@ namespace tc
         this->evt_cache_thread_->Poll();
 	}
 
-	VideoWidgetEvent::~VideoWidgetEvent() = default;
+	VideoWidget::~VideoWidget() = default;
 
-	void VideoWidgetEvent::OnWidgetResize(int w, int h) {
+	void VideoWidget::OnWidgetResize(int w, int h) {
 		this->width = w;
 		this->height = h;
 	}
 
-	void VideoWidgetEvent::OnMouseMoveEvent(QMouseEvent* event, int widget_width, int widget_height) {
+	void VideoWidget::OnMouseMoveEvent(QMouseEvent* event, int widget_width, int widget_height) {
         auto curr_pos = event->pos();
         MouseEventDesc mouse_event_desc;
         mouse_event_desc.buttons = 0;
@@ -55,7 +55,7 @@ namespace tc
         SendMouseEvent(mouse_event_desc);
 	}
 
-	void VideoWidgetEvent::OnMousePressEvent(QMouseEvent* event, int widget_width, int widget_height) {
+	void VideoWidget::OnMousePressEvent(QMouseEvent* event, int widget_width, int widget_height) {
         auto curr_pos = event->pos();
         MouseEventDesc mouse_event_desc;
         mouse_event_desc.buttons = 0;
@@ -81,7 +81,7 @@ namespace tc
         });
 	}
 
-	void VideoWidgetEvent::OnMouseReleaseEvent(QMouseEvent* event, int widget_width, int widget_height) {
+	void VideoWidget::OnMouseReleaseEvent(QMouseEvent* event, int widget_width, int widget_height) {
         auto curr_pos = event->pos();
         MouseEventDesc mouse_event_desc;
         auto released_button = 0;
@@ -101,10 +101,10 @@ namespace tc
         SendMouseEvent(mouse_event_desc);
 	}
 
-	void VideoWidgetEvent::OnMouseDoubleClickEvent(QMouseEvent*) {
+	void VideoWidget::OnMouseDoubleClickEvent(QMouseEvent*) {
 	}
 
-	void VideoWidgetEvent::OnWheelEvent(QWheelEvent* event, int widget_width, int widget_height) {
+	void VideoWidget::OnWheelEvent(QWheelEvent* event, int widget_width, int widget_height) {
         MouseEventDesc mouse_event_desc;
         mouse_event_desc.buttons = 0;
         mouse_event_desc.x_ratio = ((float)last_cursor_x_) / ((float)(widget_width));
@@ -123,29 +123,29 @@ namespace tc
         }
 	}
 
-	void VideoWidgetEvent::OnKeyPressEvent(QKeyEvent* e) {
+	void VideoWidget::OnKeyPressEvent(QKeyEvent* e) {
 #ifdef WIN32
         SendKeyEvent(e->nativeVirtualKey(), true);
 #endif
 	}
 
-	void VideoWidgetEvent::OnKeyReleaseEvent(QKeyEvent* e) {
+	void VideoWidget::OnKeyReleaseEvent(QKeyEvent* e) {
 #ifdef WIN32
         SendKeyEvent(e->nativeVirtualKey(), false);
 #endif
 	}
 
-    void VideoWidgetEvent::RegisterMouseKeyboardEventCallback(const OnMouseKeyboardEventCallback& cbk) {
+    void VideoWidget::RegisterMouseKeyboardEventCallback(const OnMouseKeyboardEventCallback& cbk) {
         event_cbk_ = cbk;
     }
 
-    void VideoWidgetEvent::SendCallback(const std::shared_ptr<NetMessage>& msg) {
+    void VideoWidget::SendCallback(const std::shared_ptr<NetMessage>& msg) {
         if (event_cbk_) {
             event_cbk_(dup_idx_, msg);
         }
     }
 
-    void VideoWidgetEvent::SendKeyEvent(quint32 vk, bool down) {
+    void VideoWidget::SendKeyEvent(quint32 vk, bool down) {
         if (settings_->only_viewing_) {
             return;
         }
@@ -189,7 +189,7 @@ namespace tc
         }
     }
 
-    void VideoWidgetEvent::SendMouseEvent(const MouseEventDesc& mouse_event_desc) {
+    void VideoWidget::SendMouseEvent(const MouseEventDesc& mouse_event_desc) {
         if (!sdk_ || settings_->only_viewing_) {
             return;
         }
@@ -224,4 +224,41 @@ namespace tc
             }
         });
     }
+
+    void VideoWidget::RefreshImage(const std::shared_ptr<RawImage> &image) {
+
+    }
+
+    RawImageFormat VideoWidget::GetDisplayImageFormat() {
+        return raw_image_format_;
+    }
+
+    void VideoWidget::SetDisplayImageFormat(RawImageFormat format) {
+        raw_image_format_ = format;
+    }
+
+    void VideoWidget::RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info) {
+        cap_mon_info_ = mon_info;
+    }
+
+    int VideoWidget::GetCapturingMonitorWidth() {
+        return cap_mon_info_.frame_width_;
+    }
+
+    int VideoWidget::GetCapturingMonitorHeight() {
+        return cap_mon_info_.frame_height_;
+    }
+
+    SdkCaptureMonitorInfo VideoWidget::GetCaptureMonitorInfo() {
+        return cap_mon_info_;
+    }
+
+    void VideoWidget::OnTimer1S() {
+
+    }
+
+    QWidget* VideoWidget::AsWidget() {
+        return nullptr;
+    }
+
 }

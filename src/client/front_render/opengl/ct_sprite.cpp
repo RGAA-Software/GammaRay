@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "client/ct_director.h"
+#include "ct_director.h"
 #include "tc_client_sdk_new/gl/raw_image.h"
 #include "ct_shader_program.h"
 #include "ct_video_widget_shaders.h"

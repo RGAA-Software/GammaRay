@@ -14,9 +14,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <QVBoxLayout>
 
-#include "tc_client_sdk_new/gl/raw_image.h"
 #include "tc_message.pb.h"
-#include "ct_video_widget_event.h"
+#include "tc_client_sdk_new/gl/raw_image.h"
+#include "client/front_render/ct_video_widget_event.h"
 
 namespace tc
 {
@@ -30,27 +30,16 @@ namespace tc
     class ThunderSdk;
     class Settings;
 
-    class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core, public VideoWidgetEvent {
+    class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core, public VideoWidget {
     public:
 
         explicit OpenGLVideoWidget(const std::shared_ptr<ClientContext> &ctx, const std::shared_ptr<ThunderSdk> &sdk,
                                    int dup_idx, RawImageFormat format, QWidget *parent = nullptr);
         ~OpenGLVideoWidget() override;
-        void RefreshRGBImage(const std::shared_ptr<RawImage> &image);
-        void RefreshRGBBuffer(const char *buf, int width, int height, int channel);
-        void RefreshI420Image(const std::shared_ptr<RawImage> &image);
-        void RefreshI420Buffer(const char *y, int y_size, const char *u, int u_size, const char *v, int v_size, int width, int height);
-        void RefreshI444Image(const std::shared_ptr<RawImage>& image);
-        void RefreshI444Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
+        QWidget * AsWidget() override;
+        void RefreshImage(const std::shared_ptr<RawImage> &image) override;
         void RefreshCursor(int x, int y, int tex_left, int text_right, int hpx, int hpy, const std::shared_ptr<RawImage> &cursor);
-        void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo &mon_info);
         void Exit();
-
-        int GetCapturingMonitorWidth();
-        int GetCapturingMonitorHeight();
-        RawImageFormat GetDisplayImageFormat();
-        void SetDisplayImageFormat(RawImageFormat format);
-        SdkCaptureMonitorInfo GetCaptureMonitorInfo();
 
     protected:
         void resizeEvent(QResizeEvent *event) override;
@@ -70,6 +59,12 @@ namespace tc
         void InitI420Texture();
         void InitI444Texture();
         void Update();
+
+        void RefreshRGBBuffer(const char *buf, int width, int height, int channel);
+        void RefreshI420Image(const std::shared_ptr<RawImage> &image);
+        void RefreshI420Buffer(const char *y, int y_size, const char *u, int u_size, const char *v, int v_size, int width, int height);
+        void RefreshI444Image(const std::shared_ptr<RawImage>& image);
+        void RefreshI444Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
 
     private:
         Settings* settings_ = nullptr;
@@ -98,7 +93,6 @@ namespace tc
         GLuint v_texture_id_ = 0;
 
         std::mutex buf_mtx_;
-        RawImageFormat raw_image_format_;
 
         std::shared_ptr<Director> director_ = nullptr;
         std::shared_ptr<Sprite> cursor_ = nullptr;
