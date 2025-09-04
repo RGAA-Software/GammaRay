@@ -207,7 +207,12 @@ namespace tc
             event->key_frame_ = key_frame;
             event->frame_index_ = frame_index;
             event->extra_ = extra;
-            event->frame_format_ = encoder_config_.enable_full_color_mode_ ? RawImageType::kI444 : RawImageType::kI420;
+            if (AV_PIX_FMT_YUV420P == codec_ctx_->pix_fmt) {
+                event->frame_format_ = RawImageType::kI420;
+            }
+            else if (AV_PIX_FMT_YUV444P == codec_ctx_->pix_fmt) {
+                event->frame_format_ = RawImageType::kI444;
+            }
             plugin_->CallbackEvent(event);
 
             auto end = TimeUtil::GetCurrentTimestamp();
