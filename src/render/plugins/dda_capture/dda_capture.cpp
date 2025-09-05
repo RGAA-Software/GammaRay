@@ -36,19 +36,18 @@ namespace tc
         HRESULT res = 0;
         int adapter_index = 0;
 
-        CComPtr<IDXGIFactory1> factory1 = nullptr;
-
-        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **) &factory1);
+        ComPtr<IDXGIFactory1> factory1 = nullptr;
+        res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **)factory1.GetAddressOf());
         if (res != S_OK) {
             LOGE("CreateDXGIFactory1 failed");
             return false;
         }
         do {
-            CComPtr<IDXGIAdapter1> adapter1 = nullptr;
-            CComPtr<ID3D11Device> d3d11_device = nullptr;
-            CComPtr<ID3D11DeviceContext> d3d11_device_context = nullptr;
+            ComPtr<IDXGIAdapter1> adapter1 = nullptr;
+            ComPtr<ID3D11Device> d3d11_device = nullptr;
+            ComPtr<ID3D11DeviceContext> d3d11_device_context = nullptr;
 
-            res = factory1->EnumAdapters1(adapter_index, &adapter1);
+            res = factory1->EnumAdapters1(adapter_index, adapter1.GetAddressOf());
             if (res != S_OK) {
                 LOGE("EnumAdapters1 failed, index: {}", adapter_index);
                 break;
@@ -58,8 +57,8 @@ namespace tc
             adapter1->GetDesc(&adapter_desc);
             LOGI("Adapter Index:{} Name:{}", adapter_index, StringUtil::ToUTF8(adapter_desc.Description).c_str());
             auto adapter_uid = adapter_desc.AdapterLuid.LowPart;
-            res = D3D11CreateDevice(adapter1, D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-                                    nullptr, 0, D3D11_SDK_VERSION, &d3d11_device, &feature_level, &d3d11_device_context);
+            res = D3D11CreateDevice(adapter1.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+                                    nullptr, 0, D3D11_SDK_VERSION, d3d11_device.GetAddressOf(), &feature_level, d3d11_device_context.GetAddressOf());
             if (res != S_OK || !d3d11_device) {
                 LOGE("D3D11CreateDevice failed: {}", StringUtil::GetErrorStr(res).c_str());
                 break;
@@ -68,8 +67,8 @@ namespace tc
                 LOGE("D3D11CreateDevice returns an instance without DirectX 11 support, level : {}  Following initialization may fail",(int) feature_level);
                 break;
             }
-            CComPtr<IDXGIDevice> dxgi_device;
-            res = d3d11_device.QueryInterface(&dxgi_device);
+            ComPtr<IDXGIDevice> dxgi_device;
+            res = d3d11_device->QueryInterface(dxgi_device.GetAddressOf());
             if (res != S_OK || !dxgi_device) {
                 LOGE("ID3D11Device is not an implementation of IDXGIDevice, this usually means the system does not support DirectX 11. Error:{}, code: {}",
                      StringUtil::GetErrorStr(res), res);
@@ -79,8 +78,8 @@ namespace tc
             int monitor_index = -1;
             do {
                 ++monitor_index;
-                CComPtr<IDXGIOutput> output;
-                res = adapter1->EnumOutputs(monitor_index, &output);
+                ComPtr<IDXGIOutput> output;
+                res = adapter1->EnumOutputs(monitor_index, output.GetAddressOf());
                 if (res == DXGI_ERROR_NOT_FOUND) {
                     LOGE("adapter1->EnumOutputs return DXGI_ERROR_NOT_FOUND,Please Check RDP connect.");
                     break;
@@ -114,8 +113,8 @@ namespace tc
                     bool is_valid_rect = func_valid_rect(output_desc.DesktopCoordinates);
                     LOGI("AttachedToDesktop: {}, is valid rect: {}", output_desc.AttachedToDesktop, is_valid_rect);
                     if (output_desc.AttachedToDesktop && is_valid_rect) {
-                        CComPtr<IDXGIOutput1> output1;
-                        res = output.QueryInterface(&output1);
+                        ComPtr<IDXGIOutput1> output1;
+                        res = output->QueryInterface(output1.GetAddressOf());
                         if (res != S_OK || !output1) {
                             LOGE("Failed to convert IDXGIOutput to IDXGIOutput1, this usually means the system does not support DirectX 11");
                             continue;
@@ -124,7 +123,7 @@ namespace tc
                         bool init_dda_success = false;
                         static const int max_retry_count = 5;
                         for (int j = 0; j < max_retry_count; ++j) {
-                            HRESULT error = output1->DuplicateOutput(d3d11_device, &dxgi_output_duplication_.duplication_);
+                            HRESULT error = output1->DuplicateOutput(d3d11_device.Get(), dxgi_output_duplication_.duplication_.GetAddressOf());
                             // to see : https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgioutput1-duplicateoutput
                             if (error != S_OK || !dxgi_output_duplication_.duplication_) {
                                 if (error == E_UNEXPECTED) {
@@ -189,10 +188,12 @@ namespace tc
                 last_list_texture_ = nullptr;
             }
             if (d3d11_device_) {
-                d3d11_device_.Release();
+                //d3d11_device_.Release();
+                d3d11_device_.Reset();
             }
             if (d3d11_device_context_) {
-                d3d11_device_context_.Release();
+                //d3d11_device_context_.Release();
+                d3d11_device_context_.Reset();
             }
             return false;
         }
@@ -214,22 +215,25 @@ namespace tc
 
     bool DDACapture::Exit() {
         if (cached_texture_) {
-            cached_texture_.Release();
+            //cached_texture_.Release();
+            cached_texture_.Reset();
         }
         if (last_list_texture_) {
             last_list_texture_->Exit();
             last_list_texture_ = nullptr;
         }
         dxgi_output_duplication_.Exit();
-        d3d11_device_.Release();
-        d3d11_device_context_.Release();
+        // d3d11_device_.Release();
+        d3d11_device_.Reset();
+        // d3d11_device_context_.Release();
+        d3d11_device_context_.Reset();
         return true;
     }
 
-    HRESULT DDACapture::CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex) {
+    HRESULT DDACapture::CaptureNextFrame(int wait_time, ComPtr<ID3D11Texture2D>& out_tex) {
         DXGI_OUTDUPL_FRAME_INFO info;
-        CComPtr<IDXGIResource> resource;
-        CComPtr<ID3D11Texture2D> source;
+        ComPtr<IDXGIResource> resource;
+        ComPtr<ID3D11Texture2D> source;
         HRESULT res;
         if (!dxgi_output_duplication_.duplication_) {
             if (!Init()) {
@@ -242,11 +246,11 @@ namespace tc
         }
         dxgi_output_duplication_.duplication_->ReleaseFrame();
 
-        res = dxgi_output_duplication_.duplication_->AcquireNextFrame(wait_time, &info, &resource);
+        res = dxgi_output_duplication_.duplication_->AcquireNextFrame(wait_time, &info, resource.GetAddressOf());
         if (res != S_OK) {
             return res;
         }
-        res = resource->QueryInterface(__uuidof(ID3D11Texture2D), (void **) &source);
+        res = resource->QueryInterface(__uuidof(ID3D11Texture2D), (void **) source.GetAddressOf());
         if (res != S_OK) {
             LOGE("QueryInterface failed when capturing: {}", StringUtil::GetErrorStr(res));
             return res;
@@ -312,7 +316,7 @@ namespace tc
 
             auto target_duration = 1000 / capture_fps_;
             //LOGI("target_duration: {}, capture_fps_: {}", target_duration, capture_fps_);
-            CComPtr<ID3D11Texture2D> texture = nullptr;
+            ComPtr<ID3D11Texture2D> texture = nullptr;
             // do capture
             auto res = CaptureNextFrame(target_duration, texture);
 
@@ -337,7 +341,7 @@ namespace tc
                 LOGE("CaptureNextFrame, monitor: {}, err: {:x}, duplicate retry? : {}", my_monitor_info_.name_, (uint32_t)res, dxgi_output_duplication_.has_retry_);
                 if (res == DXGI_ERROR_ACCESS_LOST && dxgi_output_duplication_.output1_ && !dxgi_output_duplication_.has_retry_) {
                     dxgi_output_duplication_.has_retry_ = true;
-                    HRESULT error = dxgi_output_duplication_.output1_->DuplicateOutput(d3d11_device_, &dxgi_output_duplication_.duplication_);
+                    HRESULT error = dxgi_output_duplication_.output1_->DuplicateOutput(d3d11_device_.Get(), dxgi_output_duplication_.duplication_.GetAddressOf());
                     if (error == S_OK) {
                         LOGW("Re-DuplicateOutput success, will continue to try capturing.");
                         continue;
@@ -395,7 +399,7 @@ namespace tc
         }
     }
 
-    void DDACapture::OnCaptureFrame(const CComPtr<ID3D11Texture2D>& texture, bool is_cached) {
+    void DDACapture::OnCaptureFrame(const ComPtr<ID3D11Texture2D>& texture, bool is_cached) {
         HRESULT result;
         // input texture info
         D3D11_TEXTURE2D_DESC input_desc;
@@ -427,7 +431,8 @@ namespace tc
             LOGI("texture changed, origin: {}x{}, format: {}", shared_width, shared_height, (int)shared_format);
             LOGI("texture changed, current: {}x{}, format: {}", input_width, input_height, (int)input_format);
             if (shared_texture) {
-                shared_texture.Release();
+                //shared_texture.Release();
+                shared_texture.Reset();
                 last_list_texture_->texture2d_ = nullptr;
             }
             D3D11_TEXTURE2D_DESC create_desc;
@@ -443,14 +448,14 @@ namespace tc
             //create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
             create_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
 
-            result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &last_list_texture_->texture2d_);
+            result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, last_list_texture_->texture2d_.GetAddressOf());
             if (FAILED(result)) {
                 LOGE("desktop capture create texture failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
             }
 
-            CComPtr<IDXGIResource> dxgiResource;
-            result = last_list_texture_->texture2d_->QueryInterface(__uuidof(IDXGIResource), (void**)&dxgiResource);
+            ComPtr<IDXGIResource> dxgiResource;
+            result = last_list_texture_->texture2d_->QueryInterface(__uuidof(IDXGIResource), (void**)dxgiResource.GetAddressOf());
             //result = last_list_texture_->texture2d_.As<IDXGIResource>(&dxgiResource);
             if (FAILED(result)) {
                 LOGE("desktop capture as IDXGIResource failed with:{}", StringUtil::GetErrorStr(result).c_str());
@@ -466,11 +471,12 @@ namespace tc
 
             // cached textures
             if (cached_texture_ != nullptr) {
-                cached_texture_.Release();
-                cached_texture_ = nullptr;
+                //cached_texture_.Release();
+                //cached_texture_ = nullptr;
+                cached_texture_.Reset();
             }
-            CComPtr<ID3D11Texture2D> cached_texture;
-            result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, &cached_texture);
+            ComPtr<ID3D11Texture2D> cached_texture;
+            result = d3d11_device_->CreateTexture2D(&create_desc, nullptr, cached_texture.GetAddressOf());
             if (FAILED(result)) {
                 LOGE("create cached texture failed with:{}", StringUtil::GetErrorStr(result).c_str());
                 return;
@@ -491,9 +497,9 @@ namespace tc
         //    return;
         //}
 
-        d3d11_device_context_->CopyResource(last_list_texture_->texture2d_, texture);
+        d3d11_device_context_->CopyResource(last_list_texture_->texture2d_.Get(), texture.Get());
         if (!is_cached) {
-            d3d11_device_context_->CopyResource(cached_texture_, texture);
+            d3d11_device_context_->CopyResource(cached_texture_.Get(), texture.Get());
         }
 
         //if (SUCCEEDED(result) && keyMutex) {

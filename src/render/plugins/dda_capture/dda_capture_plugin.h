@@ -11,7 +11,6 @@ namespace tc
 {
 
     class Thread;
-    /*class DesktopCapture;*/
     class CursorCapture;
     class PluginDesktopCapture;
 

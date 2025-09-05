@@ -14,6 +14,7 @@
 #include <functional>
 #include "tc_common_new/monitors.h"
 #include "tc_common_new/fps_stat.h"
+#include "tc_common_new/win32/d3d11_wrapper.h"
 #include "plugins/plugin_desktop_capture.h"
 
 using namespace Microsoft::WRL;
@@ -27,8 +28,8 @@ namespace tc
 
         class DXGIOutputDuplication {
         public:
-            CComPtr<IDXGIOutput1> output1_ = nullptr;
-            CComPtr<IDXGIOutputDuplication> duplication_ = nullptr;
+            ComPtr<IDXGIOutput1> output1_ = nullptr;
+            ComPtr<IDXGIOutputDuplication> duplication_ = nullptr;
             DXGI_OUTPUT_DESC output_desc_{};
             CaptureMonitorInfo monitor_win_info_{};
             bool has_retry_ = false;
@@ -40,13 +41,15 @@ namespace tc
             void Exit() {
                 has_retry_ = false;
                 if (output1_) {
-                    output1_.Release();
-                    output1_ = nullptr;
+                    // output1_.Release();
+                    // output1_ = nullptr;
+                    output1_.Reset();
                 }
                 if (duplication_) {
                     duplication_->ReleaseFrame();
-                    duplication_.Release();
-                    duplication_ = nullptr;
+                    duplication_.Reset();
+                    //duplication_.Release();
+                    //duplication_ = nullptr;
                 }
                 memset(&output_desc_, 0, sizeof(DXGI_OUTPUT_DESC));
                 monitor_win_info_ = CaptureMonitorInfo{};
@@ -57,15 +60,16 @@ namespace tc
         public:
             void Exit() {
                 if (texture2d_) {
-                    texture2d_.Release();
-                    texture2d_ = nullptr;
+                    //texture2d_.Release();
+                    //texture2d_ = nullptr;
+                    texture2d_.Reset();
                 }
                 shared_handle_ = nullptr;
             }
 
         public:
             HANDLE shared_handle_ = nullptr;
-            CComPtr<ID3D11Texture2D> texture2d_ = nullptr;
+            ComPtr<ID3D11Texture2D> texture2d_ = nullptr;
         };
 
         explicit DDACapture(DDACapturePlugin* plugin, const CaptureMonitorInfo& my_monitor_info);
@@ -87,14 +91,16 @@ namespace tc
             dda_init_callback_ = std::move(cbk);
         }
         int32_t GetContinuousTimeoutTimes();
+
     private:
         void Start();
         bool Exit();
         void Capture();
-        HRESULT CaptureNextFrame(int wait_time, CComPtr<ID3D11Texture2D>& out_tex);
-        void OnCaptureFrame(const CComPtr<ID3D11Texture2D>& texture, bool is_cached);
+        HRESULT CaptureNextFrame(int wait_time, ComPtr<ID3D11Texture2D>& out_tex);
+        void OnCaptureFrame(const ComPtr<ID3D11Texture2D>& texture, bool is_cached);
         void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
         int64_t GetFrameIndex();
+
     private:
         DDACapturePlugin* plugin_ = nullptr;
 
@@ -107,10 +113,10 @@ namespace tc
 
         std::shared_ptr<SharedD3d11Texture2D> last_list_texture_ = nullptr;
         DXGIOutputDuplication dxgi_output_duplication_;
-        CComPtr<ID3D11Texture2D> cached_texture_ = nullptr;
+        ComPtr<ID3D11Texture2D> cached_texture_ = nullptr;
 
-        CComPtr<ID3D11Device> d3d11_device_ = nullptr;
-        CComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
+        ComPtr<ID3D11Device> d3d11_device_ = nullptr;
+        ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
 
         std::atomic<int32_t> continuous_timeout_times_ = 0;
     };
