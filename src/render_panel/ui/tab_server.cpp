@@ -245,7 +245,6 @@ namespace tc
                 auto avatar = new RoundImageDisplay(img_path, size, size, 4);
                 avatar->setParent(qr_info);
                 avatar->setGeometry((qr_info->width()-size)/2+1, (qr_info->height()-size)/2+1, size, size);
-
             }
 
             // Connect Information
