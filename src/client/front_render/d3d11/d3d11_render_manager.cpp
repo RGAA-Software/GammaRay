@@ -35,14 +35,14 @@ namespace tc
         m_NeedsResize = true;
     }
 
-    DUPL_RETURN D3D11RenderManager::InitOutput(HWND window, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context) {
+    DUPL_RETURN D3D11RenderManager::InitOutput(HWND window, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> device_context) {
         HRESULT hr;
 
         // Store window handle
         m_WindowHandle = window;
 
         m_Device = device;
-        m_DeviceContext = context;
+        m_DeviceContext = device_context;
 
         // Get DXGI factory
         ComPtr<IDXGIDevice> DxgiDevice = nullptr;
@@ -194,7 +194,7 @@ namespace tc
 
         // Get DXGI resources
         ComPtr<IDXGIDevice> DxgiDevice = nullptr;
-        hr = m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void **>(DxgiDevice.Get()));
+        hr = m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void **>(DxgiDevice.GetAddressOf()));
         if (FAILED(hr)) {
             return ProcessFailure(nullptr, L"Failed to QI for DXGI Device", L"Error", hr);
         }

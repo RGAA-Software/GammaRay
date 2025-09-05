@@ -19,12 +19,13 @@ namespace tc
     SubFpsPanel::SubFpsPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
-        setFixedSize(200, 240);
-        auto item_height = 38;
+        int offset = 5;
+        setFixedSize(210, 250);
+        auto item_height = 35;
         auto border_spacing = 10;
-        auto item_size = QSize(this->width(), item_height);
+        auto item_size = QSize(this->width() - 2*offset, item_height);
         auto root_layout = new NoMarginVLayout();
-
+        root_layout->setContentsMargins(offset, offset, offset, offset);
         settings_ = Settings::Instance();
 
         fps_info_[EFps::k15Fps] = 15;
@@ -35,7 +36,7 @@ namespace tc
         fps_info_[EFps::k144Fps] = 144;
 
         listview_ = new SingleSelectedList(this);
-        listview_->setFixedSize(this->size());
+        listview_->setFixedSize(QSize(this->width() - 2*offset, this->height() - 2*offset));
         listview_->UpdateItems({
             std::make_shared<SingleItem>(SingleItem {
                    .name_ = "15",
@@ -86,10 +87,14 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
-        painter.setPen(Qt::NoPen);
+        QPen pen(0xaaaaaa);
+        pen.setWidth(2);
+        pen.setStyle(Qt::PenStyle::DotLine);
+        painter.setPen(pen);
+
         painter.setBrush(QColor(0xffffff));
         int offset = 0;
-        int radius = 5;
+        int radius = 2;
         painter.drawRoundedRect(offset, offset, this->width()-offset*2, this->height()-offset*2, radius, radius);
         BaseWidget::paintEvent(event);
     }

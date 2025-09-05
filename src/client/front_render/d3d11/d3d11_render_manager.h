@@ -14,7 +14,7 @@ namespace tc
         D3D11RenderManager();
         ~D3D11RenderManager();
 
-        DUPL_RETURN InitOutput(HWND window, int frame_width, int frame_height, ComPtr<ID3D11Device> device,  ComPtr<ID3D11DeviceContext> context);
+        DUPL_RETURN InitOutput(HWND window, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
         DUPL_RETURN UpdateApplicationWindow(_Inout_ bool *Occluded);
 
         void CleanRefs();

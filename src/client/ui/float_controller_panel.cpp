@@ -28,12 +28,14 @@ namespace tc
 
     FloatControllerPanel::FloatControllerPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
-        this->setFixedSize(kInitialWidth, 285);
+        this->setFixedSize(kInitialWidth, 292);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
         int border_spacing = 5;
         QSize btn_size = QSize(30, 30);
+        int offset = 5;
+        root_layout->setContentsMargins(offset, offset, offset, offset);
         root_layout->addSpacing(border_spacing);
         {
             auto layout = new QHBoxLayout();
@@ -238,7 +240,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
-            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
             widget->setLayout(layout);
 
             auto icon = new QLabel(this);
@@ -286,7 +288,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
-            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
             widget->setLayout(layout);
 
             auto icon = new QLabel(this);
@@ -335,7 +337,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
-            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
             widget->setLayout(layout);
 
             auto icon = new QLabel(this);
@@ -371,7 +373,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
-            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
             widget->setLayout(layout);
 
             auto icon = new QLabel(this);
@@ -421,7 +423,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
-            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
             widget->setLayout(layout);
 
             auto icon = new QLabel(this);
@@ -451,7 +453,7 @@ namespace tc
         {
             auto layout = new NoMarginHLayout();
             auto widget = new BackgroundWidget(ctx, this);
-            widget->setFixedSize(this->width(), icon_size.height());
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
             widget->setLayout(layout);
 
             auto icon = new QLabel(this);
@@ -522,10 +524,15 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
-        painter.setPen(Qt::NoPen);
+        QPen pen(0xaaaaaa);
+        pen.setWidth(2);
+        pen.setStyle(Qt::PenStyle::DotLine);
+        painter.setPen(pen);
+
         painter.setBrush(QColor(0xffffff));
         int offset = 0;
-        int radius = 5;
+        int radius = 2;
+        //painter.drawRoundedRect(offset, offset, this->width()-offset*2, this->height()-offset*2, radius, radius);
         painter.drawRoundedRect(offset, offset, this->width()-offset*2, this->height()-offset*2, radius, radius);
         BaseWidget::paintEvent(event);
     }
