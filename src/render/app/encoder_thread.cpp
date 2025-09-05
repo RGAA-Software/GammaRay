@@ -226,26 +226,26 @@ namespace tc
                 
                 // to do: GDI 采集的时候 显示器的名字是自定义的，需要测试下
                 if (!target_encoder_plugin) {
-                    auto nvenc_encoder = plugin_manager_->GetNvencEncoderPlugin();
-                    if (!is_mocking && nvenc_encoder && nvenc_encoder->IsPluginEnabled() && nvenc_encoder->Init(encoder_config, monitor_name)) {
-                        select_encoder_with_capability_func(nvenc_encoder, monitor_name);
+                    auto nvenc_encoder_plugin = plugin_manager_->GetNvencEncoderPlugin();
+                    if (!is_mocking && nvenc_encoder_plugin && nvenc_encoder_plugin->IsPluginEnabled() && nvenc_encoder_plugin->Init(encoder_config, monitor_name)) {
+                        select_encoder_with_capability_func(nvenc_encoder_plugin, monitor_name);
                     }
 
                     if (!target_encoder_plugin) {
                         LOGW("Init NVENC failed, will try AMF.");
-                        auto amf_encoder = plugin_manager_->GetAmfEncoderPlugin();
-                        if (!is_mocking && amf_encoder && amf_encoder->IsPluginEnabled() && amf_encoder->Init(encoder_config, monitor_name)) {
-                            select_encoder_with_capability_func(amf_encoder, monitor_name);
+                        auto amf_encoder_plugin = plugin_manager_->GetAmfEncoderPlugin();
+                        if (!is_mocking && amf_encoder_plugin && amf_encoder_plugin->IsPluginEnabled() && amf_encoder_plugin->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(amf_encoder_plugin, monitor_name);
                         }
                     }
 
-                    auto ffmpeg_encoder = plugin_manager_->GetFFmpegEncoderPlugin();
+                    auto ffmpeg_encoder_plugin = plugin_manager_->GetFFmpegEncoderPlugin();
                     if (!target_encoder_plugin) {
                         LOGW("Init AMF failed, will try FFmpeg(kNvEnc).");
                         // 让ffmpeg尝试硬编码初始化 
                         encoder_config.Hardware = EHardwareEncoder::kNvEnc;
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                            select_encoder_with_capability_func(ffmpeg_encoder, monitor_name);
+                        if (ffmpeg_encoder_plugin && ffmpeg_encoder_plugin->IsPluginEnabled() && ffmpeg_encoder_plugin->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(ffmpeg_encoder_plugin, monitor_name);
                         }
                     }
 
@@ -253,8 +253,8 @@ namespace tc
                         LOGW("Init FFmpeg(kNvEnc) failed, will try FFmpeg(kAmf).");
                         // 让ffmpeg尝试硬编码初始化 
                         encoder_config.Hardware = EHardwareEncoder::kAmf;
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                            select_encoder_with_capability_func(ffmpeg_encoder, monitor_name);
+                        if (ffmpeg_encoder_plugin && ffmpeg_encoder_plugin->IsPluginEnabled() && ffmpeg_encoder_plugin->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(ffmpeg_encoder_plugin, monitor_name);
                         }
                     }
 
@@ -262,8 +262,8 @@ namespace tc
                         LOGW("Init FFmpeg(kAmf) failed, will try FFmpeg(kNone).");
                         //让ffmpeg尝试软件编码初始化
                         encoder_config.Hardware = EHardwareEncoder::kNone;
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                            select_encoder_with_capability_func(ffmpeg_encoder, monitor_name);
+                        if (ffmpeg_encoder_plugin && ffmpeg_encoder_plugin->IsPluginEnabled() && ffmpeg_encoder_plugin->Init(encoder_config, monitor_name)) {
+                            select_encoder_with_capability_func(ffmpeg_encoder_plugin, monitor_name);
                         }
                     }
 
@@ -271,8 +271,8 @@ namespace tc
                         LOGW("Init FFmpeg(kAmf) failed, will try FFmpeg(kNone). without capability!");
                         //让ffmpeg尝试软件编码初始化
                         encoder_config.Hardware = EHardwareEncoder::kNone;
-                        if (ffmpeg_encoder && ffmpeg_encoder->IsPluginEnabled() && ffmpeg_encoder->Init(encoder_config, monitor_name)) {
-                            target_encoder_plugin = ffmpeg_encoder;
+                        if (ffmpeg_encoder_plugin && ffmpeg_encoder_plugin->IsPluginEnabled() && ffmpeg_encoder_plugin->Init(encoder_config, monitor_name)) {
+                            target_encoder_plugin = ffmpeg_encoder_plugin;
                         }
                     }
 

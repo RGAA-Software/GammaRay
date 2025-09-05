@@ -273,4 +273,8 @@ namespace tc
     std::string FFmpegEncoder::GetDisplayEncoderName() {
         return display_encoder_name_;
     }
+
+    EncoderConfig FFmpegEncoder::GetEncoderConfig() {
+        return encoder_config_;
+    }
 }
