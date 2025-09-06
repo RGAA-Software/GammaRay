@@ -23,6 +23,7 @@ namespace tc
     class SvgLable;
     class Settings;
     class Thread;
+    class MediaRecordSignLab;
 
     class GameView : public QWidget {
     public:
@@ -90,9 +91,8 @@ namespace tc
         FloatController* float_controller_ = nullptr;
         FloatControllerPanel* controller_panel_ = nullptr;
 
-        //QLabel* recording_sign_lab_ = nullptr;
 
-        SvgLable* recording_sign_lab_ = nullptr;
+        MediaRecordSignLab* recording_sign_lab_ = nullptr;
 
         bool need_recalculate_aspect_ = true;
 
