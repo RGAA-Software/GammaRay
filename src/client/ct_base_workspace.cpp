@@ -934,18 +934,18 @@ namespace tc
 
     void BaseWorkspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(def_window_size_);
-        game_view_ = new GameView(context_, sdk_, params, this);
-        game_view_->resize(def_window_size_);
-        game_view_->show();
-        game_view_->SetMainView(true);
-        setCentralWidget(game_view_);
-
-        QTimer::singleShot(1, this, [=, this]() {
-            QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
-            int x = (screenGeometry.width() - this->width()) / 2;
-            int y = (screenGeometry.height() - this->height()) / 2;
-            this->move(x, y);
-        });
+//        game_view_ = new GameView(context_, sdk_, params, this);
+//        game_view_->resize(def_window_size_);
+//        game_view_->show();
+//        game_view_->SetMainView(true);
+//        setCentralWidget(game_view_);
+//
+//        QTimer::singleShot(1, this, [=, this]() {
+//            QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
+//            int x = (screenGeometry.width() - this->width()) / 2;
+//            int y = (screenGeometry.height() - this->height()) / 2;
+//            this->move(x, y);
+//        });
     }
 
     bool BaseWorkspace::eventFilter(QObject* watched, QEvent* event) {

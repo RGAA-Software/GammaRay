@@ -268,6 +268,7 @@ namespace tc
             panel = (BaseWidget*)(new ThirdResolutionPanel(context_, (QWidget*)this->parent()));
             sub_panels_[SubDisplayType::kResolution] = panel;
             WidgetHelper::AddShadow(panel, 0xbbbbbb);
+            panel->Hide();
         }
         if (cap_monitors_info_.monitors_.empty()) {
             LOGE("Error monitor index, can not get MsgClientCaptureMonitor.");

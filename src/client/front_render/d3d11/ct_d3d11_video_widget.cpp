@@ -14,51 +14,51 @@
 
 namespace tc
 {
-    struct NV12Frame
-    {
-        UINT width;
-        UINT height;
-        UINT pitch;
-        BYTE *Y;
-        BYTE *UV;
-    };
+//    struct NV12Frame
+//    {
+//        UINT width;
+//        UINT height;
+//        UINT pitch;
+//        BYTE *Y;
+//        BYTE *UV;
+//    };
 
-    static NV12Frame* nv12_frame = nullptr;
-
-    static NV12Frame* ReadNV12FromFile()
-    {
-
-        char buf[1024];
-        FILE *file = nullptr;
-        sprintf_s(buf, "1920_1080.nv12");
-        //sprintf_s(buf, "content\\16.nv12");
-
-        fopen_s(&file, buf, "rb");
-
-        int size = sizeof(NV12Frame);
-        NV12Frame *nv12Frame = (NV12Frame*)malloc(size);
-        //int readBytes = fread(nv12Frame, size, 1, file);
-
-        nv12Frame->width = 1920;
-        nv12Frame->height = 1080;
-        nv12Frame->pitch = nv12Frame->width;
-
-        int readBytes = 0;
-
-        size = nv12Frame->pitch * nv12Frame->height;
-
-        //size = nv12Frame->pitch * nv12Frame->height;
-        nv12Frame->Y = (BYTE *)malloc(size);
-        readBytes = fread(nv12Frame->Y, size, 1, file);
-
-        size = nv12Frame->pitch * nv12Frame->height / 2;
-        nv12Frame->UV = (BYTE *)malloc(size);
-        readBytes = fread(nv12Frame->UV, size, 1, file);
-
-        fclose(file);
-
-        return nv12Frame;
-    }
+//    static NV12Frame* nv12_frame = nullptr;
+//
+//    static NV12Frame* ReadNV12FromFile()
+//    {
+//
+//        char buf[1024];
+//        FILE *file = nullptr;
+//        sprintf_s(buf, "1920_1080.nv12");
+//        //sprintf_s(buf, "content\\16.nv12");
+//
+//        fopen_s(&file, buf, "rb");
+//
+//        int size = sizeof(NV12Frame);
+//        NV12Frame *nv12Frame = (NV12Frame*)malloc(size);
+//        //int readBytes = fread(nv12Frame, size, 1, file);
+//
+//        nv12Frame->width = 1920;
+//        nv12Frame->height = 1080;
+//        nv12Frame->pitch = nv12Frame->width;
+//
+//        int readBytes = 0;
+//
+//        size = nv12Frame->pitch * nv12Frame->height;
+//
+//        //size = nv12Frame->pitch * nv12Frame->height;
+//        nv12Frame->Y = (BYTE *)malloc(size);
+//        readBytes = fread(nv12Frame->Y, size, 1, file);
+//
+//        size = nv12Frame->pitch * nv12Frame->height / 2;
+//        nv12Frame->UV = (BYTE *)malloc(size);
+//        readBytes = fread(nv12Frame->UV, size, 1, file);
+//
+//        fclose(file);
+//
+//        return nv12Frame;
+//    }
 //
 //    static void WriteNV12ToTexture(NV12Frame *nv12Frame)
 //    {
@@ -109,7 +109,7 @@ namespace tc
         ///
         // raw_sdl_widget_ = new RawSdlWidget();
 
-        nv12_frame = ReadNV12FromFile();
+        //nv12_frame = ReadNV12FromFile();
 
     }
 
@@ -120,6 +120,11 @@ namespace tc
     bool D3D11VideoWidget::InitD3DEnvIfNeeded(RawImageFormat raw_format, int fw, int fh, ComPtr<ID3D11Device> device,  ComPtr<ID3D11DeviceContext> device_context) {
         if (init) {
             return true;
+        }
+
+        // Ignore to initialize when the Window was hidden or too small
+        if (this->isHidden() || this->size().width() <= 256) {
+            return false;
         }
 
         if (auto r = render_mgr_->InitOutput((HWND)winId(), raw_format, fw, fh, device, device_context);

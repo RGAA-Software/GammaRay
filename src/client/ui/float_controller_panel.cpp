@@ -495,6 +495,7 @@ namespace tc
                     panel = (BaseWidget*)(new SubDisplayPanel(ctx, (QWidget*)this->parent()));
                     sub_panels_[SubPanelType::kDisplay] = panel;
                     WidgetHelper::AddShadow(panel, 0xbbbbbb);
+                    ((SubDisplayPanel*)panel)->Hide();
                 }
                 ((SubDisplayPanel*)panel)->SetCaptureMonitorName(monitor_name_);
                 ((SubDisplayPanel*)panel)->UpdateMonitorInfo(this->capture_monitor_);
