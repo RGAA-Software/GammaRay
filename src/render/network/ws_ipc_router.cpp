@@ -5,7 +5,7 @@
 #include "ws_ipc_router.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
-#include "hook_capture/capture_message.h"
+#include "tc_capture_new/capture_message.h"
 #include "rd_app.h"
 
 namespace tc

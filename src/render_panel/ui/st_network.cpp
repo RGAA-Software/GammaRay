@@ -13,7 +13,7 @@
 #include "tc_common_new/string_util.h"
 #include "tc_common_new/win32/audio_device_helper.h"
 #include "render_panel/gr_app_messages.h"
-#include "panel_companion/panel_companion_impl.h"
+#include "render_panel/companion/panel_companion.h"
 #include "tc_common_new/ip_util.h"
 #include "tc_dialog.h"
 #include "tc_label.h"

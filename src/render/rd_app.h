@@ -13,7 +13,7 @@
 #include "tc_common_new/concurrent_queue.h"
 #include "app_global_messages.h"
 #include "app/app_messages.h"
-#include "hook_capture/capture_message.h"
+#include "tc_capture_new/capture_message.h"
 #include "rd_context.h"
 #include <QApplication>
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "tc_message.pb.h"
-#include "hook_capture/capture_message.h"
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {

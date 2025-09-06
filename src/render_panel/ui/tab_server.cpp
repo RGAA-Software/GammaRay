@@ -56,7 +56,7 @@
 #include "render_panel/gr_workspace.h"
 #include "relay_message.pb.h"
 #include "tc_profile_client/profile_api.h"
-#include "panel_companion/panel_companion_impl.h"
+#include "render_panel/companion/panel_companion.h"
 
 namespace tc
 {
