@@ -65,6 +65,7 @@ set(SRCS_WS
     ui/float_button_state_indicator.cpp
     ui/computer_icon.cpp
     ui/svg_lable.cpp
+    ui/media_record_sign_lab.cpp
     ui/retry_conn_dialog.cpp
     network/ct_dashboard_client.cpp
     network/ct_panel_client.cpp

@@ -33,7 +33,7 @@ namespace tc
         int32_t GetEncodeFps();
         std::vector<int32_t> GetEncodeDurations();
         std::string GetDisplayEncoderName();
-
+        EncoderConfig GetEncoderConfig();
     private:
         FFmpegEncoderPlugin* plugin_ = nullptr;
         AVCodecContext* codec_ctx_ = nullptr;

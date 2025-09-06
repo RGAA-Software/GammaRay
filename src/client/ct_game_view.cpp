@@ -13,6 +13,7 @@
 #include "ui/float_controller.h"
 #include "ui/float_controller_panel.h"
 #include "ui/svg_lable.h"
+#include "ui/media_record_sign_lab.h"
 #include "ct_client_context.h"
 #include "tc_common_new/log.h"
 #include "client/ct_settings.h"
@@ -71,13 +72,11 @@ namespace tc
 
         InitFloatController();
 
-        recording_sign_lab_ = new SvgLable(":/resources/image/recording.svg",  this);
-        recording_sign_lab_->setFixedSize(36, 28);
-        recording_sign_lab_->setAttribute(Qt::WA_StyledBackground,true);
-        recording_sign_lab_->setAlignment(Qt::AlignCenter);
+        recording_sign_lab_ = new MediaRecordSignLab(this);
         recording_sign_lab_->move(this->width() * 0.85, 20);
         recording_sign_lab_->hide();
 
+#if 0
         // 创建透明度效果
         QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(recording_sign_lab_);
         recording_sign_lab_->setGraphicsEffect(opacityEffect);
@@ -101,6 +100,7 @@ namespace tc
                 animation->stop();
             }
         });
+#endif
 
         msg_listener_->Listen<MsgClientSwitchMonitor>([=, this](const MsgClientSwitchMonitor& msg) {
             if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_ && !isHidden()) {

@@ -133,9 +133,26 @@ namespace tc
     }
 
     std::optional<EncoderCapability> FFmpegEncoderPlugin::GetEncoderCapability(const std::string& monitor_name) {
+        /*
+        Since it has been previously determined through the N-card or A-card SDK, 
+        ffmpeg uses N-card or A-card hardware encoding and directly returns "yuv444 encoding output is not supported."
+        */
         EncoderCapability cap;
-        cap.support_h264_yuv444_ = true;
-        cap.support_hevc_yuv444_ = true;
+        if (video_encoders_[monitor_name]) {
+            auto encoder_config = video_encoders_[monitor_name]->GetEncoderConfig();    
+            if (EHardwareEncoder::kNvEnc == encoder_config.Hardware) {
+                cap.support_h264_yuv444_ = false;
+                cap.support_hevc_yuv444_ = false;
+            }
+            else if (EHardwareEncoder::kAmf == encoder_config.Hardware) {
+                cap.support_h264_yuv444_ = false;
+                cap.support_hevc_yuv444_ = false;
+            }
+            else if(EHardwareEncoder::kNone == encoder_config.Hardware) {
+                cap.support_h264_yuv444_ = true;
+                cap.support_hevc_yuv444_ = true;
+            }
+        }
         return { cap };
     }
 }
