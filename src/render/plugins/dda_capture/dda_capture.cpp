@@ -8,7 +8,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/monitors.h"
-#include "hook_capture/capture_message.h"
+#include "tc_capture_new/capture_message.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "dda_capture_plugin.h"
 #include "tc_common_new/win32/d3d_debug_helper.h"

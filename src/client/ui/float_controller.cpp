@@ -28,7 +28,10 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
-        painter.setPen(Qt::NoPen);
+        QPen pen(0x999999);
+        pen.setWidth(2);
+        // pen.setStyle(Qt::PenStyle::DotLine);
+        painter.setPen(pen);
         if (pressed_) {
             painter.setBrush(QBrush(QColor(0xdfdfdf)));
         } else if (enter_) {
@@ -36,7 +39,8 @@ namespace tc
         } else {
             painter.setBrush(QBrush(QColor(0xffffff)));
         }
-        painter.drawRoundedRect(this->rect(), this->width()/2, this->height()/2);
+        // painter.drawRoundedRect(this->rect(), this->width()/2, this->height()/2);
+        painter.drawRoundedRect(this->rect(), 2, 2);
 
         painter.drawPixmap((this->width()-pixmap_.width())/2, (this->height()-pixmap_.height())/2, pixmap_);
         BaseWidget::paintEvent(event);

@@ -19,13 +19,15 @@ namespace tc
     ThirdScalePanel::ThirdScalePanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
-        setFixedSize(200, 130);
+        setFixedSize(210, 140);
         auto root_layout = new NoMarginVLayout();
+        int offset = 5;
+        root_layout->setContentsMargins(offset, offset, offset, offset);
 
         settings_ = Settings::Instance();
 
         listview_ = new SingleSelectedList(this);
-        listview_->setFixedSize(this->size());
+        listview_->setFixedSize(QSize(this->width() - 2*offset, this->height() - 2*offset));
         listview_->UpdateItems({
             std::make_shared<SingleItem>(SingleItem {
                    .name_ = tcTr("id_keep_aspect_ratio"),
@@ -42,7 +44,10 @@ namespace tc
         });
         root_layout->addWidget(listview_);
         setLayout(root_layout);
-        UpdateStatus(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kImageScaleMode });
+        UpdateStatus(MsgClientFloatControllerPanelUpdate{
+            .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kImageScaleMode
+        });
+
         listview_->SetOnItemClickListener([=, this](int idx, QWidget* w) {
             ScaleMode mode = ScaleMode::kFullWindow;
             if (idx == 0) { 
@@ -55,7 +60,9 @@ namespace tc
             UpdateScaleMode(mode);
             MsgClientSwitchScaleMode scale_mode_msg{.mode_ = mode};
             context_->SendAppMessage(scale_mode_msg);
-            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{.update_type_ = MsgClientFloatControllerPanelUpdate ::EUpdate::kImageScaleMode});
+            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{
+                .update_type_ = MsgClientFloatControllerPanelUpdate ::EUpdate::kImageScaleMode
+            });
         });
     }
 
@@ -63,10 +70,14 @@ namespace tc
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
-        painter.setPen(Qt::NoPen);
+        QPen pen(0xaaaaaa);
+        pen.setWidth(2);
+        pen.setStyle(Qt::PenStyle::DotLine);
+        painter.setPen(pen);
+
         painter.setBrush(QColor(0xffffff));
         int offset = 0;
-        int radius = 5;
+        int radius = 2;
         painter.drawRoundedRect(offset, offset, this->width()-offset*2, this->height()-offset*2, radius, radius);
         BaseWidget::paintEvent(event);
     }

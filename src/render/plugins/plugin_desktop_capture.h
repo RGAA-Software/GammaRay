@@ -6,7 +6,7 @@
 #include <mutex>
 #include <deque>
 #include "tc_common_new/concurrent_queue.h"
-#include "hook_capture/win/desktop_capture/monitor_util.h"
+#include "tc_capture_new/monitor_util.h"
 
 namespace tc
 {

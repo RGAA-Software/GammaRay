@@ -113,12 +113,12 @@ namespace tc
 
     }
 
-    void D3D11VideoWidget::InitD3DEnv(int fw, int fh, ComPtr<ID3D11Device> device,  ComPtr<ID3D11DeviceContext> context) {
+    bool D3D11VideoWidget::InitD3DEnvIfNeeded(int fw, int fh, ComPtr<ID3D11Device> device,  ComPtr<ID3D11DeviceContext> device_context) {
         if (init) {
-            return;
+            return true;
         }
 
-        if (auto r = render_mgr_->InitOutput((HWND)winId(), fw, fh, device, context);
+        if (auto r = render_mgr_->InitOutput((HWND)winId(), fw, fh, device, device_context);
             r == DUPL_RETURN_SUCCESS) {
             this->init = true;
             this->frame_width = fw;
@@ -126,7 +126,7 @@ namespace tc
         }
         else {
             LOGI("D3D output init failed: {}", (int)r);
-            return;
+            return false;
         }
 
 //        nv12_frame = ReadNV12FromFile();
@@ -138,6 +138,7 @@ namespace tc
 
 //        bool Occluded = false;
 //        auto r = render_mgr_->UpdateApplicationWindow(&Occluded);
+        return true;
     }
 
     QPaintEngine * D3D11VideoWidget::paintEngine() const
@@ -156,20 +157,23 @@ namespace tc
 
         auto beg = TimeUtil::GetCurrentTimestamp();
         ComPtr<ID3D11Device> device = nullptr;
-        image->texture_->GetDevice(&device);
+        image->texture_->GetDevice(device.GetAddressOf());
         if (!device) {
             LOGE("No device with texture");
             return;
         }
 
         ComPtr<ID3D11DeviceContext> device_context = nullptr;
-        device->GetImmediateContext(&device_context);
+        device->GetImmediateContext(device_context.GetAddressOf());
         if (!device_context) {
             LOGE("No device context with texture");
             return;
         }
 
-        InitD3DEnv(image->img_width, image->img_height, device, device_context);
+        if (!InitD3DEnvIfNeeded(image->img_width, image->img_height, device, device_context)) {
+            LOGE("Don't have d3d environment.");
+            return;
+        }
 
         if (this->frame_width != image->img_width || this->frame_height != image->img_height) {
             if (render_mgr_->RecreateTexture(image->img_width, image->img_height) == DUPL_RETURN_SUCCESS) {
@@ -188,7 +192,7 @@ namespace tc
         srcBox.bottom = image->img_height;
         srcBox.front = 0;
         srcBox.back = 1;
-        device_context->CopySubresourceRegion(render_mgr_->m_texture, 0, 0, 0, 0, image->texture_, image->src_subresource_, &srcBox);
+        device_context->CopySubresourceRegion(render_mgr_->GetTexture().Get(), 0, 0, 0, 0, image->texture_, image->src_subresource_, &srcBox);
 
         bool Occluded = false;
         auto Ret = render_mgr_->UpdateApplicationWindow(&Occluded);

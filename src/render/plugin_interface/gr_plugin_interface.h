@@ -21,7 +21,7 @@
 #include <wrl/client.h>
 #include "gr_plugin_settings_info.h"
 #include "app/app_messages.h"
-#include "hook_capture/capture_message.h"
+#include "tc_capture_new/capture_message.h"
 
 namespace tc
 {

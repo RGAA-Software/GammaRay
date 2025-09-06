@@ -24,70 +24,44 @@ namespace tc
     _Post_satisfies_(return != DUPL_RETURN_SUCCESS)
     DUPL_RETURN ProcessFailure(ComPtr<ID3D11Device> Device, _In_ LPCWSTR Str, _In_ LPCWSTR Title, HRESULT hr, _In_opt_z_ HRESULT* ExpectedErrors = nullptr);
 
-    //
-    // Constructor NULLs out all pointers & sets appropriate var vals
-    //
-    D3D11RenderManager::D3D11RenderManager() : m_SwapChain(nullptr),
-                                               m_Device(nullptr),
-                                               m_Factory(nullptr),
-                                               m_DeviceContext(nullptr),
-                                               m_RTV(nullptr),
-                                               m_SamplerLinear(nullptr),
-                                               m_BlendState(nullptr),
-                                               m_VertexShader(nullptr),
-                                               m_PixelShader(nullptr),
-                                               m_InputLayout(nullptr),
-                                               m_WindowHandle(nullptr),
-                                               m_NeedsResize(false),
-                                               m_OcclusionCookie(0),
-                                               m_width(0),
-                                               m_height(0) {
+    D3D11RenderManager::D3D11RenderManager() {
     }
 
-    //
-    // Destructor which calls CleanRefs to release all references and memory.
-    //
     D3D11RenderManager::~D3D11RenderManager() {
         CleanRefs();
     }
 
-    //
-    // Indicates that window has been resized.
-    //
     void D3D11RenderManager::WindowResize() {
         m_NeedsResize = true;
     }
 
-    //
-    // Initialize all state
-    //
-    DUPL_RETURN D3D11RenderManager::InitOutput(HWND Window, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context) {
+    DUPL_RETURN D3D11RenderManager::InitOutput(HWND window, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> device_context) {
         HRESULT hr;
 
         // Store window handle
-        m_WindowHandle = Window;
+        m_WindowHandle = window;
 
         m_Device = device;
-        m_DeviceContext = context;
+        m_DeviceContext = device_context;
 
         // Get DXGI factory
-        IDXGIDevice* DxgiDevice = nullptr;
-        hr = m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&DxgiDevice));
+        ComPtr<IDXGIDevice> DxgiDevice = nullptr;
+        hr = m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(DxgiDevice.GetAddressOf()));
         if (FAILED(hr)) {
             return ProcessFailure(nullptr, L"Failed to QI for DXGI Device", L"Error", hr, nullptr);
         }
 
-        IDXGIAdapter* DxgiAdapter = nullptr;
-        hr = DxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void**>(&DxgiAdapter));
-        DxgiDevice->Release();
-        DxgiDevice = nullptr;
+        ComPtr<IDXGIAdapter> DxgiAdapter = nullptr;
+        hr = DxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void**>(DxgiAdapter.GetAddressOf()));
+        DxgiDevice.Reset();
+
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to get parent DXGI Adapter", L"Error", hr, SystemTransitionsExpectedErrors);
         }
 
-        hr = DxgiAdapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&m_Factory));
-        DxgiAdapter->Release();
-        DxgiAdapter = nullptr;
+        hr = DxgiAdapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(m_Factory.GetAddressOf()));
+        DxgiAdapter.Reset();
+
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to get parent DXGI Factory", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -118,13 +92,13 @@ namespace tc
         SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         SwapChainDesc.SampleDesc.Count = 1;
         SwapChainDesc.SampleDesc.Quality = 0;
-        hr = m_Factory->CreateSwapChainForHwnd(m_Device.Get(), Window, &SwapChainDesc, nullptr, nullptr, &m_SwapChain);
+        hr = m_Factory->CreateSwapChainForHwnd(m_Device.Get(), window, &SwapChainDesc, nullptr, nullptr, m_SwapChain.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create window swapchain", L"Error", hr, SystemTransitionsExpectedErrors);
         }
 
         // Disable the ALT-ENTER shortcut for entering full-screen mode
-        hr = m_Factory->MakeWindowAssociation(Window, DXGI_MWA_NO_ALT_ENTER);
+        hr = m_Factory->MakeWindowAssociation(window, DXGI_MWA_NO_ALT_ENTER);
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to make window association", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -145,7 +119,7 @@ namespace tc
         SetViewPort(width, height);
         D3D11_SAMPLER_DESC desc = CD3D11_SAMPLER_DESC(CD3D11_DEFAULT());
 
-        hr = m_Device->CreateSamplerState(&desc, &m_SamplerLinear);
+        hr = m_Device->CreateSamplerState(&desc, m_SamplerLinear.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create sampler state in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -176,9 +150,9 @@ namespace tc
         };
 
         // Rendering NV12 requires two resource views, which represent the luminance and chrominance channels of the YUV formatted texture.
-        std::array<ID3D11ShaderResourceView *, 2> const textureViews = {
-            m_luminanceView,
-            m_chrominanceView
+        std::array<ID3D11ShaderResourceView*, 2> const textureViews = {
+            m_luminanceView.Get(),
+            m_chrominanceView.Get()
         };
 
         // Bind the NV12 channels to the shader.
@@ -203,12 +177,12 @@ namespace tc
         InitData.pSysMem = Vertices;
 
         // Create vertex buffer
-        hr = m_Device->CreateBuffer(&BufferDesc, &InitData, &VertexBuffer);
+        hr = m_Device->CreateBuffer(&BufferDesc, &InitData, VertexBuffer.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create vertex buffer when drawing a frame", L"Error", hr, SystemTransitionsExpectedErrors);
         }
 
-        m_DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
+        m_DeviceContext->IASetVertexBuffers(0, 1, VertexBuffer.GetAddressOf(), &Stride, &Offset);
         return Return;
     }
 
@@ -219,16 +193,16 @@ namespace tc
         HRESULT hr;
 
         // Get DXGI resources
-        IDXGIDevice *DxgiDevice = nullptr;
-        hr = m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void **>(&DxgiDevice));
+        ComPtr<IDXGIDevice> DxgiDevice = nullptr;
+        hr = m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void **>(DxgiDevice.GetAddressOf()));
         if (FAILED(hr)) {
             return ProcessFailure(nullptr, L"Failed to QI for DXGI Device", L"Error", hr);
         }
 
-        IDXGIAdapter *DxgiAdapter = nullptr;
-        hr = DxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void **>(&DxgiAdapter));
-        DxgiDevice->Release();
-        DxgiDevice = nullptr;
+        ComPtr<IDXGIAdapter> DxgiAdapter = nullptr;
+        hr = DxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void **>(DxgiAdapter.GetAddressOf()));
+        DxgiDevice.Reset();
+
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to get parent DXGI Adapter", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -236,8 +210,7 @@ namespace tc
         m_width = frame_width;
         m_height = frame_height;
 
-        DxgiAdapter->Release();
-        DxgiAdapter = nullptr;
+        DxgiAdapter.Reset();
 
         D3D11_TEXTURE2D_DESC const texDesc = CD3D11_TEXTURE2D_DESC(
             DXGI_FORMAT_NV12,           // HoloLens PV camera format, common for video sources
@@ -253,7 +226,7 @@ namespace tc
         );
 
 
-        hr = m_Device->CreateTexture2D(&texDesc, nullptr, &m_texture);
+        hr = m_Device->CreateTexture2D(&texDesc, nullptr, m_texture.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -269,15 +242,15 @@ namespace tc
         // Luminance is 8 bits per pixel. DirectX will handle converting 8-bit integers into normalized
         // floats for use in the shader.
         D3D11_SHADER_RESOURCE_VIEW_DESC const luminancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-            m_texture,
+            m_texture.Get(),
             D3D11_SRV_DIMENSION_TEXTURE2D,
             DXGI_FORMAT_R8_UNORM
         );
 
         hr = m_Device->CreateShaderResourceView(
-            m_texture,
+            m_texture.Get(),
             &luminancePlaneDesc,
-            &m_luminanceView
+            m_luminanceView.GetAddressOf()
         );
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr, SystemTransitionsExpectedErrors);
@@ -287,15 +260,15 @@ namespace tc
         // Chrominance has 4 bits for U and 4 bits for V per pixel. DirectX will handle converting 4-bit
         // integers into normalized floats for use in the shader.
         D3D11_SHADER_RESOURCE_VIEW_DESC const chrominancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-            m_texture,
+            m_texture.Get(),
             D3D11_SRV_DIMENSION_TEXTURE2D,
             DXGI_FORMAT_R8G8_UNORM
         );
 
         hr = m_Device->CreateShaderResourceView(
-            m_texture,
+            m_texture.Get(),
             &chrominancePlaneDesc,
-            &m_chrominanceView
+            m_chrominanceView.GetAddressOf()
         );
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create shader resource view", L"Error", hr, SystemTransitionsExpectedErrors);
@@ -306,16 +279,13 @@ namespace tc
 
     DUPL_RETURN D3D11RenderManager::ReleaseTexture() {
         if (m_texture) {
-            m_texture->Release();
-            m_texture = nullptr;
+            m_texture.Reset();
         }
         if (m_luminanceView) {
-            m_luminanceView->Release();
-            m_luminanceView = nullptr;
+            m_luminanceView.Reset();
         }
         if (m_chrominanceView) {
-            m_chrominanceView->Release();
-            m_chrominanceView = nullptr;
+            m_chrominanceView.Reset();
         }
         return DUPL_RETURN_SUCCESS;
     }
@@ -372,16 +342,16 @@ namespace tc
         }
 
         D3DCOLORVALUE m_BackColor{0.0f, 0.135f, 0.481f, 1.0f};
-        m_DeviceContext->ClearRenderTargetView(m_RTV, reinterpret_cast<const float *>(&m_BackColor));
+        m_DeviceContext->ClearRenderTargetView(m_RTV.Get(), reinterpret_cast<const float *>(&m_BackColor));
 
         FLOAT blendFactor[4] = {0.f, 0.f, 0.f, 0.f};
         m_DeviceContext->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
-        m_DeviceContext->OMSetRenderTargets(1, &m_RTV, nullptr);
+        m_DeviceContext->OMSetRenderTargets(1, m_RTV.GetAddressOf(), nullptr);
 
         // Rendering NV12 requires two resource views, which represent the luminance and chrominance channels of the YUV formatted texture.
         std::array<ID3D11ShaderResourceView*, 2> const textureViews = {
-            m_luminanceView,
-            m_chrominanceView
+            m_luminanceView.Get(),
+            m_chrominanceView.Get()
         };
         // Bind the NV12 channels to the shader.
         m_DeviceContext->PSSetShaderResources(
@@ -393,7 +363,7 @@ namespace tc
         // Set resources
         UINT Stride = sizeof(VERTEX);
         UINT Offset = 0;
-        m_DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
+        m_DeviceContext->IASetVertexBuffers(0, 1, VertexBuffer.GetAddressOf(), &Stride, &Offset);
 
         // Draw textured quad onto render target
         m_DeviceContext->Draw(NUMVERTICES, 0);
@@ -412,7 +382,7 @@ namespace tc
         HRESULT hr;
 
         UINT Size = ARRAYSIZE(g_VS);
-        hr = m_Device->CreateVertexShader(g_VS, Size, nullptr, &m_VertexShader);
+        hr = m_Device->CreateVertexShader(g_VS, Size, nullptr, m_VertexShader.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create vertex shader in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -422,21 +392,21 @@ namespace tc
              {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
         }};
 
-        hr = m_Device->CreateInputLayout(Layout.data(), Layout.size(), g_VS, Size, &m_InputLayout);
+        hr = m_Device->CreateInputLayout(Layout.data(), Layout.size(), g_VS, Size, m_InputLayout.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create input layout in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
-        m_DeviceContext->IASetInputLayout(m_InputLayout);
+        m_DeviceContext->IASetInputLayout(m_InputLayout.Get());
 
         Size = ARRAYSIZE(g_PS);
-        hr = m_Device->CreatePixelShader(g_PS, Size, nullptr, &m_PixelShader);
+        hr = m_Device->CreatePixelShader(g_PS, Size, nullptr, m_PixelShader.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create pixel shader in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
 
-        m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
-        m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
-        m_DeviceContext->PSSetSamplers(0, 1, &m_SamplerLinear);
+        m_DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+        m_DeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+        m_DeviceContext->PSSetSamplers(0, 1, m_SamplerLinear.GetAddressOf());
         m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         return DUPL_RETURN_SUCCESS;
@@ -447,21 +417,21 @@ namespace tc
     //
     DUPL_RETURN D3D11RenderManager::MakeRTV() {
         // Get backbuffer
-        ID3D11Texture2D *BackBuffer = nullptr;
-        HRESULT hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void **>(&BackBuffer));
+        ComPtr<ID3D11Texture2D> BackBuffer = nullptr;
+        HRESULT hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void **>(BackBuffer.GetAddressOf()));
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to get backbuffer for making render target view in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
 
         // Create a render target view
-        hr = m_Device->CreateRenderTargetView(BackBuffer, nullptr, &m_RTV);
-        BackBuffer->Release();
+        hr = m_Device->CreateRenderTargetView(BackBuffer.Get(), nullptr, m_RTV.GetAddressOf());
+        BackBuffer.Reset();
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create render target view in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
 
         // Set new render target
-        m_DeviceContext->OMSetRenderTargets(1, &m_RTV, nullptr);
+        m_DeviceContext->OMSetRenderTargets(1, m_RTV.GetAddressOf(), nullptr);
         return DUPL_RETURN_SUCCESS;
     }
 
@@ -484,8 +454,7 @@ namespace tc
     //
     DUPL_RETURN D3D11RenderManager::ResizeSwapChain() {
         if (m_RTV) {
-            m_RTV->Release();
-            m_RTV = nullptr;
+            m_RTV.Reset();
         }
 
         RECT WindowRect;
@@ -519,58 +488,47 @@ namespace tc
     //
     void D3D11RenderManager::CleanRefs() {
         if (m_VertexShader) {
-            m_VertexShader->Release();
-            m_VertexShader = nullptr;
+            m_VertexShader.Reset();
         }
 
         if (m_PixelShader) {
-            m_PixelShader->Release();
-            m_PixelShader = nullptr;
+            m_PixelShader.Reset();
         }
 
         if (m_InputLayout) {
-            m_InputLayout->Release();
-            m_InputLayout = nullptr;
+            m_InputLayout.Reset();
         }
 
         if (m_RTV) {
-            m_RTV->Release();
-            m_RTV = nullptr;
+            m_RTV.Reset();
         }
 
         if (m_SamplerLinear) {
-            m_SamplerLinear->Release();
-            m_SamplerLinear = nullptr;
+            m_SamplerLinear.Reset();
         }
 
         if (m_BlendState) {
-            m_BlendState->Release();
-            m_BlendState = nullptr;
+            m_BlendState.Reset();
         }
 
         if (m_DeviceContext) {
-            m_DeviceContext->Release();
-            m_DeviceContext = nullptr;
+            m_DeviceContext.Reset();
         }
 
         if (m_Device) {
-            m_Device->Release();
-            m_Device = nullptr;
+            m_Device.Reset();
         }
 
         if (m_SwapChain) {
-            m_SwapChain->Release();
-            m_SwapChain = nullptr;
+            m_SwapChain.Reset();
         }
 
         if (m_luminanceView) {
-            m_luminanceView->Release();
-            m_luminanceView = nullptr;
+            m_luminanceView.Reset();
         }
 
         if (m_chrominanceView) {
-            m_chrominanceView->Release();
-            m_chrominanceView = nullptr;
+            m_chrominanceView.Reset();
         }
 
         if (m_Factory) {
@@ -578,8 +536,7 @@ namespace tc
                 m_Factory->UnregisterOcclusionStatus(m_OcclusionCookie);
                 m_OcclusionCookie = 0;
             }
-            m_Factory->Release();
-            m_Factory = nullptr;
+            m_Factory.Reset();
         }
     }
 

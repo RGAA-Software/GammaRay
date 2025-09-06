@@ -51,7 +51,7 @@ namespace tc
         std::vector<ComputerIcon*> computer_icons_;
         MsgClientCaptureMonitor capture_monitor_;
 
-        const int kInitialWidth = 240;
+        const int kInitialWidth = 250;
 
         // 分屏显示按钮
         FloatIcon* split_screen_btn_ = nullptr;

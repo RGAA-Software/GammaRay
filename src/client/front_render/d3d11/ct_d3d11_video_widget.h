@@ -35,7 +35,7 @@ namespace tc
                        int dup_idx, RawImageFormat format, QWidget *parent = nullptr);
         ~D3D11VideoWidget() override;
 
-        void InitD3DEnv(int frame_width, int frame_height, ComPtr<ID3D11Device>,  ComPtr<ID3D11DeviceContext>);
+        bool InitD3DEnvIfNeeded(int frame_width, int frame_height, ComPtr<ID3D11Device>,  ComPtr<ID3D11DeviceContext>);
         QWidget * AsWidget() override;
         void RefreshImage(const std::shared_ptr<RawImage>& image) override;
         void OnTimer1S() override;

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
+include(config.cmake)
 include(env_settings.cmake)
 include(version.cmake)
 
