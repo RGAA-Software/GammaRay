@@ -47,19 +47,19 @@ namespace tc
         }
     #endif
 
-    #if TEST_D3D11
-//        video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
-        if (parent) {
-            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
-            video_widget_->AsWidget()->resize(1280, 768);
-            video_widget_->AsWidget()->show();
-        }
-        else {
-            video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
-        }
-    #else
+#ifdef WIN32
+        video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
+//        if (parent) {
+//            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
+//            video_widget_->AsWidget()->resize(1280, 768);
+//            video_widget_->AsWidget()->show();
+//        }
+//        else {
+//            video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
+//        }
+#else
         video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
-    #endif
+#endif
 
         auto end = TimeUtil::GetCurrentTimestamp();
         LOGI("Create OpenGLWidget used: {}ms", (end-beg));
@@ -146,20 +146,18 @@ namespace tc
         bool enable_full_color = false;
         if (kRawImageI420 == image->Format()) {
             //LOGI("RefreshImage kRawImageI420");
-            RefreshI420Image(image);
+            //RefreshI420Image(image);
         }
         else if (kRawImageI444 == image->Format()) {
             //LOGI("RefreshImage kRawImageI444");
             enable_full_color = true;
-            RefreshI444Image(image);
+            //RefreshI444Image(image);
         }
-        else if (kRawImageD3D11Texture == image->Format()) {
-#if TEST_D3D11
-            if (video_widget_) {
-                video_widget_->RefreshImage(image);
-            }
-#endif
+
+        if (video_widget_) {
+            video_widget_->RefreshImage(image);
         }
+
 
         if (is_main_view_) {
             if (settings_->IsFullColorEnabled() != enable_full_color) {

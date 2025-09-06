@@ -3,6 +3,7 @@
 #include "tc_message.pb.h"
 #include "ct_qt_key_converter.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/data.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/thread.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
@@ -33,8 +34,8 @@ namespace tc
 	VideoWidget::~VideoWidget() = default;
 
 	void VideoWidget::OnWidgetResize(int w, int h) {
-		this->width = w;
-		this->height = h;
+		this->widget_width_ = w;
+		this->widget_height_ = h;
 	}
 
 	void VideoWidget::OnMouseMoveEvent(QMouseEvent* event, int widget_width, int widget_height) {
@@ -226,7 +227,15 @@ namespace tc
     }
 
     void VideoWidget::RefreshImage(const std::shared_ptr<RawImage> &image) {
-
+        if (image->Format() == RawImageFormat::kRawImageI420) {
+            this->RefreshI420Image(image);
+        }
+        else if (image->Format() == RawImageFormat::kRawImageI444) {
+            this->RefreshI444Image(image);
+        }
+        else if (image->Format() == RawImageFormat::kRawImageRGB) {
+            this->RefreshRGBBuffer(image->Data(), image->img_width, image->img_height, image->img_ch);
+        }
     }
 
     RawImageFormat VideoWidget::GetDisplayImageFormat() {
@@ -261,4 +270,124 @@ namespace tc
         return nullptr;
     }
 
+    void VideoWidget::RefreshRGBBuffer(const char* buf, int width, int height, int channel) {
+        std::lock_guard<std::mutex> guard(buf_mtx_);
+        int size = width * height * channel;
+        if (!rgb_buffer_) {
+            rgb_buffer_ = Data::Make(nullptr, size);
+        }
+        if (tex_width_ != width || tex_height_ != height) {
+            need_create_texture_ = true;
+        }
+        memcpy(rgb_buffer_->DataAddr(), buf, size);
+        tex_width_ = width;
+        tex_height_ = height;
+        tex_channel_ = channel;
+
+        this->OnUpdate();
+    }
+
+    void VideoWidget::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
+        std::lock_guard<std::mutex> guard(buf_mtx_);
+        int y_buf_size = image->img_width * image->img_height;
+        int uv_buf_size = y_buf_size / 4;
+        char* buf = image->Data();
+        RefreshI420Buffer(buf, y_buf_size,
+                          buf + y_buf_size, uv_buf_size,
+                          buf + y_buf_size + uv_buf_size, uv_buf_size,
+                          image->img_width, image->img_height
+        );
+    }
+
+    void VideoWidget::RefreshI420Buffer(const char* y_buf, int y_buf_size,
+                                              const char* u_buf, int u_buf_size,
+                                              const char* v_buf, int v_buf_size,
+                                              int width, int height) {
+        auto target_y_size = width * height;
+        auto target_u_size = width/2 * height/2;
+        if (!y_buffer_ || y_buffer_->Size() != y_buf_size) {
+            y_buffer_ = Data::Make(y_buf, y_buf_size);
+            need_create_texture_ = true;
+        }
+        if (!u_buffer_ || u_buffer_->Size() != u_buf_size) {
+            u_buffer_ = Data::Make(u_buf, u_buf_size);
+            need_create_texture_ = true;
+        }
+        if (!v_buffer_ || v_buffer_->Size() != v_buf_size) {
+            v_buffer_ = Data::Make(v_buf, v_buf_size);
+            need_create_texture_ = true;
+        }
+
+        if (tex_width_ != width || tex_height_ != height) {
+            need_create_texture_ = true;
+        }
+        memcpy(y_buffer_->DataAddr(), y_buf, y_buf_size);
+        memcpy(u_buffer_->DataAddr(), u_buf, u_buf_size);
+        memcpy(v_buffer_->DataAddr(), v_buf, v_buf_size);
+
+        tex_width_ = width;
+        tex_height_ = height;
+
+        this->OnUpdate();
+    }
+
+    void VideoWidget::RefreshI444Image(const std::shared_ptr<RawImage>& image) {
+        std::lock_guard<std::mutex> guard(buf_mtx_);
+        int y_buf_size = image->img_width * image->img_height;
+        int uv_buf_size = y_buf_size;
+        char* buf = image->Data();
+#if 0   // debug: save yuv file
+        {
+			std::string img_data;
+			img_data.resize(image->Size());
+			memcpy(img_data.data(), buf, image->Size());
+			static int index = 0;
+			auto yuv444_file = File::OpenForWrite("RefreshI444Image_" + std::to_string(index % 10) + ".yuv444");
+			if (yuv444_file) {
+				yuv444_file->Write(0, img_data);
+			}
+			++index;
+		}
+#endif
+        RefreshI444Buffer(
+                buf, y_buf_size,
+                buf + y_buf_size, uv_buf_size,
+                buf + y_buf_size + uv_buf_size, uv_buf_size,
+                image->img_width, image->img_height
+        );
+    }
+
+    void VideoWidget::RefreshI444Buffer(const char* y_buf, int y_buf_size,
+                                              const char* u_buf, int u_buf_size,
+                                              const char* v_buf, int v_buf_size,
+                                              int width, int height) {
+        auto target_y_size = width * height;
+        auto target_u_size = width * height;
+
+        if (!y_buffer_ || y_buffer_->Size() != y_buf_size) {
+            y_buffer_ = Data::Make(y_buf, y_buf_size);
+            need_create_texture_ = true;
+        }
+        if (!u_buffer_ || u_buffer_->Size() != u_buf_size) {
+            u_buffer_ = Data::Make(u_buf, u_buf_size);
+            need_create_texture_ = true;
+        }
+        if (!v_buffer_ || v_buffer_->Size() != v_buf_size) {
+            v_buffer_ = Data::Make(v_buf, v_buf_size);
+            need_create_texture_ = true;
+        }
+
+        if (tex_width_ != width || tex_height_ != height) {
+            need_create_texture_ = true;
+        }
+        memcpy(y_buffer_->DataAddr(), y_buf, y_buf_size);
+        memcpy(u_buffer_->DataAddr(), u_buf, u_buf_size);
+        memcpy(v_buffer_->DataAddr(), v_buf, v_buf_size);
+
+        tex_width_ = width;
+        tex_height_ = height;
+
+        this->OnUpdate();
+    }
+    
 }

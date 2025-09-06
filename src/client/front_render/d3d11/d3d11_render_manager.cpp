@@ -35,9 +35,9 @@ namespace tc
         m_NeedsResize = true;
     }
 
-    DUPL_RETURN D3D11RenderManager::InitOutput(HWND window, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> device_context) {
+    DUPL_RETURN D3D11RenderManager::InitOutput(HWND window, RawImageFormat raw_format, int frame_width, int frame_height, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> device_context) {
         HRESULT hr;
-
+        raw_image_format_ = raw_format;
         // Store window handle
         m_WindowHandle = window;
 
@@ -104,7 +104,7 @@ namespace tc
         }
 
         // Create shared texture
-        DUPL_RETURN Return = CreateTexture(frame_width, frame_height);
+        DUPL_RETURN Return = CreateTexture(raw_format, frame_width, frame_height);
         if (Return != DUPL_RETURN_SUCCESS) {
             return Return;
         }
@@ -189,7 +189,7 @@ namespace tc
     //
     // Recreate shared texture
     //
-    DUPL_RETURN D3D11RenderManager::CreateTexture(int frame_width, int frame_height) {
+    DUPL_RETURN D3D11RenderManager::CreateTexture(RawImageFormat raw_format, int frame_width, int frame_height) {
         HRESULT hr;
 
         // Get DXGI resources
@@ -212,66 +212,124 @@ namespace tc
 
         DxgiAdapter.Reset();
 
-        D3D11_TEXTURE2D_DESC const texDesc = CD3D11_TEXTURE2D_DESC(
-            DXGI_FORMAT_NV12,           // HoloLens PV camera format, common for video sources
-            m_width,                    // Width of the video frames
-            m_height,                    // Height of the video frames
-            1,                          // Number of textures in the array
-            1,                          // Number of miplevels in each texture
-            D3D11_BIND_SHADER_RESOURCE, // We read from this texture in the shader
-            D3D11_USAGE_DEFAULT,
-            0
-            //		D3D11_USAGE_DYNAMIC,        // Because we'll be copying from CPU memory
-            //		D3D11_CPU_ACCESS_WRITE      // We only need to write into the texture
-        );
+        if (raw_format == RawImageFormat::kRawImageD3D11Texture) {
+            D3D11_TEXTURE2D_DESC const texDesc = CD3D11_TEXTURE2D_DESC(
+                    DXGI_FORMAT_NV12,           // HoloLens PV camera format, common for video sources
+                    m_width,                    // Width of the video frames
+                    m_height,                    // Height of the video frames
+                    1,                          // Number of textures in the array
+                    1,                          // Number of miplevels in each texture
+                    D3D11_BIND_SHADER_RESOURCE, // We read from this texture in the shader
+                    D3D11_USAGE_DYNAMIC,        // Because we'll be copying from CPU memory
+                    D3D11_CPU_ACCESS_WRITE      // We only need to write into the texture
+            );
 
+            hr = m_Device->CreateTexture2D(&texDesc, nullptr, m_texture.GetAddressOf());
+            if (FAILED(hr)) {
+                return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr,
+                                      SystemTransitionsExpectedErrors);
+            }
 
-        hr = m_Device->CreateTexture2D(&texDesc, nullptr, m_texture.GetAddressOf());
-        if (FAILED(hr)) {
-            return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr, SystemTransitionsExpectedErrors);
+            // https://msdn.microsoft.com/en-us/library/windows/desktop/bb173059(v=vs.85).aspx
+            // To access DXGI_FORMAT_NV12 in the shader, we need to map the luminance channel and the chrominance channels
+            // into a format that shaders can understand.
+            // In the case of NV12, DirectX understands how the texture is laid out, so we can create these
+            // shader resource views which represent the two channels of the NV12 texture.
+            // Then inside the shader we convert YUV into RGB so we can render.
+
+            // DirectX specifies the view format to be DXGI_FORMAT_R8_UNORM for NV12 luminance channel.
+            // Luminance is 8 bits per pixel. DirectX will handle converting 8-bit integers into normalized
+            // floats for use in the shader.
+            D3D11_SHADER_RESOURCE_VIEW_DESC const luminancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
+                    m_texture.Get(),
+                    D3D11_SRV_DIMENSION_TEXTURE2D,
+                    DXGI_FORMAT_R8_UNORM
+            );
+
+            hr = m_Device->CreateShaderResourceView(
+                    m_texture.Get(),
+                    &luminancePlaneDesc,
+                    m_luminanceView.GetAddressOf()
+            );
+            if (FAILED(hr)) {
+                return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr,
+                                      SystemTransitionsExpectedErrors);
+            }
+
+            // DirectX specifies the view format to be DXGI_FORMAT_R8G8_UNORM for NV12 chrominance channel.
+            // Chrominance has 4 bits for U and 4 bits for V per pixel. DirectX will handle converting 4-bit
+            // integers into normalized floats for use in the shader.
+            D3D11_SHADER_RESOURCE_VIEW_DESC const chrominancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
+                    m_texture.Get(),
+                    D3D11_SRV_DIMENSION_TEXTURE2D,
+                    DXGI_FORMAT_R8G8_UNORM
+            );
+
+            hr = m_Device->CreateShaderResourceView(
+                    m_texture.Get(),
+                    &chrominancePlaneDesc,
+                    m_chrominanceView.GetAddressOf()
+            );
+            if (FAILED(hr)) {
+                return ProcessFailure(m_Device, L"Failed to create shader resource view", L"Error", hr, SystemTransitionsExpectedErrors);
+            }
+            raw_image_format_ = raw_format;
         }
+        else if (raw_format == RawImageFormat::kRawImageI420 || raw_format == RawImageFormat::kRawImageI444) {
+            LOGI("Create texture, format: {}, size: {}", raw_format, m_width, m_height);
 
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb173059(v=vs.85).aspx
-        // To access DXGI_FORMAT_NV12 in the shader, we need to map the luminance channel and the chrominance channels
-        // into a format that shaders can understand.
-        // In the case of NV12, DirectX understands how the texture is laid out, so we can create these
-        // shader resource views which represent the two channels of the NV12 texture.
-        // Then inside the shader we convert YUV into RGB so we can render.
+            D3D11_TEXTURE2D_DESC textureDesc;
+            textureDesc.Width = m_width;
+            textureDesc.Height = m_height;
+            textureDesc.MipLevels = 1;
+            textureDesc.ArraySize = 1;
+            textureDesc.Format = DXGI_FORMAT_R8_UNORM;
 
-        // DirectX specifies the view format to be DXGI_FORMAT_R8_UNORM for NV12 luminance channel.
-        // Luminance is 8 bits per pixel. DirectX will handle converting 8-bit integers into normalized
-        // floats for use in the shader.
-        D3D11_SHADER_RESOURCE_VIEW_DESC const luminancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-            m_texture.Get(),
-            D3D11_SRV_DIMENSION_TEXTURE2D,
-            DXGI_FORMAT_R8_UNORM
-        );
+            //	textureDesc.SampleDesc.Count = 4;
+            //	textureDesc.SampleDesc.Quality = m_4xMsaaQuality - 1;
 
-        hr = m_Device->CreateShaderResourceView(
-            m_texture.Get(),
-            &luminancePlaneDesc,
-            m_luminanceView.GetAddressOf()
-        );
-        if (FAILED(hr)) {
-            return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr, SystemTransitionsExpectedErrors);
-        }
+            textureDesc.SampleDesc.Count = 1;
+            textureDesc.SampleDesc.Quality = 0;
+            textureDesc.Usage = D3D11_USAGE_DYNAMIC ;//D3D11_USAGE_DEFAULT;
+            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+            textureDesc.MiscFlags = 0;
+            auto hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texturePlanes[0].GetAddressOf());
+            if (FAILED(hr)) {
+                LOGE("CreateTexture2D failed.");
+                return DUPL_RETURN_ERROR_UNEXPECTED;
+            }
 
-        // DirectX specifies the view format to be DXGI_FORMAT_R8G8_UNORM for NV12 chrominance channel.
-        // Chrominance has 4 bits for U and 4 bits for V per pixel. DirectX will handle converting 4-bit
-        // integers into normalized floats for use in the shader.
-        D3D11_SHADER_RESOURCE_VIEW_DESC const chrominancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-            m_texture.Get(),
-            D3D11_SRV_DIMENSION_TEXTURE2D,
-            DXGI_FORMAT_R8G8_UNORM
-        );
+            if (raw_format == RawImageFormat::kRawImageI420) {
+                textureDesc.Width = m_width / 2;
+                textureDesc.Height = m_height / 2;
+            }
+            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texturePlanes[1].GetAddressOf());
+            if (FAILED(hr)) {
+                LOGE("CreateTexture2D failed.");
+                return DUPL_RETURN_ERROR_UNEXPECTED;
+            }
 
-        hr = m_Device->CreateShaderResourceView(
-            m_texture.Get(),
-            &chrominancePlaneDesc,
-            m_chrominanceView.GetAddressOf()
-        );
-        if (FAILED(hr)) {
-            return ProcessFailure(m_Device, L"Failed to create shader resource view", L"Error", hr, SystemTransitionsExpectedErrors);
+            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texturePlanes[2].GetAddressOf());
+            if (FAILED(hr)) {
+                LOGE("CreateTexture2D failed.");
+                return DUPL_RETURN_ERROR_UNEXPECTED;
+            }
+
+            D3D11_SHADER_RESOURCE_VIEW_DESC resourceviewDesc;
+            resourceviewDesc.Format = DXGI_FORMAT_R8_UNORM;
+            resourceviewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            resourceviewDesc.Texture2D.MipLevels = 1u;
+            resourceviewDesc.Texture2D.MostDetailedMip = 0u;
+
+            for (int i = 0; i < 3; i++) {
+                hr = m_Device->CreateShaderResourceView(texturePlanes[i].Get(), &resourceviewDesc, reourceviewPlaner[i].GetAddressOf());
+                if (FAILED(hr)) {
+                    LOGE("CreateShaderResourceView failed.");
+                    return DUPL_RETURN_ERROR_UNEXPECTED;
+                }
+            }
+            raw_image_format_ = raw_format;
         }
 
         return DUPL_RETURN_SUCCESS;
@@ -287,13 +345,26 @@ namespace tc
         if (m_chrominanceView) {
             m_chrominanceView.Reset();
         }
+
+        for (int i = 0; i < 3; i++) {
+            auto texture =  texturePlanes[i];
+            if (texture) {
+                texture.Reset();
+            }
+
+            auto resource = reourceviewPlaner[i];
+            if (resource) {
+                resource.Reset();
+            }
+        }
+
         return DUPL_RETURN_SUCCESS;
     }
 
-    DUPL_RETURN D3D11RenderManager::RecreateTexture(int frame_width, int frame_height) {
-        LOGI("Recreate texture with size: {}x{}", frame_width, frame_height);
+    DUPL_RETURN D3D11RenderManager::RecreateTexture(RawImageFormat raw_format, int frame_width, int frame_height) {
+        LOGI("Recreate texture with size: {}x{}, format: {}", frame_width, frame_height, raw_format);
         ReleaseTexture();
-        return CreateTexture(frame_width, frame_height);
+        return CreateTexture(raw_format, frame_width, frame_height);
     }
 
     //
@@ -341,24 +412,37 @@ namespace tc
             m_NeedsResize = false;
         }
 
-        D3DCOLORVALUE m_BackColor{0.0f, 0.135f, 0.481f, 1.0f};
+        D3DCOLORVALUE m_BackColor{0.0f, 0.0f, 0.0f, 1.0f};
         m_DeviceContext->ClearRenderTargetView(m_RTV.Get(), reinterpret_cast<const float *>(&m_BackColor));
 
-        FLOAT blendFactor[4] = {0.f, 0.f, 0.f, 0.f};
-        m_DeviceContext->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
+        // FLOAT blendFactor[4] = {0.f, 0.f, 0.f, 0.f};
+        // m_DeviceContext->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
         m_DeviceContext->OMSetRenderTargets(1, m_RTV.GetAddressOf(), nullptr);
 
-        // Rendering NV12 requires two resource views, which represent the luminance and chrominance channels of the YUV formatted texture.
-        std::array<ID3D11ShaderResourceView*, 2> const textureViews = {
-            m_luminanceView.Get(),
-            m_chrominanceView.Get()
-        };
-        // Bind the NV12 channels to the shader.
-        m_DeviceContext->PSSetShaderResources(
-            0,
-            textureViews.size(),
-            textureViews.data()
-        );
+        if (raw_image_format_ == RawImageFormat::kRawImageD3D11Texture) {
+            // Rendering NV12 requires two resource views, which represent the luminance and chrominance channels of the YUV formatted texture.
+            std::array<ID3D11ShaderResourceView *, 2> const textureViews = {
+                m_luminanceView.Get(),
+                m_chrominanceView.Get()
+            };
+            // Bind the NV12 channels to the shader.
+            m_DeviceContext->PSSetShaderResources(
+                    0,
+                    textureViews.size(),
+                    textureViews.data()
+            );
+        }
+        else if (raw_image_format_ == RawImageFormat::kRawImageI420 || raw_image_format_ == RawImageFormat::kRawImageI444) {
+            std::array<ID3D11ShaderResourceView*, 3> textureViews;
+            textureViews[0] = reourceviewPlaner[0].Get();
+            textureViews[1] = reourceviewPlaner[1].Get();
+            textureViews[2] = reourceviewPlaner[2].Get();
+            m_DeviceContext->PSSetShaderResources(
+                0,
+                textureViews.size(),
+                textureViews.data()
+            );
+        }
 
         // Set resources
         UINT Stride = sizeof(VERTEX);
@@ -368,7 +452,6 @@ namespace tc
         // Draw textured quad onto render target
         m_DeviceContext->Draw(NUMVERTICES, 0);
 
-        // 解除资源绑定（避免资源泄漏警告）
         ID3D11ShaderResourceView* nullSRVs[2] = { nullptr, nullptr };
         m_DeviceContext->PSSetShaderResources(0, 2, nullSRVs);
 
@@ -398,14 +481,23 @@ namespace tc
         }
         m_DeviceContext->IASetInputLayout(m_InputLayout.Get());
 
-        Size = ARRAYSIZE(g_PS);
-        hr = m_Device->CreatePixelShader(g_PS, Size, nullptr, m_PixelShader.GetAddressOf());
-        if (FAILED(hr)) {
-            return ProcessFailure(m_Device, L"Failed to create pixel shader in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
+        if (raw_image_format_ == RawImageFormat::kRawImageD3D11Texture) {
+            Size = ARRAYSIZE(g_nv12_PS);
+            hr = m_Device->CreatePixelShader(g_nv12_PS, Size, nullptr, m_PixelShaderNv12.GetAddressOf());
+            if (FAILED(hr)) {
+                return ProcessFailure(m_Device, L"Failed to create pixel shader[NV12] in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
+            }
+            m_DeviceContext->PSSetShader(m_PixelShaderNv12.Get(), nullptr, 0);
         }
-
+        else if (raw_image_format_ == RawImageFormat::kRawImageI420 || raw_image_format_ == RawImageFormat::kRawImageI444) {
+            Size = ARRAYSIZE(g_420p_PS);
+            hr = m_Device->CreatePixelShader(g_420p_PS, Size, nullptr, m_PixelShader420p.GetAddressOf());
+            if (FAILED(hr)) {
+                return ProcessFailure(m_Device, L"Failed to create pixel shader[420p] in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
+            }
+            m_DeviceContext->PSSetShader(m_PixelShader420p.Get(), nullptr, 0);
+        }
         m_DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
-        m_DeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
         m_DeviceContext->PSSetSamplers(0, 1, m_SamplerLinear.GetAddressOf());
         m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -491,8 +583,12 @@ namespace tc
             m_VertexShader.Reset();
         }
 
-        if (m_PixelShader) {
-            m_PixelShader.Reset();
+        if (m_PixelShaderNv12) {
+            m_PixelShaderNv12.Reset();
+        }
+
+        if (m_PixelShader420p) {
+            m_PixelShader420p.Reset();
         }
 
         if (m_InputLayout) {

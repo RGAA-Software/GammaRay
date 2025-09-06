@@ -8,7 +8,6 @@
 #include "gl/raw_image.h"
 #include "tc_common_new/time_util.h"
 
-
 namespace tc
 {
 
@@ -90,7 +89,7 @@ namespace tc
             MessageBoxA(0, 0, 0, 0);
             return;
         }
-        output.InitOutput(hwnd, frame_width, frame_height, device, context);
+        output.InitOutput(hwnd, RawImageFormat::kRawImageI420, frame_width, frame_height, device, context);
 
         bool Occluded = false;
         auto Ret = output.UpdateApplicationWindow(&Occluded);

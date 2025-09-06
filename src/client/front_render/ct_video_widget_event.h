@@ -13,12 +13,13 @@
 namespace tc
 {
 
-	class ClientContext;
-    class NetMessage;
-    class QtKeyConverter;
-    class ThunderSdk;
-    class Settings;
+    class Data;
     class Thread;
+    class Settings;
+    class ThunderSdk;
+    class NetMessage;
+    class ClientContext;
+    class QtKeyConverter;
 
     using OnMouseKeyboardEventCallback = std::function<void(int dup_idx, const std::shared_ptr<NetMessage>& msg)>;
 
@@ -57,13 +58,15 @@ namespace tc
         SdkCaptureMonitorInfo GetCaptureMonitorInfo();
         void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo &mon_info);
 
+        virtual void RefreshRGBBuffer(const char *buf, int width, int height, int channel);
+        virtual void RefreshI420Image(const std::shared_ptr<RawImage> &image);
+        virtual void RefreshI420Buffer(const char *y, int y_size, const char *u, int u_size, const char *v, int v_size, int width, int height);
+        virtual void RefreshI444Image(const std::shared_ptr<RawImage>& image);
+        virtual void RefreshI444Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
         virtual QWidget* AsWidget();
         virtual void RefreshImage(const std::shared_ptr<RawImage> &image);
         virtual void OnTimer1S();
-
-#ifdef WIN32
-
-#endif
+        virtual void OnUpdate() {}
 
     private:
         void SendCallback(const std::shared_ptr<NetMessage>& msg);
@@ -73,8 +76,8 @@ namespace tc
         Settings* settings_ = nullptr;
 		std::shared_ptr<ClientContext> context_ = nullptr;
         std::shared_ptr<QtKeyConverter> key_converter_ = nullptr;
-		int width = 0;
-		int height = 0;
+		int widget_width_ = 0;
+		int widget_height_ = 0;
 		int invalid_position = -10002200;
 		int last_cursor_x_ = invalid_position;
 		int last_cursor_y_ = invalid_position;
@@ -86,6 +89,19 @@ namespace tc
         std::shared_ptr<Thread> evt_cache_thread_ = nullptr;
         RawImageFormat raw_image_format_;
         FpsStat fps_stat_;
+
+        int tex_width_ = 0;
+        int tex_height_ = 0;
+        int tex_channel_ = -1;
+        bool need_create_texture_ = true;
+
+        std::mutex buf_mtx_;
+        // YUV Buffer
+        std::shared_ptr<Data> y_buffer_ = nullptr;
+        std::shared_ptr<Data> u_buffer_ = nullptr;
+        std::shared_ptr<Data> v_buffer_ = nullptr;
+        // RGB Buffer
+        std::shared_ptr<Data> rgb_buffer_ = nullptr;
 	};
 
 }

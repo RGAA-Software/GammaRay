@@ -6,7 +6,6 @@
 #include "thunder_sdk.h"
 
 #define TEST_SDL 0
-#define TEST_D3D11 0
 
 namespace tc
 {

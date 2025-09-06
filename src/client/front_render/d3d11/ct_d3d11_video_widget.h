@@ -35,7 +35,7 @@ namespace tc
                        int dup_idx, RawImageFormat format, QWidget *parent = nullptr);
         ~D3D11VideoWidget() override;
 
-        bool InitD3DEnvIfNeeded(int frame_width, int frame_height, ComPtr<ID3D11Device>,  ComPtr<ID3D11DeviceContext>);
+        bool InitD3DEnvIfNeeded(RawImageFormat raw_format, int frame_width, int frame_height, ComPtr<ID3D11Device>,  ComPtr<ID3D11DeviceContext>);
         QWidget * AsWidget() override;
         void RefreshImage(const std::shared_ptr<RawImage>& image) override;
         void OnTimer1S() override;
@@ -54,13 +54,11 @@ namespace tc
         void paintEvent(QPaintEvent *event) override;
 
     private:
+        void RefreshD3DImage(const std::shared_ptr<RawImage>& image);
+
+    private:
         std::shared_ptr<ClientContext> context = nullptr;
-        int frame_width = 0;
-        int frame_height = 0;
-        RawImageFormat format;
-
         bool init = false;
-
         int render_fps = 0;
         uint64_t last_update_fps_time = 0;
 

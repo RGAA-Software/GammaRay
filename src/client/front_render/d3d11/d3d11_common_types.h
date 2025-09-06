@@ -16,8 +16,9 @@
 #include <warning.h>
 #include <DirectXMath.h>
 
-#include "pixel_shader.h"
 #include "vertex_shader.h"
+#include "pixel_shader_nv12.h"
+#include "pixel_shader_420p.h"
 
 #define NUMVERTICES 6
 #define BPP         4
