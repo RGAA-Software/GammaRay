@@ -24,9 +24,9 @@ namespace tc
         ComPtr<ID3D11Texture2D> GetTexture() { return m_texture; }
         ComPtr<ID3D11Device> GetDevice() { return m_Device; }
         ComPtr<ID3D11DeviceContext> GetDeviceContext() { return m_DeviceContext; }
-        ComPtr<ID3D11Texture2D> GetYPlane() { return texturePlanes[0]; }
-        ComPtr<ID3D11Texture2D> GetUPlane() { return texturePlanes[1]; }
-        ComPtr<ID3D11Texture2D> GetVPlane() { return texturePlanes[2]; }
+        ComPtr<ID3D11Texture2D> GetYPlane() { return texture_plane_[0]; }
+        ComPtr<ID3D11Texture2D> GetUPlane() { return texture_plane_[1]; }
+        ComPtr<ID3D11Texture2D> GetVPlane() { return texture_plane_[2]; }
 
     private:
         // Methods
@@ -65,8 +65,8 @@ namespace tc
         DWORD m_OcclusionCookie = 0;
         std::mutex resize_mtx_;
         RawImageFormat raw_image_format_;
-        ComPtr<ID3D11Texture2D> texturePlanes[3];
-        ComPtr<ID3D11ShaderResourceView> reourceviewPlaner[3];
+        ComPtr<ID3D11Texture2D> texture_plane_[3];
+        ComPtr<ID3D11ShaderResourceView> shader_plane_[3];
     };
 
 }

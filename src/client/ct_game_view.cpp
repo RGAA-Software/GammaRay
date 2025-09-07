@@ -61,7 +61,6 @@ namespace tc
 #else
         video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
 #endif
-
         auto end = TimeUtil::GetCurrentTimestamp();
         LOGI("Create OpenGLWidget used: {}ms", (end-beg));
 

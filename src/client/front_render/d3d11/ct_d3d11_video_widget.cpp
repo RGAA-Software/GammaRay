@@ -14,78 +14,11 @@
 
 namespace tc
 {
-//    struct NV12Frame
-//    {
-//        UINT width;
-//        UINT height;
-//        UINT pitch;
-//        BYTE *Y;
-//        BYTE *UV;
-//    };
 
-//    static NV12Frame* nv12_frame = nullptr;
-//
-//    static NV12Frame* ReadNV12FromFile()
-//    {
-//
-//        char buf[1024];
-//        FILE *file = nullptr;
-//        sprintf_s(buf, "1920_1080.nv12");
-//        //sprintf_s(buf, "content\\16.nv12");
-//
-//        fopen_s(&file, buf, "rb");
-//
-//        int size = sizeof(NV12Frame);
-//        NV12Frame *nv12Frame = (NV12Frame*)malloc(size);
-//        //int readBytes = fread(nv12Frame, size, 1, file);
-//
-//        nv12Frame->width = 1920;
-//        nv12Frame->height = 1080;
-//        nv12Frame->pitch = nv12Frame->width;
-//
-//        int readBytes = 0;
-//
-//        size = nv12Frame->pitch * nv12Frame->height;
-//
-//        //size = nv12Frame->pitch * nv12Frame->height;
-//        nv12Frame->Y = (BYTE *)malloc(size);
-//        readBytes = fread(nv12Frame->Y, size, 1, file);
-//
-//        size = nv12Frame->pitch * nv12Frame->height / 2;
-//        nv12Frame->UV = (BYTE *)malloc(size);
-//        readBytes = fread(nv12Frame->UV, size, 1, file);
-//
-//        fclose(file);
-//
-//        return nv12Frame;
-//    }
-//
-//    static void WriteNV12ToTexture(NV12Frame *nv12Frame)
-//    {
-//        // Copy from CPU access texture to bitmap buffer
-//        D3D11_MAPPED_SUBRESOURCE resource;
-//        UINT subresource = D3D11CalcSubresource(0, 0, 0);
-//        output.m_DeviceContext->Map(output.m_texture, subresource, D3D11_MAP_WRITE_DISCARD, 0, &resource);
-//
-//        BYTE* dptr = reinterpret_cast<BYTE*>(resource.pData);
-//
-//        for (int i = 0; i < nv12Frame->height; i++)
-//        {
-//            memcpy(dptr + resource.RowPitch * i, nv12Frame->Y + nv12Frame->pitch * i, nv12Frame->pitch);
-//        }
-//
-//        for (int i = 0; i < nv12Frame->height / 2; i++)
-//        {
-//            memcpy(dptr + resource.RowPitch *(nv12Frame->height + i), nv12Frame->UV + nv12Frame->pitch * i, nv12Frame->pitch);
-//        }
-//
-//        output.m_DeviceContext->Unmap(output.m_texture, subresource);
-//    }
 
     D3D11VideoWidget::D3D11VideoWidget(const std::shared_ptr<ClientContext> &ctx, const std::shared_ptr<ThunderSdk> &sdk,
                                    int dup_idx, RawImageFormat format, QWidget *parent)
             : QWidget(parent), VideoWidget(ctx, sdk, dup_idx) {
-        this->context = ctx;
         this->raw_image_format_ = format;
         
         QPalette pal = palette();
@@ -193,11 +126,9 @@ namespace tc
             this->RefreshD3DImage(image);
         }
         else {
-            // update buffer
-            //VideoWidget::RefreshImage(image);
-
+            // Flush to GPU memory directly
             if (image->Format() == RawImageFormat::kRawImageI420  || raw_image_format_ == RawImageFormat::kRawImageI444) {
-                // Copy from CPU access texture to bitmap buffer
+                // Y
                 {
                     D3D11_MAPPED_SUBRESOURCE resource;
                     UINT subresource = D3D11CalcSubresource(0, 0, 0);
@@ -209,6 +140,7 @@ namespace tc
                     image->device_context_->Unmap(render_mgr_->GetYPlane().Get(), subresource);
                 }
 
+                // U
                 {
                     int y_offset = image->img_width * image->img_height;
                     D3D11_MAPPED_SUBRESOURCE resource;
@@ -228,6 +160,7 @@ namespace tc
                     image->device_context_->Unmap(render_mgr_->GetUPlane().Get(), subresource);
                 }
 
+                // V
                 {
                     D3D11_MAPPED_SUBRESOURCE resource;
                     UINT subresource = D3D11CalcSubresource(0, 0, 0);

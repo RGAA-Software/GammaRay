@@ -20,7 +20,6 @@ namespace tc
     class Director;
     class ClientContext;
     class ShaderProgram;
-    class Statistics;
     class ThunderSdk;
     class Settings;
     class Thread;
@@ -57,13 +56,7 @@ namespace tc
         void RefreshD3DImage(const std::shared_ptr<RawImage>& image);
 
     private:
-        std::shared_ptr<ClientContext> context = nullptr;
         bool init = false;
-        int render_fps = 0;
-        uint64_t last_update_fps_time = 0;
-
-        Statistics* statistics = nullptr;
-
         std::shared_ptr<D3D11RenderManager> render_mgr_ = nullptr;
 
         // for testing

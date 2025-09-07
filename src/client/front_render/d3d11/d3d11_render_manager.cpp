@@ -226,8 +226,7 @@ namespace tc
 
             hr = m_Device->CreateTexture2D(&texDesc, nullptr, m_texture.GetAddressOf());
             if (FAILED(hr)) {
-                return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr,
-                                      SystemTransitionsExpectedErrors);
+                return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr, SystemTransitionsExpectedErrors);
             }
 
             // https://msdn.microsoft.com/en-us/library/windows/desktop/bb173059(v=vs.85).aspx
@@ -241,9 +240,9 @@ namespace tc
             // Luminance is 8 bits per pixel. DirectX will handle converting 8-bit integers into normalized
             // floats for use in the shader.
             D3D11_SHADER_RESOURCE_VIEW_DESC const luminancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-                    m_texture.Get(),
-                    D3D11_SRV_DIMENSION_TEXTURE2D,
-                    DXGI_FORMAT_R8_UNORM
+                m_texture.Get(),
+                D3D11_SRV_DIMENSION_TEXTURE2D,
+                DXGI_FORMAT_R8_UNORM
             );
 
             hr = m_Device->CreateShaderResourceView(
@@ -252,23 +251,22 @@ namespace tc
                     m_luminanceView.GetAddressOf()
             );
             if (FAILED(hr)) {
-                return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr,
-                                      SystemTransitionsExpectedErrors);
+                return ProcessFailure(m_Device, L"Failed to create texture", L"Error", hr, SystemTransitionsExpectedErrors);
             }
 
             // DirectX specifies the view format to be DXGI_FORMAT_R8G8_UNORM for NV12 chrominance channel.
             // Chrominance has 4 bits for U and 4 bits for V per pixel. DirectX will handle converting 4-bit
             // integers into normalized floats for use in the shader.
             D3D11_SHADER_RESOURCE_VIEW_DESC const chrominancePlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-                    m_texture.Get(),
-                    D3D11_SRV_DIMENSION_TEXTURE2D,
-                    DXGI_FORMAT_R8G8_UNORM
+                m_texture.Get(),
+                D3D11_SRV_DIMENSION_TEXTURE2D,
+                DXGI_FORMAT_R8G8_UNORM
             );
 
             hr = m_Device->CreateShaderResourceView(
-                    m_texture.Get(),
-                    &chrominancePlaneDesc,
-                    m_chrominanceView.GetAddressOf()
+                m_texture.Get(),
+                &chrominancePlaneDesc,
+                m_chrominanceView.GetAddressOf()
             );
             if (FAILED(hr)) {
                 return ProcessFailure(m_Device, L"Failed to create shader resource view", L"Error", hr, SystemTransitionsExpectedErrors);
@@ -276,7 +274,7 @@ namespace tc
             raw_image_format_ = raw_format;
         }
         else if (raw_format == RawImageFormat::kRawImageI420 || raw_format == RawImageFormat::kRawImageI444) {
-            LOGI("Create texture, format: {}, size: {}", raw_format, m_width, m_height);
+            LOGI("Create texture, format: {}, size: {}", (int)raw_format, m_width, m_height);
 
             D3D11_TEXTURE2D_DESC textureDesc;
             textureDesc.Width = m_width;
@@ -284,17 +282,15 @@ namespace tc
             textureDesc.MipLevels = 1;
             textureDesc.ArraySize = 1;
             textureDesc.Format = DXGI_FORMAT_R8_UNORM;
-
             //	textureDesc.SampleDesc.Count = 4;
             //	textureDesc.SampleDesc.Quality = m_4xMsaaQuality - 1;
-
             textureDesc.SampleDesc.Count = 1;
             textureDesc.SampleDesc.Quality = 0;
             textureDesc.Usage = D3D11_USAGE_DYNAMIC ;//D3D11_USAGE_DEFAULT;
             textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
             textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
             textureDesc.MiscFlags = 0;
-            auto hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texturePlanes[0].GetAddressOf());
+            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texture_plane_[0].GetAddressOf());
             if (FAILED(hr)) {
                 LOGE("CreateTexture2D failed.");
                 return DUPL_RETURN_ERROR_UNEXPECTED;
@@ -304,13 +300,14 @@ namespace tc
                 textureDesc.Width = m_width / 2;
                 textureDesc.Height = m_height / 2;
             }
-            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texturePlanes[1].GetAddressOf());
+
+            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texture_plane_[1].GetAddressOf());
             if (FAILED(hr)) {
                 LOGE("CreateTexture2D failed.");
                 return DUPL_RETURN_ERROR_UNEXPECTED;
             }
 
-            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texturePlanes[2].GetAddressOf());
+            hr = m_Device->CreateTexture2D(&textureDesc, nullptr, texture_plane_[2].GetAddressOf());
             if (FAILED(hr)) {
                 LOGE("CreateTexture2D failed.");
                 return DUPL_RETURN_ERROR_UNEXPECTED;
@@ -323,7 +320,7 @@ namespace tc
             resourceviewDesc.Texture2D.MostDetailedMip = 0u;
 
             for (int i = 0; i < 3; i++) {
-                hr = m_Device->CreateShaderResourceView(texturePlanes[i].Get(), &resourceviewDesc, reourceviewPlaner[i].GetAddressOf());
+                hr = m_Device->CreateShaderResourceView(texture_plane_[i].Get(), &resourceviewDesc, shader_plane_[i].GetAddressOf());
                 if (FAILED(hr)) {
                     LOGE("CreateShaderResourceView failed.");
                     return DUPL_RETURN_ERROR_UNEXPECTED;
@@ -347,12 +344,12 @@ namespace tc
         }
 
         for (int i = 0; i < 3; i++) {
-            auto texture =  texturePlanes[i];
+            auto texture =  texture_plane_[i];
             if (texture) {
                 texture.Reset();
             }
 
-            auto resource = reourceviewPlaner[i];
+            auto resource = shader_plane_[i];
             if (resource) {
                 resource.Reset();
             }
@@ -421,27 +418,37 @@ namespace tc
 
         if (raw_image_format_ == RawImageFormat::kRawImageD3D11Texture) {
             // Rendering NV12 requires two resource views, which represent the luminance and chrominance channels of the YUV formatted texture.
-            std::array<ID3D11ShaderResourceView *, 2> const textureViews = {
+            std::array<ID3D11ShaderResourceView *, 2> const texture_views = {
                 m_luminanceView.Get(),
                 m_chrominanceView.Get()
             };
             // Bind the NV12 channels to the shader.
             m_DeviceContext->PSSetShaderResources(
-                    0,
-                    textureViews.size(),
-                    textureViews.data()
+                0,
+                texture_views.size(),
+                texture_views.data()
             );
         }
         else if (raw_image_format_ == RawImageFormat::kRawImageI420 || raw_image_format_ == RawImageFormat::kRawImageI444) {
-            std::array<ID3D11ShaderResourceView*, 3> textureViews;
-            textureViews[0] = reourceviewPlaner[0].Get();
-            textureViews[1] = reourceviewPlaner[1].Get();
-            textureViews[2] = reourceviewPlaner[2].Get();
+            std::array<ID3D11ShaderResourceView*, 3> texture_views{};
+            texture_views[0] = shader_plane_[0].Get();
+            texture_views[1] = shader_plane_[1].Get();
+            texture_views[2] = shader_plane_[2].Get();
             m_DeviceContext->PSSetShaderResources(
                 0,
-                textureViews.size(),
-                textureViews.data()
+                texture_views.size(),
+                texture_views.data()
             );
+        }
+
+        // Vertex Shader
+        m_DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+        // Pixel Shader
+        if (raw_image_format_ == RawImageFormat::kRawImageD3D11Texture) {
+            m_DeviceContext->PSSetShader(m_PixelShaderNv12.Get(), nullptr, 0);
+        }
+        else if (raw_image_format_ == RawImageFormat::kRawImageI420 || raw_image_format_ == RawImageFormat::kRawImageI444) {
+            m_DeviceContext->PSSetShader(m_PixelShader420p.Get(), nullptr, 0);
         }
 
         // Set resources
@@ -464,8 +471,8 @@ namespace tc
     DUPL_RETURN D3D11RenderManager::InitShaders() {
         HRESULT hr;
 
-        UINT Size = ARRAYSIZE(g_VS);
-        hr = m_Device->CreateVertexShader(g_VS, Size, nullptr, m_VertexShader.GetAddressOf());
+        UINT shader_size = ARRAYSIZE(g_VS);
+        hr = m_Device->CreateVertexShader(g_VS, shader_size, nullptr, m_VertexShader.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create vertex shader in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
@@ -475,26 +482,28 @@ namespace tc
              {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
         }};
 
-        hr = m_Device->CreateInputLayout(Layout.data(), Layout.size(), g_VS, Size, m_InputLayout.GetAddressOf());
+        hr = m_Device->CreateInputLayout(Layout.data(), Layout.size(), g_VS, shader_size, m_InputLayout.GetAddressOf());
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to create input layout in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
         m_DeviceContext->IASetInputLayout(m_InputLayout.Get());
 
+        shader_size = ARRAYSIZE(g_nv12_PS);
+        hr = m_Device->CreatePixelShader(g_nv12_PS, shader_size, nullptr, m_PixelShaderNv12.GetAddressOf());
+        if (FAILED(hr)) {
+            return ProcessFailure(m_Device, L"Failed to create pixel shader[NV12] in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
+        }
+
+        shader_size = ARRAYSIZE(g_420p_PS);
+        hr = m_Device->CreatePixelShader(g_420p_PS, shader_size, nullptr, m_PixelShader420p.GetAddressOf());
+        if (FAILED(hr)) {
+            return ProcessFailure(m_Device, L"Failed to create pixel shader[420p] in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
+        }
+
         if (raw_image_format_ == RawImageFormat::kRawImageD3D11Texture) {
-            Size = ARRAYSIZE(g_nv12_PS);
-            hr = m_Device->CreatePixelShader(g_nv12_PS, Size, nullptr, m_PixelShaderNv12.GetAddressOf());
-            if (FAILED(hr)) {
-                return ProcessFailure(m_Device, L"Failed to create pixel shader[NV12] in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
-            }
             m_DeviceContext->PSSetShader(m_PixelShaderNv12.Get(), nullptr, 0);
         }
         else if (raw_image_format_ == RawImageFormat::kRawImageI420 || raw_image_format_ == RawImageFormat::kRawImageI444) {
-            Size = ARRAYSIZE(g_420p_PS);
-            hr = m_Device->CreatePixelShader(g_420p_PS, Size, nullptr, m_PixelShader420p.GetAddressOf());
-            if (FAILED(hr)) {
-                return ProcessFailure(m_Device, L"Failed to create pixel shader[420p] in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
-            }
             m_DeviceContext->PSSetShader(m_PixelShader420p.Get(), nullptr, 0);
         }
         m_DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);

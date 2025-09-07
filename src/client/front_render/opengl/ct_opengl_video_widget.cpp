@@ -123,12 +123,7 @@ namespace tc
 
 	void OpenGLVideoWidget::RefreshImage(const std::shared_ptr<RawImage>& image) {
 		VideoWidget::RefreshImage(image);
-         if (GetDisplayImageFormat() != kRawImageI420) {
-             SetDisplayImageFormat(kRawImageI420);
-         }
-         else if (GetDisplayImageFormat() != kRawImageI444) {
-             SetDisplayImageFormat(kRawImageI444);
-         }
+        SetDisplayImageFormat(image->img_format);
 	}
 
 	void OpenGLVideoWidget::resizeEvent(QResizeEvent* event) {
