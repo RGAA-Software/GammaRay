@@ -15,6 +15,9 @@ namespace tc
         this->setStyleSheet("background:#FFFFFFFF;");
         listener_ = context_->ObtainMessageListener();
         listener_->Listen<SdkMsgTimer1000>([this](const SdkMsgTimer1000& m) {
+            if (this->isHidden()) {
+                return;
+            }
             context_->PostUITask([this]() {
                 update();
                 toggle_++;

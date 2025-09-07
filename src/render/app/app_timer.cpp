@@ -6,6 +6,7 @@
 #include "rd_context.h"
 #include "app/app_messages.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/fps_stat.h"
 
 #include <vector>
 #include <format>
@@ -13,9 +14,10 @@
 namespace tc
 {
 
+    static FpsStat g_timer_16_fps;
+
     AppTimer::AppTimer(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
-        timer_ = std::make_shared<asio2::timer>();
     }
 
     void AppTimer::StartTimers() {
@@ -28,16 +30,25 @@ namespace tc
             kTimerDuration16,
         };
         for (const auto& duration : durations) {
-            auto timer_id = std::format("tid:{}", (int)duration);
-            timer_->start_timer(timer_id, (int)duration, [=, this]() {
-                this->NotifyTimeout(duration);
+            auto timer = std::make_shared<QTimer>();
+            timers_.insert({duration, timer});
+            connect(timer.get(), &QTimer::timeout, this, [=, this]() {
+                NotifyTimeout(duration);
             });
+            timer->start((int)duration);
+        }
+    }
+
+    void AppTimer::StopTimers() {
+        for (const auto& [duration, timer] : timers_) {
+            timer->stop();
         }
     }
 
     void AppTimer::NotifyTimeout(AppTimerDuration duration) {
         if (duration == AppTimerDuration::kTimerDuration1000) {
             context_->SendAppMessage(MsgTimer1000{});
+            //LOGI("16ms timer fps: {}", g_timer_16_fps.value());
         }
         else if (duration == AppTimerDuration::kTimerDuration2000) {
             context_->SendAppMessage(MsgTimer2000{});
@@ -53,6 +64,7 @@ namespace tc
         }
         else if (duration == AppTimerDuration::kTimerDuration16) {
             context_->SendAppMessage(MsgTimer16{});
+            //g_timer_16_fps.Tick();
         }
     }
 

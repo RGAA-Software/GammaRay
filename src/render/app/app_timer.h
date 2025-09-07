@@ -8,7 +8,7 @@
 #include <memory>
 #include <functional>
 #include <unordered_map>
-#include <asio2/asio2.hpp>
+#include <QTimer>
 
 namespace tc
 {
@@ -24,18 +24,18 @@ namespace tc
         kTimerDuration16 = 16,
     };
 
-    class AppTimer {
+    class AppTimer : public QObject {
     public:
-
         explicit AppTimer(const std::shared_ptr<RdContext>& ctx);
         void StartTimers();
+        void StopTimers();
 
     private:
         void NotifyTimeout(AppTimerDuration duration);
 
     private:
         std::shared_ptr<RdContext> context_ = nullptr;
-        std::shared_ptr<asio2::timer> timer_ = nullptr;
+        std::map<AppTimerDuration, std::shared_ptr<QTimer>> timers_;
     };
 
 }

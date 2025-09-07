@@ -17,9 +17,6 @@
 #include "tc_encoder_new/video_encoder_factory.h"
 #include "tc_capture_new/capture_message.h"
 #include "tc_capture_new/capture_message_maker.h"
-//#include "hook_capture/audio_capture_factory.h"
-//#include "hook_capture/desktop_capture.h"
-//#include "hook_capture/desktop_capture_factory.h"
 #include "app/app_manager.h"
 #include "app/app_manager_factory.h"
 #include "app/app_messages.h"
@@ -60,6 +57,8 @@ namespace tc
 {
 
     std::shared_ptr<RdApplication> rdApp;
+
+    static FpsStat timer_fps;
 
     std::shared_ptr<RdApplication> RdApplication::Make(const AppParams& args) {
         // By OS
@@ -210,9 +209,9 @@ namespace tc
                 }
                 plugin->On16MilliSecond();
                 if (++timer_count_16ms_ % 2 == 0) {
-
+                    plugin->On33MilliSecond();
+                    timer_fps.Tick();
                 }
-                plugin->On33MilliSecond();
             });
 
             this->PostGlobalTask([=, this]() {
@@ -232,6 +231,8 @@ namespace tc
 
             auto plugin_manager = context_->GetPluginManager();
             plugin_manager->On1Second();
+
+            LOGI("timer fps: {}", timer_fps.value());
         });
 
         msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {
@@ -756,6 +757,9 @@ namespace tc
     }
 
     void RdApplication::Exit() {
+        if (app_timer_) {
+            app_timer_->StopTimers();
+        }
         if (app_shared_info_) {
             app_shared_info_->Exit();
         }

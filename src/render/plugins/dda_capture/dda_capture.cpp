@@ -390,9 +390,9 @@ namespace tc
                 continuous_timeout_times_ = 0;
                 OnCaptureFrame(texture, is_cached);
                 uint64_t end_time = TimeUtil::GetCurrentTimestamp();
-                int cap_use_time = end_time - beg_time;
+                auto cap_use_time = end_time - beg_time;
                 if (target_duration > (cap_use_time + 5)) {
-                    TimeUtil::DelayBySleep(target_duration - cap_use_time -3);
+                    TimeUtil::DelayBySleep(target_duration - cap_use_time - 3);
                     //LOGI("DelayBySleep: {}", target_duration - cap_use_time - 3);
                 }
             }
@@ -507,7 +507,8 @@ namespace tc
         //}
 
         if (plugin_->IsPluginEnabled()) {
-            if (wanted_fps_ >= 60) {
+            if (wanted_fps_ >= 60 || send_texture_in_slow_) {
+                send_texture_in_slow_ = false;
                 SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
             }
         }
@@ -609,13 +610,6 @@ namespace tc
         if (wanted_fps_ < 60) {
             send_texture_in_slow_ = true;
         }
-        LOGI("wanted fps: {}", wanted_fps_);
-        D3D11_TEXTURE2D_DESC input_desc;
-        last_list_texture_->texture2d_->GetDesc(&input_desc);
-        UINT input_width = input_desc.Width;
-        UINT input_height = input_desc.Height;
-        DXGI_FORMAT input_format = input_desc.Format;
-        SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
     }
 
 
