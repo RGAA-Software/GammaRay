@@ -12,7 +12,8 @@ namespace tc
     }
 
     void PluginDesktopCapture::SetCaptureFps(int fps) {
-        capture_fps_ = fps;
+        wanted_fps_ = fps;
+        capture_fps_ = std::max(60, fps);
     }
 
     void PluginDesktopCapture::RefreshScreen() {
@@ -55,6 +56,14 @@ namespace tc
         inputs[1].ki.wVk = VK_SHIFT;
         inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(2, inputs, sizeof(INPUT));
+    }
+
+    void PluginDesktopCapture::On16MilliSecond() {
+
+    }
+
+    void PluginDesktopCapture::On33MilliSecond() {
+
     }
 
 }

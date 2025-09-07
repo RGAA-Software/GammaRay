@@ -84,6 +84,8 @@ namespace tc
         bool IsInitSuccess() override;
         int GetCapturingFps() override;
         void TryWakeOs() override;
+        void On16MilliSecond() override;
+        void On33MilliSecond() override;
 
         using DDAInitCallback = std::function<void(bool)>;
         DDAInitCallback dda_init_callback_ = nullptr;
@@ -119,5 +121,7 @@ namespace tc
         ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
 
         std::atomic<int32_t> continuous_timeout_times_ = 0;
+
+        std::atomic_bool send_texture_in_slow_ = false;
     };
 }

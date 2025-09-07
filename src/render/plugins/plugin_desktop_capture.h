@@ -30,9 +30,12 @@ namespace tc
         virtual std::vector<int32_t> GetCaptureGaps();
         virtual CaptureMonitorInfo GetMyMonitorInfo() { return my_monitor_info_; }
         virtual void TryWakeOs();
+        virtual void On16MilliSecond();
+        virtual void On33MilliSecond();
 
     protected:
         int capture_fps_ = 60;
+        int wanted_fps_ = 60;
         bool refresh_screen_ = false;
         std::atomic_bool pausing_ = false;
         CaptureMonitorInfo my_monitor_info_;

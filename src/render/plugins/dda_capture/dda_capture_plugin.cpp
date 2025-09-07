@@ -339,14 +339,6 @@ namespace tc
     }
 
     void DDACapturePlugin::On1Second() {
-        // TODO: IGNORE THIS
-        //SetCaptureMonitor(capturing_monitor_name_);
-        //NotifyCaptureMonitorInfo();
-        //LOGI("Capturing monitor: {}", capturing_monitor_name_);
-        //for (auto& [k, v] : captures_) {
-        //    LOGI("capture name: {}, fps: {}", k, v->GetCapturingFps());
-        //}
-
         if (1 == captures_.size()) {
 
             int32_t continuous_timeout_times = 0;
@@ -366,8 +358,20 @@ namespace tc
                 }
             }
         }
-
     }
+
+    void DDACapturePlugin::On16MilliSecond() {
+        for (const auto& [mon, capture] : captures_) {
+            capture->On16MilliSecond();
+        }
+    }
+
+    void DDACapturePlugin::On33MilliSecond() {
+        for (const auto& [mon, capture] : captures_) {
+            capture->On33MilliSecond();
+        }
+    }
+
 
     void DDACapturePlugin::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
         GrPluginInterface::OnNewClientConnected(visitor_device_id, stream_id, conn_type);
@@ -396,8 +400,8 @@ namespace tc
             }
             if (!found) {
                 resolutions.push_back(SupportedResolution{
-                        .width_ = dm.dmPelsWidth,
-                        .height_ = dm.dmPelsHeight,
+                    .width_ = dm.dmPelsWidth,
+                    .height_ = dm.dmPelsHeight,
                 });
             }
         }

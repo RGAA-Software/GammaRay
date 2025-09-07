@@ -48,8 +48,7 @@ namespace tc
             capture_init_failed_cbk_ = std::move(cbk);
         }
 
-        bool IsValidRect(const RECT& rect)
-        {
+        bool IsValidRect(const RECT& rect) {
             return rect.right > rect.left && rect.bottom > rect.top;
         }
         
@@ -71,6 +70,10 @@ namespace tc
         virtual std::optional<int> GetMonIndexByName(const std::string& name) = 0;
 
         virtual void HandleDisplayDeviceChangeEvent() = 0;
+
+        virtual void On16MilliSecond();
+        virtual void On33MilliSecond();
+
     protected:
         int capture_fps_ = 60;
         std::string capturing_monitor_name_;

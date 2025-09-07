@@ -164,6 +164,9 @@ namespace tc
         std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
 
         std::shared_ptr<WinDesktopManager> desktop_mgr_ = nullptr;
+
+        // timer count
+        int64_t timer_count_16ms_ = 0;
     };
 
     extern std::shared_ptr<RdApplication> rdApp;

@@ -44,4 +44,12 @@ namespace tc
         capture_fps_ = fps;
     }
 
+    void GrMonitorCapturePlugin::On16MilliSecond() {
+
+    }
+
+    void GrMonitorCapturePlugin::On33MilliSecond() {
+
+    }
+
 }

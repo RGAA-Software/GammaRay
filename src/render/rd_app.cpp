@@ -202,6 +202,19 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgTimer16>([=, this](const MsgTimer16& msg) {
+            context_->PostTask([=, this]() {
+                // notify dda capture
+                auto plugin = plugin_manager_->GetDDACapturePlugin();
+                if (!plugin) {
+                    return;
+                }
+                plugin->On16MilliSecond();
+                if (++timer_count_16ms_ % 2 == 0) {
+
+                }
+                plugin->On33MilliSecond();
+            });
+
             this->PostGlobalTask([=, this]() {
                 this->SendAudioSpectrumMessage();
             });

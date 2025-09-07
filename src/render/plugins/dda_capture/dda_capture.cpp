@@ -507,7 +507,9 @@ namespace tc
         //}
 
         if (plugin_->IsPluginEnabled()) {
-            SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
+            if (wanted_fps_ >= 60) {
+                SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
+            }
         }
     }
 
@@ -595,5 +597,26 @@ namespace tc
     int32_t DDACapture::GetContinuousTimeoutTimes() {
         return continuous_timeout_times_.load();
     }
+
+    void DDACapture::On16MilliSecond() {
+
+    }
+
+    void DDACapture::On33MilliSecond() {
+        if (!last_list_texture_ || !last_list_texture_->texture2d_) {
+            return;
+        }
+        if (wanted_fps_ < 60) {
+            send_texture_in_slow_ = true;
+        }
+        LOGI("wanted fps: {}", wanted_fps_);
+        D3D11_TEXTURE2D_DESC input_desc;
+        last_list_texture_->texture2d_->GetDesc(&input_desc);
+        UINT input_width = input_desc.Width;
+        UINT input_height = input_desc.Height;
+        DXGI_FORMAT input_format = input_desc.Format;
+        SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
+    }
+
 
 } // tc

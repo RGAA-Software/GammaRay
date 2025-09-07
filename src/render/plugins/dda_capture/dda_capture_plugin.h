@@ -33,6 +33,8 @@ namespace tc
         void SetCaptureFps(int fps) override;
         void OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) override;
         void On1Second() override;
+        void On16MilliSecond() override;
+        void On33MilliSecond() override;
 
         //根据显示器名字获取排序位置
         std::optional<int> GetMonIndexByName(const std::string& name) override;
