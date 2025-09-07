@@ -90,7 +90,6 @@ namespace tc
         FloatController* float_controller_ = nullptr;
         FloatControllerPanel* controller_panel_ = nullptr;
 
-
         MediaRecordSignLab* recording_sign_lab_ = nullptr;
 
         bool need_recalculate_aspect_ = true;

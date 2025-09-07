@@ -2,23 +2,22 @@
 #include <qevent.h>
 #include <qpainter.h>
 #include <qwidget.h>
-#include <qcolor.h>
-
-class QTimer;
-
+#include <memory>
 
 namespace tc
 {
+
+    class ClientContext;
+    class MessageListener;
+
     class MediaRecordSignLab : public QWidget {
     public:
-        explicit MediaRecordSignLab(QWidget* parent = nullptr);
-        ~MediaRecordSignLab();
+        explicit MediaRecordSignLab(const std::shared_ptr<ClientContext>& context, QWidget* parent = nullptr);
         void paintEvent(QPaintEvent* event) override;
-    private:
-        QTimer* timer_ = nullptr;
-        QColor brush_color_;
 
-        int color_value_ = 0;
+    private:
         int toggle_ = 0;
+        std::shared_ptr<ClientContext> context_ = nullptr;
+        std::shared_ptr<MessageListener> listener_ = nullptr;
     };
 }

@@ -71,7 +71,7 @@ namespace tc
 
         InitFloatController();
 
-        recording_sign_lab_ = new MediaRecordSignLab(this);
+        recording_sign_lab_ = new MediaRecordSignLab(ctx, this);
         recording_sign_lab_->move(this->width() * 0.85, 20);
         recording_sign_lab_->hide();
 
@@ -87,19 +87,18 @@ namespace tc
         animation->setKeyValueAt(0.5, 0.0); // 中间点完全透明
         animation->setEndValue(1.0); // 结束时不透明
         animation->setLoopCount(-1); // 无限循环
-
+#endif
         msg_listener_->Listen<MsgClientMediaRecord>([=, this](const MsgClientMediaRecord& msg) {
             bool res = ctx_->GetRecording();
             if(res) {
                 recording_sign_lab_->show();
-                animation->start(); // 开始动画
+                //animation->start(); // 开始动画
             }
             else {
                 recording_sign_lab_->hide();
-                animation->stop();
+                //animation->stop();
             }
         });
-#endif
 
         msg_listener_->Listen<MsgClientSwitchMonitor>([=, this](const MsgClientSwitchMonitor& msg) {
             if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_ && !isHidden()) {

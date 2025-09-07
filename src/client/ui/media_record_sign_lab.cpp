@@ -1,29 +1,25 @@
 ﻿#include "media_record_sign_lab.h"
 #include <QTimer>
 #include <qfont.h>
+#include "ct_client_context.h"
 #include "tc_common_new/log.h"
-#include "app_color_theme.h"
+#include "tc_common_new/message_notifier.h"
+#include "tc_client_sdk_new/sdk_messages.h"
 
 namespace tc
 {
-    MediaRecordSignLab::MediaRecordSignLab(QWidget* parent) : QWidget(parent) {
-        setFixedSize(38, 24);
+    MediaRecordSignLab::MediaRecordSignLab(const std::shared_ptr<ClientContext>& context, QWidget* parent) : QWidget(parent) {
+        context_ = context;
+        setFixedSize(42, 24);
         setAttribute(Qt::WA_StyledBackground, true);
         this->setStyleSheet("background:#FFFFFFFF;");
-        timer_ = new QTimer(this);
-        timer_->setInterval(1000);
-        brush_color_ = QColor(0xFF, 0x5E, 0x57);
-        color_value_ = 0xff5357;
-        connect(timer_, &QTimer::timeout, this, [=, this]() {
-            update();
-            ++toggle_;
+        listener_ = context_->ObtainMessageListener();
+        listener_->Listen<SdkMsgTimer1000>([this](const SdkMsgTimer1000& m) {
+            context_->PostUITask([this]() {
+                update();
+                toggle_++;
+            });
         });
-
-        timer_->start();
-    }
-
-    MediaRecordSignLab::~MediaRecordSignLab() {
-        timer_->stop();
     }
 
     void MediaRecordSignLab::paintEvent(QPaintEvent* event) {
@@ -45,11 +41,11 @@ namespace tc
         painter.drawRoundedRect(this->rect(), 2, 2);
         painter.save();
         QFont font{ "Microsoft YaHei" };
-        font.setPixelSize(14);
+        font.setPixelSize(13);
         font.setBold(true);
         painter.setPen(font_pen);
         painter.setFont(font);
-        painter.drawText(6, 17, "REC");
+        painter.drawText(this->rect(), Qt::AlignCenter, "REC");
         painter.restore();
     }
 
