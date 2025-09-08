@@ -69,7 +69,7 @@ namespace tc
         srcBox.bottom = image->img_height;
         srcBox.front = 0;
         srcBox.back = 1;
-        context->CopySubresourceRegion(output.GetTexture().Get(), 0, 0, 0, 0, image->texture_, image->src_subresource_, &srcBox);
+        context->CopySubresourceRegion(output.GetTexture().Get(), 0, 0, 0, 0, image->texture_.Get(), image->src_subresource_, &srcBox);
 
         bool Occluded = false;
         auto Ret = output.UpdateApplicationWindow(&Occluded);
