@@ -35,7 +35,6 @@ namespace tc
 
     protected:
         int capture_fps_ = 60;
-        int wanted_fps_ = 60;
         bool refresh_screen_ = false;
         std::atomic_bool pausing_ = false;
         CaptureMonitorInfo my_monitor_info_;

@@ -121,7 +121,5 @@ namespace tc
         ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
 
         std::atomic<int32_t> continuous_timeout_times_ = 0;
-
-        std::atomic_bool send_texture_in_slow_ = false;
     };
 }

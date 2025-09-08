@@ -12,8 +12,7 @@ namespace tc
     }
 
     void PluginDesktopCapture::SetCaptureFps(int fps) {
-        wanted_fps_ = fps;
-        capture_fps_ = std::max(60, fps);
+        capture_fps_ = fps;
     }
 
     void PluginDesktopCapture::RefreshScreen() {

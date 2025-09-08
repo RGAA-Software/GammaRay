@@ -507,10 +507,7 @@ namespace tc
         //}
 
         if (plugin_->IsPluginEnabled()) {
-            if (wanted_fps_ >= 60 || send_texture_in_slow_) {
-                send_texture_in_slow_ = false;
-                SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
-            }
+            SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
         }
     }
 
@@ -604,12 +601,7 @@ namespace tc
     }
 
     void DDACapture::On33MilliSecond() {
-        if (!last_list_texture_ || !last_list_texture_->texture2d_) {
-            return;
-        }
-        if (wanted_fps_ < 60) {
-            send_texture_in_slow_ = true;
-        }
+
     }
 
 
