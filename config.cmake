@@ -1,4 +1,4 @@
 set(Inner_Protobuf_ENABLED ON)
 set(DirectXTex_ENABLED ON)
 set(FFTW3_ENABLED ON)
-set(TESTS_ENABLED OFF)
+set(TESTS_ENABLED ON)
