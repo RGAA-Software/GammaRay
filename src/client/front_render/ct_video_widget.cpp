@@ -1,4 +1,4 @@
-#include "ct_video_widget_event.h"
+#include "ct_video_widget.h"
 
 #include "tc_message.pb.h"
 #include "ct_qt_key_converter.h"

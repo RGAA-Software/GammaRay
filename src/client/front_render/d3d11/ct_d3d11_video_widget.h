@@ -9,7 +9,7 @@
 #include <memory>
 #include "tc_message.pb.h"
 #include "tc_client_sdk_new/gl/raw_image.h"
-#include "client/front_render/ct_video_widget_event.h"
+#include "client/front_render/ct_video_widget.h"
 
 namespace tc
 {

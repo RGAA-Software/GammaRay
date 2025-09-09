@@ -229,6 +229,10 @@ namespace tc
     class MsgClientFocusOutEvent : public MsgClientBase {
     public:
     };
+
+    class MsgRestartRender : public MsgClientBase {
+    public:
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

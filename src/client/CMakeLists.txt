@@ -24,7 +24,7 @@ set(SRCS_WS
     ct_client_context.cpp
     ct_workspace.cpp
     ct_base_workspace.cpp
-    front_render/ct_video_widget_event.cpp
+    front_render/ct_video_widget.cpp
     front_render/opengl/ct_director.cpp
     front_render/opengl/ct_opengl_video_widget.cpp
     front_render/opengl/ct_shader_program.cpp
@@ -72,6 +72,8 @@ set(SRCS_WS
     network/ct_panel_client.cpp
     plugins/ct_plugin_manager.cpp
     plugins/ct_plugin_event_router.cpp
+    api/ct_panel_api.cpp
+    api/ct_render_api.cpp
 )
 
 if (WIN32)

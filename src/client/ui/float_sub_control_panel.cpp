@@ -10,7 +10,9 @@
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
 #include "tc_label.h"
-#include <QLabel>
+#include "tc_dialog.h"
+#include "api/ct_panel_api.h"
+#include "ct_settings.h"
 
 namespace tc
 {
@@ -19,7 +21,7 @@ namespace tc
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
         int offset = 5;
-        setFixedSize(210, 178);
+        setFixedSize(210, 216);
         auto item_height = 38;
         auto border_spacing = 10;
         auto item_size = QSize(this->width() - 2*offset, item_height);
@@ -134,6 +136,39 @@ namespace tc
                 context_->SendAppMessage(MsgClientHidePanel{});
             });
         
+        }
+
+        // restart render
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
+
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_restart_render");
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing * 2);
+            layout->addWidget(lbl);
+            layout->addStretch();
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                context_->SendAppMessage(MsgClientHidePanel{});
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_restart_renderer_msg"), nullptr);
+                if (dialog.exec() != kDoneOk) {
+                    return;
+                }
+
+                auto st = Settings::Instance();
+                CtPanelApi::StopRender(st->host_, st->panel_server_port_);
+
+                context_->SendAppMessage(MsgRestartRender{});
+            });
+
         }
 
         root_layout->addStretch();

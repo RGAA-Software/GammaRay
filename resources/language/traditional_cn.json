@@ -238,6 +238,7 @@
   "id_clipboard": "剪切板",
   "id_ctrl_alt_delete": "Ctrl + Alt + Delete",
   "id_refresh_screen": "刷新",
+  "id_restart_render": "重啟渲染服務",
   "id_scale": "縮放",
   "id_resolution": "解析度",
   "id_full_color": "全彩(4:4:4)",

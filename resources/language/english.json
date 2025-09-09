@@ -237,6 +237,7 @@
   "id_clipboard": "Clipboard",
   "id_ctrl_alt_delete": "Ctrl + Alt + Delete",
   "id_refresh_screen": "Refresh Screen",
+  "id_restart_render": "Restart Render",
   "id_scale": "Scale",
   "id_resolution": "Resolution",
   "id_full_color": "Full Color(4:4:4)",
