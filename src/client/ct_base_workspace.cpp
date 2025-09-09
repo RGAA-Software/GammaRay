@@ -1127,12 +1127,6 @@ namespace tc
                 continue;
             }
 
-            if (desc1.VendorId == 0x8086) {
-                LOGI("Skip Microsoft Basic Render Driver (software adapter)");
-                ++adapter_index;
-                continue;
-            }
-
             auto adapter_uid = desc1.AdapterLuid.LowPart;
 
             D3D_FEATURE_LEVEL featureLevel;
