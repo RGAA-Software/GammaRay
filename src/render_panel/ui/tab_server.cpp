@@ -232,7 +232,7 @@ namespace tc
                 auto layout = new NoMarginVLayout();
 
                 auto qr_info = new TcQRWidget(this);
-                qr_info->setFixedSize(183, 183);
+                qr_info->setFixedSize(175, 175);
                 lbl_qr_code_ = qr_info;
                 qr_info->SetQRPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
@@ -244,7 +244,7 @@ namespace tc
                 auto img_path = ":/resources/tc_icon.png";
                 auto avatar = new RoundImageDisplay(img_path, size, size, 4);
                 avatar->setParent(qr_info);
-                avatar->setGeometry((qr_info->width()-size)/2+1, (qr_info->height()-size)/2+1, size, size);
+                avatar->setGeometry((qr_info->width()-size)/2, (qr_info->height()-size)/2, size, size);
             }
 
             // Connect Information
