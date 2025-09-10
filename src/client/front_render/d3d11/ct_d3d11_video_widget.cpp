@@ -57,6 +57,7 @@ namespace tc
 
         // Ignore to initialize when the Window was hidden or too small
         if (this->isHidden() || this->size().width() <= 256) {
+            LOGW("D3D11VideoWidget is not valid, hidden?: {}, size: {}x{}", this->isHidden(), this->width(), this->height());
             return false;
         }
 
@@ -65,6 +66,7 @@ namespace tc
             this->init = true;
             this->tex_width_ = fw;
             this->tex_height_ = fh;
+            LOGI("D3D11 render init success by size: {}x{}", fw, fh);
         }
         else {
             LOGI("D3D output init failed: {}", (int)r);
@@ -204,8 +206,11 @@ namespace tc
         srcBox.back = 1;
         image->device_context_->CopySubresourceRegion(render_mgr_->GetTexture().Get(), 0, 0, 0, 0, image->texture_.Get(), image->src_subresource_, &srcBox);
 
-        bool Occluded = false;
-        auto Ret = render_mgr_->UpdateApplicationWindow(&Occluded);
+        bool occluded = false;
+        auto r = render_mgr_->UpdateApplicationWindow(&occluded);
+        if (r != DUPL_RETURN_SUCCESS) {
+            LOGE("Draw Texture failed, maybe retry to initialize the d3d11.");
+        }
     }
 
     void D3D11VideoWidget::resizeEvent(QResizeEvent* event) {

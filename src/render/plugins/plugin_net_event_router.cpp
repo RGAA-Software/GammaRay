@@ -246,6 +246,12 @@ namespace tc {
 //                    ProcessExitControlledEnd();
 //                    break;
 //                }
+                case kStopRender: {
+                    ProcessUtil::KillProcess(GetCurrentProcessId());
+                }
+                case kLockDevice: {
+                    context_->SendAppMessage(MsgPanelStreamLockScreen{});
+                }
                 default: {
                    
                 }

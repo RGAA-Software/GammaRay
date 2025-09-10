@@ -365,20 +365,21 @@ namespace tc
             } else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED)) {
                 ++continuous_timeout_times_;
                 //LOGI("CaptureNextFrame res: {:x}", (uint32_t)res);
-                if (refresh_screen_) {
-                    if (cached_texture_ == nullptr) {
-                        continue;
-                    }
-                    if (used_cache_times_++ > 5) {
-                        refresh_screen_ = false;
-                    }
-                    texture = cached_texture_;
-                    is_cached = true;
-                    
-                    LOGI("Use cached texture!");
-                } else {
-                    continue;
-                }
+                 if (refresh_screen_) {
+                     if (cached_texture_ == nullptr) {
+                         continue;
+                     }
+                     if (used_cache_times_++ > 5) {
+                         refresh_screen_ = false;
+                     }
+                     texture = cached_texture_;
+                     is_cached = true;
+
+                     LOGI("Use cached texture!");
+                 }
+                 else {
+                     continue;
+                 }
             }
             else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));

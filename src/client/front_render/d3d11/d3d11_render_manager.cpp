@@ -106,12 +106,14 @@ namespace tc
         // Create shared texture
         DUPL_RETURN Return = CreateTexture(raw_format, frame_width, frame_height);
         if (Return != DUPL_RETURN_SUCCESS) {
+            LOGE("CreateTexture failed for size: {}x{} in format: {}", frame_width, frame_height, (int)raw_format);
             return Return;
         }
 
         // Make new render target view
         Return = MakeRTV();
         if (Return != DUPL_RETURN_SUCCESS) {
+            LOGE("MakeRTV failed");
             return Return;
         }
 
@@ -127,6 +129,7 @@ namespace tc
         // Initialize shaders
         Return = InitShaders();
         if (Return != DUPL_RETURN_SUCCESS) {
+            LOGE("Init shader failed.");
             return Return;
         }
 
@@ -134,6 +137,7 @@ namespace tc
         if (m_NeedsResize) {
             DUPL_RETURN Ret = ResizeSwapChain();
             if (Ret != DUPL_RETURN_SUCCESS) {
+                LOGE("Resize swapchain failed when InitOutput");
                 return Ret;
             }
             m_NeedsResize = false;
@@ -359,7 +363,7 @@ namespace tc
     }
 
     DUPL_RETURN D3D11RenderManager::RecreateTexture(RawImageFormat raw_format, int frame_width, int frame_height) {
-        LOGI("Recreate texture with size: {}x{}, format: {}", frame_width, frame_height, raw_format);
+        LOGI("Recreate texture with size: {}x{}, format: {}", frame_width, frame_height, (int)raw_format);
         ReleaseTexture();
         return CreateTexture(raw_format, frame_width, frame_height);
     }
@@ -403,6 +407,7 @@ namespace tc
                 std::lock_guard<std::mutex> guard(resize_mtx_);
                 DUPL_RETURN Ret = ResizeSwapChain();
                 if (Ret != DUPL_RETURN_SUCCESS) {
+                    LOGE("Resize swapchain failed when DrawFrame");
                     return Ret;
                 }
             }
@@ -576,6 +581,7 @@ namespace tc
         // Make new render target view
         DUPL_RETURN Ret = MakeRTV();
         if (Ret != DUPL_RETURN_SUCCESS) {
+            LOGE("MakeRTV failed when resize swapchain.");
             return Ret;
         }
 

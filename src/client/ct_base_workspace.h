@@ -70,6 +70,8 @@ namespace tc
         std::shared_ptr<ThunderSdk> GetThunderSdk();
         std::shared_ptr<ClientContext> GetContext();
         std::shared_ptr<D3D11DeviceWrapper> GetD3D11DeviceWrapper(uint64_t adapter_uid);
+        void PostMediaMessage(std::shared_ptr<Data> msg);
+        void PostFileTransferMessage(std::shared_ptr<Data> msg);
 
     protected:
         void InitPluginsManager();
@@ -182,5 +184,7 @@ namespace tc
     private:
         GameView* game_view_ = nullptr;
     };
+
+    extern std::shared_ptr<BaseWorkspace> gWorkspace;
 
 }

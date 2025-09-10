@@ -47,11 +47,14 @@
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "tc_relay_client/relay_api.h"
 #include "tc_message_new/proto_converter.h"
+#include "tc_message_new/proto_message_maker.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
 #include "front_render/opengl/ct_opengl_video_widget.h"
 
 namespace tc
 {
+
+    std::shared_ptr<BaseWorkspace> gWorkspace;
 
     BaseWorkspace::BaseWorkspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent) : QMainWindow(parent) {
         this->context_ = ctx;
@@ -67,6 +70,7 @@ namespace tc
     }
 
     void BaseWorkspace::Init() {
+        gWorkspace = shared_from_this();
         // plugins
         InitPluginsManager();
 
@@ -241,12 +245,7 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgClientCtrlAltDelete>([=, this](const MsgClientCtrlAltDelete& msg) {
-            tc::Message m;
-            m.set_type(tc::kReqCtrlAltDelete);
-            m.set_device_id(settings_->device_id_);
-            m.set_stream_id(settings_->stream_id_);
-            auto _ = m.mutable_req_ctrl_alt_delete();
-            if (auto buffer = tc::ProtoAsData(&m); buffer) {
+            if (auto buffer = ProtoMessageMaker::MakeCtrlAltDelete(settings_->device_id_, settings_->stream_id_); buffer) {
                 sdk_->PostMediaMessage(buffer);
             }
         });
@@ -1171,5 +1170,13 @@ namespace tc
             return nullptr;
         }
         return d3d11_devices_[adapter_uid];
+    }
+
+    void BaseWorkspace::PostMediaMessage(std::shared_ptr<Data> msg) {
+        sdk_->PostMediaMessage(msg);
+    }
+
+    void BaseWorkspace::PostFileTransferMessage(std::shared_ptr<Data> msg) {
+        sdk_->PostFileTransferMessage(msg);
     }
 }

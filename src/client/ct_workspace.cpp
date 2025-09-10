@@ -49,7 +49,7 @@ namespace tc
 {
 
     Workspace::Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent) : BaseWorkspace(ctx, params, parent) {
-        this->context_->full_functionality_ = true;        
+        this->context_->full_functionality_ = true;
     }
 
     Workspace::~Workspace() {

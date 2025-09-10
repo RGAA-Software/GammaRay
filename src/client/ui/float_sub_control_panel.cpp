@@ -13,6 +13,8 @@
 #include "tc_dialog.h"
 #include "api/ct_panel_api.h"
 #include "ct_settings.h"
+#include "tc_message_new/proto_message_maker.h"
+#include "ct_base_workspace.h"
 
 namespace tc
 {
@@ -21,7 +23,7 @@ namespace tc
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setStyleSheet("background:#00000000;");
         int offset = 5;
-        setFixedSize(210, 216);
+        setFixedSize(210, 256);
         auto item_height = 38;
         auto border_spacing = 10;
         auto item_size = QSize(this->width() - 2*offset, item_height);
@@ -164,9 +166,45 @@ namespace tc
                 }
 
                 auto st = Settings::Instance();
-                CtPanelApi::StopRender(st->host_, st->panel_server_port_);
+                if (auto buffer = ProtoMessageMaker::MakeStopRender(st->device_id_, st->stream_id_); buffer) {
+                    gWorkspace->PostMediaMessage(buffer);
+                }
 
                 context_->SendAppMessage(MsgRestartRender{});
+            });
+
+        }
+
+        // lock the remote PC
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setLayout(layout);
+            widget->setFixedSize(item_size);
+            layout->addWidget(widget);
+
+            auto lbl = new TcLabel();
+            lbl->SetTextId("id_lock_device");
+            lbl->setStyleSheet(R"(font-weight:bold;)");
+            layout->addSpacing(border_spacing * 2);
+            layout->addWidget(lbl);
+            layout->addStretch();
+
+            root_layout->addSpacing(5);
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                context_->SendAppMessage(MsgClientHidePanel{});
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_ask_lock_screen"), nullptr);
+                if (dialog.exec() != kDoneOk) {
+                    return;
+                }
+
+                auto st = Settings::Instance();
+                if (auto buffer = ProtoMessageMaker::MakeLockDevice(st->device_id_, st->stream_id_); buffer) {
+                    gWorkspace->PostMediaMessage(buffer);
+                }
+
             });
 
         }

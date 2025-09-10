@@ -62,13 +62,9 @@ namespace tc
         std::shared_ptr<Thread> task_thread_ = nullptr;
         std::string name_;
         std::map<std::string, SdkCaptureMonitorInfo> capturing_info_map_;
-
         // plugin manager
         std::shared_ptr<ClientPluginManager> plugin_mgr_ = nullptr;
-
-        //是否在录制中
         std::atomic_bool recording_ = false;
-
         std::shared_ptr<NotifyManager> notify_manager_ = nullptr;
     };
 
