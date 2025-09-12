@@ -78,6 +78,8 @@ DEFINE_bool(relay_enabled, true, "");
 DEFINE_int32(language, 0, "");
 
 DEFINE_string(app_mode, "", "app mode");
+// appkey
+DEFINE_string(appkey, "", "appkey");
 
 void UpdateSettings(RdSettings* settings) {
     if (FLAGS_steam_app_id > 0) {
@@ -161,6 +163,9 @@ void UpdateSettings(RdSettings* settings) {
     else if (FLAGS_app_mode == "inner_capture") {
         settings->app_mode_ = AppMode::kInnerCapture;
     }
+
+    // appkey
+    settings->appkey_ = FLAGS_appkey;
 }
 
 void PrintInputArgs() {
@@ -205,6 +210,7 @@ void PrintInputArgs() {
     LOGI("relay enabled: {}", FLAGS_relay_enabled);
     LOGI("language: {}", FLAGS_language);
     LOGI("app mode: {} => {}", FLAGS_app_mode, (int)settings->app_mode_);
+    LOGI("appkey : {}", FLAGS_appkey);
     LOGI("--------------In args end----------------");
 }
 

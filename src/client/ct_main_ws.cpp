@@ -47,6 +47,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_port("port", "Port", "9999", "0");
     parser.addOption(opt_port);
 
+    QCommandLineOption opt_appkey("appkey", "appkey", "x", "");
+    parser.addOption(opt_appkey);
+
     QCommandLineOption opt_audio("audio", "Audio enabled", "value", "0");
     parser.addOption(opt_audio);
 
@@ -136,6 +139,7 @@ void ParseCommandLine(QApplication& app) {
     auto settings = tc::Settings::Instance();
     settings->host_ = g_remote_host_;
     settings->port_ = g_remote_port_;
+    settings->appkey_ = parser.value(opt_appkey).toStdString();
 
     auto audio_on = parser.value(opt_audio).toInt();
     settings->audio_on_ = (audio_on == 1);
@@ -352,6 +356,7 @@ int main(int argc, char** argv) {
 
     LOGI("host: {}", g_remote_host_);
     LOGI("port: {}", g_remote_port_);
+    LOGI("appkey: {}", settings->appkey_);
     LOGI("audio on: {}", settings->audio_on_);
     LOGI("clipboard on: {}", settings->clipboard_on_);
     LOGI("device id: {}", settings->device_id_);
@@ -413,6 +418,7 @@ int main(int argc, char** argv) {
         .display_remote_name_ = settings->display_remote_name_,
         .language_id_ = settings->language_,
         .titlebar_color_ = settings->titlebar_color_,
+        .appkey_ = settings->appkey_,
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();

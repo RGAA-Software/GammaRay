@@ -403,6 +403,7 @@ namespace tc
         sub->set_language((int)tcTrMgr()->GetSelectedLanguage());
         sub->set_file_transfer_enabled(settings_->IsFileTransferEnabled());
         sub->set_audio_enabled(settings_->IsCaptureAudioEnabled());
+        sub->set_appkey(grApp->GetAppkey());
         PostRendererMessage(tc::RpProtoAsData(&m));
     }
 

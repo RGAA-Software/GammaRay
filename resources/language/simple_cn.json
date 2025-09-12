@@ -282,6 +282,7 @@
   "id_access_hint":"请到设置界面去设置相关权限",
   "id_remote_disconnected":"对方已经主动断开远程连接.",
   "id_run_other_service_instances":"您已经运行了其他服务实例,现在,我即将退出上一个实例",
+  "id_cant_request_auth": "无法获取授权, 请检查您的地址和端口配置.",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文档",

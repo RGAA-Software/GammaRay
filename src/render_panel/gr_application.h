@@ -85,6 +85,8 @@ namespace tc
         // companion for private logics
         PanelCompanion* GetCompanion();
 
+        std::string GetAppkey();
+
     private:
         void RefreshSigServerSettings();
         void RegisterMessageListener();

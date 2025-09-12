@@ -281,6 +281,7 @@
   "id_access_hint":"Go to the settings interface to adjust",
   "id_remote_disconnected":"The remote host has disconnected the session.",
   "id_run_other_service_instances":"You have already run other service instances, Now, I am about to exit the previous instance",
+  "id_cant_request_auth": "Can't request Authorization! Please check your address/port.",
 
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",

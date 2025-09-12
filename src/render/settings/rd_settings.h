@@ -154,6 +154,8 @@ namespace tc
         bool audio_enabled_ = true;
         // app mode
         AppMode app_mode_ = AppMode::kDesktop;
+        // appkey
+        std::string appkey_;
 
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";

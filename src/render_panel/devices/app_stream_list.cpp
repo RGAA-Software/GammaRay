@@ -324,9 +324,10 @@ namespace tc
             }
 
             // check the remote device in relay server
+            auto appkey = grApp->GetAppkey();
             auto srv_remote_device_id = "server_" + item->remote_device_id_;
             LOGI("Will check remote device: {} on relay server: {}:{}", item->remote_device_id_, item->stream_host_, item->stream_port_);
-            auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id);
+            auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id, appkey);
             if (!relay_device_info.has_value()) {
                 if (relay_device_info.error() == relay::kRelayRequestFailed) {
                     // network failed
@@ -368,7 +369,8 @@ namespace tc
                                                               settings_->GetSpvrServerPort(),
                                                               target_item->remote_device_id_,
                                                               MD5::Hex(remote_random_pwd),
-                                                              MD5::Hex(remote_safety_pwd));
+                                                              MD5::Hex(remote_safety_pwd),
+                                                              grApp->GetAppkey());
             if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                 TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_profile_network_unavailable"), grWorkspace.get());
                 dialog.exec();

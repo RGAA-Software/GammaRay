@@ -408,7 +408,7 @@ namespace tc
         }
 
         // profile server
-        auto has_pr_server = HttpBaseOp::CanPingServer(true, settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+        auto has_pr_server = HttpBaseOp::CanPingServer(true, settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey());
         if (!has_pr_server) {
             return;
         }

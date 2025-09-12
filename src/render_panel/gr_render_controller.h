@@ -35,6 +35,7 @@ namespace tc
     private:
         QString GetWorkDir();
         QString GetAppPath();
+        [[nodiscard]] std::vector<std::string> GetArgs();
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;

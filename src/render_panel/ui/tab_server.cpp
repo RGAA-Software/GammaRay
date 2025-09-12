@@ -439,7 +439,8 @@ namespace tc
                                                                           settings_->GetSpvrServerPort(),
                                                                           remote_device_id,
                                                                           MD5::Hex(random_password),
-                                                                          MD5::Hex(safety_password));
+                                                                          MD5::Hex(safety_password),
+                                                                          grApp->GetAppkey());
                         if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
                             TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_profile_network_unavailable"), grWorkspace.get());
                             dialog.exec();
@@ -554,7 +555,7 @@ namespace tc
         // companion
         if (grApp->GetCompanion()) {
             std::vector<uint8_t> enc_data;
-            if (grApp->GetCompanion()->EcnQRCode(broadcast_msg, enc_data)) {
+            if (grApp->GetCompanion()->EncQRCode(broadcast_msg, enc_data)) {
                 broadcast_msg = Base64::Base64Encode(enc_data.data(), enc_data.size());
             }
         }

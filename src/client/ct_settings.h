@@ -121,6 +121,8 @@ namespace tc
 		// titlebar color
 		int titlebar_color_ = -1;
 
+        std::string appkey_;
+
         ///////
         ///////
         // from render //

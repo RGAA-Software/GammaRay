@@ -192,10 +192,15 @@ namespace tc
     }
 
     void GrApplication::RefreshSigServerSettings() {
+        std::shared_ptr<Authorization> auth = nullptr;
+        if (companion_) {
+            auth = companion_->GetAuth();
+        }
         mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
             .host_ = settings_->GetSpvrServerHost(),
             .port_ = settings_->GetSpvrServerPort(),
             .ssl_ = false,
+            .appkey_ = auth ? auth->appkey_ : "",
         });
     }
 
@@ -362,7 +367,11 @@ namespace tc
         auto& item = msg->stream_item_;
         if (item->IsRelay()) {
             auto srv_remote_device_id = "server_" + item->remote_device_id_;
-            auto res = relay::RelayApi::NotifyEvent(item->stream_host_, item->stream_port_, context_->GetDeviceIdOrIpAddress(), srv_remote_device_id, msg->AsJson());
+            auto res = relay::RelayApi::NotifyEvent(item->stream_host_,
+                                                    item->stream_port_,
+                                                    context_->GetDeviceIdOrIpAddress(),
+                                                    srv_remote_device_id, msg->AsJson(),
+                                                    this->GetAppkey());
             if (res.has_value()) {
                 if (res.value() == relay::kRelayOk) {
                     return true;
@@ -428,6 +437,13 @@ namespace tc
 
     PanelCompanion* GrApplication::GetCompanion() {
         return companion_;
+    }
+
+    std::string GrApplication::GetAppkey() {
+        if (companion_ && companion_->GetAuth()) {
+            return companion_->GetAuth()->appkey_;
+        }
+        return "";
     }
 
 }

@@ -81,7 +81,8 @@ namespace tc
                             {"relay_enabled", settings_->relay_enabled_},
                             {"relay_host", settings_->relay_host_},
                             {"relay_port", settings_->relay_port_},
-                            {"language", (int64_t)settings_->language_}
+                            {"language", (int64_t)settings_->language_},
+                            {"appkey", settings_->appkey_}
                         },
                     };
 

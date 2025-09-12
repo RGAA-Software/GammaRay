@@ -89,7 +89,6 @@ namespace tc
         void Init(const std::shared_ptr<MessageNotifier>& notifier);
         void Load();
         void Dump();
-        [[nodiscard]] std::vector<std::string> GetArgs();
         void ClearData();
 
         // Settings -> General

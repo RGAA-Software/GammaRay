@@ -7,6 +7,8 @@
 
 #include <string>
 #include <vector>
+#include <optional>
+#include <memory>
 
 namespace tc
 {
@@ -32,9 +34,11 @@ namespace tc
 
         // Spvr
         virtual void UpdateSpvrServerConfig(const std::string& host, int port) = 0;
+        virtual std::shared_ptr<Authorization> RequestAuth() = 0;
+        virtual std::shared_ptr<Authorization> GetAuth() = 0;
 
         // enc
-        virtual bool EcnQRCode(std::string origin_content, std::vector<uint8_t>& cipher_data) = 0;
+        virtual bool EncQRCode(std::string origin_content, std::vector<uint8_t>& cipher_data) = 0;
     };
 
 }

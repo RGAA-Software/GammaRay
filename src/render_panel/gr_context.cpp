@@ -298,8 +298,10 @@ namespace tc
         if (!settings_->HasRelayServerConfig()) {
             return nullptr;
         }
+
+        auto appkey = grApp->GetAppkey();
         auto srv_remote_device_id = "server_" + device_id;
-        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id);
+        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id, appkey);
         if (!relay_result) {
             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, relay::RelayError2String(relay_result.error()));
             if (show_dialog) {

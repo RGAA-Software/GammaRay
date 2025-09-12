@@ -10,6 +10,7 @@
 #include "render_panel/gr_context.h"
 #include "tc_common_new/log.h"
 #include "render_panel/gr_app_messages.h"
+#include "render_panel/gr_application.h"
 #include "tc_profile_client/profile_api.h"
 #include "tc_qt_widget/tc_dialog.h"
 #include "start_stream_loading.h"
@@ -59,6 +60,7 @@ namespace tc
         arguments
             << std::format("--host={}", item->stream_host_).c_str()
             << std::format("--port={}", item->stream_port_).c_str()
+            << std::format("--appkey={}", grApp->GetAppkey()).c_str()
             << std::format("--audio={}", item->audio_enabled_).c_str()
             << std::format("--clipboard={}", item->clipboard_enabled_).c_str()
             << std::format("--stream_id={}", item->stream_id_).c_str()

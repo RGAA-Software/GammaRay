@@ -151,6 +151,7 @@ namespace tc
                 settings_->language_ = sub.language();
                 settings_->file_transfer_enabled_ = sub.file_transfer_enabled();
                 settings_->audio_enabled_ = sub.audio_enabled();
+                settings_->appkey_ = sub.appkey();
 
                 plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
@@ -163,6 +164,7 @@ namespace tc
                     .language_ = settings_->language_,
                     .file_transfer_enabled_ = settings_->file_transfer_enabled_,
                     .audio_enabled_ = settings_->audio_enabled_,
+                    .appkey_ = settings_->appkey_,
                 });
             }
             else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {

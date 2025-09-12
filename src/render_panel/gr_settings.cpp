@@ -13,7 +13,6 @@
 #include "tc_common_new/uuid.h"
 #include "tc_common_new/base64.h"
 #include "tc_common_new/hardware.h"
-#include "translator/tc_translator.h"
 #include "tc_common_new/http_client.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_common_new/shared_preference.h"
@@ -96,44 +95,6 @@ namespace tc
         ss << "spvr server port: " << GetSpvrServerPort() << std::endl;
         ss << "---------------------GrSettings End-----------------------" << std::endl;
         LOGI("\n {}", ss.str());
-    }
-
-    std::vector<std::string> GrSettings::GetArgs() {
-        std::vector<std::string> args;
-        args.push_back(std::format("--app_mode={}", "desktop"));
-        args.push_back(std::format("--{}={}", kStEncoderSelectType, encoder_select_type_));
-        args.push_back(std::format("--{}={}", kStEncoderName, encoder_name_));
-        args.push_back(std::format("--{}={}", kStEncoderFormat, GetEncoderFormat()));
-        args.push_back(std::format("--{}={}", kStEncoderBitrate, GetBitrate()));
-        args.push_back(std::format("--{}={}", kStEncoderFPS, GetFPS()));
-        args.push_back(std::format("--encoder_resolution_type={}", (IsResResizeEnabled() ? kResTypeResize : kResTypeOrigin)));
-        args.push_back(std::format("--{}={}", kStEncoderWidth, GetResWidth()));
-        args.push_back(std::format("--{}={}", kStEncoderHeight, GetResHeight()));
-        args.push_back(std::format("--{}={}", kStCaptureAudio, IsCaptureAudioEnabled()));
-        args.push_back(std::format("--{}={}", kStCaptureAudioType, capture_audio_type_));
-        args.push_back(std::format("--{}={}", kStCaptureVideo, capture_video_));
-        args.push_back(std::format("--{}={}", kStCaptureVideoType, capture_video_type_));
-        args.push_back(std::format("--{}={}", kStWebSocketEnabled, IsWebSocketEnabled()));
-        args.push_back(std::format("--{}={}", kStNetworkListenPort, GetRenderServerPort()));
-        args.push_back(std::format("--{}={}", kStWebRTCEnabled, webrtc_enabled_));
-        args.push_back(std::format("--{}={}", kStUdpKcpEnabled, udp_kcp_enabled_));
-        args.push_back(std::format("--{}={}", kStUdpListenPort, udp_listen_port_));
-        args.push_back(std::format("--{}={}", kStCaptureAudioDevice, Base64::Base64Encode(capture_audio_device_)));
-        args.push_back(std::format("--{}={}", kStAppGamePath, ""));
-        args.push_back(std::format("--{}={}", kStAppGameArgs, ""));
-        args.push_back(std::format("--{}={}", kStDebugBlock, false));
-        args.push_back(std::format("--{}={}", kStMockVideo, false));
-        args.push_back(std::format("--{}={}", kStDeviceId, GetDeviceId()));
-        args.push_back(std::format("--{}={}", kStDeviceRandomPwd, GetDeviceRandomPwd()));
-        args.push_back(std::format("--{}={}", kStDeviceSafetyPwd, GetDeviceSecurityPwd()));
-        args.push_back(std::format("--panel_server_port={}", GetPanelServerPort()));
-        args.push_back(std::format("--{}={}", kStRelayServerHost, GetRelayServerHost()));
-        args.push_back(std::format("--{}={}", kStRelayServerPort, GetRelayServerPort()));
-        args.push_back(std::format("--{}={}", kStCanBeOperated, this->IsBeingOperatedEnabled()));
-        args.push_back(std::format("--{}={}", kStRelayEnabled, this->IsRelayEnabled()));
-        args.push_back(std::format("--language={}", (int)tcTrMgr()->GetSelectedLanguage()));
-        args.push_back(std::format("--{}={}", kStLogFile, log_file_));
-        return args;
     }
 
     void GrSettings::ClearData() {

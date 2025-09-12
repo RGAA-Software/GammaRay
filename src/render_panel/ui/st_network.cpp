@@ -388,8 +388,15 @@ namespace tc
                 settings_->Load();
 
                 // companion
-                if (grApp->GetCompanion()) {
-                    grApp->GetCompanion()->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+                auto companion = grApp->GetCompanion();
+                if (companion) {
+                    companion->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+                    auto auth = companion->RequestAuth();
+                    if (!auth) {
+                        TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_request_auth"), nullptr);
+                        dialog.exec();
+                        return;
+                    }
                 }
 
                 this->context_->SendAppMessage(MsgSettingsChanged {

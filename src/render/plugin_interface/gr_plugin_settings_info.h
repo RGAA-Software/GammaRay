@@ -31,6 +31,8 @@ namespace tc
         bool file_transfer_enabled_ = true;
         // audio enabled or not
         bool audio_enabled_ = true;
+        // appkey
+        std::string appkey_;
     };
 
 }
