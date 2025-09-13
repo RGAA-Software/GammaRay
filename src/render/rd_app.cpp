@@ -231,8 +231,6 @@ namespace tc
 
             auto plugin_manager = context_->GetPluginManager();
             plugin_manager->On1Second();
-
-            LOGI("timer fps: {}", timer_fps.value());
         });
 
         msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {
