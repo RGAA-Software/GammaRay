@@ -121,14 +121,14 @@ if (WIN32)
     add_custom_command(TARGET GammaRayClientInner POST_BUILD
             COMMAND ${QT_ROOT}/bin/windeployqt.exe $<TARGET_FILE:GammaRayClientInner> --no-translations --release
             #COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources/qt_material"  "${CMAKE_CURRENT_BINARY_DIR}/resources/qt_material"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avcodec-59.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avdevice-59.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avfilter-8.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avutil-57.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/avformat-59.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/postproc-56.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/swresample-4.dll"  "${GR_PROJECT_BINARY_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_3rdparty/ffmpeg/lib/x64/swscale-6.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/avcodec-61.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/avdevice-61.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/avfilter-10.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/avformat-61.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/avutil-59.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/postproc-58.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/swresample-5.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/swscale-8.dll"  "${GR_PROJECT_BINARY_PATH}"
     )
 
 elseif (APPLE)
