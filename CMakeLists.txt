@@ -40,6 +40,10 @@ else()
     message("Webrtc Root: ${WEBRTC_ROOT}")
 endif ()
 
+if (JEMALLOC_ENABLED)
+    add_definitions(-DJEMALLOC_ON=1)
+endif ()
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

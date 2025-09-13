@@ -67,7 +67,6 @@ namespace tc
             .monitor_bottom_ = last_capture_video_frame_.bottom_,
             .frame_image_format_ = event->frame_format_,
         };
-        //context_->SendAppMessage(msg);
 
         auto video_type = [=]() -> tc::VideoType {
             return (Encoder::EncoderFormat)msg.frame_encode_type_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
@@ -85,7 +84,8 @@ namespace tc
 
         auto net_msg = NetMessageMaker::MakeVideoFrameMsg(video_type, msg.data_, msg.frame_index_, msg.frame_width_,
                                                           msg.frame_height_, msg.key_frame_, msg.monitor_name_,
-                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_, img_format, last_capture_video_frame_.monitor_index_);
+                                                          msg.monitor_left_, msg.monitor_top_, msg.monitor_right_, msg.monitor_bottom_,
+                                                          img_format, last_capture_video_frame_.monitor_index_);
         // statistics
         //RdStatistics::Instance()->AppendMediaBytes(net_msg.size());
 
@@ -98,13 +98,8 @@ namespace tc
             plugin_manager_->VisitStreamPlugins([=](GrStreamPlugin *plugin) {
                 // stream plugins: Raw frame / Encoded frame
                 plugin->OnEncodedVideoFrame(msg.monitor_name_, event->type_, event->data_, event->frame_index_,
-                                            event->frame_width_, event->frame_height_, event->key_frame_);
+                                            (int)event->frame_width_, (int)event->frame_height_, event->key_frame_);
             });
-
-            if (auto plugin = plugin_manager_->GetRtcLocalPlugin(); plugin) {
-                plugin->OnEncodedVideoFrame(msg.monitor_name_, event->type_, event->data_, event->frame_index_,
-                                            event->frame_width_, event->frame_height_, event->key_frame_);
-            }
         });
     }
 
