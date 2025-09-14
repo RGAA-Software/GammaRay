@@ -28,6 +28,7 @@
 #include "ct_stream_item_net_type.h"
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/time_util.h"
+#include "snowflake/snowflake.h"
 
 using namespace tc;
 
@@ -311,6 +312,7 @@ int main(int argc, char** argv) {
     QSurfaceFormat::setDefaultFormat(fmt);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
+    SnowflakeId::initialize(0, 104);
     //QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
     QSurfaceFormat myFormat;
     myFormat.setDepthBufferSize(24);

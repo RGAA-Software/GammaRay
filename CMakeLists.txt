@@ -44,6 +44,10 @@ if (JEMALLOC_ENABLED)
     add_definitions(-DJEMALLOC_ON=1)
 endif ()
 
+if (MEMORY_STST_ENABLED)
+    add_definitions(-DMEMORY_STST_ON=1)
+endif ()
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

@@ -9,6 +9,7 @@
 #include "ws_server.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
+#include "tc_common_new/memory_stat.h"
 #include "render/plugins/plugin_ids.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "plugin_interface/gr_plugin_context.h"
@@ -65,7 +66,12 @@ namespace tc
     }
 
     void WsPlugin::On1Second() {
-
+#if MEMORY_STST_ON
+        plugin_context_->PostWorkTask([=, this]() {
+            auto info = MemoryStat::Instance()->GetStatInfo();
+            LOGI("Memory usage: {}", info.Dump());
+        });
+#endif
     }
 
     bool WsPlugin::IsWorking() {

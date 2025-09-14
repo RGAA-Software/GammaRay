@@ -52,6 +52,7 @@
 #include "tc_common_new/win32/d3d11_wrapper.h"
 #include "tc_message_new/proto_converter.h"
 #include "tc_message_new/rp_proto_converter.h"
+#include "tc_common_new/memory_stat.h"
 
 namespace tc
 {
@@ -231,6 +232,13 @@ namespace tc
 
             auto plugin_manager = context_->GetPluginManager();
             plugin_manager->On1Second();
+
+#if MEMORY_STST_ON
+            context_->PostTask([]() {
+                auto info = MemoryStat::Instance()->GetStatInfo();
+                LOGI("Memory usage: {}", info.Dump());
+            });
+#endif
         });
 
         msg_listener_->Listen<MsgClientConnected>([=, this](const MsgClientConnected& msg) {

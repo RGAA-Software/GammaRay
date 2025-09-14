@@ -3,13 +3,15 @@
 //
 
 #include "opus_encoder_plugin.h"
-#include "plugin_interface/gr_plugin_events.h"
 #include "render/plugins/plugin_ids.h"
 #include "tc_opus_codec_new/opus_codec.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/memory_stat.h"
+#include "plugin_interface/gr_plugin_events.h"
+#include "plugin_interface/gr_plugin_context.h"
 
 namespace tc
 {
@@ -34,7 +36,12 @@ namespace tc
     }
 
     void OpusEncoderPlugin::On1Second() {
-
+#if MEMORY_STST_ON
+        plugin_context_->PostWorkTask([=, this]() {
+            auto info = MemoryStat::Instance()->GetStatInfo();
+            LOGI("Memory usage: {}", info.Dump());
+        });
+#endif
     }
 
     bool OpusEncoderPlugin::OnCreate(const tc::GrPluginParam &param) {

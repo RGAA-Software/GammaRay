@@ -8,6 +8,7 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/log.h"
+#include "snowflake/snowflake.h"
 #include <QtCore/QTimer>
 #include <QtCore/QEvent>
 
@@ -59,6 +60,7 @@ namespace tc
     }
 
     bool ClientPluginInterface::OnCreate(const ClientPluginParam& param) {
+        SnowflakeId::initialize(0, 105);
         this->param_ = param;
         if (param.cluster_.contains("name")) {
             auto n = param.cluster_.at("name");

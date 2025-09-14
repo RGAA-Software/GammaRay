@@ -8,10 +8,12 @@
 #include "dda_capture_plugin.h"
 #include "render/plugins/plugin_ids.h"
 #include "dda_capture.h"
+#include "cursor_capture.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread.h"
+#include "tc_common_new/memory_stat.h"
 #include "plugin_interface/gr_plugin_events.h"
-#include "cursor_capture.h"
+#include "plugin_interface/gr_plugin_context.h"
 
 static void* GetInstance() {
     static tc::DDACapturePlugin plugin;
@@ -358,6 +360,13 @@ namespace tc
                 }
             }
         }
+
+#if MEMORY_STST_ON
+        plugin_context_->PostWorkTask([=, this]() {
+            auto info = MemoryStat::Instance()->GetStatInfo();
+            LOGI("Memory usage: {}", info.Dump());
+        });
+#endif
     }
 
     void DDACapturePlugin::On16MilliSecond() {
