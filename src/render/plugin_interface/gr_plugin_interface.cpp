@@ -8,6 +8,7 @@
 #include "tc_common_new/thread.h"
 #include "gr_plugin_events.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/memory_stat.h"
 #include "gr_plugin_context.h"
 #include "snowflake/snowflake.h"
 #include <QtCore/QTimer>
@@ -66,6 +67,7 @@ namespace tc
 
     bool GrPluginInterface::OnCreate(const GrPluginParam& param) {
         SnowflakeId::initialize(0, 103);
+        MemoryStat::Instance();
         this->param_ = param;
         if (param.cluster_.contains("name")) {
             auto n = param.cluster_.at("name");

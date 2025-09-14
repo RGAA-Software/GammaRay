@@ -43,6 +43,7 @@ namespace tc
 
     bool WasAudioCapturePlugin::OnCreate(const tc::GrPluginParam& param) {
         GrDataProviderPlugin::OnCreate(param);
+        MemoryStat::Instance();
         return true;
     }
 
