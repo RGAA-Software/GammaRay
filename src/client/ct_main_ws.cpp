@@ -132,6 +132,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_titlebar_color("titlebar_color", "titlebar color", "value", "");
     parser.addOption(opt_titlebar_color);
 
+    QCommandLineOption opt_decoder("decoder", "decoder type", "value", "");
+    parser.addOption(opt_decoder);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -277,6 +280,9 @@ void ParseCommandLine(QApplication& app) {
             settings->titlebar_color_ = value.toInt();
         }
     }
+
+    // decoder
+    settings->decoder_ = parser.value(opt_decoder).toStdString();
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -377,6 +383,7 @@ int main(int argc, char** argv) {
     LOGI("only viewing: {}", settings->only_viewing_);
     LOGI("split windows: {}", settings->split_windows_);
     LOGI("titlebar color: {}", settings->titlebar_color_);
+    LOGI("decoder: {}", settings->decoder_);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
@@ -421,6 +428,7 @@ int main(int argc, char** argv) {
         .language_id_ = settings->language_,
         .titlebar_color_ = settings->titlebar_color_,
         .appkey_ = settings->appkey_,
+        .decoder_ = settings->decoder_,
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();

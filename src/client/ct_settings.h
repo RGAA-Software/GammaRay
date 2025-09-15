@@ -123,6 +123,8 @@ namespace tc
 
         std::string appkey_;
 
+        std::string decoder_;
+
         ///////
         ///////
         // from render //
