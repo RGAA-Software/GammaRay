@@ -227,6 +227,7 @@
   "id_clear_data": "清理程序数据",
   "id_clear": "清理",
   "id_ask_clear_data": "您确定要清理程序数据吗?",
+  "id_prefer_decoder": "首选解码器",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

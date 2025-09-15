@@ -21,6 +21,7 @@ using namespace Microsoft::WRL;
 
 namespace tc
 {
+    class Thread;
     class DDACapturePlugin;
 
     class DDACapture : public PluginDesktopCapture  {
@@ -107,7 +108,7 @@ namespace tc
         DDACapturePlugin* plugin_ = nullptr;
 
         std::atomic<bool> stop_flag_ = false;
-        std::thread capture_thread_;
+        std::shared_ptr<Thread> capture_thread_ = nullptr;
         int64_t monitor_frame_index_ = 0;
         int used_cache_times_ = 0;
         std::shared_ptr<FpsStat> fps_stat_ = nullptr;

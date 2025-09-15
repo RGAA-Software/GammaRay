@@ -8,6 +8,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/monitors.h"
+#include "tc_common_new/thread.h"
 #include "tc_capture_new/capture_message.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "dda_capture_plugin.h"
@@ -263,7 +264,7 @@ namespace tc
     }
 
     void DDACapture::Start() {
-        capture_thread_ = std::thread([this] {
+        auto task = [this] {
             const int kInitTryMaxCount = 6;
             int try_count = -1;
             bool dda_init_res = false;
@@ -293,12 +294,14 @@ namespace tc
             else {
                 LOGI("DDA Init failed, will use gdi capturing.");
             }
-        });
+        };
+
+        capture_thread_ = Thread::MakeOnceTask(task, std::format("dda_capture:{}", my_monitor_info_.name_), false);
     }
 
     void DDACapture::Capture() {
         while (!stop_flag_) {
-            if (pausing_ || !d3d11_device_ || !d3d11_device_context_ || plugin_->DontHaveConnectedClientsNow()) {
+            if (pausing_ || !d3d11_device_ || !d3d11_device_context_ /*|| plugin_->DontHaveConnectedClientsNow()*/) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
             }
@@ -567,8 +570,8 @@ namespace tc
 
     void DDACapture::StopCapture() {
         stop_flag_ = true;
-        if (capture_thread_.joinable()) {
-            capture_thread_.join();
+        if (capture_thread_->IsJoinable()) {
+            capture_thread_->Join();
         }
         this->Exit();
     }

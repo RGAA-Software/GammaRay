@@ -452,4 +452,12 @@ namespace tc
         return value.empty() || value == kStTrue;
     }
 
+    void GrSettings::SetPreferDecoder(const std::string& decoder) {
+        sp_->Put(kStPreferDecoder, decoder);
+    }
+
+    std::string GrSettings::GetPreferDecoder() {
+        return sp_->Get(kStPreferDecoder);
+    }
+
 }

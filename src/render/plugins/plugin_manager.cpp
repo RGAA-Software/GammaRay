@@ -55,6 +55,10 @@ namespace tc
             //auto fn_get_instance = GetProcAddress(module, "GetInstance");
 
             auto library = new QLibrary(target_plugin_path);
+            if (library->isLoaded()) {
+                LOGW("This plugin: {} was already loaded.", target_plugin_path.toStdString());
+                continue;
+            }
             library->load();
             auto fn_get_instance = (FnGetInstance)library->resolve("GetInstance");
 

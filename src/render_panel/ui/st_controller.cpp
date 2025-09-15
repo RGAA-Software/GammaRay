@@ -183,6 +183,43 @@ namespace tc
                 segment_layout->addLayout(layout);
             }
 
+            // Prefer decoder
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_prefer_decoder");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new QComboBox(this);
+                edit->setFixedSize(input_size);
+                edit->addItem("Auto");
+                edit->addItem("Hardware");
+                edit->addItem("Software");
+                layout->addWidget(edit);
+
+                const QString decoder = QString::fromStdString(settings_->GetPreferDecoder());
+                if (decoder == "Hardware") {
+                    edit->setCurrentIndex(1);
+                }
+                else if (decoder == "Software") {
+                    edit->setCurrentIndex(2);
+                }
+                else {
+                    edit->setCurrentIndex(0);
+                }
+
+                connect(edit, &QComboBox::currentIndexChanged, this, [=, this](int index) {
+                    std::string decoder = edit->currentText().toStdString();
+                    settings_->SetPreferDecoder(decoder);
+                });
+
+                layout->addStretch();
+                segment_layout->addSpacing(10);
+                segment_layout->addLayout(layout);
+            }
+
             column1_layout->addLayout(segment_layout);
         }
 

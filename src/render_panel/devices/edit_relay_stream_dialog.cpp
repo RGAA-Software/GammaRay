@@ -123,6 +123,7 @@ namespace tc
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 stream_item_->stream_name_ = edt_stream_name_->text().toStdString();
+                stream_item_->device_random_pwd_ = password_input_->GetPassword().toStdString();
                 context_->SendAppMessage(StreamItemUpdated {
                     .item_ = stream_item_,
                 });
