@@ -248,6 +248,7 @@ namespace tc
             if (!settings_->HasSpvrServerConfig()) {
                 return;
             }
+            LOGI("Will request new device!");
             auto device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
             if (!device) {
                 LOGE("Can't create new device!");
