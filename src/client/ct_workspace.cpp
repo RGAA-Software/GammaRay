@@ -288,7 +288,6 @@ namespace tc
                 game_view->installEventFilter(this);
                 game_view->setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(index + 1)));
             }
-            game_view->SetMonitorIndex(index);
             game_views_.push_back(game_view);
         }
         QTimer::singleShot(1, this, [=, this]() {

@@ -2,6 +2,11 @@
 #include <qsizepolicy.h>
 #include <qpalette.h>
 #include <QTimer>
+#include <QPixmap>
+#include <QDateTime>
+#include <QStandardPaths>
+#include <QMainWindow>
+#include <QProcess>
 #include <qlabel.h>
 #include <qicon.h>
 #include <qpixmap.h>
@@ -117,6 +122,12 @@ namespace tc
             if (video_widget_) {
                 video_widget_->OnTimer1S();
             }
+        });
+
+        msg_listener_->Listen<MsgStreamShot>([=, this](const MsgStreamShot& msg) {
+            ctx_->PostTask([=, this]() {
+                this->SnapshotStream();
+            });
         });
     }
 
@@ -312,7 +323,7 @@ namespace tc
         }
     }
 
-    void GameView::SetMonitorName(const std::string mon_name) {
+    void GameView::SetMonitorName(const std::string& mon_name) {
         monitor_name_ = mon_name;
         controller_panel_->SetMonitorName(mon_name);
     }
@@ -365,6 +376,53 @@ namespace tc
             }
         }
         return QWidget::nativeEvent(eventType, message, result);
+    }
+
+    void GameView::SetActiveStatus(bool active) {
+        active_ = active;
+    }
+
+    bool GameView::GetActiveStatus() const {
+        return active_;
+    }
+
+    bool GameView::IsMainView() const {
+        return is_main_view_;
+    }
+
+    void GameView::SnapshotStream() {
+        if (this->isHidden()) {
+            return;
+        }
+        auto image = video_widget_->CaptureImage();
+        if (image.isNull()) {
+            return;
+        }
+
+        auto name = [=, this]() {
+            if (!this->windowTitle().isEmpty()) {
+                return this->windowTitle();
+            }
+            if (this->parent()) {
+                if (auto pw = ((QMainWindow*)this->parent()); pw) {
+                    return pw->windowTitle();
+                }
+            }
+            return QString::fromStdString("Default");
+        } ();
+        name = name.replace("(", "").replace(")", "").replace(":", "_");
+        QString png_name = name + "_" + QString::number(QDateTime::currentSecsSinceEpoch()) + ".png";
+        QString pic_path = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+        QString png_path = pic_path + "/" + png_name;
+        if (image.save(png_path)) {
+            auto callback = [=]() {
+                auto path = png_path;
+                QString url = QString(R"(file:///%1)").arg(path.replace("/", "\\"));
+                QString command = QString("explorer.exe /select,\"%1\"").arg(url);
+                QProcess::startDetached(command);
+            };
+            ctx_->NotifyAppMessage("Snap Success", std::format("Saved to: {}", pic_path.toStdString()).c_str(), callback);
+        }
     }
 
 }

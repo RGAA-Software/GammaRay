@@ -1,5 +1,5 @@
 #pragma once
-
+#include <QImage>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
@@ -67,6 +67,8 @@ namespace tc
         virtual void RefreshImage(const std::shared_ptr<RawImage> &image);
         virtual void OnTimer1S();
         virtual void OnUpdate() {}
+        virtual WId GetRenderWId() { return 0; }
+        virtual QImage CaptureImage() { return QImage(); }
 
     private:
         void SendCallback(const std::shared_ptr<NetMessage>& msg);

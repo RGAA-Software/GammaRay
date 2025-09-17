@@ -265,4 +265,12 @@ namespace tc
         // LOGI("D3D11 refresh FPS: {}", fps_stat_.value());
     }
 
+    WId D3D11VideoWidget::GetRenderWId() {
+        return this->winId();
+    }
+
+    QImage D3D11VideoWidget::CaptureImage() {
+        return render_mgr_->SaveBackBufferToImage();
+    }
+
 }

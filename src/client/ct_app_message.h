@@ -233,6 +233,10 @@ namespace tc
     class MsgRestartRender : public MsgClientBase {
     public:
     };
+
+    class MsgStreamShot : public MsgClientBase {
+    public:
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

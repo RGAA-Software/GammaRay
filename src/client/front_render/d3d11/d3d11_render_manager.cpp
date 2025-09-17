@@ -461,6 +461,9 @@ namespace tc
         UINT Offset = 0;
         m_DeviceContext->IASetVertexBuffers(0, 1, VertexBuffer.GetAddressOf(), &Stride, &Offset);
 
+        //
+        SetViewPort(swapchain_width_, swapchain_height_);
+
         // Draw textured quad onto render target
         m_DeviceContext->Draw(NUMVERTICES, 0);
 
@@ -541,6 +544,54 @@ namespace tc
         return DUPL_RETURN_SUCCESS;
     }
 
+    QImage D3D11RenderManager::SaveBackBufferToImage()
+    {
+        // 1. 获取 BackBuffer
+        ComPtr<ID3D11Texture2D> backBuffer;
+        HRESULT hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                          reinterpret_cast<void**>(backBuffer.GetAddressOf()));
+        if (FAILED(hr)) {
+            return QImage();
+        }
+
+        // 2. 拷贝到 CPU 可访问的 Staging 纹理
+        D3D11_TEXTURE2D_DESC desc;
+        backBuffer->GetDesc(&desc);
+
+        D3D11_TEXTURE2D_DESC stagingDesc = desc;
+        stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        stagingDesc.Usage = D3D11_USAGE_STAGING;
+        stagingDesc.BindFlags = 0;
+        stagingDesc.MiscFlags = 0;
+
+        ComPtr<ID3D11Texture2D> stagingTex;
+        hr = m_Device->CreateTexture2D(&stagingDesc, nullptr, &stagingTex);
+        if (FAILED(hr)) {
+            return QImage();
+        }
+
+        m_DeviceContext->CopyResource(stagingTex.Get(), backBuffer.Get());
+
+        // 3. Map 到 CPU 内存
+        D3D11_MAPPED_SUBRESOURCE mapped;
+        hr = m_DeviceContext->Map(stagingTex.Get(), 0, D3D11_MAP_READ, 0, &mapped);
+        if (FAILED(hr)) {
+            return QImage();
+        }
+
+        // 4. 拷贝数据到 QImage
+        QImage img(desc.Width, desc.Height, QImage::Format_ARGB32);
+        for (UINT y = 0; y < desc.Height; ++y) {
+            memcpy(img.scanLine(y),
+                   reinterpret_cast<BYTE*>(mapped.pData) + y * mapped.RowPitch,
+                   desc.Width * 4);  // 假设 DXGI_FORMAT_B8G8R8A8_UNORM
+        }
+
+        m_DeviceContext->Unmap(stagingTex.Get(), 0);
+
+        return img;
+    }
+
     //
     // Set new viewport
     //
@@ -577,6 +628,9 @@ namespace tc
         if (FAILED(hr)) {
             return ProcessFailure(m_Device, L"Failed to resize swapchain buffers in OutputManager", L"Error", hr, SystemTransitionsExpectedErrors);
         }
+
+        swapchain_width_ = Width;
+        swapchain_height_ = Height;
 
         // Make new render target view
         DUPL_RETURN Ret = MakeRTV();

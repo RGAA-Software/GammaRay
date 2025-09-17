@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <mutex>
+#include <QImage>
 #include "warning.h"
 #include "d3d11_common_types.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
@@ -27,6 +28,7 @@ namespace tc
         ComPtr<ID3D11Texture2D> GetYPlane() { return texture_plane_[0]; }
         ComPtr<ID3D11Texture2D> GetUPlane() { return texture_plane_[1]; }
         ComPtr<ID3D11Texture2D> GetVPlane() { return texture_plane_[2]; }
+        QImage SaveBackBufferToImage();
 
     private:
         // Methods
@@ -67,6 +69,9 @@ namespace tc
         RawImageFormat raw_image_format_;
         ComPtr<ID3D11Texture2D> texture_plane_[3];
         ComPtr<ID3D11ShaderResourceView> shader_plane_[3];
+
+        uint32_t swapchain_width_ = 0;
+        uint32_t swapchain_height_ = 0;
     };
 
 }

@@ -37,38 +37,19 @@ namespace tc
         void RefreshImage(const std::shared_ptr<RawImage>& image);
         void RefreshI420Image(const std::shared_ptr<RawImage>& image);
         void RefreshI444Image(const std::shared_ptr<RawImage>& image);
-
         void SendKeyEvent(quint32 vk, bool down);
-
-        void SetActiveStatus(bool active) {
-            active_ = active;
-        }
-
-        bool GetActiveStatus() {
-            return active_;
-        }
-
-        void SetMonitorIndex(int index) {
-            monitor_index_ = index;
-        }
-
-        int GetMonitorIndex() {
-            return monitor_index_;
-        }
-
-        void SetMonitorName(const std::string mon_name);
-
+        void SetActiveStatus(bool active);
+        bool GetActiveStatus() const;
+        void SetMonitorName(const std::string& mon_name);
         void SwitchToFullWindow();
-
         void CalculateAspectRatio();
-
         void SetMainView(bool main_view);
+        bool IsMainView() const;
+        void SnapshotStream();
 
-        bool IsMainView() {
-            return is_main_view_;
-        }
-
+    public:
         static bool s_mouse_in_;
+
     private:
         Settings* settings_ = nullptr;
         VideoWidget* video_widget_ = nullptr;
@@ -82,7 +63,6 @@ namespace tc
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
         std::shared_ptr<ThunderSdkParams> params_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        int monitor_index_ = 0;
         std::string monitor_name_;
         bool active_ = false;
         bool is_main_view_ = false;

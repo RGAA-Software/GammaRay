@@ -38,6 +38,8 @@ namespace tc
         QWidget * AsWidget() override;
         void RefreshImage(const std::shared_ptr<RawImage>& image) override;
         void OnTimer1S() override;
+        WId GetRenderWId() override;
+        QImage CaptureImage() override;
 
     protected:
         void mouseMoveEvent(QMouseEvent*) override;
