@@ -32,6 +32,7 @@ set(SRCS_WS
     front_render/opengl/ct_renderer.cpp
     front_render/opengl/ct_sprite.cpp
     front_render/sdl/ct_sdl_video_widget.cpp
+    front_render/vulkan/ct_vulkan_video_widget.cpp
     front_render/resource/yuv_util.cpp
     ct_qt_key_converter.cpp
     ct_audio_player.cpp
@@ -109,7 +110,7 @@ endif()
 target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Svg Qt6::Charts
         tc_common_new tc_message tc_cp_message tc_sdk tc_qt_widget OpenSSL::SSL OpenSSL::Crypto #libssl64MT.lib libcrypto64MT.lib sqlite_orm::sqlite_orm
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> Winmm.lib #QWindowKit::Widgets TC_WidgetFrame
-        tc_rtc_client Dwmapi.lib tc_client_plugin sqlite35
+        tc_rtc_client Dwmapi.lib tc_client_plugin sqlite35 libplacebo
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
@@ -129,6 +130,7 @@ if (WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/postproc-58.dll"  "${GR_PROJECT_BINARY_PATH}"
             COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/swresample-5.dll"  "${GR_PROJECT_BINARY_PATH}"
             COMMAND ${CMAKE_COMMAND} -E copy "${FFMPEG_ROOT}/bin/swscale-8.dll"  "${GR_PROJECT_BINARY_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${LIBPLACEBO_ROOT}/lib/libplacebo-349.dll"  "${GR_PROJECT_BINARY_PATH}"
     )
 
 elseif (APPLE)
