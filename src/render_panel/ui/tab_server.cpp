@@ -91,7 +91,7 @@ namespace tc
                 title->setFixedWidth(item_width);
                 title->SetTextId("id_this_device");
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 21px; font-weight:700;)");
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 
@@ -125,7 +125,7 @@ namespace tc
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
                     msg->setText(tc::SpaceId("---------").c_str());
-                    msg->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
+                    msg->setStyleSheet(R"(font-size: 21px; font-weight: 700; color: #2979ff;)");
                     code_layout->addWidget(msg);
 
                     auto btn_cpy = new TcImageButton(":/resources/image/ic_copy.svg", QSize(20, 20));
@@ -168,7 +168,7 @@ namespace tc
                     lbl_machine_random_pwd_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     msg->setText("********");
-                    msg->setStyleSheet(R"(font-size: 22px; font-weight: 700; color: #2979ff;)");
+                    msg->setStyleSheet(R"(font-size: 21px; font-weight: 700; color: #2979ff;)");
                     pwd_layout->addWidget(msg);
 
                     auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(20, 20));
@@ -258,7 +258,7 @@ namespace tc
                 title->setFixedWidth(item_width+50);
                 title->SetTextId("id_connect_information");
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 21px; font-weight:700;)");
                 left_root->addSpacing(20);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
@@ -317,7 +317,7 @@ namespace tc
                 title->setFixedWidth(item_width);
                 title->SetTextId("id_remote_device");
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 21px; font-weight:700;)");
                 left_root->addSpacing(50);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
