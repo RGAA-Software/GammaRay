@@ -201,9 +201,14 @@ namespace tc
                         }
                         context_->PostTask([=, this]() {
                             auto dev_opt = grApp->GetDeviceOperator();
-                            auto device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
+                            auto opt_device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
+                            if (!opt_device.has_value()) {
+                                LOGE("Refresh random password failed, code: {}", (int)opt_device.error());
+                                return;
+                            }
+                            auto device = opt_device.value();
                             if (!device) {
-                                LOGE("Refresh random password failed.");
+                                LOGE("Refresh random password failed, nullptr.");
                                 return;
                             }
                             settings_->SetDeviceId(device->device_id_);

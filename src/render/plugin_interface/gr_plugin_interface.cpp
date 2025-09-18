@@ -18,17 +18,16 @@ extern "C"
 {
 
 #ifdef WIN32
-    // 确保插件DLL的DllMain没有异常行为
     BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
         switch (ul_reason_for_call) {
             case DLL_PROCESS_ATTACH:
                 LOGI("Attach to process.");
                 break;
             case DLL_THREAD_ATTACH:
-                LOGI("Attach to thread: {}", GetCurrentThreadId());
+                //LOGI("Attach to thread: {}", GetCurrentThreadId());
                 break;
             case DLL_THREAD_DETACH:
-                LOGI("Detach from thread: {}", GetCurrentThreadId());
+                //LOGI("Detach from thread: {}", GetCurrentThreadId());
                 break;
             case DLL_PROCESS_DETACH:
                 break;

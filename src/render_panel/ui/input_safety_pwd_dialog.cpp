@@ -143,15 +143,22 @@ namespace tc
 
                 // update safety pwd
                 auto dev_opt = app_->GetDeviceOperator();
-                auto device = dev_opt->UpdateSafetyPwd(settings->GetDeviceId(), pwd_md5);
-                if (device && device->safety_pwd_md5_ == pwd_md5) {
-                    context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_remote_security_password_updated"));
-                    done(0);
+                auto opt_device = dev_opt->UpdateSafetyPwd(settings->GetDeviceId(), pwd_md5);
+                bool update_server_password_result = false;
+                if (opt_device.has_value()) {
+                    auto device = opt_device.value();
+                    if (device->safety_pwd_md5_ == pwd_md5) {
+                        update_server_password_result = true;
+                        context_->NotifyAppMessage(tcTr("id_update_security_success"), tcTr("id_remote_security_password_updated"));
+                        done(0);
+                    }
                 }
-                else {
+
+                if (!update_server_password_result) {
                     TcDialog warn_dialog(tcTr("id_warning"), tcTr("id_security_password_update_local_but_failed_server"), this);
                     warn_dialog.exec();
                 }
+
             });
 
             layout->addWidget(btn_sure);

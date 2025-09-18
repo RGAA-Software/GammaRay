@@ -249,9 +249,14 @@ namespace tc
                 return;
             }
             LOGI("Will request new device!");
-            auto device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
+            auto opt_device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
+            if (!opt_device.has_value()) {
+                LOGE("Can't create new device, error: {}", (int)opt_device.error());
+                return;
+            }
+            auto device = opt_device.value();
             if (!device) {
-                LOGE("Can't create new device!");
+                LOGE("Can't create new device, device is nullptr.");
                 return;
             }
 

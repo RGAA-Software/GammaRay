@@ -420,21 +420,31 @@ namespace tc
         }
 
         // has a device
-        auto device = dev_opt->QueryDevice(settings_->GetDeviceId());
+        auto opt_device = dev_opt->QueryDevice(settings_->GetDeviceId());
+        if (!opt_device.has_value()) {
+            if (auto err = opt_device.error(); err == MgrError::kDeviceNotFound) {
+                LOGI("Don't have device in server, id: {}, will request a new one.", settings_->GetDeviceId());
+                context_->SendAppMessage(MsgForceRequestDeviceId{});
+            }
+            return;
+        }
+        auto device = opt_device.value();
         if (!device) {
             LOGE("Query device for : {} failed.", settings_->GetDeviceId());
-            context_->SendAppMessage(MsgForceRequestDeviceId{});
             return;
         }
 
         auto local_random_pwd_md5 = MD5::Hex(settings_->GetDeviceRandomPwd());
         if (device->random_pwd_md5_ != local_random_pwd_md5) {
             LOGW("***Random pwd not equals, will refresh, srv: {} => local: {}", device->random_pwd_md5_, local_random_pwd_md5);
-            auto update_device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
-            if (update_device && !update_device->gen_random_pwd_.empty()) {
-                settings_->SetDeviceRandomPwd(update_device->gen_random_pwd_);
-                // todo: notify random password updated
+            auto opt_update_device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
+            if (opt_update_device.has_value()) {
+                auto update_device =  opt_update_device.value();
+                if (update_device && !update_device->gen_random_pwd_.empty()) {
+                    settings_->SetDeviceRandomPwd(update_device->gen_random_pwd_);
+                    // todo: notify random password updated
 
+                }
             }
         }
 
