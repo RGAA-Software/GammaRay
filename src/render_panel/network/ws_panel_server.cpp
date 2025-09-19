@@ -34,6 +34,7 @@ namespace tc
     static std::string kUrlPanel = "/panel";
     static std::string kUrlPanelRenderer = "/panel/renderer";
     static std::string kUrlFileTransfer = "/file/transfer";
+    static std::string kUrlSysInfo = "/sys/info";
 
     struct aop_log {
         bool before(http::web_request &req, http::web_response &rep) {
@@ -190,6 +191,8 @@ namespace tc
         AddWebsocketRouter(kUrlPanelRenderer);
         // file transfer
         AddWebsocketRouter(kUrlFileTransfer);
+        // sys info
+        AddWebsocketRouter(kUrlSysInfo);
 
         bool ret = server_->start("0.0.0.0", settings_->GetPanelServerPort());
         LOGI("App server start result: {}, port: {}", ret, settings_->GetPanelServerPort());
@@ -222,6 +225,11 @@ namespace tc
                 }
                 else if (path == kUrlFileTransfer) {
                     this->ParseFtBinaryMessage(socket_fd, data);
+                }
+                else if (path == kUrlSysInfo) {
+                    if (sys_info_sess_) {
+                        this->ParseSysInfoMessage(socket_fd, data);
+                    }
                 }
             })
             .on("open", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
@@ -269,6 +277,12 @@ namespace tc
                     this->ft_sessions_.Insert(socket_fd, ft_sess);
                     ft_sess->ch_->OnConnected();
                 }
+                else if (path == kUrlSysInfo) {
+                    auto sess = std::make_shared<WSSession>();
+                    sess->socket_fd_ = socket_fd;
+                    sess->session_ = sess_ptr;
+                    sys_info_sess_ = sess;
+                }
             })
             .on("close", [=, this](std::shared_ptr<asio2::http_session> &sess_ptr) {
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
@@ -287,6 +301,11 @@ namespace tc
                         auto ft_session = ft_sessions_.Get(socket_fd);
                         ft_session->ch_->OnDisConnected();
                         ft_sessions_.Remove(socket_fd);
+                    }
+                }
+                else if (path == kUrlSysInfo) {
+                    if (sys_info_sess_) {
+                        sys_info_sess_.reset();
                     }
                 }
             })
@@ -523,6 +542,10 @@ namespace tc
             auto processor = app_->GetRenderMsgProcessor();
             processor->OnMessage(rd_proto_msg);
         }
+    }
+
+    void WsPanelServer::ParseSysInfoMessage(uint64_t socket_fd, std::string_view msg) {
+        LOGI("Sys Info: {}", msg);
     }
 
 }

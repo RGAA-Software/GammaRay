@@ -61,7 +61,11 @@ namespace tc
         // parse /panel/renderer socket
         void ParseRendererMessage(uint64_t socket_fd, std::string_view msg);
 
+        // parse file/transfer
         void ParseFtBinaryMessage(uint64_t socket_fd, std::string_view msg);
+
+        // parse /sys/info
+        void ParseSysInfoMessage(uint64_t socket_fd, std::string_view msg);
 
     private:
         void AddWebsocketRouter(const std::string& path);
@@ -82,6 +86,7 @@ namespace tc
         ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> panel_sessions_;
         ConcurrentHashMap<uint64_t, std::shared_ptr<WSSession>> renderer_sessions_;
         ConcurrentHashMap<uint64_t, std::shared_ptr<FtSession>> ft_sessions_;
+        std::shared_ptr<WSSession> sys_info_sess_ = nullptr;
         std::shared_ptr<HttpHandler> http_handler_ = nullptr;
         GrSettings* settings_ = nullptr;
         std::shared_ptr<VisitRecordOperator> visit_record_op_ = nullptr;
