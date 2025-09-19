@@ -59,6 +59,8 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 set(FFMPEG_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_3rdparty/ffmpeg7.1.1)
 
+set(LIBPLACEBO_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_3rdparty/libplacebo)
+
 #find_package(OpenSSL REQUIRED)
 #find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Network Charts Svg)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core Core5Compat WebSockets Charts Svg)
@@ -119,6 +121,7 @@ if(MSVC)
     add_compile_options("/bigobj")
     include_directories(${FFMPEG_ROOT}/include)
     link_directories(${FFMPEG_ROOT}/lib)
+    link_directories(${LIBPLACEBO_ROOT}/lib)
 
     include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/openssl/include)
     link_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/openssl/x64/lib/VC)
