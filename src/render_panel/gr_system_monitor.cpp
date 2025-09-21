@@ -3,6 +3,9 @@
 //
 
 #include "gr_system_monitor.h"
+#include <qdir.h>
+#include <qfileinfo.h>
+#include <QApplication>
 #include "gr_context.h"
 #include "gr_application.h"
 #include "gr_app_messages.h"
@@ -21,14 +24,13 @@
 #include "service/service_manager.h"
 #include "tc_spvr_client/spvr_api.h"
 #include "tc_common_new/http_base_op.h"
+#include "tc_common_new/cpu_frequency.h"
 #include "tc_profile_client/profile_api.h"
 #include "tc_manager_client/mgr_device.h"
 #include "tc_manager_client/mgr_device_operator.h"
 #include "tc_qt_widget/tc_dialog.h"
 #include "tc_qt_widget/translator/tc_translator.h"
-#include <QApplication>
-#include <qfileinfo.h>
-#include <qdir.h>
+#include "companion/panel_companion.h"
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
@@ -247,6 +249,21 @@ namespace tc
         msg_listener_->Listen<MsgConnectedToService>([=, this](const MsgConnectedToService& msg) {
             StartServer();
         });
+
+        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& msg) {
+            context_->PostTask([=, this]() {
+                // cpu frequency
+                auto freq = CpuFrequency::GetCurrentCpuSpeed();
+                this->current_cpu_frequency_.push_back(freq);
+                if (this->current_cpu_frequency_.size() >= 180) {
+                    this->current_cpu_frequency_.pop_front();
+                }
+
+                if (auto companion = app_->GetCompanion(); companion) {
+                    companion->UpdateCurrentCpuFrequency((float)freq);
+                }
+            });
+        });
     }
 
     Response<bool, bool> GrSystemMonitor::CheckRenderAlive() {
@@ -346,60 +363,6 @@ namespace tc
         srv_mgr->StartServer();
     }
 
-    // void GrSystemMonitor::CheckOnlineServers() {
-    //     if (!this->VerifyOnlineServers()) {
-    //         auto ret_online_servers = spvr::SpvrApi::GetOnlineServers(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-    //         if (!ret_online_servers) {
-    //             auto err = ret_online_servers.error();
-    //             LOGE("Can't request online servers: {}:{}, err: {}",
-    //                  settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), SpvrError2String(err));
-    //             return;
-    //         }
-    //         auto online_servers = ret_online_servers.value();
-    //         bool settings_changed = false;
-    //         if (!online_servers->relay_servers_.empty()) {
-    //             auto srv = online_servers->relay_servers_.at(0);
-    //             settings_->SetRelayServerHost(srv.srv_w3c_ip_);
-    //             settings_->SetRelayServerPort(srv.srv_working_port_);
-    //             LOGI("Got Relay server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
-    //             settings_changed = true;
-    //         }
-    //         if (!online_servers->pr_servers_.empty()) {
-    //             auto srv = online_servers->pr_servers_.at(0);
-    //             settings_->SetProfileServerHost(srv.srv_w3c_ip_);
-    //             settings_->SetProfileServerPort(srv.srv_working_port_);
-    //             LOGI("Got Profile server: {}:{}", srv.srv_w3c_ip_, srv.srv_working_port_);
-    //             settings_changed = true;
-    //         }
-    //         if (settings_changed) {
-    //             context_->SendAppMessage(MsgSettingsChanged{});
-    //         }
-    //     }
-    // }
-
-//    bool GrSystemMonitor::VerifyOnlineServers() {
-//        if (!settings_->HasSpvrServerConfig() || !settings_->HasRelayServerConfig()) {
-//            return false;
-//        }
-//        // check spvr
-//        auto ok = HttpBaseOp::CanPingServer(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-//        if (!ok) {
-//            LOGE("Spvr is not online: {} {} ", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-//            return false;
-//        }
-//        //LOGI("Verify Spvr ok, address: {}:{}", settings_->spvr_server_host_, settings_->spvr_server_port_);
-//
-//        // check relay
-//        ok = HttpBaseOp::CanPingServer(settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
-//        if (!ok) {
-//            LOGE("Relay is not online: {} {} ", settings_->GetRelayServerHost(), settings_->GetRelayServerPort());
-//            return false;
-//        }
-//        //LOGI("Verify Relay ok, address: {}:{}", settings_->relay_server_host_, settings_->relay_server_port_);
-//
-//        return true;
-//    }
-
     void GrSystemMonitor::CheckThisDeviceInfo() {
         //LOGI("CheckThisDeviceInfo...");
         auto dev_opt = app_->GetDeviceOperator();
@@ -460,6 +423,14 @@ namespace tc
                 LOGI("***UpdateSafetyPwd success {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
             }
         }
+    }
+
+    std::vector<double> GrSystemMonitor::GetCurrentCpuFrequency() {
+        std::vector<double> frequencies;
+        for (const auto& v : current_cpu_frequency_) {
+            frequencies.push_back(v);
+        }
+        return frequencies;
     }
 
 }

@@ -3,6 +3,7 @@
 //
 
 #include "ws_panel_server.h"
+#include <QApplication>
 #include "apis.h"
 #include "http_handler.h"
 #include "tc_message.pb.h"
@@ -26,7 +27,7 @@
 #include "tc_common_new/url_helper.h"
 #include "tc_common_new/message_notifier.h"
 #include "tc_qt_widget/translator/tc_translator.h"
-#include <QApplication>
+#include "render_panel/companion/panel_companion.h"
 
 namespace tc
 {
@@ -546,6 +547,13 @@ namespace tc
 
     void WsPanelServer::ParseSysInfoMessage(uint64_t socket_fd, std::string_view msg) {
         LOGI("Sys Info: {}", msg);
+        auto companion = app_->GetCompanion();
+        if (!companion) {
+            return;
+        }
+
+        std::string m = std::string(msg.data(), msg.size());
+        auto sys_info = companion->ParseHardwareInfo(m);
     }
 
 }

@@ -9,6 +9,7 @@
 #include <vector>
 #include <optional>
 #include <memory>
+#include "panel_hardware_info.h"
 
 namespace tc
 {
@@ -39,6 +40,10 @@ namespace tc
 
         // enc
         virtual bool EncQRCode(std::string origin_content, std::vector<uint8_t>& cipher_data) = 0;
+
+        // parse hardware info
+        virtual void UpdateCurrentCpuFrequency(float freq) = 0;
+        virtual std::shared_ptr<SysInfo> ParseHardwareInfo(const std::string& info) = 0;
     };
 
 }

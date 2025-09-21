@@ -6,8 +6,9 @@
 #define TC_APPLICATION_SYSTEM_MONITOR_H
 
 #include <memory>
-#include <functional>
 #include <string>
+#include <deque>
+#include <functional>
 #include "tc_common_new/response.h"
 
 namespace tc
@@ -20,7 +21,6 @@ namespace tc
     class MessageListener;
     class ServiceManager;
     class GrSettings;
-    class SpvrManager;
 
     class GrSystemMonitor {
     public:
@@ -30,6 +30,7 @@ namespace tc
         explicit GrSystemMonitor(const std::shared_ptr<GrApplication>& app);
         void Start();
         void Exit();
+        std::vector<double> GetCurrentCpuFrequency();
 
     private:
         static bool CheckViGEmDriver();
@@ -57,6 +58,7 @@ namespace tc
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ = nullptr;
+        std::deque<double> current_cpu_frequency_;
     };
 
 }
