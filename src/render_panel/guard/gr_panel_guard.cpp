@@ -9,11 +9,13 @@
 #include "gr_guard_messages.h"
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_common_new/process_util.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
 
     const auto kGammaRayName = "GammaRay.exe";
+    const auto kGammaRaySysInfoName = "gr_sysinfo.exe";
 
     GrPanelGuard::GrPanelGuard(const std::shared_ptr<GrGuardContext>& ctx) {
         context_ = ctx;
@@ -26,20 +28,35 @@ namespace tc
         msg_listener_ = context_->ObtainMessageListener();
         msg_listener_->Listen<MsgGrGuardTimer5S>([=, this](const MsgGrGuardTimer5S& msg) {
             thread_->Post([this]() {
-                if (!CheckPanelState()) {
+                auto pss = ProcessHelper::GetProcessList(false);
+                if (!CheckPanelState(pss)) {
                     StartPanel();
                 }
+
+                if (!CheckSysInfoState(pss)) {
+                    LOGI("**Start gr_sysinfo.exe.");
+                    StartSysInfo();
+                }
             });
+        });
+
+        thread_->Post([this]() {
+            auto pss = ProcessHelper::GetProcessList(false);
+            if (!CheckSysInfoState(pss)) {
+                LOGI("--Start gr_sysinfo.exe.");
+                StartSysInfo();
+            }
         });
     }
 
     void GrPanelGuard::Exit() {
-
+        if (thread_) {
+            thread_->Exit();
+        }
     }
 
-    bool GrPanelGuard::CheckPanelState() {
-        auto processes = ProcessHelper::GetProcessList(false);
-        for (const auto& pi : processes) {
+    bool GrPanelGuard::CheckPanelState(const std::vector<std::shared_ptr<ProcessInfo>>& pss) {
+        for (const auto& pi : pss) {
             if (pi->exe_full_path_.find(kGammaRayName) != std::string::npos) {
                 return true;
             }
@@ -51,6 +68,20 @@ namespace tc
         auto cmdline = QCoreApplication::applicationDirPath() + "/" + kGammaRayName;
         ProcessUtil::StartProcess(cmdline.toStdString(), {}, true, false);
         //ProcessUtil::StartProcessInWorkDir(QCoreApplication::applicationDirPath().toStdString(), cmdline.toStdString(), {});
+    }
+
+    bool GrPanelGuard::CheckSysInfoState(const std::vector<std::shared_ptr<ProcessInfo>>& pss) {
+        for (const auto& pi : pss) {
+            if (pi->exe_full_path_.find(kGammaRaySysInfoName) != std::string::npos) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void GrPanelGuard::StartSysInfo() {
+        auto cmdline = QCoreApplication::applicationDirPath() + "/" + kGammaRaySysInfoName;
+        ProcessUtil::StartProcess(cmdline.toStdString(), {}, true, false);
     }
 
 }

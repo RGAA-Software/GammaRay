@@ -29,6 +29,7 @@ static const std::string kGammaRayGuardName = "GammaRayGuard.exe";
 static const std::string kGammaRayRenderName = "GammaRayRender.exe";
 static const std::string kGammaRayClientInner = "GammaRayClientInner.exe";
 static const std::string kGammaRayService = "GammaRayService.exe";
+static const std::string kGammaRaySysInfo = "gr_sysinfo.exe";
 
 DEFINE_string(option, "null", "uninstall/stop");
 
@@ -70,6 +71,12 @@ int main(int argc, char** argv) {
                     LOGI("Kill exe: {}", process->exe_full_path_);
                     tc::ProcessHelper::CloseProcess(process->pid_);
                     break;
+                }
+            }
+            for (auto& process : processes) {
+                if (process->exe_full_path_.find(kGammaRaySysInfo) != std::string::npos) {
+                    LOGI("Kill exe: {}", process->exe_full_path_);
+                    tc::ProcessHelper::CloseProcess(process->pid_);
                 }
             }
             for (auto& process : processes) {

@@ -58,6 +58,8 @@
         <file>resources/image/ic_icon_selected.svg</file>
         <file>resources/image/ic_avatar_normal.svg</file>
         <file>resources/image/ic_avatar_selected.svg</file>
+        <file>resources/image/ic_hw_normal.svg</file>
+        <file>resources/image/ic_hw_selected.svg</file>
         <file>resources/image/ic_settings_outline_normal.svg</file>
         <file>resources/image/ic_settings_outline_selected.svg</file>
         <file>resources/image/ic_settings_security_normal.svg</file>

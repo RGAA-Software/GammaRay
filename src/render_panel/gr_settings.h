@@ -75,6 +75,7 @@ namespace tc
     static const std::string kGammaRayRenderName = "GammaRayRender.exe";
     static const std::string kGammaRayClientInner = "GammaRayClientInner.exe";
     static const std::string kGammaRayService = "GammaRayService.exe";
+    static const std::string kGammaRaySysInfo = "gr_sysinfo.exe";
 
     class SharedPreference;
     class MessageNotifier;

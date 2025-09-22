@@ -20,6 +20,7 @@
 #include "render_panel/ui/tab_settings.h"
 #include "render_panel/ui/tab_profile.h"
 #include "render_panel/ui/tab_security_internals.h"
+#include "render_panel/ui/tab_hw_info.h"
 #include "gr_settings.h"
 #include "gr_context.h"
 #include "gr_render_controller.h"
@@ -229,6 +230,21 @@ namespace tc
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
+            {
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_hw_selected.svg", ":/resources/image/ic_hw_normal.svg", 20, 20);
+                btn_tab_hw_info_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetTextId("id_tab_hardware");
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabHWInfo);
+                });
+                layout->addSpacing(10);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
             layout->addStretch();
 
             auto exit_btn_size = QSize(btn_size.width(), btn_size.height() - 5);
@@ -291,6 +307,7 @@ namespace tc
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
             tabs_.insert({TabName::kTabSecurity, new TabSecurityInternals(app_, this)});
             //tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
+            tabs_.insert({TabName::kTabHWInfo, new TabHWInfo(app_, this)});
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
@@ -298,6 +315,7 @@ namespace tc
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
             tabs_[TabName::kTabSecurity]->SetAttach(btn_security_);
             //tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
+            tabs_[TabName::kTabHWInfo]->SetAttach(btn_tab_hw_info_);
 
             auto layout = new QVBoxLayout();
             WidgetHelper::ClearMargins(root_layout);
@@ -308,6 +326,7 @@ namespace tc
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
             stack_widget->addWidget(tabs_[TabName::kTabSecurity]);
             //stack_widget->addWidget(tabs_[TabName::kTabProfile]);
+            stack_widget->addWidget(tabs_[TabName::kTabHWInfo]);
             stacked_widget_ = stack_widget;
             layout->addWidget(stack_widget);
             root_layout->addLayout(layout);
@@ -423,6 +442,12 @@ namespace tc
                         LOGI("Kill exe: {}", process->exe_full_path_);
                         tc::ProcessHelper::CloseProcess(process->pid_);
                         break;
+                    }
+                }
+                for (auto& process : processes) {
+                    if (process->exe_full_path_.find(kGammaRaySysInfo) != std::string::npos) {
+                        LOGI("Kill exe: {}", process->exe_full_path_);
+                        tc::ProcessHelper::CloseProcess(process->pid_);
                     }
                 }
                 for (auto& process : processes) {

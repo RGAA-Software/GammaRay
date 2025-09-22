@@ -1,3 +1,4 @@
+add_subdirectory(hw_info)
 add_subdirectory(render_panel)
 add_subdirectory(render_panel/system)
 

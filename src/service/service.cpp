@@ -132,7 +132,8 @@ namespace tc
         for (auto& process : processes) {
             if (process->exe_full_path_.find(kGammaRayGuardName) != std::string::npos
                 || process->exe_full_path_.find(kGammaRayRenderName) != std::string::npos
-                || process->exe_full_path_.find(kGammaRayClientInner) != std::string::npos) {
+                || process->exe_full_path_.find(kGammaRayClientInner) != std::string::npos
+                || process->exe_full_path_.find(kGammaRaySysInfo) != std::string::npos) {
                 LOGI("Kill exe: {}", process->exe_full_path_);
                 tc::ProcessHelper::CloseProcess(process->pid_);
             }

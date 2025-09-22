@@ -9,7 +9,7 @@
 #include <vector>
 #include <optional>
 #include <memory>
-#include "panel_hardware_info.h"
+#include "hw_info/hw_info.h"
 
 namespace tc
 {

@@ -6,6 +6,7 @@
 #define GAMMARAYPREMIUM_GR_PANEL_GUARD_H
 
 #include <memory>
+#include <vector>
 
 namespace asio2
 {
@@ -16,6 +17,7 @@ namespace tc
 {
 
     class Thread;
+    class ProcessInfo;
     class GrGuardContext;
     class MessageListener;
 
@@ -26,8 +28,10 @@ namespace tc
         void Exit();
 
     private:
-        bool CheckPanelState();
+        bool CheckPanelState(const std::vector<std::shared_ptr<ProcessInfo>>& pss);
         void StartPanel();
+        bool CheckSysInfoState(const std::vector<std::shared_ptr<ProcessInfo>>& pss);
+        void StartSysInfo();
 
     private:
         std::shared_ptr<GrGuardContext> context_ = nullptr;
