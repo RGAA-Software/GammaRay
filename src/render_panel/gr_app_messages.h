@@ -19,6 +19,7 @@ namespace tc
 {
     class Message;
     class GrSettings;
+    class SysInfo;
 
     // can't connect or not installed
     class MsgViGEmState {
@@ -213,6 +214,11 @@ namespace tc
     // clear program data
     class MsgForceClearProgramData {
     public:
+    };
+
+    class MsgHWInfo {
+    public:
+        std::shared_ptr<SysInfo> sys_info_ = nullptr;
     };
 }
 

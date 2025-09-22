@@ -13,7 +13,7 @@
 namespace tc
 {
 
-    class CustomTabBtn;
+    class HWInfoWidget;
 
     class TabHWInfo : public TabBase {
     public:
@@ -23,7 +23,7 @@ namespace tc
         void OnTabHide() override;
 
     private:
-
+        HWInfoWidget* hw_widget_ = nullptr;
     };
 
 }

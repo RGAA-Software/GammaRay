@@ -546,7 +546,6 @@ namespace tc
     }
 
     void WsPanelServer::ParseSysInfoMessage(uint64_t socket_fd, std::string_view msg) {
-        LOGI("Sys Info: {}", msg);
         auto companion = app_->GetCompanion();
         if (!companion) {
             return;
@@ -554,6 +553,13 @@ namespace tc
 
         std::string m = std::string(msg.data(), msg.size());
         auto sys_info = companion->ParseHardwareInfo(m);
+        if (!sys_info) {
+            return;
+        }
+
+        context_->SendAppMessage(MsgHWInfo {
+            .sys_info_ = sys_info,
+        });
     }
 
 }
