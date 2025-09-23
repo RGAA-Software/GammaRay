@@ -230,6 +230,11 @@
   "id_prefer_decoder": "Prefer Decoder",
   "id_hw_pc_name": "PC Name",
   "id_hw_os_version": "OS Version",
+  "id_hw_cpu_brand": "CPU Brand",
+  "id_hw_memory": "Memory",
+  "id_hw_disk": "Hard Disk",
+  "id_hw_ethernet": "Ethernet",
+  "id_hw_running": "System Running",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

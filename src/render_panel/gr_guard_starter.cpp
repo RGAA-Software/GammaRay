@@ -23,14 +23,20 @@ namespace tc
     GrGuardStarter::GrGuardStarter(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
 
-        msg_listener_ = ctx->ObtainMessageListener();
-        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
+        auto fn_start = [=, this]() {
             context_->PostTask([=, this]() {
                 if (!this->CheckGuardState()) {
                     this->StartGuard();
                 }
             });
+        };
+
+        msg_listener_ = ctx->ObtainMessageListener();
+        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
+            fn_start();
         });
+
+        fn_start();
     }
 
     bool GrGuardStarter::CheckGuardState() {

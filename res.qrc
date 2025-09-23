@@ -85,6 +85,10 @@
         <file>resources/image/ic_copy.svg</file>
         <file>resources/image/ic_screen_shot.svg</file>
         <file>resources/image/ic_os_version.svg</file>
+        <file>resources/image/ic_hw_cpu.svg</file>
+        <file>resources/image/ic_memory.svg</file>
+        <file>resources/image/ic_hard_disk.svg</file>
+        <file>resources/image/ic_running.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

@@ -150,7 +150,7 @@ namespace tc
         std::string plugin_author_;
         std::string plugin_desc_;
         std::string plugin_version_name_;
-        int64_t plugin_version_code_;
+        int64_t plugin_version_code_{};
         bool plugin_enabled_ = true;
         std::string base_path_;
         std::string capture_audio_device_id_;
