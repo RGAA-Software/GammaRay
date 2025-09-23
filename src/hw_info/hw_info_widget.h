@@ -16,6 +16,7 @@ namespace tc
 
     class SysInfo;
     class TcLabel;
+    class HWStatChart;
 
     class EditableLine {
     public:
@@ -45,6 +46,11 @@ namespace tc
         std::vector<EditableLine> lbl_disks_;
         QWidget* net_widget_ = nullptr;
         std::vector<EditableLine> lbl_networks_;
+        HWStatChart* chart_cpu_usage_ = nullptr;
+        HWStatChart* chart_cpu_freq_ = nullptr;
+        HWStatChart* chart_memory_ = nullptr;
+        HWStatChart* chart_net_received_speed_ = nullptr;
+        HWStatChart* chart_net_send_speed_ = nullptr;
     };
 
 }
