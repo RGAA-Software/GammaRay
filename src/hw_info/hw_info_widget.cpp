@@ -325,6 +325,20 @@ namespace tc
                 layout->addSpacing(6);
             }
 
+            // CPU Title
+            {
+                auto item_layout = new NoMarginHLayout();
+                auto title = new TcLabel(this);
+                cpu_label_ = title;
+                title->setFixedWidth(700);
+                title->setAlignment(Qt::AlignLeft);
+                title->setStyleSheet(R"(font-size: 14px; font-weight:700;)");
+                item_layout->addWidget(title);
+                item_layout->addStretch();
+                layout->addLayout(item_layout);
+                layout->addSpacing(6);
+            }
+
             // CPU List
             {
                 auto cpu_list = new HWCpuDetailWidget(this);
@@ -375,7 +389,14 @@ namespace tc
         lbl_cpu_info_->setText(cpu_info.c_str());
 
         //
+        cpu_label_->setText(std::format("{}, {}", cpu_brand.toStdString(), cpu_info.c_str()).c_str());
         detail_widget_->UpdateCpusInfo(sys_info->cpu_.cpus_);
+        int rows = sys_info->cpu_.cpus_.size() / 7;
+        int left_size = sys_info->cpu_.cpus_.size() % 7;
+        if (left_size > 0) {
+            rows += 1;
+        }
+        detail_widget_->setFixedHeight(8 * (rows + 1) + 50 * rows);
 
         //
         chart_memory_->SetYAxisDesc(std::format("{}GB", sys_info->mem_.total_gb_).c_str());

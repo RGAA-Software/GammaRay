@@ -53,6 +53,7 @@ namespace tc
         HWStatChart* chart_memory_ = nullptr;
         HWStatChart* chart_net_received_speed_ = nullptr;
         HWStatChart* chart_net_send_speed_ = nullptr;
+        TcLabel* cpu_label_ = nullptr;
         HWCpuDetailWidget* detail_widget_ = nullptr;
     };
 
