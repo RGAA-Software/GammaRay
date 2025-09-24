@@ -90,6 +90,7 @@ namespace tc
 
     class SysGpuInfo {
     public:
+        std::string id_;
         std::string brand_;
         uint32_t fan_speed_ = 0;
         uint32_t power_limit_ = 0;
@@ -222,6 +223,7 @@ namespace tc
     static std::string to_string(const SysGpuInfo& gpu) {
         std::stringstream ss;
         ss << "SysGpuInfo{brand='" << gpu.brand_
+           << "', id=" << gpu.id_
            << "', fan_speed=" << gpu.fan_speed_
            << ", power_limit=" << gpu.power_limit_
            << ", encoder_utilization=" << gpu.encoder_utilization_

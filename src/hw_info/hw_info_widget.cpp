@@ -7,8 +7,10 @@
 #include "tc_label.h"
 #include "hw_info.h"
 #include "hw_stat_chart.h"
+#include "hw_gpu_widget.h"
 #include "hw_cpu_detail_widget.h"
 #include "tc_common_new/num_formatter.h"
+#include <QScrollArea>
 
 namespace tc
 {
@@ -290,15 +292,6 @@ namespace tc
 
                 chart_layout->addSpacing(10);
 
-//                {
-//                    auto chart = new HWStatChart(this);
-//                    chart_net_speed_ = chart;
-//                    chart->SetChartType(HWStatChartType::kLine);
-//                    chart->SetYAxisDesc("100MB/s");
-//                    chart->setFixedSize(chart_width, chart_height);
-//                    chart_layout->addWidget(chart);
-//                }
-
                 chart_layout->addStretch();
                 layout->addLayout(chart_layout);
             }
@@ -347,7 +340,14 @@ namespace tc
                 layout->addWidget(cpu_list);
             }
 
-            layout->addStretch();
+            layout->addSpacing(6);
+
+            //
+            gpu_parent_ = new QScrollArea(this);
+            gpu_parent_->setFixedWidth(700);
+            layout->addWidget(gpu_parent_);
+
+            layout->addSpacing(20);
         }
 
         content_root->addSpacing(20);
@@ -522,6 +522,20 @@ namespace tc
             chart_net_send_speed_->UpdateValues(send_speed);
         }
 
+        if (!gpu_parent_->widget()) {
+            GenGpuWidget(sys_info);
+        }
+        for (int i = 0; i < sys_info->gpus_.size(); i++) {
+            auto gpu = sys_info->gpus_[i];
+            if (gpu_titles_.contains(gpu.id_)) {
+                auto t = std::format("{}, Usage: {}%", gpu.brand_, gpu.gpu_utilization_);
+                gpu_titles_[gpu.id_]->setText(t.c_str());
+            }
+            if (gpu_widgets_.contains(gpu.id_)) {
+                gpu_widgets_[gpu.id_]->UpdateGpuInfo(gpu);
+            }
+        }
+
     }
 
     void HWInfoWidget::GenDiskList(const std::shared_ptr<SysInfo>& sys_info) {
@@ -605,6 +619,40 @@ namespace tc
             });
         }
         net_widget_->setLayout(root_layout);
+    }
+
+    void HWInfoWidget::GenGpuWidget(const std::shared_ptr<SysInfo> &sys_info) {
+        auto widget = new QWidget();
+        auto layout = new NoMarginVLayout();
+        widget->setLayout(layout);
+
+        for (int i = 0; i < sys_info->gpus_.size(); i++) {
+            auto gpu = sys_info->gpus_[i];
+            // CPU Title
+            {
+                auto item_layout = new NoMarginHLayout();
+                auto title = new TcLabel(this);
+                gpu_titles_[gpu.id_] = title;
+                auto t = std::format("{}, Usage: {}%", gpu.brand_, gpu.gpu_utilization_);
+                title->setText(t.c_str());
+                title->setFixedWidth(680);
+                title->setAlignment(Qt::AlignLeft);
+                title->setStyleSheet(R"(font-size: 14px; font-weight:700;)");
+                item_layout->addWidget(title);
+                item_layout->addStretch();
+                layout->addLayout(item_layout);
+                layout->addSpacing(6);
+            }
+
+            // GPU
+            {
+                auto gpu_widget = new HWGpuWidget(this);
+                gpu_widgets_[gpu.id_] = gpu_widget;
+                gpu_widget->setFixedSize(680, 100);
+                layout->addWidget(gpu_widget);
+            }
+        }
+        gpu_parent_->setWidget(widget);
     }
 
 }

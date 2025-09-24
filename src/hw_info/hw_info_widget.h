@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPaintEvent>
+#include <QScrollArea>
 
 namespace tc
 {
@@ -18,6 +19,7 @@ namespace tc
     class TcLabel;
     class HWStatChart;
     class HWCpuDetailWidget;
+    class HWGpuWidget;
 
     class EditableLine {
     public:
@@ -35,6 +37,7 @@ namespace tc
         void RefreshInternal();
         void GenDiskList(const std::shared_ptr<SysInfo>& sys_info);
         void GenNetworkList(const std::shared_ptr<SysInfo>& sys_info);
+        void GenGpuWidget(const std::shared_ptr<SysInfo>& sys_info);
 
     private:
         std::deque<std::shared_ptr<SysInfo>> sys_info_hist_;
@@ -55,6 +58,9 @@ namespace tc
         HWStatChart* chart_net_send_speed_ = nullptr;
         TcLabel* cpu_label_ = nullptr;
         HWCpuDetailWidget* detail_widget_ = nullptr;
+        QScrollArea* gpu_parent_ = nullptr;
+        std::map<std::string, TcLabel*> gpu_titles_;
+        std::map<std::string, HWGpuWidget*> gpu_widgets_;
     };
 
 }

@@ -110,17 +110,18 @@ namespace tc
                 auto gpus_obj = obj["gpus"];
                 for (const auto& gpu : gpus_obj) {
                     value->gpus_.push_back(SysGpuInfo {
-                            .brand_ = gpu["brand"].get<std::string>(),
-                            .fan_speed_ = gpu["fan_speed"].get<uint32_t>(),
-                            .power_limit_ = gpu["power_limit"].get<uint32_t>(),
-                            .encoder_utilization_ = gpu["encoder_utilization"].get<uint32_t>(),
-                            .gpu_utilization_ = gpu["gpu_utilization"].get<uint32_t>(),
-                            .mem_utilization_ = gpu["mem_utilization"].get<uint32_t>(),
-                            .temperature_ = gpu["temperature"].get<uint32_t>(),
-                            .mem_used_ = gpu["mem_used"].get<uint64_t>(),
-                            .mem_used_gb_ = gpu["mem_used_gb"].get<float>(),
-                            .mem_total_ = gpu["mem_total"].get<uint64_t>(),
-                            .mem_total_gb_ = gpu["mem_total_gb"].get<float>(),
+                        .id_ = gpu["id"].get<std::string>(),
+                        .brand_ = gpu["brand"].get<std::string>(),
+                        .fan_speed_ = gpu["fan_speed"].get<uint32_t>(),
+                        .power_limit_ = gpu["power_limit"].get<uint32_t>(),
+                        .encoder_utilization_ = gpu["encoder_utilization"].get<uint32_t>(),
+                        .gpu_utilization_ = gpu["gpu_utilization"].get<uint32_t>(),
+                        .mem_utilization_ = gpu["mem_utilization"].get<uint32_t>(),
+                        .temperature_ = gpu["temperature"].get<uint32_t>(),
+                        .mem_used_ = gpu["mem_used"].get<uint64_t>(),
+                        .mem_used_gb_ = gpu["mem_used_gb"].get<float>(),
+                        .mem_total_ = gpu["mem_total"].get<uint64_t>(),
+                        .mem_total_gb_ = gpu["mem_total_gb"].get<float>(),
                     });
                 }
             }
