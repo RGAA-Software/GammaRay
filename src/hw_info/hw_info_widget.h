@@ -17,6 +17,7 @@ namespace tc
     class SysInfo;
     class TcLabel;
     class HWStatChart;
+    class HWCpuDetailWidget;
 
     class EditableLine {
     public:
@@ -40,6 +41,7 @@ namespace tc
         TcLabel* lbl_pc_name_ = nullptr;
         TcLabel* lbl_os_version_ = nullptr;
         TcLabel* lbl_cpu_ = nullptr;
+        TcLabel* lbl_cpu_info_ = nullptr;
         TcLabel* lbl_memory_ = nullptr;
         TcLabel* lbl_uptime_ = nullptr;
         QWidget* disk_widget_ = nullptr;
@@ -51,6 +53,7 @@ namespace tc
         HWStatChart* chart_memory_ = nullptr;
         HWStatChart* chart_net_received_speed_ = nullptr;
         HWStatChart* chart_net_send_speed_ = nullptr;
+        HWCpuDetailWidget* detail_widget_ = nullptr;
     };
 
 }

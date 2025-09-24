@@ -56,7 +56,7 @@ namespace tc
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
         {
-            QPen pen(0xefefef);
+            QPen pen(0xe2e2e2);
             painter.setPen(pen);
             painter.setBrush(QBrush(0xfafafa));
             auto radius = 3.0f;

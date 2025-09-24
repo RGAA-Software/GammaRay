@@ -7,6 +7,7 @@
 #include "tc_label.h"
 #include "hw_info.h"
 #include "hw_stat_chart.h"
+#include "hw_cpu_detail_widget.h"
 #include "tc_common_new/num_formatter.h"
 
 namespace tc
@@ -26,10 +27,11 @@ namespace tc
 
         // LEFT
         auto label_width = 130;
-        auto value_width = 230;
+        auto value_width = 270;
         int margin_left = 20;
         auto icon_size = 30;
         int lbl_margin_left = 5;
+        int item_height = 32;
         {
             auto layout = new NoMarginVLayout();
 
@@ -41,7 +43,7 @@ namespace tc
                 title->SetTextId("id_tab_hardware");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
-                item_layout->addSpacing(margin_left + 7);
+                item_layout->addSpacing(margin_left + 3);
                 item_layout->addWidget(title);
                 item_layout->addStretch();
                 layout->addLayout(item_layout);
@@ -58,7 +60,7 @@ namespace tc
                 item_layout->addWidget(icon);
 
                 auto label = new TcLabel(this);
-                label->setFixedSize(label_width, icon_size);
+                label->setFixedSize(label_width, item_height);
                 label->SetTextId("id_hw_pc_name");
                 label->setStyleSheet("font-size: 13px;");
                 item_layout->addSpacing(lbl_margin_left);
@@ -66,7 +68,7 @@ namespace tc
 
                 auto value = new TcLabel(this);
                 lbl_pc_name_ = value;
-                value->setFixedSize(value_width, icon_size);
+                value->setFixedSize(value_width, item_height);
                 value->setText("--");
                 value->setStyleSheet("font-size: 13px;");
                 item_layout->addWidget(value);
@@ -84,7 +86,7 @@ namespace tc
                 item_layout->addWidget(icon);
 
                 auto label = new TcLabel(this);
-                label->setFixedSize(label_width, icon_size);
+                label->setFixedSize(label_width, item_height);
                 label->SetTextId("id_hw_os_version");
                 label->setStyleSheet("font-size: 13px;");
                 item_layout->addSpacing(lbl_margin_left);
@@ -92,7 +94,7 @@ namespace tc
 
                 auto value = new TcLabel(this);
                 lbl_os_version_ = value;
-                value->setFixedSize(value_width, icon_size);
+                value->setFixedSize(value_width, item_height);
                 value->setText("--");
                 value->setStyleSheet("font-size: 13px;");
                 item_layout->addWidget(value);
@@ -110,7 +112,7 @@ namespace tc
                 item_layout->addWidget(icon);
 
                 auto label = new TcLabel(this);
-                label->setFixedSize(label_width, icon_size);
+                label->setFixedSize(label_width, item_height);
                 label->SetTextId("id_hw_cpu_brand");
                 label->setStyleSheet("font-size: 13px;");
                 item_layout->addSpacing(lbl_margin_left);
@@ -118,7 +120,33 @@ namespace tc
 
                 auto value = new TcLabel(this);
                 lbl_cpu_ = value;
-                value->setFixedSize(value_width, icon_size);
+                value->setFixedSize(value_width, item_height);
+                value->setText("--");
+                value->setStyleSheet("font-size: 13px;");
+                item_layout->addWidget(value);
+                item_layout->addStretch();
+                layout->addLayout(item_layout);
+            }
+
+            // CPU Info
+            {
+                auto item_layout = new NoMarginHLayout();
+                item_layout->addSpacing(margin_left);
+                auto icon = new TcLabel(this);
+                icon->setFixedSize(icon_size, icon_size);
+                icon->setStyleSheet(GetItemIconStyleSheet(":/resources/image/ic_hw_cpu.svg"));
+                item_layout->addWidget(icon);
+
+                auto label = new TcLabel(this);
+                label->setFixedSize(label_width, item_height);
+                label->SetTextId("id_hw_cpu_info");
+                label->setStyleSheet("font-size: 13px;");
+                item_layout->addSpacing(lbl_margin_left);
+                item_layout->addWidget(label);
+
+                auto value = new TcLabel(this);
+                lbl_cpu_info_ = value;
+                value->setFixedSize(value_width, item_height);
                 value->setText("--");
                 value->setStyleSheet("font-size: 13px;");
                 item_layout->addWidget(value);
@@ -136,7 +164,7 @@ namespace tc
                 item_layout->addWidget(icon);
 
                 auto label = new TcLabel(this);
-                label->setFixedSize(label_width, icon_size);
+                label->setFixedSize(label_width, item_height);
                 label->SetTextId("id_hw_memory");
                 label->setStyleSheet("font-size: 13px;");
                 item_layout->addSpacing(lbl_margin_left);
@@ -144,7 +172,7 @@ namespace tc
 
                 auto value = new TcLabel(this);
                 lbl_memory_ = value;
-                value->setFixedSize(value_width, icon_size);
+                value->setFixedSize(value_width, item_height);
                 value->setText("--");
                 value->setStyleSheet("font-size: 13px;");
                 item_layout->addWidget(value);
@@ -157,12 +185,12 @@ namespace tc
                 auto item_layout = new NoMarginHLayout();
                 item_layout->addSpacing(margin_left);
                 auto icon = new TcLabel(this);
-                icon->setFixedSize(icon_size, icon_size);
+                icon->setFixedSize(icon_size, item_height);
                 icon->setStyleSheet(GetItemIconStyleSheet(":/resources/image/ic_running.svg"));
                 item_layout->addWidget(icon);
 
                 auto label = new TcLabel(this);
-                label->setFixedSize(label_width, icon_size);
+                label->setFixedSize(label_width, item_height);
                 label->SetTextId("id_hw_running");
                 label->setStyleSheet("font-size: 13px;");
                 item_layout->addSpacing(lbl_margin_left);
@@ -190,7 +218,7 @@ namespace tc
 
             //
             auto chart_width = 220;
-            auto chart_height = 120;
+            auto chart_height = 110;
             {
                 auto chart_layout = new NoMarginHLayout();
                 chart_layout->addSpacing(margin_left);
@@ -278,8 +306,37 @@ namespace tc
             layout->addStretch();
         }
 
-        content_root->addStretch();
+        // right
+        {
+            auto layout = new NoMarginVLayout();
+            content_root->addLayout(layout);
 
+            // Detail
+            {
+                auto item_layout = new NoMarginHLayout();
+                auto title = new TcLabel(this);
+                title->setFixedWidth(700);
+                title->SetTextId("id_hw_detailed_info");
+                title->setAlignment(Qt::AlignLeft);
+                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                item_layout->addWidget(title);
+                item_layout->addStretch();
+                layout->addLayout(item_layout);
+                layout->addSpacing(6);
+            }
+
+            // CPU List
+            {
+                auto cpu_list = new HWCpuDetailWidget(this);
+                cpu_list->setFixedHeight(250);
+                detail_widget_ = cpu_list;
+                layout->addWidget(cpu_list);
+            }
+
+            layout->addStretch();
+        }
+
+        content_root->addSpacing(20);
         setLayout(content_root);
     }
 
@@ -311,6 +368,14 @@ namespace tc
         QString cpu_brand = QString::fromStdString(sys_info->cpu_.brand_);
         cpu_brand = cpu_brand.replace("(R)", "").replace("(TM)", "").replace("@ ", "");
         lbl_cpu_->setText(cpu_brand);
+
+        auto cpu_info = std::format("{} Cores, Base: {}GHz, Now: {}GHz",
+                                    sys_info->cpu_.cpus_.size(), NumFormatter::Round2DecimalPlaces(sys_info->cpu_.base_frequency_),
+                                    NumFormatter::Round2DecimalPlaces(sys_info->cpu_.current_frequency_));
+        lbl_cpu_info_->setText(cpu_info.c_str());
+
+        //
+        detail_widget_->UpdateCpusInfo(sys_info->cpu_.cpus_);
 
         //
         chart_memory_->SetYAxisDesc(std::format("{}GB", sys_info->mem_.total_gb_).c_str());
@@ -446,6 +511,7 @@ namespace tc
             int margin_left = 20;
             auto icon_size = 32;
             int lbl_margin_left = 5;
+            int item_height = 32;
             auto item_layout = new NoMarginHLayout();
             item_layout->addSpacing(margin_left);
             auto icon = new TcLabel(this);
@@ -454,14 +520,14 @@ namespace tc
             item_layout->addWidget(icon);
 
             auto label = new TcLabel(this);
-            label->setFixedSize(label_width, icon_size);
+            label->setFixedSize(label_width, item_height);
             label->SetTextId("id_hw_disk");
             label->setStyleSheet("font-size: 13px;");
             item_layout->addSpacing(lbl_margin_left);
             item_layout->addWidget(label);
 
             auto value = new TcLabel(this);
-            value->setFixedSize(value_width, icon_size);
+            value->setFixedSize(value_width, item_height);
             value->setText("--");
             value->setStyleSheet("font-size: 13px;");
             item_layout->addWidget(value);
@@ -489,6 +555,7 @@ namespace tc
             int margin_left = 20;
             auto icon_size = 32;
             int lbl_margin_left = 5;
+            int item_height = 32;
             auto item_layout = new NoMarginHLayout();
             item_layout->addSpacing(margin_left);
             auto icon = new TcLabel(this);
@@ -497,14 +564,14 @@ namespace tc
             item_layout->addWidget(icon);
 
             auto label = new TcLabel(this);
-            label->setFixedSize(label_width, icon_size);
+            label->setFixedSize(label_width, item_height);
             label->SetTextId("id_hw_ethernet");
             label->setStyleSheet("font-size: 13px;");
             item_layout->addSpacing(lbl_margin_left);
             item_layout->addWidget(label);
 
             auto value = new TcLabel(this);
-            value->setFixedSize(value_width, icon_size);
+            value->setFixedSize(value_width, item_height);
             value->setText("--");
             value->setStyleSheet("font-size: 13px;");
             item_layout->addWidget(value);
