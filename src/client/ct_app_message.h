@@ -13,6 +13,7 @@
 #include "tc_message.pb.h"
 #include "client/ct_settings.h"
 #include "notify/notify_defs.h"
+#include "hw_info/hw_info.h"
 
 namespace tc
 {
@@ -236,6 +237,16 @@ namespace tc
 
     class MsgStreamShot : public MsgClientBase {
     public:
+    };
+
+    class MsgHWInfo : public MsgClientBase {
+    public:
+        std::shared_ptr<SysInfo> info_ = nullptr;
+    };
+
+    class MsgSetHWInfoPanelVisibility : public MsgClientBase {
+    public:
+        bool visible_ = false;
     };
 }
 

@@ -110,6 +110,7 @@
   "id_install_service": "Install Service",
   "id_install_service_msg": "Do you want to install Service?",
   "id_statistics": "Statistics",
+  "id_remote_hw": "Remote Hardware",
   "id_renderer_running": "Renderer Running",
   "id_sent_data": "Sent Data",
   "id_send_speed": "Send Speed",

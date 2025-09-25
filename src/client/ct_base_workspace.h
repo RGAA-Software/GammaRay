@@ -46,6 +46,7 @@ namespace tc
     class MediaRecordPluginClientInterface;
     class RetryConnDialog;
     class D3D11DeviceWrapper;
+    class HWInfoWidget;
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -179,7 +180,10 @@ namespace tc
         std::atomic_bool remote_force_closed_ = false;
 
         // uint64_t adapter_uid <==> D3D11Device/D3D11DeviceContext
-         std::map<uint64_t, std::shared_ptr<D3D11DeviceWrapper>> d3d11_devices_;
+        std::map<uint64_t, std::shared_ptr<D3D11DeviceWrapper>> d3d11_devices_;
+
+        // show remote hardware info
+        HWInfoWidget* hw_info_widget_ = nullptr;
 
     private:
         GameView* game_view_ = nullptr;

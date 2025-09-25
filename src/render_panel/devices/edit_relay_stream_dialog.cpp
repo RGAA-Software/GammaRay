@@ -3,7 +3,6 @@
 //
 
 #include "edit_relay_stream_dialog.h"
-#include "client/ct_app_message.h"
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>

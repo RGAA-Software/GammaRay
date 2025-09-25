@@ -118,6 +118,7 @@ namespace tc
         std::vector<SysComponentInfo> components_;
         std::string uptime_;
         std::vector<SysGpuInfo> gpus_;
+        std::string raw_json_msg_;
     };
 
     // PRINT

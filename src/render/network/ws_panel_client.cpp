@@ -240,6 +240,16 @@ namespace tc
                     }
                 });
             }
+            else if (m.type() == tcrp::RpMessageType::kRpHardwareInfo) {
+                auto json_msg = m.hw_info().json_msg();
+                tc::Message net_msg;
+                net_msg.set_type(MessageType::kHardwareInfo);
+                net_msg.mutable_hw_info()->set_hw_info(json_msg);
+                auto data = ProtoAsData(&net_msg);
+                plugin_mgr_->VisitNetPlugins([=](GrNetPlugin* plugin) {
+                    plugin->PostProtoMessage(data, true);
+                });
+            }
 
         } catch(std::exception& e) {
             LOGE("ParseNetMessage failed: {}", e.what());

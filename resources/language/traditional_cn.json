@@ -111,6 +111,7 @@
   "id_install_service": "安裝系統服務",
   "id_install_service_msg": "您確定要安裝系統服務嗎?",
   "id_statistics": "統計詳情",
+  "id_remote_hw": "遠端硬體資訊",
   "id_renderer_running": "渲染端已運行",
   "id_sent_data": "已發送數據",
   "id_send_speed": "發送速度",

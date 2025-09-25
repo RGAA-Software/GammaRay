@@ -3,7 +3,6 @@
 //
 
 #include "stream_settings_dialog.h"
-#include "client/ct_app_message.h"
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>

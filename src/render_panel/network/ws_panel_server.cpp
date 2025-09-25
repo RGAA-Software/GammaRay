@@ -571,6 +571,15 @@ namespace tc
         context_->SendAppMessage(MsgHWInfo {
             .sys_info_ = sys_info,
         });
+
+        // to render
+        {
+            tcrp::RpMessage rp_msg;
+            rp_msg.set_type(tcrp::RpMessageType::kRpHardwareInfo);
+            auto sub = rp_msg.mutable_hw_info();
+            sub->set_json_msg(sys_info->raw_json_msg_);
+            PostRendererMessage(tc::RpProtoAsData(&rp_msg));
+        }
     }
 
 }

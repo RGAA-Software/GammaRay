@@ -11,7 +11,6 @@
 #include "tc_label.h"
 #include "tc_pushbutton.h"
 #include "render_panel/database/stream_item.h"
-#include "client/ct_app_message.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "render_panel/gr_context.h"
@@ -194,7 +193,6 @@ namespace tc
             stream_port = relay_device_info->relay_server_port();
         }
 
-        auto settings = Settings::Instance();
         auto func_update_stream = [&](std::shared_ptr<StreamItem>& item) {
             item->remote_device_id_ = conn_info->device_id_;
             item->remote_device_random_pwd_ = conn_info->random_pwd_;

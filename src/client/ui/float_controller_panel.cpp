@@ -28,7 +28,7 @@ namespace tc
 
     FloatControllerPanel::FloatControllerPanel(const std::shared_ptr<ClientContext>& ctx, QWidget* parent) : BaseWidget(ctx, parent) {
         this->setWindowFlags(Qt::FramelessWindowHint);
-        this->setFixedSize(kInitialWidth, 332);
+        this->setFixedSize(kInitialWidth, 372);
         this->setStyleSheet("background:#00000000;");
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
@@ -477,6 +477,37 @@ namespace tc
                 if (debug_listener_) {
                     debug_listener_(widget);
                 }
+            });
+        }
+
+        // hw info visibility
+        {
+            auto layout = new NoMarginHLayout();
+            auto widget = new BackgroundWidget(ctx, this);
+            widget->setFixedSize(this->width() - offset*2, icon_size.height());
+            widget->setLayout(layout);
+
+            auto icon = new QLabel(this);
+            icon->setFixedSize(icon_size);
+            icon->setStyleSheet(R"( background-image: url(:resources/image/ic_hw_cpu.svg);
+                                    background-repeat:no-repeat;
+                                    background-position: center center;)");
+            layout->addSpacing(item_left_spacing);
+            layout->addWidget(icon);
+
+            auto text = new TcLabel();
+            text->SetTextId("id_remote_hw");
+            text->setStyleSheet(R"(font-weight: bold;)");
+            //layout->addSpacing(border_spacing);
+            layout->addWidget(text);
+
+            layout->addStretch();
+            root_layout->addWidget(widget);
+
+            widget->SetOnClickListener([=, this](QWidget* w) {
+                context_->SendAppMessage(MsgSetHWInfoPanelVisibility {
+                    .visible_ = true,
+                });
             });
         }
 

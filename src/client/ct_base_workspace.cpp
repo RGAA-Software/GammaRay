@@ -50,6 +50,9 @@
 #include "tc_message_new/proto_message_maker.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
 #include "front_render/opengl/ct_opengl_video_widget.h"
+#include "hw_info/hw_info.h"
+#include "hw_info/hw_info_parser.h"
+#include "hw_info/hw_info_widget.h"
 
 namespace tc
 {
@@ -127,6 +130,11 @@ namespace tc
         st_panel_ = new CtStatisticsPanel(context_, nullptr);
         st_panel_->resize(def_window_size_);
         st_panel_->hide();
+
+        hw_info_widget_ = new HWInfoWidget(nullptr);
+        hw_info_widget_->setWindowTitle(tcTr("id_tab_hardware"));
+        hw_info_widget_->resize(QSize(1200, 800));
+        hw_info_widget_->hide();
     }
 
     void BaseWorkspace::InitTheme() {
@@ -256,6 +264,21 @@ namespace tc
 
         msg_listener_->Listen<MsgExitControlledEndExe>([=, this](const MsgExitControlledEndExe& msg) {
             this->SendExitControlledEndMessage();
+        });
+
+        msg_listener_->Listen<MsgSetHWInfoPanelVisibility>([=, this](const MsgSetHWInfoPanelVisibility& msg) {
+            context_->PostUITask([=, this]() {
+                hw_info_widget_->show();
+            });
+        });
+
+        msg_listener_->Listen<MsgHWInfo>([=, this](const MsgHWInfo& msg) {
+            if (!msg.info_) {
+                return;
+            }
+            context_->PostUITask([=, this]() {
+                hw_info_widget_->OnSysInfoCallback(msg.info_);
+            });
         });
     }
 
@@ -1037,6 +1060,18 @@ namespace tc
                 TcDialog dialog(tcTr("id_warning"), tcTr("id_remote_disconnected"), this);
                 dialog.exec();
                 Exit();
+            });
+        }
+        else if (msg->type() == MessageType::kHardwareInfo) {
+            context_->PostTask([=, this]() {
+                auto sys_info = HWInfoParser::ParseHWInfo(msg->hw_info().hw_info(), 0);
+                if (!sys_info) {
+                    return;
+                }
+                context_->SendAppMessage(MsgHWInfo {
+                    .info_ = sys_info,
+                });
+                //LOGI("SysInfo: {}", to_string(*sys_info.get()));
             });
         }
     }
