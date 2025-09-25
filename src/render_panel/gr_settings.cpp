@@ -457,7 +457,7 @@ namespace tc
     }
 
     std::string GrSettings::GetPreferDecoder() {
-        return sp_->Get(kStPreferDecoder);
+        return sp_->Get(kStPreferDecoder, "Auto");
     }
 
 }
