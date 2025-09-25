@@ -268,7 +268,6 @@ namespace tc
                     chart_net_received_speed_ = chart;
                     chart->SetTitle("Recv");
                     chart->SetChartType(HWStatChartType::kLine);
-                    chart->SetYAxisDesc("50MB/s");
                     chart->setFixedSize(chart_width, chart_height);
                     chart_layout->addWidget(chart);
                 }
@@ -285,7 +284,6 @@ namespace tc
                     chart_net_send_speed_ = chart;
                     chart->SetChartType(HWStatChartType::kLine);
                     chart->SetTitle("Send");
-                    chart->SetYAxisDesc("50MB/s");
                     chart->setFixedSize(chart_width, chart_height);
                     chart_layout->addWidget(chart);
                 }
@@ -476,6 +474,8 @@ namespace tc
             std::vector<float> send_speed;
             uint32_t latest_received_speed = 0;
             uint32_t latest_send_speed = 0;
+            float receive_MB_s = 0.0f;
+            float transmit_MB_s = 0.0f;
             for (int i = 0; i < sys_info_hist_.size(); i++) {
                 auto next_idx = i + 1;
                 if (next_idx >= sys_info_hist_.size()) {
@@ -497,15 +497,17 @@ namespace tc
                 auto next_recv = next_nt_info.received_data_;
                 auto next_sent = next_nt_info.sent_data_;
 
-                // 50MB/s Max
                 {
+                    receive_MB_s = nt_info.max_receive_speed_ > 0 ? nt_info.max_receive_speed_ / 1000 / 1000 / 8.0f : 50;
                     latest_received_speed = next_recv - recv;
-                    auto speed = latest_received_speed * 1.0f / 1024 / 1024 / 50;
+                    auto speed = latest_received_speed * 1.0f / 1000 / 1000 / receive_MB_s;
                     received_speed.push_back(speed);
                 }
+
                 {
+                    transmit_MB_s = nt_info.max_transmit_speed_ > 0 ? nt_info.max_transmit_speed_ / 1000 / 1000 / 8.0f : 50;
                     latest_send_speed = next_sent - sent;
-                    auto speed = latest_send_speed * 1.0f / 1024 / 1024 / 50;
+                    auto speed = latest_send_speed * 1.0f / 1000 / 1000 / transmit_MB_s;
                     send_speed.push_back(speed);
                 }
             }
@@ -515,11 +517,14 @@ namespace tc
                         std::format("Recv({})", NumFormatter::FormatSpeed(latest_received_speed)).c_str());
             }
             chart_net_received_speed_->UpdateValues(received_speed);
+            chart_net_received_speed_->SetYAxisDesc(std::format("{}MB/s", (int)receive_MB_s).c_str());
+
             if (!send_speed.empty()) {
                 chart_net_send_speed_->SetTitle(
                         std::format("Send({})", NumFormatter::FormatSpeed(latest_send_speed)).c_str());
             }
             chart_net_send_speed_->UpdateValues(send_speed);
+            chart_net_send_speed_->SetYAxisDesc(std::format("{}MB/s", (int)transmit_MB_s).c_str());
         }
 
         if (!gpu_parent_->widget()) {

@@ -63,6 +63,8 @@ namespace tc
         std::vector<SysIpNetwork> ip_networks_;
         uint64_t received_data_ = 0;
         uint64_t sent_data_ = 0;
+        uint64_t max_transmit_speed_ = 0;
+        uint64_t max_receive_speed_ = 0;
     };
 
     class SysUserInfo {
@@ -188,6 +190,8 @@ namespace tc
            << "', mac='" << net.mac_
            << "', received_data=" << net.received_data_
            << ", sent_data=" << net.sent_data_
+           << ", max_transmit_speed =" << net.max_transmit_speed_
+           << ", max_receive_speed=" << net.max_receive_speed_
            << ", ip_networks=[";
 
         for (size_t i = 0; i < net.ip_networks_.size(); ++i) {

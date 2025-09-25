@@ -152,6 +152,8 @@ namespace tc
                 settings_->file_transfer_enabled_ = sub.file_transfer_enabled();
                 settings_->audio_enabled_ = sub.audio_enabled();
                 settings_->appkey_ = sub.appkey();
+                settings_->max_transmit_speed_ = sub.max_transmit_speed();
+                settings_->max_receive_speed_ = sub.max_receive_speed();
 
                 plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
@@ -165,6 +167,8 @@ namespace tc
                     .file_transfer_enabled_ = settings_->file_transfer_enabled_,
                     .audio_enabled_ = settings_->audio_enabled_,
                     .appkey_ = settings_->appkey_,
+                    .max_transmit_speed_ = settings_->max_transmit_speed_,
+                    .max_receive_speed_ = settings_->max_receive_speed_,
                 });
             }
             else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {

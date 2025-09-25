@@ -92,6 +92,9 @@ namespace tc
         std::shared_ptr<VisitRecordOperator> visit_record_op_ = nullptr;
         std::shared_ptr<FileTransferRecordOperator> ft_record_op_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        // max speed of default ethernet
+        uint64_t max_transmit_speed_ = 0;
+        uint64_t max_receive_speed_ = 0;
     };
 }
 

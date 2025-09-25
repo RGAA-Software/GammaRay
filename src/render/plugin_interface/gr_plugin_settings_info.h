@@ -33,6 +33,9 @@ namespace tc
         bool audio_enabled_ = true;
         // appkey
         std::string appkey_;
+        // ethernet
+        uint64_t max_transmit_speed_ = 0;
+        uint64_t max_receive_speed_ = 0;
     };
 
 }

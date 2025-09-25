@@ -36,8 +36,8 @@ namespace tc
                 if (cpu_obj.contains("cpus") && cpu_obj["cpus"].is_array()) {
                     for (const auto& sub : cpu_obj["cpus"]) {
                         value->cpu_.cpus_.push_back(SysSingleCpuInfo {
-                                .name_ = sub["name"].get<std::string>(),
-                                .usage_ = sub["usage"].get<float>(),
+                            .name_ = sub["name"].get<std::string>(),
+                            .usage_ = sub["usage"].get<float>(),
                         });
                     }
                 }
@@ -62,13 +62,13 @@ namespace tc
             if (obj.contains("disks") && obj["disks"].is_array()) {
                 for (const auto& disk : obj["disks"]) {
                     value->disks_.push_back(SysDiskInfo {
-                            .disk_type_ = disk["disk_type"].get<std::string>(),
-                            .mount_on_ = disk["mount_on"].get<std::string>(),
-                            .filesystem_ = disk["filesystem"].get<std::string>(),
-                            .available_ = disk["available"].get<uint64_t>(),
-                            .available_gb_ = disk["available_gb"].get<uint64_t>(),
-                            .total_ = disk["total"].get<uint64_t>(),
-                            .total_gb_ = disk["total_gb"].get<uint64_t>(),
+                        .disk_type_ = disk["disk_type"].get<std::string>(),
+                        .mount_on_ = disk["mount_on"].get<std::string>(),
+                        .filesystem_ = disk["filesystem"].get<std::string>(),
+                        .available_ = disk["available"].get<uint64_t>(),
+                        .available_gb_ = disk["available_gb"].get<uint64_t>(),
+                        .total_ = disk["total"].get<uint64_t>(),
+                        .total_gb_ = disk["total_gb"].get<uint64_t>(),
                     });
                 }
             }
@@ -80,16 +80,18 @@ namespace tc
                     std::vector<SysIpNetwork> ip_networks;
                     for (const auto& nt : nts) {
                         ip_networks.push_back(SysIpNetwork {
-                                .addr_ = nt["addr"].get<std::string>(),
-                                .prefix_ = nt["prefix"].get<uint8_t>(),
+                            .addr_ = nt["addr"].get<std::string>(),
+                            .prefix_ = nt["prefix"].get<uint8_t>(),
                         });
                     }
                     value->networks_.push_back(SysNetworkInfo {
-                            .name_ = network["name"].get<std::string>(),
-                            .mac_ = network["mac"].get<std::string>(),
-                            .ip_networks_ = ip_networks,
-                            .received_data_ = network["received_data"].get<uint64_t>(),
-                            .sent_data_ = network["sent_data"].get<uint64_t>(),
+                        .name_ = network["name"].get<std::string>(),
+                        .mac_ = network["mac"].get<std::string>(),
+                        .ip_networks_ = ip_networks,
+                        .received_data_ = network["received_data"].get<uint64_t>(),
+                        .sent_data_ = network["sent_data"].get<uint64_t>(),
+                        .max_transmit_speed_ = network["max_transmit_speed"].get<uint64_t>(),
+                        .max_receive_speed_ = network["max_receive_speed"].get<uint64_t>(),
                     });
                 }
             }

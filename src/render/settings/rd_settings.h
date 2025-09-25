@@ -156,6 +156,9 @@ namespace tc
         AppMode app_mode_ = AppMode::kDesktop;
         // appkey
         std::string appkey_;
+        // ethernet
+        uint64_t max_transmit_speed_ = 0;
+        uint64_t max_receive_speed_ = 0;
 
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";

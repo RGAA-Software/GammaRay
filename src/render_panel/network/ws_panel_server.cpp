@@ -74,6 +74,15 @@ namespace tc
                 this->RpSyncPanelInfo();
             });
         });
+
+        msg_listener_->Listen<MsgHWInfo>([=, this](const MsgHWInfo& msg) {
+            if (msg.sys_info_->networks_.empty()) {
+                return;
+            }
+            const auto& def_ethernet = msg.sys_info_->networks_[0];
+            this->max_transmit_speed_ = def_ethernet.max_transmit_speed_;
+            this->max_receive_speed_ = def_ethernet.max_receive_speed_;
+        });
     }
 
     void WsPanelServer::Start() {
@@ -424,6 +433,8 @@ namespace tc
         sub->set_file_transfer_enabled(settings_->IsFileTransferEnabled());
         sub->set_audio_enabled(settings_->IsCaptureAudioEnabled());
         sub->set_appkey(grApp->GetAppkey());
+        sub->set_max_transmit_speed(this->max_transmit_speed_);
+        sub->set_max_receive_speed(this->max_receive_speed_);
         PostRendererMessage(tc::RpProtoAsData(&m));
     }
 
