@@ -528,7 +528,7 @@ namespace tc
         for (int i = 0; i < sys_info->gpus_.size(); i++) {
             auto gpu = sys_info->gpus_[i];
             if (gpu_titles_.contains(gpu.id_)) {
-                auto t = std::format("{}, Usage: {}%", gpu.brand_, gpu.gpu_utilization_);
+                auto t = std::format("{}, Usage: {}%, Temperature: {}℃", gpu.brand_, gpu.gpu_utilization_, gpu.temperature_);
                 gpu_titles_[gpu.id_]->setText(t.c_str());
             }
             if (gpu_widgets_.contains(gpu.id_)) {
