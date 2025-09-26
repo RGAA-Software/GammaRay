@@ -43,6 +43,7 @@ namespace tc
 
         // parse hardware info
         virtual void UpdateCurrentCpuFrequency(float freq) = 0;
+        virtual float GetCurrentCpuFrequency() = 0;
         virtual std::shared_ptr<SysInfo> ParseHardwareInfo(const std::string& info) = 0;
     };
 

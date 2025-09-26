@@ -1064,7 +1064,9 @@ namespace tc
         }
         else if (msg->type() == MessageType::kHardwareInfo) {
             context_->PostTask([=, this]() {
-                auto sys_info = HWInfoParser::ParseHWInfo(msg->hw_info().hw_info(), 0);
+                const auto& hw_info = msg->hw_info().hw_info();
+                const auto freq = msg->hw_info().current_cpu_freq();
+                auto sys_info = HWInfoParser::ParseHWInfo(msg->hw_info().hw_info(), freq);
                 if (!sys_info) {
                     return;
                 }

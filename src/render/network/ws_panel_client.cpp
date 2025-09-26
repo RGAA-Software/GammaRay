@@ -245,6 +245,7 @@ namespace tc
                 tc::Message net_msg;
                 net_msg.set_type(MessageType::kHardwareInfo);
                 net_msg.mutable_hw_info()->set_hw_info(json_msg);
+                net_msg.mutable_hw_info()->set_current_cpu_freq(m.hw_info().current_cpu_freq());
                 auto data = ProtoAsData(&net_msg);
                 plugin_mgr_->VisitNetPlugins([=](GrNetPlugin* plugin) {
                     plugin->PostProtoMessage(data, true);

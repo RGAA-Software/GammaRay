@@ -578,6 +578,7 @@ namespace tc
             rp_msg.set_type(tcrp::RpMessageType::kRpHardwareInfo);
             auto sub = rp_msg.mutable_hw_info();
             sub->set_json_msg(sys_info->raw_json_msg_);
+            sub->set_current_cpu_freq(companion->GetCurrentCpuFrequency());
             PostRendererMessage(tc::RpProtoAsData(&rp_msg));
         }
     }
