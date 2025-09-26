@@ -278,6 +278,18 @@ namespace tc
             }
             context_->PostUITask([=, this]() {
                 hw_info_widget_->OnSysInfoCallback(msg.info_);
+                if (!msg.info_->networks_.empty()) {
+                    for (const auto& nt : msg.info_->networks_) {
+                        auto name = StringUtil::ToLowerCpy(nt.name_);
+                        if (name.find("wsl") != std::string::npos
+                            || name.find("wmware") != std::string::npos
+                            || name.find("virtualbox") != std::string::npos) {
+                            continue;
+                        }
+                        settings_->max_transmit_speed_ = nt.max_transmit_speed_;
+                        settings_->max_receive_speed_ = nt.max_receive_speed_;
+                    }
+                }
             });
         });
     }
@@ -458,6 +470,8 @@ namespace tc
                 // sync settings
                 plugin->SyncClientPluginSettings(ClientPluginSettings {
                     .clipboard_enabled_ = settings_->clipboard_on_,
+                    .max_transmit_speed_ = settings_->max_transmit_speed_,
+                    .max_receive_speed_ = settings_->max_receive_speed_,
                 });
             });
         });

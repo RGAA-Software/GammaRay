@@ -19,6 +19,8 @@ namespace tc
         std::string stream_name_;
         std::string display_name_;
         std::string display_remote_name_;
+        uint64_t max_transmit_speed_ = 0;
+        uint64_t max_receive_speed_ = 0;
     };
 
 }

@@ -136,6 +136,10 @@ namespace tc
 
         // can be operated by mouse/keyboard in render
         bool is_render_be_operated_by_mk_ = true;
+
+        // max speed of remote ethernet
+        uint64_t max_transmit_speed_ = 0;
+        uint64_t max_receive_speed_ = 0;
         ///////
         ///////
     };
