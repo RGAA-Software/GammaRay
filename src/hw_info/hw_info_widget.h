@@ -29,7 +29,7 @@ namespace tc
 
     class HWInfoWidget : public QWidget {
     public:
-        explicit HWInfoWidget(QWidget* parent = nullptr);
+        explicit HWInfoWidget(bool client, QWidget* parent = nullptr);
         void OnSysInfoCallback(const std::shared_ptr<SysInfo>& si);
         void paintEvent(QPaintEvent *event) override;
 

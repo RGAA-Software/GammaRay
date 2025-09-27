@@ -23,7 +23,7 @@ namespace tc
         return style.arg(url);
     }
 
-    HWInfoWidget::HWInfoWidget(QWidget* parent) : QWidget(parent) {
+    HWInfoWidget::HWInfoWidget(bool client, QWidget* parent) : QWidget(parent) {
 
         auto content_root = new NoMarginHLayout();
 
@@ -34,6 +34,9 @@ namespace tc
         auto icon_size = 30;
         int lbl_margin_left = 5;
         int item_height = 32;
+        if (client) {
+            item_height = 36;
+        }
         {
             auto layout = new NoMarginVLayout();
 
@@ -44,10 +47,18 @@ namespace tc
                 auto title = new TcLabel(this);
                 title->SetTextId("id_tab_hardware");
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                if (client) {
+                    title->setStyleSheet(R"(font-size: 16px; font-weight:6;)");
+                }
+                else {
+                    title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                }
                 item_layout->addSpacing(margin_left + 3);
                 item_layout->addWidget(title);
                 item_layout->addStretch();
+                if (client) {
+                    layout->addSpacing(15);
+                }
                 layout->addLayout(item_layout);
                 layout->addSpacing(6);
             }
@@ -309,7 +320,12 @@ namespace tc
                 title->setFixedWidth(700);
                 title->SetTextId("id_hw_detailed_info");
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                if (client) {
+                    title->setStyleSheet(R"(font-size: 16px; font-weight:600;)");
+                }
+                else {
+                    title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
+                }
                 item_layout->addWidget(title);
                 item_layout->addStretch();
                 layout->addLayout(item_layout);

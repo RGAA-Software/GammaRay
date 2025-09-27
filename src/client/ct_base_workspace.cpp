@@ -131,8 +131,8 @@ namespace tc
         st_panel_->resize(def_window_size_);
         st_panel_->hide();
 
-        hw_info_widget_ = new HWInfoWidget(nullptr);
-        hw_info_widget_->setWindowTitle(tcTr("id_tab_hardware"));
+        hw_info_widget_ = new HWInfoWidget(true, nullptr);
+        hw_info_widget_->setWindowTitle(tcTr("id_remote_hw"));
         hw_info_widget_->resize(QSize(1200, 800));
         hw_info_widget_->hide();
     }

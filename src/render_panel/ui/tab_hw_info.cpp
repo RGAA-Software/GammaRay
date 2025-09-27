@@ -23,7 +23,7 @@ namespace tc
         auto root_layout = new NoMarginHLayout();
         setLayout(root_layout);
 
-        hw_widget_ = new HWInfoWidget(this);
+        hw_widget_ = new HWInfoWidget(false, this);
         root_layout->addWidget(hw_widget_);
 
         msg_listener_->Listen<MsgHWInfo>([=, this](const MsgHWInfo& msg) {
