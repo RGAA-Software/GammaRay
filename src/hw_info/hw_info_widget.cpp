@@ -48,7 +48,7 @@ namespace tc
                 title->SetTextId("id_tab_hardware");
                 title->setAlignment(Qt::AlignLeft);
                 if (client) {
-                    title->setStyleSheet(R"(font-size: 16px; font-weight:6;)");
+                    title->setStyleSheet(R"(font-size: 16px; font-weight:500;)");
                 }
                 else {
                     title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
@@ -321,13 +321,16 @@ namespace tc
                 title->SetTextId("id_hw_detailed_info");
                 title->setAlignment(Qt::AlignLeft);
                 if (client) {
-                    title->setStyleSheet(R"(font-size: 16px; font-weight:600;)");
+                    title->setStyleSheet(R"(font-size: 16px; font-weight:500;)");
                 }
                 else {
                     title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
                 }
                 item_layout->addWidget(title);
                 item_layout->addStretch();
+                if (client) {
+                    layout->addSpacing(15);
+                }
                 layout->addLayout(item_layout);
                 layout->addSpacing(6);
             }
@@ -339,7 +342,7 @@ namespace tc
                 cpu_label_ = title;
                 title->setFixedWidth(700);
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 14px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 14px; font-weight:500;)");
                 item_layout->addWidget(title);
                 item_layout->addStretch();
                 layout->addLayout(item_layout);
@@ -448,8 +451,8 @@ namespace tc
             int index = 0;
             if (lbl_networks_.size() <= sys_info->networks_.size()) {
                 for (const auto &network: sys_info->networks_) {
-                    QString name = QString::fromStdString(network.name_);
-                    if (name.contains("WSL") || name.contains("vEthernet")) {
+                    QString name = QString::fromStdString(network.name_).toLower();
+                    if (name.contains("wsl") || name.contains("vmware") || name.contains("virtualbox")) {
                         continue;
                     }
 
@@ -490,8 +493,9 @@ namespace tc
             std::vector<float> send_speed;
             uint32_t latest_received_speed = 0;
             uint32_t latest_send_speed = 0;
-            float receive_MB_s = 0.0f;
-            float transmit_MB_s = 0.0f;
+            float append_size = 3; // extra 3MB/s
+            float receive_MB_s = 0;
+            float transmit_MB_s = 0;
             for (int i = 0; i < sys_info_hist_.size(); i++) {
                 auto next_idx = i + 1;
                 if (next_idx >= sys_info_hist_.size()) {
@@ -515,6 +519,7 @@ namespace tc
 
                 {
                     receive_MB_s = nt_info.max_receive_speed_ > 0 ? nt_info.max_receive_speed_ / 1000 / 1000 / 8.0f : 50;
+                    receive_MB_s += append_size;
                     latest_received_speed = next_recv - recv;
                     auto speed = latest_received_speed * 1.0f / 1000 / 1000 / receive_MB_s;
                     received_speed.push_back(speed);
@@ -522,6 +527,7 @@ namespace tc
 
                 {
                     transmit_MB_s = nt_info.max_transmit_speed_ > 0 ? nt_info.max_transmit_speed_ / 1000 / 1000 / 8.0f : 50;
+                    transmit_MB_s += append_size;
                     latest_send_speed = next_sent - sent;
                     auto speed = latest_send_speed * 1.0f / 1000 / 1000 / transmit_MB_s;
                     send_speed.push_back(speed);
@@ -658,7 +664,7 @@ namespace tc
                 title->setText(t.c_str());
                 title->setFixedWidth(680);
                 title->setAlignment(Qt::AlignLeft);
-                title->setStyleSheet(R"(font-size: 14px; font-weight:700;)");
+                title->setStyleSheet(R"(font-size: 14px; font-weight:500;)");
                 item_layout->addWidget(title);
                 item_layout->addStretch();
                 layout->addLayout(item_layout);
