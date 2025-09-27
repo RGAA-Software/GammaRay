@@ -602,8 +602,8 @@ namespace tc
         //:/icons/ic_network.svg
         auto root_layout = new NoMarginVLayout();
         for (const auto& network : sys_info->networks_) {
-            QString name = QString::fromStdString(network.name_);
-            if (name.contains("WSL") || name.contains("vEthernet")) {
+            QString name = QString::fromStdString(network.name_).toLower();
+            if (name.contains("wsl") || name.contains("vmware") || name.contains("vritualbox")) {
                 continue;
             }
             auto label_width = 130;
