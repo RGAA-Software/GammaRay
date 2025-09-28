@@ -32,6 +32,7 @@ namespace tc
         explicit HWInfoWidget(bool client, QWidget* parent = nullptr);
         void OnSysInfoCallback(const std::shared_ptr<SysInfo>& si);
         void paintEvent(QPaintEvent *event) override;
+        bool eventFilter(QObject *watched, QEvent *event) override;
 
     private:
         void RefreshInternal();

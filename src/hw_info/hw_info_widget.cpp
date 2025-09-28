@@ -10,6 +10,7 @@
 #include "hw_gpu_widget.h"
 #include "hw_cpu_detail_widget.h"
 #include "tc_common_new/num_formatter.h"
+#include "widget_helper.h"
 #include <QScrollArea>
 
 namespace tc
@@ -24,7 +25,7 @@ namespace tc
     }
 
     HWInfoWidget::HWInfoWidget(bool client, QWidget* parent) : QWidget(parent) {
-
+        this->installEventFilter(this);
         auto content_root = new NoMarginHLayout();
 
         // LEFT
@@ -386,6 +387,13 @@ namespace tc
 //        QPainter painter(this);
 //        painter.setBrush(QBrush(0xbbbbbb));
 //        painter.drawRect(this->rect());
+    }
+
+    bool HWInfoWidget::eventFilter(QObject *watched, QEvent *event) {
+        if (event->type() == QEvent::Show && watched == this) {
+            WidgetHelper::SetTitleBarColor(this);
+        }
+        return QObject::eventFilter(watched, event);
     }
 
     void HWInfoWidget::RefreshInternal() {
