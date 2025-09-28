@@ -28,11 +28,16 @@ namespace tc
         return false;
     }
 
-    void GrNetPlugin::OnClientEventCame(bool is_proto, int64_t socket_fd, const NetPluginType& nt_plugin_type, std::shared_ptr<Data> msg) {
+    void GrNetPlugin::OnClientEventCame(bool is_proto,
+                                        int64_t socket_fd,
+                                        const NetPluginType& nt_plugin_type,
+                                        const NetChannelType& ch_type,
+                                        std::shared_ptr<Data> msg) {
         auto event = std::make_shared<GrPluginNetClientEvent>();
         event->is_proto_ = is_proto;
         event->socket_fd_ = socket_fd;
         event->nt_plugin_type_ = nt_plugin_type;
+        event->nt_channel_type_ = ch_type;
         event->message_ = msg;
         event->from_plugin_ = this;
         CallbackEvent(event);

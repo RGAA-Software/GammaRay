@@ -70,6 +70,7 @@ namespace tc
         std::shared_ptr<Data> message_;
         int64_t socket_fd_ = 0;
         NetPluginType nt_plugin_type_;
+        NetChannelType nt_channel_type_;
         GrNetPlugin* from_plugin_ = nullptr;
     };
 

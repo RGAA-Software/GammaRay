@@ -48,7 +48,7 @@ namespace tc
                 title->SetTextId("id_tab_hardware");
                 title->setAlignment(Qt::AlignLeft);
                 if (client) {
-                    title->setStyleSheet(R"(font-size: 16px; font-weight:500;)");
+                    title->setStyleSheet(R"(font-size: 16px; font-weight:bold;)");
                 }
                 else {
                     title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
@@ -321,7 +321,7 @@ namespace tc
                 title->SetTextId("id_hw_detailed_info");
                 title->setAlignment(Qt::AlignLeft);
                 if (client) {
-                    title->setStyleSheet(R"(font-size: 16px; font-weight:500;)");
+                    title->setStyleSheet(R"(font-size: 16px; font-weight:bold;)");
                 }
                 else {
                     title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
@@ -622,7 +622,7 @@ namespace tc
             item_layout->addSpacing(margin_left);
             auto icon = new TcLabel(this);
             icon->setFixedSize(icon_size, icon_size);
-            icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_network.svg"));
+            icon->setStyleSheet(GetItemIconStyleSheet(":/resources/image/ic_network.svg"));
             item_layout->addWidget(icon);
 
             auto label = new TcLabel(this);

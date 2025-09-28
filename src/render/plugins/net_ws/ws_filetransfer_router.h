@@ -7,6 +7,7 @@
 
 //#include "render/network/wss_router.h"
 #include "render/network/ws_router.h"
+#include "plugin_interface/gr_net_plugin_type.h"
 
 namespace tc
 {
@@ -20,6 +21,7 @@ namespace tc
             auto router = std::make_shared<WsFileTransferRouter>(data, only_audio);
             router->device_id_ = device_id;
             router->stream_id_ = stream_id;
+            router->nt_channel_type_ = NetChannelType::kFileTransfer;
             return router;
         }
 
@@ -35,6 +37,7 @@ namespace tc
         std::string device_id_;
         std::string stream_id_;
         unsigned int post_thread_id_ = 0;
+        NetChannelType nt_channel_type_;
     };
 
 }

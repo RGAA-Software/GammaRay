@@ -167,4 +167,15 @@ namespace tc
         return nullptr;
     }
 
+    void WsPlugin::OnMessageAck(const std::shared_ptr<NetMessageAck> &ack) {
+        //LOGI("OnMessage ack, type: {}, channel: {}, resp time: {}", ack->msg_type_, (int)ack->ch_type_, ack->resp_time_);
+        if (ack->ch_type_ == NetChannelType::kFileTransfer) {
+            if (last_ack_) {
+                auto diff = ack->resp_time_ - last_ack_->resp_time_;
+                LOGI("OnMessage ack: {}ms", (diff));
+            }
+            last_ack_ = ack;
+        }
+    }
+
 }

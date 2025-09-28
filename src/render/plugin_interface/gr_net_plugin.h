@@ -6,18 +6,12 @@
 #define GAMMARAY_GR_NET_PLUGIN_H
 
 #include "gr_plugin_interface.h"
+#include "gr_net_plugin_type.h"
 
 namespace tc
 {
 
     class Data;
-
-    enum class NetPluginType {
-        kWebSocket,
-        kUdpKcp,
-        kWebRtcDirect,
-        kWebRtc
-    };
 
     class NetSyncInfo {
     public:
@@ -82,11 +76,15 @@ namespace tc
         // to file transfer
         virtual bool PostTargetFileTransferProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg, bool run_through);
 
-        // messages from remote(client) -> this plugin -> process it
+        // messages from remote(client) -> this plugin -> exe processes it
         // client 1 ->
         // client 2 ->  -> Renderer
         // client 3 ->
-        void OnClientEventCame(bool is_proto, int64_t socket_fd, const NetPluginType& nt_plugin_type, std::shared_ptr<Data> msg);
+        void OnClientEventCame(bool is_proto,
+                               int64_t socket_fd,
+                               const NetPluginType& nt_plugin_type,
+                               const NetChannelType& ch_type,
+                               std::shared_ptr<Data> msg);
 
         virtual bool IsOnlyAudioClients();
 
@@ -112,6 +110,11 @@ namespace tc
         virtual bool AllocNewLocalRtcInstance(const std::shared_ptr<GrLocalRtcRequestInfo>& info,
                                               std::function<void(const std::shared_ptr<GrLocalRtcReplyInfo>&)>&& callback) {
             return false;
+        }
+
+        // message ack
+        virtual void OnMessageAck(const std::shared_ptr<NetMessageAck>& ack) {
+
         }
 
     protected:

@@ -71,6 +71,9 @@ namespace tc
         void ReportClientConnected(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
         void ReportClientDisConnected(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
 
+        // ack
+        void ProcessAck(const std::shared_ptr<GrPluginNetClientEvent>& ev, const std::shared_ptr<Message>& m);
+
     private:
         RdSettings* settings_ = nullptr;
         RdStatistics* statistics_ = nullptr;

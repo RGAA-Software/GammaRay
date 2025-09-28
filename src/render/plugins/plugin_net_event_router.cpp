@@ -149,8 +149,10 @@ namespace tc {
                     }
                     break;
                 }
-                case kAck:
+                case kAck: {
+                    this->ProcessAck(event, msg);
                     break;
+                }
                 case kHeartBeat: {
                     ProcessHeartBeat(std::move(msg));
                     if (event->nt_plugin_type_ == NetPluginType::kUdpKcp) {
@@ -552,4 +554,14 @@ namespace tc {
 //        //win_event_replayer_->SimulateCtrlWinShiftB();
 //        //exit(0);
 //    }
+
+    void PluginNetEventRouter::ProcessAck(const std::shared_ptr<GrPluginNetClientEvent>& ev, const std::shared_ptr<Message>& m) {
+        auto sub = m->ack();
+        auto ack = std::make_shared<NetMessageAck>();
+        ack->send_time_ = sub.send_time();
+        ack->resp_time_ = sub.resp_time();
+        ack->ch_type_ = ev->nt_channel_type_;
+        ack->msg_type_ = m->type();
+        ev->from_plugin_->OnMessageAck(ack);
+    }
 }

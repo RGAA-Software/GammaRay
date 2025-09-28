@@ -6,6 +6,7 @@
 #define TC_APPLICATION_WS_PLUGIN_ROUTER_H
 
 #include "render/network/ws_router.h"
+#include "plugin_interface/gr_net_plugin_type.h"
 //#include "render/network/wss_router.h"
 
 namespace tc
@@ -19,6 +20,7 @@ namespace tc
             auto router = std::make_shared<WsStreamRouter>(data, only_audio);
             router->visitor_device_id_ = visitor_device_id;
             router->stream_id_ = stream_id;
+            router->nt_channel_type_ = NetChannelType::kMedia;
             return router;
         }
 
@@ -38,6 +40,7 @@ namespace tc
         std::string stream_id_;
         unsigned int post_thread_id_ = 0;
         std::string device_name_;
+        NetChannelType nt_channel_type_;
     };
 
 }

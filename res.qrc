@@ -89,6 +89,7 @@
         <file>resources/image/ic_memory.svg</file>
         <file>resources/image/ic_hard_disk.svg</file>
         <file>resources/image/ic_running.svg</file>
+        <file>resources/image/ic_network.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

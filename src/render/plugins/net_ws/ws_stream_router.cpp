@@ -24,7 +24,7 @@ namespace tc
         WsRouter::OnMessage(sess_ptr, socket_fd, data);
         auto plugin = Get<WsPlugin*>("plugin");
         auto msg = Data::Make(data.data(), data.size());
-        plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, msg);
+        plugin->OnClientEventCame(true, socket_fd, NetPluginType::kWebSocket, nt_channel_type_, msg);
     }
 
     void WsStreamRouter::OnPing(std::shared_ptr<asio2::http_session> &sess_ptr) {

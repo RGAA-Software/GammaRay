@@ -38,7 +38,7 @@ namespace tc
         bool HasEnoughBufferForQueuingFtMessages() override;
         std::vector<std::shared_ptr<GrConnectedClientInfo>> GetConnectedClientInfo() override;
         void DispatchAppEvent(const std::shared_ptr<AppBaseEvent> &event) override;
-
+        void OnMessageAck(const std::shared_ptr<NetMessageAck> &ack) override;
         GrNetPlugin* GetLocalRtcPlugin();
 
     private:
@@ -46,7 +46,7 @@ namespace tc
 
     private:
         std::shared_ptr<WsPluginServer> ws_server_ = nullptr;
-
+        std::shared_ptr<NetMessageAck> last_ack_ = nullptr;
     };
 
 }
