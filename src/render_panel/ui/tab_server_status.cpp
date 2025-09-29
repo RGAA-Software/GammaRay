@@ -218,7 +218,7 @@ namespace tc
                 item_layout->addSpacing(margin_left);
                 auto icon = new TcLabel(this);
                 icon->setFixedSize(38, 38);
-                icon->setStyleSheet(GetItemIconStyleSheet(":/icons/ic_network.svg"));
+                icon->setStyleSheet(GetItemIconStyleSheet(":/resources/image/ic_network.svg"));
                 item_layout->addWidget(icon);
 
                 auto label = new TcLabel(this);
