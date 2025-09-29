@@ -23,3 +23,5 @@ elseif (APPLE)
 elseif (UNIX)
 
 endif ()
+
+add_library(tc_global_id_generator SHARED global_id_generator.cpp)

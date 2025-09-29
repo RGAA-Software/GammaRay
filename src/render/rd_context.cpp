@@ -10,6 +10,9 @@
 #include "plugins/plugin_manager.h"
 #include "plugin_interface/gr_plugin_interface.h"
 
+typedef uint64_t (*FnGenNextGlobalId)();
+FnGenNextGlobalId g_fn_gen_next_global_id = nullptr;
+
 namespace tc
 {
     std::shared_ptr<RdContext> RdContext::Make() {
@@ -25,6 +28,12 @@ namespace tc
     }
 
     bool RdContext::Init() {
+        auto id_generator_path = QCoreApplication::applicationDirPath() + "/tc_global_id_generator.dll";
+        auto library = new QLibrary(id_generator_path);
+        if (!library->isLoaded()) {
+            library->load();
+        }
+        g_fn_gen_next_global_id = (FnGenNextGlobalId)library->resolve("GenNextGlobalId");
         return true;
     }
 
@@ -72,6 +81,10 @@ namespace tc
         plugin_manager_->VisitAllPlugins([=, this](GrPluginInterface* plugin) {
             plugin->DispatchAppEvent(event);
         });
+    }
+
+    uint64_t RdContext::GenNextNetworkIndex() {
+        return g_fn_gen_next_global_id();
     }
 
 }

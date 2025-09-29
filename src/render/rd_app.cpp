@@ -182,6 +182,12 @@ namespace tc
 
         rdApp = shared_from_this();
 
+        // test //
+        for (int i = 0; i < 10; i++) {
+            LOGI("Test next global network index: {}", context_->GenNextNetworkIndex());
+        }
+        // test //
+
         return qapp_->exec();
     }
 
