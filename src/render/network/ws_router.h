@@ -61,7 +61,10 @@ namespace tc
         }
 
         virtual int64_t GetQueuingMsgCount() {
-            return queuing_message_count_;
+            if (!session_) {
+                return 0;
+            }
+            return std::max((int64_t)queuing_message_count_, (int64_t)session_->get_pending_event_count());
         }
 
     protected:
