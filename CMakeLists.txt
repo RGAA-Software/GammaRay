@@ -85,7 +85,6 @@ configure_file(
         @ONLY
 )
 
-include_directories(${VK_SDK})
 include_directories(${GR_PROJECT_PATH}/)
 include_directories(${GR_PROJECT_PATH}/src)
 include_directories(${GR_PROJECT_PATH}/deps)
@@ -275,7 +274,7 @@ add_custom_command(TARGET tc_build_all POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${GR_PROJECT_PATH}/resources/language"  "${GR_PROJECT_BINARY_PATH}/resources/language"
     COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/render/settings.toml"  "${GR_PROJECT_BINARY_PATH}/"
     COMMAND ${CMAKE_COMMAND} -E copy "${OpenCV_ROOT}/x64/vc16/bin/opencv_world4100.dll"  "${GR_PROJECT_BINARY_PATH}/"
-    COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/prebuild/win/gr_sysinfo.exe"  "${GR_PROJECT_BINARY_PATH}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${GR_PROJECT_PATH}/prebuild/win/gr_sysinfo.exe"  "${GR_PROJECT_BINARY_PATH}/"
 
     COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/tc_rtc_client.dll"  "${GR_PROJECT_BINARY_PATH}/gr_client/tc_rtc_client.dll"
 
