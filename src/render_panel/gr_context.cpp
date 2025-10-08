@@ -174,6 +174,7 @@ namespace tc
             ip_address = ips[0].ip_addr_;
         }
         auto device_id = settings_->GetDeviceId();
+        //LOGI("** This Device ID: {}, ip: {}", device_id, ip_address);
         return !device_id.empty() ? device_id : ip_address;
     }
 

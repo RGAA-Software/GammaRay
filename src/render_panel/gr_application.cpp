@@ -376,7 +376,8 @@ namespace tc
             auto res = relay::RelayApi::NotifyEvent(item->stream_host_,
                                                     item->stream_port_,
                                                     context_->GetDeviceIdOrIpAddress(),
-                                                    srv_remote_device_id, msg->AsJson(),
+                                                    srv_remote_device_id,
+                                                    msg->AsJson(),
                                                     this->GetAppkey());
             if (res.has_value()) {
                 if (res.value() == relay::kRelayOk) {
