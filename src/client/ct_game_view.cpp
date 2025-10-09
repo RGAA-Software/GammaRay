@@ -36,7 +36,7 @@ namespace tc
 
     GameView::GameView(const std::shared_ptr<ClientContext>& ctx, std::shared_ptr<ThunderSdk>& sdk, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent)
         : ctx_(ctx), sdk_(sdk), params_(params), QWidget(parent) {
-        WidgetHelper::SetTitleBarColor(this);
+        WidgetHelper::SetTitleBarColor(this, this->params_->titlebar_color_);
         settings_ = Settings::Instance();
         msg_listener_ = ctx_->GetMessageNotifier()->CreateListener();
         this->setAttribute(Qt::WA_StyledBackground, true);
