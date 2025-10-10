@@ -61,6 +61,8 @@ namespace tc
             << std::format("--host={}", item->stream_host_).c_str()
             << std::format("--port={}", item->stream_port_).c_str()
             << std::format("--appkey={}", grApp->GetAppkey()).c_str()
+            << std::format("--spvr_host={}", settings_->GetSpvrServerHost()).c_str()
+            << std::format("--spvr_port={}", settings_->GetSpvrServerPort()).c_str()
             << std::format("--audio={}", item->audio_enabled_).c_str()
             << std::format("--clipboard={}", item->clipboard_enabled_).c_str()
             << std::format("--stream_id={}", item->stream_id_).c_str()

@@ -47,6 +47,7 @@ namespace tc
     class RetryConnDialog;
     class D3D11DeviceWrapper;
     class HWInfoWidget;
+    class CtSpvrClient;
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -184,6 +185,9 @@ namespace tc
 
         // show remote hardware info
         HWInfoWidget* hw_info_widget_ = nullptr;
+
+        // spvr client
+        std::shared_ptr<CtSpvrClient> spvr_client_ = nullptr;
 
     private:
         GameView* game_view_ = nullptr;

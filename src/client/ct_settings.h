@@ -51,6 +51,10 @@ namespace tc
         std::string host_;
         int port_{0};
 
+        // Spvr
+        std::string spvr_host_;
+        int spvr_port_ = 0;
+
         std::string version_;
         bool audio_on_ = false;
         bool clipboard_on_ = false;

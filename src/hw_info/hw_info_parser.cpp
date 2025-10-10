@@ -55,7 +55,7 @@ namespace tc
                 value->mem_.used_gb_ = mem_obj["used_gb"].get<uint64_t>();
                 // available
                 value->mem_.available_ = mem_obj["available"].get<uint64_t>();
-                value->mem_.available_gb_ = mem_obj["available"].get<uint64_t>();
+                value->mem_.available_gb_ = mem_obj["available_gb"].get<uint64_t>();
             }
 
             // Disks
@@ -129,7 +129,7 @@ namespace tc
             }
 
             auto print_info = to_string(*value.get());
-            LOGI("SysInfo: {}", print_info);
+            //LOGI("SysInfo: {}", print_info);
 
             return value;
         }

@@ -74,7 +74,7 @@ set(SRCS_WS
     ui/svg_lable.cpp
     ui/media_record_sign_lab.cpp
     ui/retry_conn_dialog.cpp
-    network/ct_dashboard_client.cpp
+    network/ct_spvr_client.cpp
     network/ct_panel_client.cpp
     plugins/ct_plugin_manager.cpp
     plugins/ct_plugin_event_router.cpp

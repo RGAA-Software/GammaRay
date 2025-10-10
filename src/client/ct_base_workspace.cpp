@@ -53,6 +53,7 @@
 #include "hw_info/hw_info.h"
 #include "hw_info/hw_info_parser.h"
 #include "hw_info/hw_info_widget.h"
+#include "network/ct_spvr_client.h"
 
 namespace tc
 {
@@ -93,6 +94,12 @@ namespace tc
 
         sdk_ = ThunderSdk::Make(this->context_->GetMessageNotifier());
         sdk_->Init(this->params_, nullptr, DecoderRenderType::kFFmpegI420);
+
+        if (!settings_->device_id_.empty() && !settings_->spvr_host_.empty() && settings_->spvr_port_ > 0 && !settings_->appkey_.empty()) {
+            LOGI("Will start spvr client!");
+            spvr_client_ = std::make_shared<CtSpvrClient>(context_, settings_->spvr_host_, settings_->spvr_port_, settings_->device_id_, settings_->appkey_);
+            spvr_client_->Start();
+        }
 
         // init game views
         InitGameView(this->params_);
