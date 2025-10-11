@@ -35,6 +35,7 @@ namespace tc
     class ClipboardManager;
     class GrGuardStarter;
     class PanelCompanion;
+    class GrSpvrClient;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -101,6 +102,9 @@ namespace tc
         // load panel companion
         void LoadPanelCompanion();
 
+        // start spvr client if needed
+        void StartSpvrClientIfNeeded();
+
     private:
         QWidget* main_window_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
@@ -135,6 +139,9 @@ namespace tc
 
         // panel companion
         PanelCompanion* companion_ = nullptr;
+
+        // panel spvr client
+        std::shared_ptr<GrSpvrClient> spvr_client_ = nullptr;
 
     };
 

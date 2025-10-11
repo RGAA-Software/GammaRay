@@ -4,6 +4,7 @@ set(PANEL_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/network/udp_broadcaster.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/gr_service_client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/network/render_api.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/network/gr_spvr_client.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/database/db_game.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/database/db_game_operator.cpp

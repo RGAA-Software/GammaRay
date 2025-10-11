@@ -18,6 +18,7 @@
 #include "gr_account_manager.h"
 #include "gr_connected_manager.h"
 #include "tc_common_new/thread.h"
+#include "network/gr_spvr_client.h"
 #include "tc_common_new/time_util.h"
 #include "companion/panel_companion.h"
 #include "ui/input_safety_pwd_dialog.h"
@@ -223,6 +224,9 @@ namespace tc
             if (companion_) {
                 companion_->OnTimer1S();
             }
+
+            // spvr client
+            this->StartSpvrClientIfNeeded();
         });
 
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
@@ -451,6 +455,23 @@ namespace tc
             return companion_->GetAuth()->appkey_;
         }
         return "";
+    }
+
+    void GrApplication::StartSpvrClientIfNeeded() {
+        auto appkey = GetAppkey();
+        auto spvr_host = settings_->GetSpvrServerHost();
+        auto spvr_port = settings_->GetSpvrServerPort();
+        auto device_id = settings_->GetDeviceId();
+        if (appkey.empty() || spvr_host.empty() || spvr_port <= 0 || device_id.empty()) {
+            return;
+        }
+
+        if (!spvr_client_) {
+            spvr_client_ = std::make_shared<GrSpvrClient>(context_, spvr_host, spvr_port, device_id, appkey);
+        }
+        if (!spvr_client_->IsStarted()) {
+            spvr_client_->Start();
+        }
     }
 
 }
