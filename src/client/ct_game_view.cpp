@@ -54,7 +54,14 @@ namespace tc
     #endif
 
 #ifdef WIN32
-        video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
+        if (params_->d3d11_wrapper_) {
+            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
+            LOGI("*** Use D3D11 to render frames");
+        }
+        else {
+            video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
+            LOGI("*** Use OpenGL to render frames");
+        }
 //        if (parent) {
 //            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
 //            video_widget_->AsWidget()->resize(1280, 768);

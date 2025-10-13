@@ -189,6 +189,9 @@ namespace tc
         // spvr client
         std::shared_ptr<CtSpvrClient> spvr_client_ = nullptr;
 
+        // can generate relative d3d11device & context
+        bool gen_d3d11_device_ = false;
+
     private:
         GameView* game_view_ = nullptr;
     };

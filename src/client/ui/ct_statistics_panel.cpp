@@ -313,7 +313,7 @@ namespace tc
                                 return "Relay";
                             }
                             else if (settings_->network_type_ == ClientNetworkType::kWebsocket) {
-                                return "WSS";
+                                return "WS";
                             }
                             else if (settings_->network_type_ == ClientNetworkType::kWebRtc) {
                                 return "RTC";

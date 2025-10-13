@@ -83,12 +83,17 @@ namespace tc
         InitTheme();
 
 #ifdef WIN32
-        GenerateD3DDevice();
-        for (const auto& [adapter_uid, wrapper] : d3d11_devices_) {
-            // TODO: find the primary or using d3d11 device
-            this->params_->d3d11_wrapper_ = wrapper;
-            LOGI("Using the D3D11Device, ID: {}", wrapper->adapter_uid_);
-            break;
+        gen_d3d11_device_ = GenerateD3DDevice();
+        if (gen_d3d11_device_) {
+            for (const auto &[adapter_uid, wrapper]: d3d11_devices_) {
+                // TODO: find the primary or using d3d11 device
+                this->params_->d3d11_wrapper_ = wrapper;
+                LOGI("Using the D3D11Device, ID: {}", wrapper->adapter_uid_);
+                break;
+            }
+        }
+        else {
+            LOGW("!!Can't use D3D11 to render!!");
         }
 #endif
 
@@ -1121,13 +1126,6 @@ namespace tc
         auto new_device_wrapper = std::make_shared<D3D11DeviceWrapper>();
         const D3D_FEATURE_LEVEL supportedFeatureLevels[] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
 
-//        int adapterIndex, outputIndex;
-//        if (!SDL_DXGIGetOutputInfo(SDL_GetWindowDisplayIndex((HWND)winId()),
-//                                   &adapterIndex, &outputIndex)) {
-//            LOGE("SDL_DXGIGetOutputInfo() failed: {}", SDL_GetError());
-//            return false;
-//        }
-
         ComPtr<IDXGIFactory1> factory1 = nullptr;
         ComPtr<IDXGIAdapter1> adapter = nullptr;
 
@@ -1172,7 +1170,7 @@ namespace tc
             res = factory1->EnumAdapters1(adapter_index, adapter.GetAddressOf());
             if (res != S_OK) {
                 LOGE("EnumAdapters1 index:{} failed\n", adapter_index);
-                return false;
+                return !d3d11_devices_.empty();
             }
 
             DXGI_ADAPTER_DESC1 desc1;
@@ -1198,7 +1196,7 @@ namespace tc
 
             if (res != S_OK || !new_device_wrapper->d3d11_device_) {
                 LOGE("D3D11CreateDevice failed: {}", res);
-                return false;
+                return !d3d11_devices_.empty();
             } else {
                 if (featureLevel < D3D_FEATURE_LEVEL_11_0) {
                     LOGE("Skip, Feature level < 11 {}");
@@ -1210,9 +1208,17 @@ namespace tc
                     ++adapter_index;
                     continue;
                 }
+
+                auto driver_name = StringUtil::ToUTF8(desc1.Description);
+                if (driver_name.find("Microsoft Basic") != std::string::npos) {
+                    LOGW("Skip, this is a microsoft basic render: {}", driver_name);
+                    ++adapter_index;
+                    continue;
+                }
+
                 new_device_wrapper->adapter_uid_ = adapter_uid;
-                LOGI("** Adapter Index:{}, UID: {}, Name: {}", adapter_index,  adapter_uid, StringUtil::ToUTF8(desc1.Description).c_str());
-                LOGI("** D3D11CreateDevice mDevice = {}", (void *) new_device_wrapper->d3d11_device_.Get());
+                LOGI("++ Adapter Index:{}, UID: {}, Name: {}", adapter_index,  adapter_uid, driver_name);
+                LOGI("++ D3D11CreateDevice mDevice = {}", (void *) new_device_wrapper->d3d11_device_.Get());
                 d3d11_devices_[adapter_uid] = new_device_wrapper;
             }
             ++adapter_index;
@@ -1221,6 +1227,7 @@ namespace tc
         if (d3d11_devices_.empty()) {
             LOGW("Can't create any D3D11Device/D3D11DeviceContext!");
         }
+        return !d3d11_devices_.empty();
     }
 
     std::shared_ptr<D3D11DeviceWrapper> BaseWorkspace::GetD3D11DeviceWrapper(uint64_t adapter_uid) {
