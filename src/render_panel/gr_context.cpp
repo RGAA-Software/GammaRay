@@ -217,12 +217,16 @@ namespace tc
 
     void GrContext::StartTimers() {
         timer_ = std::make_shared<asio2::timer>();
-        timer_->start_timer(1, 100, [=, this]() {
+        timer_->start_timer(100, 100, [=, this]() {
             this->SendAppMessage(MsgGrTimer100{});
         });
 
-        timer_->start_timer(2, 1000, [=, this]() {
+        timer_->start_timer(1, 1000, [=, this]() {
             this->SendAppMessage(MsgGrTimer1S{});
+        });
+
+        timer_->start_timer(2, 2000, [=, this]() {
+            this->SendAppMessage(MsgGrTimer2S{});
         });
 
         timer_->start_timer(5, 5000, [=, this]() {

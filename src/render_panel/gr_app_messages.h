@@ -67,6 +67,10 @@ namespace tc
     public:
     };
 
+    class MsgGrTimer2S {
+    public:
+    };
+
     class MsgGrTimer5S {
     public:
     };

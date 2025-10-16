@@ -11,6 +11,7 @@
 namespace tc
 {
     class GrContext;
+    class MessageListener;
 
     // Between Panel <-> Spvr
     class GrSpvrClient {
@@ -22,9 +23,13 @@ namespace tc
                               const std::string& appkey);
         void Start();
         bool IsStarted();
+        bool IsActive();
+        void PostBinMessage(const std::string& m);
 
     private:
         void ParseMessage(std::string_view data);
+        void Hello();
+        void Heartbeat();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
@@ -33,6 +38,8 @@ namespace tc
         int port_ = 0;
         std::string device_id_;
         std::string appkey_;
+        std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::atomic_int64_t hb_idx_ = 0;
     };
 
 }

@@ -3,8 +3,11 @@
 //
 
 #include "gr_spvr_client.h"
+#include "spvr_panel.pb.h"
 #include "tc_common_new/log.h"
 #include "render_panel/gr_context.h"
+#include "tc_common_new/message_notifier.h"
+#include "render_panel/gr_app_messages.h"
 
 namespace tc
 {
@@ -18,6 +21,14 @@ namespace tc
         port_ = port;
         device_id_ = device_id;
         appkey_ = appkey;
+
+        msg_listener_ = context_->ObtainMessageListener();
+        msg_listener_->Listen<MsgGrTimer2S>([=, this](const MsgGrTimer2S& m) {
+            context_->PostTask([=, this]() {
+                this->Heartbeat();
+            });
+        });
+
     }
 
     void GrSpvrClient::Start() {
@@ -27,21 +38,9 @@ namespace tc
         client_->set_timeout(std::chrono::milliseconds(3000));
         client_->set_verify_mode(asio::ssl::verify_none);
 
-        client_->start_timer("spvr_client_hb", std::chrono::seconds(1), [=, this]() {
-            if (!client_->is_started()) {
-                return;
-            }
-
-            // test //
-            client_->ws_stream().binary(false);
-            auto msg = std::format("connected, I'm: {}", device_id_);
-            client_->async_send(msg);
-        });
-
         client_->bind_init([&]() {
             client_->ws_stream().binary(true);
             client_->set_no_delay(true);
-
         })
         .bind_connect([=, this]() {
             if (asio2::get_last_error()) {
@@ -51,10 +50,7 @@ namespace tc
             }
 
             client_->post_queued_event([=, this]() {
-                // test //
-                client_->ws_stream().binary(false);
-                auto msg = std::format("connected, I'm: {}", device_id_);
-                client_->async_send(msg);
+                this->Hello();
             });
 
         })
@@ -81,6 +77,38 @@ namespace tc
 
     bool GrSpvrClient::IsStarted() {
         return client_ != nullptr;
+    }
+
+    bool GrSpvrClient::IsActive() {
+        return IsStarted() && client_->is_started();
+    }
+
+    void GrSpvrClient::Hello() {
+        if (!IsActive()) {
+            return;
+        }
+        spvr_panel::SpvrPanelMessage msg;
+        msg.set_msg_type(spvr_panel::SpvrPanelMessageType::kSpvrPanelHello);
+        auto sub = msg.mutable_hello();
+        sub->set_device_id(device_id_);
+        PostBinMessage(msg.SerializeAsString());
+    }
+
+    void GrSpvrClient::Heartbeat() {
+        if (!IsActive()) {
+            return;
+        }
+        spvr_panel::SpvrPanelMessage msg;
+        msg.set_msg_type(spvr_panel::SpvrPanelMessageType::kSpvrPanelHeartBeat);
+        auto sub = msg.mutable_heartbeat();
+        sub->set_hb_index(hb_idx_++);
+        PostBinMessage(msg.SerializeAsString());
+    }
+
+    void GrSpvrClient::PostBinMessage(const std::string& m) {
+        if (IsActive()) {
+            client_->async_send(m);
+        }
     }
 
     void GrSpvrClient::ParseMessage(std::string_view data) {
