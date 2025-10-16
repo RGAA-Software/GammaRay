@@ -73,12 +73,35 @@ static void plLogCallback(void* priv, enum pl_log_level level, const char* msg) 
 
 namespace tc { 
 
+    std::shared_ptr<PlVulkan> PlVulkan::Make() {
+        return std::make_shared<PlVulkan>();
+    }
+
 	PlVulkan::PlVulkan() {
 	
 	}
 
 	PlVulkan::~PlVulkan() {
-	
+        for (int i = 0; i < (int)SDL_arraysize(m_Textures); i++) {
+            pl_tex_destroy(m_Vulkan->gpu, &m_Textures[i]);
+        }
+
+        pl_renderer_destroy(&m_Renderer);
+        pl_swapchain_destroy(&m_Swapchain);
+        pl_vulkan_destroy(&m_Vulkan);
+
+        if (fn_vkDestroySurfaceKHR && m_VkSurface) {
+            fn_vkDestroySurfaceKHR(m_PlVkInstance->instance, m_VkSurface, nullptr);
+        }
+
+        if (m_HwDeviceCtx != nullptr) {
+            av_buffer_unref(&m_HwDeviceCtx);
+        }
+
+        pl_vk_inst_destroy(&m_PlVkInstance);
+
+        // m_Log must always be the last object destroyed
+        pl_log_destroy(&m_Log);
 	}
 
 
@@ -212,19 +235,29 @@ namespace tc {
 
     bool PlVulkan::Initialize(HWND hwnd) {
         
-        CreatePlVulkanInstance();
+        if (!CreatePlVulkanInstance()) {
+            return false;
+        }
 
-        CreateWin32SurfaceFromHwnd(hwnd);
+        if (!CreateWin32SurfaceFromHwnd(hwnd)) {
+            return false;
+        }
 
         if (!ChooseVulkanDevice(nullptr, false)) {
             return false;
         }
 
-        CreateSwapchain();
+        if (!CreateSwapchain()) {
+            return false;
+        }
 
-        CreatePlRender();
+        if (!CreatePlRender()) {
+            return false;
+        }
 
-        InitAVHWDeviceContext();
+        if (!InitAVHWDeviceContext()) {
+            return false;
+        }
 
         return true;
     }
@@ -342,28 +375,7 @@ namespace tc {
         if (m_HwAccelBackend) {
             const char* videoDecodeExtension;
 
-#if 0   // 测试demo 直接 使用 VK_KHR_VIDEO_DECODE_H265_EXTENSION_NAME
-            if (decoderParams->videoFormat & VIDEO_FORMAT_MASK_H264) {
-                videoDecodeExtension = VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME;
-            }
-            else if (decoderParams->videoFormat & VIDEO_FORMAT_MASK_H265) {
-                videoDecodeExtension = VK_KHR_VIDEO_DECODE_H265_EXTENSION_NAME;
-            }
-            else if (decoderParams->videoFormat & VIDEO_FORMAT_MASK_AV1) {
-                // FFmpeg 6.1 implemented an early Mesa extension for Vulkan AV1 decoding.
-                // FFmpeg 7.0 replaced that implementation with one based on the official extension.
-#if LIBAVCODEC_VERSION_MAJOR >= 61
-                videoDecodeExtension = VK_KHR_VIDEO_DECODE_AV1_EXTENSION_NAME;
-#else
-                videoDecodeExtension = "VK_MESA_video_decode_av1";
-#endif
-            }
-            else {
-                SDL_assert(false);
-                return false;
-            }
-#endif 
-
+            // 这里直接使用265测试
             videoDecodeExtension = VK_KHR_VIDEO_DECODE_H265_EXTENSION_NAME;
 
             if (!isExtensionSupportedByPhysicalDevice(device, videoDecodeExtension)) {
@@ -579,7 +591,7 @@ namespace tc {
     }
 
 
-    void PlVulkan::renderFrame(AVFrame* frame)
+    bool PlVulkan::renderFrame(AVFrame* frame)
     {
 
         pl_frame mappedFrame;
@@ -588,7 +600,7 @@ namespace tc {
         // 1) Map AVFrame -> pl_frame (检查返回)
         if (!mapAvFrameToPlacebo(frame, &mappedFrame)) {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "mapAvFrameToPlacebo failed");
-            return;
+            return false;
         }
 
         // 2) Start swapchain frame (必须有，不能跳过)
@@ -596,7 +608,7 @@ namespace tc {
         if (!pl_swapchain_start_frame(m_Swapchain, &sw_frame)) {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "pl_swapchain_start_frame failed (window occluded?)");
             pl_unmap_avframe(m_Vulkan->gpu, &mappedFrame);
-            return;
+            return false;
         }
 
         // 3) Build targetFrame from swapchain frame
@@ -605,18 +617,6 @@ namespace tc {
         // 4) Ensure overlays are empty (you removed overlays); avoid leaving garbage
         targetFrame.num_overlays = 0;
         targetFrame.overlays = nullptr;
-
-        // optional: adjust targetFrame.crop if you need scaling, else use as-is
-
-        // 5) Sanity checks before rendering (debugging aids)
-      /*  if (!targetFrame.fbo) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "targetFrame.fbo is NULL!");
-        }
-        if (mappedFrame.num_planes == 0 && mappedFrame.image == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "mappedFrame has no image!");
-        }*/
-
-        Sleep(10);
 
         int mode = Scale_Fit;
 
@@ -658,27 +658,26 @@ namespace tc {
         targetFrame.crop.x1 = dstRect.x() + dstRect.width();
         targetFrame.crop.y1 = dstRect.y() + dstRect.height();
 
-
-
         // 6) Render
         if (!pl_render_image(m_Renderer, &mappedFrame, &targetFrame, &pl_render_fast_params)) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "pl_render_image() failed");
             // still fallthrough and submit
+            return false;
         }
 
         // 7) Submit and (on Windows) swap buffers
         if (!pl_swapchain_submit_frame(m_Swapchain)) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "pl_swapchain_submit_frame() failed");
             // handle recreate if necessary
+            return false;
         }
+
 #ifdef Q_OS_WIN32
         pl_swapchain_swap_buffers(m_Swapchain);
 #endif
-
         // 8) Unmap source frame
         pl_unmap_avframe(m_Vulkan->gpu, &mappedFrame);
-
-
+        return true;
     }
 
     bool PlVulkan::mapAvFrameToPlacebo(const AVFrame* frame, pl_frame* mappedFrame)

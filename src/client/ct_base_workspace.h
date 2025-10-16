@@ -48,6 +48,8 @@ namespace tc
     class D3D11DeviceWrapper;
     class HWInfoWidget;
     class CtSpvrClient;
+    class PlVulkan;
+
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -186,11 +188,17 @@ namespace tc
         // show remote hardware info
         HWInfoWidget* hw_info_widget_ = nullptr;
 
+<<<<<<< Updated upstream
         // spvr client
         std::shared_ptr<CtSpvrClient> spvr_client_ = nullptr;
 
         // can generate relative d3d11device & context
         bool gen_d3d11_device_ = false;
+=======
+
+        // libplacebo vulkan
+        std::shared_ptr<PlVulkan> pl_vulkan_ = nullptr;
+>>>>>>> Stashed changes
 
     private:
         GameView* game_view_ = nullptr;

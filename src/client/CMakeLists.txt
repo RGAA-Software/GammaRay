@@ -35,9 +35,12 @@ set(SRCS_WS
     front_render/opengl/ct_renderer.cpp
     front_render/opengl/ct_sprite.cpp
     front_render/sdl/ct_sdl_video_widget.cpp
-#    front_render/vulkan/ct_vulkan_video_widget.cpp
-#    front_render/vulkan/pl_vulkan.cpp
-#    front_render/vulkan/plvk_c.c
+    front_render/vulkan/ct_vulkan_video_widget.cpp
+    front_render/vulkan/pl_vulkan.cpp
+    front_render/vulkan/plvk_c.c
+    front_render/vulkan/ct_test_vulkan_video_widget.cpp
+    front_render/vulkan/ct_test_ffmpeg_vulkan_decoder.cpp
+    front_render/vulkan/ct_vulkan_checker.cpp
     front_render/resource/yuv_util.cpp
     ct_qt_key_converter.cpp
     ct_audio_player.cpp

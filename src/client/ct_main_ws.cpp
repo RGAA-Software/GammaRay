@@ -16,7 +16,6 @@
 #include "client/ct_client_context.h"
 #include "ct_base_workspace.h"
 #include "client/ct_workspace.h"
-#include "client/ct_base_workspace.h"
 #include "client/ct_application.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/log.h"
@@ -29,6 +28,7 @@
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/time_util.h"
 #include "snowflake/snowflake.h"
+#include "front_render/vulkan/ct_vulkan_checker.h"
 
 using namespace tc;
 
@@ -444,6 +444,13 @@ int main(int argc, char** argv) {
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();
+
+    bool support_vulkan = false;
+    {
+        auto vulkan_checker = VulkanChecker::Make();
+        support_vulkan = vulkan_checker->TestDecodeAndRenderHevcYuv444Frame();
+        LOGI("support vulkan(hevc deoce yuv444 and render): {}", support_vulkan);
+    }
 
     static auto ws = std::make_shared<Workspace>(ctx, params);
     ws->Init();

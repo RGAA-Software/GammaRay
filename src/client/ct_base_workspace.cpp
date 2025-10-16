@@ -50,6 +50,7 @@
 #include "tc_message_new/proto_message_maker.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
 #include "front_render/opengl/ct_opengl_video_widget.h"
+#include "front_render/vulkan/pl_vulkan.h"
 #include "hw_info/hw_info.h"
 #include "hw_info/hw_info_parser.h"
 #include "hw_info/hw_info_widget.h"
@@ -71,6 +72,8 @@ namespace tc
             this->raise();
             this->activateWindow();
         });
+
+        pl_vulkan_ = PlVulkan::Make();
     }
 
     void BaseWorkspace::Init() {
@@ -108,6 +111,8 @@ namespace tc
 
         // init game views
         InitGameView(this->params_);
+
+        this->params_->vulkan_hw_device_ctx_ = pl_vulkan_->GetHwDeviceCtx();
 
         InitSampleWidget();
 

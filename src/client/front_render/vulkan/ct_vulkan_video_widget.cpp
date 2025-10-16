@@ -30,10 +30,6 @@ namespace tc
         setMouseTracking(true);
         grabKeyboard();
 
-        //render_mgr_ = std::make_shared<D3D11RenderManager>();
-        ///
-        // raw_sdl_widget_ = new RawSdlWidget();
-        //nv12_frame = ReadNV12FromFile();
     }
 
     VulkanVideoWidget::~VulkanVideoWidget() {

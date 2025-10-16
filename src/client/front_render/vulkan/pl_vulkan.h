@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <memory>
 #include <Windows.h>
 
 #include <SDL.h>
@@ -52,6 +53,7 @@ namespace tc {
 
 	class PlVulkan {
 	public:
+        static std::shared_ptr<PlVulkan> Make();
         PlVulkan();
 		~PlVulkan();
 
@@ -71,19 +73,16 @@ namespace tc {
         bool populateQueues(int videoFormat);
 
         bool prepareDecoderContext(AVCodecContext* context, AVDictionary**);
+        AVBufferRef* GetHwDeviceCtx() { return m_HwDeviceCtx; }
 
-        void renderFrame(AVFrame* frame);
+        bool renderFrame(AVFrame* frame);
 
         bool mapAvFrameToPlacebo(const AVFrame* frame, pl_frame* mappedFrame);
 
         static void lockQueue(AVHWDeviceContext* dev_ctx, uint32_t queue_family, uint32_t index);
         static void unlockQueue(AVHWDeviceContext* dev_ctx, uint32_t queue_family, uint32_t index);
 
-
-
 	public:
-        SDL_Window* m_Window = nullptr;
-
         // The libplacebo rendering state
         pl_log m_Log = nullptr;
         pl_vk_inst m_PlVkInstance = nullptr;
