@@ -83,12 +83,20 @@ namespace tc {
 
 	PlVulkan::~PlVulkan() {
         for (int i = 0; i < (int)SDL_arraysize(m_Textures); i++) {
-            pl_tex_destroy(m_Vulkan->gpu, &m_Textures[i]);
+            if (m_Vulkan && m_Vulkan->gpu && m_Textures[i]) {
+                pl_tex_destroy(m_Vulkan->gpu, &m_Textures[i]);
+            }
         }
 
-        pl_renderer_destroy(&m_Renderer);
-        pl_swapchain_destroy(&m_Swapchain);
-        pl_vulkan_destroy(&m_Vulkan);
+        if (m_Renderer) {
+            pl_renderer_destroy(&m_Renderer);
+        }
+        if (m_Swapchain) {
+            pl_swapchain_destroy(&m_Swapchain);
+        }
+        if (m_Vulkan) {
+            pl_vulkan_destroy(&m_Vulkan);
+        }
 
         if (fn_vkDestroySurfaceKHR && m_VkSurface) {
             fn_vkDestroySurfaceKHR(m_PlVkInstance->instance, m_VkSurface, nullptr);
@@ -98,10 +106,14 @@ namespace tc {
             av_buffer_unref(&m_HwDeviceCtx);
         }
 
-        pl_vk_inst_destroy(&m_PlVkInstance);
+        if (m_PlVkInstance) {
+            pl_vk_inst_destroy(&m_PlVkInstance);
+        }
 
         // m_Log must always be the last object destroyed
-        pl_log_destroy(&m_Log);
+        if (m_Log) {
+            pl_log_destroy(&m_Log);
+        }
 	}
 
 
