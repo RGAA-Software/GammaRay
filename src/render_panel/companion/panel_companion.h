@@ -21,6 +21,12 @@ namespace tc
         std::string appkey_;
     };
 
+    // Spvr Access
+    class SpvrAccessInfo {
+    public:
+
+    };
+
     //
     class PanelCompanion {
     public:
@@ -45,6 +51,9 @@ namespace tc
         virtual void UpdateCurrentCpuFrequency(float freq) = 0;
         virtual float GetCurrentCpuFrequency() = 0;
         virtual std::shared_ptr<SysInfo> ParseHardwareInfo(const std::string& info) = 0;
+
+        // spvr access
+        virtual std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info) = 0;
     };
 
 }

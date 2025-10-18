@@ -239,6 +239,8 @@
   "id_hw_ethernet": "网卡",
   "id_hw_running": "系统已运行",
   "id_hw_detailed_info": "详细信息",
+  "id_request_device_id_failed": "请求设备ID失败，检查您的网络配置是否正常。然后请登录管理后台确保已经正常工作，并确保当前设备可以连接您的服务。",
+  "id_spvr_auth_access_info": "授权信息 *",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

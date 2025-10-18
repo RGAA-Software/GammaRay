@@ -60,7 +60,7 @@ namespace tc
 
             }
 
-            layout->addSpacing(3);
+            layout->addSpacing(5);
 
             {
                 auto sub_layout = new NoMarginHLayout();

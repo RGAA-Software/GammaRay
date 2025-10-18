@@ -64,6 +64,7 @@ namespace tc
     static const std::string kStColorfulTitlebar = "colorful_titlebar";
     static const std::string kStDisplayRandomPwd = "display_random_pwd";
     static const std::string kStPreferDecoder = "prefer_decoder";
+    static const std::string kStSpvrAccessInfo = "spvr_access_info";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -240,6 +241,10 @@ namespace tc
         // prefer decoder
         void SetPreferDecoder(const std::string& decoder);
         std::string GetPreferDecoder();
+
+        // Spvr access info
+        void SetSpvrAccessInfo(const std::string& info);
+        std::string GetSpvrAccessInfo();
 
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;

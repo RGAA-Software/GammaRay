@@ -15,6 +15,7 @@ namespace tc
 
     class GrApplication;
     class MessageListener;
+    class SpvrAccessInfo;
 
     class StNetwork : public TabBase {
     public:
@@ -25,7 +26,11 @@ namespace tc
         void OnTabHide() override;
 
     private:
+        std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info);
+
+    private:
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        QLineEdit* edt_spvr_access_ = nullptr;
         QLineEdit* edt_spvr_server_host_ = nullptr;
         QLineEdit* edt_spvr_server_port_ = nullptr;
         QLineEdit* edt_relay_server_host_ = nullptr;

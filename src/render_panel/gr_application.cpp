@@ -122,7 +122,7 @@ namespace tc
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;
         LOGI("** Connection used: {}ms", conn_diff);
 
-        RefreshSigServerSettings();
+        RefreshClientManagerSettings();
         RegisterMessageListener();
         StartWindowsMessagesLooping();
 
@@ -192,7 +192,7 @@ namespace tc
         return true;
     }
 
-    void GrApplication::RefreshSigServerSettings() {
+    void GrApplication::RefreshClientManagerSettings() {
         std::shared_ptr<Authorization> auth = nullptr;
         if (companion_) {
             auth = companion_->GetAuth();
@@ -209,7 +209,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgSettingsChanged>([=, this](const MsgSettingsChanged& msg) {
             LOGI("Settings changed...");
-            RefreshSigServerSettings();
+            RefreshClientManagerSettings();
             bool force_update = settings_->GetDeviceId().empty();
             RequestNewClientId(force_update);
         });
@@ -243,25 +243,25 @@ namespace tc
         });
     }
 
-    void GrApplication::RequestNewClientId(bool force_update) {
+    bool GrApplication::RequestNewClientId(bool force_update, bool sync) {
         if (!force_update && !settings_->GetDeviceId().empty() && !settings_->GetDeviceRandomPwd().empty()) {
-            return;
+            return false;
         }
 
-        context_->PostTask([=, this]() {
+        auto task = [=, this]() -> bool {
             if (!settings_->HasSpvrServerConfig()) {
-                return;
+                return false;
             }
             LOGI("Will request new device!");
             auto opt_device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
             if (!opt_device.has_value()) {
                 LOGE("Can't create new device, error: {}", (int)opt_device.error());
-                return;
+                return false;
             }
             auto device = opt_device.value();
-            if (!device) {
+            if (!device || device->device_id_.empty() || device->gen_random_pwd_.empty()) {
                 LOGE("Can't create new device, device is nullptr.");
-                return;
+                return false;
             }
 
             settings_->SetDeviceId(device->device_id_);
@@ -272,10 +272,20 @@ namespace tc
                 .device_random_pwd_ = device->gen_random_pwd_,
                 .force_update_ = force_update,
             });
-
             context_->SendAppMessage(MsgSyncSettingsToRender{});
 
-        });
+            return true;
+        };
+
+        if (sync) {
+            return task();
+        }
+        else {
+            context_->PostTask([=]() {
+                task();
+            });
+            return true;
+        }
     }
 
     void GrApplication::RegisterFirewall() {

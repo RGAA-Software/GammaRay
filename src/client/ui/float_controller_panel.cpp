@@ -46,7 +46,7 @@ namespace tc
                 ci->setFixedSize(QSize(26, 26));
                 ci->UpdateSelectedState(true);
                 ci->Hide();
-                layout->addSpacing(3);
+                layout->addSpacing(5);
                 layout->addWidget(ci);
                 computer_icons_.push_back(ci);
 

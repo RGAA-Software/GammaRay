@@ -62,7 +62,7 @@ namespace tc
         // panel -> render
         // msg: protobuf message
         bool PostMessage2Renderer(std::shared_ptr<Data> msg);
-        void RequestNewClientId(bool force_update);
+        bool RequestNewClientId(bool force_update, bool sync = false);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
 
         // manager client
@@ -87,9 +87,9 @@ namespace tc
         PanelCompanion* GetCompanion();
 
         std::string GetAppkey();
+        void RefreshClientManagerSettings();
 
     private:
-        void RefreshSigServerSettings();
         void RegisterMessageListener();
         void RegisterFirewall();
 
