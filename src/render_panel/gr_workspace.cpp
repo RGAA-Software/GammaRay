@@ -291,8 +291,9 @@ namespace tc
                     background-repeat: no-repeat;
                     background-position: center;
                 )");
+                layout->addSpacing(8);
                 layout->addWidget(lbl, 0, Qt::AlignHCenter);
-                layout->addSpacing(15);
+                layout->addSpacing(8);
             }
 
             root_layout->addLayout(layout);

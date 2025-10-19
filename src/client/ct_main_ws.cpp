@@ -446,7 +446,7 @@ int main(int argc, char** argv) {
     auto beg = TimeUtil::GetCurrentTimestamp();
 
     bool support_vulkan = false;
-    {
+    if (0) {
         auto vulkan_checker = VulkanChecker::Make();
         support_vulkan = vulkan_checker->TestDecodeAndRenderHevcYuv444Frame();
         LOGI("support vulkan(hevc deoce yuv444 and render): {}", support_vulkan);

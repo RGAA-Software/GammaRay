@@ -420,42 +420,43 @@ namespace tc
             }
 
             // verify security password
-            auto r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
-            auto ok = r.value_or(false);
-            for (;;) {
-                LOGI("VerifySecurityPassword result: {}", ok);
-                if (!ok) {
-                    LOGI("VerifySecurityPassword result 1: {}", ok);
-                    InputRemotePwdDialog dlg_input_pwd(context_);
-                    if (dlg_input_pwd.exec() == 1) {
-                        return;
-                    }
-                    auto input_password = dlg_input_pwd.GetInputPassword();
-                    if (input_password.isEmpty()) {
-                        context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_input_necessary_info"));
-                        continue;
-                    }
-
-                    // md5 pwd
-                    auto pwd_md5 = MD5::Hex(input_password.toStdString());
-
-                    r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, pwd_md5);
-                    ok = r.value_or(false);
+            if (!target_item->remote_device_safety_pwd_.empty()) {
+                auto r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
+                auto ok = r.value_or(false);
+                for (;;) {
+                    LOGI("VerifySecurityPassword result: {}", ok);
                     if (!ok) {
-                        context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
-                    }
-                    else {
-                        // update to database
-                        context_->PostDBTask([=, this]() {
-                            auto mgr = context_->GetStreamDBManager();
-                            mgr->UpdateStreamSafetyPwd(target_item->stream_id_, pwd_md5);
-                            LoadStreamItems();
-                        });
+                        LOGI("VerifySecurityPassword result 1: {}", ok);
+                        InputRemotePwdDialog dlg_input_pwd(context_);
+                        if (dlg_input_pwd.exec() == 1) {
+                            return;
+                        }
+                        auto input_password = dlg_input_pwd.GetInputPassword();
+                        if (input_password.isEmpty()) {
+                            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_input_necessary_info"));
+                            continue;
+                        }
+
+                        // md5 pwd
+                        auto pwd_md5 = MD5::Hex(input_password.toStdString());
+
+                        r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_,
+                                                              pwd_md5);
+                        ok = r.value_or(false);
+                        if (!ok) {
+                            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
+                        } else {
+                            // update to database
+                            context_->PostDBTask([=, this]() {
+                                auto mgr = context_->GetStreamDBManager();
+                                mgr->UpdateStreamSafetyPwd(target_item->stream_id_, pwd_md5);
+                                LoadStreamItems();
+                            });
+                            break;
+                        }
+                    } else {
                         break;
                     }
-                }
-                else {
-                    break;
                 }
             }
         }
