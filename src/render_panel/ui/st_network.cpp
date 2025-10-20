@@ -19,6 +19,7 @@
 #include "tc_label.h"
 #include "tc_pushbutton.h"
 #include "tc_spvr_client/spvr_api.h"
+#include "tc_relay_client/relay_api.h"
 #include "tc_common_new/message_notifier.h"
 #include <QPushButton>
 #include <QLineEdit>
@@ -59,19 +60,8 @@ namespace tc
                 segment_layout->addWidget(label);
                 segment_layout->addSpacing(2);
             }
-            // Relay
 
-            auto fn_set_spvr_input_state = [this](bool enabled) {
-                if (enabled) {
-                    edt_spvr_server_host_->setEnabled(true);
-                    edt_spvr_server_port_->setEnabled(true);
-                }
-                else {
-                    edt_spvr_server_host_->setEnabled(false);
-                    edt_spvr_server_port_->setEnabled(false);
-                }
-            };
-
+            // Spvr access info
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
@@ -80,20 +70,45 @@ namespace tc
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
 
-                auto edit = new QLineEdit(this);
+                auto edit = new QTextEdit(this);
+                edit->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+                edit->setLineWrapMode(QTextEdit::WidgetWidth);
+                edit->setAcceptRichText(false);
                 edt_spvr_access_ = edit;
-                QObject::connect(edit, &QLineEdit::textChanged, this, [=, this](const QString &text) {
-                     this->ParseSpvrAccessInfo(text.toStdString());
+                QObject::connect(edit, &QTextEdit::textChanged, this, [=, this]() {
+                     auto text = edit->toPlainText();
+                     auto info = this->ParseSpvrAccessInfo(text.toStdString());
+                     this->DisplaySpvrAccessInfo(info);
                  });
-                edit->setFixedSize(input_size);
-                edit->setText("");
+                edit->setFixedSize(input_size.width()*2, input_size.height()*2);
+                edit->setText(settings_->GetSpvrAccessInfo().c_str());
                 layout->addWidget(edit);
-                layout->addSpacing(10);
+                layout->addSpacing(15);
 
-                auto search = new TcPushButton();
-                search->SetTextId("id_file_trans_search");
-                search->setFixedSize(100, input_size.height());
-                layout->addWidget(search);
+                {
+                    auto search_layout = new NoMarginVLayout();
+
+                    auto search = new TcPushButton();
+                    search->SetTextId("id_file_trans_search");
+                    search->setFixedSize(80, 32);
+                    search_layout->addWidget(search);
+                    connect(search, &QPushButton::clicked, this, [=, this]() {
+                        this->SearchAccessInfo();
+                    });
+
+                    search_layout->addSpacing(5);
+
+                    auto verify = new TcPushButton();
+                    verify->SetTextId("id_verify");
+                    verify->setFixedSize(80, 32);
+                    search_layout->addWidget(verify);
+                    connect(verify, &QPushButton::clicked, this, [=, this]() {
+                        this->VerifyAccessInfo();
+                    });
+
+                    search_layout->addStretch();
+                    layout->addLayout(search_layout);
+                }
 
                 layout->addStretch();
 
@@ -111,6 +126,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setEnabled(false);
                 edt_spvr_server_host_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setText(settings_->GetSpvrServerHost().c_str());
@@ -128,6 +144,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setEnabled(false);
                 edt_spvr_server_port_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setValidator(new QIntValidator);
@@ -148,6 +165,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setEnabled(false);
                 edt_relay_server_host_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setText(settings_->GetRelayServerHost().c_str());
@@ -165,6 +183,7 @@ namespace tc
                 layout->addWidget(label);
 
                 auto edit = new QLineEdit(this);
+                edit->setEnabled(false);
                 edt_relay_server_port_ = edit;
                 edit->setFixedSize(input_size);
                 edit->setValidator(new QIntValidator);
@@ -174,7 +193,6 @@ namespace tc
                 segment_layout->addSpacing(5);
                 segment_layout->addLayout(layout);
             }
-            fn_set_spvr_input_state(settings_->IsRelayEnabled());
 
             // PORT settings
             {
@@ -387,6 +405,8 @@ namespace tc
                 settings_->SetRelayServerHost(relay_host);
                 settings_->SetRelayServerPort(relay_port);
 
+                SaveSpvrAccessInfo();
+
                 // Load again
                 settings_->Load();
 
@@ -469,6 +489,84 @@ namespace tc
             return nullptr;
         }
         return companion->ParseSpvrAccessInfo(info);
+    }
+
+    void StNetwork::DisplaySpvrAccessInfo(const std::shared_ptr<SpvrAccessInfo>& info) {
+        if (!info || !info->spvr_config_.IsValid() || info->relay_configs_.empty()) {
+            if (edt_spvr_server_host_) {
+                edt_spvr_server_host_->setText("");
+            }
+            if (edt_spvr_server_port_) {
+                edt_spvr_server_port_->setText("");
+            }
+            if (edt_relay_server_host_) {
+                edt_relay_server_host_->setText("");
+            }
+            if (edt_relay_server_port_) {
+                edt_relay_server_port_->setText("");
+            }
+            return;
+        }
+        if (edt_spvr_server_host_) {
+            edt_spvr_server_host_->setText(info->spvr_config_.srv_w3c_ip_.c_str());
+        }
+        if (edt_spvr_server_port_) {
+            edt_spvr_server_port_->setText(QString::number(info->spvr_config_.srv_working_port_));
+        }
+        if (edt_relay_server_host_) {
+            edt_relay_server_host_->setText(info->relay_configs_[0].srv_w3c_ip_.c_str());
+        }
+        if (edt_relay_server_port_) {
+            edt_relay_server_port_->setText(QString::number(info->relay_configs_[0].srv_working_port_));
+        }
+    }
+
+    void StNetwork::SaveSpvrAccessInfo() {
+        auto info = edt_spvr_access_->toPlainText().toStdString();
+        settings_->SetSpvrAccessInfo(info);
+    }
+
+    void StNetwork::SearchAccessInfo() {
+
+    }
+
+    void StNetwork::VerifyAccessInfo() {
+        // 1. verify spvr server
+        auto ac_info = ParseSpvrAccessInfo(edt_spvr_access_->toPlainText().toStdString());
+        if (!ac_info) {
+            LOGE("Parse access info failed: {}", edt_spvr_access_->toPlainText().toStdString());
+            return;
+        }
+
+        {
+            auto appkey = ac_info->spvr_config_.srv_appkey_;
+            auto r = spvr::SpvrApi::Ping(ac_info->spvr_config_.srv_w3c_ip_, ac_info->spvr_config_.srv_working_port_, appkey);
+            if (!r.has_value() || !r.value()) {
+                TcDialog dialog(tcTr("id_error"), tcTr("id_verify_spvr_failed"));
+                dialog.exec();
+                return;
+            }
+        }
+
+        // 2. verify relay server
+        {
+            if (ac_info->relay_configs_.empty()) {
+                TcDialog dialog(tcTr("id_error"), tcTr("id_verify_relay_failed"));
+                dialog.exec();
+                return;
+            }
+            for (const auto& cfg : ac_info->relay_configs_) {
+                auto r = relay::RelayApi::Ping(cfg.srv_w3c_ip_, cfg.srv_working_port_, cfg.srv_appkey_);
+                if (!r.has_value() || !r.value()) {
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_verify_relay_failed"));
+                    dialog.exec();
+                    return;
+                }
+            }
+        }
+
+        TcDialog dialog(tcTr("id_tips"), tcTr("id_verify_success"));
+        dialog.exec();
     }
 
 }

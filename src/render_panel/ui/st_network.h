@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QTextEdit>
 #include "tab_base.h"
 
 namespace tc
@@ -27,10 +28,14 @@ namespace tc
 
     private:
         std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info);
+        void DisplaySpvrAccessInfo(const std::shared_ptr<SpvrAccessInfo>& info);
+        void SaveSpvrAccessInfo();
+        void SearchAccessInfo();
+        void VerifyAccessInfo();
 
     private:
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        QLineEdit* edt_spvr_access_ = nullptr;
+        QTextEdit* edt_spvr_access_ = nullptr;
         QLineEdit* edt_spvr_server_host_ = nullptr;
         QLineEdit* edt_spvr_server_port_ = nullptr;
         QLineEdit* edt_relay_server_host_ = nullptr;

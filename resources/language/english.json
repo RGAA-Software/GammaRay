@@ -240,6 +240,10 @@
   "id_hw_detailed_info": "Detailed Info",
   "id_request_device_id_failed": "Failed to request device ID. Check if your network configuration is normal. Then log in to the management console to ensure it is functioning properly, and verify that the current device can connect to your service.",
   "id_spvr_auth_access_info": "Authorization Info *",
+  "id_verify": "Verify",
+  "id_verify_success": "Verify Success.",
+  "id_verify_relay_failed": "Verify relay server failed.",
+  "id_verify_spvr_failed": "Verify Supervisor server failed.",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

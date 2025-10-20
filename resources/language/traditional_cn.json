@@ -241,6 +241,10 @@
   "id_hw_detailed_info": "詳細資訊",
   "id_request_device_id_failed": "請求設備ID失敗，檢查您的網路配置是否正常。然後請登入管理後台確保已經正常工作，並確認目前設備可以連線到您的服務。",
   "id_spvr_auth_access_info": "授權資訊 *",
+  "id_verify": "驗證",
+  "id_verify_success": "驗證成功。",
+  "id_verify_relay_failed": "驗證中轉服務失敗。",
+  "id_verify_spvr_failed": "驗證管理服務失敗。",
 
   "id_client_network_disconnected": "連接已斷開, 正在重試",
   "id_gr_client": "GammaRay客戶端",
