@@ -13,6 +13,7 @@
 #include "gr_settings.h"
 #include "gr_statistics.h"
 #include "gr_app_messages.h"
+#include "asio2/3rd/asio.hpp"
 #include "tc_common_new/log.h"
 #include "gr_system_monitor.h"
 #include "gr_account_manager.h"
@@ -47,6 +48,7 @@
 #include <QLibrary>
 
 using namespace nlohmann;
+using asio::ip::udp;
 
 typedef void *(*FnGetInstance)();
 
@@ -125,6 +127,7 @@ namespace tc
         RefreshClientManagerSettings();
         RegisterMessageListener();
         StartWindowsMessagesLooping();
+        StartUdpReceiver(30501);
 
         if (!run_automatically_) {
             context_->PostUIDelayTask([=, this]() {
@@ -141,6 +144,9 @@ namespace tc
         if (win_msg_thread_ && win_msg_thread_->IsJoinable()) {
             win_msg_thread_->Join();
         }
+        exit_udp_receiver_ = true;
+        udp_receiver_thread_->Join();
+
         context_->Exit();
     }
 
@@ -482,6 +488,34 @@ namespace tc
         if (!spvr_client_->IsStarted()) {
             spvr_client_->Start();
         }
+    }
+
+    void GrApplication::StartUdpReceiver(int port) {
+        udp_receiver_thread_ = std::make_shared<Thread>([=, this]() {
+            try {
+                asio::io_context io;
+                udp::socket socket(io, udp::endpoint(udp::v4(), port));
+                LOGI("Listening on UDP port :{}", port);
+                char data[4096];
+                udp::endpoint sender_endpoint;
+
+                while(!exit_udp_receiver_) {
+                    asio::error_code ec;
+                    size_t len = socket.receive_from(asio::buffer(data), sender_endpoint, 0, ec);
+
+                    if (!ec && len > 0) {
+                        std::string msg(data, len);
+                        LOGI("*Received from {}", msg);
+                    }
+                    else if (ec) {
+                        LOGE("*Receive error: {}", ec.message());
+                    }
+                }
+            }
+            catch (std::exception& e) {
+                std::cerr << "Exception: " << e.what() << std::endl;
+            }
+        }, "udp_receiver_thread", false);
     }
 
 }

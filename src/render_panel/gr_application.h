@@ -105,6 +105,9 @@ namespace tc
         // start spvr client if needed
         void StartSpvrClientIfNeeded();
 
+        //
+        void StartUdpReceiver(int port);
+
     private:
         QWidget* main_window_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
@@ -142,6 +145,10 @@ namespace tc
 
         // panel spvr client
         std::shared_ptr<GrSpvrClient> spvr_client_ = nullptr;
+
+        // udp receiver thread
+        std::shared_ptr<Thread> udp_receiver_thread_ = nullptr;
+        std::atomic_bool exit_udp_receiver_ = false;
 
     };
 
