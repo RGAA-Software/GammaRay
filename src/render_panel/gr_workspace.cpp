@@ -127,7 +127,7 @@ namespace tc
                 logo->setScaledContents(true);
                 logo->setStyleSheet(R"(
                     border: none;
-                    border-image: url(:/resources/tc_icon.png);
+                    border-image: url(:/resources/tc_trans_icon_blue.png);
                     background-repeat: no-repeat;
                     background-position: center;
                 )");
