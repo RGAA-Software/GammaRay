@@ -150,7 +150,7 @@ namespace tc
 
         hw_info_widget_ = new HWInfoWidget(true, nullptr);
         hw_info_widget_->setWindowTitle(tcTr("id_remote_hw"));
-        hw_info_widget_->resize(QSize(1200, 800));
+        hw_info_widget_->resize(QSize(1260, 880));
         hw_info_widget_->hide();
     }
 
