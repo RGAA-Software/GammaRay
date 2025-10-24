@@ -245,6 +245,12 @@
   "id_verify_success": "验证成功.",
   "id_verify_relay_failed": "验证中转服务失败.",
   "id_verify_spvr_failed": "验证管理服务失败.",
+  "id_nothing": "没有任何信息...",
+  "id_found_manager_server": "检测到服务",
+  "id_spvr_server_address": "管理服务地址",
+  "id_relay_server_address": "中转服务地址",
+  "id_timestamp": "时间",
+  "id_join_in": "加入",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

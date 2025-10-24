@@ -54,6 +54,11 @@ namespace tc
     // Spvr Access
     class SpvrAccessInfo {
     public:
+        bool IsValid() {
+            return spvr_config_.IsValid() && !relay_configs_.empty();
+        }
+
+    public:
         SpvrSrvConfig spvr_config_;
         std::vector<RelaySrvConfig> relay_configs_;
     };

@@ -254,11 +254,13 @@ namespace tc
             context_->PostTask([=, this]() {
                 // cpu frequency
                 auto freq = CpuFrequency::GetCurrentCpuSpeed();
-                this->current_cpu_frequency_.push_back(freq);
-                if (this->current_cpu_frequency_.size() >= 180) {
-                    this->current_cpu_frequency_.pop_front();
+                {
+                    std::lock_guard<std::mutex> guard(cpu_frequency_mtx_);
+                    this->current_cpu_frequency_.push_back(freq);
+                    if (this->current_cpu_frequency_.size() >= 180) {
+                        this->current_cpu_frequency_.pop_front();
+                    }
                 }
-
                 if (auto companion = app_->GetCompanion(); companion) {
                     companion->UpdateCurrentCpuFrequency((float)freq);
                 }
@@ -426,6 +428,7 @@ namespace tc
     }
 
     std::vector<double> GrSystemMonitor::GetCurrentCpuFrequency() {
+        std::lock_guard<std::mutex> guard(cpu_frequency_mtx_);
         std::vector<double> frequencies;
         for (const auto& v : current_cpu_frequency_) {
             frequencies.push_back(v);

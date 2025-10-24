@@ -30,8 +30,9 @@ namespace tc
         std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info);
         void DisplaySpvrAccessInfo(const std::shared_ptr<SpvrAccessInfo>& info);
         void SaveSpvrAccessInfo();
-        void SearchAccessInfo();
+        void SearchAccessInfo(bool auto_restart_render);
         void VerifyAccessInfo();
+        void Save(bool auto_restart_render);
 
     private:
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;

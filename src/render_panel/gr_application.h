@@ -36,6 +36,7 @@ namespace tc
     class GrGuardStarter;
     class PanelCompanion;
     class GrSpvrClient;
+    class SpvrScanner;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -87,7 +88,14 @@ namespace tc
         PanelCompanion* GetCompanion();
 
         std::string GetAppkey();
+        // refresh spvr server host/port/appkey...
         void RefreshClientManagerSettings();
+
+        // spvr manager
+        std::shared_ptr<MgrClientSdk> GetSpvrClientSdk();
+
+        // spvr scanner
+        std::shared_ptr<SpvrScanner> GetSpvrScanner();
 
     private:
         void RegisterMessageListener();
@@ -104,9 +112,6 @@ namespace tc
 
         // start spvr client if needed
         void StartSpvrClientIfNeeded();
-
-        //
-        void StartUdpReceiver(int port);
 
     private:
         QWidget* main_window_ = nullptr;
@@ -146,10 +151,8 @@ namespace tc
         // panel spvr client
         std::shared_ptr<GrSpvrClient> spvr_client_ = nullptr;
 
-        // udp receiver thread
-        std::shared_ptr<Thread> udp_receiver_thread_ = nullptr;
-        std::atomic_bool exit_udp_receiver_ = false;
-
+        // spvr scanner
+        std::shared_ptr<SpvrScanner> spvr_scanner_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;

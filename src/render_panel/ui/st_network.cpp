@@ -18,9 +18,14 @@
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
+#include "st_network_search.h"
 #include "tc_spvr_client/spvr_api.h"
 #include "tc_relay_client/relay_api.h"
 #include "tc_common_new/message_notifier.h"
+#include "tc_manager_client/mgr_device.h"
+#include "tc_manager_client/mgr_device_operator.h"
+#include "render_panel/spvr_scanner/spvr_scanner.h"
+#include "st_network_auto_join_dialog.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
@@ -93,7 +98,7 @@ namespace tc
                     search->setFixedSize(80, 32);
                     search_layout->addWidget(search);
                     connect(search, &QPushButton::clicked, this, [=, this]() {
-                        this->SearchAccessInfo();
+                        this->SearchAccessInfo(false);
                     });
 
                     search_layout->addSpacing(5);
@@ -386,70 +391,7 @@ namespace tc
             btn->setStyleSheet("font-size: 14px; font-weight: 700;");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=, this]() {
-                auto spvr_host = edt_spvr_server_host_->text().toStdString();
-                auto spvr_port = edt_spvr_server_port_->text().toStdString();
-                auto relay_host = edt_relay_server_host_->text().toStdString();
-                auto relay_port = edt_relay_server_port_->text().toStdString();
-                bool force_update_device_id = false;
-                if (/*!settings_->GetSpvrServerHost().empty()
-                    && */(settings_->GetSpvrServerHost() != spvr_host || settings_->GetSpvrServerPort() != std::atoi(spvr_port.c_str()))) {
-                    force_update_device_id = true;
-                    settings_->SetDeviceId("");
-                    settings_->SetDeviceRandomPwd("");
-                    LOGW("Clear old device id, force updating device id.");
-                }
-                settings_->SetSpvrServerHost(spvr_host);
-                settings_->SetSpvrServerPort(spvr_port);
-                settings_->SetPanelServerPort(edt_panel_port_->text().toInt());
-
-                settings_->SetRelayServerHost(relay_host);
-                settings_->SetRelayServerPort(relay_port);
-
-                SaveSpvrAccessInfo();
-
-                // Load again
-                settings_->Load();
-
-                // companion
-                auto companion = grApp->GetCompanion();
-                if (companion) {
-                    companion->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
-                    auto auth = companion->RequestAuth();
-                    if (!auth) {
-                        TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_request_auth"), nullptr);
-                        dialog.exec();
-                        return;
-                    }
-                    LOGI("Requested auth, id: {} , appkey: {}", auth->auth_id_, auth->appkey_);
-                }
-
-                // refresh settings
-                grApp->RefreshClientManagerSettings();
-
-                // request id if needed
-                auto device_id = settings_->GetDeviceId();
-                if (device_id.empty()) {
-                    if (!grApp->RequestNewClientId(true, true)) {
-                        LOGE("Request Device ID failed!");
-                        TcDialog dialog(tcTr("id_warning"), tcTr("id_request_device_id_failed"), nullptr);
-                        dialog.exec();
-                        return;
-                    }
-                    else {
-                        LOGI("Request Device ID success!");
-                    }
-                }
-
-                this->context_->SendAppMessage(MsgSettingsChanged {
-                    .settings_ = settings_,
-                    .force_update_device_id_ = force_update_device_id,
-                });
-
-                TcDialog dialog(tcTr("id_tips"), tcTr("id_save_settings_restart_renderer"), nullptr);
-                if (dialog.exec() == kDoneOk) {
-                    this->context_->SendAppMessage(AppMsgRestartServer{});
-                }
-
+                this->Save(false);
             });
 
             layout->addStretch();
@@ -473,6 +415,11 @@ namespace tc
                 edt_relay_server_port_->setText("");
             });
         });
+
+        //
+        context_->PostUIDelayTask([=, this]() {
+            this->SearchAccessInfo(true);
+        }, 5000);
     }
 
     void StNetwork::OnTabShow() {
@@ -526,8 +473,45 @@ namespace tc
         settings_->SetSpvrAccessInfo(info);
     }
 
-    void StNetwork::SearchAccessInfo() {
-
+    void StNetwork::SearchAccessInfo(bool auto_restart_render) {
+        auto ac_info = app_->GetSpvrScanner()->GetSpvrAccessInfo();
+        if (ac_info.empty()) {
+            return;
+        }
+        if (ac_info.size() == 1) {
+            std::shared_ptr<StNetworkSpvrAccessInfo> info = nullptr;
+            for (const auto& [k, v] : ac_info) {
+                info = v;
+            }
+            if (info) {
+                if (settings_->GetSpvrServerHost() != info->spvr_ip_ || settings_->GetSpvrServerPort() != info->spvr_port_
+                    || settings_->GetRelayServerHost() != info->relay_ip_ || settings_->GetRelayServerPort() != info->relay_port_ || !auto_restart_render) {
+                    StNetworkAutoJoinDialog dialog(app_, info);
+                    if (dialog.exec() == 0) {
+                        edt_spvr_access_->setText(info->origin_info_.c_str());
+                        if (auto_restart_render) {
+                            this->Save(auto_restart_render);
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            StNetworkSearch nt_search(app_, this);
+            if (nt_search.exec() == 0) {
+                auto selected_item = nt_search.GetSelectedItem();
+                if (!selected_item) {
+                    LOGE("Not a valid spvr item !");
+                    return;
+                }
+                if (selected_item->spvr_ip_.empty() || selected_item->relay_ip_.empty()) {
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_verify_spvr_failed"));
+                    dialog.exec();
+                    return;
+                }
+                edt_spvr_access_->setText(selected_item->origin_info_.c_str());
+            }
+        }
     }
 
     void StNetwork::VerifyAccessInfo() {
@@ -567,6 +551,99 @@ namespace tc
 
         TcDialog dialog(tcTr("id_tips"), tcTr("id_verify_success"));
         dialog.exec();
+    }
+
+    void StNetwork::Save(bool auto_restart_render) {
+        auto spvr_host = edt_spvr_server_host_->text().toStdString();
+        auto spvr_port = edt_spvr_server_port_->text().toStdString();
+        auto relay_host = edt_relay_server_host_->text().toStdString();
+        auto relay_port = edt_relay_server_port_->text().toStdString();
+        bool force_update_device_id = false;
+        if (!spvr_host.empty()
+            && (settings_->GetSpvrServerHost() != spvr_host || settings_->GetSpvrServerPort() != std::atoi(spvr_port.c_str()))) {
+            force_update_device_id = true;
+            settings_->SetDeviceId("");
+            settings_->SetDeviceRandomPwd("");
+            LOGW("Clear old device id, force updating device id.");
+        }
+        settings_->SetSpvrServerHost(spvr_host);
+        settings_->SetSpvrServerPort(spvr_port);
+        settings_->SetPanelServerPort(edt_panel_port_->text().toInt());
+
+        settings_->SetRelayServerHost(relay_host);
+        settings_->SetRelayServerPort(relay_port);
+
+        SaveSpvrAccessInfo();
+
+        // Load again
+        settings_->Load();
+
+        // companion
+        auto companion = grApp->GetCompanion();
+        if (companion) {
+            companion->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+            auto auth = companion->RequestAuth();
+            if (!auth) {
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_request_auth"), nullptr);
+                dialog.exec();
+                return;
+            }
+            LOGI("Requested auth, id: {} , appkey: {}", auth->auth_id_, auth->appkey_);
+        }
+
+        // refresh settings
+        grApp->RefreshClientManagerSettings();
+
+        // request id if needed
+        auto device_id = settings_->GetDeviceId();
+        // request function
+        auto fn_request_new_device_id = [=, this]() -> bool {
+            if (!grApp->RequestNewClientId(true, true)) {
+                LOGE("Request Device ID failed!");
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_request_device_id_failed"), nullptr);
+                dialog.exec();
+                return false;
+            }
+            else {
+                LOGI("Request Device ID success!");
+                return true;
+            }
+        };
+
+        // request a new device id
+        if (device_id.empty()) {
+            if (!fn_request_new_device_id()) {
+                return;
+            }
+        }
+        else {
+            // check the device id is valid or not
+            auto device_operator = grApp->GetDeviceOperator();
+            auto r = device_operator->QueryDevice(device_id);
+            if (!r.has_value() || r.value()->device_id_.empty()) {
+                // request a new one
+                LOGI("Can't query the device id : {} in server, will request a new one.", settings_->GetDeviceId());
+                if (!fn_request_new_device_id()) {
+                    return;
+                }
+            }
+        }
+
+        this->context_->SendAppMessage(MsgSettingsChanged {
+            .settings_ = settings_,
+            .force_update_device_id_ = force_update_device_id,
+        });
+
+        if (auto_restart_render) {
+            this->context_->SendAppMessage(AppMsgRestartServer{});
+        }
+        else {
+            TcDialog dialog(tcTr("id_tips"), tcTr("id_save_settings_restart_renderer"), nullptr);
+            if (dialog.exec() == kDoneOk) {
+                this->context_->SendAppMessage(AppMsgRestartServer{});
+            }
+        }
+
     }
 
 }

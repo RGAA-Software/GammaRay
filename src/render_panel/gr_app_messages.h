@@ -4,6 +4,7 @@
 #include <QVariantMap>
 #include "database/stream_item.h"
 #include "notify/notify_defs.h"
+#include <map>
 
 namespace tcrp
 {
@@ -223,6 +224,13 @@ namespace tc
     class MsgHWInfo {
     public:
         std::shared_ptr<SysInfo> sys_info_ = nullptr;
+    };
+
+    // spvr access info
+    class StNetworkSpvrAccessInfo;
+    class MsgSpvrAccessInfo {
+    public:
+        std::map<std::string, std::shared_ptr<StNetworkSpvrAccessInfo>> access_info_;
     };
 }
 
