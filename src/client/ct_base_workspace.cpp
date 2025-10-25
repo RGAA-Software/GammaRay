@@ -1092,6 +1092,8 @@ namespace tc
                 dialog.exec();
                 Exit();
             });
+            context_->SendAppMessage(MsgStopTheWorld{});
+            ExitSdk();
         }
         else if (msg->type() == MessageType::kHardwareInfo) {
             context_->PostTask([=, this]() {
@@ -1248,5 +1250,12 @@ namespace tc
 
     void BaseWorkspace::PostFileTransferMessage(std::shared_ptr<Data> msg) {
         sdk_->PostFileTransferMessage(msg);
+    }
+
+    void BaseWorkspace::ExitSdk() {
+        if (sdk_) {
+            sdk_->Exit();
+            sdk_ = nullptr;
+        }
     }
 }
