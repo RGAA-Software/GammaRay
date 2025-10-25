@@ -33,6 +33,8 @@
 #include "tc_qt_widget/tc_dialog.h"
 #include "version_config.h"
 #include "tc_common_new/win32/process_helper.h"
+#include "tc_label.h"
+#include "no_margin_layout.h"
 
 namespace tc
 {
@@ -121,18 +123,45 @@ namespace tc
 
             // logo
             {
+                // logo
+                auto logo_layout = new NoMarginHLayout();
                 auto logo = new QLabel(this);
-                int logo_size = 80;
+                int logo_size = 50;
                 logo->setFixedSize(logo_size, logo_size);
                 logo->setScaledContents(true);
                 logo->setStyleSheet(R"(
                     border: none;
-                    border-image: url(:/resources/tc_trans_icon_blue.png);
+                    border-image: url(:/resources/image/ic_not_login.svg);
                     background-repeat: no-repeat;
                     background-position: center;
                 )");
+                logo_layout->addStretch();
+                logo_layout->addWidget(logo);
+
+                logo_layout->addSpacing(10);
+
+                // name
+                auto name_layout = new NoMarginVLayout();
+                name_layout->addStretch();
+                auto lbl = new TcLabel(this);
+                lbl->setStyleSheet("font-weight: 700; color: #333333; font-size: 15px;");
+                lbl->setText("UnKnown");
+                name_layout->addWidget(lbl);
+
+                name_layout->addSpacing(3);
+
+                auto lbl_version = new TcLabel(this);
+                lbl_version->setStyleSheet("font-weight: 500; color: #666666; font-size: 13px;");
+                lbl_version->setText("Premium");
+                name_layout->addWidget(lbl_version);
+
+                name_layout->addStretch();
+                logo_layout->addLayout(name_layout);
+                logo_layout->addStretch();
+                //
+
                 layout->addSpacing(45);
-                layout->addWidget(logo, 0, Qt::AlignHCenter);
+                layout->addLayout(logo_layout);
             }
 
             // buttons
@@ -245,7 +274,8 @@ namespace tc
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
-            layout->addStretch();
+            /// Splitter
+            layout->addStretch(100);
 
             auto exit_btn_size = QSize(btn_size.width(), btn_size.height() - 5);
             // stop all
