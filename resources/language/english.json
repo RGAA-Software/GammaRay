@@ -207,7 +207,7 @@
   "id_security_password_update_failed": "Update security password failed. Please check your Supervisor server config and try again.",
   "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server.",
   "id_must_input_security_password": "You must set your security password in Security Settings.",
-  "id_relay": "Relay Streaming",
+  "id_relay": "Relay",
   "id_about_me_desc": "GammaRay is a set of tools for streaming your games, desktop, audio to other devices, and replaying gamepad/keyboard/mouse events in the Server. You can also share your files between devices easily.",
   "id_dialog_ssl_streaming_always_on": "WSS Streaming will always be enabled.",
   "id_dont_have_server_config": "Don't have server config, please input server information in Settings.",
@@ -251,6 +251,7 @@
   "id_timestamp": "Timestamp",
   "id_join_in": "Join In",
   "id_guest": "Guest",
+  "id_direct": "Direct",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

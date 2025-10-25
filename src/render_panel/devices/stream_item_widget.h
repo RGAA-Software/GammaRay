@@ -20,6 +20,7 @@ namespace tc
 
     class StreamItem;
     class TcPushButton;
+    class TcLabel;
 
     using OnConnectListener = std::function<void()>;
     using OnMenuListener = std::function<void()>;
@@ -54,6 +55,7 @@ namespace tc
         OnConnectListener conn_listener_;
         OnMenuListener menu_listener_;
         bool connected_ = false;
+        TcLabel* work_mode_ = nullptr;
     };
 
 }

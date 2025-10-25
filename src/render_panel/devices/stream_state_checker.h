@@ -25,13 +25,13 @@ namespace tc
         void Start();
         void Exit();
         void SetOnCheckedCallback(OnStreamStateCheckedCallback&&);
-        void UpdateCurrentStreamItems(const std::vector<std::shared_ptr<StreamItem>>& items);
-        void CheckState();
+        void UpdateCurrentStreamItems(std::vector<std::shared_ptr<StreamItem>> items);
+    private:
+        void CheckState(const std::vector<std::shared_ptr<StreamItem>>& items);
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        std::vector<std::shared_ptr<StreamItem>> items_;
         OnStreamStateCheckedCallback on_checked_cbk_;
     };
 

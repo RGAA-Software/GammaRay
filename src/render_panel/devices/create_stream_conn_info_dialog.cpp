@@ -127,6 +127,8 @@ namespace tc
             return false;
         }
 
+        LOGI("ConnInfo: {}", conn_info->Dump());
+
         auto fn_invalid_dialog = [this]() {
             TcDialog dialog(tcTr("id_error"), tcTr("id_verify_conn_info_failed"), this);
             dialog.exec();
@@ -140,38 +142,41 @@ namespace tc
         // check a valid one
         GrConnectionInfo::GrConnectionHost conn_host{};
         bool has_device_id = !conn_info->device_id_.empty();
-        // websocket mode: remote device host
-        // relay mode: relay server ip
-        std::string stream_host;
-        // websocket mode: remote device port
-        // relay mode: relay server port
-        int stream_port = 0;
 
-        if (!has_device_id) {
-            if (conn_info->hosts_.size() > 1) {
-                for (const auto &host: conn_info->hosts_) {
-                    auto client = HttpClient::Make(host.ip_, conn_info->render_srv_port_, "/api/ping", 500);
-                    auto r = client->Request();
-                    if (r.status == 200) {
-                        conn_host = host;
-                        LOGI("THIS Worked: {}:{}", host.ip_, conn_info->render_srv_port_);
-                        break;
-                    }
+        //
+        if (!conn_info->hosts_.empty()) {
+            for (const auto &host: conn_info->hosts_) {
+                auto client = HttpClient::Make(host.ip_, conn_info->render_srv_port_, "/api/ping", 1000);
+                auto r = client->Request();
+                if (r.status == 200) {
+                    conn_host = host;
+                    LOGI("THIS Worked: {}:{}", host.ip_, conn_info->render_srv_port_);
+                    break;
                 }
-            } else {
-                conn_host = conn_info->hosts_[0];
             }
-
-            if (conn_host.ip_.empty()) {
+            if (!conn_host.ip_.empty()) {
+                // this is good
+                std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+                item->remote_device_id_ = "";
+                item->remote_device_random_pwd_ = "";
+                item->stream_name_ = name;
+                item->stream_host_ = conn_host.ip_;
+                item->stream_port_ = conn_info->render_srv_port_;
+                item->encode_bps_ = 0;
+                item->encode_fps_ = 0;
+                item->network_type_ = kStreamItemNtTypeWebSocket;
+                item->clipboard_enabled_ = true;
+                context_->SendAppMessage(StreamItemAdded {
+                    .item_ = item,
+                    .auto_start_ = false,
+                });
+            }
+            else {
                 fn_invalid_dialog();
-                return false;
             }
-
-            // websocket mode
-            stream_host = conn_host.ip_;
-            stream_port = conn_info->render_srv_port_;
         }
-        else {
+
+        if (has_device_id) {
             auto settings = GrSettings::Instance();
             if (!settings->HasSpvrServerConfig() || !settings->HasRelayServerConfig()) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_dont_have_server_config"), this);
@@ -189,28 +194,25 @@ namespace tc
             }
 
             // relay mode
-            stream_host = relay_device_info->relay_server_ip();
-            stream_port = relay_device_info->relay_server_port();
-        }
+            auto host = relay_device_info->relay_server_ip();
+            auto port = relay_device_info->relay_server_port();
 
-        auto func_update_stream = [&](std::shared_ptr<StreamItem>& item) {
+            std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
             item->remote_device_id_ = conn_info->device_id_;
             item->remote_device_random_pwd_ = conn_info->random_pwd_;
-            item->stream_name_ = name.empty() ? (item->remote_device_id_.empty() ? std::format("{}", conn_host.ip_) : item->remote_device_id_) : name;
-            item->stream_host_ = stream_host;
-            item->stream_port_ = stream_port;
+            item->stream_name_ = name;
+            item->stream_host_ = host;
+            item->stream_port_ = port;
             item->encode_bps_ = 0;
             item->encode_fps_ = 0;
-            item->network_type_ = has_device_id ? kStreamItemNtTypeRelay : kStreamItemNtTypeWebSocket;
+            item->network_type_ = kStreamItemNtTypeRelay;
             item->clipboard_enabled_ = true;
-        };
+            context_->SendAppMessage(StreamItemAdded {
+                .item_ = item,
+                .auto_start_ = false,
+            });
+        }
 
-        std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
-        func_update_stream(item);
-        context_->SendAppMessage(StreamItemAdded {
-            .item_ = item,
-            .auto_start_ = true,
-        });
         return true;
     }
 

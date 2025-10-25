@@ -12,6 +12,7 @@
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_qt_widget/tc_pushbutton.h"
+#include "tc_qt_widget/tc_label.h"
 
 namespace tc
 {
@@ -69,6 +70,19 @@ namespace tc
                 menu_listener_();
             }
         });
+
+        // work mode
+        work_mode_ = new TcLabel(this);
+        if (item->network_type_ == kStreamItemNtTypeWebSocket) {
+            // direct
+            work_mode_->SetTextId("id_direct");
+            work_mode_->setStyleSheet("font-size: 13px; font-weight: 700; color: #3e6682;");
+        }
+        else {
+            // relay
+            work_mode_->SetTextId("id_relay");
+            work_mode_->setStyleSheet("font-size: 13px; font-weight: 700; color: #438761;");
+        }
     }
 
     StreamItemWidget::~StreamItemWidget() {
@@ -115,12 +129,28 @@ namespace tc
             font.setStyleStrategy(QFont::PreferAntialias);
             font.setPointSize(13);
             painter.setFont(font);
-            painter.setPen(QPen(QColor(0x555555)));
+            //painter.setPen(QPen(QColor(0x555555)));
+            painter.setPen(QPen(QColor(0x2979ff)));
             auto stream_name = item_->stream_name_;
             if (item_->IsRelay()) {
-                stream_name = tc::SpaceId(stream_name);
+                stream_name = tc::SpaceId(item_->remote_device_id_);
+            }
+            else {
+                stream_name = item_->stream_host_;
             }
             painter.drawText(QRect(15, 0, this->width(), 40), Qt::AlignVCenter, stream_name.c_str());
+        }
+
+        int y_offset = 32;
+        if (!item_->stream_name_.empty() && item_->stream_name_ != item_->stream_host_) {
+            QFont font(tcFontMgr()->font_name_);
+            font.setBold(true);
+            font.setStyleStrategy(QFont::PreferAntialias);
+            font.setPointSize(10);
+            painter.setFont(font);
+            painter.setPen(QPen(QColor(0x77777777)));
+            painter.drawText(QRect(15, y_offset, this->width(), 20), Qt::AlignVCenter, item_->stream_name_.c_str());
+            y_offset += 20;
         }
 
         // desktop name
@@ -135,7 +165,8 @@ namespace tc
             if (item_->IsRelay()) {
                 desktop_name = tc::SpaceId(desktop_name);
             }
-            painter.drawText(QRect(15, 35, this->width(), 20), Qt::AlignVCenter, desktop_name.c_str());
+            painter.drawText(QRect(15, y_offset, this->width(), 20), Qt::AlignVCenter, desktop_name.c_str());
+            y_offset += 20;
         }
 
         // os version
@@ -148,7 +179,7 @@ namespace tc
             painter.setPen(QPen(QColor(0x77777777)));
             auto os_version = QString::fromStdString(item_->os_version_);
             os_version = os_version.toUpper();
-            painter.drawText(QRect(15, 55, this->width(), 20), Qt::AlignVCenter, os_version);
+            painter.drawText(QRect(15, y_offset, this->width(), 20), Qt::AlignVCenter, os_version);
         }
 
         QPen pen;
@@ -196,6 +227,7 @@ namespace tc
         auto y = this->height() - 35;
         btn_conn_->setGeometry(15, y, btn_conn_->width(), btn_conn_->height());
         btn_option_->setGeometry(this->width() - btn_option_->width() - 13, y, btn_option_->width(), btn_option_->height());
+        work_mode_->setGeometry(15 + btn_conn_->width() + 15, y, btn_conn_->width(), btn_conn_->height());
     }
 
     void StreamItemWidget::SetOnConnectListener(OnConnectListener&& listener) {

@@ -6,6 +6,7 @@
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>
+#include <QRegularExpressionValidator>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_dialog.h"
@@ -90,6 +91,8 @@ namespace tc
             layout->addSpacing(10);
 
             auto edit = new QLineEdit(this);
+            auto validator = new QRegularExpressionValidator(QRegularExpression("[\\x20-\\x7E]+"), edit);
+            edit->setValidator(validator);
             ed_host_ = edit;
             if (stream_item_ && stream_item_->IsValid()) {
                 ed_host_->setText(stream_item_->stream_host_.c_str());

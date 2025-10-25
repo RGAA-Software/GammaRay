@@ -85,7 +85,7 @@ namespace tc
         state_checker_->Start();
         context_->PostUIDelayTask([=, this]() {
             context_->PostTask([=, this]() {
-                state_checker_->CheckState();
+                state_checker_->UpdateCurrentStreamItems(streams_);
             });
         }, 2200);
     }
@@ -228,6 +228,12 @@ namespace tc
 
         msg_listener_->Listen<MsgClientConnectedPanel>([=, this](const MsgClientConnectedPanel& msg) {
 
+        });
+
+        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
+            context_->PostTask([this]() {
+                state_checker_->UpdateCurrentStreamItems(streams_);
+            });
         });
     }
 
