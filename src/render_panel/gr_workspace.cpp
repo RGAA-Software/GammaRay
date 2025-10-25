@@ -12,6 +12,8 @@
 #include <QApplication>
 #include <QMenu>
 #include <dwmapi.h>
+#include <QSvgRenderer>
+#include <QPainter>
 
 #include "tc_qt_widget/custom_tab_btn.h"
 #include "tc_qt_widget/widget_helper.h"
@@ -125,34 +127,40 @@ namespace tc
             {
                 // logo
                 auto logo_layout = new NoMarginHLayout();
-                auto logo = new QLabel(this);
+                auto logo = new TcLabel(this);
                 int logo_size = 50;
                 logo->setFixedSize(logo_size, logo_size);
                 logo->setScaledContents(true);
-                logo->setStyleSheet(R"(
-                    border: none;
-                    border-image: url(:/resources/image/ic_not_login.svg);
-                    background-repeat: no-repeat;
-                    background-position: center;
-                )");
-                logo_layout->addStretch();
+                auto pixmap = WidgetHelper::RenderSvgToPixmap(":/resources/image/ic_not_login.svg", QSize(logo_size, logo_size));
+                logo->setPixmap(pixmap);
+                logo_layout->addSpacing(20);
                 logo_layout->addWidget(logo);
+                logo->SetOnClickListener([=, this](QWidget* w) {
 
-                logo_layout->addSpacing(10);
+                });
+                logo_layout->addSpacing(8);
 
                 // name
                 auto name_layout = new NoMarginVLayout();
                 name_layout->addStretch();
                 auto lbl = new TcLabel(this);
+                lbl->setMaximumWidth(125);
                 lbl->setStyleSheet("font-weight: 700; color: #333333; font-size: 15px;");
-                lbl->setText("UnKnown");
+                lbl->SetTextId("id_guest");
+                lbl->SetOnClickListener([=, this](QWidget* w) {
+
+                });
                 name_layout->addWidget(lbl);
 
                 name_layout->addSpacing(3);
 
                 auto lbl_version = new TcLabel(this);
-                lbl_version->setStyleSheet("font-weight: 500; color: #666666; font-size: 13px;");
-                lbl_version->setText("Premium");
+#if PREMIUM_VERSION
+                lbl_version->setStyleSheet("font-weight: 700; color: #2979ff; font-size: 12px;");
+#else
+                lbl_version->setStyleSheet("font-weight: 700; color: #666666; font-size: 12px;");
+#endif
+                lbl_version->setText(version);
                 name_layout->addWidget(lbl_version);
 
                 name_layout->addStretch();

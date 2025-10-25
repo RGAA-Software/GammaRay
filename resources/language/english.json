@@ -250,6 +250,7 @@
   "id_relay_server_address": "Relay Server Address",
   "id_timestamp": "Timestamp",
   "id_join_in": "Join In",
+  "id_guest": "Guest",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

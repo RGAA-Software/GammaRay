@@ -251,6 +251,7 @@
   "id_relay_server_address": "中轉服務地址",
   "id_timestamp": "時間",
   "id_join_in": "加入",
+  "id_guest": "未登入",
 
   "id_client_network_disconnected": "連接已斷開, 正在重試",
   "id_gr_client": "GammaRay客戶端",
