@@ -49,6 +49,7 @@ namespace tc
         void ChangeTab(const TabName& tn);
         void InitListeners();
         void ForceStopAllPrograms(bool uninstall_service);
+        void ShowUserRegisterDialog();
 
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;

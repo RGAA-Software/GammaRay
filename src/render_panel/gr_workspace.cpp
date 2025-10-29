@@ -37,6 +37,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_label.h"
 #include "no_margin_layout.h"
+#include "ui/user/user_register_dialog.h"
 
 namespace tc
 {
@@ -136,7 +137,7 @@ namespace tc
                 logo_layout->addSpacing(20);
                 logo_layout->addWidget(logo);
                 logo->SetOnClickListener([=, this](QWidget* w) {
-
+                    this->ShowUserRegisterDialog();
                 });
                 logo_layout->addSpacing(8);
 
@@ -148,7 +149,7 @@ namespace tc
                 lbl->setStyleSheet("font-weight: 700; color: #333333; font-size: 15px;");
                 lbl->SetTextId("id_guest");
                 lbl->SetOnClickListener([=, this](QWidget* w) {
-
+                    this->ShowUserRegisterDialog();
                 });
                 name_layout->addWidget(lbl);
 
@@ -497,6 +498,11 @@ namespace tc
                 }
             }, 1000);
         }
+    }
+
+    void GrWorkspace::ShowUserRegisterDialog() {
+        UserRegisterDialog dialog(app_->GetContext());
+        dialog.exec();
     }
 
 }

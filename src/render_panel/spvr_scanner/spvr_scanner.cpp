@@ -73,10 +73,10 @@ namespace tc
                         }
 
                         {
-                            std::lock_guard<std::mutex> guard(ac_mtx_);
-                            app_->GetContext()->SendAppMessage(MsgSpvrAccessInfo{
-                                .access_info_ = this->access_info_,
-                            });
+                            auto msg = MsgSpvrAccessInfo {
+                                .access_info_ = this->GetSpvrAccessInfo(),
+                            };
+                            app_->GetContext()->SendAppMessage(msg);
                         }
                     }
                 }
