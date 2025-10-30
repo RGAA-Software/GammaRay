@@ -253,6 +253,9 @@
   "id_join_in": "加入",
   "id_guest": "未登录",
   "id_direct": "直连",
+  "id_register": "注册",
+  "id_username": "用户名称",
+  "id_re_password": "重复密码",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

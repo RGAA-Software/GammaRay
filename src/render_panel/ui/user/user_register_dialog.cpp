@@ -27,7 +27,7 @@ namespace tc
     UserRegisterDialog::~UserRegisterDialog() = default;
 
     void UserRegisterDialog::CreateLayout() {
-        setWindowTitle(tcTr("id_add_device"));
+        setWindowTitle(tcTr("id_register"));
 
         auto item_width = 320;
         auto edit_size = QSize(item_width, 35);
@@ -41,32 +41,30 @@ namespace tc
 
         content_layout->addSpacing(25);
 
-        // 0. name
+        // 1. username
         {
             auto layout = new NoMarginVLayout();
-
             auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->SetTextId("id_device_id");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->SetTextId("id_username");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
 
-            auto edit = new QLabel(this);
-            edit->setText("DeviceID");
-            edit->setStyleSheet("font-size: 16px; font-weight: 700; color: #2979ff;");
+            auto edit = new QLineEdit(this);
+            edt_username_ = edit;
+            edt_username_->setText("");
+
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
-
             content_layout->addLayout(layout);
-
         }
 
         content_layout->addSpacing(25);
 
-        // 1. password
+        // 2. password
         {
             auto layout = new NoMarginVLayout();
             auto label = new TcLabel(this);
@@ -79,7 +77,7 @@ namespace tc
 
             auto edit = new TcPasswordInput(this);
             password_input_ = edit;
-            password_input_->SetPassword("Password");
+            password_input_->SetPassword("");
 
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -89,20 +87,20 @@ namespace tc
 
         content_layout->addSpacing(25);
 
-        // 2. name
+        // 2. password
         {
             auto layout = new NoMarginVLayout();
             auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
-            label->SetTextId("id_device_name");
+            label->SetTextId("id_re_password");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
 
-            auto edit = new QLineEdit(this);
-            edt_stream_name_ = edit;
-            edt_stream_name_->setText("Name");
+            auto edit = new TcPasswordInput(this);
+            re_password_input_ = edit;
+            re_password_input_->SetPassword("");
 
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);

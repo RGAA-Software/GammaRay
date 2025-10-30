@@ -35,8 +35,9 @@ namespace tc
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
-        QLineEdit* edt_stream_name_ = nullptr;
+        QLineEdit* edt_username_ = nullptr;
         TcPasswordInput* password_input_ = nullptr;
+        TcPasswordInput* re_password_input_ = nullptr;
 
     };
 
