@@ -23,11 +23,10 @@
 #include "gr_settings.h"
 #include "service/service_manager.h"
 #include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device.h"
 #include "tc_common_new/http_base_op.h"
 #include "tc_common_new/cpu_frequency.h"
 #include "tc_profile_client/profile_api.h"
-#include "tc_manager_client/mgr_device.h"
-#include "tc_manager_client/mgr_device_operator.h"
 #include "tc_qt_widget/tc_dialog.h"
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "companion/panel_companion.h"
@@ -367,11 +366,6 @@ namespace tc
 
     void GrSystemMonitor::CheckThisDeviceInfo() {
         //LOGI("CheckThisDeviceInfo...");
-        auto dev_opt = app_->GetDeviceOperator();
-        if (!dev_opt) {
-            return;
-        }
-
         // profile server
         auto has_pr_server = HttpBaseOp::CanPingServer(true, settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey());
         if (!has_pr_server) {
@@ -385,9 +379,12 @@ namespace tc
         }
 
         // has a device
-        auto opt_device = dev_opt->QueryDevice(settings_->GetDeviceId());
+        auto opt_device = spvr::SpvrApi::QueryDevice(settings_->GetSpvrServerHost(),
+                                                     settings_->GetSpvrServerPort(),
+                                                     grApp->GetAppkey(),
+                                                     settings_->GetDeviceId());
         if (!opt_device.has_value()) {
-            if (auto err = opt_device.error(); err == MgrError::kDeviceNotFound) {
+            if (auto err = opt_device.error(); err == spvr::SpvrApiError::kDeviceNotFound) {
                 LOGI("Don't have device in server, id: {}, will request a new one.", settings_->GetDeviceId());
                 context_->SendAppMessage(MsgForceRequestDeviceId{});
             }
@@ -402,7 +399,10 @@ namespace tc
         auto local_random_pwd_md5 = MD5::Hex(settings_->GetDeviceRandomPwd());
         if (device->random_pwd_md5_ != local_random_pwd_md5) {
             LOGW("***Random pwd not equals, will refresh, srv: {} => local: {}", device->random_pwd_md5_, local_random_pwd_md5);
-            auto opt_update_device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
+            auto opt_update_device = spvr::SpvrApi::UpdateRandomPwd(settings_->GetSpvrServerHost(),
+                                                                    settings_->GetSpvrServerPort(),
+                                                                    grApp->GetAppkey(),
+                                                                    settings_->GetDeviceId());
             if (opt_update_device.has_value()) {
                 auto update_device =  opt_update_device.value();
                 if (update_device && !update_device->gen_random_pwd_.empty()) {
@@ -417,7 +417,11 @@ namespace tc
         if (device->safety_pwd_md5_ != settings_->GetDeviceSecurityPwd() && !current_device_security_pwd.empty()) {
             LOGW("***Safety pwd not equals, will refresh, srv: {} => local: {}", device->safety_pwd_md5_, current_device_security_pwd);
             // update safety password
-            auto update_device = dev_opt->UpdateSafetyPwd(settings_->GetDeviceId(), current_device_security_pwd);
+            auto update_device = spvr::SpvrApi::UpdateSafetyPwd(settings_->GetSpvrServerHost(),
+                                                                settings_->GetSpvrServerPort(),
+                                                                grApp->GetAppkey(),
+                                                                settings_->GetDeviceId(),
+                                                                current_device_security_pwd);
             if (!update_device) {
                 LOGE("***UpdateSafetyPwd failed for : {}, SPWD: {}", settings_->GetDeviceId(), current_device_security_pwd);
             }

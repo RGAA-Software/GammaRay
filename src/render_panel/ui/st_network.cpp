@@ -20,10 +20,9 @@
 #include "tc_pushbutton.h"
 #include "st_network_search.h"
 #include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device.h"
 #include "tc_relay_client/relay_api.h"
 #include "tc_common_new/message_notifier.h"
-#include "tc_manager_client/mgr_device.h"
-#include "tc_manager_client/mgr_device_operator.h"
 #include "render_panel/spvr_scanner/spvr_scanner.h"
 #include "st_network_auto_join_dialog.h"
 #include <QPushButton>
@@ -618,8 +617,7 @@ namespace tc
         }
         else {
             // check the device id is valid or not
-            auto device_operator = grApp->GetDeviceOperator();
-            auto r = device_operator->QueryDevice(device_id);
+            auto r = spvr::SpvrApi::QueryDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), device_id);
             if (!r.has_value() || r.value()->device_id_.empty()) {
                 // request a new one
                 LOGI("Can't query the device id : {} in server, will request a new one.", settings_->GetDeviceId());

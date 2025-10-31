@@ -27,7 +27,6 @@ namespace tc
     class MgrClientSdk;
     class MessageListener;
     class GrAccountManager;
-    class MgrDeviceOperator;
     class WinMessageLoop;
     class GrConnectedManager;
     class GrBaseStreamMessage;
@@ -66,11 +65,6 @@ namespace tc
         bool RequestNewClientId(bool force_update, bool sync = false);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
 
-        // manager client
-        std::shared_ptr<MgrClientSdk> GetManagerClient();
-        // device operator
-        std::shared_ptr<MgrDeviceOperator> GetDeviceOperator();
-
         // 1. device id is empty ?
         // 2. device id & password paired ?
         bool CheckLocalDeviceInfoWithPopup();
@@ -90,9 +84,6 @@ namespace tc
         std::string GetAppkey();
         // refresh spvr server host/port/appkey...
         void RefreshClientManagerSettings();
-
-        // spvr manager
-        std::shared_ptr<MgrClientSdk> GetSpvrClientSdk();
 
         // spvr scanner
         std::shared_ptr<SpvrScanner> GetSpvrScanner();
@@ -122,7 +113,6 @@ namespace tc
         std::shared_ptr<GrServiceClient> service_client_ = nullptr;
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;
-        std::shared_ptr<MgrClientSdk> mgr_client_sdk_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<GrAccountManager> account_mgr_ = nullptr;

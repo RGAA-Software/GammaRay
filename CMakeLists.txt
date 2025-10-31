@@ -193,7 +193,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${GR_PR
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg sqlite35
         tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget winmm.lib SetupAPI.lib gflags::gflags#tc_signaling_sdk #lib_GammaRayClient
-        tc_relay_client tc_manager_client tc_translator tc_spvr_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets TC_WidgetFrame
+        tc_relay_client tc_translator tc_spvr_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets TC_WidgetFrame
         tc_account_sdk tc_rp_message tc_profile_client tc_hw_info tc_global_id_generator tc_server_message
 )
 
@@ -245,7 +245,7 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} sqlite35 GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter GammaRayClientInner tc_manager_client tc_relay_client tc_rtc_client tc_cp_message GammaRayGuard tc_hw_info)
+        uninstall shadow_deleter GammaRayClientInner tc_relay_client tc_rtc_client tc_cp_message GammaRayGuard tc_hw_info)
 if(ENABLE_HOOK_CAPTURE)
     #add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()

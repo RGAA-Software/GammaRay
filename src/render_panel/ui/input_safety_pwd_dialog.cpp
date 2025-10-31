@@ -21,9 +21,8 @@
 #include "tc_common_new/md5.h"
 #include "tc_common_new/http_client.h"
 #include "tc_qt_widget/tc_password_input.h"
-#include "tc_manager_client/mgr_client_sdk.h"
-#include "tc_manager_client/mgr_device_operator.h"
-#include "tc_manager_client/mgr_device.h"
+#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device.h"
 
 namespace tc
 {
@@ -135,14 +134,17 @@ namespace tc
                 });
 
                 // Supervisor server unconfigured
-                if (!app_->GetManagerClient()->IsServerConfigured() || settings->GetDeviceId().empty()) {
+                if (settings->GetDeviceId().empty()) {
                     done(0);
                     return;
                 }
 
                 // update safety pwd
-                auto dev_opt = app_->GetDeviceOperator();
-                auto opt_device = dev_opt->UpdateSafetyPwd(settings->GetDeviceId(), pwd_md5);
+                auto opt_device = spvr::SpvrApi::UpdateSafetyPwd(settings->GetSpvrServerHost(),
+                                                                 settings->GetSpvrServerPort(),
+                                                                 grApp->GetAppkey(),
+                                                                 settings->GetDeviceId(),
+                                                                 pwd_md5);
                 bool update_server_password_result = false;
                 if (opt_device.has_value()) {
                     auto device = opt_device.value();
