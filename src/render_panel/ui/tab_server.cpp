@@ -46,7 +46,7 @@
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_password_input.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 #include "tc_common_new/base64.h"
 #include "tc_common_new/tc_aes.h"
@@ -199,7 +199,7 @@ namespace tc
                             return;
                         }
                         context_->PostTask([=, this]() {
-                            auto opt_device = spvr::SpvrApi::UpdateRandomPwd(settings_->GetSpvrServerHost(),
+                            auto opt_device = spvr::SpvrDeviceApi::UpdateRandomPwd(settings_->GetSpvrServerHost(),
                                                                              settings_->GetSpvrServerPort(),
                                                                              grApp->GetAppkey(),
                                                                              settings_->GetDeviceId());

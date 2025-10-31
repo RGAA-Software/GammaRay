@@ -23,7 +23,7 @@
 #include "gr_settings.h"
 #include "gr_application.h"
 #include "database/stream_db_operator.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "devices/running_stream_manager.h"
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "tc_dialog.h"

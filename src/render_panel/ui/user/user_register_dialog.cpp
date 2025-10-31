@@ -114,6 +114,13 @@ namespace tc
             auto btn_sure = new TcPushButton();
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
+                auto username = edt_username_->text();
+                auto password = password_input_->GetPassword();
+                auto re_password = re_password_input_->GetPassword();
+                if (username.isEmpty() || password.isEmpty() || password != re_password) {
+                    // todo: show a dialog
+                    return;
+                }
 
                 this->close();
             });
@@ -129,7 +136,13 @@ namespace tc
         root_layout_->addStretch();
     }
 
+    std::string UserRegisterDialog::GetInputUsername() {
+        return edt_username_->text().toStdString();
+    }
 
+    std::string UserRegisterDialog::GetInputPassword() {
+        return password_input_->GetPassword().toStdString();
+    }
 
     void UserRegisterDialog::paintEvent(QPaintEvent *event) {
         TcCustomTitleBarDialog::paintEvent(event);

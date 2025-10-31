@@ -25,7 +25,7 @@
 #include "ui/input_safety_pwd_dialog.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_relay_client/relay_api.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 #include "tc_steam_manager_new/steam_manager.h"
 #include "tc_common_new/folder_util.h"
@@ -251,7 +251,7 @@ namespace tc
                 return false;
             }
             LOGI("Will request new device!");
-            auto opt_device = spvr::SpvrApi::RequestNewDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), "");
+            auto opt_device = spvr::SpvrDeviceApi::RequestNewDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), "");
             if (!opt_device.has_value()) {
                 LOGE("Can't create new device, error: {}", (int)opt_device.error());
                 return false;

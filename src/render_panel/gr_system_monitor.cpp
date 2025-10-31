@@ -22,7 +22,7 @@
 #include "render_panel/network/ws_panel_server.h"
 #include "gr_settings.h"
 #include "service/service_manager.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 #include "tc_common_new/http_base_op.h"
 #include "tc_common_new/cpu_frequency.h"
@@ -379,7 +379,7 @@ namespace tc
         }
 
         // has a device
-        auto opt_device = spvr::SpvrApi::QueryDevice(settings_->GetSpvrServerHost(),
+        auto opt_device = spvr::SpvrDeviceApi::QueryDevice(settings_->GetSpvrServerHost(),
                                                      settings_->GetSpvrServerPort(),
                                                      grApp->GetAppkey(),
                                                      settings_->GetDeviceId());
@@ -399,7 +399,7 @@ namespace tc
         auto local_random_pwd_md5 = MD5::Hex(settings_->GetDeviceRandomPwd());
         if (device->random_pwd_md5_ != local_random_pwd_md5) {
             LOGW("***Random pwd not equals, will refresh, srv: {} => local: {}", device->random_pwd_md5_, local_random_pwd_md5);
-            auto opt_update_device = spvr::SpvrApi::UpdateRandomPwd(settings_->GetSpvrServerHost(),
+            auto opt_update_device = spvr::SpvrDeviceApi::UpdateRandomPwd(settings_->GetSpvrServerHost(),
                                                                     settings_->GetSpvrServerPort(),
                                                                     grApp->GetAppkey(),
                                                                     settings_->GetDeviceId());
@@ -417,7 +417,7 @@ namespace tc
         if (device->safety_pwd_md5_ != settings_->GetDeviceSecurityPwd() && !current_device_security_pwd.empty()) {
             LOGW("***Safety pwd not equals, will refresh, srv: {} => local: {}", device->safety_pwd_md5_, current_device_security_pwd);
             // update safety password
-            auto update_device = spvr::SpvrApi::UpdateSafetyPwd(settings_->GetSpvrServerHost(),
+            auto update_device = spvr::SpvrDeviceApi::UpdateSafetyPwd(settings_->GetSpvrServerHost(),
                                                                 settings_->GetSpvrServerPort(),
                                                                 grApp->GetAppkey(),
                                                                 settings_->GetDeviceId(),

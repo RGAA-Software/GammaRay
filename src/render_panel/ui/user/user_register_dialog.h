@@ -25,8 +25,10 @@ namespace tc
 
     class UserRegisterDialog : public TcCustomTitleBarDialog {
     public:
-        UserRegisterDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
+        explicit UserRegisterDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~UserRegisterDialog() override;
+        std::string GetInputUsername();
+        std::string GetInputPassword();
 
         void paintEvent(QPaintEvent *event) override;
 

@@ -21,7 +21,7 @@
 #include "tc_common_new/md5.h"
 #include "tc_common_new/http_client.h"
 #include "tc_qt_widget/tc_password_input.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 
 namespace tc
@@ -140,7 +140,7 @@ namespace tc
                 }
 
                 // update safety pwd
-                auto opt_device = spvr::SpvrApi::UpdateSafetyPwd(settings->GetSpvrServerHost(),
+                auto opt_device = spvr::SpvrDeviceApi::UpdateSafetyPwd(settings->GetSpvrServerHost(),
                                                                  settings->GetSpvrServerPort(),
                                                                  grApp->GetAppkey(),
                                                                  settings->GetDeviceId(),

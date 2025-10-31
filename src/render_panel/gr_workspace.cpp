@@ -39,6 +39,7 @@
 #include "no_margin_layout.h"
 #include "ui/user/user_login_dialog.h"
 #include "ui/user/user_register_dialog.h"
+#include "tc_spvr_client/spvr_user_api.h"
 
 namespace tc
 {
@@ -502,11 +503,22 @@ namespace tc
     }
 
     void GrWorkspace::ShowUserRegisterDialog() {
-        UserLoginDialog login_dialog(app_->GetContext());
-        login_dialog.exec();
+//        UserLoginDialog login_dialog(app_->GetContext());
+//        login_dialog.exec();
 
         UserRegisterDialog dialog(app_->GetContext());
         dialog.exec();
+
+        auto username = dialog.GetInputUsername();
+        auto password = dialog.GetInputPassword();
+        auto opt_user = spvr::SpvrUserApi::Register(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), username, password);
+        if (!opt_user.has_value()) {
+            LOGI("Register user failed!");
+            return;
+        }
+        auto user = opt_user.value();
+        LOGI("Register success: {}, {}", user->username_, user->uid_);
+
     }
 
 }

@@ -19,7 +19,7 @@
 #include "tc_label.h"
 #include "tc_pushbutton.h"
 #include "st_network_search.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 #include "tc_relay_client/relay_api.h"
 #include "tc_common_new/message_notifier.h"
@@ -523,7 +523,7 @@ namespace tc
 
         {
             auto appkey = ac_info->spvr_config_.srv_appkey_;
-            auto r = spvr::SpvrApi::Ping(ac_info->spvr_config_.srv_w3c_ip_, ac_info->spvr_config_.srv_working_port_, appkey);
+            auto r = spvr::SpvrDeviceApi::Ping(ac_info->spvr_config_.srv_w3c_ip_, ac_info->spvr_config_.srv_working_port_, appkey);
             if (!r.has_value() || !r.value()) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_verify_spvr_failed"));
                 dialog.exec();
@@ -617,7 +617,7 @@ namespace tc
         }
         else {
             // check the device id is valid or not
-            auto r = spvr::SpvrApi::QueryDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), device_id);
+            auto r = spvr::SpvrDeviceApi::QueryDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), device_id);
             if (!r.has_value() || r.value()->device_id_.empty()) {
                 // request a new one
                 LOGI("Can't query the device id : {} in server, will request a new one.", settings_->GetDeviceId());
