@@ -37,6 +37,7 @@
 #include "tc_common_new/win32/process_helper.h"
 #include "tc_label.h"
 #include "no_margin_layout.h"
+#include "ui/user/user_login_dialog.h"
 #include "ui/user/user_register_dialog.h"
 
 namespace tc
@@ -501,6 +502,9 @@ namespace tc
     }
 
     void GrWorkspace::ShowUserRegisterDialog() {
+        UserLoginDialog login_dialog(app_->GetContext());
+        login_dialog.exec();
+
         UserRegisterDialog dialog(app_->GetContext());
         dialog.exec();
     }
