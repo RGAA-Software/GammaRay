@@ -16,6 +16,8 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_win32.h> 
 
+#include "tc_common_new/log.h"
+
 #define LOG_ERROR(msg) qCritical() << msg
 // 或者： #define LOG_ERROR(msg) std::cerr << msg << std::endl
 
@@ -23,7 +25,7 @@
 #define POPULATE_FUNCTION(name) \
     fn_##name = (PFN_##name)m_PlVkInstance->get_proc_addr(m_PlVkInstance->instance, #name); \
     if (fn_##name == nullptr) { \
-        LOG_ERROR("Missing required Vulkan function: " #name); \
+        LOGE("Missing required Vulkan function:  {}", #name);\
         return false; \
     }
 
@@ -61,14 +63,9 @@ static const char* k_OptionalDeviceExtensions[] = {
 #endif
 };
 
-enum ScaleMode {
-    Scale_Fill,  // 拉伸填充
-    Scale_Fit    // 等比例
-};
-
-
 static void plLogCallback(void* priv, enum pl_log_level level, const char* msg) {
     qDebug().noquote() << "[libplacebo]" << msg;
+    LOGI("[libplacebo] {}", msg);
 }
 
 namespace tc { 
@@ -82,24 +79,40 @@ namespace tc {
 	}
 
 	PlVulkan::~PlVulkan() {
-        for (int i = 0; i < (int)SDL_arraysize(m_Textures); i++) {
-            if (m_Vulkan && m_Vulkan->gpu && m_Textures[i]) {
-                pl_tex_destroy(m_Vulkan->gpu, &m_Textures[i]);
+        for (auto& pair : textures_) {
+            auto texture_array = pair.second;
+            for (int i = 0; i < texture_array.size(); i++) {
+                if (m_Vulkan && m_Vulkan->gpu && texture_array[i]) {
+                    pl_tex_destroy(m_Vulkan->gpu, &texture_array[i]);
+                }
             }
         }
 
-        if (m_Renderer) {
-            pl_renderer_destroy(&m_Renderer);
+        for (auto& pair : vulkan_renderers_) {
+            auto render = pair.second;
+            if (render) {
+                pl_renderer_destroy(&render);
+            }
         }
-        if (m_Swapchain) {
-            pl_swapchain_destroy(&m_Swapchain);
+
+        for (auto& pair : vulkan_swapchains_) {
+            auto swapchain = pair.second;
+            if (swapchain) {
+                pl_swapchain_destroy(&swapchain);
+            }
         }
+
         if (m_Vulkan) {
             pl_vulkan_destroy(&m_Vulkan);
         }
 
-        if (fn_vkDestroySurfaceKHR && m_VkSurface) {
-            fn_vkDestroySurfaceKHR(m_PlVkInstance->instance, m_VkSurface, nullptr);
+        if (fn_vkDestroySurfaceKHR) {
+            for (auto& pair : vulkan_surfaces_) {
+                auto surface = pair.second;
+                if (surface) {
+                    fn_vkDestroySurfaceKHR(m_PlVkInstance->instance, surface, nullptr);
+                }
+            }
         }
 
         if (m_HwDeviceCtx != nullptr) {
@@ -115,7 +128,6 @@ namespace tc {
             pl_log_destroy(&m_Log);
         }
 	}
-
 
     bool PlVulkan::CreatePlVulkanInstance() {
         // 创建 Vulkan 实例参数
@@ -141,14 +153,14 @@ namespace tc {
         lparams.log_level = PL_LOG_DEBUG;
         m_Log = pl_log_create(PL_API_VER, &lparams);
         if (!m_Log) {
-            qWarning() << "pl_log_create failed";
+            LOGW("pl_log_create failed");
             return false;
         }
 
         // 创建 libplacebo 的 Vulkan 实例
         m_PlVkInstance = pl_vk_inst_create(m_Log, &vkInstParams);
         if (!m_PlVkInstance) {
-            qDebug() << "pl_vk_inst_create() failed";
+            LOGW("pl_vk_inst_create() failed");
             return false;
         }
 
@@ -164,45 +176,53 @@ namespace tc {
         return true;
     }
 
-    bool PlVulkan::CreateWin32SurfaceFromHwnd(HWND hwnd) {
+    bool PlVulkan::CreateWin32SurfaceFromHwnd(uintptr_t game_view_ptr, HWND hwnd) {
+
+        std::array<pl_tex, PL_MAX_PLANES> texture = {0};
+        textures_[game_view_ptr] = texture;
+
         // 用 Win32 API 创建 surface
         VkWin32SurfaceCreateInfoKHR sci{};
         sci.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
         sci.hinstance = GetModuleHandle(nullptr);
         sci.hwnd = hwnd;
 
-        if (vkCreateWin32SurfaceKHR(m_PlVkInstance->instance, &sci, nullptr, &m_VkSurface) != VK_SUCCESS) {
-            qDebug() << "vkCreateWin32SurfaceKHR failed";
+        VkSurfaceKHR vk_surface = VK_NULL_HANDLE;
+        vulkan_surfaces_[game_view_ptr] = vk_surface;
+
+        if (vkCreateWin32SurfaceKHR(m_PlVkInstance->instance, &sci, nullptr, &vulkan_surfaces_[game_view_ptr]) != VK_SUCCESS) {
+            LOGE("vkCreateWin32SurfaceKHR failed");
             return false;
         }
-        qDebug() << "Vulkan surface created successfully!";
+
+        LOGI("Vulkan surface created successfully!");
         return true;
     }
 
     // 与surface关联
-    bool PlVulkan::CreateSwapchain() {
-        // 默认先使用 Immediate 模式
+    bool PlVulkan::CreateSwapchain(uintptr_t game_view_ptr) {
         VkPresentModeKHR presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;  // 这种模式也被称为 立即模式 或 无垂直同步模式
 
         pl_vulkan_swapchain_params vkSwapchainParams = {};
-        vkSwapchainParams.surface = m_VkSurface;
+        vkSwapchainParams.surface = vulkan_surfaces_[game_view_ptr];
         vkSwapchainParams.present_mode = presentMode;
         vkSwapchainParams.swapchain_depth = 1; // No queued frames
 #if PL_API_VER >= 338
         vkSwapchainParams.disable_10bit_sdr = true; // Some drivers don't dither 10-bit SDR output correctly
 #endif
-        m_Swapchain = pl_vulkan_create_swapchain(m_Vulkan, &vkSwapchainParams);
-        if (m_Swapchain == nullptr) {
-            qDebug() << "pl_vulkan_create_swapchain() failed";
+        vulkan_swapchains_[game_view_ptr] = pl_vulkan_create_swapchain(m_Vulkan, &vkSwapchainParams);
+        if (vulkan_swapchains_[game_view_ptr] == nullptr) {
+            LOGE("pl_vulkan_create_swapchain() failed");
             return false;
         }
+
         return true;
     }
 
-    bool PlVulkan::CreatePlRender() {
-        m_Renderer = pl_renderer_create(m_Log, m_Vulkan->gpu);
-        if (m_Renderer == nullptr) {
-            qDebug() << "pl_renderer_create() failed";
+    bool PlVulkan::CreatePlRender(uintptr_t game_view_ptr) {
+        vulkan_renderers_[game_view_ptr] = pl_renderer_create(m_Log, m_Vulkan->gpu);
+        if (vulkan_renderers_[game_view_ptr] == nullptr) {
+            LOGE("pl_renderer_create() failed");
             return false;
         }
         return true;
@@ -211,8 +231,7 @@ namespace tc {
     bool PlVulkan::InitAVHWDeviceContext() {
         m_HwDeviceCtx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
         if (m_HwDeviceCtx == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                "av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN) failed");
+            LOGE("av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN) failed");
             return false;
         }
 
@@ -238,43 +257,50 @@ namespace tc {
 
         int err = av_hwdevice_ctx_init(m_HwDeviceCtx);
         if (err < 0) {
-            qDebug() << "av_hwdevice_ctx_init() failed: " << err;
+            LOGE("av_hwdevice_ctx_init() failed: {}", err);
             return false;
         }
 
         return true;
     }
 
-    bool PlVulkan::Initialize(HWND hwnd) {
+    bool PlVulkan::Initialize(uintptr_t game_view_ptr, HWND hwnd) {
         
         if (!CreatePlVulkanInstance()) {
+            LOGE("CreatePlVulkanInstance() failed");
             return false;
         }
 
-        if (!CreateWin32SurfaceFromHwnd(hwnd)) {
+        if (!CreateWin32SurfaceFromHwnd(game_view_ptr, hwnd)) {
+            LOGE("CreateWin32SurfaceFromHwnd() failed");
             return false;
         }
 
-        if (!ChooseVulkanDevice(nullptr, false)) {
+        if (!ChooseVulkanDevice(game_view_ptr, nullptr, false)) {
+            LOGE("ChooseVulkanDevice() failed");
             return false;
         }
 
-        if (!CreateSwapchain()) {
+        if (!CreateSwapchain(game_view_ptr)) {
+            LOGE("CreateSwapchain() failed");
             return false;
         }
 
-        if (!CreatePlRender()) {
+        if (!CreatePlRender(game_view_ptr)) {
+            LOGE("CreatePlRender() failed");
             return false;
         }
 
         if (!InitAVHWDeviceContext()) {
+            LOGE("InitAVHWDeviceContext() failed");
             return false;
         }
 
+        LOGI("Vulkan initialized successfully!");
         return true;
     }
 
-    bool PlVulkan::ChooseVulkanDevice(PDECODER_PARAMETERS params, bool hdrOutputRequired)
+    bool PlVulkan::ChooseVulkanDevice(uintptr_t game_view_ptr, PDECODER_PARAMETERS params, bool hdrOutputRequired)
     {
         /*
         * 暂时不用支持HDR输出
@@ -291,15 +317,14 @@ namespace tc {
         VkPhysicalDeviceProperties deviceProps;
 
         if (physicalDeviceCount == 0) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                "No Vulkan devices found!");
+            LOGE("No Vulkan devices found!");
             return false;
         }
 
         // First, try the first device in the list to support device selection layers
         // that put the user's preferred GPU in the first slot.
         fn_vkGetPhysicalDeviceProperties(physicalDevices[0], &deviceProps);
-        if (tryInitializeDevice(physicalDevices[0], &deviceProps, params, hdrOutputRequired)) {
+        if (tryInitializeDevice(game_view_ptr, physicalDevices[0], &deviceProps, params, hdrOutputRequired)) {
             return true;
         }
         devicesTried.emplace(0);
@@ -315,7 +340,7 @@ namespace tc {
             VkPhysicalDeviceProperties deviceProps;
             fn_vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProps);
             if (deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) {
-                if (tryInitializeDevice(physicalDevices[i], &deviceProps, params, hdrOutputRequired)) {
+                if (tryInitializeDevice(game_view_ptr, physicalDevices[i], &deviceProps, params, hdrOutputRequired)) {
                     return true;
                 }
                 devicesTried.emplace(i);
@@ -332,7 +357,7 @@ namespace tc {
             VkPhysicalDeviceProperties deviceProps;
             fn_vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProps);
             if (deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-                if (tryInitializeDevice(physicalDevices[i], &deviceProps, params, hdrOutputRequired)) {
+                if (tryInitializeDevice(game_view_ptr, physicalDevices[i], &deviceProps, params, hdrOutputRequired)) {
                     return true;
                 }
                 devicesTried.emplace(i);
@@ -348,26 +373,22 @@ namespace tc {
 
             VkPhysicalDeviceProperties deviceProps;
             fn_vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProps);
-            if (tryInitializeDevice(physicalDevices[i], &deviceProps, params, hdrOutputRequired)) {
+            if (tryInitializeDevice(game_view_ptr, physicalDevices[i], &deviceProps, params, hdrOutputRequired)) {
                 return true;
             }
             devicesTried.emplace(i);
         }
 
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-            "No suitable %sVulkan devices found!",
-            hdrOutputRequired ? "HDR-capable " : "");
+        LOGE("No suitable {}Vulkan devices found!", hdrOutputRequired ? "HDR-capable " : "");
         return false;
     }
 
-    bool PlVulkan::tryInitializeDevice(VkPhysicalDevice device, VkPhysicalDeviceProperties* deviceProps, PDECODER_PARAMETERS decoderParams, bool hdrOutputRequired)
+    bool PlVulkan::tryInitializeDevice(uintptr_t game_view_ptr, VkPhysicalDevice device, VkPhysicalDeviceProperties* deviceProps, PDECODER_PARAMETERS decoderParams, bool hdrOutputRequired)
     {
-#if 1
+
         // Check the Vulkan API version first to ensure it meets libplacebo's minimum
         if (deviceProps->apiVersion < PL_VK_MIN_VERSION) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                "Vulkan device '%s' does not meet minimum Vulkan version",
-                deviceProps->deviceName);
+            LOGE("Vulkan device {} does not meet minimum Vulkan version", deviceProps->deviceName);
             return false;
         }
 
@@ -377,8 +398,7 @@ namespace tc {
         // D3D11VA, let's reject them here so we can select a different Vulkan device or
         // just allow D3D11VA to take over.
         if (m_HwAccelBackend && deviceProps->vendorID == 0x8086 && !qEnvironmentVariableIntValue("PLVK_ALLOW_INTEL")) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                "Skipping Intel GPU for Vulkan Video due to broken drivers");
+            LOGE("Skipping Intel GPU for Vulkan Video due to broken drivers");
             return false;
         }
 #endif
@@ -386,67 +406,49 @@ namespace tc {
         // If we're acting as the decoder backend, we need a physical device with Vulkan video support
         if (m_HwAccelBackend) {
             const char* videoDecodeExtension;
-
             // 这里直接使用265测试
             videoDecodeExtension = VK_KHR_VIDEO_DECODE_H265_EXTENSION_NAME;
-
-            if (!isExtensionSupportedByPhysicalDevice(device, videoDecodeExtension)) {
-                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "Vulkan device '%s' does not support %s",
-                    deviceProps->deviceName,
-                    videoDecodeExtension);
+            if (!isExtensionSupportedByPhysicalDevice(game_view_ptr, device, videoDecodeExtension)) {
+                LOGE("Vulkan device {} does not support {}", deviceProps->deviceName, videoDecodeExtension);
                 return false;
             }
         }
 
-        if (!isSurfacePresentationSupportedByPhysicalDevice(device)) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                "Vulkan device '%s' does not support presenting on window surface",
-                deviceProps->deviceName);
+        if (!isSurfacePresentationSupportedByPhysicalDevice(game_view_ptr, device)) {
+            LOGE("Vulkan device {} does not support presenting on window surface", deviceProps->deviceName);
             return false;
         }
 
-        if (hdrOutputRequired && !isColorSpaceSupportedByPhysicalDevice(device, VK_COLOR_SPACE_HDR10_ST2084_EXT)) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                "Vulkan device '%s' does not support HDR10 (ST.2084 PQ)",
-                deviceProps->deviceName);
+        if (hdrOutputRequired && !isColorSpaceSupportedByPhysicalDevice(game_view_ptr, device, VK_COLOR_SPACE_HDR10_ST2084_EXT)) {
+            LOGE("Vulkan device {} does not support HDR10 (ST.2084 PQ)", deviceProps->deviceName);
             return false;
         }
 
         // Avoid software GPUs
         if (deviceProps->deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU /*&& qgetenv("PLVK_ALLOW_SOFTWARE") != "1"*/) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                "Vulkan device '%s' is a (probably slow) software renderer. Set PLVK_ALLOW_SOFTWARE=1 to allow using this device.",
-                deviceProps->deviceName);
+            LOGE("Vulkan device {} is a a (probably slow) software renderer. Set PLVK_ALLOW_SOFTWARE=1 to allow using this device.", deviceProps->deviceName);
             return false;
         }
 
         pl_vulkan_params vkParams = pl_vulkan_default_params;
         vkParams.instance = m_PlVkInstance->instance;
         vkParams.get_proc_addr = m_PlVkInstance->get_proc_addr;
-        vkParams.surface = m_VkSurface;
+        vkParams.surface = vulkan_surfaces_[game_view_ptr];
         vkParams.device = device;
         vkParams.opt_extensions = k_OptionalDeviceExtensions;
         vkParams.num_opt_extensions = SDL_arraysize(k_OptionalDeviceExtensions);
         vkParams.extra_queues = m_HwAccelBackend ? VK_QUEUE_FLAG_BITS_MAX_ENUM : 0;
         m_Vulkan = pl_vulkan_create(m_Log, &vkParams);
         if (m_Vulkan == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                "pl_vulkan_create() failed for '%s'",
-                deviceProps->deviceName);
+            LOGE("pl_vulkan_create() failed for {}", deviceProps->deviceName);
             return false;
         }
 
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-            "Vulkan rendering device chosen: %s",
-            deviceProps->deviceName);
+        LOGI("Vulkan device chosen: {}", deviceProps->deviceName);
         return true;
-#endif 
-        return false;
     }
 
-    bool PlVulkan::isExtensionSupportedByPhysicalDevice(VkPhysicalDevice device, const char* extensionName)
-    {
+    bool PlVulkan::isExtensionSupportedByPhysicalDevice(uintptr_t game_view_ptr, VkPhysicalDevice device, const char* extensionName) {
         uint32_t extensionCount = 0;
         fn_vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -460,13 +462,13 @@ namespace tc {
         return false;
     }
 
-    bool PlVulkan::isColorSpaceSupportedByPhysicalDevice(VkPhysicalDevice device, VkColorSpaceKHR colorSpace)
+    bool PlVulkan::isColorSpaceSupportedByPhysicalDevice(uintptr_t game_view_ptr, VkPhysicalDevice device, VkColorSpaceKHR colorSpace)
     {
         uint32_t formatCount = 0;
-        fn_vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_VkSurface, &formatCount, nullptr);
+        fn_vkGetPhysicalDeviceSurfaceFormatsKHR(device, vulkan_surfaces_[game_view_ptr], &formatCount, nullptr);
 
         std::vector<VkSurfaceFormatKHR> formats(formatCount);
-        fn_vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_VkSurface, &formatCount, formats.data());
+        fn_vkGetPhysicalDeviceSurfaceFormatsKHR(device, vulkan_surfaces_[game_view_ptr], &formatCount, formats.data());
 
         for (uint32_t i = 0; i < formatCount; i++) {
             if (formats[i].colorSpace == colorSpace) {
@@ -476,14 +478,14 @@ namespace tc {
         return false;
     }
 
-    bool PlVulkan::isSurfacePresentationSupportedByPhysicalDevice(VkPhysicalDevice device)
+    bool PlVulkan::isSurfacePresentationSupportedByPhysicalDevice(uintptr_t game_view_ptr, VkPhysicalDevice device)
     {
         uint32_t queueFamilyCount = 0;
         fn_vkGetPhysicalDeviceQueueFamilyProperties2(device, &queueFamilyCount, nullptr);
 
         for (uint32_t i = 0; i < queueFamilyCount; i++) {
             VkBool32 supported = VK_FALSE;
-            if (fn_vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_VkSurface, &supported) == VK_SUCCESS && supported == VK_TRUE) {
+            if (fn_vkGetPhysicalDeviceSurfaceSupportKHR(device, i, vulkan_surfaces_[game_view_ptr], &supported) == VK_SUCCESS && supported == VK_TRUE) {
                 return true;
             }
         }
@@ -586,39 +588,38 @@ namespace tc {
         return true;
     }
 
-    bool PlVulkan::prepareDecoderContext(AVCodecContext* context, AVDictionary**)
-    {
+    bool PlVulkan::prepareDecoderContext(AVCodecContext* context, AVDictionary**) {
         if (m_HwAccelBackend) {
-            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-                "Using Vulkan video decoding");
-
+            LOGI("Using Vulkan video decoding");
             context->hw_device_ctx = av_buffer_ref(m_HwDeviceCtx);
         }
         else {
-            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-                "Using Vulkan renderer");
+            LOGI("Using Vulkan renderer");
         }
 
         return true;
     }
 
-
-    bool PlVulkan::renderFrame(AVFrame* frame)
-    {
+    bool PlVulkan::RenderFrame(uintptr_t game_view_ptr, AVFrame* frame) {
+  
+        const AVPixFmtDescriptor* desc = av_pix_fmt_desc_get((AVPixelFormat) frame->format);
+        if (!desc) { // 这里需要判断下,因为如果desc是空 会导致在libplacebo库 崩溃
+            return false;
+        }
 
         pl_frame mappedFrame;
         pl_frame targetFrame;
 
         // 1) Map AVFrame -> pl_frame (检查返回)
-        if (!mapAvFrameToPlacebo(frame, &mappedFrame)) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "mapAvFrameToPlacebo failed");
+        if (!mapAvFrameToPlacebo(game_view_ptr, frame, &mappedFrame)) {
+            LOGE("mapAvFrameToPlacebo failed");
             return false;
         }
 
         // 2) Start swapchain frame (必须有，不能跳过)
         pl_swapchain_frame sw_frame;
-        if (!pl_swapchain_start_frame(m_Swapchain, &sw_frame)) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "pl_swapchain_start_frame failed (window occluded?)");
+        if (!pl_swapchain_start_frame(vulkan_swapchains_[game_view_ptr], &sw_frame)) {
+            LOGE("pl_swapchain_start_frame failed (window occluded?)");
             pl_unmap_avframe(m_Vulkan->gpu, &mappedFrame);
             return false;
         }
@@ -630,76 +631,35 @@ namespace tc {
         targetFrame.num_overlays = 0;
         targetFrame.overlays = nullptr;
 
-        int mode = Scale_Fit;
-
-        QSize srcSize(mappedFrame.crop.x1 - mappedFrame.crop.x0,
-            mappedFrame.crop.y1 - mappedFrame.crop.y0);
-
-        QSize dstSize(targetFrame.crop.x1 - targetFrame.crop.x0,
-            targetFrame.crop.y1 - targetFrame.crop.y0);
-
-        QRectF srcRect(0, 0, srcSize.width(), srcSize.height());
-        QRectF dstRect(0, 0, dstSize.width(), dstSize.height());
-
-        if (mode == Scale_Fit) {
-            // 等比缩放
-            float srcAspect = float(srcSize.width()) / srcSize.height();
-            float dstAspect = float(dstSize.width()) / dstSize.height();
-
-            if (dstAspect > srcAspect) {
-                // 留左右黑边
-                float newWidth = dstSize.height() * srcAspect;
-                float xOffset = (dstSize.width() - newWidth) / 2.0f;
-                dstRect = QRectF(xOffset, 0, newWidth, dstSize.height());
-            }
-            else {
-                // 留上下黑边
-                float newHeight = dstSize.width() / srcAspect;
-                float yOffset = (dstSize.height() - newHeight) / 2.0f;
-                dstRect = QRectF(0, yOffset, dstSize.width(), newHeight);
-            }
-        }
-        else {
-            // 填充模式
-            dstRect = QRectF(0, 0, dstSize.width(), dstSize.height());
-        }
-
-        // --- 将 Qt 坐标转回 libplacebo 的 crop 逻辑 ---
-        targetFrame.crop.x0 = dstRect.x();
-        targetFrame.crop.y0 = dstRect.y();
-        targetFrame.crop.x1 = dstRect.x() + dstRect.width();
-        targetFrame.crop.y1 = dstRect.y() + dstRect.height();
-
         // 6) Render
-        if (!pl_render_image(m_Renderer, &mappedFrame, &targetFrame, &pl_render_fast_params)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "pl_render_image() failed");
+        if (!pl_render_image(vulkan_renderers_[game_view_ptr], &mappedFrame, &targetFrame, &pl_render_fast_params)) {
+            LOGE("pl_render_image() failed");
             // still fallthrough and submit
             return false;
         }
 
         // 7) Submit and (on Windows) swap buffers
-        if (!pl_swapchain_submit_frame(m_Swapchain)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "pl_swapchain_submit_frame() failed");
+        if (!pl_swapchain_submit_frame(vulkan_swapchains_[game_view_ptr])) {
+            LOGE("pl_swapchain_submit_frame() failed");
             // handle recreate if necessary
             return false;
         }
 
 #ifdef Q_OS_WIN32
-        pl_swapchain_swap_buffers(m_Swapchain);
+        pl_swapchain_swap_buffers(vulkan_swapchains_[game_view_ptr]);
 #endif
         // 8) Unmap source frame
         pl_unmap_avframe(m_Vulkan->gpu, &mappedFrame);
         return true;
     }
 
-    bool PlVulkan::mapAvFrameToPlacebo(const AVFrame* frame, pl_frame* mappedFrame)
+    bool PlVulkan::mapAvFrameToPlacebo(uintptr_t game_view_ptr, const AVFrame* frame, pl_frame* mappedFrame)
     {
         pl_avframe_params mapParams = {};
         mapParams.frame = frame;
-        mapParams.tex = m_Textures;
-        if (!pl_map_avframe_ex(m_Vulkan->gpu, mappedFrame, &mapParams)) {   // 找不到函数
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                "pl_map_avframe_ex() failed");
+        mapParams.tex = textures_[game_view_ptr].data();
+        if (!pl_map_avframe_ex(m_Vulkan->gpu, mappedFrame, &mapParams)) {   
+            LOGE("pl_map_avframe_ex() failed");
             return false;
         }
 
@@ -719,6 +679,27 @@ namespace tc {
         // As a workaround, set full range manually in the mapped frame ourselves.
         mappedFrame->repr.levels = PL_COLOR_LEVELS_FULL;
 
+        mappedFrame->repr = pl_color_repr_uhdtv;    //  关键代码,支持更宽的色域
+        mappedFrame->color = pl_color_space_bt709;  //
+        return true;
+    }
+
+    bool PlVulkan::CreateRenderComponent(uintptr_t game_view_ptr, HWND hwnd) {
+        if (!CreateWin32SurfaceFromHwnd(game_view_ptr, hwnd)) {
+            LOGE("CreateWin32SurfaceFromHwnd failed");
+            return false;
+        }
+
+        if (!CreateSwapchain(game_view_ptr)) {
+            LOGE("CreateSwapchain failed");
+            return false;
+        }
+
+        if (!CreatePlRender(game_view_ptr)) {
+            LOGE("CreatePlRender failed");
+            return false;
+        }
+        LOGI("CreateRenderComponent success");
         return true;
     }
 }

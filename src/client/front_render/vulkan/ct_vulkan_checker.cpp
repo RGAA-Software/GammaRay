@@ -23,9 +23,12 @@ namespace tc {
         render_widget_ = std::make_shared<TestVulkanVideoWidget>();
         pl_vulkan_ = PlVulkan::Make();
 
+        uintptr_t render_obj = reinterpret_cast<uintptr_t>(render_widget_.get());
+
         HWND render_hwnd = reinterpret_cast<HWND>(render_widget_->winId());
 
-        bool res = pl_vulkan_->Initialize(render_hwnd);
+
+        bool res = pl_vulkan_->Initialize(render_obj, render_hwnd);
         if (!res) {
             LOGW("vulkan init error");
             return false;
@@ -56,7 +59,7 @@ namespace tc {
             qDebug() << "frame format is not AV_PIX_FMT_VULKAN ";
             return false;
         }
-        res = pl_vulkan_->renderFrame(frame);
+        res = pl_vulkan_->RenderFrame(render_obj, frame);
         ffmpeg_vulkan_decoder_->FreeTestHevcYuv444Frame(frame);
 
         return res;

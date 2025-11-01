@@ -44,6 +44,7 @@
 #include "plugin_interface/ct_media_record_plugin_interface.h"
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "front_render/opengl/ct_opengl_video_widget.h"
+#include "front_render/vulkan/pl_vulkan.h"
 
 namespace tc
 {
@@ -112,7 +113,13 @@ namespace tc
                 if (!game_views_.empty()) {
                     if (game_views_[kMainGameViewIndex]) {
                         game_views_[kMainGameViewIndex]->RefreshCapturedMonitorInfo(info);
-                        game_views_[kMainGameViewIndex]->RefreshImage(image);
+                        if (this->params_->support_vulkan_) {  
+                            uintptr_t obj = reinterpret_cast<uintptr_t>(game_views_[kMainGameViewIndex]);
+                            pl_vulkan_->RenderFrame(obj, image->vulkan_av_frame_);
+                        }
+                        else {
+                            game_views_[kMainGameViewIndex]->RefreshImage(image);
+                        }
                     }
                 }
             }
@@ -120,7 +127,12 @@ namespace tc
                 if (game_views_.size() > info.mon_index_) {
                     if (game_views_[info.mon_index_]) {
                         game_views_[info.mon_index_]->RefreshCapturedMonitorInfo(info);
-                        game_views_[info.mon_index_]->RefreshImage(image);
+                        if (this->params_->support_vulkan_) {
+                            pl_vulkan_->RenderFrame(reinterpret_cast<uintptr_t>(game_views_[info.mon_index_]), image->vulkan_av_frame_);
+                        }
+                        else {
+                            game_views_[info.mon_index_]->RefreshImage(image);
+                        }
                         if (!game_views_[info.mon_index_]->GetActiveStatus()) {
                             game_views_[info.mon_index_]->SetActiveStatus(true);
                             UpdateGameViewsStatus();
@@ -271,6 +283,9 @@ namespace tc
 
     void Workspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(def_window_size_);
+
+        bool support_vulkan = this->params_->support_vulkan_;
+
         for (int index = 0; index < settings_->max_number_of_screen_window_; ++index) {
             GameView* game_view = nullptr;
             if (0 == index) {
@@ -279,6 +294,14 @@ namespace tc
                 game_view->show();
                 game_view->SetMainView(true);
                 setCentralWidget(game_view);
+                if (support_vulkan) {
+                    auto hwnd = game_view->GetVideoHwnd();
+                    uintptr_t obj = reinterpret_cast<uintptr_t>(game_view);
+                    bool res = pl_vulkan_->Initialize(obj, hwnd);
+                    if (!res) {
+                        LOGE("pl_vulkan_->Initialize failed.");
+                    }
+                }
             }
             else {
                 game_view = new GameView(context_, sdk_, params, nullptr); // extend view
@@ -287,6 +310,15 @@ namespace tc
                 game_view->SetMainView(false);
                 game_view->installEventFilter(this);
                 game_view->setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(index + 1)));
+
+                uintptr_t obj = reinterpret_cast<uintptr_t>(game_view);
+                if (support_vulkan) {
+                    auto hwnd = game_view->GetVideoHwnd();
+                    bool res = pl_vulkan_->CreateRenderComponent(obj, hwnd);
+                    if (!res) {
+                        LOGE("pl_vulkan_->CreateRenderComponent failed.");
+                    }
+                }
             }
             game_views_.push_back(game_view);
         }

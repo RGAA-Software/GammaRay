@@ -1,5 +1,9 @@
 ﻿#pragma once
 #include <memory>
+#include <vector>
+#include <map>
+#include <array>
+#include <cstdint>
 #include <Windows.h>
 
 #include <SDL.h>
@@ -19,7 +23,6 @@ extern "C" {
     #include <libavutil/pixdesc.h>
     #include <libavutil/hwcontext_vulkan.h>
 }
-
 
 namespace tc { 
 
@@ -58,48 +61,50 @@ namespace tc {
 		~PlVulkan();
 
         bool CreatePlVulkanInstance();
-        bool CreateWin32SurfaceFromHwnd(HWND hwnd);
-        bool CreateSwapchain();
-        bool CreatePlRender();
+        bool CreateWin32SurfaceFromHwnd(uintptr_t game_view_ptr, HWND hwnd);
+        bool CreateSwapchain(uintptr_t game_view_ptr);
+        bool CreatePlRender(uintptr_t game_view_ptr);
         bool InitAVHWDeviceContext();
 
-        bool Initialize(HWND hwnd);
-        bool ChooseVulkanDevice(PDECODER_PARAMETERS params, bool hdrOutputRequired);
-        bool tryInitializeDevice(VkPhysicalDevice device, VkPhysicalDeviceProperties* deviceProps, PDECODER_PARAMETERS decoderParams, bool hdrOutputRequired);
-        bool isExtensionSupportedByPhysicalDevice(VkPhysicalDevice device, const char* extensionName);
-        bool isColorSpaceSupportedByPhysicalDevice(VkPhysicalDevice device, VkColorSpaceKHR colorSpace);
-        bool isSurfacePresentationSupportedByPhysicalDevice(VkPhysicalDevice device);
+        bool Initialize(uintptr_t game_view_ptr, HWND hwnd);
+
+        bool CreateRenderComponent(uintptr_t game_view_ptr, HWND hwnd);
+
+        bool ChooseVulkanDevice(uintptr_t game_view_ptr, PDECODER_PARAMETERS params, bool hdrOutputRequired);
+        bool tryInitializeDevice(uintptr_t game_view_ptr, VkPhysicalDevice device, VkPhysicalDeviceProperties* deviceProps, PDECODER_PARAMETERS decoderParams, bool hdrOutputRequired);
+        bool isExtensionSupportedByPhysicalDevice(uintptr_t game_view_ptr, VkPhysicalDevice device, const char* extensionName);
+        bool isColorSpaceSupportedByPhysicalDevice(uintptr_t game_view_ptr, VkPhysicalDevice device, VkColorSpaceKHR colorSpace);
+        bool isSurfacePresentationSupportedByPhysicalDevice(uintptr_t game_view_ptr, VkPhysicalDevice device);
 
         bool populateQueues(int videoFormat);
 
         bool prepareDecoderContext(AVCodecContext* context, AVDictionary**);
-        AVBufferRef* GetHwDeviceCtx() { return m_HwDeviceCtx; }
+        AVBufferRef* GetHwDeviceCtx() { 
+            return m_HwDeviceCtx; 
+        }
 
-        bool renderFrame(AVFrame* frame);
+        bool RenderFrame(uintptr_t game_view_ptr, AVFrame* frame);
 
-        bool mapAvFrameToPlacebo(const AVFrame* frame, pl_frame* mappedFrame);
+        bool mapAvFrameToPlacebo(uintptr_t game_view_ptr, const AVFrame* frame, pl_frame* mappedFrame);
 
         static void lockQueue(AVHWDeviceContext* dev_ctx, uint32_t queue_family, uint32_t index);
         static void unlockQueue(AVHWDeviceContext* dev_ctx, uint32_t queue_family, uint32_t index);
-
 	public:
         // The libplacebo rendering state
         pl_log m_Log = nullptr;
         pl_vk_inst m_PlVkInstance = nullptr;
-        VkSurfaceKHR m_VkSurface = VK_NULL_HANDLE;
         pl_vulkan m_Vulkan = nullptr;
-        pl_swapchain m_Swapchain = nullptr;
-        pl_renderer m_Renderer = nullptr;
-        pl_tex m_Textures[PL_MAX_PLANES] = {};
-        pl_color_space m_LastColorspace = {};
-
-        // Pending swapchain state shared between waitToRender(), renderFrame(), and cleanupRenderContext()
-        pl_swapchain_frame m_SwapchainFrame = {};
 
         bool m_HwAccelBackend = true;
 
         // Device context used for hwaccel decoders
         AVBufferRef* m_HwDeviceCtx = nullptr;
+
+        //创建多个交换链等 以支持渲染多个窗口
+        std::map<uintptr_t, VkSurfaceKHR> vulkan_surfaces_;
+        std::map<uintptr_t, pl_swapchain> vulkan_swapchains_;
+        std::map<uintptr_t, pl_renderer> vulkan_renderers_;
+        std::map<uintptr_t, std::array<pl_tex, PL_MAX_PLANES>> textures_; // 使用 std::array<pl_tex, PL_MAX_PLANES> 更容易管理
 
         // Vulkan functions we call directly
         PFN_vkDestroySurfaceKHR fn_vkDestroySurfaceKHR = nullptr;
@@ -111,5 +116,4 @@ namespace tc {
         PFN_vkGetPhysicalDeviceSurfaceSupportKHR fn_vkGetPhysicalDeviceSurfaceSupportKHR = nullptr;
         PFN_vkEnumerateDeviceExtensionProperties fn_vkEnumerateDeviceExtensionProperties = nullptr;
 	};
-
 }

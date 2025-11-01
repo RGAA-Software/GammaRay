@@ -68,11 +68,13 @@ namespace tc
         this->params_ = params;
         cursor_ = QCursor(Qt::ArrowCursor);
         retry_conn_dialog_ = std::make_shared<RetryConnDialog>(tcTr("id_warning"));
-        QTimer::singleShot(1000, this, [this]() {
-            this->raise();
-            this->activateWindow();
+        QTimer::singleShot(1000, [self = QPointer<BaseWorkspace>(this)]() {
+            if (!self) {
+                return;
+            }
+            self->raise();
+            self->activateWindow();
         });
-
         pl_vulkan_ = PlVulkan::Make();
     }
 
@@ -112,7 +114,10 @@ namespace tc
         // init game views
         InitGameView(this->params_);
 
-        this->params_->vulkan_hw_device_ctx_ = pl_vulkan_->GetHwDeviceCtx();
+        // vulkan 
+        if (this->params_->support_vulkan_) {
+            this->params_->vulkan_hw_device_ctx_ = pl_vulkan_->GetHwDeviceCtx();
+        }
 
         InitSampleWidget();
 

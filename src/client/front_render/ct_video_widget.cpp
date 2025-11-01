@@ -23,6 +23,7 @@ namespace tc
 	VideoWidget::VideoWidget(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx) {
         TimeDuration dr("VideoWidget");
 		this->context_ = ctx;
+        // to do, dup_idx_ ÒÑ¾­·ÏÆú£¬´ýÉ¾³ý
         this->dup_idx_ = dup_idx;
         this->key_converter_ = std::make_shared<QtKeyConverter>();
         this->sdk_ = sdk;

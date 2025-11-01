@@ -5,6 +5,7 @@
 #include <qdebug.h>
 #include <chrono>
 #include <thread>
+#include "tc_common_new/log.h"
 
 namespace tc {
 
@@ -99,8 +100,8 @@ namespace tc {
         // runs out of output buffers.
         test_hevc_video_decoder_ctx_->err_recognition = AV_EF_EXPLODE;
 
-        test_hevc_video_decoder_ctx_->pix_fmt = AV_PIX_FMT_VULKAN;
-        test_hevc_video_decoder_ctx_->get_format = ffGetFormat;
+        test_hevc_video_decoder_ctx_->pix_fmt = AV_PIX_FMT_VULKAN;// 表示 解码输出的像素格式
+        test_hevc_video_decoder_ctx_->get_format = ffGetFormat;// 是 FFmpeg 解码器在解码初始化阶段调用的回调函数，用来由你（应用层）选择最终的输出像素格式
 
         return true;
     }
@@ -170,6 +171,21 @@ namespace tc {
 
         av_packet_free(&pkt);
         avcodec_free_context(&test_hevc_video_decoder_ctx_);
+
+
+        LOGI("Frame format: {} {}",
+            frame->format,
+            av_get_pix_fmt_name((AVPixelFormat)frame->format));
+        if (frame->hw_frames_ctx) {
+            const AVHWFramesContext* hwfc = (const AVHWFramesContext*)frame->hw_frames_ctx->data;
+            LOGI("HW device type: {}, sw_format: {}",
+                av_hwdevice_get_type_name(hwfc->device_ctx->type),
+                av_get_pix_fmt_name((AVPixelFormat)hwfc->sw_format));
+        }
+        else {
+            LOGI("No hw_frames_ctx!\n");
+        }
+
         return frame;
     }
 }

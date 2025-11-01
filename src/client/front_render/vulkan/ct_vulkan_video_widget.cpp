@@ -1,6 +1,4 @@
 #include "ct_vulkan_video_widget.h"
-
-#include <QSurface>
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/thread.h"

@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <qlabel.h>
 #include <qicon.h>
+#include <qpointer.h>
 #include <qpixmap.h>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
@@ -28,6 +29,7 @@
 #include "front_render/sdl/ct_sdl_video_widget.h"
 #include "front_render/d3d11/ct_d3d11_video_widget.h"
 #include "front_render/opengl/ct_opengl_video_widget.h"
+#include "front_render/vulkan/ct_vulkan_video_widget.h"
 
 namespace tc
 {
@@ -54,13 +56,19 @@ namespace tc
     #endif
 
 #ifdef WIN32
-        if (params_->d3d11_wrapper_) {
-            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
-            LOGI("*** Use D3D11 to render frames");
+        if (params_->support_vulkan_) {
+            LOGI("*** Use vulkan to render frames");
+            video_widget_ = new VulkanVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageVulkanAVFrame, this);
         }
         else {
-            video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
-            LOGI("*** Use OpenGL to render frames");
+            if (params_->d3d11_wrapper_) {
+                video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
+                LOGI("*** Use D3D11 to render frames");
+            }
+            else {
+                video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
+                LOGI("*** Use OpenGL to render frames");
+            }
         }
 //        if (parent) {
 //            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
@@ -173,7 +181,6 @@ namespace tc
         if (video_widget_) {
             video_widget_->RefreshImage(image);
         }
-
 
         if (is_main_view_) {
             if (settings_->IsFullColorEnabled() != enable_full_color) {
@@ -432,4 +439,21 @@ namespace tc
         }
     }
 
+    HWND GameView::GetVideoHwnd() {
+        return (HWND)video_widget_->GetRenderWId();
+    }
+
+    void GameView::showEvent(QShowEvent* event) {
+        QWidget::showEvent(event);
+        // 非主窗口创建出来后，并没有显示出来, 需要触发一次 resizeEvent 来更新交换链信息
+        if (width() > 0 && height() > 0) {
+            resize(width() + 1, height() + 1);
+        }
+        QTimer::singleShot(60, [self = QPointer<GameView>(this)]() {
+            if (!self) {
+                return;
+            }
+            self->resize(self->width() - 1, self->height() - 1);
+        });
+    }
 }

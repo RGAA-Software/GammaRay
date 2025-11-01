@@ -451,6 +451,7 @@ int main(int argc, char** argv) {
         support_vulkan = vulkan_checker->TestDecodeAndRenderHevcYuv444Frame();
         LOGI("support vulkan(hevc deoce yuv444 and render): {}", support_vulkan);
     }
+    params->support_vulkan_ = false; //support_vulkan;
 
     static auto ws = std::make_shared<Workspace>(ctx, params);
     ws->Init();
