@@ -193,7 +193,10 @@ namespace tc
                 if (!dir.exists(icons_path)) {
                     dir.mkdir(icons_path);
                 }
-                rp->icon_name_ = MD5::Hex(rp->exe_full_path_) + ".png";
+                if (rp->exe_full_path_.empty()) {
+                    continue;
+                }
+                rp->icon_name_ = MD5::Hex(QString::fromStdString(rp->exe_full_path_).toStdString()) + ".png";
                 auto icon_file_path = icons_path + "/" + rp->icon_name_.c_str();
                 if (QFile::exists(icon_file_path)) {
                     continue;
