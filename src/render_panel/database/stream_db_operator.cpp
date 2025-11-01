@@ -164,7 +164,7 @@ namespace tc
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         int offset_size = (page - 1) * page_size;
         auto unique_streams = storage.get_all_pointer<spvr::SpvrStream>(
-            where(c(&spvr::SpvrStream::network_type_) == "relay"),
+            where(length(&spvr::SpvrStream::remote_device_id_) > 1),
             order_by(&spvr::SpvrStream::created_timestamp_).desc(),
             limit(page_size, offset(offset_size))
         );

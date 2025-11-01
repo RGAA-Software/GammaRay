@@ -31,6 +31,7 @@ namespace tc
         // relay server
         std::string relay_host_;
         int relay_port_{0};
+        std::string relay_appkey_;
 
     public:
         [[nodiscard]] bool IsValid() const {
@@ -41,6 +42,7 @@ namespace tc
             std::stringstream ss;
             ss << "Connection info: " << std::endl;
             ss << "Device Info: " << device_id_ << ", " << random_pwd_ << ", relay: " << relay_host_ << "," << relay_port_ << std::endl;
+            ss << "Relay appkey : " << relay_appkey_ << std::endl;
             ss << "Device IP:" << std::endl;
             for (const auto& ch : hosts_) {
                 ss << ch.ip_ << "" << std::endl;

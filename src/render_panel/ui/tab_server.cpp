@@ -433,10 +433,13 @@ namespace tc
                         if (remote_device_id.empty()) {
                             return;
                         }
+
+                        // assume the device in the same relay server, so we use the settings' relay server info
                         // get device's relay server info
                         auto relay_host = settings_->GetRelayServerHost();
                         auto relay_port = settings_->GetRelayServerPort();
-                        auto relay_device_info = context_->GetRelayServerSideDeviceInfo(relay_host, relay_port, remote_device_id);
+                        auto relay_appkey = grApp->GetAppkey();
+                        auto relay_device_info = context_->GetRelayServerSideDeviceInfo(relay_host, relay_port, relay_appkey, remote_device_id);
                         if (relay_device_info == nullptr) {
                             return;
                         }
@@ -464,11 +467,13 @@ namespace tc
                         std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
                         item->stream_id_ = "id_" + remote_device_id;
                         item->stream_name_ = remote_device_id;
-                        item->stream_host_ = relay_device_info->relay_server_ip();
-                        item->stream_port_ = relay_device_info->relay_server_port();
+                        item->stream_host_ = "";
+                        item->stream_port_ = 0;
+                        item->relay_host_ = relay_device_info->relay_server_ip();
+                        item->relay_port_ = relay_device_info->relay_server_port();
+                        item->relay_appkey_ = grApp->GetAppkey();
                         item->encode_bps_ = 0;
                         item->encode_fps_ = 0;
-                        item->network_type_ = kStreamItemNtTypeRelay;
                         item->remote_device_id_ = remote_device_id;
                         item->clipboard_enabled_ = true;
                         item->bg_color_ = 0xffffff;
@@ -484,7 +489,7 @@ namespace tc
                             .item_ = item,
                         });
 
-                        running_stream_mgr_->StartStream(item);
+                        running_stream_mgr_->StartStream(item, kStreamItemNtTypeRelay);
                     });
                 }
 

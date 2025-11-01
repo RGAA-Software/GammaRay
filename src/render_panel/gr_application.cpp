@@ -372,10 +372,10 @@ namespace tc
         }
 
         auto& item = msg->stream_item_;
-        if (item->IsRelay()) {
+        if (item->HasRelayInfo()) {
             auto srv_remote_device_id = "server_" + item->remote_device_id_;
-            auto res = relay::RelayApi::NotifyEvent(item->stream_host_,
-                                                    item->stream_port_,
+            auto res = relay::RelayApi::NotifyEvent(item->relay_host_,
+                                                    item->relay_port_,
                                                     context_->GetDeviceIdOrIpAddress(),
                                                     srv_remote_device_id,
                                                     msg->AsJson(),

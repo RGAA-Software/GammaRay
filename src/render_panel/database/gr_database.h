@@ -59,9 +59,11 @@ namespace tc
                     make_column("audio_capture_mode", &spvr::SpvrStream::audio_capture_mode_),
                     make_column("stream_host", &spvr::SpvrStream::stream_host_),
                     make_column("stream_port", &spvr::SpvrStream::stream_port_),
+                    make_column("relay_host", &spvr::SpvrStream::relay_host_, default_value("")),
+                    make_column("relay_port", &spvr::SpvrStream::relay_port_, default_value(0)),
+                    make_column("relay_appkey", &spvr::SpvrStream::relay_appkey_, default_value("")),
                     make_column("bg_color", &spvr::SpvrStream::bg_color_),
                     make_column("encode_fps", &spvr::SpvrStream::encode_fps_),
-                    make_column("network_type", &spvr::SpvrStream::network_type_),
                     make_column("connect_type", &spvr::SpvrStream::connect_type_),
                     make_column("device_id", &spvr::SpvrStream::device_id_),
                     make_column("device_random_pwd", &spvr::SpvrStream::device_random_pwd_),
@@ -73,7 +75,8 @@ namespace tc
                     make_column("updated_timestamp", &spvr::SpvrStream::updated_timestamp_, default_value(0)),
                     make_column("enable_p2p", &spvr::SpvrStream::enable_p2p_, default_value(0)),
                     make_column("desktop_name", &spvr::SpvrStream::desktop_name_),
-                    make_column("os_version", &spvr::SpvrStream::os_version_)
+                    make_column("os_version", &spvr::SpvrStream::os_version_),
+                    make_column("force_relay", &spvr::SpvrStream::force_relay_, default_value(false))
                 ),
                 make_table("visit_record",
                     make_column("id", &VisitRecord::id_, primary_key()),

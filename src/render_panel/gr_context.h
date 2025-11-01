@@ -105,8 +105,12 @@ namespace tc
         // spvr
         // will add prefix: server
         // id ==> server_111333444
+        // relay_host: relay server host for the device
+        // relay_port: relay server port for the device
+        // relay_app_key: app key for this relay server
         std::shared_ptr<relay::RelayDeviceInfo> GetRelayServerSideDeviceInfo(const std::string& relay_host,
                                                                              int relay_port,
+                                                                             const std::string& relay_appkey,
                                                                              const std::string& device_id,
                                                                              bool show_dialog = true);
 

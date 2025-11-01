@@ -37,6 +37,7 @@
 #include "render_panel/gr_workspace.h"
 #include "render_panel/network/render_api.h"
 #include "render_panel/database/stream_db_operator.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
@@ -322,109 +323,10 @@ namespace tc
             target_item->only_viewing_ = true;
         }
 
-        // verify in profile server
-        if (target_item->IsRelay()) {
-            // verify my self
-            if (!grApp->CheckLocalDeviceInfoWithPopup()) {
-                return;
-            }
-
-            // check the remote device in relay server
-            auto appkey = grApp->GetAppkey();
-            auto srv_remote_device_id = "server_" + item->remote_device_id_;
-            LOGI("Will check remote device: {} on relay server: {}:{}", item->remote_device_id_, item->stream_host_, item->stream_port_);
-            auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id, appkey);
-            if (!relay_device_info.has_value()) {
-                if (relay_device_info.error() == relay::kRelayRequestFailed) {
-                    // network failed
-                    TcDialog dialog(tcTr("id_error"), tcTr("id_relay_network_unavailable_recreate"));
-                    dialog.exec();
-                }
-                else {
-                    //
-                    TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"));
-                    dialog.exec();
-                }
-                return;
-            }
-
-            // NO password, just input one
-            QString input_password;
-            if (target_item->remote_device_random_pwd_.empty() && target_item->remote_device_safety_pwd_.empty()) {
-                InputRemotePwdDialog dlg_input_pwd(context_);
-                if (dlg_input_pwd.exec() == 1) {
-                    return;
-                }
-                input_password = dlg_input_pwd.GetInputPassword();
-                if (input_password.isEmpty()) {
-                    return;
-                }
-            }
-
-            auto remote_random_pwd = target_item->remote_device_random_pwd_;
-            auto remote_safety_pwd = target_item->remote_device_safety_pwd_;
-            if (!input_password.isEmpty() && remote_random_pwd.empty() && remote_safety_pwd.empty()) {
-                remote_random_pwd = input_password.toStdString();
-                remote_safety_pwd = input_password.toStdString();
-            }
-
-            // verify remote
-            // password from inputting
-            // password from database
-            auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetSpvrServerHost(),
-                                                              settings_->GetSpvrServerPort(),
-                                                              target_item->remote_device_id_,
-                                                              MD5::Hex(remote_random_pwd),
-                                                              MD5::Hex(remote_safety_pwd),
-                                                              grApp->GetAppkey());
-            if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
-                TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_profile_network_unavailable"), grWorkspace.get());
-                dialog.exec();
-                return;
-            }
-
-            if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd &&
-                verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd &&
-                verify_result != ProfileVerifyResult::kVfSuccessAllPwd) {
-                // tell user, password is invalid
-                TcDialog dialog(tcTr("id_password_invalid"), tcTr("id_password_invalid_msg"), grWorkspace.get());
-                dialog.exec();
-
-                // clear the password and restart stream, then you need to input a password
-                // clear the memory
-                item->remote_device_random_pwd_ = "";
-                item->remote_device_safety_pwd_ = "";
-                // clear the database
-                db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, "");
-                db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, "");
-                context_->PostUIDelayTask([=, this]() {
-                    StartStream(item, false);
-                }, 100);
-                return;
-            }
-
-            LOGI("Verify result, the password type: {}", (int)verify_result);
-            // update to database
-            if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
-                db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
-                target_item->remote_device_random_pwd_ = remote_random_pwd;
-            }
-            else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
-                db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
-                target_item->remote_device_safety_pwd_ = remote_safety_pwd;
-            }
-        }
-        else {
-            // get render configuration; to check the render online or not
-            {
-                auto r = RenderApi::GetRenderConfiguration(target_item->stream_host_, target_item->stream_port_);
-                if (!r.has_value()) {
-                    TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
-                    dialog.exec();
-                    return;
-                }
-            }
-
+        // get render configuration; to check the render online or not
+        auto direct_render_result = RenderApi::GetRenderConfiguration(target_item->stream_host_, target_item->stream_port_);
+        if (direct_render_result.has_value() && !target_item->force_relay_) {
+            LOGI("We can connect directly: {}:{}", target_item->stream_host_, target_item->stream_port_);
             // verify security password
             if (!target_item->remote_device_safety_pwd_.empty()) {
                 auto r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
@@ -451,7 +353,8 @@ namespace tc
                         ok = r.value_or(false);
                         if (!ok) {
                             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
-                        } else {
+                        }
+                        else {
                             // update to database
                             context_->PostDBTask([=, this]() {
                                 auto mgr = context_->GetStreamDBManager();
@@ -460,14 +363,122 @@ namespace tc
                             });
                             break;
                         }
-                    } else {
+                    }
+                    else {
                         break;
                     }
                 }
             }
-        }
 
-        running_stream_mgr_->StartStream(target_item);
+            // start via websocket
+            running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeWebSocket);
+        }
+        else {
+            // we can connect directly
+            LOGI("We can *NOT* connect directly: {}:{}, will try relay!", target_item->stream_host_, target_item->stream_port_);
+            if (target_item->HasRelayInfo()) {
+                LOGI("Yes, we have relay info: {} {} {}", target_item->relay_host_, target_item->relay_port_, target_item->relay_appkey_);
+                // verify my self
+                if (!grApp->CheckLocalDeviceInfoWithPopup()) {
+                    return;
+                }
+
+                // check the remote device in relay server
+                auto appkey = grApp->GetAppkey();
+                auto srv_remote_device_id = "server_" + item->remote_device_id_;
+                LOGI("Will check remote device: {} on relay server: {}:{}", item->remote_device_id_, item->stream_host_, item->stream_port_);
+                auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id, appkey);
+                if (!relay_device_info.has_value()) {
+                    if (relay_device_info.error() == relay::kRelayRequestFailed) {
+                        // network failed
+                        TcDialog dialog(tcTr("id_error"), tcTr("id_relay_network_unavailable_recreate"));
+                        dialog.exec();
+                    }
+                    else {
+                        //
+                        TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"));
+                        dialog.exec();
+                    }
+                    return;
+                }
+
+                // NO password, just input one
+                QString input_password;
+                if (target_item->remote_device_random_pwd_.empty() && target_item->remote_device_safety_pwd_.empty()) {
+                    InputRemotePwdDialog dlg_input_pwd(context_);
+                    if (dlg_input_pwd.exec() == 1) {
+                        return;
+                    }
+                    input_password = dlg_input_pwd.GetInputPassword();
+                    if (input_password.isEmpty()) {
+                        return;
+                    }
+                }
+
+                auto remote_random_pwd = target_item->remote_device_random_pwd_;
+                auto remote_safety_pwd = target_item->remote_device_safety_pwd_;
+                if (!input_password.isEmpty() && remote_random_pwd.empty() && remote_safety_pwd.empty()) {
+                    remote_random_pwd = input_password.toStdString();
+                    remote_safety_pwd = input_password.toStdString();
+                }
+
+                // verify remote
+                // password from inputting
+                // password from database
+                auto verify_result = ProfileApi::VerifyDeviceInfo(settings_->GetSpvrServerHost(),
+                                                                  settings_->GetSpvrServerPort(),
+                                                                  target_item->remote_device_id_,
+                                                                  MD5::Hex(remote_random_pwd),
+                                                                  MD5::Hex(remote_safety_pwd),
+                                                                  grApp->GetAppkey());
+                if (verify_result == ProfileVerifyResult::kVfNetworkFailed) {
+                    TcDialog dialog(tcTr("id_connect_failed"), tcTr("id_profile_network_unavailable"), grWorkspace.get());
+                    dialog.exec();
+                    return;
+                }
+
+                if (verify_result != ProfileVerifyResult::kVfSuccessRandomPwd &&
+                    verify_result != ProfileVerifyResult::kVfSuccessSafetyPwd &&
+                    verify_result != ProfileVerifyResult::kVfSuccessAllPwd) {
+                    // tell user, password is invalid
+                    TcDialog dialog(tcTr("id_password_invalid"), tcTr("id_password_invalid_msg"), grWorkspace.get());
+                    dialog.exec();
+
+                    // clear the password and restart stream, then you need to input a password
+                    // clear the memory
+                    item->remote_device_random_pwd_ = "";
+                    item->remote_device_safety_pwd_ = "";
+                    // clear the database
+                    db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, "");
+                    db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, "");
+                    context_->PostUIDelayTask([=, this]() {
+                        StartStream(item, false);
+                    }, 100);
+                    return;
+                }
+
+                LOGI("Verify result, the password type: {}", (int)verify_result);
+                // update to database
+                if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
+                    db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
+                    target_item->remote_device_random_pwd_ = remote_random_pwd;
+                }
+                else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
+                    db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
+                    target_item->remote_device_safety_pwd_ = remote_safety_pwd;
+                }
+
+                // start via websocket
+                running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeRelay);
+            }
+            else {
+                LOGI("Yes, we DONT have relay info, force relay? {}, relay_host: {}, relay_port: {}, relay_appkey: {}",
+                     target_item->force_relay_, target_item->relay_host_, target_item->relay_port_, target_item->relay_appkey_);
+                 TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
+                 dialog.exec();
+                 return;
+            }
+        }
     }
 
     void AppStreamList::StopStream(const std::shared_ptr<spvr::SpvrStream>& item) {
@@ -527,7 +538,7 @@ namespace tc
             LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
         }
-        if (item->IsRelay()) {
+        if (item->HasRelayInfo()) {
             auto dialog = new EditRelayStreamDialog(context_, si.value(), grWorkspace.get());
             dialog->exec();
         }
@@ -588,7 +599,7 @@ namespace tc
         name->hide();
         name->setObjectName("st_name");
         auto stream_name = stream->stream_name_;
-        if (stream->IsRelay()) {
+        if (stream->HasRelayInfo()) {
             stream_name = tc::SpaceId(stream_name);
         }
         name->setText(stream_name.c_str());

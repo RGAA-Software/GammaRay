@@ -190,12 +190,15 @@ namespace tc
         for (auto& item : ips) {
             json ip_obj;
             ip_obj["ip"] = item.ip_addr_;
-            ip_obj["type"] = item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
+            ip_obj["type"] = "";//item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
             ip_array.push_back(ip_obj);
         }
         obj["ips"] = ip_array;
         obj["panel_srv_port"] = settings_->GetPanelServerPort();
         obj["render_srv_port"] = settings_->GetRenderServerPort();
+        obj["relay_host"] = settings_->GetSpvrServerHost();
+        obj["relay_port"] = settings_->GetSpvrServerPort();
+        obj["relay_appkey"] = grApp->GetAppkey();
         return obj.dump();
     }
 
@@ -299,14 +302,14 @@ namespace tc
     std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& relay_host,
                                                                                     int relay_port,
                                                                                     const std::string& device_id,
+                                                                                    const std::string& relay_appkey,
                                                                                     bool show_dialog) {
         if (!settings_->HasRelayServerConfig()) {
             return nullptr;
         }
 
-        auto appkey = grApp->GetAppkey();
         auto srv_remote_device_id = "server_" + device_id;
-        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id, appkey);
+        auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id, relay_appkey);
         if (!relay_result) {
             LOGE("Get device info for: {} failed: {}", srv_remote_device_id, relay::RelayError2String(relay_result.error()));
             if (show_dialog) {

@@ -42,9 +42,9 @@ namespace tc
     void StreamStateChecker::CheckState(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items) {
         for (auto& item : items) {
             bool online = false;
-            if (item->IsRelay()) {
+            if (item->HasRelayInfo()) {
                 // to check in server
-                auto device_info = context_->GetRelayServerSideDeviceInfo(item->stream_host_, item->stream_port_, item->remote_device_id_, false);
+                auto device_info = context_->GetRelayServerSideDeviceInfo(item->relay_host_, item->relay_port_, item->relay_appkey_, item->remote_device_id_, false);
                 if (device_info && relay::RelayApi::IsRelayDeviceValid(device_info)) {
                     online = true;
                 }

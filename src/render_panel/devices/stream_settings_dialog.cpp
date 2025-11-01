@@ -386,12 +386,12 @@ namespace tc
 
             //
             if (stream_item_->IsValid()) {
-                if (stream_item_->network_type_ == kStreamItemNtTypeWebSocket) {
-                    btn_ws->setChecked(true);
-                }
-                else if (stream_item_->network_type_ == kStreamItemNtTypeRelay) {
-                    btn_relay->setChecked(true);
-                }
+//                if (stream_item_->network_type_ == kStreamItemNtTypeWebSocket) {
+//                    btn_ws->setChecked(true);
+//                }
+//                else if (stream_item_->network_type_ == kStreamItemNtTypeRelay) {
+//                    btn_relay->setChecked(true);
+//                }
 //                else if (stream_item_->network_type_ == kStreamItemNtTypeUdpKcp) {
 //                    btn_udp_kcp->setChecked(true);
 //                }

@@ -23,7 +23,7 @@ namespace tc
     class RunningStreamManager {
     public:
         explicit RunningStreamManager(const std::shared_ptr<GrContext>& ctx);
-        void StartStream(const std::shared_ptr<spvr::SpvrStream>& item);
+        void StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type);
         void StopStream(const std::shared_ptr<spvr::SpvrStream>& item);
 
     private:

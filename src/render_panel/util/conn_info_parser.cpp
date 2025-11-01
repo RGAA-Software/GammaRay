@@ -41,6 +41,16 @@ namespace tc
             conn_info->panel_srv_port_ = obj["panel_srv_port"].get<int>();
             conn_info->render_srv_port_ = obj["render_srv_port"].get<int>();
 
+            if (!obj["relay_host"].is_null()) {
+                conn_info->relay_host_ = obj["relay_host"].get<std::string>();
+            }
+            if (!obj["relay_port"].is_null()) {
+                conn_info->relay_port_ = obj["relay_port"].get<int>();
+            }
+            if (!obj["relay_appkey"].is_null()) {
+                conn_info->relay_appkey_ = obj["relay_appkey"].get<std::string>();
+            }
+
             return conn_info;
         }
         catch(std::exception& e) {

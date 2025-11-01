@@ -34,7 +34,7 @@ namespace tc
         });
     }
 
-    void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item) {
+    void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type) {
         // loading dialog
         auto loading = std::make_shared<StartStreamLoading>(context_, item);
         loading->setWindowFlag(Qt::WindowStaysOnTopHint, true);
@@ -68,7 +68,7 @@ namespace tc
             << std::format("--clipboard={}", item->clipboard_enabled_).c_str()
             << std::format("--stream_id={}", item->stream_id_).c_str()
             << std::format("--conn_type={}", item->connect_type_).c_str()
-            << std::format("--network_type={}", item->network_type_).c_str()
+            << std::format("--network_type={}", network_type).c_str()
             << std::format("--stream_name={}", Base64::Base64Encode(item->stream_name_)).c_str()
             << std::format("--device_id={}", settings_->GetDeviceId()).c_str()
             << std::format("--device_rp={}", Base64::Base64Encode(settings_->GetDeviceRandomPwd())).c_str()
@@ -79,7 +79,7 @@ namespace tc
             << std::format("--enable_p2p={}", item->enable_p2p_).c_str()
             << std::format("--show_max_window={}", settings_->IsMaxWindowEnabled() ? 1 : 0).c_str()
             << std::format("--display_name={}", [=, this]() -> std::string {
-                if (item->network_type_ == kStreamItemNtTypeRelay) {
+                if (network_type == kStreamItemNtTypeRelay) {
                     return settings_->GetDeviceId();
                 }
                 else {
@@ -87,7 +87,7 @@ namespace tc
                 }
             }()).c_str()
             << std::format("--display_remote_name={}", [=, this]() -> std::string {
-                if (item->network_type_ == kStreamItemNtTypeRelay) {
+                if (network_type == kStreamItemNtTypeRelay) {
                     return item->remote_device_id_;
                 }
                 else {

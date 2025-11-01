@@ -23,7 +23,7 @@ namespace tc
         this->bg_color_ = bg_color;
         this->setStyleSheet("background:#00000000;");
         if (icon_.isNull()) {
-            if (item->IsRelay()) {
+            if (item->HasRelayInfo()) {
                 icon_ = QPixmap::fromImage(QImage(":/resources/image/ic_windows_relay.svg"));
             } else {
                 icon_ = QPixmap::fromImage(QImage(":/resources/image/ic_windows_direct.svg"));
@@ -74,16 +74,16 @@ namespace tc
 
         // work mode
         work_mode_ = new TcLabel(this);
-        if (item->network_type_ == kStreamItemNtTypeWebSocket) {
-            // direct
-            work_mode_->SetTextId("id_direct");
-            work_mode_->setStyleSheet("font-size: 13px; font-weight: 700; color: #3e6682;");
-        }
-        else {
-            // relay
-            work_mode_->SetTextId("id_relay");
-            work_mode_->setStyleSheet("font-size: 13px; font-weight: 700; color: #438761;");
-        }
+//        if (item->network_type_ == kStreamItemNtTypeWebSocket) {
+//            // direct
+//            work_mode_->SetTextId("id_direct");
+//            work_mode_->setStyleSheet("font-size: 13px; font-weight: 700; color: #3e6682;");
+//        }
+//        else {
+//            // relay
+//            work_mode_->SetTextId("id_relay");
+//            work_mode_->setStyleSheet("font-size: 13px; font-weight: 700; color: #438761;");
+//        }
     }
 
     StreamItemWidget::~StreamItemWidget() {
@@ -133,7 +133,7 @@ namespace tc
             //painter.setPen(QPen(QColor(0x555555)));
             painter.setPen(QPen(QColor(0x2979ff)));
             auto stream_name = item_->stream_name_;
-            if (item_->IsRelay()) {
+            if (item_->HasRelayInfo()) {
                 stream_name = tc::SpaceId(item_->remote_device_id_);
             }
             else {
@@ -163,7 +163,7 @@ namespace tc
             painter.setFont(font);
             painter.setPen(QPen(QColor(0x77777777)));
             auto desktop_name = item_->desktop_name_;
-            if (item_->IsRelay()) {
+            if (item_->HasRelayInfo()) {
                 desktop_name = tc::SpaceId(desktop_name);
             }
             painter.drawText(QRect(15, y_offset, this->width(), 20), Qt::AlignVCenter, desktop_name.c_str());

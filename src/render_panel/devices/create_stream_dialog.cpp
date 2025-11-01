@@ -197,12 +197,12 @@ namespace tc
 
             //
             if (stream_item_->IsValid()) {
-                if (stream_item_->network_type_ == kStreamItemNtTypeWebSocket) {
-                    btn_ws->setChecked(true);
-                }
-                else if (stream_item_->network_type_ == kStreamItemNtTypeRelay) {
-                    btn_relay->setChecked(true);
-                }
+//                if (stream_item_->network_type_ == kStreamItemNtTypeWebSocket) {
+//                    btn_ws->setChecked(true);
+//                }
+//                else if (stream_item_->network_type_ == kStreamItemNtTypeRelay) {
+//                    btn_relay->setChecked(true);
+//                }
 //                else if (stream_item_->network_type_ == kStreamItemNtTypeUdpKcp) {
 //                    btn_udp_kcp->setChecked(true);
 //                }
@@ -333,7 +333,6 @@ namespace tc
             item->stream_port_ = port;
             item->encode_bps_ = bitrate;
             item->encode_fps_ = cb_fps_ ? std::atoi(cb_fps_->currentText().toStdString().c_str()) : 0;
-            item->network_type_ = kStreamItemNtTypeWebSocket;
             item->clipboard_enabled_ = true;
         };
 
