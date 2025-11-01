@@ -6,7 +6,7 @@
 #define TC_SERVER_STEAM_TAB_SERVER_H
 
 #include "tab_base.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 
 #include <QListWidget>
 #include <QListWidgetItem>
@@ -57,7 +57,7 @@ namespace tc
         TcImageButton* btn_hide_random_pwd_ = nullptr;
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<StreamDBOperator> stream_db_mgr_ = nullptr;
-        std::vector<std::shared_ptr<StreamItem>> recent_streams_;
+        std::vector<std::shared_ptr<spvr::SpvrStream>> recent_streams_;
     };
 }
 

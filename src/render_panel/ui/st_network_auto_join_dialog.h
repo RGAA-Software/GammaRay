@@ -2,8 +2,8 @@
 // Created by RGAA on 2023-08-18.
 //
 
-#ifndef SAILFISH_CLIENT_PC_EDIT_RELAY_STREAM_DIALOG_H
-#define SAILFISH_CLIENT_PC_EDIT_RELAY_STREAM_DIALOG_H
+#ifndef ST_NETWORK_AUTO_JOIN_DIALOG_H
+#define ST_NETWORK_AUTO_JOIN_DIALOG_H
 
 #include <QDialog>
 #include <QHBoxLayout>
@@ -23,22 +23,26 @@ namespace tc
 {
 
     class GrContext;
+    class GrApplication;
     class TcPasswordInput;
+    class StNetworkSpvrAccessInfo;
 
-    class EditRelayStreamDialog : public TcCustomTitleBarDialog {
+    class StNetworkAutoJoinDialog : public TcCustomTitleBarDialog {
     public:
-        EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent = nullptr);
-        ~EditRelayStreamDialog() override;
+        StNetworkAutoJoinDialog(const std::shared_ptr<GrApplication>& app, const std::shared_ptr<StNetworkSpvrAccessInfo>& item, QWidget* parent = nullptr);
+        ~StNetworkAutoJoinDialog() override;
 
         void paintEvent(QPaintEvent *event) override;
+        void closeEvent(QCloseEvent *) override;
 
     private:
         void CreateLayout();
 
     private:
+        std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         QLineEdit* edt_stream_name_ = nullptr;
-        std::shared_ptr<spvr::SpvrStream> stream_item_;
+        std::shared_ptr<StNetworkSpvrAccessInfo> item_ = nullptr;
         TcPasswordInput* password_input_ = nullptr;
 
     };

@@ -155,7 +155,7 @@ namespace tc
 
         hw_info_widget_ = new HWInfoWidget(true, nullptr);
         hw_info_widget_->setWindowTitle(tcTr("id_remote_hw"));
-        hw_info_widget_->resize(QSize(1200, 800));
+        hw_info_widget_->resize(QSize(1260, 880));
         hw_info_widget_->hide();
     }
 
@@ -1097,6 +1097,8 @@ namespace tc
                 dialog.exec();
                 Exit();
             });
+            context_->SendAppMessage(MsgStopTheWorld{});
+            ExitSdk();
         }
         else if (msg->type() == MessageType::kHardwareInfo) {
             context_->PostTask([=, this]() {
@@ -1253,5 +1255,12 @@ namespace tc
 
     void BaseWorkspace::PostFileTransferMessage(std::shared_ptr<Data> msg) {
         sdk_->PostFileTransferMessage(msg);
+    }
+
+    void BaseWorkspace::ExitSdk() {
+        if (sdk_) {
+            sdk_->Exit();
+            sdk_ = nullptr;
+        }
     }
 }

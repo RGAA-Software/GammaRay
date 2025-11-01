@@ -46,17 +46,17 @@
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_password_input.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
+#include "tc_spvr_client/spvr_device.h"
 #include "tc_common_new/base64.h"
 #include "tc_common_new/tc_aes.h"
-#include "tc_manager_client/mgr_device_operator.h"
-#include "tc_manager_client/mgr_device.h"
 #include "render_panel/devices/running_stream_manager.h"
 #include "render_panel/database/stream_db_operator.h"
 #include "render_panel/gr_workspace.h"
 #include "relay_message.pb.h"
 #include "tc_profile_client/profile_api.h"
 #include "render_panel/companion/panel_companion.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
@@ -200,8 +200,10 @@ namespace tc
                             return;
                         }
                         context_->PostTask([=, this]() {
-                            auto dev_opt = grApp->GetDeviceOperator();
-                            auto opt_device = dev_opt->UpdateRandomPwd(settings_->GetDeviceId());
+                            auto opt_device = spvr::SpvrDeviceApi::UpdateRandomPwd(settings_->GetSpvrServerHost(),
+                                                                             settings_->GetSpvrServerPort(),
+                                                                             grApp->GetAppkey(),
+                                                                             settings_->GetDeviceId());
                             if (!opt_device.has_value()) {
                                 LOGE("Refresh random password failed, code: {}", (int)opt_device.error());
                                 return;
@@ -459,7 +461,7 @@ namespace tc
                             return;
                         }
 
-                        std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+                        std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
                         item->stream_id_ = "id_" + remote_device_id;
                         item->stream_name_ = remote_device_id;
                         item->stream_host_ = relay_device_info->relay_server_ip();

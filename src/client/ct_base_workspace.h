@@ -132,6 +132,9 @@ namespace tc
         //uint64_t adapter_uid
         bool GenerateD3DDevice();
 
+        // exit sdk
+        void ExitSdk();
+
     protected:
         Settings* settings_ = nullptr;
         std::shared_ptr<ThunderSdkParams> params_ = nullptr;

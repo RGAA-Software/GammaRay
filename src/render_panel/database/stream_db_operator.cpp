@@ -19,7 +19,7 @@ extern "C" {
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/time_util.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 
 using namespace sqlite_orm;
 
@@ -35,7 +35,7 @@ namespace tc
 
     }
 
-    void StreamDBOperator::AddStream(const std::shared_ptr<StreamItem>& stream) {
+    void StreamDBOperator::AddStream(const std::shared_ptr<spvr::SpvrStream>& stream) {
         if (stream->stream_id_.empty()) {
             stream->stream_id_ = GenUUID();
         }
@@ -51,15 +51,15 @@ namespace tc
     bool StreamDBOperator::HasStream(const std::string& stream_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        auto streams = storage.get_all<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_id_) == stream_id));
         return !streams.empty();
     }
 
-    bool StreamDBOperator::UpdateStream(std::shared_ptr<StreamItem> stream) {
+    bool StreamDBOperator::UpdateStream(std::shared_ptr<spvr::SpvrStream> stream) {
         stream->updated_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream->stream_id_));
+        auto streams = storage.get_all<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_id_) == stream->stream_id_));
         if (streams.size() == 1) {
             storage.update(*stream);
         }
@@ -77,7 +77,7 @@ namespace tc
 
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        auto streams = storage.get_all<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_id_) == stream_id));
         if (streams.size() == 1) {
             storage.update(*stream);
         }
@@ -95,17 +95,17 @@ namespace tc
 
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        auto streams = storage.get_all<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_id_) == stream_id));
         if (streams.size() == 1) {
             storage.update(*stream);
         }
         return true;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamByStreamId(const std::string& stream_id) {
+    std::optional<std::shared_ptr<spvr::SpvrStream>> StreamDBOperator::GetStreamByStreamId(const std::string& stream_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_id_) == stream_id));
+        auto streams = storage.get_all_pointer<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_id_) == stream_id));
         if (streams.empty()) {
             return std::nullopt;
         }
@@ -113,10 +113,10 @@ namespace tc
         return target_stream;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamByHostPort(const std::string& host, int port) {
+    std::optional<std::shared_ptr<spvr::SpvrStream>> StreamDBOperator::GetStreamByHostPort(const std::string& host, int port) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::stream_host_) == host and c(&StreamItem::stream_port_) == port));
+        auto streams = storage.get_all_pointer<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_host_) == host and c(&spvr::SpvrStream::stream_port_) == port));
         if (streams.empty()) {
             return std::nullopt;
         }
@@ -124,52 +124,52 @@ namespace tc
         return target_stream;
     }
 
-    std::optional<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
+    std::optional<std::shared_ptr<spvr::SpvrStream>> StreamDBOperator::GetStreamByRemoteDeviceId(const std::string& remote_device_id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto streams = storage.get_all_pointer<StreamItem>(where(c(&StreamItem::remote_device_id_) == remote_device_id));
+        auto streams = storage.get_all_pointer<spvr::SpvrStream>(where(c(&spvr::SpvrStream::remote_device_id_) == remote_device_id));
         if (streams.empty()) {
             return std::nullopt;
         }
-        std::shared_ptr<StreamItem> target_stream = std::move(streams[0]);
+        std::shared_ptr<spvr::SpvrStream> target_stream = std::move(streams[0]);
         return target_stream;
     }
 
-//    std::vector<StreamItem> StreamDBManager::GetAllStreams() {
+//    std::vector<spvr::SpvrStream> StreamDBManager::GetAllStreams() {
 //        using Storage = decltype(db_->GetStorageTypeValue());
 //        auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-//        return storage.get_all<StreamItem>();
+//        return storage.get_all<spvr::SpvrStream>();
 //    }
 
-    std::vector<std::shared_ptr<StreamItem>> StreamDBOperator::GetAllStreamsSortByCreatedTime(bool increase) {
+    std::vector<std::shared_ptr<spvr::SpvrStream>> StreamDBOperator::GetAllStreamsSortByCreatedTime(bool increase) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        auto unique_streams = storage.get_all_pointer<StreamItem>([=]() -> auto {
+        auto unique_streams = storage.get_all_pointer<spvr::SpvrStream>([=]() -> auto {
             if (increase) {
-                return order_by(&StreamItem::created_timestamp_);
+                return order_by(&spvr::SpvrStream::created_timestamp_);
             } else {
-                return order_by(&StreamItem::created_timestamp_).desc();
+                return order_by(&spvr::SpvrStream::created_timestamp_).desc();
             }
         }());
 
-        std::vector<std::shared_ptr<StreamItem>> streams;
+        std::vector<std::shared_ptr<spvr::SpvrStream>> streams;
         for (auto& st : unique_streams) {
             streams.push_back(std::move(st));
         }
         return streams;
     }
 
-    std::vector<std::shared_ptr<StreamItem>> StreamDBOperator::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
+    std::vector<std::shared_ptr<spvr::SpvrStream>> StreamDBOperator::GetStreamsSortByCreatedTime(int page, int page_size, bool increase) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         int offset_size = (page - 1) * page_size;
-        auto unique_streams = storage.get_all_pointer<StreamItem>(
-            where(c(&StreamItem::network_type_) == "relay"),
-            order_by(&StreamItem::created_timestamp_).desc(),
+        auto unique_streams = storage.get_all_pointer<spvr::SpvrStream>(
+            where(c(&spvr::SpvrStream::network_type_) == "relay"),
+            order_by(&spvr::SpvrStream::created_timestamp_).desc(),
             limit(page_size, offset(offset_size))
         );
 
-        std::vector<std::shared_ptr<StreamItem>> streams;
+        std::vector<std::shared_ptr<spvr::SpvrStream>> streams;
         for (auto& ust : unique_streams) {
             streams.push_back(std::move(ust));
         }
@@ -179,7 +179,7 @@ namespace tc
     void StreamDBOperator::DeleteStream(int id) {
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
-        storage.remove<StreamItem>(id);
+        storage.remove<spvr::SpvrStream>(id);
     }
 
     std::string StreamDBOperator::GenUUID() {

@@ -21,6 +21,48 @@ namespace tc
         std::string appkey_;
     };
 
+    // SpvrSrvConfig
+    class SpvrSrvConfig {
+    public:
+        std::string srv_name_;
+        std::string srv_type_;
+        std::string srv_w3c_ip_;
+        int srv_working_port_ = 0;
+        std::string srv_appkey_;
+
+    public:
+        [[nodiscard]] bool IsValid() const {
+            return !srv_w3c_ip_.empty() && srv_working_port_ > 0 && !srv_appkey_.empty();
+        }
+    };
+
+    // RelaySrvConfig
+    class RelaySrvConfig {
+    public:
+        std::string srv_name_;
+        std::string srv_type_;
+        std::string srv_w3c_ip_;
+        int srv_working_port_ = 0;
+        std::string srv_appkey_;
+
+    public:
+        [[nodiscard]] bool IsValid() const {
+            return !srv_w3c_ip_.empty() && srv_working_port_ > 0 && !srv_appkey_.empty();
+        }
+    };
+
+    // Spvr Access
+    class SpvrAccessInfo {
+    public:
+        bool IsValid() {
+            return spvr_config_.IsValid() && !relay_configs_.empty();
+        }
+
+    public:
+        SpvrSrvConfig spvr_config_;
+        std::vector<RelaySrvConfig> relay_configs_;
+    };
+
     //
     class PanelCompanion {
     public:
@@ -45,6 +87,9 @@ namespace tc
         virtual void UpdateCurrentCpuFrequency(float freq) = 0;
         virtual float GetCurrentCpuFrequency() = 0;
         virtual std::shared_ptr<SysInfo> ParseHardwareInfo(const std::string& info) = 0;
+
+        // spvr access
+        virtual std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info) = 0;
     };
 
 }

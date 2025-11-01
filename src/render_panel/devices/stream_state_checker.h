@@ -10,14 +10,18 @@
 #include <vector>
 #include <functional>
 
+namespace spvr
+{
+    class SpvrStream;
+}
+
 namespace tc
 {
 
     class GrContext;
-    class StreamItem;
     class MessageListener;
 
-    using OnStreamStateCheckedCallback = std::function<void(std::vector<std::shared_ptr<StreamItem>>)>;
+    using OnStreamStateCheckedCallback = std::function<void(std::vector<std::shared_ptr<spvr::SpvrStream>>)>;
 
     class StreamStateChecker {
     public:
@@ -25,13 +29,13 @@ namespace tc
         void Start();
         void Exit();
         void SetOnCheckedCallback(OnStreamStateCheckedCallback&&);
-        void UpdateCurrentStreamItems(const std::vector<std::shared_ptr<StreamItem>>& items);
-        void CheckState();
+        void UpdateCurrentStreamItems(std::vector<std::shared_ptr<spvr::SpvrStream>> items);
+    private:
+        void CheckState(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items);
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
-        std::vector<std::shared_ptr<StreamItem>> items_;
         OnStreamStateCheckedCallback on_checked_cbk_;
     };
 

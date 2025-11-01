@@ -6,6 +6,7 @@
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>
+#include <QRegularExpressionValidator>
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_dialog.h"
@@ -13,6 +14,7 @@
 #include "tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
@@ -23,7 +25,7 @@ namespace tc
         CreateLayout();
     }
 
-    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
         setFixedSize(375, 475);
@@ -90,6 +92,8 @@ namespace tc
             layout->addSpacing(10);
 
             auto edit = new QLineEdit(this);
+            auto validator = new QRegularExpressionValidator(QRegularExpression("[\\x20-\\x7E]+"), edit);
+            edit->setValidator(validator);
             ed_host_ = edit;
             if (stream_item_ && stream_item_->IsValid()) {
                 ed_host_->setText(stream_item_->stream_host_.c_str());
@@ -323,7 +327,7 @@ namespace tc
             return false;
         }
 
-        auto func_update_stream = [&](std::shared_ptr<StreamItem>& item) {
+        auto func_update_stream = [&](std::shared_ptr<spvr::SpvrStream>& item) {
             item->stream_name_ = name.empty() ? host : name;
             item->stream_host_ = host;
             item->stream_port_ = port;
@@ -340,7 +344,7 @@ namespace tc
             });
         }
         else {
-            std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+            std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
             func_update_stream(item);
             context_->SendAppMessage(StreamItemAdded {
                 .item_ = item,

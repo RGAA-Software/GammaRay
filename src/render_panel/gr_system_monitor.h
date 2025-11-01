@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <deque>
+#include <mutex>
 #include <functional>
 #include "tc_common_new/response.h"
 
@@ -58,6 +59,7 @@ namespace tc
 
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<ServiceManager> service_manager_ = nullptr;
+        std::mutex cpu_frequency_mtx_;
         std::deque<double> current_cpu_frequency_;
     };
 

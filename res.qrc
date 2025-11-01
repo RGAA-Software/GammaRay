@@ -42,8 +42,6 @@
         <file>resources/image/ic_close_notification.svg</file>
         <file>resources/image/ic_mail.svg</file>
         <file>resources/image/test_cover.png</file>
-        <file>resources/image/tc_icon.png</file>
-        <file>resources/image/tc_icon_raw.png</file>
         <file>resources/image/ic_transfer.svg</file>
         <file>resources/image/ic_arrow_right_1.svg</file>
         <file>resources/image/ic_arrow_right_2.svg</file>
@@ -90,6 +88,8 @@
         <file>resources/image/ic_hard_disk.svg</file>
         <file>resources/image/ic_running.svg</file>
         <file>resources/image/ic_network.svg</file>
+        <file>resources/image/ic_not_login.svg</file>
+        <file>resources/image/ic_default_avatar.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

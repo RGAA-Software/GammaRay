@@ -2,8 +2,7 @@
 // Created by RGAA on 2023-08-18.
 //
 
-#ifndef SAILFISH_CLIENT_PC_EDIT_RELAY_STREAM_DIALOG_H
-#define SAILFISH_CLIENT_PC_EDIT_RELAY_STREAM_DIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QHBoxLayout>
@@ -15,20 +14,19 @@
 #include <QRadioButton>
 #include <QComboBox>
 #include <QPainter>
-
-#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/tc_custom_titlebar_dialog.h"
 
 namespace tc
 {
 
+    class SpvrUser;
     class GrContext;
     class TcPasswordInput;
 
-    class EditRelayStreamDialog : public TcCustomTitleBarDialog {
+    class UserLoginDialog : public TcCustomTitleBarDialog {
     public:
-        EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent = nullptr);
-        ~EditRelayStreamDialog() override;
+        UserLoginDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
+        ~UserLoginDialog() override;
 
         void paintEvent(QPaintEvent *event) override;
 
@@ -37,12 +35,9 @@ namespace tc
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
-        QLineEdit* edt_stream_name_ = nullptr;
-        std::shared_ptr<spvr::SpvrStream> stream_item_;
+        QLineEdit* edt_username_ = nullptr;
         TcPasswordInput* password_input_ = nullptr;
 
     };
 
 }
-
-#endif //SAILFISH_CLIENT_PC_CREATESTREAMDIALOG_H

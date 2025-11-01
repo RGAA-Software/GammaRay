@@ -248,6 +248,11 @@ namespace tc
     public:
         bool visible_ = false;
     };
+
+    // STOP the world
+    class MsgStopTheWorld : public MsgClientBase {
+    public:
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

@@ -8,7 +8,7 @@
 #include <QWidget>
 #include <memory>
 #include <functional>
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 
 namespace tc
 {
@@ -16,7 +16,7 @@ namespace tc
     class GrContext;
     class AppStreamList;
 
-    using OnStartingStreamCallback = std::function<void(const StreamItem&)>;
+    using OnStartingStreamCallback = std::function<void(const spvr::SpvrStream&)>;
 
     class AddButton : public QLabel {
     public:

@@ -8,7 +8,7 @@
 #include "tc_common_new/http_client.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "relay_message.pb.h"
 #include "tc_relay_client/relay_api.h"
 
@@ -18,11 +18,7 @@ namespace tc
     StreamStateChecker::StreamStateChecker(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
         msg_listener_ = context_->ObtainMessageListener();
-        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
-            context_->PostTask([this]() {
-                this->CheckState();
-            });
-        });
+
     }
 
     void StreamStateChecker::Start() {
@@ -33,10 +29,9 @@ namespace tc
 
     }
 
-    void StreamStateChecker::UpdateCurrentStreamItems(const std::vector<std::shared_ptr<StreamItem>>& items) {
-        items_ = items;
-        context_->PostTask([this]() {
-            this->CheckState();
+    void StreamStateChecker::UpdateCurrentStreamItems(std::vector<std::shared_ptr<spvr::SpvrStream>> items) {
+        context_->PostTask([=, this]() {
+            this->CheckState(items);
         });
     }
 
@@ -44,8 +39,8 @@ namespace tc
         on_checked_cbk_ = cbk;
     }
 
-    void StreamStateChecker::CheckState() {
-        for (auto& item : items_) {
+    void StreamStateChecker::CheckState(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items) {
+        for (auto& item : items) {
             bool online = false;
             if (item->IsRelay()) {
                 // to check in server
@@ -71,7 +66,7 @@ namespace tc
         }
 
         if (on_checked_cbk_) {
-            on_checked_cbk_(items_);
+            on_checked_cbk_(items);
         }
     }
 

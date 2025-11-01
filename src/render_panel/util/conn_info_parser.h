@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace tc
 {
@@ -21,11 +22,6 @@ namespace tc
         };
 
     public:
-        bool IsValid() const {
-            return render_srv_port_ > 0 && !hosts_.empty();
-        }
-
-    public:
         std::string device_id_;
         std::string random_pwd_;
         int icon_idx_{0};
@@ -35,6 +31,22 @@ namespace tc
         // relay server
         std::string relay_host_;
         int relay_port_{0};
+
+    public:
+        [[nodiscard]] bool IsValid() const {
+            return render_srv_port_ > 0 && !hosts_.empty();
+        }
+
+        std::string Dump() {
+            std::stringstream ss;
+            ss << "Connection info: " << std::endl;
+            ss << "Device Info: " << device_id_ << ", " << random_pwd_ << ", relay: " << relay_host_ << "," << relay_port_ << std::endl;
+            ss << "Device IP:" << std::endl;
+            for (const auto& ch : hosts_) {
+                ss << ch.ip_ << "" << std::endl;
+            }
+            return ss.str();
+        }
     };
 
     // parse gammaray://xxxx

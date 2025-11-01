@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QTextEdit>
 #include "tab_base.h"
 
 namespace tc
@@ -15,6 +16,7 @@ namespace tc
 
     class GrApplication;
     class MessageListener;
+    class SpvrAccessInfo;
 
     class StNetwork : public TabBase {
     public:
@@ -25,7 +27,16 @@ namespace tc
         void OnTabHide() override;
 
     private:
+        std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info);
+        void DisplaySpvrAccessInfo(const std::shared_ptr<SpvrAccessInfo>& info);
+        void SaveSpvrAccessInfo();
+        void SearchAccessInfo(bool auto_restart_render);
+        void VerifyAccessInfo();
+        void Save(bool auto_restart_render);
+
+    private:
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        QTextEdit* edt_spvr_access_ = nullptr;
         QLineEdit* edt_spvr_server_host_ = nullptr;
         QLineEdit* edt_spvr_server_port_ = nullptr;
         QLineEdit* edt_relay_server_host_ = nullptr;

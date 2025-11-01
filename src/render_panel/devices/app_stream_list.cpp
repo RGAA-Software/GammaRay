@@ -66,7 +66,7 @@ namespace tc
 
         //
         state_checker_ = std::make_shared<StreamStateChecker>(context_);
-        state_checker_->SetOnCheckedCallback([=, this](const std::vector<std::shared_ptr<StreamItem>>& stream_items) {
+        state_checker_->SetOnCheckedCallback([=, this](const std::vector<std::shared_ptr<spvr::SpvrStream>>& stream_items) {
             context_->PostUITask([=, this]() {
                 int count = stream_list_->count();
                 for (int i = 0; i < count; i++) {
@@ -85,7 +85,7 @@ namespace tc
         state_checker_->Start();
         context_->PostUIDelayTask([=, this]() {
             context_->PostTask([=, this]() {
-                state_checker_->CheckState();
+                state_checker_->UpdateCurrentStreamItems(streams_);
             });
         }, 2200);
     }
@@ -148,7 +148,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            std::shared_ptr<StreamItem> exist_stream_item = nullptr;
+            std::shared_ptr<spvr::SpvrStream> exist_stream_item = nullptr;
             // by stream id
             {
                 auto opt_stream = db_mgr_->GetStreamByStreamId(item->stream_id_);
@@ -229,6 +229,12 @@ namespace tc
         msg_listener_->Listen<MsgClientConnectedPanel>([=, this](const MsgClientConnectedPanel& msg) {
 
         });
+
+        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
+            context_->PostTask([this]() {
+                state_checker_->UpdateCurrentStreamItems(streams_);
+            });
+        });
     }
 
     void AppStreamList::RegisterActions(int index) {
@@ -263,7 +269,7 @@ namespace tc
         delete menu;
     }
 
-    void AppStreamList::ProcessAction(int index, const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ProcessAction(int index, const std::shared_ptr<spvr::SpvrStream>& item) {
         if (index == 0) {
             // connect
             StartStream(item, false);
@@ -303,7 +309,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::StartStream(const std::shared_ptr<StreamItem>& item, bool force_only_viewing) {
+    void AppStreamList::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -420,42 +426,43 @@ namespace tc
             }
 
             // verify security password
-            auto r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
-            auto ok = r.value_or(false);
-            for (;;) {
-                LOGI("VerifySecurityPassword result: {}", ok);
-                if (!ok) {
-                    LOGI("VerifySecurityPassword result 1: {}", ok);
-                    InputRemotePwdDialog dlg_input_pwd(context_);
-                    if (dlg_input_pwd.exec() == 1) {
-                        return;
-                    }
-                    auto input_password = dlg_input_pwd.GetInputPassword();
-                    if (input_password.isEmpty()) {
-                        context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_input_necessary_info"));
-                        continue;
-                    }
-
-                    // md5 pwd
-                    auto pwd_md5 = MD5::Hex(input_password.toStdString());
-
-                    r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, pwd_md5);
-                    ok = r.value_or(false);
+            if (!target_item->remote_device_safety_pwd_.empty()) {
+                auto r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_, target_item->remote_device_safety_pwd_);
+                auto ok = r.value_or(false);
+                for (;;) {
+                    LOGI("VerifySecurityPassword result: {}", ok);
                     if (!ok) {
-                        context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
-                    }
-                    else {
-                        // update to database
-                        context_->PostDBTask([=, this]() {
-                            auto mgr = context_->GetStreamDBManager();
-                            mgr->UpdateStreamSafetyPwd(target_item->stream_id_, pwd_md5);
-                            LoadStreamItems();
-                        });
+                        LOGI("VerifySecurityPassword result 1: {}", ok);
+                        InputRemotePwdDialog dlg_input_pwd(context_);
+                        if (dlg_input_pwd.exec() == 1) {
+                            return;
+                        }
+                        auto input_password = dlg_input_pwd.GetInputPassword();
+                        if (input_password.isEmpty()) {
+                            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_input_necessary_info"));
+                            continue;
+                        }
+
+                        // md5 pwd
+                        auto pwd_md5 = MD5::Hex(input_password.toStdString());
+
+                        r = RenderApi::VerifySecurityPassword(target_item->stream_host_, target_item->stream_port_,
+                                                              pwd_md5);
+                        ok = r.value_or(false);
+                        if (!ok) {
+                            context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_password_invalid_msg"));
+                        } else {
+                            // update to database
+                            context_->PostDBTask([=, this]() {
+                                auto mgr = context_->GetStreamDBManager();
+                                mgr->UpdateStreamSafetyPwd(target_item->stream_id_, pwd_md5);
+                                LoadStreamItems();
+                            });
+                            break;
+                        }
+                    } else {
                         break;
                     }
-                }
-                else {
-                    break;
                 }
             }
         }
@@ -463,7 +470,7 @@ namespace tc
         running_stream_mgr_->StartStream(target_item);
     }
 
-    void AppStreamList::StopStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::StopStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -472,7 +479,7 @@ namespace tc
         running_stream_mgr_->StopStream(si.value());
     }
 
-    void AppStreamList::LockDevice(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::LockDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
         if (!item->online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
@@ -486,7 +493,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::RestartDevice(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::RestartDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
         if (!item->online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
@@ -500,7 +507,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::ShutdownDevice(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ShutdownDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
         if (!item->online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
@@ -514,7 +521,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::EditStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -530,7 +537,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::DeleteStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::DeleteStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_remote_control"), grWorkspace.get());
         if (dialog.exec() == kDoneOk) {
             // stop it if running
@@ -542,7 +549,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::ShowSettings(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ShowSettings(const std::shared_ptr<spvr::SpvrStream>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -552,7 +559,7 @@ namespace tc
         dialog->exec();
     }
 
-    QListWidgetItem* AppStreamList::AddItem(const std::shared_ptr<StreamItem>& stream, int index) {
+    QListWidgetItem* AppStreamList::AddItem(const std::shared_ptr<spvr::SpvrStream>& stream, int index) {
         auto item = new QListWidgetItem(stream_list_);
         item->setSizeHint(QSize(230, 150));
         auto widget = new StreamItemWidget(stream, stream->bg_color_, stream_list_);

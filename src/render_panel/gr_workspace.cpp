@@ -12,6 +12,8 @@
 #include <QApplication>
 #include <QMenu>
 #include <dwmapi.h>
+#include <QSvgRenderer>
+#include <QPainter>
 
 #include "tc_qt_widget/custom_tab_btn.h"
 #include "tc_qt_widget/widget_helper.h"
@@ -33,6 +35,11 @@
 #include "tc_qt_widget/tc_dialog.h"
 #include "version_config.h"
 #include "tc_common_new/win32/process_helper.h"
+#include "tc_label.h"
+#include "no_margin_layout.h"
+#include "ui/user/user_login_dialog.h"
+#include "ui/user/user_register_dialog.h"
+#include "tc_spvr_client/spvr_user_api.h"
 
 namespace tc
 {
@@ -121,18 +128,51 @@ namespace tc
 
             // logo
             {
-                auto logo = new QLabel(this);
-                int logo_size = 80;
+                // logo
+                auto logo_layout = new NoMarginHLayout();
+                auto logo = new TcLabel(this);
+                int logo_size = 50;
                 logo->setFixedSize(logo_size, logo_size);
                 logo->setScaledContents(true);
-                logo->setStyleSheet(R"(
-                    border: none;
-                    border-image: url(:/resources/tc_icon.png);
-                    background-repeat: no-repeat;
-                    background-position: center;
-                )");
+                auto pixmap = WidgetHelper::RenderSvgToPixmap(":/resources/image/ic_not_login.svg", QSize(logo_size, logo_size));
+                logo->setPixmap(pixmap);
+                logo_layout->addSpacing(20);
+                logo_layout->addWidget(logo);
+                logo->SetOnClickListener([=, this](QWidget* w) {
+                    this->ShowUserRegisterDialog();
+                });
+                logo_layout->addSpacing(8);
+
+                // name
+                auto name_layout = new NoMarginVLayout();
+                name_layout->addStretch();
+                auto lbl = new TcLabel(this);
+                lbl->setMaximumWidth(125);
+                lbl->setStyleSheet("font-weight: 700; color: #333333; font-size: 15px;");
+                lbl->SetTextId("id_guest");
+                lbl->SetOnClickListener([=, this](QWidget* w) {
+                    this->ShowUserRegisterDialog();
+                });
+                name_layout->addWidget(lbl);
+
+                name_layout->addSpacing(3);
+
+                auto lbl_version = new TcLabel(this);
+#if PREMIUM_VERSION
+                lbl_version->setStyleSheet("font-weight: 700; color: #2979ff; font-size: 12px;");
+#else
+                lbl_version->setStyleSheet("font-weight: 700; color: #666666; font-size: 12px;");
+#endif
+                lbl_version->setText(version);
+                name_layout->addWidget(lbl_version);
+
+                name_layout->addStretch();
+                logo_layout->addLayout(name_layout);
+                logo_layout->addStretch();
+                //
+
                 layout->addSpacing(45);
-                layout->addWidget(logo, 0, Qt::AlignHCenter);
+                layout->addLayout(logo_layout);
             }
 
             // buttons
@@ -245,7 +285,8 @@ namespace tc
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
-            layout->addStretch();
+            /// Splitter
+            layout->addStretch(100);
 
             auto exit_btn_size = QSize(btn_size.width(), btn_size.height() - 5);
             // stop all
@@ -291,8 +332,9 @@ namespace tc
                     background-repeat: no-repeat;
                     background-position: center;
                 )");
+                layout->addSpacing(8);
                 layout->addWidget(lbl, 0, Qt::AlignHCenter);
-                layout->addSpacing(15);
+                layout->addSpacing(8);
             }
 
             root_layout->addLayout(layout);
@@ -458,6 +500,25 @@ namespace tc
                 }
             }, 1000);
         }
+    }
+
+    void GrWorkspace::ShowUserRegisterDialog() {
+//        UserLoginDialog login_dialog(app_->GetContext());
+//        login_dialog.exec();
+
+        UserRegisterDialog dialog(app_->GetContext());
+        dialog.exec();
+
+        auto username = dialog.GetInputUsername();
+        auto password = dialog.GetInputPassword();
+        auto opt_user = spvr::SpvrUserApi::Register(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), username, password);
+        if (!opt_user.has_value()) {
+            LOGI("Register user failed!");
+            return;
+        }
+        auto user = opt_user.value();
+        LOGI("Register success: {}, {}", user->username_, user->uid_);
+
     }
 
 }

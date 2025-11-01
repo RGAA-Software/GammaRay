@@ -147,7 +147,7 @@ namespace tc
                     }
                 }
 
-                LOGI("url: {}, path: {}", url.toString().toStdString(), url.toLocalFile().toStdString());
+                //LOGI("url: {}, path: {}", url.toString().toStdString(), url.toLocalFile().toStdString());
             }
 
             // debug

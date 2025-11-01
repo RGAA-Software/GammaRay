@@ -20,7 +20,7 @@
 #include <map>
 #include <QProcess>
 
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 
 namespace tc
 {
@@ -33,7 +33,7 @@ namespace tc
     class RunningStreamManager;
     class StreamStateChecker;
 
-    using OnItemDoubleClickedCallback = std::function<void(const std::shared_ptr<StreamItem>&)>;
+    using OnItemDoubleClickedCallback = std::function<void(const std::shared_ptr<spvr::SpvrStream>&)>;
 
     class AppStreamList : public QWidget {
     public:
@@ -43,28 +43,28 @@ namespace tc
         void LoadStreamItems();
 
     private:
-        QListWidgetItem* AddItem(const std::shared_ptr<StreamItem>& item, int index);
+        QListWidgetItem* AddItem(const std::shared_ptr<spvr::SpvrStream>& item, int index);
         QWidget* GetItemByStreamId(const std::string& stream_id);
         void RegisterActions(int index);
-        void ProcessAction(int index, const std::shared_ptr<StreamItem>& item);
+        void ProcessAction(int index, const std::shared_ptr<spvr::SpvrStream>& item);
 
         void CreateLayout();
         void Init();
 
-        void DeleteStream(const std::shared_ptr<StreamItem>& item);
-        void StartStream(const std::shared_ptr<StreamItem>& item, bool force_only_viewing);
-        void StopStream(const std::shared_ptr<StreamItem>& item);
-        void LockDevice(const std::shared_ptr<StreamItem>& item);
-        void RestartDevice(const std::shared_ptr<StreamItem>& item);
-        void ShutdownDevice(const std::shared_ptr<StreamItem>& item);
-        void EditStream(const std::shared_ptr<StreamItem>& item);
-        void ShowSettings(const std::shared_ptr<StreamItem>& item);
+        void DeleteStream(const std::shared_ptr<spvr::SpvrStream>& item);
+        void StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
+        void StopStream(const std::shared_ptr<spvr::SpvrStream>& item);
+        void LockDevice(const std::shared_ptr<spvr::SpvrStream>& item);
+        void RestartDevice(const std::shared_ptr<spvr::SpvrStream>& item);
+        void ShutdownDevice(const std::shared_ptr<spvr::SpvrStream>& item);
+        void EditStream(const std::shared_ptr<spvr::SpvrStream>& item);
+        void ShowSettings(const std::shared_ptr<spvr::SpvrStream>& item);
 
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<StreamDBOperator> db_mgr_ = nullptr;
-        std::vector<std::shared_ptr<StreamItem>> streams_;
+        std::vector<std::shared_ptr<spvr::SpvrStream>> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;
         StreamContent* stream_content_ = nullptr;

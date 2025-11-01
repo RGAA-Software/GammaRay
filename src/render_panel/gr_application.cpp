@@ -21,20 +21,20 @@
 #include "network/gr_spvr_client.h"
 #include "tc_common_new/time_util.h"
 #include "companion/panel_companion.h"
+#include "spvr_scanner/spvr_scanner.h"
 #include "ui/input_safety_pwd_dialog.h"
-#include "tc_manager_client/mgr_device.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_relay_client/relay_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
+#include "tc_spvr_client/spvr_device.h"
 #include "tc_steam_manager_new/steam_manager.h"
-#include "tc_manager_client/mgr_client_sdk.h"
-#include "tc_manager_client/mgr_device_operator.h"
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/http_client.h"
 #include "tc_common_new/win32/firewall_helper.h"
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
 #include "render_panel/gr_guard_starter.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "render_panel/gr_render_msg_processor.h"
 #include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"
@@ -100,8 +100,6 @@ namespace tc
         st->SetContext(context_);
         st->RegisterEventListeners();
 
-        mgr_client_sdk_ = std::make_shared<MgrClientSdk>(context_->GetMessageNotifier());
-
         ws_panel_server_ = WsPanelServer::Make(shared_from_this());
         ws_panel_server_->Start();
 
@@ -122,14 +120,16 @@ namespace tc
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;
         LOGI("** Connection used: {}ms", conn_diff);
 
-        RefreshSigServerSettings();
+        RefreshClientManagerSettings();
         RegisterMessageListener();
         StartWindowsMessagesLooping();
+        spvr_scanner_ = std::make_shared<SpvrScanner>(shared_from_this());
+        spvr_scanner_->StartUdpReceiver(30501);
 
         if (!run_automatically_) {
             context_->PostUIDelayTask([=, this]() {
                 this->UpdateServerSecurityPasswordIfNeeded();
-                CheckSecurityPassword();
+                //CheckSecurityPassword();
             }, 500);
         }
     }
@@ -140,6 +140,9 @@ namespace tc
         }
         if (win_msg_thread_ && win_msg_thread_->IsJoinable()) {
             win_msg_thread_->Join();
+        }
+        if (spvr_scanner_) {
+            spvr_scanner_->Exit();
         }
         context_->Exit();
     }
@@ -192,24 +195,19 @@ namespace tc
         return true;
     }
 
-    void GrApplication::RefreshSigServerSettings() {
+    void GrApplication::RefreshClientManagerSettings() {
         std::shared_ptr<Authorization> auth = nullptr;
         if (companion_) {
             auth = companion_->GetAuth();
         }
-        mgr_client_sdk_->SetSdkParam(MgrClientSdkParam {
-            .host_ = settings_->GetSpvrServerHost(),
-            .port_ = settings_->GetSpvrServerPort(),
-            .ssl_ = false,
-            .appkey_ = auth ? auth->appkey_ : "",
-        });
+        // deprecated //
     }
 
     void GrApplication::RegisterMessageListener() {
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<MsgSettingsChanged>([=, this](const MsgSettingsChanged& msg) {
             LOGI("Settings changed...");
-            RefreshSigServerSettings();
+            RefreshClientManagerSettings();
             bool force_update = settings_->GetDeviceId().empty();
             RequestNewClientId(force_update);
         });
@@ -243,25 +241,25 @@ namespace tc
         });
     }
 
-    void GrApplication::RequestNewClientId(bool force_update) {
+    bool GrApplication::RequestNewClientId(bool force_update, bool sync) {
         if (!force_update && !settings_->GetDeviceId().empty() && !settings_->GetDeviceRandomPwd().empty()) {
-            return;
+            return false;
         }
 
-        context_->PostTask([=, this]() {
+        auto task = [=, this]() -> bool {
             if (!settings_->HasSpvrServerConfig()) {
-                return;
+                return false;
             }
             LOGI("Will request new device!");
-            auto opt_device = mgr_client_sdk_->GetDeviceOperator()->RequestNewDevice("");
+            auto opt_device = spvr::SpvrDeviceApi::RequestNewDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), "");
             if (!opt_device.has_value()) {
                 LOGE("Can't create new device, error: {}", (int)opt_device.error());
-                return;
+                return false;
             }
             auto device = opt_device.value();
-            if (!device) {
+            if (!device || device->device_id_.empty() || device->gen_random_pwd_.empty()) {
                 LOGE("Can't create new device, device is nullptr.");
-                return;
+                return false;
             }
 
             settings_->SetDeviceId(device->device_id_);
@@ -272,10 +270,20 @@ namespace tc
                 .device_random_pwd_ = device->gen_random_pwd_,
                 .force_update_ = force_update,
             });
-
             context_->SendAppMessage(MsgSyncSettingsToRender{});
 
-        });
+            return true;
+        };
+
+        if (sync) {
+            return task();
+        }
+        else {
+            context_->PostTask([=]() {
+                task();
+            });
+            return true;
+        }
     }
 
     void GrApplication::RegisterFirewall() {
@@ -336,14 +344,6 @@ namespace tc
         return false;
     }
 
-    std::shared_ptr<MgrClientSdk> GrApplication::GetManagerClient() {
-        return mgr_client_sdk_;
-    }
-
-    std::shared_ptr<MgrDeviceOperator> GrApplication::GetDeviceOperator() {
-        return mgr_client_sdk_->GetDeviceOperator();
-    }
-
     void GrApplication::CheckSecurityPassword() {
         if (settings_->GetDeviceSecurityPwd().empty()) {
             InputSafetyPwdDialog dialog(grApp, grWorkspace.get());
@@ -356,9 +356,6 @@ namespace tc
             if (settings_->GetDeviceSecurityPwd().empty()) {
                 return;
             }
-
-            auto dev_opt = GetDeviceOperator();
-            dev_opt->QueryDevice("");
         });
     }
 
@@ -474,4 +471,7 @@ namespace tc
         }
     }
 
+    std::shared_ptr<SpvrScanner> GrApplication::GetSpvrScanner() {
+        return spvr_scanner_;
+    }
 }

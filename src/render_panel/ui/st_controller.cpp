@@ -27,7 +27,7 @@
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/ip_util.h"
-#include "tc_spvr_client/spvr_api.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "input_safety_pwd_dialog.h"
 
 namespace tc

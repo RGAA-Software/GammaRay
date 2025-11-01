@@ -27,7 +27,6 @@ namespace tc
     class MgrClientSdk;
     class MessageListener;
     class GrAccountManager;
-    class MgrDeviceOperator;
     class WinMessageLoop;
     class GrConnectedManager;
     class GrBaseStreamMessage;
@@ -36,6 +35,7 @@ namespace tc
     class GrGuardStarter;
     class PanelCompanion;
     class GrSpvrClient;
+    class SpvrScanner;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -62,13 +62,8 @@ namespace tc
         // panel -> render
         // msg: protobuf message
         bool PostMessage2Renderer(std::shared_ptr<Data> msg);
-        void RequestNewClientId(bool force_update);
+        bool RequestNewClientId(bool force_update, bool sync = false);
         std::shared_ptr<MessageNotifier> GetMessageNotifier();
-
-        // manager client
-        std::shared_ptr<MgrClientSdk> GetManagerClient();
-        // device operator
-        std::shared_ptr<MgrDeviceOperator> GetDeviceOperator();
 
         // 1. device id is empty ?
         // 2. device id & password paired ?
@@ -87,9 +82,13 @@ namespace tc
         PanelCompanion* GetCompanion();
 
         std::string GetAppkey();
+        // refresh spvr server host/port/appkey...
+        void RefreshClientManagerSettings();
+
+        // spvr scanner
+        std::shared_ptr<SpvrScanner> GetSpvrScanner();
 
     private:
-        void RefreshSigServerSettings();
         void RegisterMessageListener();
         void RegisterFirewall();
 
@@ -114,7 +113,6 @@ namespace tc
         std::shared_ptr<GrServiceClient> service_client_ = nullptr;
         QTimer* timer_ = nullptr;
         GrSettings* settings_ = nullptr;
-        std::shared_ptr<MgrClientSdk> mgr_client_sdk_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;
         std::shared_ptr<GrAccountManager> account_mgr_ = nullptr;
@@ -143,6 +141,8 @@ namespace tc
         // panel spvr client
         std::shared_ptr<GrSpvrClient> spvr_client_ = nullptr;
 
+        // spvr scanner
+        std::shared_ptr<SpvrScanner> spvr_scanner_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;

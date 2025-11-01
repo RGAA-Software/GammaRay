@@ -105,6 +105,7 @@ namespace tc
         this->SetSpvrServerPort("");
         this->SetRelayServerHost("");
         this->SetRelayServerPort("");
+        this->SetSpvrAccessInfo("");
     }
 
     void GrSettings::SetEnableResResize(bool enabled) {
@@ -458,6 +459,14 @@ namespace tc
 
     std::string GrSettings::GetPreferDecoder() {
         return sp_->Get(kStPreferDecoder, "Auto");
+    }
+
+    void GrSettings::SetSpvrAccessInfo(const std::string& info) {
+        sp_->Put(kStSpvrAccessInfo, info);
+    }
+
+    std::string GrSettings::GetSpvrAccessInfo() {
+        return sp_->Get(kStSpvrAccessInfo, "");
     }
 
 }

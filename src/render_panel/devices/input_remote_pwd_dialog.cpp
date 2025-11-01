@@ -10,7 +10,7 @@
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "render_panel/gr_context.h"

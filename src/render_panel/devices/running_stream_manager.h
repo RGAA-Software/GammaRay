@@ -10,7 +10,7 @@
 #include <map>
 
 #include <QProcess>
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 
 namespace tc
 {
@@ -23,8 +23,8 @@ namespace tc
     class RunningStreamManager {
     public:
         explicit RunningStreamManager(const std::shared_ptr<GrContext>& ctx);
-        void StartStream(const std::shared_ptr<StreamItem>& item);
-        void StopStream(const std::shared_ptr<StreamItem>& item);
+        void StartStream(const std::shared_ptr<spvr::SpvrStream>& item);
+        void StopStream(const std::shared_ptr<spvr::SpvrStream>& item);
 
     private:
         GrSettings* settings_ = nullptr;

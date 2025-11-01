@@ -2,7 +2,7 @@
 // Created by RGAA on 2023-08-18.
 //
 
-#include "edit_relay_stream_dialog.h"
+#include "user_login_dialog.h"
 #include <QValidator>
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -18,21 +18,16 @@
 namespace tc
 {
 
-    EditRelayStreamDialog::EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    UserLoginDialog::UserLoginDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
-        stream_item_ = item;
         setFixedSize(375, 475);
         CreateLayout();
     }
 
-    EditRelayStreamDialog::~EditRelayStreamDialog() = default;
+    UserLoginDialog::~UserLoginDialog() = default;
 
-    void EditRelayStreamDialog::CreateLayout() {
-        if (stream_item_->IsValid()) {
-            setWindowTitle(tcTr("id_edit_device"));
-        } else {
-            setWindowTitle(tcTr("id_add_device"));
-        }
+    void UserLoginDialog::CreateLayout() {
+        setWindowTitle(tcTr("id_register"));
 
         auto item_width = 320;
         auto edit_size = QSize(item_width, 35);
@@ -46,32 +41,30 @@ namespace tc
 
         content_layout->addSpacing(25);
 
-        // 0. name
+        // 1. username
         {
             auto layout = new NoMarginVLayout();
-
             auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->SetTextId("id_device_id");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->SetTextId("id_username");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
 
-            auto edit = new QLabel(this);
-            edit->setText(stream_item_->remote_device_id_.c_str());
-            edit->setStyleSheet("font-size: 16px; font-weight: 700; color: #2979ff;");
+            auto edit = new QLineEdit(this);
+            edt_username_ = edit;
+            edt_username_->setText("");
+
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
-
             content_layout->addLayout(layout);
-
         }
 
         content_layout->addSpacing(25);
 
-        // 1. password
+        // 2. password
         {
             auto layout = new NoMarginVLayout();
             auto label = new TcLabel(this);
@@ -84,7 +77,7 @@ namespace tc
 
             auto edit = new TcPasswordInput(this);
             password_input_ = edit;
-            password_input_->SetPassword(stream_item_->remote_device_random_pwd_.c_str());
+            password_input_->SetPassword("");
 
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -92,28 +85,7 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
-        content_layout->addSpacing(25);
-
-        // 2. name
-        {
-            auto layout = new NoMarginVLayout();
-            auto label = new TcLabel(this);
-            label->setFixedWidth(item_width);
-            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
-            label->SetTextId("id_device_name");
-            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-            layout->addWidget(label);
-            layout->addSpacing(10);
-
-            auto edit = new QLineEdit(this);
-            edt_stream_name_ = edit;
-            edt_stream_name_->setText(stream_item_->stream_name_.c_str());
-
-            edit->setFixedSize(edit_size);
-            layout->addWidget(edit);
-            layout->addStretch();
-            content_layout->addLayout(layout);
-        }
+        content_layout->addSpacing(70);
 
         // sure button
         {
@@ -121,11 +93,7 @@ namespace tc
             auto btn_sure = new TcPushButton();
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-                stream_item_->stream_name_ = edt_stream_name_->text().toStdString();
-                stream_item_->device_random_pwd_ = password_input_->GetPassword().toStdString();
-                context_->SendAppMessage(StreamItemUpdated {
-                    .item_ = stream_item_,
-                });
+
                 this->close();
             });
 
@@ -142,7 +110,7 @@ namespace tc
 
 
 
-    void EditRelayStreamDialog::paintEvent(QPaintEvent *event) {
+    void UserLoginDialog::paintEvent(QPaintEvent *event) {
         TcCustomTitleBarDialog::paintEvent(event);
     }
 

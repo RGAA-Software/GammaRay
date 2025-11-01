@@ -16,7 +16,7 @@
 #include <QComboBox>
 #include <QPainter>
 
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/tc_custom_titlebar_dialog.h"
 
 namespace tc

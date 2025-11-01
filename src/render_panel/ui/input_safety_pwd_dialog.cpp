@@ -10,7 +10,7 @@
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "render_panel/gr_application.h"
@@ -21,9 +21,8 @@
 #include "tc_common_new/md5.h"
 #include "tc_common_new/http_client.h"
 #include "tc_qt_widget/tc_password_input.h"
-#include "tc_manager_client/mgr_client_sdk.h"
-#include "tc_manager_client/mgr_device_operator.h"
-#include "tc_manager_client/mgr_device.h"
+#include "tc_spvr_client/spvr_device_api.h"
+#include "tc_spvr_client/spvr_device.h"
 
 namespace tc
 {
@@ -135,14 +134,17 @@ namespace tc
                 });
 
                 // Supervisor server unconfigured
-                if (!app_->GetManagerClient()->IsServerConfigured() || settings->GetDeviceId().empty()) {
+                if (settings->GetDeviceId().empty()) {
                     done(0);
                     return;
                 }
 
                 // update safety pwd
-                auto dev_opt = app_->GetDeviceOperator();
-                auto opt_device = dev_opt->UpdateSafetyPwd(settings->GetDeviceId(), pwd_md5);
+                auto opt_device = spvr::SpvrDeviceApi::UpdateSafetyPwd(settings->GetSpvrServerHost(),
+                                                                 settings->GetSpvrServerPort(),
+                                                                 grApp->GetAppkey(),
+                                                                 settings->GetDeviceId(),
+                                                                 pwd_md5);
                 bool update_server_password_result = false;
                 if (opt_device.has_value()) {
                     auto device = opt_device.value();
