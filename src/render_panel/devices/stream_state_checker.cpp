@@ -8,7 +8,7 @@
 #include "tc_common_new/http_client.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "relay_message.pb.h"
 #include "tc_relay_client/relay_api.h"
 
@@ -29,7 +29,7 @@ namespace tc
 
     }
 
-    void StreamStateChecker::UpdateCurrentStreamItems(std::vector<std::shared_ptr<StreamItem>> items) {
+    void StreamStateChecker::UpdateCurrentStreamItems(std::vector<std::shared_ptr<spvr::SpvrStream>> items) {
         context_->PostTask([=, this]() {
             this->CheckState(items);
         });
@@ -39,7 +39,7 @@ namespace tc
         on_checked_cbk_ = cbk;
     }
 
-    void StreamStateChecker::CheckState(const std::vector<std::shared_ptr<StreamItem>>& items) {
+    void StreamStateChecker::CheckState(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items) {
         for (auto& item : items) {
             bool online = false;
             if (item->IsRelay()) {

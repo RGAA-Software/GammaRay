@@ -34,7 +34,7 @@
 #include "tc_common_new/shared_preference.h"
 #include "tc_common_new/message_notifier.h"
 #include "render_panel/gr_guard_starter.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "render_panel/gr_render_msg_processor.h"
 #include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"

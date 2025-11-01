@@ -1,10 +1,10 @@
 ﻿#ifndef APP_MESSAGES_H
 #define APP_MESSAGES_H
 
-#include <QVariantMap>
-#include "database/stream_item.h"
-#include "notify/notify_defs.h"
 #include <map>
+#include <QVariantMap>
+#include "notify/notify_defs.h"
+#include "tc_spvr_client/spvr_stream.h"
 
 namespace tcrp
 {
@@ -129,19 +129,19 @@ namespace tc
 
     class StreamItemAdded {
     public:
-        std::shared_ptr<StreamItem> item_;
+        std::shared_ptr<spvr::SpvrStream> item_;
         bool auto_start_ = false;
     };
 
     class StreamItemUpdated {
     public:
-        std::shared_ptr<StreamItem> item_;
+        std::shared_ptr<spvr::SpvrStream> item_;
     };
 
     // Close workspace
     class ClearWorkspace {
     public:
-        std::shared_ptr<StreamItem> item_;
+        std::shared_ptr<spvr::SpvrStream> item_;
     };
 
     // reported plugins info

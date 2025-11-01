@@ -7,17 +7,18 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_font_manager.h"
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_label.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
 
-    StreamItemWidget::StreamItemWidget(const std::shared_ptr<StreamItem>& item, int bg_color, QWidget* parent) : QWidget(parent) {
+    StreamItemWidget::StreamItemWidget(const std::shared_ptr<spvr::SpvrStream>& item, int bg_color, QWidget* parent) : QWidget(parent) {
         this->item_ = item;
         this->bg_color_ = bg_color;
         this->setStyleSheet("background:#00000000;");

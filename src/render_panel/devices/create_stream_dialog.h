@@ -16,7 +16,7 @@
 #include <QComboBox>
 #include <QPainter>
 
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/tc_custom_titlebar_dialog.h"
 
 namespace tc
@@ -28,7 +28,7 @@ namespace tc
     class CreateStreamDialog : public TcCustomTitleBarDialog {
     public:
         explicit CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
-        CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent = nullptr);
+        CreateStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent = nullptr);
         ~CreateStreamDialog() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -49,7 +49,7 @@ namespace tc
         QRadioButton* rb_ws_ = nullptr;
         //QRadioButton* rb_udp_ = nullptr;
         QRadioButton* rb_relay_ = nullptr;
-        std::shared_ptr<StreamItem> stream_item_;
+        std::shared_ptr<spvr::SpvrStream> stream_item_;
 
     };
 

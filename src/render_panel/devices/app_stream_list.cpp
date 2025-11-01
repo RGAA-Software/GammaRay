@@ -66,7 +66,7 @@ namespace tc
 
         //
         state_checker_ = std::make_shared<StreamStateChecker>(context_);
-        state_checker_->SetOnCheckedCallback([=, this](const std::vector<std::shared_ptr<StreamItem>>& stream_items) {
+        state_checker_->SetOnCheckedCallback([=, this](const std::vector<std::shared_ptr<spvr::SpvrStream>>& stream_items) {
             context_->PostUITask([=, this]() {
                 int count = stream_list_->count();
                 for (int i = 0; i < count; i++) {
@@ -148,7 +148,7 @@ namespace tc
         msg_listener_ = context_->GetMessageNotifier()->CreateListener();
         msg_listener_->Listen<StreamItemAdded>([=, this](const StreamItemAdded& msg) {
             auto item = msg.item_;
-            std::shared_ptr<StreamItem> exist_stream_item = nullptr;
+            std::shared_ptr<spvr::SpvrStream> exist_stream_item = nullptr;
             // by stream id
             {
                 auto opt_stream = db_mgr_->GetStreamByStreamId(item->stream_id_);
@@ -269,7 +269,7 @@ namespace tc
         delete menu;
     }
 
-    void AppStreamList::ProcessAction(int index, const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ProcessAction(int index, const std::shared_ptr<spvr::SpvrStream>& item) {
         if (index == 0) {
             // connect
             StartStream(item, false);
@@ -309,7 +309,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::StartStream(const std::shared_ptr<StreamItem>& item, bool force_only_viewing) {
+    void AppStreamList::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -470,7 +470,7 @@ namespace tc
         running_stream_mgr_->StartStream(target_item);
     }
 
-    void AppStreamList::StopStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::StopStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -479,7 +479,7 @@ namespace tc
         running_stream_mgr_->StopStream(si.value());
     }
 
-    void AppStreamList::LockDevice(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::LockDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
         if (!item->online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
@@ -493,7 +493,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::RestartDevice(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::RestartDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
         if (!item->online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
@@ -507,7 +507,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::ShutdownDevice(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ShutdownDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
         if (!item->online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
@@ -521,7 +521,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::EditStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::EditStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -537,7 +537,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::DeleteStream(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::DeleteStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         TcDialog dialog(tcTr("id_warning"), tcTr("id_delete_remote_control"), grWorkspace.get());
         if (dialog.exec() == kDoneOk) {
             // stop it if running
@@ -549,7 +549,7 @@ namespace tc
         }
     }
 
-    void AppStreamList::ShowSettings(const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ShowSettings(const std::shared_ptr<spvr::SpvrStream>& item) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -559,7 +559,7 @@ namespace tc
         dialog->exec();
     }
 
-    QListWidgetItem* AppStreamList::AddItem(const std::shared_ptr<StreamItem>& stream, int index) {
+    QListWidgetItem* AppStreamList::AddItem(const std::shared_ptr<spvr::SpvrStream>& stream, int index) {
         auto item = new QListWidgetItem(stream_list_);
         item->setSizeHint(QSize(230, 150));
         auto widget = new StreamItemWidget(stream, stream->bg_color_, stream_list_);

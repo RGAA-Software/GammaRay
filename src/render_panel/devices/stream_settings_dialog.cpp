@@ -17,11 +17,12 @@
 #include "render_panel/database/stream_db_operator.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_tooltip.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
 
-    StreamSettingsDialog::StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
+    StreamSettingsDialog::StreamSettingsDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         db_mgr_ = context_->GetStreamDBManager();
         stream_item_ = item;

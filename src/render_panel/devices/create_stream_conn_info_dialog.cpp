@@ -10,7 +10,7 @@
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/sized_msg_box.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "render_panel/gr_context.h"
@@ -20,6 +20,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_client.h"
 #include "relay_message.pb.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
@@ -156,7 +157,7 @@ namespace tc
             }
             if (!conn_host.ip_.empty()) {
                 // this is good
-                std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+                std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
                 item->remote_device_id_ = "";
                 item->remote_device_random_pwd_ = "";
                 item->stream_name_ = name;
@@ -197,7 +198,7 @@ namespace tc
             auto host = relay_device_info->relay_server_ip();
             auto port = relay_device_info->relay_server_port();
 
-            std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+            std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
             item->remote_device_id_ = conn_info->device_id_;
             item->remote_device_random_pwd_ = conn_info->random_pwd_;
             item->stream_name_ = name;

@@ -9,14 +9,14 @@
 #include "widget_helper.h"
 #include "no_margin_layout.h"
 #include "tc_common_new/uid_spacer.h"
-#include "render_panel/database/stream_item.h"
+#include "tc_spvr_client/spvr_stream.h"
 #include "tc_qt_widget/loadings/winstyle/win10circleloadingwidget.h"
 #include "tc_qt_widget/loadings/winstyle/win10horizontalloadingwidget.h"
 
 namespace tc
 {
 
-    StartStreamLoading::StartStreamLoading(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<StreamItem>& item)
+    StartStreamLoading::StartStreamLoading(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item)
         : QDialog(nullptr) {
 
         setWindowFlags(Qt::FramelessWindowHint|Qt::Dialog);

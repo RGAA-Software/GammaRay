@@ -15,6 +15,7 @@
 #include "tc_qt_widget/tc_dialog.h"
 #include "start_stream_loading.h"
 #include "tc_qt_widget/translator/tc_translator.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
@@ -33,7 +34,7 @@ namespace tc
         });
     }
 
-    void RunningStreamManager::StartStream(const std::shared_ptr<StreamItem>& item) {
+    void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         // loading dialog
         auto loading = std::make_shared<StartStreamLoading>(context_, item);
         loading->setWindowFlag(Qt::WindowStaysOnTopHint, true);
@@ -125,7 +126,7 @@ namespace tc
         LOGI("After start client: {}", client_inner_path.toStdString());
     }
 
-    void RunningStreamManager::StopStream(const std::shared_ptr<StreamItem>& item) {
+    void RunningStreamManager::StopStream(const std::shared_ptr<spvr::SpvrStream>& item) {
         context_->SendAppMessage(ClearWorkspace {
             .item_ = item,
         });

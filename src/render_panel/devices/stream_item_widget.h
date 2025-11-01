@@ -15,10 +15,14 @@
 #include <QLabel>
 #include <memory>
 
+namespace spvr
+{
+    class SpvrStream;
+}
+
 namespace tc
 {
 
-    class StreamItem;
     class TcPushButton;
     class TcLabel;
 
@@ -28,7 +32,7 @@ namespace tc
     class StreamItemWidget : public QWidget {
     public:
 
-        explicit StreamItemWidget(const std::shared_ptr<StreamItem>& item, int bg_color, QWidget* parent = nullptr);
+        explicit StreamItemWidget(const std::shared_ptr<spvr::SpvrStream>& item, int bg_color, QWidget* parent = nullptr);
         ~StreamItemWidget() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -43,7 +47,7 @@ namespace tc
         std::string GetStreamId();
 
     private:
-        std::shared_ptr<StreamItem> item_;
+        std::shared_ptr<spvr::SpvrStream> item_;
         int bg_color_ = 0;
         QPixmap icon_;
         QPixmap bg_pixmap_;

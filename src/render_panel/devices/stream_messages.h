@@ -8,6 +8,12 @@
 #include <string>
 #include <memory>
 
+namespace spvr
+{
+    // stream
+    class SpvrStream;
+}
+
 // send from panel -> remote render
 // 1. direct: http request -> remote render
 // 2. relay: http reqeust -> relay server -> remote render
@@ -22,16 +28,13 @@ namespace tc
        kShutdownDevice,
     };
 
-    // stream
-    class StreamItem;
-
     // base
     class GrBaseStreamMessage {
     public:
         virtual std::string AsJson() = 0;
     public:
         GrStreamMessageType type_;
-        std::shared_ptr<StreamItem> stream_item_ = nullptr;
+        std::shared_ptr<spvr::SpvrStream> stream_item_ = nullptr;
     };
 
     //

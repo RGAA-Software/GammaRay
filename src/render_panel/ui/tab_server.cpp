@@ -56,6 +56,7 @@
 #include "relay_message.pb.h"
 #include "tc_profile_client/profile_api.h"
 #include "render_panel/companion/panel_companion.h"
+#include "client/ct_stream_item_net_type.h"
 
 namespace tc
 {
@@ -460,7 +461,7 @@ namespace tc
                             return;
                         }
 
-                        std::shared_ptr<StreamItem> item = std::make_shared<StreamItem>();
+                        std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
                         item->stream_id_ = "id_" + remote_device_id;
                         item->stream_name_ = remote_device_id;
                         item->stream_host_ = relay_device_info->relay_server_ip();
