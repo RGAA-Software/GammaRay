@@ -386,8 +386,8 @@ namespace tc
                 // check the remote device in relay server
                 auto appkey = grApp->GetAppkey();
                 auto srv_remote_device_id = "server_" + item->remote_device_id_;
-                LOGI("Will check remote device: {} on relay server: {}:{}", item->remote_device_id_, item->stream_host_, item->stream_port_);
-                auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->stream_host_, item->stream_port_, srv_remote_device_id, appkey);
+                LOGI("Will check remote device: {} on relay server: {}:{}", srv_remote_device_id, item->relay_host_, item->relay_port_);
+                auto relay_device_info = relay::RelayApi::GetRelayDeviceInfo(item->relay_host_, item->relay_port_, srv_remote_device_id, appkey);
                 if (!relay_device_info.has_value()) {
                     if (relay_device_info.error() == relay::kRelayRequestFailed) {
                         // network failed

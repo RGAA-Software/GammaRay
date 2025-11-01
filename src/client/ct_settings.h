@@ -45,9 +45,6 @@ namespace tc
         // 1. direct mode
         // host: remote device ip address
         // port: remote device port
-        // 2. relay mode
-        // host: relay server address
-        // port: relay server port
         std::string host_;
         int port_{0};
 
@@ -128,6 +125,13 @@ namespace tc
         std::string appkey_;
 
         std::string decoder_;
+
+        // 2. relay mode
+        // host: relay server address
+        // port: relay server port
+        std::string relay_host_;
+        int relay_port_ = 0;
+        std::string relay_appkey_;
 
         ///////
         ///////

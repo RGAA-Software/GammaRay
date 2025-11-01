@@ -141,6 +141,15 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_decoder("decoder", "decoder type", "value", "");
     parser.addOption(opt_decoder);
 
+    QCommandLineOption opt_relay_host("relay_host", "relay server host", "value", "");
+    parser.addOption(opt_relay_host);
+
+    QCommandLineOption opt_relay_port("relay_port", "relay server port", "0", "");
+    parser.addOption(opt_relay_port);
+
+    QCommandLineOption opt_relay_appkey("relay_appkey", "relay server appkey", "value", "");
+    parser.addOption(opt_relay_appkey);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -293,6 +302,11 @@ void ParseCommandLine(QApplication& app) {
 
     // decoder
     settings->decoder_ = parser.value(opt_decoder).toStdString();
+
+    // relay info
+    settings->relay_host_ = parser.value(opt_relay_host).toStdString();
+    settings->relay_port_ = parser.value(opt_relay_port).toInt();
+    settings->relay_appkey_ = parser.value(opt_relay_appkey).toStdString();
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -396,6 +410,9 @@ int main(int argc, char** argv) {
     LOGI("split windows: {}", settings->split_windows_);
     LOGI("titlebar color: {}", settings->titlebar_color_);
     LOGI("decoder: {}", settings->decoder_);
+    LOGI("relay host: {}", settings->relay_host_);
+    LOGI("relay port: {}", settings->relay_port_);
+    LOGI("relay appkey: {}", settings->relay_appkey_);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
@@ -441,6 +458,9 @@ int main(int argc, char** argv) {
         .titlebar_color_ = settings->titlebar_color_,
         .appkey_ = settings->appkey_,
         .decoder_ = settings->decoder_,
+        .relay_host_ = settings->relay_host_,
+        .relay_port_ = settings->relay_port_,
+        .relay_appkey_ = settings->relay_appkey_,
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();

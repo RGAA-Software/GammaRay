@@ -196,8 +196,8 @@ namespace tc
         obj["ips"] = ip_array;
         obj["panel_srv_port"] = settings_->GetPanelServerPort();
         obj["render_srv_port"] = settings_->GetRenderServerPort();
-        obj["relay_host"] = settings_->GetSpvrServerHost();
-        obj["relay_port"] = settings_->GetSpvrServerPort();
+        obj["relay_host"] = settings_->GetRelayServerHost();
+        obj["relay_port"] = settings_->GetRelayServerPort();
         obj["relay_appkey"] = grApp->GetAppkey();
         return obj.dump();
     }
@@ -301,8 +301,8 @@ namespace tc
 
     std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& relay_host,
                                                                                     int relay_port,
-                                                                                    const std::string& device_id,
                                                                                     const std::string& relay_appkey,
+                                                                                    const std::string& device_id,
                                                                                     bool show_dialog) {
         if (!settings_->HasRelayServerConfig()) {
             return nullptr;
@@ -319,8 +319,8 @@ namespace tc
             return nullptr;
         }
         auto relay_device_info = relay_result.value();
-        //LOGI("Remote device info: id: {}, relay host: {}, port: {}",
-        //     srv_remote_device_id, relay_device_info->relay_server_ip_, relay_device_info->relay_server_port_);
+        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
+             srv_remote_device_id, relay_device_info->relay_server_ip(), relay_device_info->relay_server_port());
         return relay_device_info;
 
     }

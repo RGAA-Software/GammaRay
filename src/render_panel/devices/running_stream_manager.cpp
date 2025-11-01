@@ -36,7 +36,7 @@ namespace tc
 
     void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type) {
         // loading dialog
-        auto loading = std::make_shared<StartStreamLoading>(context_, item);
+        auto loading = std::make_shared<StartStreamLoading>(context_, item, network_type);
         loading->setWindowFlag(Qt::WindowStaysOnTopHint, true);
         loading->show();
         auto stream_id = item->stream_id_;
@@ -111,6 +111,9 @@ namespace tc
             << std::format("--develop_mode={}", settings_->IsDevelopMode() ? 1 : 0).c_str()
             << std::format("--titlebar_color={}", settings_->IsColorfulTitleBarEnabled() ? item->bg_color_ : -1).c_str()
             << std::format("--decoder={}", settings_->GetPreferDecoder()).c_str()
+            << std::format("--relay_host={}", item->relay_host_).c_str()
+            << std::format("--relay_port={}", item->relay_port_).c_str()
+            << std::format("--relay_appkey={}", item->relay_appkey_).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

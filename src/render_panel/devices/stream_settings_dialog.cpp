@@ -276,21 +276,21 @@ namespace tc
         }
 
         content_layout->addSpacing(item_gap);
-        // Enable P2P
-        if (0) {
+        // Force Ralay
+        {
             auto layout = new NoMarginHLayout();
 
-            auto label = new QLabel(this);
+            auto label = new TcLabel(this);
             label->setFixedWidth(item_width);
-            label->setText("Enable P2P");
+            label->SetTextId("id_force_relay");
             label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
             label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
             layout->addWidget(label);
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_->enable_p2p_);
-            cb_enable_p2p_ = cb;
+            cb->setChecked(stream_item_->force_relay_);
+            cb_force_relay_ = cb;
             layout->addWidget(cb);
 
             auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
@@ -301,7 +301,7 @@ namespace tc
             //tooltip
             auto tooltip = new TcToolTip(this);
             tooltip->setFixedSize(275, 70);
-            tooltip->SetText("Try P2P network when started.");
+            tooltip->SetText("Force using Relay Server to exchange data.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
                 auto w_pos = w->mapToGlobal(QPoint(0,0));
@@ -317,7 +317,6 @@ namespace tc
 
             layout->addStretch();
             content_layout->addLayout(layout);
-
         }
 
         // Remote device id
@@ -480,7 +479,7 @@ namespace tc
                 stream_item_->only_viewing_ = cb_only_viewing_->isChecked();
                 //stream_item_->show_max_window_ = cb_show_max_->isChecked();
                 stream_item_->split_windows_ = cb_split_windows_->isChecked();
-                //stream_item_->enable_p2p_ = cb_enable_p2p_->isChecked();
+                stream_item_->force_relay_ = cb_force_relay_->isChecked();
                 db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });

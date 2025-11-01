@@ -208,7 +208,7 @@
   "id_security_password_update_failed": "安全密码更新失败，请检查您的Supervisor服务并重试.",
   "id_security_password_update_local_but_failed_server": "您已更新本地安全密码, 但未成功更新服务端密码. 请检查您的Supervisor服务.",
   "id_must_input_security_password": "您必须先在安全设置中，设置安全密码.",
-  "id_relay": "中继",
+  "id_relay": "中转",
   "id_about_me_desc": "GammaRay可以将您的桌面，游戏画面，声音等传输到远端其他设备上，并可将远端设备的鼠标，键盘，手柄等操作映射到本机。您也可以轻松的在不同的设备之间，传输共享您的文件。",
   "id_dialog_ssl_streaming_always_on": "WSS串流将一直开启.",
   "id_dont_have_server_config": "没有配置服务信息，请在设置中先配置服务.",
@@ -256,6 +256,7 @@
   "id_register": "注册",
   "id_username": "用户名称",
   "id_re_password": "重复密码",
+  "id_force_relay": "强制使用中转服务",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

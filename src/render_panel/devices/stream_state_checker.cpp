@@ -49,9 +49,10 @@ namespace tc
                     online = true;
                 }
             }
-            else {
-                // host & port mode
-                // /api/ping
+
+            // host & port mode
+            // /api/ping
+            if (!online) {
                 auto client = HttpClient::Make(item->stream_host_, item->stream_port_, "/api/ping", 1000);
                 auto res = client->Request();
                 if (res.status == 200) {

@@ -22,7 +22,7 @@ namespace tc
 
     class StartStreamLoading : public QDialog {
     public:
-        StartStreamLoading(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item);
+        StartStreamLoading(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type);
         void resizeEvent(QResizeEvent *event) override;
         void paintEvent(QPaintEvent *event) override;
 
