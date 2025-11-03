@@ -149,6 +149,13 @@ namespace tc
                     // resize will be enabled when dda capture working
                     encoder_config.frame_resize = true;
                 }
+
+                // 如果选择了全彩模式, 则强制使用HEVC, 因为 大多数264硬件解码器不支持全彩
+                if (settings_->EnableFullColorMode()) {
+                    settings->encoder_.encoder_format_ = Encoder::EncoderFormat::kHEVC;
+                    LOGI("full color mode, use HEVC");
+                }
+
                 encoder_config.codec_type = settings->encoder_.encoder_format_ == Encoder::EncoderFormat::kH264 ? tc::EVideoCodecType::kH264 : tc::EVideoCodecType::kHEVC;
                 encoder_config.enable_adaptive_quantization = true;
                 encoder_config.gop_size = -1;
@@ -477,6 +484,7 @@ namespace tc
         LOGI("gop size: {}", config.gop_size);
         LOGI("gop bitrate: {}", config.bitrate);
         LOGI("enable full color: {}", config.enable_full_color_mode_);
+        LOGI("encoder codec_type: {}", static_cast<int>(config.codec_type));
         LOGI("***************************************************");
     }
 
