@@ -1042,8 +1042,8 @@ namespace tc
         // Reconnect
         // 1. Can I connect relay server?
         {
-            LOGI("will get device info in {}:{} for id: {}", settings_->host_, settings_->port_, settings_->full_device_id_);
-            auto r = relay::RelayApi::GetRelayDeviceInfo(settings_->host_, settings_->port_, settings_->full_device_id_, settings_->appkey_);
+            LOGI("will get device info in {}:{} for id: {}", settings_->relay_host_, settings_->relay_port_, settings_->full_device_id_);
+            auto r = relay::RelayApi::GetRelayDeviceInfo(settings_->relay_host_, settings_->relay_port_, settings_->full_device_id_, settings_->relay_appkey_);
             if (!r.has_value()) {
                 context_->PostUITask([=, this]() {
                     TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_get_local_device_info"), this);
@@ -1055,8 +1055,8 @@ namespace tc
 
         // 2. Can I get remote device info ?
         {
-            LOGI("will get remote device info in {}:{} for id: {}", settings_->host_, settings_->port_, settings_->full_remote_device_id_);
-            auto r = relay::RelayApi::GetRelayDeviceInfo(settings_->host_, settings_->port_, settings_->full_remote_device_id_, settings_->appkey_);
+            LOGI("will get remote device info in {}:{} for id: {}", settings_->relay_host_, settings_->relay_port_, settings_->full_remote_device_id_);
+            auto r = relay::RelayApi::GetRelayDeviceInfo(settings_->relay_host_, settings_->relay_port_, settings_->full_remote_device_id_, settings_->relay_appkey_);
             if (!r.has_value()) {
                 context_->PostUITask([=, this]() {
                     TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_get_remote_device_info"), this);

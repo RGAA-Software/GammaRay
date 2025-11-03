@@ -360,7 +360,9 @@ int main(int argc, char** argv) {
     auto settings = tc::Settings::Instance();
     auto host = g_remote_host_;
     auto port = g_remote_port_;
-    if (host.empty() || port <= 0 || port >= 65535) {
+    bool has_direct_info = !host.empty() && port > 0;
+    bool has_relay_info = !settings->relay_host_.empty() && settings->relay_port_ > 0 && !settings->relay_appkey_.empty();
+    if (!has_relay_info && !has_direct_info) {
         auto msg_box = SizedMessageBox::MakeOkBox("Error Params", "You must give valid (HOST & PORT) or Remote device ID.");
         msg_box->exec();
         return -1;
