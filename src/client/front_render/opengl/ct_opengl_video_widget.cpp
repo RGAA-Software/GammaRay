@@ -39,6 +39,13 @@ namespace tc
 	}
 
 	void OpenGLVideoWidget::initializeGL() {
+
+#if 0
+		QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+		// 设置V-Sync开启
+		format.setSwapInterval(1);  // 1表示启用V-Sync，0表示禁用
+		QSurfaceFormat::setDefaultFormat(format);
+#endif
 		initializeOpenGLFunctions();
 
         TimeDuration duration("initializeGL");
@@ -122,6 +129,10 @@ namespace tc
 	}
 
 	void OpenGLVideoWidget::RefreshImage(const std::shared_ptr<RawImage>& image) {
+
+		//std::string file_name = QString(".\\yuv\\debug.yuv444").toStdString();
+		//image->AppendYUV444ToFile(file_name);
+
 		VideoWidget::RefreshImage(image);
         SetDisplayImageFormat(image->img_format);
 	}

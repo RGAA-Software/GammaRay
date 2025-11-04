@@ -150,7 +150,7 @@ namespace tc
                     encoder_config.frame_resize = true;
                 }
 
-                // 如果选择了全彩模式, 则强制使用HEVC, 因为 大多数264硬件解码器不支持全彩
+                // If the full-color mode is selected, HEVC is mandated, as most 264 hardware decoders do not support full-color
                 if (settings_->EnableFullColorMode()) {
                     settings->encoder_.encoder_format_ = Encoder::EncoderFormat::kHEVC;
                     LOGI("full color mode, use HEVC");

@@ -680,7 +680,7 @@ namespace tc {
         mappedFrame->repr.levels = PL_COLOR_LEVELS_FULL;
 
         mappedFrame->repr = pl_color_repr_uhdtv;    //  关键代码,支持更宽的色域
-        mappedFrame->color = pl_color_space_bt709;  //
+        mappedFrame->color = pl_color_space_bt709;  //  关键代码
         return true;
     }
 
