@@ -34,10 +34,14 @@ namespace tc
                                  int frame_height,
                                  bool key) override;
 
+        // new client connected
+        void OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) override;
+
     private:
         GrPluginEncodedVideoType encoded_video_type_{};
         bool save_encoded_video_ = false;
         std::shared_ptr<File> encoded_video_file_ = nullptr;
+        bool new_client_in_ = false;
     };
 
 }

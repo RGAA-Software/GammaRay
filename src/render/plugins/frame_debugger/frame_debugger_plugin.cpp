@@ -5,6 +5,7 @@
 #include "frame_debugger_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include "tc_common_new/file.h"
+#include "tc_common_new/time_util.h"
 #include "render/plugins/plugin_ids.h"
 
 namespace tc
@@ -52,7 +53,14 @@ namespace tc
 
     void FrameDebuggerPlugin::OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {
         encoded_video_type_ = type;
-        std::string encoded_video_file_name = std::format("gr_data/1_encoded_video.{}", (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
+        if (new_client_in_) {
+            if (encoded_video_file_) {
+                encoded_video_file_.reset();
+            }
+            new_client_in_ = false;
+        }
+        auto part_name = TimeUtil::FormatTimestamp2(TimeUtil::GetCurrentTimestamp());
+        std::string encoded_video_file_name = std::format("gr_data/{}_enc_video.{}", part_name, (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
         if (File::Exists(encoded_video_file_name)) {
             File::Delete(encoded_video_file_name);
         }
@@ -71,6 +79,10 @@ namespace tc
         if (save_encoded_video_) {
             encoded_video_file_->Append(data);
         }
+    }
+
+    void FrameDebuggerPlugin::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
+        new_client_in_ = true;
     }
 
 }
