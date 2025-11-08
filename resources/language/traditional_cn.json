@@ -290,6 +290,7 @@
   "id_video_color_mode": "視頻顏色模式",
   "id_video_decoder": "視頻解碼",
   "id_connection_type": "鏈接類型",
+  "id_video_render_mode": "視頻渲染模式",
   "id_remote_pc_info": "遠端設備資訊",
   "id_local_pc_info": "本地設備資訊",
   "id_isolated_monitor_info": "每個顯示器資訊",

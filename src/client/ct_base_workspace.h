@@ -200,6 +200,7 @@ namespace tc
         // libplacebo vulkan
         std::shared_ptr<PlVulkan> pl_vulkan_ = nullptr;
 
+        std::string render_type_name_ = "unknow";
     private:
         GameView* game_view_ = nullptr;
     };

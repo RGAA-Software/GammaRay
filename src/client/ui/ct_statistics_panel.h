@@ -29,6 +29,7 @@ namespace tc
         void paintEvent(QPaintEvent *event) override;
         bool eventFilter(QObject* object, QEvent* event) override;
         void UpdateOnHeartBeat(std::shared_ptr<tc::Message> msg);
+        void UpdateClientRenderTypeName(std::string render_type_name);
     private:
         void UpdateDataSpeedChart();
 
@@ -48,6 +49,7 @@ namespace tc
         QLabel* lbl_audio_capture_type_ = nullptr;
         QLabel* lbl_audio_encode_type_ = nullptr;
         QLabel* lbl_conn_type_ = nullptr;
+        QLabel* lbl_render_type_ = nullptr;
         QLabel* lbl_remote_computer_info_ = nullptr;
         QLabel* lbl_local_computer_info_ = nullptr;
         QLabel* lbl_network_ = nullptr;

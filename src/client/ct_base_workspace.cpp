@@ -150,6 +150,7 @@ namespace tc
 
         // debug panel
         st_panel_ = new CtStatisticsPanel(context_, nullptr);
+        st_panel_->UpdateClientRenderTypeName(render_type_name_);
         st_panel_->resize(def_window_size_);
         st_panel_->hide();
 

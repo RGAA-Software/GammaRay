@@ -40,7 +40,9 @@ namespace tc
         void RefreshImage(const std::shared_ptr<RawImage> &image) override;
         void RefreshCursor(int x, int y, int tex_left, int text_right, int hpx, int hpy, const std::shared_ptr<RawImage> &cursor);
         void Exit();
-
+        std::string GetRenderTypeName() override {
+            return "OpenGL";
+        }
     protected:
         void resizeEvent(QResizeEvent *event) override;
         void initializeGL() override;

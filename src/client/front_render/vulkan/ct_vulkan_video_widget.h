@@ -28,7 +28,9 @@ namespace tc
         void OnTimer1S() override;
         WId GetRenderWId() override;
         QImage CaptureImage() override;
-
+        std::string GetRenderTypeName() override {
+            return "Vulkan";
+        }
     protected:
         void mouseMoveEvent(QMouseEvent*) override;
         void mousePressEvent(QMouseEvent*) override;

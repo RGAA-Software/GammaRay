@@ -353,7 +353,31 @@ namespace tc
 
                 } // end line 3
 
-                // line 4
+                 // line 4
+                {
+                    auto layout = new NoMarginHLayout();
+                    // client render type
+                    {
+                        auto item_layout = new NoMarginHLayout();
+                        auto label = new TcLabel(this);
+                        label->setFixedSize(label_size);
+                        label->SetTextId("id_video_render_mode");
+                        label->setStyleSheet("font-size: 13px;");
+                        item_layout->addWidget(label);
+
+                        auto op = new QLabel(this);
+                        lbl_render_type_ = op;
+                        op->setText("");
+                        op->setFixedSize(QSize(520, 30));
+                        op->setStyleSheet("font-size: 12px; font-weight:500; color: #2979ff;");
+                        item_layout->addWidget(op);
+                        item_layout->addStretch();
+                        layout->addLayout(item_layout);
+                    }
+                    right_layout->addLayout(layout);
+                }
+
+                // line 
                 {
                     //
                     auto layout = new NoMarginHLayout();
@@ -377,9 +401,9 @@ namespace tc
                     }
                     right_layout->addLayout(layout);
 
-                } // end line 4
+                } // end line
 
-                // line 4
+                // line
                 {
                     //
                     auto layout = new NoMarginHLayout();
@@ -403,7 +427,7 @@ namespace tc
                     }
                     right_layout->addLayout(layout);
 
-                } // end line 4
+                } // end line 
 
                 // monitor info
                 {
@@ -657,5 +681,9 @@ namespace tc
                 frame_info_items_[index]->ClearInfo();
             }
         }
+    }
+
+    void CtStatisticsPanel::UpdateClientRenderTypeName(std::string render_type_name) {
+        lbl_render_type_->setText(render_type_name.c_str());
     }
 }

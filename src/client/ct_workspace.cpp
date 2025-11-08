@@ -302,6 +302,7 @@ namespace tc
                         LOGE("pl_vulkan_->Initialize failed.");
                     }
                 }
+                params->render_type_name_ = render_type_name_ = game_view->GetRenderTypeName();
             }
             else {
                 game_view = new GameView(context_, sdk_, params, nullptr); // extend view

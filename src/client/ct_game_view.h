@@ -48,6 +48,7 @@ namespace tc
         bool IsMainView() const;
         void SnapshotStream();
         HWND GetVideoHwnd();
+        std::string GetRenderTypeName();
     public:
         static bool s_mouse_in_;
 

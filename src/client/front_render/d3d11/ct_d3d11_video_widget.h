@@ -40,7 +40,9 @@ namespace tc
         void OnTimer1S() override;
         WId GetRenderWId() override;
         QImage CaptureImage() override;
-
+        std::string GetRenderTypeName() override {
+            return "D3D11";
+        }
     protected:
         void mouseMoveEvent(QMouseEvent*) override;
         void mousePressEvent(QMouseEvent*) override;

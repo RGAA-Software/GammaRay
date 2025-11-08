@@ -70,6 +70,8 @@ namespace tc
         virtual WId GetRenderWId() { return 0; }
         virtual QImage CaptureImage() { return QImage(); }
 
+        virtual std::string GetRenderTypeName() { return "unknow"; };
+
     private:
         void SendCallback(const std::shared_ptr<NetMessage>& msg);
         void SendMouseEvent(const MouseEventDesc& mouse_event);

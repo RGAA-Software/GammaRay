@@ -70,14 +70,6 @@ namespace tc
                 LOGI("*** Use OpenGL to render frames");
             }
         }
-//        if (parent) {
-//            video_widget_ = new D3D11VideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageD3D11Texture, this);
-//            video_widget_->AsWidget()->resize(1280, 768);
-//            video_widget_->AsWidget()->show();
-//        }
-//        else {
-//            video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
-//        }
 #else
         video_widget_ = new OpenGLVideoWidget(ctx, sdk_, 0, RawImageFormat::kRawImageI420, this);
 #endif
@@ -455,5 +447,12 @@ namespace tc
             }
             self->resize(self->width() - 1, self->height() - 1);
         });
+    }
+
+    std::string GameView::GetRenderTypeName() {
+        if (!video_widget_) {
+            return "";
+        }
+        return video_widget_->GetRenderTypeName();
     }
 }
