@@ -52,6 +52,7 @@
 		<file>resources/image/recording2.svg</file>
 		<file>resources/image/ic_notify.png</file>
         <file>resources/image/ic_notify_err.png</file>
+        <file>resources/image/ic_notify_warn.png</file>
         <file>resources/image/ic_screen_shot.svg</file>
         <file>resources/image/ic_os_version.svg</file>
         <file>resources/image/ic_hw_cpu.svg</file>

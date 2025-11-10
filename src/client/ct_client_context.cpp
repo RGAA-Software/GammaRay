@@ -178,4 +178,17 @@ namespace tc
             }
         });
     }
+
+    void ClientContext::NotifyAppWarningMessage(const QString& title, const QString& msg, std::function<void()>&& cbk) {
+        QMetaObject::invokeMethod(this, [=, this]() {
+            if (notify_manager_) {
+                notify_manager_->notify(NotifyItem{
+                    .type_ = NotifyItemType::kWarning,
+                    .title_ = title,
+                    .body_ = msg,
+                    .cbk_ = cbk,
+                });
+            }
+        });
+    }
 }

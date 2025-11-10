@@ -315,6 +315,28 @@ namespace tc
                 }
             });
         });
+
+        msg_listener_->Listen<SdkMsgVideoDecodeInit>([=, this](const SdkMsgVideoDecodeInit& msg) {
+            context_->PostUITask([=, this]() {
+                bool notify_user = false;
+                QString video_info;
+                if (msg.hard_ware_) {
+                    return;
+                }
+                if (msg.width_ > 1920 || msg.format_ == EImageFormat::kI444) {
+                    video_info = QString::number(msg.width_) + "x" + QString::number(msg.height_);
+                    if (msg.format_ == EImageFormat::kI444) {
+                        video_info = video_info + " YUV444";
+                    }
+                    notify_user = true;
+                }
+                if (!notify_user) {
+                    return;
+                }
+                video_info = " (" + video_info + ") ";
+                context_->NotifyAppWarningMessage(tcTr("id_warning"), tcTr("id_cpu_decode_warning") + video_info);
+            });
+        });
     }
 
     BaseWorkspace::~BaseWorkspace() {
@@ -322,19 +344,21 @@ namespace tc
     }
 
     void BaseWorkspace::RegisterSdkMsgCallbacks() {
-//        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
-//            if (!has_frame_arrived_) {
-//                has_frame_arrived_ = true;
-//                UpdateVideoWidgetSize();
-//            }
-//
-//            if (game_view_) {
-//                game_view_->RefreshCapturedMonitorInfo(info);
-//                game_view_->RefreshImage(image);
-//            }
-//
-//            context_->UpdateCapturingMonitorInfo(info);
-//        });
+#if 0
+        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
+            if (!has_frame_arrived_) {
+                has_frame_arrived_ = true;
+                UpdateVideoWidgetSize();
+            }
+
+            if (game_view_) {
+                game_view_->RefreshCapturedMonitorInfo(info);
+                game_view_->RefreshImage(image);
+            }
+
+            context_->UpdateCapturingMonitorInfo(info);
+        });
+#endif
 
         // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm
         sdk_->SetOnAudioFrameDecodedCallback([=, this](std::shared_ptr<Data> data, int samples, int channels, int bits) {
