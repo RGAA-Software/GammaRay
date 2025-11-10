@@ -70,6 +70,7 @@
         <file>resources/image/ic_plugin.svg</file>
         <file>resources/image/ic_notify.png</file>
         <file>resources/image/ic_notify_err.png</file>
+        <file>resources/image/ic_notify_warn.png</file>
         <file>resources/image/ic_refresh.svg</file>
         <file>resources/image/ic_empty_avatar.svg</file>
         <file>resources/image/ic_served.svg</file>

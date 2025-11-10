@@ -127,6 +127,7 @@
   "id_stop_game": "停止游戏",
   "id_installed_location": "安装路径",
   "id_error": "错误",
+  "id_cpu_decode_warning": "当前正在使用cpu解码, 可能会影响性能.",
   "id_start_process_error": "启动进程失败: ",
   "id_dont_have_exe": "缺少可执行文件",
   "id_file_not_exist": "可执行文件不存在",
