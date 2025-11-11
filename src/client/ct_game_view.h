@@ -38,6 +38,7 @@ namespace tc
         void RefreshImage(const std::shared_ptr<RawImage>& image);
         void RefreshI420Image(const std::shared_ptr<RawImage>& image);
         void RefreshI444Image(const std::shared_ptr<RawImage>& image);
+        void UpdateFullColorState(bool full_color);
         void SendKeyEvent(quint32 vk, bool down);
         void SetActiveStatus(bool active);
         bool GetActiveStatus() const;

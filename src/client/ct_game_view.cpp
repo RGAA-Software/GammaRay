@@ -159,28 +159,21 @@ namespace tc
     }
 
     void GameView::RefreshImage(const std::shared_ptr<RawImage>& image) {
-        bool enable_full_color = false;
-        if (kRawImageI420 == image->Format()) {
-            //LOGI("RefreshImage kRawImageI420");
-            //RefreshI420Image(image);
-        }
-        else if (kRawImageI444 == image->Format()) {
-            //LOGI("RefreshImage kRawImageI444");
-            enable_full_color = true;
-            //RefreshI444Image(image);
-        }
-
         if (video_widget_) {
             video_widget_->RefreshImage(image);
         }
+        UpdateFullColorState(image->full_color_);
+    }
 
-        if (is_main_view_) {
-            if (settings_->IsFullColorEnabled() != enable_full_color) {
-                settings_->SetFullColorEnabled(enable_full_color);
-                ctx_->SendAppMessage(MsgClientFloatControllerPanelUpdate{
-                    .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFullColorStatus
-                });
-            }
+    void GameView::UpdateFullColorState(bool full_color) {
+        if (!is_main_view_) {
+            return;
+        }
+        if (settings_->IsFullColorEnabled() != full_color) {
+            settings_->SetFullColorEnabled(full_color);
+            ctx_->SendAppMessage(MsgClientFloatControllerPanelUpdate{
+                .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFullColorStatus
+            });
         }
     }
 

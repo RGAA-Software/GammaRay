@@ -116,6 +116,7 @@ namespace tc
                         if (this->params_->support_vulkan_) {  
                             uintptr_t obj = reinterpret_cast<uintptr_t>(game_views_[kMainGameViewIndex]);
                             pl_vulkan_->RenderFrame(obj, image->vulkan_av_frame_);
+                            game_views_[kMainGameViewIndex]->UpdateFullColorState(image->full_color_);
                         }
                         else {
                             game_views_[kMainGameViewIndex]->RefreshImage(image);
