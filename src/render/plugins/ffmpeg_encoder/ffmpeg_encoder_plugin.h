@@ -33,14 +33,18 @@ namespace tc
         bool HasEncoderForMonitor(const std::string& monitor_name) override;
         bool CanEncodeTexture() override;
         bool Init(const EncoderConfig& config, const std::string& monitor_name) override;
-        void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) override;
+        VideoEncoderError Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) override;
         void Exit(const std::string& monitor_name) override;
         void ExitAll() override;
         std::map<std::string, WorkingEncoderInfoPtr> GetWorkingCapturesInfo() override;
-
         std::optional<EncoderCapability> GetEncoderCapability(const std::string& monitor_name) override;
+
+        void DisableHardware();
+        bool IsHardwareEnabled();
+
     private:
         std::map<std::string, std::shared_ptr<FFmpegEncoder>> video_encoders_;
+        bool hardware_enabled_ = true;
     };
 
 }

@@ -36,6 +36,48 @@ namespace tc
         bool support_hevc_yuv444_ = false;
     };
 
+    // Video encoder error type
+    enum class VideoEncoderErrorType {
+        kOk,
+        kNotFound,
+        kEncodeFailed,
+        kInvalidInput,
+        kUnknown,
+    };
+
+    // Video encoder error
+    class VideoEncoderError {
+    public:
+        static VideoEncoderError Ok() {
+            VideoEncoderError err;
+            err.type_ = VideoEncoderErrorType::kOk;
+            return err;
+        }
+
+        static VideoEncoderError NotFound() {
+            VideoEncoderError err;
+            err.type_ = VideoEncoderErrorType::kNotFound;
+            return err;
+        }
+
+        static VideoEncoderError EncodeFailed() {
+            VideoEncoderError err;
+            err.type_ = VideoEncoderErrorType::kEncodeFailed;
+            return err;
+        }
+
+        static VideoEncoderError InvalidInput() {
+            VideoEncoderError err;
+            err.type_ = VideoEncoderErrorType::kInvalidInput;
+            return err;
+        }
+
+    public:
+        VideoEncoderErrorType type_ = VideoEncoderErrorType::kUnknown;
+        int inner_error_ = 0;
+        std::string msg_;
+    };
+
     class GrVideoEncoderPlugin : public GrPluginInterface {
     public:
         GrVideoEncoderPlugin();
@@ -49,8 +91,8 @@ namespace tc
         virtual bool CanEncodeTexture();
         virtual bool HasEncoderForMonitor(const std::string& monitor_name) = 0;
         virtual bool Init(const EncoderConfig& config, const std::string& monitor_name);
-        virtual void Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra);
-        virtual void Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
+        virtual VideoEncoderError Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra);
+        virtual VideoEncoderError Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra);
         virtual void Exit(const std::string& monitor_name);
         virtual void ExitAll();
         // encoding information for monitors/hook

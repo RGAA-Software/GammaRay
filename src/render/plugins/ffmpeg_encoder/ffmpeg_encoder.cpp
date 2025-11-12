@@ -27,11 +27,11 @@ namespace tc
         auto encoder_id = config.codec_type == EVideoCodecType::kHEVC ? AV_CODEC_ID_HEVC : AV_CODEC_ID_H264;
         const char* codec_name = nullptr;
         if (EVideoCodecType::kHEVC == config.codec_type) {
-            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
+            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
                 codec_name = "hevc_nvenc";
                 display_encoder_name_ = "F_NVENC";
             }
-            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
+            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
                 codec_name = "hevc_amf";
                 display_encoder_name_ = "F_AMF";
             }
@@ -41,11 +41,11 @@ namespace tc
             }
         }
         else if (EVideoCodecType::kH264 == config.codec_type) {
-            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
+            if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
                 codec_name = "h264_nvenc";
                 display_encoder_name_ = "F_NVENC";
             }
-            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
+            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
                 codec_name = "h264_amf";
                 display_encoder_name_ = "F_AMF";
             }
@@ -95,6 +95,8 @@ namespace tc
         LOGI("thread count: {}", codec_ctx_->thread_count);
         LOGI("gop size: {}", codec_ctx_->gop_size);
         LOGI("encoder width: {}, encoder height: {}", encoder_config_.encode_width, encoder_config_.encode_height);
+        LOGI("hardware enabled: {}", plugin_->IsHardwareEnabled());
+        LOGI("hardware config: {} (1 -> amf, 2 -> nvenc, 3 -> qsv)", (int)encoder_config_.Hardware);
 
         AVDictionary* param = nullptr;
         if (EHardwareEncoder::kNvEnc == encoder_config_.Hardware) {
@@ -141,11 +143,7 @@ namespace tc
         return true;
     }
 
-    void FFmpegEncoder::Encode(const std::shared_ptr<Image>&image, uint64_t frame_index, const std::any & extra) {
-        if (!image) {
-            LOGE("image is nullptr!");
-            return;
-        }
+    bool FFmpegEncoder::Encode(std::shared_ptr<Image> image, uint64_t frame_index, const std::any & extra) {
         auto beg = TimeUtil::GetCurrentTimestamp();
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
         auto img_width = image->width;
@@ -178,13 +176,17 @@ namespace tc
         memcpy(frame_->data[2], image_data->CStr() + y_size + uv_size, uv_size);
 
         int send_result = avcodec_send_frame(codec_ctx_, frame_);
-
+        if (send_result < 0 && send_result != AVERROR(EAGAIN)) {
+            plugin_->DisableHardware();
+            LOGE("encode failed, err: {}, <! hardware disabled !>", send_result);
+            return false;
+        }
         //LOGI("avcodec_send_frame send_result: {}", send_result);
 
-        while (send_result >= 0) {
-            int receiveResult = avcodec_receive_packet(codec_ctx_, packet_);
+        while (true) {
+            int receive_result = avcodec_receive_packet(codec_ctx_, packet_);
             //LOGI("avcodec_receive_packet receiveResult: {}", receiveResult);
-            if (receiveResult == AVERROR(EAGAIN) || receiveResult == AVERROR_EOF) {
+            if (receive_result == AVERROR(EAGAIN) || receive_result == AVERROR_EOF) {
                 break;
             }
 
@@ -226,6 +228,7 @@ namespace tc
 
             av_packet_unref(packet_);
         }
+        return true;
     }
 
     void FFmpegEncoder::InsertIdr() {

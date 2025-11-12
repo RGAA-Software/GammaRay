@@ -27,7 +27,7 @@ namespace tc
     public:
         explicit FFmpegEncoder(FFmpegEncoderPlugin* plugin);
         bool Init(const EncoderConfig& config, const std::string& monitor_name);
-        void Encode(const std::shared_ptr<Image>& image, uint64_t frame_index, const std::any& extra);
+        bool Encode(std::shared_ptr<Image> image, uint64_t frame_index, const std::any& extra);
         void InsertIdr();
         void Exit();
         int32_t GetEncodeFps();
