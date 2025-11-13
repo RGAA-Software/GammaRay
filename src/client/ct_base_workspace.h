@@ -50,7 +50,7 @@ namespace tc
     class HWInfoWidget;
     class CtSpvrClient;
     class PlVulkan;
-
+    class SkinInterface;
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -77,6 +77,9 @@ namespace tc
         std::shared_ptr<D3D11DeviceWrapper> GetD3D11DeviceWrapper(uint64_t adapter_uid);
         void PostMediaMessage(std::shared_ptr<Data> msg);
         void PostFileTransferMessage(std::shared_ptr<Data> msg);
+
+        // skin
+        SkinInterface* GetSkin();
 
     protected:
         void InitPluginsManager();
@@ -216,6 +219,10 @@ namespace tc
         */
         std::array<int, 6> fps_array_ = {15, 30, 60, 90, 120, 144};
         std::uint64_t last_reduce_fps_time_ = 0;
+
+        // skin
+        SkinInterface* skin_ = nullptr;
+
     private:
         GameView* game_view_ = nullptr;
     };

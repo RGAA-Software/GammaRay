@@ -36,6 +36,7 @@ namespace tc
     class PanelCompanion;
     class GrSpvrClient;
     class SpvrScanner;
+    class SkinInterface;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -87,6 +88,9 @@ namespace tc
 
         // spvr scanner
         std::shared_ptr<SpvrScanner> GetSpvrScanner();
+
+        // skin
+        SkinInterface* GetSkin();
 
     private:
         void RegisterMessageListener();
@@ -143,6 +147,9 @@ namespace tc
 
         // spvr scanner
         std::shared_ptr<SpvrScanner> spvr_scanner_ = nullptr;
+
+        // skin interface
+        SkinInterface* skin_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;

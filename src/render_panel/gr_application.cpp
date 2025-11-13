@@ -13,6 +13,7 @@
 #include "gr_settings.h"
 #include "gr_statistics.h"
 #include "gr_app_messages.h"
+#include "skin/skin_loader.h"
 #include "tc_common_new/log.h"
 #include "gr_system_monitor.h"
 #include "gr_account_manager.h"
@@ -25,6 +26,7 @@
 #include "ui/input_safety_pwd_dialog.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_relay_client/relay_api.h"
+#include "skin/interface/skin_interface.h"
 #include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 #include "tc_steam_manager_new/steam_manager.h"
@@ -77,6 +79,11 @@ namespace tc
         LoadPanelCompanion();
         if (companion_) {
             companion_->UpdateSpvrServerConfig(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort());
+        }
+
+        skin_ = SkinLoader::LoadSkin();
+        if (!skin_) {
+            LOGE("Load skin failed!!!");
         }
 
         auto exeDir = QApplication::applicationDirPath().toStdString();
@@ -473,5 +480,9 @@ namespace tc
 
     std::shared_ptr<SpvrScanner> GrApplication::GetSpvrScanner() {
         return spvr_scanner_;
+    }
+
+    SkinInterface* GrApplication::GetSkin() {
+        return skin_;
     }
 }

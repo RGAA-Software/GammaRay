@@ -11,3 +11,4 @@ set(MAIN_SRCS
 )
 
 add_subdirectory(render)
+add_subdirectory(skin)

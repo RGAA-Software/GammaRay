@@ -55,6 +55,8 @@
 #include "hw_info/hw_info_parser.h"
 #include "hw_info/hw_info_widget.h"
 #include "network/ct_spvr_client.h"
+#include "skin/skin_loader.h"
+#include "skin/interface/skin_interface.h"
 
 namespace tc
 {
@@ -82,6 +84,9 @@ namespace tc
         gWorkspace = shared_from_this();
         // plugins
         InitPluginsManager();
+
+        // skin
+        skin_ = SkinLoader::LoadSkin();
 
         auto beg = TimeUtil::GetCurrentTimestamp();
 
@@ -1319,6 +1324,10 @@ namespace tc
 
     void BaseWorkspace::PostFileTransferMessage(std::shared_ptr<Data> msg) {
         sdk_->PostFileTransferMessage(msg);
+    }
+
+    SkinInterface* BaseWorkspace::GetSkin() {
+        return skin_;
     }
 
     void BaseWorkspace::ExitSdk() {

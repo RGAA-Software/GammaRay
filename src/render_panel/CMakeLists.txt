@@ -99,4 +99,3 @@ set(PANEL_SRCS
 )
 
 add_subdirectory(companion)
-add_subdirectory(skin)
