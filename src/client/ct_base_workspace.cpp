@@ -518,6 +518,10 @@ namespace tc
                 .fps_ = new_fps,
             });
             context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFps });
+            context_->PostUITask([=, this]() {
+                context_->NotifyAppWarningMessage(tcTr("id_warning"), tcTr("id_auto_reduce_fps_warning") + QString(" (")
+                    +  QString::number(cur_fps) + " => " + QString::number(new_fps) + QString(" )"));
+            }); 
         });
 
         media_record_plugin_ = plugin_manager_->GetMediaRecordPlugin();
