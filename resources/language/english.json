@@ -128,6 +128,7 @@
   "id_installed_location": "Installed Location",
   "id_error": "Error",
   "id_cpu_decode_warning": "Currently using CPU decoding, which may affect performance.",
+  "id_auto_reduce_fps_warning": "Due to poor decoding performance of the machine, the fps has been automatically reduced.",
   "id_start_process_error": "Start process failed: ",
   "id_dont_have_exe": "Don't have exe",
   "id_file_not_exist": "File not exists",
