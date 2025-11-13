@@ -38,12 +38,12 @@ namespace tc
         return true;
     }
 
-    void GrVideoEncoderPlugin::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra) {
-
+    VideoEncoderError GrVideoEncoderPlugin::Encode(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& tex2d, uint64_t frame_index, const std::any& extra) {
+        return VideoEncoderError::NotFound();
     }
 
-    void GrVideoEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
-
+    VideoEncoderError GrVideoEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
+        return VideoEncoderError::NotFound();
     }
 
     void GrVideoEncoderPlugin::InsertIdr() {

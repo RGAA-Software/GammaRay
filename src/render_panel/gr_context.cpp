@@ -181,24 +181,32 @@ namespace tc
     std::string GrContext::MakeBroadcastMessage() {
         json obj;
         // device
-        obj["device_id"] = settings_->GetDeviceId();
-        obj["random_pwd"] = settings_->GetDeviceRandomPwd();
-        obj["icon_idx"] = this->GetIndexByUniqueId();
+        // device_id
+        obj["did"] = settings_->GetDeviceId();
+        // random passwor
+        obj["rpwd"] = settings_->GetDeviceRandomPwd();
+        //obj["icon_idx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();
         auto ips = this->GetIps();
         for (auto& item : ips) {
             json ip_obj;
             ip_obj["ip"] = item.ip_addr_;
-            ip_obj["type"] = "";//item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
+            //ip_obj["type"] = "";//item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS";
             ip_array.push_back(ip_obj);
         }
         obj["ips"] = ip_array;
-        obj["panel_srv_port"] = settings_->GetPanelServerPort();
-        obj["render_srv_port"] = settings_->GetRenderServerPort();
-        obj["relay_host"] = settings_->GetRelayServerHost();
-        obj["relay_port"] = settings_->GetRelayServerPort();
-        obj["relay_appkey"] = grApp->GetAppkey();
+
+        // panel_srv_port
+        obj["ppt"] = settings_->GetPanelServerPort();
+        // render_srv_port
+        obj["rpt"] = settings_->GetRenderServerPort();
+        // relay_host
+        obj["rst"] = settings_->GetRelayServerHost();
+        // relay_port
+        obj["rpt"] = settings_->GetRelayServerPort();
+        // relay_appkey
+        obj["rak"] = grApp->GetAppkey();
         return obj.dump();
     }
 

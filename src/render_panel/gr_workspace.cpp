@@ -40,6 +40,7 @@
 #include "ui/user/user_login_dialog.h"
 #include "ui/user/user_register_dialog.h"
 #include "tc_spvr_client/spvr_user_api.h"
+#include "ui/tab_cophone.h"
 
 namespace tc
 {
@@ -227,6 +228,21 @@ namespace tc
 
             {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
+                btn->AddIcon(":/resources/image/ic_device_selected.svg", ":/resources/image/ic_device_normal.svg", 20, 20);
+                btn_tab_cophone_ = btn;
+                btn->SetBorderRadius(btn_size.height()/2);
+                btn->SetTextId("id_co_phone");
+                btn->SetSelectedFontColor(btn_font_color);
+                btn->setFixedSize(btn_size);
+                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    ChangeTab(TabName::kTabCoPhone);
+                });
+                layout->addSpacing(10);
+                layout->addWidget(btn, 0, Qt::AlignHCenter);
+            }
+
+            {
+                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn->AddIcon(":/resources/image/ic_settings_security_selected.svg", ":/resources/image/ic_settings_security_normal.svg", 20, 20);
                 btn_security_ = btn;
                 btn->SetBorderRadius(btn_size.height()/2);
@@ -250,21 +266,6 @@ namespace tc
                 btn->setFixedSize(btn_size);
                 QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
                     ChangeTab(TabName::kTabSettings);
-                });
-                layout->addSpacing(10);
-                layout->addWidget(btn, 0, Qt::AlignHCenter);
-            }
-
-            if (0) {
-                auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
-                btn->AddIcon(":/resources/image/ic_avatar_selected.svg", ":/resources/image/ic_avatar_normal.svg", 20, 20);
-                btn_tab_profile_ = btn;
-                btn->SetBorderRadius(btn_size.height()/2);
-                btn->SetTextId("id_tab_profile");
-                btn->SetSelectedFontColor(btn_font_color);
-                btn->setFixedSize(btn_size);
-                QObject::connect(btn, &QPushButton::clicked, this, [=, this]() {
-                    ChangeTab(TabName::kTabProfile);
                 });
                 layout->addSpacing(10);
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
@@ -346,6 +347,7 @@ namespace tc
             tabs_.insert({TabName::kTabServer, new TabServer(app_, this)});
             tabs_.insert({TabName::kTabServerStatus, new TabServerStatus(app_, this)});
             tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
+            tabs_.insert({TabName::kTabCoPhone, new TabCoPhone(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
             tabs_.insert({TabName::kTabSecurity, new TabSecurityInternals(app_, this)});
             //tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
@@ -354,6 +356,7 @@ namespace tc
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
             tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
+            tabs_[TabName::kTabCoPhone]->SetAttach(btn_tab_cophone_);
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
             tabs_[TabName::kTabSecurity]->SetAttach(btn_security_);
             //tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
@@ -365,6 +368,7 @@ namespace tc
             stack_widget->addWidget(tabs_[TabName::kTabServer]);
             stack_widget->addWidget(tabs_[TabName::kTabServerStatus]);
             stack_widget->addWidget(tabs_[TabName::kTabGames]);
+            stack_widget->addWidget(tabs_[TabName::kTabCoPhone]);
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
             stack_widget->addWidget(tabs_[TabName::kTabSecurity]);
             //stack_widget->addWidget(tabs_[TabName::kTabProfile]);

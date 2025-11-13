@@ -27,6 +27,7 @@ namespace tc
         kTabServer,
         kTabServerStatus,
         kTabGames,
+        kTabCoPhone,
         kTabSettings,
         kTabSecurity,
         kTabProfile,
@@ -61,6 +62,7 @@ namespace tc
         QPushButton* btn_tab_games_ = nullptr;
         QPushButton* btn_security_ = nullptr;
         QPushButton* btn_tab_settings_ = nullptr;
+        QPushButton* btn_tab_cophone_ = nullptr;
         QPushButton* btn_tab_profile_ = nullptr;
         QPushButton* btn_tab_hw_info_ = nullptr;
         QStackedWidget* stacked_widget_ = nullptr;

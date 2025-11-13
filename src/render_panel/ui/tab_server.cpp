@@ -239,14 +239,14 @@ namespace tc
                 auto layout = new NoMarginVLayout();
 
                 auto qr_info = new TcQRWidget(this);
-                qr_info->setFixedSize(175, 175);
+                qr_info->setFixedSize(160, 160);
                 lbl_qr_code_ = qr_info;
                 qr_info->SetQRPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
                 layout->addStretch();
                 machine_code_qr_layout->addLayout(layout);
 
-                int size = 22;
+                int size = 18;
                 //auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
                 auto img_path = ":/resources/tc_icon.png";
                 auto avatar = new RoundImageDisplay(img_path, size, size, 4);
@@ -573,6 +573,9 @@ namespace tc
         }
 
         qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), -1);
+        LOGI("QR str: {}", broadcast_msg);
+        LOGI("QR pixmap size: {}x{}", qr_pixmap_.width(), qr_pixmap_.height());
+        //qr_pixmap_ = qr_pixmap_.scaled(60, 60, Qt::KeepAspectRatio, Qt::FastTransformation);
         if (lbl_qr_code_) {
             lbl_qr_code_->SetQRPixmap(qr_pixmap_);
         }

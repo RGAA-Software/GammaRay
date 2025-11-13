@@ -96,13 +96,19 @@ namespace tc
         return true;
     }
 
-    void FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
+    VideoEncoderError FFmpegEncoderPlugin::Encode(const std::shared_ptr<Image>& i420_image, uint64_t frame_index, const std::any& extra) {
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
         auto monitor_name = std::string(cap_video_frame.display_name_);
-        if (!HasEncoderForMonitor(monitor_name)) {
-            return;
+        if (!i420_image) {
+            return VideoEncoderError::InvalidInput();
         }
-        video_encoders_[monitor_name]->Encode(i420_image, frame_index, extra);
+        if (!HasEncoderForMonitor(monitor_name)) {
+            return VideoEncoderError::NotFound();
+        }
+        if (!video_encoders_[monitor_name]->Encode(i420_image, frame_index, extra)) {
+            return VideoEncoderError::EncodeFailed();
+        }
+        return VideoEncoderError::Ok();
     }
 
     void FFmpegEncoderPlugin::Exit(const std::string& monitor_name) {
@@ -154,5 +160,13 @@ namespace tc
             }
         }
         return { cap };
+    }
+
+    void FFmpegEncoderPlugin::DisableHardware() {
+        hardware_enabled_ = false;
+    }
+
+    bool FFmpegEncoderPlugin::IsHardwareEnabled() {
+        return hardware_enabled_;
     }
 }
