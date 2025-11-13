@@ -37,6 +37,7 @@ namespace tc
         void SetScaleMode(ScaleMode mode);
         void SetFullColorEnabled(bool enabled);
         void SetFps(int fps);
+        int GetFps() const;
         bool IsRelayMode();
         bool IsDirectMode();
         void Dump();

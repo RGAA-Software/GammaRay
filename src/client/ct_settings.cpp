@@ -86,6 +86,10 @@ namespace tc
         fps_ = fps;
     }
 
+    int Settings::GetFps() const {
+        return fps_;
+    }
+
     bool Settings::IsRelayMode() {
         return network_type_ == ClientNetworkType::kRelay;
     }

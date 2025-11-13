@@ -485,6 +485,41 @@ namespace tc
             this->ProcessNetworkMessage(msg);
         });
 
+        sdk_->SetOnVideoFrameDecodeThreadDiscardedCallback([=]() ->void {
+            bool need_handle = true;
+            auto cur_time = TimeUtil::GetCurrentTimestamp();
+            if (cur_time - last_reduce_fps_time_ < 3000) {
+                need_handle = false;
+            }
+            last_reduce_fps_time_ = cur_time;
+            if (!need_handle) {
+                return;
+            }
+            if (!settings_) {
+                return;
+            }
+            int cur_fps = settings_->GetFps();
+            bool find = false;
+            int index = 0;
+            for (auto fps : fps_array_) {
+                if (cur_fps == fps) {
+                    find = true;
+                    break;
+                }
+                ++index;
+            }
+            if (!find || index == 0) {
+                return;
+            }
+            int new_fps = fps_array_[index - 1];
+            LOGI("new fps is {}", new_fps);
+            settings_->SetFps(new_fps);
+            context_->SendAppMessage(MsgClientModifyFps{
+                .fps_ = new_fps,
+            });
+            context_->SendAppMessage(MsgClientFloatControllerPanelUpdate{ .update_type_ = MsgClientFloatControllerPanelUpdate::EUpdate::kFps });
+        });
+
         media_record_plugin_ = plugin_manager_->GetMediaRecordPlugin();
         if (!media_record_plugin_) {
             LOGE("media_record_plugin_ is nullptr!!!");

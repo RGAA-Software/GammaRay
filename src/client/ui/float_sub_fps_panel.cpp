@@ -101,7 +101,7 @@ namespace tc
 
     void SubFpsPanel::UpdateStatus(const MsgClientFloatControllerPanelUpdate& msg) {
         if (MsgClientFloatControllerPanelUpdate::EUpdate::kFps == msg.update_type_) {
-            int fps = settings_->fps_;
+            const int fps = settings_->GetFps();
             int list_index = GetFpsIndex(fps);
             listview_->Select(list_index);
         }
