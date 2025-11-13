@@ -16,6 +16,7 @@
 #ifdef WIN32
 #include <d3d11.h>
 #include <wrl/client.h>
+#include <array>
 
 using namespace Microsoft::WRL;
 
@@ -201,6 +202,20 @@ namespace tc
         std::shared_ptr<PlVulkan> pl_vulkan_ = nullptr;
 
         std::string render_type_name_ = "unknow";
+
+        /*
+        * fps_array_ 参考如下枚举(float_sub_fps_panel.h)
+        enum class EFps {
+            k15Fps ,
+            k30Fps ,
+            k60Fps ,
+            k90Fps ,
+            k120Fps,
+            k144Fps,
+        };
+        */
+        std::array<int, 6> fps_array_ = {15, 30, 60, 90, 120, 144};
+        std::uint64_t last_reduce_fps_time_ = 0;
     private:
         GameView* game_view_ = nullptr;
     };
