@@ -72,6 +72,28 @@ namespace tc
             return err;
         }
 
+        [[nodiscard]] bool Success() const {
+            return type_ == VideoEncoderErrorType::kOk;
+        }
+
+        [[nodiscard]] std::string GetReadableType() const {
+            if (type_ == VideoEncoderErrorType::kOk) {
+                return "Ok";
+            }
+            else if (type_ == VideoEncoderErrorType::kNotFound) {
+                return "Not found encoder";
+            }
+            else if (type_ == VideoEncoderErrorType::kEncodeFailed) {
+                return "Encode failed";
+            }
+            else if (type_ == VideoEncoderErrorType::kInvalidInput) {
+                return "Invalid input";
+            }
+            else {
+                return "Unknown error";
+            }
+        }
+
     public:
         VideoEncoderErrorType type_ = VideoEncoderErrorType::kUnknown;
         int inner_error_ = 0;
