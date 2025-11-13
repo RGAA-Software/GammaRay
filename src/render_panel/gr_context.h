@@ -97,7 +97,7 @@ namespace tc
         // return ip address if device id is empty
         std::string GetDeviceIdOrIpAddress();
 
-        // Display a message on right-bottom
+        // Display a message at right-bottom
         std::shared_ptr<NotifyManager> GetNotifyManager();
         void NotifyAppMessage(const QString& title, const QString& msg, std::function<void()>&& cbk = []() {});
         void NotifyAppErrMessage(const QString& title, const QString& msg, std::function<void()>&& cbk = []() {});

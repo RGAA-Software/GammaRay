@@ -46,6 +46,7 @@
 #include "tc_qt_widget/tc_pushbutton.h"
 #include "tc_qt_widget/tc_image_button.h"
 #include "tc_qt_widget/tc_password_input.h"
+#include "tc_qt_widget/tc_circle_indicator.h"
 #include "tc_spvr_client/spvr_device_api.h"
 #include "tc_spvr_client/spvr_device.h"
 #include "tc_common_new/base64.h"
@@ -496,6 +497,49 @@ namespace tc
                 left_root->addLayout(remote_input_layout);
             }
             left_root->addStretch(120);
+
+            // server status of myself
+            {
+                auto layout = new NoMarginHLayout();
+                layout->setAlignment(Qt::AlignHCenter);
+                auto label_size = QSize(100, 30);
+                auto indicator_size = QSize(14, 14);
+                {
+                    // indicator
+                    auto indicator = new TcCircleIndicator(this);
+                    indicator->setFixedSize(indicator_size);
+                    layout->addWidget(indicator);
+
+                    layout->addSpacing(5);
+
+                    // text
+                    auto text = new TcLabel(this);
+                    text->setFixedSize(label_size);
+                    text->SetTextId("id_manager_server");
+                    layout->addWidget(text);
+                }
+
+                layout->addSpacing(10);
+
+                {
+                    auto indicator = new TcCircleIndicator(this);
+                    indicator->setFixedSize(indicator_size);
+                    layout->addWidget(indicator);
+
+                    layout->addSpacing(5);
+
+                    // text
+                    auto text = new TcLabel(this);
+                    text->setFixedSize(label_size);
+                    text->SetTextId("id_relay_server");
+                    layout->addWidget(text);
+                }
+
+                layout->addStretch();
+
+                left_root->addLayout(layout);
+                left_root->addSpacing(10);
+            }
         }
 
         // clients

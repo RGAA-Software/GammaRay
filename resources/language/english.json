@@ -259,6 +259,8 @@
   "id_username": "User Name",
   "id_re_password": "Repeat Password",
   "id_force_relay": "Force Relay",
+  "id_manager_server": "Manager Server",
+  "id_relay_server": "Relay Server",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",
