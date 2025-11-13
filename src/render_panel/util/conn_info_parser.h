@@ -51,7 +51,7 @@ namespace tc
         }
     };
 
-    // parse gammaray://xxxx
+    // parse link://xxxx
     class ConnInfoParser {
     public:
         static std::shared_ptr<GrConnectionInfo> Parse(const std::string& info);

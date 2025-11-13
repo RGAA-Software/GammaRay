@@ -185,7 +185,7 @@ namespace tc
         obj["did"] = settings_->GetDeviceId();
         // random passwor
         obj["rpwd"] = settings_->GetDeviceRandomPwd();
-        //obj["icon_idx"] = this->GetIndexByUniqueId();
+        obj["iidx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();
         auto ips = this->GetIps();
@@ -200,13 +200,13 @@ namespace tc
         // panel_srv_port
         obj["ppt"] = settings_->GetPanelServerPort();
         // render_srv_port
-        obj["rpt"] = settings_->GetRenderServerPort();
+        obj["rdpt"] = settings_->GetRenderServerPort();
         // relay_host
-        obj["rst"] = settings_->GetRelayServerHost();
+        obj["rlst"] = settings_->GetRelayServerHost();
         // relay_port
-        obj["rpt"] = settings_->GetRelayServerPort();
+        obj["rlpt"] = settings_->GetRelayServerPort();
         // relay_appkey
-        obj["rak"] = grApp->GetAppkey();
+        obj["rlak"] = grApp->GetAppkey();
         return obj.dump();
     }
 
@@ -319,7 +319,7 @@ namespace tc
         auto srv_remote_device_id = "server_" + device_id;
         auto relay_result = relay::RelayApi::GetRelayDeviceInfo(relay_host, relay_port, srv_remote_device_id, relay_appkey);
         if (!relay_result) {
-            LOGE("Get device info for: {} failed: {}, code: {}", srv_remote_device_id, relay::RelayError2String(relay_result.error()), relay_result.error());
+            LOGE("Get device info in [Relay Server] for: {} failed: {}, code: {}, appkey: {}", srv_remote_device_id, relay::RelayError2String(relay_result.error()), relay_result.error(), relay_appkey);
             if (show_dialog) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
                 dialog.exec();
@@ -327,7 +327,7 @@ namespace tc
             return nullptr;
         }
         auto relay_device_info = relay_result.value();
-        LOGI("Remote device info: id: {}, relay host: {}, port: {}",
+        LOGI("Remote device in [Relay Server] info: id: {}, relay host: {}, port: {}",
              srv_remote_device_id, relay_device_info->relay_server_ip(), relay_device_info->relay_server_port());
         return relay_device_info;
 

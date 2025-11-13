@@ -38,7 +38,7 @@ namespace tc
             lbl_eg->setFixedWidth(widget->width());
             lbl_eg->setAlignment(Qt::AlignCenter);
             lbl_eg->setStyleSheet("font-size: 12px; font-weight: 700; color: #2979ff;");
-            lbl_eg->setText("For example:\ngammaray://6e4e6296\n68e87ab2f4f08d03b...");
+            lbl_eg->setText("For example:\nlink://6e4e6296\n68e87ab2f4f08d03b...");
             layout->addSpacing(8);
             layout->addWidget(lbl_eg);
 

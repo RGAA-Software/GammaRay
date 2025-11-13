@@ -239,7 +239,7 @@ namespace tc
                 auto layout = new NoMarginVLayout();
 
                 auto qr_info = new TcQRWidget(this);
-                qr_info->setFixedSize(160, 160);
+                qr_info->setFixedSize(171, 171);
                 lbl_qr_code_ = qr_info;
                 qr_info->SetQRPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
@@ -265,7 +265,7 @@ namespace tc
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 
-            // gammaray:// information
+            // link:// information
             {
                 left_root->addSpacing(18);
 
@@ -289,7 +289,7 @@ namespace tc
                 msg->setAlignment(Qt::AlignLeft);
                 msg->setFixedWidth(330);
                 msg->setFixedHeight(35);
-                auto info = std::format("gammaray://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
+                auto info = std::format("link://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
                 msg->setText(info.c_str());
                 msg->setCursorPosition(0);
                 msg->setStyleSheet(R"(font-size: 12px; padding-left: 5px; font-weight: 500; color: #2979ff;)");
@@ -581,7 +581,7 @@ namespace tc
         }
 
         if (lbl_detailed_info_) {
-            auto info = std::format("gammaray://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
+            auto info = std::format("link://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
             lbl_detailed_info_->setText(info.c_str());
             lbl_detailed_info_->setCursorPosition(0);
         }

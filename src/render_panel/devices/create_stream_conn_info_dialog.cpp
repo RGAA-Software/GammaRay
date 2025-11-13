@@ -149,6 +149,7 @@ namespace tc
         //
         if (!conn_info->hosts_.empty()) {
             for (const auto &host: conn_info->hosts_) {
+                LOGI("Check connecting directly => http://{}:{}/api/ping", host.ip_, conn_info->render_srv_port_);
                 auto client = HttpClient::Make(host.ip_, conn_info->render_srv_port_, "/api/ping", 1000);
                 auto r = client->Request();
                 if (r.status == 200) {

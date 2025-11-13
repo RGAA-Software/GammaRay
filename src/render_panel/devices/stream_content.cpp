@@ -132,7 +132,7 @@ namespace tc
             SelectStreamTypeDialog select_stream_dialog(ctx, this);
             auto r = select_stream_dialog.exec();
             if (r == 1) {
-                // create by gammaray://
+                // create by link://
                 CreateStreamConnInfoDialog dialog(ctx, this);
                 dialog.exec();
             }
