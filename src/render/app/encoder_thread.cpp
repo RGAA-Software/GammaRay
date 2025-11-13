@@ -233,15 +233,16 @@ namespace tc
                 
                 // to do: GDI 采集的时候 显示器的名字是自定义的，需要测试下
                 if (!target_encoder_plugin) {
+                    LOGI("Hardware disabled? {}", hardware_disabled_);
                     auto nvenc_encoder_plugin = plugin_manager_->GetNvencEncoderPlugin();
-                    if (!is_mocking && nvenc_encoder_plugin && nvenc_encoder_plugin->IsPluginEnabled() && nvenc_encoder_plugin->Init(encoder_config, monitor_name)) {
+                    if (!is_mocking && !hardware_disabled_ && nvenc_encoder_plugin && nvenc_encoder_plugin->IsPluginEnabled() && nvenc_encoder_plugin->Init(encoder_config, monitor_name)) {
                         select_encoder_with_capability_func(nvenc_encoder_plugin, monitor_name);
                     }
 
                     if (!target_encoder_plugin) {
                         LOGW("Init NVENC failed, will try AMF.");
                         auto amf_encoder_plugin = plugin_manager_->GetAmfEncoderPlugin();
-                        if (!is_mocking && amf_encoder_plugin && amf_encoder_plugin->IsPluginEnabled() && amf_encoder_plugin->Init(encoder_config, monitor_name)) {
+                        if (!is_mocking && !hardware_disabled_  && amf_encoder_plugin && amf_encoder_plugin->IsPluginEnabled() && amf_encoder_plugin->Init(encoder_config, monitor_name)) {
                             select_encoder_with_capability_func(amf_encoder_plugin, monitor_name);
                         }
                     }
@@ -352,7 +353,19 @@ namespace tc
                 if (target_encoder_plugin && target_encoder_plugin->CanEncodeTexture()) {
                     can_encode_texture = true;
                     // plugins: EncodeTexture
-                    target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
+                    auto encode_result = target_encoder_plugin->Encode(target_texture, frame_index, cap_video_msg);
+                    if (!encode_result.Success()) {
+                        if (encode_result.type_ == VideoEncoderErrorType::kEncodeFailed) {
+                            LOGW("<!!> Encode failed, will release this encoder for display and disable hardware: {}", monitor_name);
+                            target_encoder_plugin->Exit(monitor_name);
+                            encoder_plugins_.erase(monitor_name);
+                            // disable hardware encoder
+                            hardware_disabled_ = true;
+                        }
+                        LOGE("<!!> Encode texture failed, encoder plugin: {}, error: {}->{}, monitor: {}",
+                             target_encoder_plugin->GetPluginName(), (int)encode_result.type_, encode_result.GetReadableType(), monitor_name);
+                        return;
+                    }
                 }
 
                 // TODO: Add Texture Mapping duration
@@ -388,7 +401,12 @@ namespace tc
                         // callback in YUV converter thread
                         if (target_encoder_plugin && !can_encode_texture) {
                             PostEncTask([=, this]() {
-                                target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                                auto encode_result = target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                                if (!encode_result.Success()) {
+                                    LOGE("<!!> Encode YUV failed, encoder plugin: {}, error: {}->, monitor: {}",
+                                         target_encoder_plugin->GetPluginName(), (int)encode_result.type_, encode_result.GetReadableType(), cap_video_msg.display_name_);
+                                    return;
+                                }
                             });
                         }
                     };
@@ -436,7 +454,12 @@ namespace tc
                     // callback in YUV converter thread
                     if (target_encoder_plugin) {
                         PostEncTask([=, this]() {
-                            target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                            auto encode_result = target_encoder_plugin->Encode(image, frame_index, cap_video_msg);
+                            if (!encode_result.Success()) {
+                                LOGE("<!!> Encode YUV failed, encoder plugin: {}, error: {}->{}, monitor: {}",
+                                     target_encoder_plugin->GetPluginName(), (int)encode_result.type_, encode_result.GetReadableType(), cap_video_msg.display_name_);
+                                return;
+                            }
                         });
                     }
                     context_->PostStreamPluginTask([=, this]() {

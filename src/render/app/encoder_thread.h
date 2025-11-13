@@ -63,6 +63,9 @@ namespace tc
 
         // frame carrier plugin
         GrFrameCarrierPlugin* frame_carrier_plugin_ = nullptr;
+
+        // hardware disabled
+        std::atomic_bool hardware_disabled_ = false;
     };
 
 }
