@@ -11,7 +11,7 @@ namespace tc
 {
     class SkinOfficial : public SkinInterface {
     public:
-        std::string GetSkinName() override;
+        QString GetSkinName() override;
     };
 }
 

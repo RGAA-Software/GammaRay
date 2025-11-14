@@ -40,35 +40,28 @@ namespace tc
         std::shared_ptr<SkinContext> GetPluginContext();
 
         // info
-        virtual std::string GetSkinName() = 0;
+        virtual QString GetSkinName() = 0;
 
         // version
-        virtual std::string GetVersionName();
-        virtual uint32_t GetVersionCode();
+        virtual QString GetAppVersionName();
+        virtual uint32_t GetAppVersionCode();
 
         // lifecycle
         virtual bool OnCreate(const SkinParam& param);
-        virtual bool OnResume();
-        virtual bool OnStop();
-        virtual bool OnDestroy();
-
-        virtual void On1Second();
 
         // widget
         virtual QWidget* GetRootWidget();
-        virtual void ShowRootWidget();
-        virtual void HideRootWidget();
         bool eventFilter(QObject *watched, QEvent *event) override;
 
     protected:
         bool HasParam(const std::string& k) {
-            return param_.cluster_.count(k) > 0;
+            return skin_param_.cluster_.count(k) > 0;
         }
 
         template<typename T>
         T GetConfigParam(const std::string& k) {
-            if (param_.cluster_.count(k) > 0) {
-                return std::any_cast<T>(param_.cluster_[k]);
+            if (skin_param_.cluster_.count(k) > 0) {
+                return std::any_cast<T>(skin_param_.cluster_[k]);
             }
             return T{};
         }
@@ -84,21 +77,11 @@ namespace tc
         double GetConfigDoubleParam(const std::string& k) { return GetConfigParam<double>(k); }
 
     protected:
-        std::shared_ptr<SkinContext> plugin_context_ = nullptr;
-        std::atomic_bool stopped_ = false;
-        std::atomic_bool destroyed_ = false;
-        SkinParam param_;
-        std::string plugin_file_name_;
-        QWidget* root_widget_ = nullptr;
-        std::string plugin_author_;
-        std::string plugin_desc_;
-        std::string plugin_version_name_;
-        int64_t plugin_version_code_{};
-        bool plugin_enabled_ = true;
+        std::shared_ptr<SkinContext> skin_context_ = nullptr;
+        SkinParam skin_param_;
+        SkinSettings skin_settings_;
         std::string base_path_;
-        std::string capture_audio_device_id_;
-        std::string screen_recording_path_;
-        SkinSettings plugin_settings_;
+        std::string plugin_file_name_;
     };
 
 

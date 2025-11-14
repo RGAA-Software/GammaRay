@@ -276,7 +276,7 @@ namespace tc
         }
 
         content_layout->addSpacing(item_gap);
-        // Force Ralay
+        // Force Relay
         {
             auto layout = new NoMarginHLayout();
 
@@ -302,6 +302,50 @@ namespace tc
             auto tooltip = new TcToolTip(this);
             tooltip->setFixedSize(275, 70);
             tooltip->SetText("Force using Relay Server to exchange data.");
+            tooltip->hide();
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
+            layout->addStretch();
+            content_layout->addLayout(layout);
+        }
+
+        content_layout->addSpacing(item_gap);
+        // Force software
+        {
+            auto layout = new NoMarginHLayout();
+
+            auto label = new TcLabel(this);
+            label->setFixedWidth(item_width);
+            label->SetTextId("id_force_software");
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+            layout->addSpacing(10);
+
+            auto cb = new QCheckBox(this);
+            cb->setChecked(stream_item_->force_software_);
+            cb_force_software_ = cb;
+            layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(275, 70);
+            tooltip->SetText("Force using Software to render and decode.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
                 auto w_pos = w->mapToGlobal(QPoint(0,0));
@@ -480,6 +524,7 @@ namespace tc
                 //stream_item_->show_max_window_ = cb_show_max_->isChecked();
                 stream_item_->split_windows_ = cb_split_windows_->isChecked();
                 stream_item_->force_relay_ = cb_force_relay_->isChecked();
+                stream_item_->force_software_ = cb_force_software_->isChecked();
                 db_mgr_->UpdateStream(stream_item_);
                 this->close();
             });

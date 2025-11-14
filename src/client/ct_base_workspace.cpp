@@ -93,7 +93,9 @@ namespace tc
         InitTheme();
 
 #ifdef WIN32
-        gen_d3d11_device_ = GenerateD3DDevice();
+        if (!settings_->force_software_) {
+            gen_d3d11_device_ = GenerateD3DDevice();
+        }
         if (gen_d3d11_device_) {
             for (const auto &[adapter_uid, wrapper]: d3d11_devices_) {
                 // TODO: find the primary or using d3d11 device

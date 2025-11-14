@@ -260,6 +260,7 @@
   "id_force_relay": "強制使用中轉服務",
   "id_manager_server": "管理服務",
   "id_relay_server": "中轉服務",
+  "id_force_software": "強制軟解碼",
 
   "id_client_network_disconnected": "連接已斷開, 正在重試",
   "id_gr_client": "GammaRay客戶端",

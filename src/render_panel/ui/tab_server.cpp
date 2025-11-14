@@ -240,8 +240,9 @@ namespace tc
                 auto layout = new NoMarginVLayout();
 
                 auto qr_info = new TcQRWidget(this);
-                qr_info->setFixedSize(171, 171);
+                //qr_info->setFixedSize(171, 171);
                 lbl_qr_code_ = qr_info;
+                lbl_qr_code_->setFixedSize(qr_pixmap_.width()*3, qr_pixmap_.height()*3);
                 qr_info->SetQRPixmap(qr_pixmap_);
                 layout->addWidget(qr_info);
                 layout->addStretch();
@@ -251,6 +252,7 @@ namespace tc
                 //auto img_path = std::format(":/icons/{}.png", context_->GetIndexByUniqueId());
                 auto img_path = ":/resources/tc_icon.png";
                 auto avatar = new RoundImageDisplay(img_path, size, size, 4);
+                qr_avatar_ = avatar;
                 avatar->setParent(qr_info);
                 avatar->setGeometry((qr_info->width()-size)/2, (qr_info->height()-size)/2, size, size);
             }
@@ -621,7 +623,12 @@ namespace tc
         LOGI("QR pixmap size: {}x{}", qr_pixmap_.width(), qr_pixmap_.height());
         //qr_pixmap_ = qr_pixmap_.scaled(60, 60, Qt::KeepAspectRatio, Qt::FastTransformation);
         if (lbl_qr_code_) {
+            lbl_qr_code_->setFixedSize(qr_pixmap_.width()*3, qr_pixmap_.height()*3);
             lbl_qr_code_->SetQRPixmap(qr_pixmap_);
+            qr_avatar_->setGeometry((lbl_qr_code_->width()-qr_avatar_->width())/2,
+                                    (lbl_qr_code_->height()-qr_avatar_->height())/2,
+                                    qr_avatar_->width(),
+                                    qr_avatar_->height());
         }
 
         if (lbl_detailed_info_) {

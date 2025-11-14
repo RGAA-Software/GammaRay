@@ -134,6 +134,9 @@ namespace tc
         int relay_port_ = 0;
         std::string relay_appkey_;
 
+        // force software to decode & render
+        bool force_software_ = false;
+
         ///////
         ///////
         // from render //

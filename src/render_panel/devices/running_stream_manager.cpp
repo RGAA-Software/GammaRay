@@ -114,6 +114,7 @@ namespace tc
             << std::format("--relay_host={}", item->relay_host_).c_str()
             << std::format("--relay_port={}", item->relay_port_).c_str()
             << std::format("--relay_appkey={}", item->relay_appkey_).c_str()
+            << std::format("--force_software={}", item->force_software_ ? 1 : 0).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

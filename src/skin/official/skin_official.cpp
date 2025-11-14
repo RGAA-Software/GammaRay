@@ -12,7 +12,7 @@ void* GetInstance() {
 namespace tc
 {
 
-    std::string SkinOfficial::GetSkinName() {
+    QString SkinOfficial::GetSkinName() {
         return "Official";
     }
 

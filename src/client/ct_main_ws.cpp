@@ -150,6 +150,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_relay_appkey("relay_appkey", "relay server appkey", "value", "");
     parser.addOption(opt_relay_appkey);
 
+    QCommandLineOption opt_force_software("force_software", "force software", "value", "");
+    parser.addOption(opt_force_software);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -307,6 +310,9 @@ void ParseCommandLine(QApplication& app) {
     settings->relay_host_ = parser.value(opt_relay_host).toStdString();
     settings->relay_port_ = parser.value(opt_relay_port).toInt();
     settings->relay_appkey_ = parser.value(opt_relay_appkey).toStdString();
+
+    // force software
+    settings->force_software_ = parser.value(opt_force_software).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -415,6 +421,7 @@ int main(int argc, char** argv) {
     LOGI("relay host: {}", settings->relay_host_);
     LOGI("relay port: {}", settings->relay_port_);
     LOGI("relay appkey: {}", settings->relay_appkey_);
+    LOGI("force software: {}", settings->force_software_);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
@@ -467,13 +474,12 @@ int main(int argc, char** argv) {
 
     auto beg = TimeUtil::GetCurrentTimestamp();
 
-    bool support_vulkan = false;
-    if (0) {
+    if (!settings->force_software_) {
         auto vulkan_checker = VulkanChecker::Make();
-        support_vulkan = vulkan_checker->TestDecodeAndRenderHevcYuv444Frame();
-        LOGI("support vulkan(hevc deoce yuv444 and render): {}", support_vulkan);
+        bool support_vulkan = vulkan_checker->TestDecodeAndRenderHevcYuv444Frame();
+        LOGI("support vulkan(hevc decode yuv444 and render): {}", support_vulkan);
+        params->support_vulkan_ = support_vulkan;
     }
-    params->support_vulkan_ = false; //support_vulkan;
 
     static auto ws = std::make_shared<Workspace>(ctx, params);
     ws->Init();

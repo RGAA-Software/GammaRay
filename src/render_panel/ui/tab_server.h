@@ -29,6 +29,7 @@ namespace tc
     class RunningStreamManager;
     class StreamDBOperator;
     class TcPasswordInput;
+    class RoundImageDisplay;
 
     class TabServer : public TabBase {
     public:
@@ -51,6 +52,7 @@ namespace tc
         QLabel* lbl_machine_random_pwd_ = nullptr;
         QLineEdit* lbl_detailed_info_ = nullptr;
         TcQRWidget* lbl_qr_code_ = nullptr;
+        RoundImageDisplay* qr_avatar_ = nullptr;
         StreamContent* stream_content_ = nullptr;
         TcPasswordInput* password_input_ = nullptr;
         QComboBox* remote_devices_ = nullptr;
