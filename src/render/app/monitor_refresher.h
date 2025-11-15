@@ -23,6 +23,7 @@ namespace tc
 
     private:
         std::shared_ptr<RdContext> context_ = nullptr;
+        int color_value_ = 0;
     };
 
     // Refresher

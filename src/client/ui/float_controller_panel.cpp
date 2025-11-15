@@ -17,8 +17,6 @@
 #include "float_sub_mode_panel.h"
 #include "float_sub_display_panel.h"
 #include "float_sub_control_panel.h"
-#include "client/ct_app_message.h"
-#include "tc_qt_widget/tc_dialog.h"
 #include "client/ct_client_context.h"
 #include "plugins/ct_plugin_manager.h"
 #include "tc_common_new/message_notifier.h"

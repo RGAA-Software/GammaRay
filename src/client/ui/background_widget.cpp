@@ -31,16 +31,19 @@ namespace tc
     void BackgroundWidget::enterEvent(QEnterEvent *event) {
         enter_ = true;
         repaint();
+        BaseWidget::enterEvent(event);
     }
 
     void BackgroundWidget::leaveEvent(QEvent *event) {
         enter_ = false;
         repaint();
+        BaseWidget::leaveEvent(event);
     }
 
     void BackgroundWidget::mousePressEvent(QMouseEvent *event) {
         pressed_ = true;
         repaint();
+        BaseWidget::mousePressEvent(event);
     }
 
     void BackgroundWidget::mouseReleaseEvent(QMouseEvent *event) {
@@ -49,6 +52,7 @@ namespace tc
         if (click_listener_) {
             click_listener_(this);
         }
+        BaseWidget::mouseReleaseEvent(event);
     }
 
     void BackgroundWidget::SetColors(int normal_color, int enter_color, int pressed_color) {

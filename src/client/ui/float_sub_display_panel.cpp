@@ -108,6 +108,9 @@ namespace tc
                 HideAllSubPanels();
                 if (cap_monitors_info_.monitors_.empty()) {
                     LOGE("Error monitor index, can not get MsgClientCaptureMonitor.");
+                    context_->PostUITask([=, this]() {
+                        context_->NotifyAppWarningMessage(tcTr("id_warning"), tcTr("id_modify_display_settings_of_controlled"));
+                    });
                     return;
                 }
                 //auto capture_monitor = cap_monitors_info_.GetCaptureMonitorByName(capturing_monitor_name);
