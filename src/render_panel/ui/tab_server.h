@@ -30,6 +30,7 @@ namespace tc
     class StreamDBOperator;
     class TcPasswordInput;
     class RoundImageDisplay;
+    class TcCircleIndicator;
 
     class TabServer : public TabBase {
     public:
@@ -43,6 +44,7 @@ namespace tc
     private:
         void UpdateQRCode();
         void SetDeviceRandomPwdVisibility();
+        void UpdateServerState();
 
     private:
         GrSettings* settings_ = nullptr;
@@ -60,6 +62,8 @@ namespace tc
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<StreamDBOperator> stream_db_mgr_ = nullptr;
         std::vector<std::shared_ptr<spvr::SpvrStream>> recent_streams_;
+        TcCircleIndicator* spvr_indicator_ = nullptr;
+        TcCircleIndicator* relay_indicator_ = nullptr;
     };
 }
 

@@ -35,6 +35,7 @@ namespace tc
         kPluginEncodedAudioFrameEvent,
         kPluginRelayPausedEvent,
         kPluginRelayResumeEvent,
+        kPluginRelayAlive,
         kPluginRtcAnswerSdpEvent,
         kPluginRtcIceEvent,
         kPluginRtcReportEvent,
@@ -338,6 +339,16 @@ namespace tc
         std::string mon_name_;
         uint32_t bps_ = 0;
         uint32_t fps_ = 0;
+    };
+
+    // relay plugin alive
+    class GrPluginRelayAlive : public GrPluginBaseEvent {
+    public:
+        GrPluginRelayAlive() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginRelayAlive;
+        }
+    public:
+        std::string device_id_;
     };
 }
 

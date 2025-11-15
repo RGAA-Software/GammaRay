@@ -160,6 +160,10 @@ namespace tc
                 }
             });
         }
+        else if (event->event_type_ == GrPluginEventType::kPluginRelayAlive) {
+            auto target_event = std::dynamic_pointer_cast<GrPluginRelayAlive>(event);
+            ReportRelayAlive(target_event->device_id_, target_event->created_timestamp_);
+        }
     }
 
     void PluginEventRouter::SendAnswerSdpToRemote(const std::shared_ptr<GrPluginBaseEvent>& event) {
@@ -284,6 +288,10 @@ namespace tc
         catch(const std::exception& e) {
             LOGE("ProcessPanelStreamMessage failed: {}, body: {}", e.what(), event->body_->AsString());
         }
+    }
+
+    void PluginEventRouter::ReportRelayAlive(const std::string& device_id, int64_t timestamp) {
+
     }
 
 }

@@ -92,6 +92,9 @@ namespace tc
         // skin
         SkinInterface* GetSkin();
 
+        // spvr
+        bool IsSpvrClientAlive();
+
     private:
         void RegisterMessageListener();
         void RegisterFirewall();

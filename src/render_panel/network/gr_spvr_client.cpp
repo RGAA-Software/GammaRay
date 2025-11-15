@@ -8,6 +8,10 @@
 #include "render_panel/gr_context.h"
 #include "tc_common_new/message_notifier.h"
 #include "render_panel/gr_app_messages.h"
+#include "tc_common_new/time_util.h"
+#include "spvr_panel.pb.h"
+
+using namespace spvr_panel;
 
 namespace tc
 {
@@ -23,7 +27,7 @@ namespace tc
         appkey_ = appkey;
 
         msg_listener_ = context_->ObtainMessageListener();
-        msg_listener_->Listen<MsgGrTimer2S>([=, this](const MsgGrTimer2S& m) {
+        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& m) {
             context_->PostTask([=, this]() {
                 this->Heartbeat();
             });
@@ -111,8 +115,29 @@ namespace tc
         }
     }
 
-    void GrSpvrClient::ParseMessage(std::string_view data) {
+    void GrSpvrClient::ParseMessage(const std::string& m) {
+        auto pm = std::make_shared<spvr_panel::SpvrPanelMessage>();
+        bool r = pm->ParsePartialFromString(m);
+        if (!r) {
+            LOGE("Parse SpvrClient message failed!");
+            return;
+        }
+        last_received_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
 
+        auto type = pm->msg_type();
+        if (type == SpvrPanelMessageType::kSpvrPanelHello) {
+            LOGI("SpvrClient hello.");
+        }
+        else if (type == SpvrPanelMessageType::kSpvrPanelHeartBeat) {
+            LOGI("SpvrClient heartbeat.");
+        }
+    }
+
+    bool GrSpvrClient::IsAlive() const {
+        auto current_timestamp = TimeUtil::GetCurrentTimestamp();
+        auto diff = current_timestamp - last_received_timestamp_ < 3100;
+        LOGI("Diff alive: {}ms", diff);
+        return diff;
     }
 
 }

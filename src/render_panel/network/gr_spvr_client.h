@@ -25,9 +25,10 @@ namespace tc
         bool IsStarted();
         bool IsActive();
         void PostBinMessage(const std::string& m);
+        bool IsAlive() const;
 
     private:
-        void ParseMessage(std::string_view data);
+        void ParseMessage(const std::string& data);
         void Hello();
         void Heartbeat();
 
@@ -40,6 +41,7 @@ namespace tc
         std::string appkey_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::atomic_int64_t hb_idx_ = 0;
+        int64_t last_received_timestamp_ = 0;
     };
 
 }

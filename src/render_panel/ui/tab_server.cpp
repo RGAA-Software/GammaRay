@@ -509,6 +509,7 @@ namespace tc
                 {
                     // indicator
                     auto indicator = new TcCircleIndicator(this);
+                    spvr_indicator_ = indicator;
                     indicator->setFixedSize(indicator_size);
                     layout->addWidget(indicator);
 
@@ -525,6 +526,7 @@ namespace tc
 
                 {
                     auto indicator = new TcCircleIndicator(this);
+                    relay_indicator_ = indicator;
                     indicator->setFixedSize(indicator_size);
                     layout->addWidget(indicator);
 
@@ -605,6 +607,12 @@ namespace tc
                 this->UpdateQRCode();
             });
         });
+
+        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& m) {
+            context_->PostUITask([=, this]() {
+                UpdateServerState();
+            });
+        });
     }
 
     void TabServer::UpdateQRCode() {
@@ -651,5 +659,10 @@ namespace tc
             lbl_machine_random_pwd_->setText("********");
             btn_hide_random_pwd_->ToImage2();
         }
+    }
+
+    void TabServer::UpdateServerState() {
+        bool spvr_client_alive = grApp->IsSpvrClientAlive();
+        spvr_indicator_->SetState(spvr_client_alive ? TcCircleIndicator::State::kOk : TcCircleIndicator::State::kError);
     }
 }

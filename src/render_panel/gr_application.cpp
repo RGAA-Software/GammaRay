@@ -485,4 +485,8 @@ namespace tc
     SkinInterface* GrApplication::GetSkin() {
         return skin_;
     }
+
+    bool GrApplication::IsSpvrClientAlive() {
+        return spvr_client_ && spvr_client_->IsAlive();
+    }
 }

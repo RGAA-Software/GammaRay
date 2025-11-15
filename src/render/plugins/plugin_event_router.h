@@ -6,6 +6,7 @@
 #define GAMMARAY_PLUGIN_EVENT_ROUTER_H
 
 #include <memory>
+#include <string>
 
 namespace tc
 {
@@ -36,6 +37,7 @@ namespace tc
         void ReportRemoteClipboardResp(const std::shared_ptr<GrPluginRemoteClipboardResp>& event);
         // from remote panel
         void ProcessPanelStreamMessage(const std::shared_ptr<GrPluginPanelStreamMessage>& event);
+        void ReportRelayAlive(const std::string& device_id, int64_t timestamp);
 
     private:
         std::shared_ptr<RdApplication> app_ = nullptr;
