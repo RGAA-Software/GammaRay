@@ -263,7 +263,9 @@
   "id_force_relay": "强制使用中转服务",
   "id_manager_server": "管理服务",
   "id_relay_server": "中转服务",
+  "id_relay_ft_server": "中转文件服务",
   "id_force_software": "强制软解码",
+  "id_wait_debug": "等待调试",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

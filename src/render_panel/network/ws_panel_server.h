@@ -25,6 +25,7 @@ namespace tc
     class VisitRecordOperator;
     class FileTransferRecordOperator;
     class MessageListener;
+    class GrStatistics;
 
     class WSSession {
     public:
@@ -95,6 +96,8 @@ namespace tc
         // max speed of default ethernet
         uint64_t max_transmit_speed_ = 0;
         uint64_t max_receive_speed_ = 0;
+        // statistics
+        GrStatistics* stat_ = nullptr;
     };
 }
 

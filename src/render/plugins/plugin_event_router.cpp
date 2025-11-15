@@ -162,7 +162,8 @@ namespace tc
         }
         else if (event->event_type_ == GrPluginEventType::kPluginRelayAlive) {
             auto target_event = std::dynamic_pointer_cast<GrPluginRelayAlive>(event);
-            ReportRelayAlive(target_event->device_id_, target_event->created_timestamp_);
+            ReportRelayAlive(target_event->device_id_, (int64_t)target_event->created_timestamp_);
+            LOGI("Plugin update relay alive: {} -> {}", target_event->device_id_, target_event->created_timestamp_);
         }
     }
 
@@ -291,7 +292,15 @@ namespace tc
     }
 
     void PluginEventRouter::ReportRelayAlive(const std::string& device_id, int64_t timestamp) {
-
+        app_->PostGlobalTask([=, this]() {
+            tcrp::RpMessage msg;
+            msg.set_type(tcrp::kRpRelayAlive);
+            auto sub = msg.mutable_relay_alive();
+            sub->set_device_id(device_id);
+            sub->set_timestamp(timestamp);
+            auto buffer = RpProtoAsData(&msg);
+            app_->PostPanelMessage(buffer);
+        });
     }
 
 }

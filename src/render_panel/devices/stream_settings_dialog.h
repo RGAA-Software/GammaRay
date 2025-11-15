@@ -46,6 +46,7 @@ namespace tc
         QCheckBox* cb_split_windows_ = nullptr;
         QCheckBox* cb_force_relay_ = nullptr;
         QCheckBox* cb_force_software_ = nullptr;
+        QCheckBox* cb_wait_debug_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
         QLineEdit* ed_remote_device_id_ = nullptr;
         QComboBox* cb_fps_ = nullptr;

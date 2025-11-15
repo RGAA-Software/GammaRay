@@ -28,6 +28,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "render_panel/companion/panel_companion.h"
+#include "render_panel/gr_statistics.h"
 
 namespace tc
 {
@@ -56,6 +57,7 @@ namespace tc
 
     WsPanelServer::WsPanelServer(const std::shared_ptr<GrApplication>& app) {
         app_ = app;
+        stat_ = GrStatistics::Instance();
         context_ = app_->GetContext();
         http_handler_ = std::make_shared<HttpHandler>(app_);
         settings_ = GrSettings::Instance();
@@ -553,6 +555,10 @@ namespace tc
             }
             auto processor = app_->GetRenderMsgProcessor();
             processor->OnMessage(rd_proto_msg);
+        }
+        else if (proto_msg->type() == tcrp::kRpRelayAlive) {
+            auto sub = proto_msg->relay_alive();
+            stat_->UpdateRelayAlive(sub.device_id(), sub.timestamp());
         }
     }
 

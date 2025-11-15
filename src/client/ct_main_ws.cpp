@@ -153,6 +153,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_force_software("force_software", "force software", "value", "");
     parser.addOption(opt_force_software);
 
+    QCommandLineOption opt_wait_debug("wait_debug", "wait debug", "value", "");
+    parser.addOption(opt_wait_debug);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -313,6 +316,9 @@ void ParseCommandLine(QApplication& app) {
 
     // force software
     settings->force_software_ = parser.value(opt_force_software).toInt() == 1;
+
+    // wait debug
+    settings->wait_debug_ = parser.value(opt_wait_debug).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -377,7 +383,7 @@ int main(int argc, char** argv) {
     // init language
     tcTrMgr()->InitLanguage((LanguageKind)settings->language_);
 
-    if (false) {
+    if (settings->wait_debug_) {
 #ifdef WIN32
         MessageBox(0,0,0,0);
 #endif
