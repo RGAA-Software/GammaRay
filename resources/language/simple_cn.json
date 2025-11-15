@@ -296,7 +296,7 @@
   "id_video_color_mode": "视频颜色模式",
   "id_video_decoder": "视频解码",
   "id_connection_type": "链接类型",
-  "id_video_render_mode": "视频渲染模式",
+  "id_video_render_mode": "图形渲染接口",
   "id_remote_pc_info": "远端设备信息",
   "id_local_pc_info": "本地设备信息",
   "id_isolated_monitor_info": "每个显示器信息",

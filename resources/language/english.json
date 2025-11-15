@@ -295,7 +295,7 @@
   "id_video_color_mode": "Video Color Mode",
   "id_video_decoder": "Video Decoder",
   "id_connection_type": "Connection Type",
-  "id_video_render_mode": "Video Render Mode",
+  "id_video_render_mode": "Graphics interface",
   "id_remote_pc_info": "Remote PC Info",
   "id_local_pc_info": "Local PC Info",
   "id_isolated_monitor_info": "Isolated Monitor Information",
