@@ -1,5 +1,5 @@
 add_subdirectory(interface)
-add_subdirectory(official)
+add_subdirectory(opensource)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

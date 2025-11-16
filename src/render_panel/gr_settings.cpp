@@ -469,4 +469,12 @@ namespace tc
         return sp_->Get(kStSpvrAccessInfo, "");
     }
 
+    void GrSettings::SetSkinName(const std::string& name) {
+        sp_->Put(kStSkinName, name);
+    }
+
+    std::string GrSettings::GetSkinName() {
+        return sp_->Get(kStSkinName, "");
+    }
+
 }

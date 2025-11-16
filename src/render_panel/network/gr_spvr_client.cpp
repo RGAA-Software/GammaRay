@@ -129,14 +129,14 @@ namespace tc
             LOGI("SpvrClient hello.");
         }
         else if (type == SpvrPanelMessageType::kSpvrPanelHeartBeat) {
-            LOGI("SpvrClient heartbeat.");
+            //LOGI("SpvrClient heartbeat.");
         }
     }
 
     bool GrSpvrClient::IsAlive() const {
         auto current_timestamp = TimeUtil::GetCurrentTimestamp();
         auto diff = current_timestamp - last_received_timestamp_ < 3100;
-        LOGI("Diff alive: {}ms", diff);
+        //LOGI("Diff alive: {}", diff);
         return diff;
     }
 

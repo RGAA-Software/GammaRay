@@ -25,6 +25,7 @@ namespace tc
         QLineEdit* et_bitrate_ = nullptr;
         QComboBox* et_fps_ = nullptr;
         QComboBox* cb_language_ = nullptr;
+        QComboBox* cb_skin_ = nullptr;
         QLineEdit* et_res_width_ = nullptr;
         QLineEdit* et_res_height_ = nullptr;
         QCheckBox* cb_resize_res_ = nullptr;

@@ -19,14 +19,6 @@ namespace tc
         return skin_context_;
     }
 
-    QString SkinInterface::GetAppVersionName() {
-        return "1.0.0";
-    }
-
-    uint32_t SkinInterface::GetAppVersionCode() {
-        return 1;
-    }
-
     bool SkinInterface::OnCreate(const SkinParam& param) {
         SnowflakeId::initialize(0, 105);
         this->skin_param_ = param;

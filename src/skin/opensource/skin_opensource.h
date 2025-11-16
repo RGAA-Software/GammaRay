@@ -9,9 +9,9 @@
 
 namespace tc
 {
-    class SkinOfficial : public SkinInterface {
+    class SkinOpenSource /*: public SkinInterface*/ {
     public:
-        QString GetSkinName() override;
+        //QString GetSkinName() override;
     };
 }
 

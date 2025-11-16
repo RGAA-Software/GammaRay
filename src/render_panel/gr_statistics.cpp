@@ -233,7 +233,6 @@ namespace tc
         if (opt_ra.has_value()) {
             auto ra = opt_ra.value();
             ra->last_update_ts_ = timestamp;
-            LOGI("update relay alive: {} -> {}", device_id, timestamp);
         }
         else {
             auto ra = std::make_shared<GrStatRelayAlive>();

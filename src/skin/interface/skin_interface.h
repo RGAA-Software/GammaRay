@@ -42,16 +42,42 @@ namespace tc
         // info
         virtual QString GetSkinName() = 0;
 
-        // version
-        virtual QString GetAppVersionName();
-        virtual uint32_t GetAppVersionCode();
-
         // lifecycle
         virtual bool OnCreate(const SkinParam& param);
 
         // widget
         virtual QWidget* GetRootWidget();
         bool eventFilter(QObject *watched, QEvent *event) override;
+
+        // app name
+        virtual QString GetAppName() = 0;
+
+        // version
+        // eg: 1.3.5
+        virtual QString GetAppVersionName() = 0;
+
+        // eg: Premium / Pro ...
+        virtual QString GetAppVersionMode() = 0;
+
+        // colors
+        virtual int GetPrimaryColor() = 0;
+
+        virtual int GetSecondaryColor() = 0;
+
+        virtual int GetHeadTextColor() = 0;
+
+        virtual int GetSubHeadTextColor() = 0;
+
+        virtual int GetMainTextColor() = 0;
+
+        virtual int GetSecondaryTextColor() = 0;
+
+        // icons
+        virtual QPixmap GetWindowIcon() = 0;
+
+        virtual QPixmap GetLargeIconTextLogo() = 0;
+
+        virtual QPixmap GetSquareIconLogo() = 0;
 
     protected:
         bool HasParam(const std::string& k) {

@@ -1,10 +1,10 @@
-project(skin_official)
+project(skin_opensource)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SRCS
-    skin_official.cpp
+    skin_opensource.cpp
 )
 
 qt_add_resources(RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc)

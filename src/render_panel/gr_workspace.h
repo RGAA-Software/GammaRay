@@ -38,6 +38,7 @@ namespace tc
     class GrApplication;
     class GrSettings;
     class MessageListener;
+    class SkinInterface;
 
     class GrWorkspace : public QMainWindow, public std::enable_shared_from_this<GrWorkspace> {
     public:
@@ -55,6 +56,7 @@ namespace tc
     private:
         std::shared_ptr<GrApplication> app_ = nullptr;
         GrSettings* settings_ = nullptr;
+        SkinInterface* skin_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::map<TabName, TabBase*> tabs_;
         QPushButton* btn_tab_server_ = nullptr;

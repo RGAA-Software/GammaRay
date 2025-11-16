@@ -687,7 +687,7 @@ namespace tc
             {
                 auto sid = "server_" + device_id;
                 auto ts = stat_->GetRelayLastUpdateTimestamp(sid);
-                LOGI("relay alive: {}, ts: {}, diff: {}ms", sid, ts, (current_ts - ts));
+                //LOGI("relay alive: {}, ts: {}, diff: {}ms", sid, ts, (current_ts - ts));
                 if (current_ts - ts < max_duration) {
                     // alive
                     relay_indicator_->SetState(TcCircleIndicator::State::kOk);

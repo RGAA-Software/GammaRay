@@ -41,6 +41,7 @@
 #include "ui/user/user_register_dialog.h"
 #include "tc_spvr_client/spvr_user_api.h"
 #include "ui/tab_cophone.h"
+#include "skin/interface/skin_interface.h"
 
 namespace tc
 {
@@ -49,14 +50,6 @@ namespace tc
 
     GrWorkspace::GrWorkspace(bool run_automatically) : QMainWindow(nullptr) {
         this->run_automatically_ = run_automatically;
-
-        auto version = "";
-#if PREMIUM_VERSION
-        version = "Premium";
-#else
-        version = "Freemium";
-#endif
-        setWindowTitle(std::format("GammaRay(V{} {})", PROJECT_VERSION, version).c_str());
         settings_ = GrSettings::Instance();
 
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
@@ -103,6 +96,22 @@ namespace tc
 
         app_ = std::make_shared<GrApplication>(this, run_automatically);
         app_->Init();
+        skin_ = grApp->GetSkin();
+
+        auto version = "";
+#if PREMIUM_VERSION
+        version = "Premium";
+#else
+        version = "Freemium";
+#endif
+        if (skin_) {
+            setWindowTitle(std::format("{}(V{} {})", skin_->GetAppName().toStdString(),
+                                       skin_->GetAppVersionName().toStdString(),
+                                       skin_->GetAppVersionMode().toStdString()).c_str());
+        }
+        else {
+            setWindowTitle(std::format("GammaRay(V{} {})", PROJECT_VERSION, version).c_str());
+        }
 
         qApp->installNativeEventFilter(app_.get());
 

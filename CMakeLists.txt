@@ -255,7 +255,7 @@ endif ()
 add_dependencies(tc_build_all plugin_net_ws plugin_ffmpeg_encoder plugin_frame_debugger plugin_dda_capture
     plugin_was_audio_capture plugin_opus_encoder tc_sdk tc_qt_widget plugin_mock_video_stream tc_translator
     tc_spvr_client tc_account_sdk tc_rp_message tc_profile_client plugin_event_replayer tc_global_id_generator
-    tc_server_message skin_interface skin_loader
+    tc_server_message skin_interface skin_loader skin_opensource
 )
 
 # client plugins
@@ -313,7 +313,7 @@ add_custom_command(TARGET tc_build_all POST_BUILD
     # COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/client/plugins/multi_screens/plugin_multi_screens.dll.toml"  "${GR_PROJECT_BINARY_PATH}/gr_plugins_client/plugin_multi_screens.dll.toml"
 
     ### Skin
-    COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/skin_official.dll"  "${GR_PROJECT_BINARY_PATH}/gr_skins/skin_official.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_BINARY_PATH}/skin_opensource.dll"  "${GR_PROJECT_BINARY_PATH}/gr_skins/skin_opensource.dll"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/src/skin/skin_config.toml" "${GR_PROJECT_BINARY_PATH}/gr_skins/skin_config.toml"
 )
 

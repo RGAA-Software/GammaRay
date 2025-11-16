@@ -65,6 +65,7 @@ namespace tc
     static const std::string kStDisplayRandomPwd = "display_random_pwd";
     static const std::string kStPreferDecoder = "prefer_decoder";
     static const std::string kStSpvrAccessInfo = "spvr_access_info";
+    static const std::string kStSkinName = "skin_name";
 
     static const std::string kStTrue = "true";
     static const std::string kStFalse = "false";
@@ -245,6 +246,10 @@ namespace tc
         // Spvr access info
         void SetSpvrAccessInfo(const std::string& info);
         std::string GetSpvrAccessInfo();
+
+        // skin name
+        void SetSkinName(const std::string& name);
+        std::string GetSkinName();
 
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;
