@@ -228,5 +228,27 @@ namespace tc
         return r;
     }
 
+    void GrStatistics::UpdateRelayAlive(const std::string& device_id, int64_t timestamp) {
+        auto opt_ra = relays_alive_.TryGet(device_id);
+        if (opt_ra.has_value()) {
+            auto ra = opt_ra.value();
+            ra->last_update_ts_ = timestamp;
+            LOGI("update relay alive: {} -> {}", device_id, timestamp);
+        }
+        else {
+            auto ra = std::make_shared<GrStatRelayAlive>();
+            ra->device_id_ = device_id;
+            ra->created_ts_ = timestamp;
+            ra->last_update_ts_ = timestamp;
+            relays_alive_.Insert(device_id, ra);
+        }
+    }
+
+    int64_t GrStatistics::GetRelayLastUpdateTimestamp(const std::string& device_id) {
+        if (auto r = relays_alive_.TryGet(device_id); r.has_value()) {
+            return r.value()->last_update_ts_;
+        }
+        return 0;
+    }
 
 }

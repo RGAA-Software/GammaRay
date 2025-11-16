@@ -31,6 +31,7 @@ namespace tc
     class TcPasswordInput;
     class RoundImageDisplay;
     class TcCircleIndicator;
+    class GrStatistics;
 
     class TabServer : public TabBase {
     public:
@@ -48,6 +49,7 @@ namespace tc
 
     private:
         GrSettings* settings_ = nullptr;
+        GrStatistics* stat_ = nullptr;
         QPixmap qr_pixmap_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QLabel* lbl_machine_code_ = nullptr;
@@ -64,6 +66,7 @@ namespace tc
         std::vector<std::shared_ptr<spvr::SpvrStream>> recent_streams_;
         TcCircleIndicator* spvr_indicator_ = nullptr;
         TcCircleIndicator* relay_indicator_ = nullptr;
+        TcCircleIndicator* relay_ft_indicator_ = nullptr;
     };
 }
 

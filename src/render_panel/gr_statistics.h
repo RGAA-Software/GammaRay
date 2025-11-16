@@ -22,6 +22,14 @@ namespace tc
     class GrContext;
     class MessageListener;
 
+    // relay alive
+    class GrStatRelayAlive {
+    public:
+        std::string device_id_;
+        int64_t created_ts_ = 0;
+        int64_t last_update_ts_ = 0;
+    };
+
     class GrStatistics {
     public:
 
@@ -42,6 +50,8 @@ namespace tc
         std::vector<double> GetRightSpectrum();
         std::vector<std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>> GetCapturesInfo();
         std::vector<std::shared_ptr<tcrp::RpConnectedClientInfo>> GetConnectedClientsInfo();
+        void UpdateRelayAlive(const std::string& device_id, int64_t timestamp);
+        int64_t GetRelayLastUpdateTimestamp(const std::string& device_id);
 
     private:
         void ProcessCaptureStatistics(const MsgCaptureStatistics& msg);
@@ -58,6 +68,7 @@ namespace tc
         ConcurrentVector<double> right_spectrum_;
         ConcurrentVector<std::shared_ptr<tcrp::RpMsgWorkingCaptureInfo>> captures_info_;
         ConcurrentVector<std::shared_ptr<tcrp::RpConnectedClientInfo>> connected_clients_info_;
+        ConcurrentHashMap<std::string, std::shared_ptr<GrStatRelayAlive>> relays_alive_;
 
     public:
         std::shared_ptr<GrContext> context_ = nullptr;

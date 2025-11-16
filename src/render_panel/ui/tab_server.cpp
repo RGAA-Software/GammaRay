@@ -58,12 +58,14 @@
 #include "tc_profile_client/profile_api.h"
 #include "render_panel/companion/panel_companion.h"
 #include "client/ct_stream_item_net_type.h"
+#include "render_panel/gr_statistics.h"
 
 namespace tc
 {
 
     TabServer::TabServer(const std::shared_ptr<GrApplication>& app, QWidget *parent) : TabBase(app, parent) {
         settings_ = GrSettings::Instance();
+        stat_ = GrStatistics::Instance();
         running_stream_mgr_ = context_->GetRunningStreamManager();
         stream_db_mgr_ = context_->GetStreamDBManager();
 
@@ -504,7 +506,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 layout->setAlignment(Qt::AlignHCenter);
-                auto label_size = QSize(100, 30);
+                auto label_size = QSize(75, 30);
                 auto indicator_size = QSize(14, 14);
                 {
                     // indicator
@@ -522,8 +524,6 @@ namespace tc
                     layout->addWidget(text);
                 }
 
-                layout->addSpacing(10);
-
                 {
                     auto indicator = new TcCircleIndicator(this);
                     relay_indicator_ = indicator;
@@ -538,6 +538,22 @@ namespace tc
                     text->SetTextId("id_relay_server");
                     layout->addWidget(text);
                 }
+
+                {
+                    auto indicator = new TcCircleIndicator(this);
+                    relay_ft_indicator_ = indicator;
+                    indicator->setFixedSize(indicator_size);
+                    layout->addWidget(indicator);
+
+                    layout->addSpacing(5);
+
+                    // text
+                    auto text = new TcLabel(this);
+                    text->setFixedSize(label_size);
+                    text->SetTextId("id_relay_ft_server");
+                    layout->addWidget(text);
+                }
+
 
                 layout->addStretch();
 
@@ -664,5 +680,37 @@ namespace tc
     void TabServer::UpdateServerState() {
         bool spvr_client_alive = grApp->IsSpvrClientAlive();
         spvr_indicator_->SetState(spvr_client_alive ? TcCircleIndicator::State::kOk : TcCircleIndicator::State::kError);
+        auto device_id = settings_->GetDeviceId();
+        if (!device_id.empty()) {
+            auto current_ts = TimeUtil::GetCurrentTimestamp();
+            auto max_duration = 3500;
+            {
+                auto sid = "server_" + device_id;
+                auto ts = stat_->GetRelayLastUpdateTimestamp(sid);
+                LOGI("relay alive: {}, ts: {}, diff: {}ms", sid, ts, (current_ts - ts));
+                if (current_ts - ts < max_duration) {
+                    // alive
+                    relay_indicator_->SetState(TcCircleIndicator::State::kOk);
+                }
+                else {
+                    relay_indicator_->SetState(TcCircleIndicator::State::kError);
+                }
+            }
+            {
+                auto sid = "ft_server_" + device_id;
+                auto ts = stat_->GetRelayLastUpdateTimestamp(sid);
+                if (current_ts - ts < max_duration) {
+                    // alive
+                    relay_ft_indicator_->SetState(TcCircleIndicator::State::kOk);
+                }
+                else {
+                    relay_ft_indicator_->SetState(TcCircleIndicator::State::kError);
+                }
+            }
+        }
+        else {
+            relay_indicator_->SetState(TcCircleIndicator::State::kError);
+            relay_ft_indicator_->SetState(TcCircleIndicator::State::kError);
+        }
     }
 }

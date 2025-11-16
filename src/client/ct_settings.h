@@ -137,6 +137,9 @@ namespace tc
         // force software to decode & render
         bool force_software_ = false;
 
+        // wait debug
+        bool wait_debug_ = false;
+
         ///////
         ///////
         // from render //
