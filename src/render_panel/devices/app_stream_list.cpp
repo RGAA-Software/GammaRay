@@ -76,7 +76,10 @@ namespace tc
                     auto stream_id_for_widget = widget->GetStreamId();
                     for (const auto& update_item : stream_items) {
                         if (update_item->stream_id_ == stream_id_for_widget) {
-                            widget->SetConnectedState(update_item->online_);
+                            widget->SetDirectConnectedState(update_item->direct_online_);
+                            widget->SetRelayConnectedState(update_item->relay_online_);
+                            widget->SetSpvrConnectedState(update_item->spvr_online_);
+                            widget->Update();
                             break;
                         }
                     }
@@ -491,7 +494,7 @@ namespace tc
     }
 
     void AppStreamList::LockDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
-        if (!item->online_) {
+        if (!item->direct_online_ && !item->relay_online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
         }
@@ -505,7 +508,7 @@ namespace tc
     }
 
     void AppStreamList::RestartDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
-        if (!item->online_) {
+        if (!item->direct_online_ && !item->relay_online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
         }
@@ -519,7 +522,7 @@ namespace tc
     }
 
     void AppStreamList::ShutdownDevice(const std::shared_ptr<spvr::SpvrStream>& item) {
-        if (!item->online_) {
+        if (!item->direct_online_ && !item->relay_online_) {
             context_->NotifyAppErrMessage(tcTr("id_error"), tcTr("id_device_offline"));
             return;
         }
@@ -665,10 +668,9 @@ namespace tc
     }
 
     void AppStreamList::LoadStreamItems() {
-        auto db_mgr = context_->GetStreamDBManager();
-        streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
-
         context_->PostUITask([=, this]() {
+            auto db_mgr = context_->GetStreamDBManager();
+            streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
             int count = stream_list_->count();
             for (int i = 0; i < count; i++) {
                 auto item = stream_list_->takeItem(0);
