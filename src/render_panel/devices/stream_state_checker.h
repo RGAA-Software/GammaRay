@@ -19,6 +19,7 @@ namespace tc
 {
 
     class GrContext;
+    class GrSettings;
     class MessageListener;
 
     using OnStreamStateCheckedCallback = std::function<void(std::vector<std::shared_ptr<spvr::SpvrStream>>)>;
@@ -34,6 +35,7 @@ namespace tc
         void CheckState(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items);
 
     private:
+        GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         OnStreamStateCheckedCallback on_checked_cbk_;

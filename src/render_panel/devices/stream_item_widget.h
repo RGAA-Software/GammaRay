@@ -42,7 +42,10 @@ namespace tc
 
         void SetOnConnectListener(OnConnectListener&& listener);
         void SetOnMenuListener(OnMenuListener&& listener);
-        void SetConnectedState(bool connected);
+        void SetDirectConnectedState(bool connected);
+        void SetRelayConnectedState(bool connected);
+        void SetSpvrConnectedState(bool connected);
+        void Update();
 
         std::string GetStreamId();
 
@@ -58,7 +61,9 @@ namespace tc
         QWidget* btn_option_ = nullptr;
         OnConnectListener conn_listener_;
         OnMenuListener menu_listener_;
-        bool connected_ = false;
+        bool direct_connected_ = false;
+        bool relay_connected_ = false;
+        bool spvr_connected_ = false;
         TcLabel* work_mode_ = nullptr;
     };
 

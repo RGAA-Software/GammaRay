@@ -194,22 +194,44 @@ namespace tc
         painter.setBrush(Qt::NoBrush);
         painter.drawRoundedRect(border_width/2, border_width/2, width() - border_width, height() - border_width, radius_-2, radius_-2);
 
-        int margin_right = 20;
         int margin_top = 30;
-        painter.drawPixmap(QWidget::width() - icon_.width() - margin_right, margin_top, icon_);
+        painter.drawPixmap(QWidget::width() - icon_.width() - 20, margin_top, icon_);
 
-        {
-            QPen pen(QColor(0x999999));
-            pen.setWidth(1);
-            painter.setPen(pen);
-            if (connected_) {
+        int indicator_width = 10;
+        int indicator_height = 8;
+        int indicator_radius = 4;
+        int margin_right = 50;
+        for (int i = 0; i < 3; i++) {
+            if (direct_connected_ && i == 0) {
+                painter.setBrush(QBrush(0x00ff00));
+            }
+            else if (relay_connected_ && i == 1) {
+                painter.setBrush(QBrush(0x00ff00));
+            }
+            else if (spvr_connected_ && i == 2) {
                 painter.setBrush(QBrush(0x00ff00));
             }
             else {
                 painter.setBrush(QBrush(0xbbbbbb));
             }
-            int indicator_size = 12;
-            painter.drawRoundedRect(this->width() - indicator_size - margin_right, 10, indicator_size, indicator_size, indicator_size/2, indicator_size);
+            painter.setPen(Qt::NoPen);
+            auto x = this->width() - margin_right + indicator_width * i;
+            auto y = 10;
+            painter.drawRoundedRect(x, y, indicator_width, indicator_height, 0, 0);
+            if (i == 1 || i == 2) {
+                QPen pen(QColor(0x555555));
+                pen.setWidth(1);
+                painter.setPen(pen);
+                painter.drawLine(x, y+2 , x, y + indicator_height - 2);
+            }
+        }
+
+        {
+            QPen pen(QColor(0x555555));
+            pen.setWidth(1);
+            painter.setPen(pen);
+            painter.setBrush(Qt::NoBrush);
+            painter.drawRoundedRect(this->width() - margin_right, 10, indicator_width * 3, indicator_height, indicator_radius, indicator_radius);
         }
     }
 
@@ -239,9 +261,20 @@ namespace tc
         menu_listener_ = listener;
     }
 
-    void StreamItemWidget::SetConnectedState(bool connected) {
-        connected_ = connected;
-        update();
+    void StreamItemWidget::SetDirectConnectedState(bool connected) {
+        direct_connected_ = connected;
+    }
+
+    void StreamItemWidget::SetRelayConnectedState(bool connected) {
+        relay_connected_ = connected;
+    }
+
+    void StreamItemWidget::SetSpvrConnectedState(bool connected) {
+        spvr_connected_ = connected;
+    }
+
+    void StreamItemWidget::Update() {
+        this->update();
     }
 
     std::string StreamItemWidget::GetStreamId() {
