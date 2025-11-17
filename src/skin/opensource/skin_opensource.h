@@ -9,9 +9,43 @@
 
 namespace tc
 {
-    class SkinOpenSource /*: public SkinInterface*/ {
+    class SkinOpenSource : public SkinInterface {
     public:
-        //QString GetSkinName() override;
+        QString GetSkinName() override;
+
+        // app name
+        QString GetAppName() override;
+
+        // version
+        // eg: 1.3.5
+        QString GetAppVersionName() override;
+
+        // eg: Premium / Pro ...
+        QString GetAppVersionMode() override;
+
+        // colors
+        int GetPrimaryColor() override;
+
+        int GetSecondaryColor() override;
+
+        int GetHeadTextColor() override;
+
+        int GetSubHeadTextColor() override;
+
+        int GetMainTextColor() override;
+
+        int GetSecondaryTextColor() override;
+
+        // icons
+        QPixmap GetWindowIcon() override;
+
+        QPixmap GetLargeIconTextLogo() override;
+
+        QPixmap GetSquareLogo() override;
+
+        QPixmap GetSquarePrimaryColorLogoTransBg() override;
+
+        QPixmap GetSquareWhiteLogoTransBg() override;
     };
 }
 

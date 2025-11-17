@@ -336,12 +336,14 @@ namespace tc
             {
                 auto lbl = new QLabel(this);
                 lbl->setFixedSize(190, 40);
-                lbl->setStyleSheet(R"(
-                    border: none;
-                    border-image: url(:/resources/tc_logo_text_trans_bg.png);
-                    background-repeat: no-repeat;
-                    background-position: center;
-                )");
+//                lbl->setStyleSheet(R"(
+//                    border: none;
+//                    border-image: url(:/resources/tc_logo_text_trans_bg.png);
+//                    background-repeat: no-repeat;
+//                    background-position: center;
+//                )");
+                auto p = skin_->GetLargeIconTextLogo();
+                lbl->setPixmap(p);
                 layout->addSpacing(8);
                 layout->addWidget(lbl, 0, Qt::AlignHCenter);
                 layout->addSpacing(8);

@@ -77,7 +77,11 @@ namespace tc
 
         virtual QPixmap GetLargeIconTextLogo() = 0;
 
-        virtual QPixmap GetSquareIconLogo() = 0;
+        virtual QPixmap GetSquareLogo() = 0;
+
+        virtual QPixmap GetSquarePrimaryColorLogoTransBg() = 0;
+
+        virtual QPixmap GetSquareWhiteLogoTransBg() = 0;
 
     protected:
         bool HasParam(const std::string& k) {

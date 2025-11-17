@@ -10,6 +10,8 @@
 #include "no_margin_layout.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_spvr_client/spvr_stream.h"
+#include "render_panel/gr_application.h"
+#include "skin/interface/skin_interface.h"
 #include "client/ct_stream_item_net_type.h"
 #include "tc_qt_widget/loadings/winstyle/win10circleloadingwidget.h"
 #include "tc_qt_widget/loadings/winstyle/win10horizontalloadingwidget.h"
@@ -31,12 +33,8 @@ namespace tc
             auto lbl_icon = new QLabel(this);
             lbl_icon->setFixedSize(size, size);
             lbl_icon->setScaledContents(true);
-            lbl_icon->setStyleSheet(R"(
-                border: none;
-                border-image: url(:/resources/tc_trans_icon_blue.png);
-                background-repeat: no-repeat;
-                background-position: center;
-            )");
+            auto p = grApp->GetSkin()->GetSquareWhiteLogoTransBg();
+            lbl_icon->setPixmap(p);
             root_layout->addSpacing(60);
 
             auto layout = new NoMarginHLayout();
