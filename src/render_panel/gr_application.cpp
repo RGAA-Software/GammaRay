@@ -86,9 +86,9 @@ namespace tc
             LOGE("Load skin failed!!!");
         }
 
-        auto exeDir = QApplication::applicationDirPath().toStdString();
-        FolderUtil::CreateDir(std::format("{}/clients/windows", exeDir));
-        FolderUtil::CreateDir(std::format("{}/clients/android", exeDir));
+        //auto exeDir = QApplication::applicationDirPath().toStdString();
+        //FolderUtil::CreateDir(std::format("{}/clients/windows", exeDir));
+        //FolderUtil::CreateDir(std::format("{}/clients/android", exeDir));
 
         context_ = std::make_shared<GrContext>(main_window_);
         context_->Init(shared_from_this());

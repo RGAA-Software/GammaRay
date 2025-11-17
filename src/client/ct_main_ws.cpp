@@ -27,6 +27,7 @@
 #include "ct_stream_item_net_type.h"
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/folder_util.h"
 #include "snowflake/snowflake.h"
 #include "front_render/vulkan/ct_vulkan_checker.h"
 
@@ -367,7 +368,8 @@ int main(int argc, char** argv) {
 
     tcFontMgr()->InitFont(":/resources/font/ms_yahei.ttf");
 
-    PrepareDirs(app.applicationDirPath());
+    auto data_path = QString::fromStdWString(FolderUtil::GetProgramDataPath());
+    PrepareDirs(data_path);
 
     auto settings = tc::Settings::Instance();
     auto host = g_remote_host_;

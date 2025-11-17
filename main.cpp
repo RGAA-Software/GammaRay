@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QLockFile>
 #include <QMessageBox>
+#include <QStandardPaths>
 #include "gflags/gflags.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/auto_start.h"
@@ -61,7 +62,8 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    auto base_dir = QApplication::applicationDirPath();
+    //auto base_dir = QApplication::applicationDirPath();
+    auto base_dir = QString::fromStdWString(FolderUtil::GetProgramDataPath());
     PrepareDirs(base_dir);
 
     auto log_path = base_dir + "/gr_logs/gammaray.log";
@@ -86,7 +88,7 @@ int main(int argc, char *argv[]) {
     }
 
     // init sp
-    auto sp_dir = qApp->applicationDirPath() + "/gr_data";
+    auto sp_dir = base_dir + "/gr_data";
     if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
         //QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
         return -1;

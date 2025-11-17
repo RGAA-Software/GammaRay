@@ -6,6 +6,7 @@
 #include "service_context.h"
 #include "service.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/folder_util.h"
 #include "tc_common_new/string_util.h"
 #include <string>
 #include <Windows.h>
@@ -126,7 +127,8 @@ void WINAPI ServiceMain(DWORD argc, LPWSTR* argv) {
 }
 
 int main(int argc, char** argv) {
-    auto path = std::string(GetModulePath(nullptr)) + "/gr_logs/gammaray_service.log";
+    auto data_path = FolderUtil::GetProgramDataPath();
+    auto path = QString::fromStdWString(data_path).toStdString() + "/gr_logs/gammaray_service.log";
     Logger::InitLog(path, true);
     LOGI("----------Service Start----------");
     LOGI("Args size: {}", argc);

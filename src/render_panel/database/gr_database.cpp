@@ -8,6 +8,7 @@
 #include "file_transfer_record_operator.h"
 #include "stream_db_operator.h"
 #include "db_game_operator.h"
+#include "tc_common_new/folder_util.h"
 #include <QApplication>
 
 namespace tc
@@ -18,8 +19,9 @@ namespace tc
     }
 
     bool GrDatabase::Init() {
-        auto db_path = qApp->applicationDirPath() + "/gr_data/gr_data.db";
-        auto storage = InitAppDatabase(db_path.toStdString());
+        std::string base_path = QString::fromStdWString(FolderUtil::GetProgramDataPath()).toStdString();
+        auto db_path = base_path + "/gr_data/gr_data.db";
+        auto storage = InitAppDatabase(db_path);
         storage.sync_schema();
         db_storage_ = storage;
 

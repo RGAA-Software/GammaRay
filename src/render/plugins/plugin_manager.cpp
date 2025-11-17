@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QFile>
 #include <QApplication>
+#include <QStandardPaths>
 #include "toml/toml.hpp"
 #include "rd_app.h"
 #include "plugin_ids.h"
@@ -13,6 +14,7 @@
 #include "tc_common_new/log.h"
 #include "plugin_event_router.h"
 #include "settings/rd_settings.h"
+#include "tc_common_new/folder_util.h"
 #include "plugin_interface/gr_net_plugin.h"
 #include "plugin_interface/gr_stream_plugin.h"
 #include "plugin_interface/gr_plugin_interface.h"
@@ -36,7 +38,9 @@ namespace tc
 
     void PluginManager::LoadAllPlugins() {
         auto base_path = QCoreApplication::applicationDirPath();
+        auto base_data_path = QString::fromStdWString(FolderUtil::GetProgramDataPath());
         LOGI("plugin base path: {}", base_path.toStdString());
+        LOGI("plugin base data path: {}", base_data_path.toStdString());
         QDir plugin_dir(base_path + R"(/gr_plugins)");
         QStringList filters;
 #if WIN32
@@ -78,6 +82,7 @@ namespace tc
                         .cluster_ = {
                             {"name", filename.toStdString()},
                             {"base_path", base_path.toStdString()},
+                            {"base_data_path", base_data_path.toStdString()},
                             {"capture_audio_device_id", settings_->capture_.capture_audio_device_},
                             {"ws-listen-port", (int64_t)settings_->transmission_.listening_port_},
                             {"udp-listen-port", (int64_t)settings_->transmission_.udp_listen_port_},

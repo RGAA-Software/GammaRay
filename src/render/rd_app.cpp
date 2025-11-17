@@ -53,6 +53,7 @@
 #include "tc_message_new/proto_converter.h"
 #include "tc_message_new/rp_proto_converter.h"
 #include "tc_common_new/memory_stat.h"
+#include "tc_common_new/folder_util.h"
 
 namespace tc
 {
@@ -85,7 +86,7 @@ namespace tc
 
         // sp
         sp_ = SharedPreference::Instance();
-        auto path = qapp_->applicationDirPath() + "/gr_data";
+        auto path = QString::fromStdWString(FolderUtil::GetProgramDataPath()) + "/gr_data";
         std::string sp_name = std::format("gammaray_render_{}.dat", settings_->transmission_.listening_port_);
         sp_->Init(path.toStdString(), sp_name);
     }

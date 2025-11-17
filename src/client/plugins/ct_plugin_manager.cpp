@@ -13,6 +13,7 @@
 #include "ct_client_context.h"
 #include "ct_base_workspace.h"
 #include "ct_plugin_event_router.h"
+#include "tc_common_new/folder_util.h"
 #include "plugin_interface/ct_plugin_interface.h"
 
 typedef void *(*FnGetInstance)();
@@ -31,6 +32,7 @@ namespace tc
 
     void ClientPluginManager::LoadAllPlugins() {
         auto base_path = QCoreApplication::applicationDirPath();
+        auto base_data_path = QString::fromStdWString(FolderUtil::GetProgramDataPath()).toStdString();
         LOGI("plugin base path: {}", base_path.toStdString());
         QDir plugin_dir(base_path + R"(/gr_plugins_client)");
         QStringList filters;
@@ -64,6 +66,7 @@ namespace tc
                         .cluster_ = {
                             {"name", filename.toStdString()},
                             {"base_path", base_path.toStdString()},
+                            {"base_data_path", base_data_path},
                             {"screen_recording_path", settings->screen_recording_path_},
                             {"clipboard_enabled", settings->clipboard_on_},
                             {"device_id", settings->device_id_.empty() ? settings->my_host_ : settings->device_id_},

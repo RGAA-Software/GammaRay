@@ -70,9 +70,13 @@ namespace tc
         if (param.cluster_.contains("base_path")) {
             base_path_ = std::any_cast<std::string>(param.cluster_.at("base_path"));
         }
+        std::string base_data_path;
+        if (param.cluster_.contains("base_data_path")) {
+            base_data_path = std::any_cast<std::string>(param.cluster_.at("base_data_path"));
+        }
         plugin_context_ = std::make_shared<ClientPluginContext>(GetPluginName());
 
-        Logger::InitLog(base_path_ + "/gr_logs/ct_" + plugin_file_name_+".log", true);
+        Logger::InitLog(base_data_path + "/gr_logs/ct_" + plugin_file_name_+".log", true);
         LOGI("{} OnCreate", GetPluginName());
 
         capture_audio_device_id_ = GetConfigParam<std::string>("capture_audio_device_id");

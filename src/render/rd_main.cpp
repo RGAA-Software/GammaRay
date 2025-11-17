@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
 
     // Log
     auto log_file_path = std::format("{}/gr_logs/gammaray_render_{}.log",
-         QString::fromStdWString(FolderUtil::GetCurrentFolderPath()).toStdString(), settings->transmission_.listening_port_);
+         QString::fromStdWString(FolderUtil::GetProgramDataPath()).toStdString(), settings->transmission_.listening_port_);
     Logger::InitLog(log_file_path, FLAGS_logfile);
 
     PrintInputArgs();

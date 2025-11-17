@@ -11,6 +11,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/hardware.h"
+#include "tc_common_new/folder_util.h"
 #include "tc_qt_widget/notify/notifymanager.h"
 #include "client/ct_app_message.h"
 #include <QTimer>
@@ -31,15 +32,12 @@ namespace tc
     }
 
     void ClientContext::Init() {
-        sp_ = SharedPreference::Instance();
-        auto sp_name = std::format("./gr_data/app.{}.dat", this->name_);
-        if (!sp_->Init("", sp_name)) {
-            LOGE("Init sp failed: {}", sp_name);
-        }
+        auto data_path = QString::fromStdWString(FolderUtil::GetProgramDataPath()).toStdString();
 
-        auto base_dir = QApplication::applicationDirPath();
-        auto log_path = base_dir + std::format("/gr_logs/app.{}.log", this->name_).c_str();
-        std::cout << "log path: " << log_path.toStdString() << std::endl;
+        //auto base_dir = QApplication::applicationDirPath();
+
+        auto log_path = std::format("{}/gr_logs/app.{}.log", data_path, this->name_);
+        std::cout << "log path: " << log_path << std::endl;
 
         if (this->name_ == kClientEmbedName) {
             // embed in main panel
@@ -48,9 +46,18 @@ namespace tc
         }
         else {
             // single running
-            Logger::InitLog(log_path.toStdString(), true);
+            Logger::InitLog(log_path, true);
         }
         LOGI("ClientContext in {}", this->name_);
+
+        sp_ = SharedPreference::Instance();
+        auto sp_name = std::format("app.{}.dat", this->name_);
+        if (!sp_->Init(data_path + "/gr_data", sp_name)) {
+            LOGE("!! Init sp failed: {}", sp_name);
+        }
+        else {
+            LOGI("** Init app data success: {}", sp_name);
+        }
 
         auto settings = Settings::Instance();
         //if (!render) {
