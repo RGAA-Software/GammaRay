@@ -220,7 +220,7 @@ namespace tc
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
-            {
+            if (skin_->IsGameEnabled()) {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn->AddIcon(":/resources/image/ic_game_selected.svg", ":/resources/image/ic_game_normal.svg", 20, 20);
                 btn_tab_games_ = btn;
@@ -357,7 +357,9 @@ namespace tc
             // tabs
             tabs_.insert({TabName::kTabServer, new TabServer(app_, this)});
             tabs_.insert({TabName::kTabServerStatus, new TabServerStatus(app_, this)});
-            tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
+            if (skin_->IsGameEnabled()) {
+                tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
+            }
             tabs_.insert({TabName::kTabCoPhone, new TabCoPhone(app_, this)});
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
             tabs_.insert({TabName::kTabSecurity, new TabSecurityInternals(app_, this)});
@@ -366,7 +368,9 @@ namespace tc
 
             tabs_[TabName::kTabServer]->SetAttach(btn_tab_server_);
             tabs_[TabName::kTabServerStatus]->SetAttach(btn_tab_server_status_);
-            tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
+            if (skin_->IsGameEnabled()) {
+                tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
+            }
             tabs_[TabName::kTabCoPhone]->SetAttach(btn_tab_cophone_);
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
             tabs_[TabName::kTabSecurity]->SetAttach(btn_security_);
@@ -378,7 +382,9 @@ namespace tc
             auto stack_widget = new QStackedWidget(this);
             stack_widget->addWidget(tabs_[TabName::kTabServer]);
             stack_widget->addWidget(tabs_[TabName::kTabServerStatus]);
-            stack_widget->addWidget(tabs_[TabName::kTabGames]);
+            if (skin_->IsGameEnabled()) {
+                stack_widget->addWidget(tabs_[TabName::kTabGames]);
+            }
             stack_widget->addWidget(tabs_[TabName::kTabCoPhone]);
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
             stack_widget->addWidget(tabs_[TabName::kTabSecurity]);

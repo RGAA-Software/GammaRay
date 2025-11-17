@@ -79,4 +79,8 @@ namespace tc
         return QObject::eventFilter(watched, event);
     }
 
+    bool SkinInterface::IsGameEnabled() {
+        return true;
+    }
+
 }

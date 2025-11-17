@@ -83,6 +83,9 @@ namespace tc
 
         virtual QPixmap GetSquareWhiteLogoTransBg() = 0;
 
+        // enable game
+        virtual bool IsGameEnabled();
+
     protected:
         bool HasParam(const std::string& k) {
             return skin_param_.cluster_.count(k) > 0;
