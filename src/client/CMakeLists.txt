@@ -121,6 +121,11 @@ target_link_libraries(GammaRayClientInner PRIVATE Qt6::Widgets Qt6::Core Qt6::Op
         tc_rtc_client Dwmapi.lib tc_client_plugin sqlite35 libplacebo vulkan-1 tc_hw_info skin_interface skin_loader
 )
 
+if (ANTI_HOOKING_ENABLED)
+    add_definitions(-DANTI_HOOKING_ENABLED=1)
+    target_link_libraries(GammaRayClientInner PRIVATE anti_hooking_protection)
+endif ()
+
 if(QT_VERSION_MAJOR EQUAL 6)
 #    qt_finalize_executable(${PROJECT_NAME})
 #    qt_finalize_executable(${PROJECT_NAME}Inner)

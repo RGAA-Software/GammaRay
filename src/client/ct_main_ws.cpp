@@ -31,6 +31,10 @@
 #include "snowflake/snowflake.h"
 #include "front_render/vulkan/ct_vulkan_checker.h"
 
+#ifdef ANTI_HOOKING_ENABLED
+#include "antihookingprotection.h"
+#endif
+
 using namespace tc;
 
 std::string g_remote_host_;
@@ -345,6 +349,9 @@ bool PrepareDirs(const QString& base_path) {
 int main(int argc, char** argv) {
 #ifdef WIN32
     CaptureDump();
+#ifdef ANTI_HOOKING_ENABLED
+    AntiHookingDummyImport();
+#endif
 #endif
 
 #ifdef __APPLE__
