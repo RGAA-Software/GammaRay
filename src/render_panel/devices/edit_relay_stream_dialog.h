@@ -40,6 +40,8 @@ namespace tc
         QLineEdit* edt_stream_name_ = nullptr;
         std::shared_ptr<spvr::SpvrStream> stream_item_;
         TcPasswordInput* password_input_ = nullptr;
+        QLineEdit* ed_host_ = nullptr;
+        QLineEdit* ed_port_ = nullptr;
 
     };
 

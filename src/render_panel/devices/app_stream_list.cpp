@@ -186,8 +186,12 @@ namespace tc
                 if (!item->remote_device_id_.empty()) {
                     exist_stream_item->remote_device_id_ = item->remote_device_id_;
                 }
-                exist_stream_item->stream_host_ = item->stream_host_;
-                exist_stream_item->stream_port_ = item->stream_port_;
+                if (!item->stream_host_.empty()) {
+                    exist_stream_item->stream_host_ = item->stream_host_;
+                }
+                if (item->stream_port_ > 0) {
+                    exist_stream_item->stream_port_ = item->stream_port_;
+                }
                 if (exist_stream_item->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
                     exist_stream_item->remote_device_random_pwd_ = item->remote_device_random_pwd_;
                 }
@@ -199,11 +203,11 @@ namespace tc
             LoadStreamItems();
 
             LOGI("Auto start stream: {}", msg.auto_start_);
-            context_->PostUITask([=, this]() {
+            context_->PostUIDelayTask([=, this]() {
                 if (msg.auto_start_) {
                     StartStream(exist_stream_item, false);
                 }
-            });
+            }, 70);
         });
 
         msg_listener_->Listen<StreamItemUpdated>([=, this](const StreamItemUpdated& msg) {
@@ -541,14 +545,18 @@ namespace tc
             LOGE("read stream item from db failed: {}", item->stream_id_);
             return;
         }
-        if (item->HasRelayInfo()) {
-            auto dialog = new EditRelayStreamDialog(context_, si.value(), grWorkspace.get());
-            dialog->exec();
-        }
-        else {
-            auto dialog = new CreateStreamDialog(context_, si.value(), grWorkspace.get());
-            dialog->exec();
-        }
+
+        auto dialog = new EditRelayStreamDialog(context_, si.value(), grWorkspace.get());
+        dialog->exec();
+
+//        if (item->HasRelayInfo()) {
+//            auto dialog = new EditRelayStreamDialog(context_, si.value(), grWorkspace.get());
+//            dialog->exec();
+//        }
+//        else {
+//            auto dialog = new CreateStreamDialog(context_, si.value(), grWorkspace.get());
+//            dialog->exec();
+//        }
     }
 
     void AppStreamList::DeleteStream(const std::shared_ptr<spvr::SpvrStream>& item) {

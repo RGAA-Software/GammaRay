@@ -84,6 +84,7 @@ set(PANEL_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/devices/connected_info_tag.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/devices/connected_info_sliding_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/devices/stream_messages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/devices/infinite_loading.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
 

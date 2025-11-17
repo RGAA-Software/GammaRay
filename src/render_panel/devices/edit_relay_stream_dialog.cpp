@@ -21,7 +21,7 @@ namespace tc
     EditRelayStreamDialog::EditRelayStreamDialog(const std::shared_ptr<GrContext>& ctx, const std::shared_ptr<spvr::SpvrStream>& item, QWidget* parent) : TcCustomTitleBarDialog("", parent) {
         context_ = ctx;
         stream_item_ = item;
-        setFixedSize(375, 475);
+        setFixedSize(375, 500);
         CreateLayout();
     }
 
@@ -35,6 +35,7 @@ namespace tc
         }
 
         auto item_width = 320;
+        auto item_spacing = 20;
         auto edit_size = QSize(item_width, 35);
 
         auto root_layout = new NoMarginHLayout();
@@ -44,7 +45,7 @@ namespace tc
         root_layout->addStretch();
         root_layout_->addLayout(root_layout);
 
-        content_layout->addSpacing(25);
+        content_layout->addSpacing(item_spacing);
 
         // 0. name
         {
@@ -59,7 +60,12 @@ namespace tc
             layout->addSpacing(10);
 
             auto edit = new QLabel(this);
-            edit->setText(stream_item_->remote_device_id_.c_str());
+            if (!stream_item_->remote_device_id_.empty()) {
+                edit->setText(stream_item_->remote_device_id_.c_str());
+            }
+            else {
+                edit->setText("None");
+            }
             edit->setStyleSheet("font-size: 16px; font-weight: 700; color: #2979ff;");
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
@@ -69,7 +75,7 @@ namespace tc
 
         }
 
-        content_layout->addSpacing(25);
+        content_layout->addSpacing(item_spacing);
 
         // 1. password
         {
@@ -92,7 +98,7 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
-        content_layout->addSpacing(25);
+        content_layout->addSpacing(item_spacing);
 
         // 2. name
         {
@@ -115,6 +121,59 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
+        content_layout->addSpacing(item_spacing);
+
+        // 1. host
+        {
+            auto layout = new NoMarginVLayout();
+            auto label = new TcLabel(this);
+            label->setFixedWidth(item_width);
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->SetTextId("id_host_star");
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+            layout->addSpacing(10);
+
+            auto edit = new QLineEdit(this);
+            auto validator = new QRegularExpressionValidator(QRegularExpression("[\\x20-\\x7E]+"), edit);
+            edit->setValidator(validator);
+            ed_host_ = edit;
+            if (stream_item_ && stream_item_->IsValid()) {
+                ed_host_->setText(stream_item_->stream_host_.c_str());
+            }
+            edit->setFixedSize(edit_size);
+            layout->addWidget(edit);
+            layout->addStretch();
+            content_layout->addLayout(layout);
+        }
+
+        content_layout->addSpacing(item_spacing);
+
+        // 2. port
+        {
+            auto layout = new NoMarginVLayout();
+            auto label = new TcLabel(this);
+            label->setFixedWidth(item_width);
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->SetTextId("id_port_star");
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+            layout->addSpacing(10);
+
+            auto edit = new QLineEdit(this);
+            auto validator = new QIntValidator(this);
+            edit->setValidator(validator);
+            ed_port_ = edit;
+            ed_port_->setText(QString::number(stream_item_->stream_port_));
+            if (stream_item_ && stream_item_->IsValid()) {
+                ed_port_->setText(QString::number(stream_item_->stream_port_));
+            }
+            edit->setFixedSize(edit_size);
+            layout->addWidget(edit);
+            layout->addStretch();
+            content_layout->addLayout(layout);
+        }
+
         // sure button
         {
             auto layout = new NoMarginVLayout();
@@ -123,6 +182,8 @@ namespace tc
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
                 stream_item_->stream_name_ = edt_stream_name_->text().toStdString();
                 stream_item_->device_random_pwd_ = password_input_->GetPassword().toStdString();
+                stream_item_->stream_host_ = ed_host_->text().toStdString();
+                stream_item_->stream_port_ = ed_port_->text().toInt();
                 context_->SendAppMessage(StreamItemUpdated {
                     .item_ = stream_item_,
                 });

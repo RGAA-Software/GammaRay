@@ -21,6 +21,7 @@
 #include "tc_common_new/http_client.h"
 #include "relay_message.pb.h"
 #include "client/ct_stream_item_net_type.h"
+#include "infinite_loading.h"
 
 namespace tc
 {
@@ -100,10 +101,7 @@ namespace tc
             auto btn_sure = new TcPushButton();
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-                if (!GenStream()) {
-                    return;
-                }
-                this->close();
+                GenStream();
             });
 
             layout->addWidget(btn_sure);
@@ -118,6 +116,11 @@ namespace tc
     }
 
     bool CreateStreamConnInfoDialog::GenStream() {
+        // loading dialog
+        auto dialog = std::make_shared<InfiniteLoading>(context_, tcTr("id_verifying"));
+        dialog->setWindowFlag(Qt::WindowStaysOnTopHint, true);
+        dialog->show();
+
         auto info = ed_conn_info_->toPlainText().toStdString();
         auto name = ed_device_name_->text().toStdString();
 
@@ -143,80 +146,71 @@ namespace tc
         // check a valid one
         bool has_device_id = !conn_info->device_id_.empty();
 
-        std::string direct_host;
-        int direct_port = 0;
-
-        //
-        if (!conn_info->hosts_.empty()) {
-            for (const auto &host: conn_info->hosts_) {
-                LOGI("Check connecting directly => http://{}:{}/api/ping", host.ip_, conn_info->render_srv_port_);
-                auto client = HttpClient::Make(host.ip_, conn_info->render_srv_port_, "/api/ping", 1000);
-                auto r = client->Request();
-                if (r.status == 200) {
-                    direct_host = host.ip_;
-                    direct_port = conn_info->render_srv_port_;
-                    LOGI("THIS Worked: {}:{}", host.ip_, conn_info->render_srv_port_);
-                    break;
+        context_->PostTask([=, this]() {
+            std::string direct_host;
+            int direct_port = 0;
+            bool direct_online = false;
+            //
+            if (!conn_info->hosts_.empty()) {
+                for (const auto &host: conn_info->hosts_) {
+                    LOGI("Check connecting directly => http://{}:{}/api/ping", host.ip_, conn_info->render_srv_port_);
+                    auto client = HttpClient::Make(host.ip_, conn_info->render_srv_port_, "/api/ping", 2000);
+                    auto r = client->Request();
+                    if (r.status == 200) {
+                        direct_online = true;
+                        direct_host = host.ip_;
+                        direct_port = conn_info->render_srv_port_;
+                        LOGI("THIS Worked: {}:{}", host.ip_, conn_info->render_srv_port_);
+                        break;
+                    }
+                    else {
+                        LOGI("Test connection for adding stream, can't connect: {}:{}", direct_host, direct_port);
+                    }
                 }
             }
-        }
 
-        std::string relay_host;
-        int relay_port = 0;
-        std::string relay_appkey;
+            std::string relay_host;
+            int relay_port = 0;
+            std::string relay_appkey;
 
-        if (has_device_id) {
-            relay_host = conn_info->relay_host_;
-            relay_port = conn_info->relay_port_;
-            relay_appkey = conn_info->relay_appkey_;
-            if (relay_host.empty() || relay_port <= 0 || relay_appkey.empty()) {
-                TcDialog dialog(tcTr("id_error"), tcTr("id_dont_have_server_config"), this);
-                dialog.exec();
+            if (has_device_id) {
+                relay_host = conn_info->relay_host_;
+                relay_port = conn_info->relay_port_;
+                relay_appkey = conn_info->relay_appkey_;
+                if (relay_host.empty() || relay_port <= 0 || relay_appkey.empty()) {
+                    context_->PostUITask([this]() {
+                        TcDialog dialog(tcTr("id_error"), tcTr("id_dont_have_server_config"), this);
+                        dialog.exec();
+                    });
+                }
             }
 
-            // auto relay_device_info = context_->GetRelayServerSideDeviceInfo(relay_host, relay_port, relay_appkey, conn_info->device_id_, false);
-            // if (relay_device_info == nullptr) {
-            //     TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), this);
-            //     dialog.exec();
-            //     return false;
-            // }
+            // this is good
+            std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
+            item->remote_device_id_ = conn_info->device_id_;
+            item->remote_device_random_pwd_ = conn_info->random_pwd_;
+            item->stream_name_ = name;
+            item->stream_host_ = direct_host;
+            item->stream_port_ = direct_port;
+            item->relay_host_ = relay_host;
+            item->relay_port_ = relay_port;
+            item->relay_appkey_ = relay_appkey;
+            item->encode_bps_ = 0;
+            item->encode_fps_ = 0;
+            item->clipboard_enabled_ = true;
+            item->direct_online_ = direct_online;
+            context_->SendAppMessage(StreamItemAdded {
+                .item_ = item,
+                .auto_start_ = true,
+            });
 
-            // relay mode
-            // auto host = relay_device_info->relay_server_ip();
-            // auto port = relay_device_info->relay_server_port();
+            context_->PostUIDelayTask([=, this]() {
+                dialog->hide();
+                dialog->Close() ;
+                this->hide();
+                this->close();
+            }, 50);
 
-            // std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
-            // item->remote_device_id_ = conn_info->device_id_;
-            // item->remote_device_random_pwd_ = conn_info->random_pwd_;
-            // item->stream_name_ = name;
-            // item->stream_host_ = host;
-            // item->stream_port_ = port;
-            // item->encode_bps_ = 0;
-            // item->encode_fps_ = 0;
-            // item->network_type_ = kStreamItemNtTypeRelay;
-            // item->clipboard_enabled_ = true;
-            // context_->SendAppMessage(StreamItemAdded {
-            //     .item_ = item,
-            //     .auto_start_ = false,
-            // });
-        }
-
-        // this is good
-        std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
-        item->remote_device_id_ = conn_info->device_id_;
-        item->remote_device_random_pwd_ = conn_info->random_pwd_;
-        item->stream_name_ = name;
-        item->stream_host_ = direct_host;
-        item->stream_port_ = direct_port;
-        item->relay_host_ = relay_host;
-        item->relay_port_ = relay_port;
-        item->relay_appkey_ = relay_appkey;
-        item->encode_bps_ = 0;
-        item->encode_fps_ = 0;
-        item->clipboard_enabled_ = true;
-        context_->SendAppMessage(StreamItemAdded {
-            .item_ = item,
-            .auto_start_ = true,
         });
 
         return true;

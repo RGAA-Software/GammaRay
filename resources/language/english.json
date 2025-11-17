@@ -266,6 +266,7 @@
   "id_relay_ft_server": "Relay File",
   "id_force_software": "Force Software Decode",
   "id_wait_debug": "Wait Debugger",
+  "id_verifying": "Verifying...",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",
