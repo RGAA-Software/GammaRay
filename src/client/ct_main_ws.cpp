@@ -31,8 +31,8 @@
 #include "snowflake/snowflake.h"
 #include "front_render/vulkan/ct_vulkan_checker.h"
 
-#ifdef ANTI_HOOKING_ENABLED
-#include "antihookingprotection.h"
+#ifdef TC_PROTECTION_ENABLED
+#include "tc_protection.h"
 #endif
 
 using namespace tc;
@@ -349,8 +349,8 @@ bool PrepareDirs(const QString& base_path) {
 int main(int argc, char** argv) {
 #ifdef WIN32
     CaptureDump();
-#ifdef ANTI_HOOKING_ENABLED
-    AntiHookingDummyImport();
+#ifdef TC_PROTECTION_ENABLED
+    TCProtectionDummyImport();
 #endif
 #endif
 
