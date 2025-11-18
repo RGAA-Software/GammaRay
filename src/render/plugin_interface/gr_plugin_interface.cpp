@@ -342,6 +342,7 @@ namespace tc
         sys_settings_.file_transfer_enabled_ = settings.file_transfer_enabled_;
         sys_settings_.audio_enabled_ = settings.audio_enabled_;
         sys_settings_.appkey_ = settings.appkey_;
+        sys_settings_.license_ok_ = settings.license_ok_;
         // LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}, relay enabled: {}, language: {}",
         //      sys_settings_.device_id_, sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.relay_host_,
         //      sys_settings_.relay_port_, sys_settings_.relay_enabled_, sys_settings_.language_);

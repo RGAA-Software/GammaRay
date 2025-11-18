@@ -29,6 +29,7 @@
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "render_panel/companion/panel_companion.h"
 #include "render_panel/gr_statistics.h"
+#include "skin/interface/skin_interface.h"
 
 namespace tc
 {
@@ -437,6 +438,7 @@ namespace tc
         sub->set_appkey(grApp->GetAppkey());
         sub->set_max_transmit_speed(this->max_transmit_speed_);
         sub->set_max_receive_speed(this->max_receive_speed_);
+        sub->set_license_ok(true);
         PostRendererMessage(tc::RpProtoAsData(&m));
     }
 

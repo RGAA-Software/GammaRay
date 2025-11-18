@@ -14,7 +14,7 @@ namespace tc
 {
 
     QString SkinOpenSource::GetSkinName() {
-        return "Official";
+        return "OpenSource";
     }
 
     // app name

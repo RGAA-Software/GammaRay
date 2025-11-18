@@ -36,6 +36,8 @@ namespace tc
         // ethernet
         uint64_t max_transmit_speed_ = 0;
         uint64_t max_receive_speed_ = 0;
+        // skin name
+        bool license_ok_;
     };
 
 }

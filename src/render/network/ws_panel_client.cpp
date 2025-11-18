@@ -154,6 +154,7 @@ namespace tc
                 settings_->appkey_ = sub.appkey();
                 settings_->max_transmit_speed_ = sub.max_transmit_speed();
                 settings_->max_receive_speed_ = sub.max_receive_speed();
+                settings_->license_ok_ = sub.license_ok();
 
                 plugin_mgr_->SyncPluginSettingsInfo(GrPluginSettingsInfo {
                     .device_id_ = settings_->device_id_,
@@ -169,6 +170,7 @@ namespace tc
                     .appkey_ = settings_->appkey_,
                     .max_transmit_speed_ = settings_->max_transmit_speed_,
                     .max_receive_speed_ = settings_->max_receive_speed_,
+                    .license_ok_ = settings_->license_ok_,
                 });
             }
             else if (m.type() == tcrp::RpMessageType::kRpCommandRenderer) {
