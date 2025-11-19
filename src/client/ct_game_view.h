@@ -23,6 +23,7 @@ namespace tc
     class Settings;
     class Thread;
     class MediaRecordSignLab;
+    class OverlayWidget;
 
     class GameView : public QWidget {
     public:
@@ -34,6 +35,9 @@ namespace tc
         bool eventFilter(QObject* watched, QEvent* event) override;
         bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;
         void showEvent(QShowEvent* event) override;
+        void hideEvent(QHideEvent* event) override;
+        void moveEvent(QMoveEvent* event) override;
+        void mouseReleaseEvent(QMouseEvent* event) override;
         void RefreshCapturedMonitorInfo(const SdkCaptureMonitorInfo& mon_info);
         void RefreshImage(const std::shared_ptr<RawImage>& image);
         void RefreshI420Image(const std::shared_ptr<RawImage>& image);
@@ -48,8 +52,10 @@ namespace tc
         void SetMainView(bool main_view);
         bool IsMainView() const;
         void SnapshotStream();
+        void InitOverlayWidget();
         HWND GetVideoHwnd();
         std::string GetRenderTypeName();
+        void UpdateOverlayWidgetPos();
     public:
         static bool s_mouse_in_;
 
@@ -79,6 +85,7 @@ namespace tc
 
         std::shared_ptr<Thread> thread_ = nullptr;
 
+        OverlayWidget* overlay_widget_ = nullptr;
     private:
         void InitFloatController();
         void RegisterControllerPanelListeners();

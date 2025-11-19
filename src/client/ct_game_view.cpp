@@ -16,6 +16,7 @@
 #include "tc_dialog.h"
 #include "no_margin_layout.h"
 #include "ct_const_def.h"
+#include "ct_game_overlay.h"
 #include "ui/float_controller.h"
 #include "ui/float_controller_panel.h"
 #include "ui/svg_lable.h"
@@ -156,6 +157,9 @@ namespace tc
             float_controller_->ReCalculatePosition();
         }
         recording_sign_lab_->move(this->width() * 0.85, 20);
+        if (overlay_widget_) {
+            overlay_widget_->resize(this->size());
+        }
         QWidget::resizeEvent(event);
     }
 
@@ -361,7 +365,7 @@ namespace tc
     }
 
     bool GameView::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
-        if (eventType == "windows_generic_MSG") {
+#ifdef WIN32
             MSG* msg = static_cast<MSG*>(message);
             if (msg->message == WM_ACTIVATE) {
                 if (LOWORD(msg->wParam) == WA_INACTIVE) {
@@ -374,7 +378,10 @@ namespace tc
                     qDebug() << "Window gained focus!";
                 }
             }
-        }
+            else if (msg->message == WM_EXITSIZEMOVE) {
+                UpdateOverlayWidgetPos();
+            }
+#endif
         return QWidget::nativeEvent(eventType, message, result);
     }
 
@@ -433,12 +440,22 @@ namespace tc
         if (width() > 0 && height() > 0) {
             resize(width() + 1, height() + 1);
         }
-        QTimer::singleShot(60, [self = QPointer<GameView>(this)]() {
+        QTimer::singleShot(60, this, [self = QPointer<GameView>(this)]() {
             if (!self) {
                 return;
             }
             self->resize(self->width() - 1, self->height() - 1);
         });
+        if (overlay_widget_) {
+            overlay_widget_->show();
+        }
+    }
+
+    void GameView::hideEvent(QHideEvent* event) {
+        QWidget::hideEvent(event);
+        if (overlay_widget_) {
+            overlay_widget_->hide();
+        }
     }
 
     std::string GameView::GetRenderTypeName() {
@@ -446,5 +463,44 @@ namespace tc
             return "";
         }
         return video_widget_->GetRenderTypeName();
+    }
+
+    void GameView::moveEvent(QMoveEvent* event) {
+        if (overlay_widget_) {
+            QPoint global_pos = mapToGlobal(QPoint(0, 0));
+            overlay_widget_->move(global_pos);
+        }
+        QWidget::moveEvent(event);
+    }
+
+    void GameView::InitOverlayWidget() {
+        overlay_widget_ = new OverlayWidget(this);
+        overlay_widget_->resize(this->size());
+        overlay_widget_->SetOpacity(0.5);
+        overlay_widget_->SetWatermarkCount(6);
+        overlay_widget_->hide();
+        QTimer::singleShot(1000, this, [=, this]() {
+            if (overlay_widget_) {
+                UpdateOverlayWidgetPos();
+                if (this->isHidden()) {
+                    overlay_widget_->hide();
+                }
+                else {
+                    overlay_widget_->show();
+                }
+            }
+        });
+    }
+
+    void GameView::mouseReleaseEvent(QMouseEvent* event) {
+        QWidget::mouseReleaseEvent(event);
+    }
+
+    void GameView::UpdateOverlayWidgetPos() {
+        if (overlay_widget_) {
+            QPoint global_pos = mapToGlobal(QPoint(0, 0));
+            overlay_widget_->resize(this->size());
+            overlay_widget_->move(global_pos);
+        }
     }
 }
