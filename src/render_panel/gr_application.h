@@ -90,6 +90,7 @@ namespace tc
 
         // skin
         SkinInterface* GetSkin();
+        std::string GetSkinName();
 
         // spvr
         bool IsSpvrClientAlive();

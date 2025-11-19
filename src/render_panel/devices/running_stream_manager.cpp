@@ -55,6 +55,11 @@ namespace tc
             settings_->SetScreenRecordingPath(screen_recording_path);
         }
 
+        bool show_watermark = true;
+        if (grApp->GetSkinName() == "OpenSource" || !item->remote_device_id_.empty()) {
+            show_watermark = false;
+        }
+
         // start it
         auto process = std::make_shared<QProcess>();
         QStringList arguments;
@@ -116,6 +121,7 @@ namespace tc
             << std::format("--relay_appkey={}", item->relay_appkey_).c_str()
             << std::format("--force_software={}", item->force_software_ ? 1 : 0).c_str()
             << std::format("--wait_debug={}", item->wait_debug_ ? 1 : 0).c_str()
+            << std::format("--show_watermark={}", show_watermark ? 1 : 0).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

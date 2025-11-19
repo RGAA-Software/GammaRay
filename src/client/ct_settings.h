@@ -140,6 +140,9 @@ namespace tc
         // wait debug
         bool wait_debug_ = false;
 
+        // show watermark
+        bool show_watermark_ = false;
+
         ///////
         ///////
         // from render //

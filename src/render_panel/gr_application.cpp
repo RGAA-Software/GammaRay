@@ -485,6 +485,10 @@ namespace tc
         return skin_;
     }
 
+    std::string GrApplication::GetSkinName() {
+        return skin_ ? skin_->GetSkinName().toStdString() : "";
+    }
+
     bool GrApplication::IsSpvrClientAlive() {
         return spvr_client_ && spvr_client_->IsAlive();
     }

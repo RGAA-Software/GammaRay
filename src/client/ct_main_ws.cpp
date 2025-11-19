@@ -162,6 +162,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_wait_debug("wait_debug", "wait debug", "value", "");
     parser.addOption(opt_wait_debug);
 
+    QCommandLineOption opt_show_watermark("show_watermark", "show watermark", "value", "");
+    parser.addOption(opt_show_watermark);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -325,6 +328,9 @@ void ParseCommandLine(QApplication& app) {
 
     // wait debug
     settings->wait_debug_ = parser.value(opt_wait_debug).toInt() == 1;
+
+    // show watermark
+    settings->show_watermark_ = parser.value(opt_show_watermark).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -438,6 +444,7 @@ int main(int argc, char** argv) {
     LOGI("relay port: {}", settings->relay_port_);
     LOGI("relay appkey: {}", settings->relay_appkey_);
     LOGI("force software: {}", settings->force_software_);
+    LOGI("show watermark: {}", settings->show_watermark_);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
