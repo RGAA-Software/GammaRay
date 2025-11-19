@@ -272,6 +272,7 @@
   "id_force_software": "强制软解码",
   "id_wait_debug": "等待调试",
   "id_verifying": "校验中...",
+  "id_op_error": "操作错误",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

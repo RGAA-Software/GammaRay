@@ -12,10 +12,15 @@ namespace tc
 {
 
     class GrContext;
+    class GrSettings;
 
     class GrUserManager {
     public:
         explicit GrUserManager(const std::shared_ptr<GrContext>& ctx);
+        bool Register(const std::string& username, const std::string& password);
+        bool Login(const std::string& username, const std::string& password);
+        bool Logout();
+
         std::string GetUserId();
         std::string GetUsername();
         std::string GetPassword();
@@ -34,6 +39,7 @@ namespace tc
         static std::string KeyAvatarPath();
 
     private:
+        GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
 
     };

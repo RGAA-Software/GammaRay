@@ -5,9 +5,14 @@
 #include "gr_user_manager.h"
 #include <format>
 #include "tc_common_new/log.h"
+#include "tc_common_new/md5.h"
 #include "tc_spvr_client/spvr_user.h"
 #include "tc_spvr_client/spvr_user_api.h"
 #include "render_panel/gr_context.h"
+#include "render_panel/gr_settings.h"
+#include "render_panel/gr_application.h"
+#include "tc_label.h"
+#include "tc_dialog.h"
 
 const std::string kUserPrefix = "spvr_user:";
 
@@ -16,6 +21,76 @@ namespace tc
 
     GrUserManager::GrUserManager(const std::shared_ptr<GrContext>& ctx) {
         context_ = ctx;
+        settings_ = GrSettings::Instance();
+    }
+
+    bool GrUserManager::Register(const std::string& username, const std::string& password) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto hash_password = MD5::Hex(password);
+        auto r = spvr::SpvrUserApi::Register(host, port, appkey, username, hash_password);
+        if (r.has_value()) {
+            auto user = r.value();
+            this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
+        }
+        else {
+            auto err = r.error();
+            LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
+            context_->PostUITask([=, this]() {
+                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err);
+                TcDialog dialog(tcTr("id_error"), msg);
+                dialog.exec();
+            });
+        }
+        return true;
+    }
+
+    bool GrUserManager::Login(const std::string& username, const std::string& password) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto hash_password = MD5::Hex(password);
+        auto r = spvr::SpvrUserApi::Register(host, port, appkey, username, hash_password);
+        if (r.has_value()) {
+            auto user = r.value();
+            this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
+            return true;
+        }
+        else {
+            auto err = r.error();
+            LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
+            context_->PostUITask([=, this]() {
+                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err);
+                TcDialog dialog(tcTr("id_error"), msg);
+                dialog.exec();
+            });
+            return false;
+        }
+    }
+
+    bool GrUserManager::Logout() {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto uid = GetUserId();
+        auto password = GetPassword();
+        auto hash_password = MD5::Hex(password);
+        auto r = spvr::SpvrUserApi::Logout(host, port, appkey, uid, hash_password);
+        if (r.has_value()) {
+            LOGI("Logout: {} {}", GetUsername(), GetUserId());
+            Clear();
+        }
+        else {
+            auto err = r.error();
+            LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
+            context_->PostUITask([=, this]() {
+                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err);
+                TcDialog dialog(tcTr("id_error"), msg);
+                dialog.exec();
+            });
+        }
+        return true;
     }
 
     void GrUserManager::SaveUserInfo(const std::string& uid, const std::string& username, const std::string& password, const std::string& avatar_path) {
