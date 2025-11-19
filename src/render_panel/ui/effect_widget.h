@@ -20,14 +20,19 @@ namespace tc
     class EffectWidget : public QWidget {
     public:
         explicit EffectWidget(QWidget *parent = nullptr) : QWidget(parent) {
-            auto timer = new QTimer(this);
-            timer->setInterval(17);
-            QObject::connect(timer, &QTimer::timeout, this, [this] {
+            timer_ = new QTimer(this);
+            timer_->setInterval(17);
+            timer_conn_ = QObject::connect(timer_, &QTimer::timeout, this, [this] {
                 auto st = GrStatistics::Instance();
                 this->OnDataComing(st->GetLeftSpectrum(), {}/*st->GetRightSpectrum()*/);
                 this->repaint();
             });
-            timer->start();
+            timer_->start();
+        }
+
+        ~EffectWidget() {
+            disconnect(timer_conn_);
+            timer_->stop();
         }
 
         virtual QWidget *AsWidget() {
@@ -73,7 +78,6 @@ namespace tc
         }
 
     protected:
-
         std::mutex data_mtx_;
         std::vector<double> left_bars;
         std::vector<double> left_new_bars_;
@@ -82,6 +86,8 @@ namespace tc
         std::vector<double> origin_left_bars_;
         std::vector<double> origin_right_bars_;
         long counts_ = 0;
+        QMetaObject::Connection timer_conn_;
+        QTimer* timer_ = nullptr;
     };
 
     typedef std::shared_ptr<EffectWidget> EffectWidgetPtr;
