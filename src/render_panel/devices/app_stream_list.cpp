@@ -32,7 +32,6 @@
 #include "stream_state_checker.h"
 #include "tc_profile_client/profile_api.h"
 #include "tc_relay_client/relay_api.h"
-#include "render_panel/gr_account_manager.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
 #include "render_panel/network/render_api.h"

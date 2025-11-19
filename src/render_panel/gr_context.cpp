@@ -71,11 +71,6 @@ namespace tc
 
         msg_notifier_ = app_->GetMessageNotifier();
 
-        acc_sdk_ = std::make_shared<AccountSdk>(msg_notifier_, std::make_shared<AccountParams>(AccountParams {
-            .host_ = ACC_HOST,
-            .port_ = ACC_PORT,
-        }));
-
         // ips
         ips_ = IPUtil::ScanIPs();
 
@@ -303,10 +298,6 @@ namespace tc
         return database_;
     }
 
-    std::shared_ptr<AccountSdk> GrContext::GetAccSdk() {
-        return acc_sdk_;
-    }
-
     std::shared_ptr<relay::RelayDeviceInfo> GrContext::GetRelayServerSideDeviceInfo(const std::string& relay_host,
                                                                                     int relay_port,
                                                                                     const std::string& relay_appkey,
@@ -331,6 +322,22 @@ namespace tc
         //     srv_remote_device_id, relay_device_info->relay_server_ip(), relay_device_info->relay_server_port());
         return relay_device_info;
 
+    }
+
+    void GrContext::SpPutString(const std::string& key, const std::string& value) {
+        sp_->Put(key, value);
+    }
+
+    std::string GrContext::SpGetString(const std::string& key, const std::string& def_val) {
+        return sp_->Get(key, def_val);
+    }
+
+    void GrContext::SpPutInteger(const std::string& key, int value) {
+        sp_->PutInt(key, value);
+    }
+
+    int GrContext::SpGetInteger(const std::string& key, int def_val) {
+        return sp_->GetInt(key, def_val);
     }
 
 }

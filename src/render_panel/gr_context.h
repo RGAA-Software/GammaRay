@@ -34,7 +34,6 @@ namespace tc
     class GrApplication;
     class NotifyManager;
     class GrDatabase;
-    class AccountSdk;
 
     // Device list
     class StreamDBOperator;
@@ -93,7 +92,6 @@ namespace tc
         std::shared_ptr<StreamDBOperator> GetStreamDBManager();
         std::shared_ptr<RunningStreamManager> GetRunningStreamManager();
         std::shared_ptr<GrDatabase> GetDatabase();
-        std::shared_ptr<AccountSdk> GetAccSdk();
         // return ip address if device id is empty
         std::string GetDeviceIdOrIpAddress();
 
@@ -113,6 +111,13 @@ namespace tc
                                                                              const std::string& relay_appkey,
                                                                              const std::string& device_id,
                                                                              bool show_dialog = true);
+
+        // sp operations
+        void SpPutString(const std::string& key, const std::string& value);
+        std::string SpGetString(const std::string& key, const std::string& def_val = "");
+
+        void SpPutInteger(const std::string& key, int value);
+        int SpGetInteger(const std::string& key, int def_val = 0);
 
     private:
         void StartTimers();
@@ -136,7 +141,6 @@ namespace tc
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<NotifyManager> notify_mgr_ = nullptr;
         std::shared_ptr<GrDatabase> database_ = nullptr;
-        std::shared_ptr<AccountSdk> acc_sdk_ = nullptr;
     };
 
 }

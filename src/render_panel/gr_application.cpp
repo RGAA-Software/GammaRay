@@ -16,7 +16,6 @@
 #include "skin/skin_loader.h"
 #include "tc_common_new/log.h"
 #include "gr_system_monitor.h"
-#include "gr_account_manager.h"
 #include "gr_connected_manager.h"
 #include "tc_common_new/thread.h"
 #include "network/gr_spvr_client.h"
@@ -44,6 +43,7 @@
 #include "render_panel/devices/stream_messages.h"
 #include "render_panel/system/win/win_panel_message_loop.h"
 #include "render_panel/clipboard/panel_clipboard_manager.h"
+#include "render_panel/user/gr_user_manager.h"
 
 #include <shellapi.h>
 #include <QLibrary>
@@ -95,7 +95,7 @@ namespace tc
         auto ctx_init_diff = TimeUtil::GetCurrentTimestamp() - begin_ctx_init_ts;
         LOGI("** Context init used: {}ms", ctx_init_diff);
 
-        account_mgr_ = std::make_shared<GrAccountManager>(context_);
+        user_mgr_ = std::make_shared<GrUserManager>(context_);
 
         // firewall
         context_->PostTask([this]() {
@@ -338,13 +338,12 @@ namespace tc
     }
 
     bool GrApplication::CheckLocalDeviceInfoWithPopup() {
-        auto r = account_mgr_->IsDeviceInfoOk();
-        auto ok = r.value_or(false);
-        if (ok) {
+        auto r = this->IsDeviceInfoOk();
+        if (r) {
             return true;
         }
 
-        auto err_msg = GrAccountError2String(r.error());
+        auto err_msg = "Your device info invalid, ID is empty or password invalid";
         QString pre_msg = tcTr("id_local_device_info_error");
         TcDialog dialog(tcTr("id_error"), pre_msg + std::format(" {}", err_msg).c_str(), grWorkspace.get());
         dialog.exec();
@@ -488,5 +487,21 @@ namespace tc
 
     bool GrApplication::IsSpvrClientAlive() {
         return spvr_client_ && spvr_client_->IsAlive();
+    }
+
+    std::shared_ptr<GrUserManager> GrApplication::GetUserManager() {
+        return user_mgr_;
+    }
+
+    bool GrApplication::IsDeviceInfoOk() {
+        auto device_id = settings_->GetDeviceId();
+        auto device_random_pwd = settings_->GetDeviceRandomPwd();
+        auto device_safety_pwd = settings_->GetDeviceSecurityPwd();
+
+        if (device_id.empty() || device_random_pwd.empty()) {
+            LOGE("Check device info error, device id is empty.");
+            return false;
+        }
+        return true;
     }
 }

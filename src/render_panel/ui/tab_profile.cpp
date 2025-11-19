@@ -48,7 +48,6 @@ namespace tc
         setAcceptDrops(true);
 #endif
 
-        acc_sdk_ = context_->GetAccSdk();
         stacked_widget_ = new QStackedWidget(this);
 
         root_layout_ = new NoMarginHLayout();
@@ -57,7 +56,7 @@ namespace tc
         setLayout(root_layout_);
 
         //
-        QueryMyDevices();
+        // QueryMyDevices();
     }
 
     void TabProfile::OnTabShow() {

@@ -62,7 +62,6 @@ set(PANEL_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_render_controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_run_game_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_running_pipe.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_account_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_connected_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_render_msg_processor.cpp
 
@@ -95,6 +94,8 @@ set(PANEL_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_guard_starter.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/spvr_scanner/spvr_scanner.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/user/gr_user_manager.cpp
 
     PARENT_SCOPE
 )
