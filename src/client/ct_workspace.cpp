@@ -307,12 +307,13 @@ namespace tc
             }
             else {
                 game_view = new GameView(context_, sdk_, params, nullptr); // extend view
+                game_view->InitOverlayWidget();
                 game_view->resize(def_window_size_);
                 game_view->hide();
                 game_view->SetMainView(false);
                 game_view->installEventFilter(this);
                 game_view->setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(index + 1)));
-
+       
                 uintptr_t obj = reinterpret_cast<uintptr_t>(game_view);
                 if (support_vulkan) {
                     auto hwnd = game_view->GetVideoHwnd();
@@ -373,5 +374,4 @@ namespace tc
         }
         return QMainWindow::eventFilter(watched, event);
     }
-
 }

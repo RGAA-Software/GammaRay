@@ -51,6 +51,7 @@ namespace tc
     class CtSpvrClient;
     class PlVulkan;
     class SkinInterface;
+    class OverlayWidget;
 
     class BaseWorkspace : public QMainWindow, public std::enable_shared_from_this<BaseWorkspace> {
     public:
@@ -69,6 +70,10 @@ namespace tc
         void dropEvent(QDropEvent *event) override;
         bool eventFilter(QObject* watched, QEvent* event) override;
         bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;
+        void moveEvent(QMoveEvent* event) override;
+        void showEvent(QShowEvent* event) override;
+        void hideEvent(QHideEvent* event) override;
+        void mouseReleaseEvent(QMouseEvent* event) override;
         // virtual void focusOutEvent(QFocusEvent* event) override; 此窗口接收不到, 原因未知
         virtual void SendWindowsKey(unsigned long vk, bool down);
 
@@ -120,6 +125,7 @@ namespace tc
         virtual void InitGameView(const std::shared_ptr<ThunderSdkParams>& params);
         void WidgetSelectMonitor(QWidget* widget, QList<QScreen*>& screens);
         void ExitClientWithDialog();
+        void UpdateOverlayWidgetPos();
 
         // 匹配鼠标形状
         Qt::CursorShape ToQCursorShape(uint32_t cursor_type);
@@ -223,6 +229,7 @@ namespace tc
         // skin
         SkinInterface* skin_ = nullptr;
 
+        OverlayWidget* overlay_widget_ = nullptr;
     private:
         GameView* game_view_ = nullptr;
     };

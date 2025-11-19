@@ -57,6 +57,7 @@
 #include "network/ct_spvr_client.h"
 #include "skin/skin_loader.h"
 #include "skin/interface/skin_interface.h"
+#include "ct_game_overlay.h"
 
 namespace tc
 {
@@ -78,6 +79,23 @@ namespace tc
             self->activateWindow();
         });
         pl_vulkan_ = PlVulkan::Make();
+
+        overlay_widget_ = new OverlayWidget(this);
+        overlay_widget_->resize(this->size());
+        overlay_widget_->SetOpacity(0.5);
+        overlay_widget_->SetWatermarkCount(6);
+        overlay_widget_->hide();
+        QTimer::singleShot(1000, this, [=, this]() {
+            if (overlay_widget_) {
+                UpdateOverlayWidgetPos();
+                if (this->isHidden()) {
+                    overlay_widget_->hide();
+                }
+                else {
+                    overlay_widget_->show();
+                }
+            }
+        });
     }
 
     void BaseWorkspace::Init() {
@@ -740,6 +758,9 @@ namespace tc
         UpdateDebugPanelPosition();
         UpdateVideoWidgetSize();
         UpdateFloatButtonIndicatorPosition();
+        if (overlay_widget_) {
+            overlay_widget_->resize(event->size());
+        }
     }
 
     void BaseWorkspace::UpdateFloatButtonIndicatorPosition() {
@@ -1188,21 +1209,24 @@ namespace tc
     }
 
     bool BaseWorkspace::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
-        if (eventType == "windows_generic_MSG") {
-            MSG* msg = static_cast<MSG*>(message);
-            if (msg->message == WM_ACTIVATE) {
-                if (LOWORD(msg->wParam) == WA_INACTIVE) {
-                    qDebug() << "Window lost focus!";
-                    context_->PostTask([this]() {
-                        context_->SendAppMessage(MsgClientFocusOutEvent{});
-                    });
-                }
-                else {
-                    qDebug() << "Window gained focus!";
-                }
+#ifdef WIN32
+        MSG* msg = static_cast<MSG*>(message);
+        if (msg->message == WM_ACTIVATE) {
+            if (LOWORD(msg->wParam) == WA_INACTIVE) {
+                qDebug() << "Window lost focus!";
+                context_->PostTask([this]() {
+                    context_->SendAppMessage(MsgClientFocusOutEvent{});
+                });
+            }
+            else {
+                qDebug() << "Window gained focus!";
             }
         }
-        return QWidget::nativeEvent(eventType, message, result);
+        else if (msg->message == WM_EXITSIZEMOVE) {
+            UpdateOverlayWidgetPos();
+        }
+#endif
+        return QMainWindow::nativeEvent(eventType, message, result);
     }
 
     bool BaseWorkspace::GenerateD3DDevice() {
@@ -1336,6 +1360,39 @@ namespace tc
         if (sdk_) {
             sdk_->Exit();
             sdk_ = nullptr;
+        }
+    }
+
+    void BaseWorkspace::moveEvent(QMoveEvent* event) {
+        QMainWindow::moveEvent(event);
+        if (overlay_widget_) {
+            overlay_widget_->move(this->pos());
+        }
+    }
+
+    void BaseWorkspace::showEvent(QShowEvent* event) {
+        QMainWindow::showEvent(event);
+        if (overlay_widget_) {
+            overlay_widget_->show();
+        }
+    }
+
+    void BaseWorkspace::hideEvent(QHideEvent* event) {
+        QMainWindow::hideEvent(event);
+        if (overlay_widget_) {
+            overlay_widget_->hide();
+        }
+    }
+
+    void BaseWorkspace::mouseReleaseEvent(QMouseEvent* event) {
+        QMainWindow::mouseReleaseEvent(event);
+    }
+
+    void BaseWorkspace::UpdateOverlayWidgetPos() {
+        if (overlay_widget_) {
+            QPoint global_pos = mapToGlobal(QPoint(0, 0));
+            overlay_widget_->resize(this->size());
+            overlay_widget_->move(global_pos);
         }
     }
 }

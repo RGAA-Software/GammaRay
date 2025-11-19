@@ -29,6 +29,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/folder_util.h"
 #include "snowflake/snowflake.h"
+#include "ct_game_overlay.h"
 #include "front_render/vulkan/ct_vulkan_checker.h"
 
 #ifdef TC_PROTECTION_ENABLED

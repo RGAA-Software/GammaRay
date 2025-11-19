@@ -46,6 +46,7 @@ set(SRCS_WS
     ct_audio_player.cpp
     ct_main_progress.cpp
     ct_game_view.cpp
+    ct_game_overlay.cpp
     icon.rc ${RES}
     ui/switch_button.cpp
     ui/float_icon.cpp
