@@ -47,7 +47,7 @@ namespace tc
         std::map<std::string, WorkingCaptureInfoPtr> GetWorkingCapturesInfo() override;
 
     private:
-        void InitVideoCaptures();
+        bool InitVideoCaptures();
         void InitCursorCapture();
         std::vector<SupportedResolution> GetSupportedResolutions(const std::wstring& name);
         void CalculateVirtualDeskInfo();

@@ -51,20 +51,18 @@ namespace tc
 
     bool DDACapturePlugin::OnCreate(const tc::GrPluginParam& param) {
         GrMonitorCapturePlugin::OnCreate(param);
-        InitVideoCaptures();
         InitCursorCapture();
-        LOGI("DDA Capture audio device: {}", capture_audio_device_id_);
         return true;
     }
 
-    void DDACapturePlugin::InitVideoCaptures() {
+    bool DDACapturePlugin::InitVideoCaptures() {
         HRESULT res = 0;
         int adapter_index = 0;
         CComPtr<IDXGIFactory1> factory1_ = nullptr;
         res = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **) &factory1_);
         if (res != S_OK) {
             LOGE("!!! CreateDXGIFactory1 failed, this plugin can't work !!!");
-            return;
+            return false;
         }
         
         do {
@@ -86,7 +84,7 @@ namespace tc
                                     nullptr, 0, D3D11_SDK_VERSION, &d3d11_device, &feature_level,
                                     &d3d11_device_context);
             if (res != S_OK || !d3d11_device) {
-                LOGE("D3D11CreateDevice failed: {}", StringUtil::GetErrorStr(res).c_str());
+                LOGE("D3D11CreateDevice failed: 0x{:x} {}", res, StringUtil::GetErrorStr(res).c_str());
                 break;
             }
             if (feature_level < D3D_FEATURE_LEVEL_11_0) {
@@ -166,6 +164,10 @@ namespace tc
         for(const auto&[dev_name, monitor_info] : monitors_) {
             LOGI("In adapter:{}, the monitor:[{}]=>{}", monitor_info.adapter_uid_, dev_name, monitors_[dev_name].Dump());
         }
+        if (monitors_.empty()) {
+            LOGE("!! Don't have monitors!");
+        }
+        return !monitors_.empty();
     }
 
     void DDACapturePlugin::InitCursorCapture() {
@@ -203,6 +205,16 @@ namespace tc
     bool DDACapturePlugin::StartCapturing() {
         GrMonitorCapturePlugin::StartCapturing();
         StopCapturing();
+
+        auto res_init = InitVideoCaptures();
+        if (!res_init) {
+            LOGE("InitVideoCaptures failed!");
+            if (capture_init_failed_cbk_) {
+                capture_init_failed_cbk_();
+            }
+            return false;
+        }
+
         if (capturing_monitor_name_ != kAllMonitorsNameSign && !capturing_monitor_name_.empty()) {
             if (!ExistCaptureMonitor(capturing_monitor_name_)) {
                 capturing_monitor_name_ = "";
@@ -247,6 +259,7 @@ namespace tc
         for(const auto&[dev_name, capture] : captures_) {
             capture->StopCapture();
         }
+        captures_.clear();
     }
 
     void DDACapturePlugin::RestartCapturing() {
@@ -254,7 +267,6 @@ namespace tc
         StopCapturing();
         captures_.clear();
         monitors_.clear();
-        InitVideoCaptures();
         StartCapturing();
     }
 

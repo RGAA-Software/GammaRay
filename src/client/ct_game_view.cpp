@@ -25,6 +25,7 @@
 #include "client/ct_settings.h"
 #include "tc_common_new/thread.h"
 #include "tc_common_new/time_util.h"
+#include "tc_common_new/file_util.h"
 #include "tc_client_sdk_new/sdk_messages.h"
 #include "front_render/sdl/ct_sdl_video_widget.h"
 #include "front_render/d3d11/ct_d3d11_video_widget.h"
@@ -416,9 +417,7 @@ namespace tc
         if (image.save(png_path)) {
             auto callback = [=]() {
                 auto path = png_path;
-                QString url = QString(R"(file:///%1)").arg(path.replace("/", "\\"));
-                QString command = QString("explorer.exe /select,\"%1\"").arg(url);
-                QProcess::startDetached(command);
+                FileUtil::SelectFileInExplorer(path.toStdString());
             };
             ctx_->NotifyAppMessage("Snap Success", std::format("Saved to: {}", pic_path.toStdString()).c_str(), callback);
         }

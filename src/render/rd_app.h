@@ -9,12 +9,13 @@
 #include <memory>
 #include <unordered_map>
 #include <condition_variable>
-#include "tc_common_new/concurrent_hashmap.h"
-#include "tc_common_new/concurrent_queue.h"
-#include "app_global_messages.h"
-#include "app/app_messages.h"
-#include "tc_capture_new/capture_message.h"
 #include "rd_context.h"
+#include "app/app_messages.h"
+#include "app_global_messages.h"
+#include "tc_capture_new/capture_message.h"
+#include "tc_common_new/concurrent_type.h"
+#include "tc_common_new/concurrent_queue.h"
+#include "tc_common_new/concurrent_hashmap.h"
 #include <QApplication>
 
 #ifdef WIN32
@@ -147,7 +148,10 @@ namespace tc
         std::shared_ptr<QApplication> qapp_ = nullptr;
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
-        tc::GrMonitorCapturePlugin* monitor_capture_plugin_ = nullptr;
+        // working capture plugin
+        tc::GrMonitorCapturePlugin* capture_plugin_;
+        tc::GrMonitorCapturePlugin* gdi_capture_plugin_ = nullptr;
+        tc::GrMonitorCapturePlugin* dda_capture_plugin_ = nullptr;
         tc::GrDataProviderPlugin* data_provider_plugin = nullptr;
         tc::GrDataProviderPlugin* audio_capture_plugin_ = nullptr;
         tc::GrAudioEncoderPlugin* audio_encoder_plugin_ = nullptr;

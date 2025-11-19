@@ -142,17 +142,29 @@ namespace tc
                 LOGI("Use inner capture.");
             }
             else {
-                monitor_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+                dda_capture_plugin_ = plugin_manager_->GetDDACapturePlugin();
+                gdi_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
+                if (dda_capture_plugin_) {
+                    capture_plugin_ = dda_capture_plugin_;
+                }
+                else if (gdi_capture_plugin_) {
+                    capture_plugin_ = gdi_capture_plugin_;
+                }
+                else {
+                    LOGE("Don't have a valid capture plugin, will exit!");
+                    return -1;
+                }
+
                 LOGI("Use capture fps: {}", settings_->encoder_.fps_);
-                if (monitor_capture_plugin_ && monitor_capture_plugin_->IsPluginEnabled()) {
+                if (capture_plugin_ && capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
-                    monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
-                    monitor_capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
-                        monitor_capture_plugin_->StopCapturing();
-                        monitor_capture_plugin_->DisablePlugin();
+                    capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
+                    capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
+                        capture_plugin_->StopCapturing();
+                        capture_plugin_->DisablePlugin();
                         LOGI("Don't use DDA, will switch to GDI.");
                         SwitchGdiCapture();
-                        monitor_capture_plugin_->StartCapturing();
+                        capture_plugin_->StartCapturing();
                     });
                 }
                 else {
@@ -182,12 +194,6 @@ namespace tc
         desktop_mgr_ = WinDesktopManager::Make(context_);
 
         rdApp = shared_from_this();
-
-        // test //
-        for (int i = 0; i < 10; i++) {
-            LOGI("Test next global network index: {}", context_->GenNextNetworkIndex());
-        }
-        // test //
 
         return qapp_->exec();
     }
@@ -296,9 +302,9 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgModifyFps>([=, this](const MsgModifyFps& msg) {
-            if (monitor_capture_plugin_) {
+            if (capture_plugin_) {
                 settings_->encoder_.fps_ = msg.fps_;
-                monitor_capture_plugin_->SetCaptureFps(msg.fps_);
+                capture_plugin_->SetCaptureFps(msg.fps_);
             }
         });
 
@@ -512,9 +518,13 @@ namespace tc
             PostNetMessage(net_msg);
         });
 
-        if (monitor_capture_plugin_) {
-            monitor_capture_plugin_->StartCapturing();
-            //monitor_capture_plugin_->SetCaptureMonitor("");
+        if (capture_plugin_) {
+            LOGI("Will start capturing by using: {}", capture_plugin_->GetPluginName());
+            auto r = capture_plugin_->StartCapturing();
+            if (!r) {
+                LOGE("StartCapturing failed in : {}", capture_plugin_->GetPluginName());
+            }
+            //capture_plugin_->SetCaptureMonitor("");
         }
         if (data_provider_plugin) {
             data_provider_plugin->StartProviding();
@@ -591,7 +601,7 @@ namespace tc
     }
 
     void RdApplication::SendConfigurationBack() {
-        if (!monitor_capture_plugin_) {
+        if (!capture_plugin_) {
             LOGE("SendConfigurationBack failed, working monitor capture plugin is null.");
             return;
         }
@@ -600,8 +610,8 @@ namespace tc
         auto config = m.mutable_config();
         // screen info
         auto monitors_info = config->mutable_monitors_info();
-        auto capturing_name = monitor_capture_plugin_->GetCapturingMonitorName();
-        auto monitors = monitor_capture_plugin_->GetCaptureMonitorInfo();
+        auto capturing_name = capture_plugin_->GetCapturingMonitorName();
+        auto monitors = capture_plugin_->GetCaptureMonitorInfo();
         LOGI("Will send configuration back, monitor size: {}", monitors.size());
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
@@ -661,7 +671,7 @@ namespace tc
     }
 
     tc::GrMonitorCapturePlugin* RdApplication::GetWorkingMonitorCapturePlugin() {
-        return monitor_capture_plugin_;
+        return capture_plugin_;
     }
 
     std::map<std::string, GrVideoEncoderPlugin*> RdApplication::GetWorkingVideoEncoderPlugins() {
@@ -754,12 +764,16 @@ namespace tc
     }
 
     void RdApplication::SwitchGdiCapture() {
-        if (monitor_capture_plugin_) {
-            monitor_capture_plugin_->StopCapturing();
+        if (capture_plugin_) {
+            capture_plugin_->StopCapturing();
         }
-        monitor_capture_plugin_ = plugin_manager_->GetGdiCapturePlugin();
-        monitor_capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
-        //monitor_capture_plugin_->EnablePlugin();
+        if (!gdi_capture_plugin_) {
+            LOGE("Don't have gdi plugin, ignore!");
+            return;
+        }
+        capture_plugin_ = gdi_capture_plugin_;
+        capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
+        //capture_plugin_->EnablePlugin();
         LOGI("Use gdi capture plugin.");
     }
 

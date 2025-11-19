@@ -10,6 +10,7 @@
 #include <QCheckBox>
 #include <QDebug>
 #include <QFileDialog>
+#include <QStandardPaths>
 #include "tc_dialog.h"
 #include "tc_label.h"
 #include "tc_pushbutton.h"
@@ -26,6 +27,11 @@
 #include "tc_common_new/ip_util.h"
 #include "tc_spvr_client/spvr_device_api.h"
 #include "input_safety_pwd_dialog.h"
+#include "render_panel/devices/infinite_loading.h"
+#include "tc_qt_widget/tc_dialog_util.h"
+#include "tc_common_new/folder_util.h"
+#include "tc_common_new/zip_util.h"
+#include "tc_common_new/file_util.h"
 
 namespace tc
 {
@@ -292,6 +298,60 @@ namespace tc
                     settings_->SetDevelopModeEnabled(enabled);
                     context_->SendAppMessage(MsgDevelopModeUpdated {
                         .enabled_ = enabled,
+                    });
+                });
+            }
+
+            // Collect logs
+            {
+                auto layout = new NoMarginHLayout();
+                auto label = new TcLabel(this);
+                label->SetTextId("id_collect_logs");
+                label->setFixedSize(tips_label_size);
+                label->setStyleSheet("font-size: 14px; font-weight: 500;");
+                layout->addWidget(label);
+
+                auto edit = new TcPushButton(this);
+                //edit->setProperty("class", "danger");
+                edit->SetTextId("id_collect");
+                edit->setFixedSize(QSize(80, 30));
+                edit->setEnabled(true);
+                layout->addWidget(edit, 0, Qt::AlignVCenter);
+                layout->addStretch();
+                segment_layout->addSpacing(5);
+                segment_layout->addLayout(layout);
+                connect(edit, &QPushButton::clicked, this, [=, this]() {
+                    auto desktop_path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+                    auto target_dir = TcDialogUtil::SelectDirectory(tcTr("id_save_path"), desktop_path, nullptr);
+                    target_dir += "/gr_dat_logs.zip";
+
+                    auto from = FolderUtil::GetProgramDataPath();
+                    auto to = from + L"/../back";
+
+                    auto dialog = std::make_shared<InfiniteLoading>(context_, tcTr("id_collecting"));
+                    dialog->show();
+                    auto fn_close_dialog = [=, this]() {
+                        context_->PostUITask([=, this]() {
+                            dialog->Close();
+                        });
+                    };
+
+                    context_->PostTask([=, this]() {
+                        if (!FolderUtil::CopyDirectory(from, to, true)) {
+                            LOGE("CopyDirectory failed: {} -> {}", QString::fromStdWString(from).toStdString(), QString::fromStdWString(to).toStdString());
+                            return;
+                        }
+
+                        auto zip_folder = QString::fromStdWString(to).toStdString();
+                        auto target_zip_file = target_dir.toStdString();
+                        LOGE("Zip folder: {} -> {}", zip_folder, target_zip_file);
+                        if (!ZipUtil::ZipFolder(zip_folder, target_zip_file)) {
+                            fn_close_dialog();
+                            LOGE("Zip folder failed: {} -> {}", zip_folder, target_zip_file);
+                            return;
+                        }
+                        fn_close_dialog();
+                        FileUtil::SelectFileInExplorer(target_dir.toStdString());
                     });
                 });
             }

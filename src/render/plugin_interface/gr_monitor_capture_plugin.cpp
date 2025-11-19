@@ -21,7 +21,7 @@ namespace tc
     }
 
     bool GrMonitorCapturePlugin::StartCapturing() {
-        return true;
+        return false;
     }
 
     void GrMonitorCapturePlugin::StopCapturing() {
