@@ -34,11 +34,14 @@ namespace tc
         kTabHWInfo,
     };
 
+    class TcLabel;
     class TabBase;
-    class GrApplication;
+    class GrContext;
     class GrSettings;
+    class GrApplication;
     class MessageListener;
     class SkinInterface;
+    class GrUserManager;
 
     class GrWorkspace : public QMainWindow, public std::enable_shared_from_this<GrWorkspace> {
     public:
@@ -52,12 +55,18 @@ namespace tc
         void InitListeners();
         void ForceStopAllPrograms(bool uninstall_service);
         void ShowUserRegisterDialog();
+        void ShowUserLoginDialog();
+        void ShowSelectAvatarDialog();
+        void UpdateUsername();
 
     private:
+        std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
         GrSettings* settings_ = nullptr;
         SkinInterface* skin_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+        std::shared_ptr<GrUserManager> user_mgr_ = nullptr;
+
         std::map<TabName, TabBase*> tabs_;
         QPushButton* btn_tab_server_ = nullptr;
         QPushButton* btn_tab_server_status_ = nullptr;
@@ -74,6 +83,9 @@ namespace tc
         QPushButton* btn_uninstall_ = nullptr;
         // is started by OS when logon?
         bool run_automatically_ = false;
+
+        // username
+        TcLabel* lbl_username_ = nullptr;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;

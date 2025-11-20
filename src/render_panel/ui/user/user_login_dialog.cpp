@@ -14,6 +14,9 @@
 #include "tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/user/gr_user_manager.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -27,7 +30,7 @@ namespace tc
     UserLoginDialog::~UserLoginDialog() = default;
 
     void UserLoginDialog::CreateLayout() {
-        setWindowTitle(tcTr("id_register"));
+        setWindowTitle(tcTr("id_login"));
 
         auto item_width = 320;
         auto edit_size = QSize(item_width, 35);
@@ -85,7 +88,7 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
-        content_layout->addSpacing(70);
+        content_layout->addSpacing(40);
 
         // sure button
         {
@@ -93,8 +96,7 @@ namespace tc
             auto btn_sure = new TcPushButton();
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-
-                this->close();
+                Login();
             });
 
             layout->addWidget(btn_sure);
@@ -104,14 +106,96 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
+        // or
+        {
+            auto lbl = new TcLabel(this);
+            auto layout = new NoMarginHLayout();
+            layout->addStretch();
+            layout->addWidget(lbl);
+            layout->addStretch();
+            lbl->setText("-or-");
+            content_layout->addSpacing(20);
+            content_layout->addLayout(layout);
+        }
+
+        {
+
+            auto style = "QLabel {"
+                "    background-color: #ffffff;"
+                "    color: #2171cf;"
+                "    font-size: 13px;"
+                "    font-weight: bold;"
+                "}"
+                "QLabel:hover {"
+                "    background-color: #ffffff;"  // 鼠标悬浮时的背景色
+                "    color: #2979ff;"             // 鼠标悬浮时的文字颜色
+                "}"
+                "QLabel:pressed {"
+                "    background-color: #ffffff;"  // 鼠标按下时的背景色
+                "    color: #2171cf;"             // 鼠标按下时的文字颜色
+                "}";
+
+            auto layout = new NoMarginHLayout();
+            layout->addStretch();
+
+            {
+                auto lbl = new TcLabel(this);
+                lbl->SetOnClickListener([=, this](QWidget* w) {
+                    done(-1);
+                });
+                layout->addWidget(lbl);
+                lbl->setStyleSheet(style);
+                lbl->SetTextId("id_register");
+            }
+            layout->addSpacing(15);
+            {
+                auto lbl = new TcLabel(this);
+                lbl->SetOnClickListener([=, this](QWidget* w) {
+                    TcDialog dialog(tcTr("id_tips"), tcTr("id_consult_admin_to_change_password"));
+                    dialog.exec();
+                });
+                layout->addWidget(lbl);
+                lbl->setStyleSheet(style);
+                lbl->SetTextId("id_forget_password");
+            }
+            layout->addStretch();
+
+            content_layout->addSpacing(10);
+            content_layout->addLayout(layout);
+        }
+
         content_layout->addSpacing(30);
         root_layout_->addStretch();
     }
 
-
-
     void UserLoginDialog::paintEvent(QPaintEvent *event) {
         TcCustomTitleBarDialog::paintEvent(event);
+    }
+
+    std::string UserLoginDialog::GetUsername() {
+        return edt_username_->text().toStdString();
+    }
+
+    std::string UserLoginDialog::GetPassword() {
+        return password_input_->GetPassword().toStdString();
+    }
+
+    void UserLoginDialog::Login() {
+        auto user_mgr = grApp->GetUserManager();
+        auto username = GetUsername();
+        auto password = GetPassword();
+        if (username.empty() || password.empty()) {
+            return;
+        }
+        bool ret_login = user_mgr->Login(username, password);
+        if (ret_login) {
+            // notify
+            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_login_success"));
+            done(0);
+        }
+        else {
+            LOGE("Login failed: {} {}", username, password);
+        }
     }
 
 }

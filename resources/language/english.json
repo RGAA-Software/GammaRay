@@ -261,7 +261,9 @@
   "id_join_in": "Join In",
   "id_guest": "Guest",
   "id_direct": "Direct",
+  "id_login": "Login",
   "id_register": "Register",
+  "id_forget_password": "Forget Password",
   "id_username": "User Name",
   "id_re_password": "Repeat Password",
   "id_force_relay": "Force Relay",
@@ -272,6 +274,8 @@
   "id_wait_debug": "Wait Debugger",
   "id_verifying": "Verifying...",
   "id_op_error": "Operation Error",
+  "id_consult_admin_to_help": "Consult your administrator to get help",
+  "id_consult_admin_to_change_password": "Consult your administrator to change password",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

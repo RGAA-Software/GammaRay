@@ -28,10 +28,14 @@ namespace tc
         UserLoginDialog(const std::shared_ptr<GrContext>& ctx, QWidget* parent = nullptr);
         ~UserLoginDialog() override;
 
+        std::string GetUsername();
+        std::string GetPassword();
+
         void paintEvent(QPaintEvent *event) override;
 
     private:
         void CreateLayout();
+        void Login();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;

@@ -42,6 +42,8 @@
 #include "tc_spvr_client/spvr_user_api.h"
 #include "ui/tab_cophone.h"
 #include "skin/interface/skin_interface.h"
+#include "user/gr_user_manager.h"
+#include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
 
 namespace tc
 {
@@ -51,7 +53,6 @@ namespace tc
     GrWorkspace::GrWorkspace(bool run_automatically) : QMainWindow(nullptr) {
         this->run_automatically_ = run_automatically;
         settings_ = GrSettings::Instance();
-
         //setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
         WidgetHelper::SetTitleBarColor(this);
 
@@ -96,7 +97,10 @@ namespace tc
 
         app_ = std::make_shared<GrApplication>(this, run_automatically);
         app_->Init();
+        context_ = app_->GetContext();
         skin_ = grApp->GetSkin();
+
+        user_mgr_ = grApp->GetUserManager();
 
         auto version = "";
 #if PREMIUM_VERSION
@@ -149,7 +153,7 @@ namespace tc
                 logo_layout->addSpacing(20);
                 logo_layout->addWidget(logo);
                 logo->SetOnClickListener([=, this](QWidget* w) {
-                    this->ShowUserRegisterDialog();
+                    this->ShowSelectAvatarDialog();
                 });
                 logo_layout->addSpacing(8);
 
@@ -157,11 +161,19 @@ namespace tc
                 auto name_layout = new NoMarginVLayout();
                 name_layout->addStretch();
                 auto lbl = new TcLabel(this);
+                lbl_username_ = lbl;
                 lbl->setMaximumWidth(125);
                 lbl->setStyleSheet("font-weight: 700; color: #333333; font-size: 15px;");
-                lbl->SetTextId("id_guest");
+
+                UpdateUsername();
+
                 lbl->SetOnClickListener([=, this](QWidget* w) {
-                    this->ShowUserRegisterDialog();
+                    if (user_mgr_->IsLoggedIn()) {
+
+                    }
+                    else {
+                        this->ShowUserLoginDialog();
+                    }
                 });
                 name_layout->addWidget(lbl);
 
@@ -517,23 +529,33 @@ namespace tc
         }
     }
 
-    void GrWorkspace::ShowUserRegisterDialog() {
-//        UserLoginDialog login_dialog(app_->GetContext());
-//        login_dialog.exec();
+    void GrWorkspace::UpdateUsername() {
+        if (user_mgr_->IsLoggedIn()) {
+            lbl_username_->setText(user_mgr_->GetUsername().c_str());
+        }
+        else {
+            lbl_username_->SetTextId("id_guest");
+        }
+    }
 
+    void GrWorkspace::ShowUserRegisterDialog() {
         UserRegisterDialog dialog(app_->GetContext());
         dialog.exec();
+    }
 
-        auto username = dialog.GetInputUsername();
-        auto password = dialog.GetInputPassword();
-        auto opt_user = spvr::SpvrUserApi::Register(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), username, password);
-        if (!opt_user.has_value()) {
-            LOGI("Register user failed!");
-            return;
+    void GrWorkspace::ShowUserLoginDialog() {
+        UserLoginDialog dialog(app_->GetContext());
+        auto r = dialog.exec();
+        if (r == -1) {
+            //
+            ShowUserRegisterDialog();
         }
-        auto user = opt_user.value();
-        LOGI("Register success: {}, {}", user->username_, user->uid_);
+    }
 
+    void GrWorkspace::ShowSelectAvatarDialog() {
+        QPixmap image = ImageCropperDialog::getCroppedImage("C:/Users/hy/Pictures/abc.png", 600, 400, CropperShape::CIRCLE);
+        if (image.isNull())
+            return;
     }
 
 }

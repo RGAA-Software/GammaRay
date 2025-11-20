@@ -21,6 +21,7 @@ namespace tc
         bool Login(const std::string& username, const std::string& password);
         bool Logout();
 
+        bool IsLoggedIn();
         std::string GetUserId();
         std::string GetUsername();
         std::string GetPassword();

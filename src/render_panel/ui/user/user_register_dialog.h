@@ -34,6 +34,7 @@ namespace tc
 
     private:
         void CreateLayout();
+        void Register();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;

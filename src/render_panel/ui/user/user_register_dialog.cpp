@@ -14,6 +14,9 @@
 #include "tc_pushbutton.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_app_messages.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/user/gr_user_manager.h"
+#include "tc_common_new/log.h"
 
 namespace tc
 {
@@ -119,10 +122,13 @@ namespace tc
                 auto re_password = re_password_input_->GetPassword();
                 if (username.isEmpty() || password.isEmpty() || password != re_password) {
                     // todo: show a dialog
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_invalid_input"));
+                    dialog.exec();
                     return;
                 }
 
-                this->close();
+                Register();
+                //this->close();
             });
 
             layout->addWidget(btn_sure);
@@ -146,6 +152,22 @@ namespace tc
 
     void UserRegisterDialog::paintEvent(QPaintEvent *event) {
         TcCustomTitleBarDialog::paintEvent(event);
+    }
+
+    void UserRegisterDialog::Register() {
+        auto user_mgr = grApp->GetUserManager();
+        auto username = GetInputUsername();
+        auto password = GetInputPassword();
+        if (username.empty() || password.empty()) {
+            return;
+        }
+        auto r = user_mgr->Register(username, password);
+        if (!r) {
+            LOGI("Register user failed!");
+            return;
+        }
+        context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_register_success"));
+        LOGI("Register success: {}, {}", user_mgr->GetUsername(), user_mgr->GetUserId());
     }
 
 }

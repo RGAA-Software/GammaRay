@@ -32,6 +32,7 @@
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/zip_util.h"
 #include "tc_common_new/file_util.h"
+#include "render_panel/user/gr_user_manager.h"
 
 namespace tc
 {
@@ -262,6 +263,7 @@ namespace tc
                     if (dialog.exec() == kDoneOk) {
                         // clear
                         settings_->ClearData();
+                        grApp->GetUserManager()->Clear();
                         context_->SendAppMessage(MsgForceClearProgramData{});
                     }
                 });

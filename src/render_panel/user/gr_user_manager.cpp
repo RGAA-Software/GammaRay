@@ -33,6 +33,7 @@ namespace tc
         if (r.has_value()) {
             auto user = r.value();
             this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
+            LOGI("Register success");
         }
         else {
             auto err = r.error();
@@ -51,7 +52,7 @@ namespace tc
         auto port = settings_->GetSpvrServerPort();
         auto appkey = grApp->GetAppkey();
         auto hash_password = MD5::Hex(password);
-        auto r = spvr::SpvrUserApi::Register(host, port, appkey, username, hash_password);
+        auto r = spvr::SpvrUserApi::Login(host, port, appkey, username, hash_password);
         if (r.has_value()) {
             auto user = r.value();
             this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
@@ -105,6 +106,13 @@ namespace tc
 
         // avatar path
         this->UpdateAvatarPath(avatar_path);
+    }
+
+    bool GrUserManager::IsLoggedIn() {
+        auto uid = GetUserId();
+        auto username = GetUsername();
+        auto password = GetPassword();
+        return !uid.empty() && !username.empty() && !password.empty();
     }
 
     std::string GrUserManager::GetUserId() {
