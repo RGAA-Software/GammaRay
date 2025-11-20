@@ -58,6 +58,9 @@ namespace tc
         void ShowUserLoginDialog();
         void ShowSelectAvatarDialog();
         void UpdateUsername();
+        void UpdateAvatar();
+        void UpdateUserInfo();
+        void ClearUserInfo();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;

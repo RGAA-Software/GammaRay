@@ -276,6 +276,9 @@
   "id_op_error": "Operation Error",
   "id_consult_admin_to_help": "Consult your administrator to get help",
   "id_consult_admin_to_change_password": "Consult your administrator to change password",
+  "id_register_success": "Register Success",
+  "id_invalid_input": "Invalid Input",
+  "id_login_success": "Login Success",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

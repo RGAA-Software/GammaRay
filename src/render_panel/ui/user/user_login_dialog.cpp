@@ -187,10 +187,8 @@ namespace tc
         if (username.empty() || password.empty()) {
             return;
         }
-        bool ret_login = user_mgr->Login(username, password);
-        if (ret_login) {
-            // notify
-            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_login_success"));
+        bool r = user_mgr->Login(username, password);
+        if (r) {
             done(0);
         }
         else {

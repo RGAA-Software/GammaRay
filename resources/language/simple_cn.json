@@ -277,6 +277,9 @@
   "id_op_error": "操作错误",
   "id_consult_admin_to_help": "联系您的管理员获取帮助",
   "id_consult_admin_to_change_password": "联系您的管理员修改密码",
+  "id_register_success": "注册成功",
+  "id_invalid_input": "非法输入",
+  "id_login_success": "登录成功",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

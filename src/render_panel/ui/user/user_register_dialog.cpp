@@ -166,8 +166,8 @@ namespace tc
             LOGI("Register user failed!");
             return;
         }
-        context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_register_success"));
         LOGI("Register success: {}, {}", user_mgr->GetUsername(), user_mgr->GetUserId());
+        done(0);
     }
 
 }

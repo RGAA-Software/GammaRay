@@ -332,6 +332,9 @@
   "id_remote_disconnected":"對方已經主動斷開遠程連接.",
   "id_run_other_service_instances":"您已經運行了其他服務實例,現在，我即將退出上一個實例",
   "id_cant_request_auth": "無法獲取授權, 請檢查您的地址和端口配置.",
+  "id_register_success": "註冊成功",
+  "id_invalid_input": "非法輸入",
+  "id_login_success": "登入成功",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文檔",

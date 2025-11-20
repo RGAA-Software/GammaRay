@@ -482,6 +482,13 @@ namespace tc
             });
         });
 
+        // clear data
+        msg_listener_->Listen<MsgForceClearProgramData>([=, this](const MsgForceClearProgramData& msg) {
+            context_->PostUITask([=, this]() {
+                this->ClearUserInfo();
+            });
+        });
+
     }
 
     void GrWorkspace::ForceStopAllPrograms(bool uninstall_service) {
@@ -529,18 +536,12 @@ namespace tc
         }
     }
 
-    void GrWorkspace::UpdateUsername() {
-        if (user_mgr_->IsLoggedIn()) {
-            lbl_username_->setText(user_mgr_->GetUsername().c_str());
-        }
-        else {
-            lbl_username_->SetTextId("id_guest");
-        }
-    }
-
     void GrWorkspace::ShowUserRegisterDialog() {
         UserRegisterDialog dialog(app_->GetContext());
-        dialog.exec();
+        auto r = dialog.exec();
+        if (r == 0) {
+            UpdateUserInfo();
+        }
     }
 
     void GrWorkspace::ShowUserLoginDialog() {
@@ -550,6 +551,9 @@ namespace tc
             //
             ShowUserRegisterDialog();
         }
+        else if (r == 0) {
+            UpdateUserInfo();
+        }
     }
 
     void GrWorkspace::ShowSelectAvatarDialog() {
@@ -557,5 +561,29 @@ namespace tc
         if (image.isNull())
             return;
     }
+
+    void GrWorkspace::UpdateUserInfo() {
+        UpdateUsername();
+        UpdateAvatar();
+    }
+
+    void GrWorkspace::ClearUserInfo() {
+        lbl_username_->SetTextId("id_guest");
+    }
+
+    void GrWorkspace::UpdateUsername() {
+        if (user_mgr_->IsLoggedIn()) {
+            lbl_username_->SetTextId("");
+            lbl_username_->setText(user_mgr_->GetUsername().c_str());
+        }
+        else {
+            lbl_username_->SetTextId("id_guest");
+        }
+    }
+
+    void GrWorkspace::UpdateAvatar() {
+
+    }
+
 
 }

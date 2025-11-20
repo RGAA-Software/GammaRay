@@ -33,13 +33,14 @@ namespace tc
         if (r.has_value()) {
             auto user = r.value();
             this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
+            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_register_success"));
             LOGI("Register success");
         }
         else {
             auto err = r.error();
             LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
             context_->PostUITask([=, this]() {
-                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err);
+                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
                 TcDialog dialog(tcTr("id_error"), msg);
                 dialog.exec();
             });
@@ -56,6 +57,7 @@ namespace tc
         if (r.has_value()) {
             auto user = r.value();
             this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
+            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_login_success"));
             return true;
         }
         else {
