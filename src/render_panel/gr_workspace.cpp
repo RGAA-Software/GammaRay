@@ -14,6 +14,7 @@
 #include <dwmapi.h>
 #include <QSvgRenderer>
 #include <QPainter>
+#include <QStandardPaths>
 
 #include "tc_qt_widget/custom_tab_btn.h"
 #include "tc_qt_widget/widget_helper.h"
@@ -43,6 +44,8 @@
 #include "ui/tab_cophone.h"
 #include "skin/interface/skin_interface.h"
 #include "user/gr_user_manager.h"
+#include "tc_common_new/file.h"
+#include "tc_qt_widget/tc_dialog_util.h"
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
 
 namespace tc
@@ -153,7 +156,9 @@ namespace tc
                 logo_layout->addSpacing(20);
                 logo_layout->addWidget(logo);
                 logo->SetOnClickListener([=, this](QWidget* w) {
-                    this->ShowSelectAvatarDialog();
+                    if (user_mgr_->IsLoggedIn()) {
+                        this->ShowSelectAvatarDialog();
+                    }
                 });
                 logo_layout->addSpacing(8);
 
@@ -557,9 +562,31 @@ namespace tc
     }
 
     void GrWorkspace::ShowSelectAvatarDialog() {
-        QPixmap image = ImageCropperDialog::getCroppedImage("C:/Users/hy/Pictures/abc.png", 600, 400, CropperShape::CIRCLE);
-        if (image.isNull())
+        auto desktop_path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+        auto image_path = TcDialogUtil::SelectImage(tcTr("id_select_image"), desktop_path, nullptr);
+        if (image_path.isEmpty()) {
             return;
+        }
+        QPixmap image = ImageCropperDialog::getCroppedImage(image_path, 600, 400, CropperShape::CIRCLE);
+        if (image.isNull()) {
+            return;
+        }
+
+        auto avatar_path = settings_->GetGrDataPath() + "/" + grApp->GetUserManager()->GetUserId() + "_avatar.jpg";
+        image.save(avatar_path.c_str());
+
+        if (!File::Exists(avatar_path)) {
+            LOGE("Crop image failed, file not exists: {}", avatar_path);
+            return;
+        }
+
+        auto size = File::Size(avatar_path);
+        if (size < 0 || size >= 10 * 1024 * 1024) {
+            LOGE("Image size invalid: {}", size);
+            return;
+        }
+
+        user_mgr_->UpdateAvatar(avatar_path);
     }
 
     void GrWorkspace::UpdateUserInfo() {

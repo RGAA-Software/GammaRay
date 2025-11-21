@@ -280,6 +280,8 @@
   "id_register_success": "注册成功",
   "id_invalid_input": "非法输入",
   "id_login_success": "登录成功",
+  "id_select_image": "选择图片",
+  "id_update_success": "更新成功",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",
@@ -329,7 +331,7 @@
   "id_has_video_frame": "已收到视频帧, 开始控制",
   "id_open_directory": "下载",
   "id_remote_local_machine":"正在远程本机",
-  "id_disconncet":"断开",
+  "id_disconnect":"断开",
   "id_allow_access_to":"允许访问:",
   "id_voice":"声音",
   "id_file":"文件",

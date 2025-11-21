@@ -64,7 +64,7 @@ namespace tc
             auto err = r.error();
             LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
             context_->PostUITask([=, this]() {
-                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err);
+                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
                 TcDialog dialog(tcTr("id_error"), msg);
                 dialog.exec();
             });
@@ -88,12 +88,33 @@ namespace tc
             auto err = r.error();
             LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
             context_->PostUITask([=, this]() {
-                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err);
+                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
                 TcDialog dialog(tcTr("id_error"), msg);
                 dialog.exec();
             });
         }
         return true;
+    }
+
+    bool GrUserManager::UpdateAvatar(const std::string& avatar_path) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto uid = GetUserId();
+        auto password = GetPassword();
+        auto hash_password = MD5::Hex(password);
+        auto r = spvr::SpvrUserApi::UpdateAvatar(host, port, appkey, uid, hash_password, avatar_path);
+        if (r.has_value()) {
+            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_update_success"));
+            return true;
+        }
+        else {
+            auto err = r.error();
+            QString msg = tcTr("id_op_error") + ":" + QString::number((int)err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
+            TcDialog dialog(tcTr("id_error"), msg);
+            dialog.exec();
+            return false;
+        }
     }
 
     void GrUserManager::SaveUserInfo(const std::string& uid, const std::string& username, const std::string& password, const std::string& avatar_path) {

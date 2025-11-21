@@ -251,6 +251,8 @@ namespace tc
         void SetSkinName(const std::string& name);
         std::string GetSkinName();
 
+        std::string GetGrDataPath();
+
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;
         SharedPreference* sp_ = nullptr;
@@ -274,6 +276,8 @@ namespace tc
         std::string file_transfer_folder_;
 
         int sys_service_port_ = 20375;
+
+        std::string gr_data_path_;
 
     };
 

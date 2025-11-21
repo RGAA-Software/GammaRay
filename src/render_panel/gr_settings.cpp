@@ -477,4 +477,8 @@ namespace tc
         return sp_->Get(kStSkinName, "");
     }
 
+    std::string GrSettings::GetGrDataPath() {
+        return gr_data_path_;
+    }
+
 }

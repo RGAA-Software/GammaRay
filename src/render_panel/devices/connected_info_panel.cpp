@@ -80,7 +80,7 @@ namespace tc {
 		conn_prompt_lab_->adjustSize();
 		disconnect_btn_ = new TcPushButton(this);
 		disconnect_btn_->setFixedWidth(90);
-		disconnect_btn_->SetTextId("id_disconncet");
+		disconnect_btn_->SetTextId("id_disconnect");
         connect(disconnect_btn_, &QPushButton::clicked, this, [=, this]() {
             if (!info_) {
                 return;

@@ -88,11 +88,13 @@ int main(int argc, char *argv[]) {
     }
 
     // init sp
-    auto sp_dir = base_dir + "/gr_data";
-    if (!SharedPreference::Instance()->Init(sp_dir.toStdString(), "gammaray.dat")) {
+    auto data_dir = base_dir + "/gr_data";
+    if (!SharedPreference::Instance()->Init(data_dir.toStdString(), "gammaray.dat")) {
         //QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
         return -1;
     }
+
+    GrSettings::Instance()->gr_data_path_ = data_dir.toStdString();
 
     {
         auto auto_start = std::make_shared<tc::AutoStart>();

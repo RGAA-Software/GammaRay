@@ -279,6 +279,8 @@
   "id_register_success": "Register Success",
   "id_invalid_input": "Invalid Input",
   "id_login_success": "Login Success",
+  "id_select_image": "Select Image",
+  "id_update_success": "Update Success",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",
@@ -328,7 +330,7 @@
   "id_has_video_frame": "Received video frame, start controlling",
   "id_open_directory": "Download",
   "id_remote_local_machine":"Accessing this machine",
-  "id_disconncet":"Disconnect",
+  "id_disconnect":"Disconnect",
   "id_allow_access_to":"Allow access to:",
   "id_voice":"Voice",
   "id_file":"File",

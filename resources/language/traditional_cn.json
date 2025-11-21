@@ -323,7 +323,7 @@
   "id_has_video_frame": "已收到視頻幀, 開始控制",
   "id_open_directory": "下载",
   "id_remote_local_machine":"正在遠程本機",
-  "id_disconncet":"斷開",
+  "id_disconnect":"斷開",
   "id_allow_access_to":"允許訪問:",
   "id_voice":"聲音",
   "id_file":"檔",
@@ -335,6 +335,8 @@
   "id_register_success": "註冊成功",
   "id_invalid_input": "非法輸入",
   "id_login_success": "登入成功",
+  "id_select_image": "選擇圖片",
+  "id_update_success": "更新成功",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文檔",
