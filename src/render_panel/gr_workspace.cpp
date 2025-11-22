@@ -646,7 +646,9 @@ namespace tc
         // modify username
         if (index == 0) {
             ModifyUsernameDialog dialog(context_);
-            dialog.exec();
+            if (dialog.exec() == kDoneOk) {
+                this->UpdateUsername();
+            }
         }
         else if (index == 1) {
             // modify password

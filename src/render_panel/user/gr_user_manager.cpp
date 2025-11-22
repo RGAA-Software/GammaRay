@@ -96,6 +96,32 @@ namespace tc
         return true;
     }
 
+    bool GrUserManager::ModifyUsername(const std::string& username) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto uid = GetUserId();
+        auto password = GetPassword();
+        auto hash_password = MD5::Hex(password);
+        std::map<std::string, std::string> values = {
+            {spvr::kUserName, username}
+        };
+        auto r = spvr::SpvrUserApi::Update(host, port, appkey, uid, hash_password, values);
+        if (r.has_value()) {
+            auto user = r.value();
+            this->UpdateUsername(user->username_);
+            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_update_success"));
+            return true;
+        }
+        else {
+            auto err = r.error();
+            QString msg = tcTr("id_op_error") + ":" + QString::number((int)err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
+            TcDialog dialog(tcTr("id_error"), msg);
+            dialog.exec();
+            return false;
+        }
+    }
+
     bool GrUserManager::UpdateAvatar(const std::string& avatar_path) {
         auto host = settings_->GetSpvrServerHost();
         auto port = settings_->GetSpvrServerPort();

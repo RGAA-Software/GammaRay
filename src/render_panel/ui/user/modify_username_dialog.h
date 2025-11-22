@@ -29,18 +29,16 @@ namespace tc
         ~ModifyUsernameDialog() override;
 
         std::string GetUsername();
-        std::string GetPassword();
 
         void paintEvent(QPaintEvent *event) override;
 
     private:
         void CreateLayout();
-        void Login();
+        void ModifyUsername();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         QLineEdit* edt_username_ = nullptr;
-        TcPasswordInput* password_input_ = nullptr;
 
     };
 

@@ -17,6 +17,7 @@
 #include "render_panel/gr_application.h"
 #include "render_panel/user/gr_user_manager.h"
 #include "tc_common_new/log.h"
+#include "render_panel/user/gr_user_manager.h"
 
 namespace tc
 {
@@ -73,7 +74,7 @@ namespace tc
             auto btn_sure = new TcPushButton();
             btn_sure->SetTextId("id_ok");
             connect(btn_sure, &QPushButton::clicked, this, [=, this] () {
-                Login();
+                ModifyUsername();
             });
 
             layout->addWidget(btn_sure);
@@ -93,23 +94,18 @@ namespace tc
         return edt_username_->text().toStdString();
     }
 
-    std::string ModifyUsernameDialog::GetPassword() {
-        return password_input_->GetPassword().toStdString();
-    }
-
-    void ModifyUsernameDialog::Login() {
+    void ModifyUsernameDialog::ModifyUsername() {
         auto user_mgr = grApp->GetUserManager();
         auto username = GetUsername();
-        auto password = GetPassword();
-        if (username.empty() || password.empty()) {
+        if (username.empty()) {
             return;
         }
-        bool r = user_mgr->Login(username, password);
+        bool r = user_mgr->ModifyUsername(username);
         if (r) {
-            done(0);
+            done(kDoneOk);
         }
         else {
-            LOGE("Login failed: {} {}", username, password);
+            LOGE("ModifyUsername failed: {}", username);
         }
     }
 
