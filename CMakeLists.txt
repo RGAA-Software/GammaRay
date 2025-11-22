@@ -111,6 +111,7 @@ include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/qwindowkit/src)
 include_directories(${GR_PROJECT_PATH}/src/render)
 include_directories(${GR_PROJECT_PATH}/deps/tc_qt_widget)
 include_directories(${GR_PROJECT_PATH}/deps/tc_client_sdk_new)
+include_directories(${VCPKG_ROOT}/packages/breakpad_x64-windows-static/include)
 
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/openssl/x64/lib/VC/static)
@@ -196,6 +197,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Cor
         tc_relay_client tc_translator tc_spvr_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets TC_WidgetFrame
         tc_account_sdk tc_rp_message tc_profile_client tc_hw_info tc_global_id_generator tc_server_message skin_interface skin_loader
 )
+set(BREAKPAD_LIB_PATH ${VCPKG_ROOT}/packages/breakpad_x64-windows-static/lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${BREAKPAD_LIB_PATH}/libbreakpad.lib ${BREAKPAD_LIB_PATH}/libbreakpad_client.lib)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${GR_PROJECT_BINARY_PATH}/gr_plugins

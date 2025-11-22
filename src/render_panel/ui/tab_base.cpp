@@ -10,6 +10,12 @@
 #include "render_panel/gr_statistics.h"
 #include "render_panel/gr_app_messages.h"
 
+// 测试崩溃函数
+void CrashFunction() {
+    int* ptr = nullptr;
+    *ptr = 42;  // 人为制造崩溃
+}
+
 namespace tc
 {
     TabBase::TabBase(const std::shared_ptr<GrApplication>& app, QWidget* parent) : QWidget(parent) {
@@ -21,6 +27,7 @@ namespace tc
 
         msg_listener_->Listen<MsgLanguageChanged>([=, this](const MsgLanguageChanged& msg) {
             this->OnTranslate();
+            //CrashFunction();
         });
     }
 

@@ -21,6 +21,8 @@
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/process_util.h"
+#include "client/windows/handler/exception_handler.h"
+#include "client/windows/crash_generation/crash_generation_client.h"
 
 using namespace tc;
 
@@ -48,10 +50,48 @@ bool PrepareDirs(const QString& base_path) {
     return result;
 }
 
+// Dump文件保存目录
+std::wstring dump_path = L"./dumps/";
+
+// 创建Dump回调函数
+static bool DumpCallback(const wchar_t* dump_path, const wchar_t* minidump_id,
+                         void* context, EXCEPTION_POINTERS* exinfo,
+                         MDRawAssertionInfo* assertion, bool succeeded) {
+    if (succeeded) {
+        std::wcout << L"Minidump文件已生成: " << dump_path << minidump_id << L".dmp" << std::endl;
+    } else {
+        std::wcout << L"Minidump生成失败" << std::endl;
+    }
+    return succeeded;
+}
+
+// 创建异常处理器
+google_breakpad::ExceptionHandler* exception_handler = nullptr;
+
+void InitializeBreakpad() {
+    // 确保dump目录存在
+    CreateDirectory(dump_path.c_str(), NULL);
+
+    exception_handler = new google_breakpad::ExceptionHandler(
+            dump_path,                                // dump文件路径
+            NULL,                                     // 过滤器回调
+            DumpCallback,                             // 回调函数
+            NULL,                                     // 回调上下文
+            google_breakpad::ExceptionHandler::HANDLER_ALL  // 处理所有异常类型
+    );
+
+    if (exception_handler) {
+        std::cout << "Breakpad初始化成功" << std::endl;
+    }
+}
+
 int main(int argc, char *argv[]) {
 
     tc::Hardware::AcquirePermissionForRestartDevice();
-    CaptureDump();
+
+    InitializeBreakpad();
+
+    //CaptureDump();
 
     // run in high level
     tc::ProcessUtil::SetProcessInHighLevel();
