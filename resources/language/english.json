@@ -281,6 +281,12 @@
   "id_login_success": "Login Success",
   "id_select_image": "Select Image",
   "id_update_success": "Update Success",
+  "id_edit_username": "Modify Username",
+  "id_edit_password": "Modify Password",
+  "id_edit_avatar": "Update Avatar",
+  "id_user_center": "User Center",
+  "id_exit_login": "Exit Account",
+  "id_exit_login_msg": "Are you sure to exit this Account?",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
   "id_gr_client": "GammaRay Client",

@@ -337,6 +337,12 @@
   "id_login_success": "登入成功",
   "id_select_image": "選擇圖片",
   "id_update_success": "更新成功",
+  "id_edit_username": "修改名稱",
+  "id_edit_password": "修改密碼",
+  "id_edit_avatar": "更新頭像",
+  "id_user_center": "用戶中心",
+  "id_exit_login": "退出帳戶",
+  "id_exit_login_msg": "您确定要退出当前登录的帳戶吗?",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文檔",

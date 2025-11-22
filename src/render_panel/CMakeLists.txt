@@ -50,6 +50,7 @@ set(PANEL_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/security_password_checker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/user/user_register_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/user/user_login_dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/user/modify_username_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/tab_cophone.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_application.cpp

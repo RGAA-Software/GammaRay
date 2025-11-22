@@ -61,6 +61,8 @@ namespace tc
         void UpdateAvatar();
         void UpdateUserInfo();
         void ClearUserInfo();
+        void ShowUserActions();
+        void ProcessUserAction(int index);
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;

@@ -21,6 +21,9 @@
 #include "tc_common_new/dump_helper.h"
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/process_util.h"
+#include "tc_common_new/time_util.h"
+#include "tc_common_new/file_util.h"
+#include "version_config.h"
 #include "client/windows/handler/exception_handler.h"
 #include "client/windows/crash_generation/crash_generation_client.h"
 
@@ -58,10 +61,19 @@ static bool DumpCallback(const wchar_t* dump_path, const wchar_t* minidump_id,
                          void* context, EXCEPTION_POINTERS* exinfo,
                          MDRawAssertionInfo* assertion, bool succeeded) {
     if (succeeded) {
-        std::wcout << L"Minidump文件已生成: " << dump_path << minidump_id << L".dmp" << std::endl;
-    } else {
+        auto exe_name = qApp->applicationName().toStdWString();
+        auto exe_version = QString::fromStdString(PROJECT_VERSION).toStdWString();
+        std::wstring original_dmp = std::wstring(dump_path) + L"/" + minidump_id + L".dmp";
+        std::wstring new_dmp_name = std::wstring(dump_path) + L"/" + exe_name + L"_" + exe_version + L"_" +
+                                    QString::fromStdString(TimeUtil::GetCurrentTimeString()).toStdWString() + L".dmp";
+
+        FileUtil::ReName(QString::fromStdWString(original_dmp).toStdString(),
+                         QString::fromStdWString(new_dmp_name).toStdString());
+    }
+    else {
         std::wcout << L"Minidump生成失败" << std::endl;
     }
+
     return succeeded;
 }
 

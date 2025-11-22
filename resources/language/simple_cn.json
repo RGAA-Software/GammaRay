@@ -282,6 +282,12 @@
   "id_login_success": "登录成功",
   "id_select_image": "选择图片",
   "id_update_success": "更新成功",
+  "id_edit_username": "修改名称",
+  "id_edit_password": "修改密码",
+  "id_edit_avatar": "更新头像",
+  "id_user_center": "用户中心",
+  "id_exit_login": "退出账户",
+  "id_exit_login_msg": "您确定要退出当前登录的账号吗?",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

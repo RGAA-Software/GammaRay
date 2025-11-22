@@ -47,6 +47,7 @@
 #include "tc_common_new/file.h"
 #include "tc_qt_widget/tc_dialog_util.h"
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
+#include "render_panel/ui/user/modify_username_dialog.h"
 
 namespace tc
 {
@@ -157,7 +158,8 @@ namespace tc
                 logo_layout->addWidget(logo);
                 logo->SetOnClickListener([=, this](QWidget* w) {
                     if (user_mgr_->IsLoggedIn()) {
-                        this->ShowSelectAvatarDialog();
+                        ShowUserActions();
+                        //this->ShowSelectAvatarDialog();
                     }
                 });
                 logo_layout->addSpacing(8);
@@ -174,7 +176,7 @@ namespace tc
 
                 lbl->SetOnClickListener([=, this](QWidget* w) {
                     if (user_mgr_->IsLoggedIn()) {
-
+                        ShowUserActions();
                     }
                     else {
                         this->ShowUserLoginDialog();
@@ -612,5 +614,61 @@ namespace tc
 
     }
 
+    void GrWorkspace::ShowUserActions() {
+        auto menu = new QMenu();
+        std::vector<QString> actions = {
+            tcTr("id_edit_username"),
+            tcTr("id_edit_password"),
+            tcTr("id_edit_avatar"),
+            "",
+            tcTr("id_user_center"),
+            "",
+            tcTr("id_exit_login"),
+        };
+        for (int i = 0; i < actions.size(); i++) {
+            const QString& action_name = actions.at(i);
+            if (action_name.isEmpty()) {
+                menu->addSeparator();
+                continue;
+            }
+
+            auto action = new QAction(action_name, menu);
+            menu->addAction(action);
+            connect(action, &QAction::triggered, this, [=, this]() {
+                ProcessUserAction(i);
+            });
+        }
+        menu->exec(QCursor::pos());
+        delete menu;
+    }
+
+    void GrWorkspace::ProcessUserAction(int index) {
+        // modify username
+        if (index == 0) {
+            ModifyUsernameDialog dialog(context_);
+            dialog.exec();
+        }
+        else if (index == 1) {
+            // modify password
+        }
+        else if (index == 2) {
+            // update avatar
+        }
+        else if (index == 4) {
+            // user center
+        }
+        else if (index == 6) {
+            // exit
+            TcDialog dialog(tcTr("id_exit_login"), tcTr("id_exit_login_msg"));
+            if (dialog.exec() == kDoneOk) {
+                // clear database
+                user_mgr_->Clear();
+
+                // clear ui
+                ClearUserInfo();
+                // avatar
+            }
+        }
+    }
 
 }
