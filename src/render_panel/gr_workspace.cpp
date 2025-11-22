@@ -159,7 +159,9 @@ namespace tc
                 logo->SetOnClickListener([=, this](QWidget* w) {
                     if (user_mgr_->IsLoggedIn()) {
                         ShowUserActions();
-                        //this->ShowSelectAvatarDialog();
+                    }
+                    else {
+                        this->ShowUserLoginDialog();
                     }
                 });
                 logo_layout->addSpacing(8);
