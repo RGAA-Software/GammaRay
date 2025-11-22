@@ -24,8 +24,6 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/file_util.h"
 #include "version_config.h"
-#include "client/windows/handler/exception_handler.h"
-#include "client/windows/crash_generation/crash_generation_client.h"
 
 using namespace tc;
 
@@ -53,57 +51,9 @@ bool PrepareDirs(const QString& base_path) {
     return result;
 }
 
-// Dump文件保存目录
-std::wstring dump_path = L"./dumps/";
-
-// 创建Dump回调函数
-static bool DumpCallback(const wchar_t* dump_path, const wchar_t* minidump_id,
-                         void* context, EXCEPTION_POINTERS* exinfo,
-                         MDRawAssertionInfo* assertion, bool succeeded) {
-    if (succeeded) {
-        auto exe_name = qApp->applicationName().toStdWString();
-        auto exe_version = QString::fromStdString(PROJECT_VERSION).toStdWString();
-        std::wstring original_dmp = std::wstring(dump_path) + L"/" + minidump_id + L".dmp";
-        std::wstring new_dmp_name = std::wstring(dump_path) + L"/" + exe_name + L"_" + exe_version + L"_" +
-                                    QString::fromStdString(TimeUtil::GetCurrentTimeString()).toStdWString() + L".dmp";
-
-        FileUtil::ReName(QString::fromStdWString(original_dmp).toStdString(),
-                         QString::fromStdWString(new_dmp_name).toStdString());
-    }
-    else {
-        std::wcout << L"Minidump生成失败" << std::endl;
-    }
-
-    return succeeded;
-}
-
-// 创建异常处理器
-google_breakpad::ExceptionHandler* exception_handler = nullptr;
-
-void InitializeBreakpad() {
-    // 确保dump目录存在
-    CreateDirectory(dump_path.c_str(), NULL);
-
-    exception_handler = new google_breakpad::ExceptionHandler(
-            dump_path,                                // dump文件路径
-            NULL,                                     // 过滤器回调
-            DumpCallback,                             // 回调函数
-            NULL,                                     // 回调上下文
-            google_breakpad::ExceptionHandler::HANDLER_ALL  // 处理所有异常类型
-    );
-
-    if (exception_handler) {
-        std::cout << "Breakpad初始化成功" << std::endl;
-    }
-}
-
 int main(int argc, char *argv[]) {
 
     tc::Hardware::AcquirePermissionForRestartDevice();
-
-    InitializeBreakpad();
-
-    //CaptureDump();
 
     // run in high level
     tc::ProcessUtil::SetProcessInHighLevel();
@@ -113,6 +63,14 @@ int main(int argc, char *argv[]) {
     //::ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);  // WM_COPYGLOBALDATA
 
     QApplication app(argc, argv);
+
+    //CaptureDump();
+    // Breakpad
+    auto bc = BreakpadContext {
+        .version_ = PROJECT_VERSION,
+        .app_name_ = qApp->applicationName().toStdString(),
+    };
+    CaptureDumpByBreakpad(&bc);
 
     //auto base_dir = QApplication::applicationDirPath();
     auto base_dir = QString::fromStdWString(FolderUtil::GetProgramDataPath());

@@ -30,6 +30,7 @@
 #include "tc_common_new/folder_util.h"
 #include "snowflake/snowflake.h"
 #include "ct_game_overlay.h"
+#include "version_config.h"
 #include "front_render/vulkan/ct_vulkan_checker.h"
 
 #ifdef TC_PROTECTION_ENABLED
@@ -355,10 +356,19 @@ bool PrepareDirs(const QString& base_path) {
 
 int main(int argc, char** argv) {
 #ifdef WIN32
-    CaptureDump();
+    // dump
+    //CaptureDump();
+    // Breakpad
+    auto bc = BreakpadContext {
+        .version_ = PROJECT_VERSION,
+        .app_name_ = "GammaRayClientInner",
+    };
+    CaptureDumpByBreakpad(&bc);
+
 #ifdef TC_PROTECTION_ENABLED
     TCProtectionDummyImport();
 #endif
+
 #endif
 
 #ifdef __APPLE__

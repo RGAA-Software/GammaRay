@@ -10,6 +10,7 @@
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/process_util.h"
 #include "gflags/gflags.h"
+#include "version_config.h"
 
 #include <QLockFile>
 #include <QMessageBox>
@@ -227,8 +228,15 @@ bool CanWeRun(const QString& lock_path) {
 
 int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
+
     // dump
-    CaptureDump();
+    //CaptureDump();
+    // Breakpad
+    auto bc = BreakpadContext {
+        .version_ = PROJECT_VERSION,
+        .app_name_ = "GammaRayRender",
+    };
+    CaptureDumpByBreakpad(&bc);
 
     // run in high level
     tc::ProcessUtil::SetProcessInHighLevel();

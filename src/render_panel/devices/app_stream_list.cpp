@@ -182,6 +182,9 @@ namespace tc
                 // todo: Check stream info.
                 // check password type: random / safety
                 // then update it in database
+                if (!item->stream_name_.empty()) {
+                    exist_stream_item->stream_name_ = item->stream_name_;
+                }
                 if (!item->remote_device_id_.empty()) {
                     exist_stream_item->remote_device_id_ = item->remote_device_id_;
                 }
@@ -190,6 +193,15 @@ namespace tc
                 }
                 if (item->stream_port_ > 0) {
                     exist_stream_item->stream_port_ = item->stream_port_;
+                }
+                if (!item->relay_host_.empty()) {
+                    exist_stream_item->relay_host_ = item->relay_host_;
+                }
+                if (item->relay_port_ > 0) {
+                    exist_stream_item->relay_port_ = item->relay_port_;
+                }
+                if (!item->relay_appkey_.empty()) {
+                    exist_stream_item->relay_appkey_ = item->relay_appkey_;
                 }
                 if (exist_stream_item->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
                     exist_stream_item->remote_device_random_pwd_ = item->remote_device_random_pwd_;

@@ -3,11 +3,14 @@
 //
 
 #include "service_main.h"
-#include "service_context.h"
 #include "service.h"
+#include "service_context.h"
+#include "version_config.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/folder_util.h"
 #include "tc_common_new/string_util.h"
+#include "tc_common_new/dump_helper.h"
+
 #include <string>
 #include <Windows.h>
 #include <Shlwapi.h>
@@ -132,6 +135,12 @@ int main(int argc, char** argv) {
     Logger::InitLog(path, true);
     LOGI("----------Service Start----------");
     LOGI("Args size: {}", argc);
+
+    auto bc = BreakpadContext {
+        .version_ = PROJECT_VERSION,
+        .app_name_ = "GammaRayService",
+    };
+    CaptureDumpByBreakpad(&bc);
 
     // listening port
     int listening_port = 0;

@@ -12,3 +12,4 @@ set(MAIN_SRCS
 
 add_subdirectory(render)
 add_subdirectory(skin)
+add_subdirectory(crash_reporter)

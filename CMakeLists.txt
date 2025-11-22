@@ -248,7 +248,7 @@ install(TARGETS ${PROJECT_NAME}
 
 add_custom_target(tc_build_all ALL COMMENT "Build all targets")
 add_dependencies(tc_build_all ${PROJECT_NAME} sqlite35 GammaRay GammaRayRender GammaRayService GammaRayServiceManager tc_message tc_vigem tc_plugin
-        uninstall shadow_deleter GammaRayClientInner tc_relay_client tc_rtc_client tc_cp_message GammaRayGuard tc_hw_info)
+        uninstall shadow_deleter GammaRayClientInner tc_relay_client tc_rtc_client tc_cp_message GammaRayGuard tc_hw_info GammaRayCrashReporter)
 if(ENABLE_HOOK_CAPTURE)
     #add_dependencies(tc_build_all tc_graphics tc_graphics_helper tc_graphics_util) #tc_capture_library
 endif ()
