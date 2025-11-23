@@ -392,8 +392,11 @@ namespace tc
             running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeWebSocket);
         }
         else {
-            // we can connect directly
+            // we can't connect directly
             LOGI("We can *NOT* connect directly: {}:{}, will try relay!", target_item->stream_host_, target_item->stream_port_);
+            LOGI("Stream id: {}", target_item->stream_id_);
+            LOGI("origin random: {}, target random: {}", item->remote_device_random_pwd_, target_item->remote_device_random_pwd_);
+            LOGI("stream host: {}, remote device id: {}", target_item->stream_host_, target_item->remote_device_id_);
             if (target_item->HasRelayInfo()) {
                 LOGI("Yes, we have relay info: {} {} {}", target_item->relay_host_, target_item->relay_port_, target_item->relay_appkey_);
                 // verify my self
@@ -421,6 +424,7 @@ namespace tc
                 }
 
                 // NO password, just input one
+                LOGI("device id: {}, random: {}, safety: {}", target_item->device_id_, target_item->remote_device_random_pwd_, target_item->remote_device_safety_pwd_);
                 QString input_password;
                 if (target_item->remote_device_random_pwd_.empty() && target_item->remote_device_safety_pwd_.empty()) {
                     InputRemotePwdDialog dlg_input_pwd(context_);
@@ -480,10 +484,12 @@ namespace tc
                 if (verify_result == ProfileVerifyResult::kVfSuccessRandomPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                     db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, remote_random_pwd);
                     target_item->remote_device_random_pwd_ = remote_random_pwd;
+                    LOGI("Update the Random! {}", remote_random_pwd);
                 }
                 else if (verify_result == ProfileVerifyResult::kVfSuccessSafetyPwd || verify_result == ProfileVerifyResult::kVfSuccessAllPwd) {
                     db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, remote_safety_pwd);
                     target_item->remote_device_safety_pwd_ = remote_safety_pwd;
+                    LOGI("Update the Safety!", remote_safety_pwd);
                 }
 
                 // start via websocket

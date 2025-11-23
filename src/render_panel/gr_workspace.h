@@ -42,6 +42,7 @@ namespace tc
     class MessageListener;
     class SkinInterface;
     class GrUserManager;
+    class RoundImageDisplay;
 
     class GrWorkspace : public QMainWindow, public std::enable_shared_from_this<GrWorkspace> {
     public:
@@ -58,11 +59,13 @@ namespace tc
         void ShowUserLoginDialog();
         void ShowSelectAvatarDialog();
         void UpdateUsername();
-        void UpdateAvatar();
         void UpdateUserInfo();
         void ClearUserInfo();
         void ShowUserActions();
         void ProcessUserAction(int index);
+        void LoadAvatar();
+        void SetAvatar(const std::string& filepath);
+        void ClearAvatar();
 
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
@@ -90,6 +93,8 @@ namespace tc
         bool run_automatically_ = false;
 
         // username
+        int avatar_size_ = 50;
+        RoundImageDisplay* lbl_avatar_ = nullptr;
         TcLabel* lbl_username_ = nullptr;
     };
 

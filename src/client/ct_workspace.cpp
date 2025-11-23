@@ -65,7 +65,7 @@ namespace tc
     void Workspace::ListenMultiMonDisplayModeMessage() {
         msg_listener_->Listen<MsgClientMultiMonDisplayMode>([=, this](const MsgClientMultiMonDisplayMode& msg) {
             multi_display_mode_ = msg.mode_;
-            context_->PostUITask([=]() {
+            context_->PostUITask([=, this]() {
                 if (EMultiMonDisplayMode::kSeparate == multi_display_mode_) {
                     if (monitors_count_ > 1) {
                         setWindowTitle(origin_title_name_ + QStringLiteral(" (Desktop:%1)").arg(QString::number(1)));

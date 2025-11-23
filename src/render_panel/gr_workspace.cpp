@@ -45,7 +45,10 @@
 #include "skin/interface/skin_interface.h"
 #include "user/gr_user_manager.h"
 #include "tc_common_new/file.h"
+#include "tc_common_new/file_util.h"
+#include "tc_common_new/http_client.h"
 #include "tc_qt_widget/tc_dialog_util.h"
+#include "tc_qt_widget/round_img_display.h"
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
 #include "render_panel/ui/user/modify_username_dialog.h"
 #include "render_panel/ui/user/modify_password_dialog.h"
@@ -149,12 +152,12 @@ namespace tc
             {
                 // logo
                 auto logo_layout = new NoMarginHLayout();
-                auto logo = new TcLabel(this);
-                int logo_size = 50;
-                logo->setFixedSize(logo_size, logo_size);
+                auto logo = new RoundImageDisplay("", avatar_size_, avatar_size_, avatar_size_/2);
+                lbl_avatar_ = logo;
+                logo->setFixedSize(avatar_size_, avatar_size_);
                 logo->setScaledContents(true);
-                auto pixmap = WidgetHelper::RenderSvgToPixmap(":/resources/image/ic_not_login.svg", QSize(logo_size, logo_size));
-                logo->setPixmap(pixmap);
+                auto pixmap = WidgetHelper::RenderSvgToPixmap(":/resources/image/ic_not_login.svg", QSize(avatar_size_, avatar_size_));
+                logo->UpdatePixmap(pixmap);
                 logo_layout->addSpacing(20);
                 logo_layout->addWidget(logo);
                 logo->SetOnClickListener([=, this](QWidget* w) {
@@ -431,6 +434,11 @@ namespace tc
         // last works
         app_->RequestNewClientId(false);
 
+        //
+        if (user_mgr_->IsLoggedIn()) {
+            this->LoadAvatar();
+        }
+
         InitListeners();
     }
 
@@ -591,12 +599,14 @@ namespace tc
             return;
         }
 
-        user_mgr_->UpdateAvatar(avatar_path);
+        if (user_mgr_->UpdateAvatar(avatar_path)) {
+            LoadAvatar();
+        }
     }
 
     void GrWorkspace::UpdateUserInfo() {
         UpdateUsername();
-        UpdateAvatar();
+        LoadAvatar();
     }
 
     void GrWorkspace::ClearUserInfo() {
@@ -611,10 +621,6 @@ namespace tc
         else {
             lbl_username_->SetTextId("id_guest");
         }
-    }
-
-    void GrWorkspace::UpdateAvatar() {
-
     }
 
     void GrWorkspace::ShowUserActions() {
@@ -668,12 +674,15 @@ namespace tc
             // user center
         }
         else if (index == 6) {
-            // logout
-            user_mgr_->Logout();
-
             // exit
             TcDialog dialog(tcTr("id_exit_login"), tcTr("id_exit_login_msg"));
             if (dialog.exec() == kDoneOk) {
+                // logout
+                user_mgr_->Logout();
+
+                // clear avatar
+                ClearAvatar();
+
                 // clear database
                 user_mgr_->Clear();
 
@@ -682,6 +691,48 @@ namespace tc
                 // avatar
             }
         }
+    }
+
+    void GrWorkspace::LoadAvatar() {
+        context_->PostTask([=, this]() {
+            auto avatar_path = user_mgr_->GetAvatarPath();
+            if (avatar_path.starts_with("./")) {
+                avatar_path = avatar_path.substr(1);
+            }
+            auto avatar_url_path =std::format("https://{}:{}{}?appkey={}", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), avatar_path, grApp->GetAppkey());
+            auto target_avatar_path = settings_->GetGrDataPath() + "/" + user_mgr_->GetUserId() + + "." + FileUtil::GetFileSuffix(avatar_path);
+            if (File::Exists(target_avatar_path)) {
+                LOGI("Load local avatar first");
+                context_->PostUITask([=, this]() {
+                    this->SetAvatar(target_avatar_path);
+                });
+            }
+
+            auto file = File::OpenForWriteB(target_avatar_path);
+            auto r = HttpClient::Download(avatar_url_path, [=, this](const std::string& d) {
+                file->Append(d);
+            });
+            if (r.status == 200) {
+                LOGI("Load avatar from server and refresh it!");
+                context_->PostUITask([=, this]() {
+                    this->SetAvatar(target_avatar_path);
+                });
+            }
+        });
+    }
+
+    void GrWorkspace::SetAvatar(const std::string& filepath) {
+        auto pixmap = QPixmap::fromImage(QImage(filepath.c_str()));
+        if (pixmap.isNull()) {
+            return;
+        }
+        pixmap = pixmap.scaled(avatar_size_, avatar_size_, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        lbl_avatar_->UpdatePixmap(pixmap);
+    }
+
+    void GrWorkspace::ClearAvatar() {
+        auto pixmap = WidgetHelper::RenderSvgToPixmap(":/resources/image/ic_not_login.svg", QSize(avatar_size_, avatar_size_));
+        lbl_avatar_->UpdatePixmap(pixmap);
     }
 
 }
