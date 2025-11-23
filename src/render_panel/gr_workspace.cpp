@@ -48,6 +48,7 @@
 #include "tc_qt_widget/tc_dialog_util.h"
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
 #include "render_panel/ui/user/modify_username_dialog.h"
+#include "render_panel/ui/user/modify_password_dialog.h"
 
 namespace tc
 {
@@ -654,14 +655,22 @@ namespace tc
         }
         else if (index == 1) {
             // modify password
+            ModifyPasswordDialog dialog(context_);
+            if (dialog.exec() == kDoneOk) {
+
+            }
         }
         else if (index == 2) {
             // update avatar
+            ShowSelectAvatarDialog();
         }
         else if (index == 4) {
             // user center
         }
         else if (index == 6) {
+            // logout
+            user_mgr_->Logout();
+
             // exit
             TcDialog dialog(tcTr("id_exit_login"), tcTr("id_exit_login_msg"));
             if (dialog.exec() == kDoneOk) {

@@ -21,6 +21,7 @@ namespace tc
         bool Login(const std::string& username, const std::string& password);
         bool Logout();
         bool ModifyUsername(const std::string& username);
+        bool ModifyPassword(const std::string& new_password);
         bool UpdateAvatar(const std::string& avatar_path);
 
         bool IsLoggedIn();
