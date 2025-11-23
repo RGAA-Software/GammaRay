@@ -18,6 +18,11 @@ message("==> VCPKG_ROOT:" ${VCPKG_ROOT})
 set(GR_PROJECT_PATH "")
 set(GR_PROJECT_BINARY_PATH "")
 
+set(NSIS_VERSION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/package/proj_version.nsh")
+file(WRITE ${NSIS_VERSION_FILE}
+"!define PRODUCT_VERSION \"${TC_APP_VERSION}\"\n"
+)
+
 if (BUILD_PREMIUM)
     message("==> Build Premium <==")
     set(GR_PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
