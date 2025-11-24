@@ -180,10 +180,10 @@ namespace tc
 
     void WinEventReplayer::ReplayMouseEvent(const std::string& monitor_name, float x_ratio, float y_ratio, int buttons, int data) {
 
-        if (kVirtualDesktopNameSign == monitor_name) {
-            ReplayVirtualDesktopMouseEvent(x_ratio, y_ratio, buttons, data);
-            return;
-        }
+        //if (kVirtualDesktopNameSign == monitor_name) {
+        //    ReplayVirtualDesktopMouseEvent(x_ratio, y_ratio, buttons, data);
+        //    return;
+        //}
 
         if (monitors_.empty()) {
             LOGE("Don't have capturing monitor info.");

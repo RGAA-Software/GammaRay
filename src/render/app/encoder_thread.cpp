@@ -419,20 +419,11 @@ namespace tc
                 //RdStatistics::Instance()->AppendEncodeDuration(diff);
             }
             else {
-#if 0
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        plugin->OnRawVideoFrameRgba(monitor_name, cap_video_msg.raw_image_);
+                        plugin->OnRawVideoFrameRgba(monitor_name, frame_index, cap_video_msg.frame_width_, cap_video_msg.frame_height_, cap_video_msg.raw_image_);
                     });
                 });
-
-                // todo: convert to YUV
-
-                // raw video frame
-                if (target_encoder_plugin) {
-                    target_encoder_plugin->Encode(cap_video_msg.raw_image_, frame_index, cap_video_msg);
-                }
-#endif
 
                 auto beg_map_texture = TimeUtil::GetCurrentTimestamp();
 

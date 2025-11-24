@@ -23,7 +23,7 @@ static void* GetInstance() {
 namespace tc
 {
 
-    static const int32_t kAllowedMaxContinuousTimeoutTimes = 300;
+    static const int32_t kAllowedMaxContinuousTimeoutTimes = 600;
 
     DDACapturePlugin::DDACapturePlugin() : GrMonitorCapturePlugin() {
 

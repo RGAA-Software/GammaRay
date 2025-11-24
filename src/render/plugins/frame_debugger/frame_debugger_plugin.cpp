@@ -4,6 +4,7 @@
 
 #include "frame_debugger_plugin.h"
 #include "plugin_interface/gr_plugin_events.h"
+#include "plugin_interface/gr_plugin_context.h"
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_util.h"
 #include "render/plugins/plugin_ids.h"
@@ -41,6 +42,14 @@ namespace tc
         if (HasParam(key_save_encoded_video)) {
             save_encoded_video_ = GetConfigParam<bool>(key_save_encoded_video);
         }
+        if (save_encoded_video_) {
+            lbl_frame_ = new QLabel(root_widget_);
+            lbl_frame_->setFixedSize(960, 540);
+            auto layout = new QVBoxLayout();
+            layout->addWidget(lbl_frame_);
+            root_widget_->setLayout(layout);
+            root_widget_->show();
+        }
         return true;
     }
 
@@ -48,7 +57,22 @@ namespace tc
         if (encoded_video_file_) {
             encoded_video_file_->Close();
         }
-        return true;
+        return GrStreamPlugin::OnDestroy();
+    }
+
+    static QPixmap RgbaToPixmap(const uint8_t* data, int width, int height) {
+        QImage img(data, width, height, QImage::Format_RGBA8888);
+        return QPixmap::fromImage(img.copy());
+    }
+
+    void FrameDebuggerPlugin::OnRawVideoFrameRgba(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) {
+        if (!image->data) {
+            return;
+        }
+        plugin_context_->PostUITask([=, this]() {
+            auto pixmap = RgbaToPixmap((uint8_t*)image->data->CStr(), image->width, image->height);
+            lbl_frame_->setPixmap(pixmap);
+        });
     }
 
     void FrameDebuggerPlugin::OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {

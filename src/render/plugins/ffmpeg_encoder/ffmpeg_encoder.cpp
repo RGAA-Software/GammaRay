@@ -31,10 +31,11 @@ namespace tc
                 codec_name = "hevc_nvenc";
                 display_encoder_name_ = "F_NVENC";
             }
-            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
-                codec_name = "hevc_amf";
-                display_encoder_name_ = "F_AMF";
-            }
+            // FFmpeg's implementation is so bad.
+            // else if (EHardwareEncoder::kAmf == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
+            //     codec_name = "hevc_amf";
+            //     display_encoder_name_ = "F_AMF";
+            // }
             else {
                 codec_name = "libx265";
                 display_encoder_name_ = "S/W";
@@ -45,10 +46,11 @@ namespace tc
                 codec_name = "h264_nvenc";
                 display_encoder_name_ = "F_NVENC";
             }
-            else if (EHardwareEncoder::kAmf == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
-                codec_name = "h264_amf";
-                display_encoder_name_ = "F_AMF";
-            }
+            // FFmpeg's implementation is so bad.
+            // else if (EHardwareEncoder::kAmf == encoder_config_.Hardware && plugin_->IsHardwareEnabled()) {
+            //     codec_name = "h264_amf";
+            //     display_encoder_name_ = "F_AMF";
+            // }
             else {
                 codec_name = "libx264";
                 display_encoder_name_ = "S/W";
@@ -104,14 +106,14 @@ namespace tc
             av_dict_set(&param, "tune", "ull", 0);
             av_dict_set(&param, "zerolatency", "1", 0);
         }
-        else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
-            av_dict_set(&param, "quality", "speed", 0);
-            av_dict_set(&param, "bf_ref", "0", 0);
-            av_dict_set(&param, "header_insertion_mode", "idr", 0);
-            av_dict_set(&param, "rc", "cqp", 0);
-            av_dict_set(&param, "profile", "main", 0);
-            // av_dict_set(&param, "usage", "ultralowlatency", 0);
-        }
+        //else if (EHardwareEncoder::kAmf == encoder_config_.Hardware) {
+        //    av_dict_set(&param, "quality", "speed", 0);
+        //    av_dict_set(&param, "bf_ref", "0", 0);
+        //    av_dict_set(&param, "header_insertion_mode", "idr", 0);
+        //    av_dict_set(&param, "rc", "cqp", 0);
+        //    av_dict_set(&param, "profile", "main", 0);
+        //    // av_dict_set(&param, "usage", "ultralowlatency", 0);
+        //}
         else {
             av_dict_set(&param, "preset", "ultrafast", 0);
             av_dict_set(&param, "tune", "zerolatency", 0);

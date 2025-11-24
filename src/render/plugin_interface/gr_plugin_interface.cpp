@@ -168,6 +168,10 @@ namespace tc
     }
 
     bool GrPluginInterface::OnDestroy() {
+        if (root_widget_) {
+            root_widget_->hide();
+            root_widget_->close();
+        }
         plugin_context_->OnDestroy();
         destroyed_ = true;
         return true;

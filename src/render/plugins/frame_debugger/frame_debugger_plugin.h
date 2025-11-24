@@ -25,6 +25,11 @@ namespace tc
         bool OnDestroy() override;
 
         void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) override;
+
+        // raw video frame in rgba format
+        // image: Raw image
+        void OnRawVideoFrameRgba(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) override;
+
         // data: encode video frame, h264/h265/...
         void OnEncodedVideoFrame(const std::string& mon_name,
                                  const GrPluginEncodedVideoType& video_type,
@@ -42,6 +47,7 @@ namespace tc
         bool save_encoded_video_ = false;
         std::shared_ptr<File> encoded_video_file_ = nullptr;
         bool new_client_in_ = false;
+        QLabel* lbl_frame_ = nullptr;
     };
 
 }

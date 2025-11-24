@@ -153,6 +153,7 @@ namespace tc
                 // logo
                 auto logo_layout = new NoMarginHLayout();
                 auto logo = new RoundImageDisplay("", avatar_size_, avatar_size_, avatar_size_/2);
+                logo->SetBorder(2, 0x555555);
                 lbl_avatar_ = logo;
                 logo->setFixedSize(avatar_size_, avatar_size_);
                 logo->setScaledContents(true);
