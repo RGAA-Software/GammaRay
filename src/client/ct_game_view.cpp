@@ -488,6 +488,13 @@ namespace tc
                 else {
                     overlay_widget_->show();
                 }
+
+                if (settings_->show_watermark_) {
+                    overlay_widget_->SetWatermarkCount(6);
+                }
+                else {
+                    overlay_widget_->SetWatermarkCount(0);
+                }
             }
         });
     }
