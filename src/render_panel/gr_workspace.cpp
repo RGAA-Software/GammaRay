@@ -436,7 +436,7 @@ namespace tc
 
         //
         if (user_mgr_->IsLoggedIn()) {
-            this->LoadAvatar();
+            this->Login();
         }
 
         InitListeners();
@@ -560,6 +560,19 @@ namespace tc
         if (r == 0) {
             UpdateUserInfo();
         }
+    }
+
+    void GrWorkspace::Login() {
+        context_->PostTask([=, this]() {
+            auto username = user_mgr_->GetUsername();
+            auto password = user_mgr_->GetPassword();
+            if (username.empty() || password.empty()) {
+                return;
+            }
+            user_mgr_->Login(username, password);
+
+            this->LoadAvatar();
+        });
     }
 
     void GrWorkspace::ShowUserLoginDialog() {
@@ -699,7 +712,7 @@ namespace tc
             if (avatar_path.starts_with("./")) {
                 avatar_path = avatar_path.substr(1);
             }
-            auto avatar_url_path =std::format("https://{}:{}{}?appkey={}", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), avatar_path, grApp->GetAppkey());
+            auto avatar_url_path = std::format("https://{}:{}{}?appkey={}", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), avatar_path, grApp->GetAppkey());
             auto target_avatar_path = settings_->GetGrDataPath() + "/" + user_mgr_->GetUserId() + + "." + FileUtil::GetFileSuffix(avatar_path);
             if (File::Exists(target_avatar_path)) {
                 LOGI("Load local avatar first");

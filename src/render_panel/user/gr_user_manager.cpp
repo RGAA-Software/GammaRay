@@ -153,6 +153,8 @@ namespace tc
         auto hash_password = MD5::Hex(password);
         auto r = spvr::SpvrUserApi::UpdateAvatar(host, port, appkey, uid, hash_password, avatar_path);
         if (r.has_value()) {
+            auto user = r.value();
+            UpdateAvatarPath(user->avatar_path_);
             context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_update_success"));
             return true;
         }

@@ -25,7 +25,7 @@ namespace tc
         })
         .bind_connect([&]() {
             if (asio2::get_last_error()) {
-                LOGE("WsPanelClient,connect failure : {} {}", asio2::last_error_val(), QString::fromStdString(asio2::last_error_msg()).toStdString().c_str());
+                //LOGE("WsPanelClient,connect failure : {} {}", asio2::last_error_val(), QString::fromStdString(asio2::last_error_msg()).toStdString().c_str());
             } else {
                 LOGI("WsPanelClient,connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }

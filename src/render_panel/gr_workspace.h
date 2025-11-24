@@ -55,6 +55,7 @@ namespace tc
         void ChangeTab(const TabName& tn);
         void InitListeners();
         void ForceStopAllPrograms(bool uninstall_service);
+        void Login();
         void ShowUserRegisterDialog();
         void ShowUserLoginDialog();
         void ShowSelectAvatarDialog();
