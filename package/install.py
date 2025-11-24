@@ -6,18 +6,7 @@ from shutil import copy2
 from shutil import copyfile
 from shutil import copytree
 
-import re
-
-def extract_project_version(file_path):
-    with open(file_path, 'r') as file:
-        content = file.read()
-
-    # 使用正则表达式匹配 #define PROJECT_VERSION "x.x.x"
-    match = re.search(r'#define\s+PROJECT_VERSION\s+"([0-9.]+)"', content)
-    if match:
-        return match.group(1)
-    return None
-
+from gen_pack_name import gen_package_name
 
 def collceion_program_files(force_update, in_target_path):
 
@@ -161,8 +150,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         target_path = sys.argv[1]
     else:
-        target_path = "GammaRay_" + extract_project_version("../version_config.h")
-        #target_path = target_path.replace(".", "_")
+        target_path = gen_package_name()
 
     # delete it
     try:
