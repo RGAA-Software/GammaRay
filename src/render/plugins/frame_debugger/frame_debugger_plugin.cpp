@@ -66,7 +66,7 @@ namespace tc
     }
 
     void FrameDebuggerPlugin::OnRawVideoFrameRgba(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) {
-        if (!image->data) {
+        if (!image->data || !lbl_frame_ || !IsPluginEnabled()) {
             return;
         }
         plugin_context_->PostUITask([=, this]() {
