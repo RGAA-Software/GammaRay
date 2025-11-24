@@ -62,7 +62,11 @@ def collceion_program_files(force_update, in_target_path):
         "protoc-gen-upbdefs.exe",
         "protoc-gen-upb_minitable.exe",
         "protoc-gen-upb.exe",
-        "cpuid.exe"
+        "cpuid.exe",
+        "skin_official.dll",
+        "skin_opensource.dll",
+        "test_http.exe",
+        "vc_redist.x64_cpy.exe"
     ]
 
     files_with_ref_path = []
@@ -117,6 +121,7 @@ def collceion_program_files(force_update, in_target_path):
     folders_path.append(base_path + "gr_client")
     folders_path.append(base_path + "certs")
     folders_path.append(base_path + "web")
+    folders_path.append(base_path + "gr_skins")
 
     target_path = base_path + "package/packages/com.rgaa.gammaray/data"#+ "gammaray" + target_folder_suffix
     if len(in_target_path) > 0:
@@ -156,7 +161,14 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         target_path = sys.argv[1]
     else:
-        target_path = "release_" + extract_project_version("../version_config.h")
-        target_path = target_path.replace(".", "_")
+        target_path = "GammaRay_" + extract_project_version("../version_config.h")
+        #target_path = target_path.replace(".", "_")
+
+    # delete it
+    try:
+        print("will delete folder: {}".format(target_path))
+        shutil.rmtree(target_path)
+    except:
+        print("")
 
     collceion_program_files(force_update, target_path)
