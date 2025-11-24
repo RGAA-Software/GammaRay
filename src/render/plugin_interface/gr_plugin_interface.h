@@ -178,7 +178,7 @@ namespace tc
 
         // stream
         // video
-        virtual void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {}
+        virtual void OnVideoEncoderCreated(const std::string& mon_name, const GrPluginEncodedVideoType& type, int width, int height) {}
 
         // data: encode video frame, h264/h265/...
         virtual void OnEncodedVideoFrame(const std::string& mon_name,

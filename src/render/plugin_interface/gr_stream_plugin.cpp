@@ -15,7 +15,7 @@ namespace tc
 
     }
 
-    void GrStreamPlugin::OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {
+    void GrStreamPlugin::OnVideoEncoderCreated(const std::string& mon_name, const GrPluginEncodedVideoType& type, int width, int height) {
 
     }
 

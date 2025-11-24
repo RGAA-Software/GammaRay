@@ -307,7 +307,7 @@ namespace tc
                 // plugins: VideoEncoderCreated
                 context_->PostStreamPluginTask([=, this]() {
                     plugin_manager_->VisitStreamPlugins([=, this](GrStreamPlugin *plugin) {
-                        plugin->OnVideoEncoderCreated(video_type, encoder_config.width, encoder_config.height);
+                        plugin->OnVideoEncoderCreated(monitor_name, video_type, encoder_config.width, encoder_config.height);
                     });
                 });
 

@@ -16,7 +16,7 @@ namespace tc
         ~GrStreamPlugin() override;
 
         // video
-        void OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) override;
+        void OnVideoEncoderCreated(const std::string& mon_name, const GrPluginEncodedVideoType& type, int width, int height) override;
         // data: encode video frame, h264/h265/...
         void OnEncodedVideoFrame(const std::string& mon_name,
                                  const GrPluginEncodedVideoType& video_type,

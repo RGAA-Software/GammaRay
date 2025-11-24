@@ -8,6 +8,8 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/time_util.h"
 #include "render/plugins/plugin_ids.h"
+#include "tc_common_new/folder_util.h"
+#include "tc_common_new/string_util.h"
 
 namespace tc
 {
@@ -54,8 +56,8 @@ namespace tc
     }
 
     bool FrameDebuggerPlugin::OnDestroy() {
-        if (encoded_video_file_) {
-            encoded_video_file_->Close();
+        for (const auto& [k, v] : encoded_video_files_) {
+            v->Close();
         }
         return GrStreamPlugin::OnDestroy();
     }
@@ -75,21 +77,27 @@ namespace tc
         });
     }
 
-    void FrameDebuggerPlugin::OnVideoEncoderCreated(const GrPluginEncodedVideoType& type, int width, int height) {
+    void FrameDebuggerPlugin::OnVideoEncoderCreated(const std::string& mon_name, const GrPluginEncodedVideoType& type, int width, int height) {
+        if (mon_name.size() <= 4) {
+            return;
+        }
         encoded_video_type_ = type;
         if (new_client_in_) {
-            if (encoded_video_file_) {
-                encoded_video_file_.reset();
+            for (const auto& [mn, file] : encoded_video_files_) {
+                file->Close();
             }
             new_client_in_ = false;
         }
         auto part_name = TimeUtil::FormatTimestamp2(TimeUtil::GetCurrentTimestamp());
-        std::string encoded_video_file_name = std::format("gr_data/{}_enc_video.{}", part_name, (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
+        auto folder_path = StringUtil::ToUTF8(FolderUtil::GetProgramDataPath());
+        auto display_name = mon_name.substr(4);
+        std::string encoded_video_file_name = std::format("{}/gr_data/enc_{}_{}.{}", folder_path, display_name, part_name, (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
         if (File::Exists(encoded_video_file_name)) {
             File::Delete(encoded_video_file_name);
         }
         if (save_encoded_video_) {
-            encoded_video_file_ = File::OpenForAppendB(encoded_video_file_name);
+            auto file = File::OpenForAppendB(encoded_video_file_name);
+            encoded_video_files_[mon_name] = file;
         }
     }
 
@@ -101,7 +109,9 @@ namespace tc
                                                   int frame_height,
                                                   bool key) {
         if (save_encoded_video_) {
-            encoded_video_file_->Append(data);
+            if (encoded_video_files_.contains(mon_name)) {
+                encoded_video_files_[mon_name]->Append(data);
+            }
         }
     }
 

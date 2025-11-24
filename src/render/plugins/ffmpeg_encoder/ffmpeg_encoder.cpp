@@ -152,6 +152,8 @@ namespace tc
         auto img_height = image->height;
         auto image_data = image->data;
 
+        LOGI("Encode frame: {}, frame index: {}", cap_video_frame.display_name_, frame_index);
+
         // re-create when width/height changed
         // todo
         frame_->pts = (int64_t)frame_index;
