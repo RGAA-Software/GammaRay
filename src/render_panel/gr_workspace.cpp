@@ -570,7 +570,7 @@ namespace tc
             if (username.empty() || password.empty()) {
                 return;
             }
-            user_mgr_->Login(username, password);
+            user_mgr_->Login(username, password, false);
 
             this->LoadAvatar();
         });

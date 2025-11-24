@@ -18,7 +18,7 @@ namespace tc
     public:
         explicit GrUserManager(const std::shared_ptr<GrContext>& ctx);
         bool Register(const std::string& username, const std::string& password);
-        bool Login(const std::string& username, const std::string& password);
+        bool Login(const std::string& username, const std::string& password, bool show_dialog = true);
         bool Logout();
         bool ModifyUsername(const std::string& username);
         bool ModifyPassword(const std::string& new_password);

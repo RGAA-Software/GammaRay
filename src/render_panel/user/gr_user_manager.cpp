@@ -48,7 +48,7 @@ namespace tc
         return true;
     }
 
-    bool GrUserManager::Login(const std::string& username, const std::string& password) {
+    bool GrUserManager::Login(const std::string& username, const std::string& password, bool show_dialog) {
         auto host = settings_->GetSpvrServerHost();
         auto port = settings_->GetSpvrServerPort();
         auto appkey = grApp->GetAppkey();
@@ -63,11 +63,13 @@ namespace tc
         else {
             auto err = r.error();
             LOGE("Register failed, err: {}, msg: {}", (int)err, spvr::SpvrApiErrorAsString(err));
-            context_->PostUITask([=, this]() {
-                QString msg = tcTr("id_op_error") + ":" + QString::number((int)err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
-                TcDialog dialog(tcTr("id_error"), msg);
-                dialog.exec();
-            });
+            if (show_dialog) {
+                context_->PostUITask([=, this]() {
+                    QString msg = tcTr("id_op_error") + ":" + QString::number((int) err) + " " + spvr::SpvrApiErrorAsString(err).c_str();
+                    TcDialog dialog(tcTr("id_error"), msg);
+                    dialog.exec();
+                });
+            }
             return false;
         }
     }
