@@ -477,7 +477,7 @@ namespace tc
         overlay_widget_ = new OverlayWidget(this);
         overlay_widget_->resize(this->size());
         overlay_widget_->SetOpacity(0.5);
-        overlay_widget_->SetWatermarkCount(6);
+        overlay_widget_->SetWatermarkCount(10);
         overlay_widget_->hide();
         QTimer::singleShot(1000, this, [=, this]() {
             if (overlay_widget_) {
@@ -490,7 +490,7 @@ namespace tc
                 }
 
                 if (settings_->show_watermark_) {
-                    overlay_widget_->SetWatermarkCount(6);
+                    overlay_widget_->SetWatermarkCount(10);
                 }
                 else {
                     overlay_widget_->SetWatermarkCount(0);

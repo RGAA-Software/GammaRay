@@ -55,7 +55,8 @@ def collceion_program_files(force_update, in_target_path):
         "skin_official.dll",
         "skin_opensource.dll",
         "test_http.exe",
-        "vc_redist.x64_cpy.exe"
+        "vc_redist.x64_cpy.exe",
+        "uninstall.exe"
     ]
 
     files_with_ref_path = []

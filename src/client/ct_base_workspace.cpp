@@ -296,7 +296,7 @@ namespace tc
             // process watermark
             context_->PostUITask([=, this]() {
                 if (settings_->show_watermark_) {
-                    overlay_widget_->SetWatermarkCount(6);
+                    overlay_widget_->SetWatermarkCount(10);
                 }
                 else {
                     overlay_widget_->SetWatermarkCount(0);
