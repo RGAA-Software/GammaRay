@@ -599,7 +599,7 @@ namespace tc
             return;
         }
 
-        auto avatar_path = settings_->GetGrDataPath() + "/" + grApp->GetUserManager()->GetUserId() + "_avatar.jpg";
+        auto avatar_path = settings_->GetGrDataCachePath() + "/" + grApp->GetUserManager()->GetUserId() + "_avatar.jpg";
         image.save(avatar_path.c_str());
 
         if (!File::Exists(avatar_path)) {
@@ -714,7 +714,7 @@ namespace tc
                 avatar_path = avatar_path.substr(1);
             }
             auto avatar_url_path = std::format("https://{}:{}{}?appkey={}", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), avatar_path, grApp->GetAppkey());
-            auto target_avatar_path = settings_->GetGrDataPath() + "/" + user_mgr_->GetUserId() + + "." + FileUtil::GetFileSuffix(avatar_path);
+            auto target_avatar_path = settings_->GetGrDataCachePath() + "/" + user_mgr_->GetUserId() + + "." + FileUtil::GetFileSuffix(avatar_path);
             if (File::Exists(target_avatar_path)) {
                 LOGI("Load local avatar first");
                 context_->PostUITask([=, this]() {

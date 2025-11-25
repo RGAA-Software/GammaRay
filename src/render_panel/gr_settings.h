@@ -251,7 +251,11 @@ namespace tc
         void SetSkinName(const std::string& name);
         std::string GetSkinName();
 
+        //..../gr_data
         std::string GetGrDataPath();
+
+        //..../gr_data/cache
+        std::string GetGrDataCachePath();
 
     public:
         std::shared_ptr<MessageNotifier> notifier_ = nullptr;

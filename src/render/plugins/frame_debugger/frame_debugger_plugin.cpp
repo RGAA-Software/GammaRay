@@ -112,7 +112,7 @@ namespace tc
         auto part_name = TimeUtil::FormatTimestamp2(TimeUtil::GetCurrentTimestamp());
         auto folder_path = StringUtil::ToUTF8(FolderUtil::GetProgramDataPath());
         auto display_name = mon_name.substr(4);
-        std::string encoded_video_file_name = std::format("{}/gr_data/enc_{}_{}.{}", folder_path, display_name, part_name, (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
+        std::string encoded_video_file_name = std::format("{}/gr_data/render/enc_{}_{}.{}", folder_path, display_name, part_name, (type == GrPluginEncodedVideoType::kH264) ? "h264" : "h265");
         if (File::Exists(encoded_video_file_name)) {
             File::Delete(encoded_video_file_name);
         }

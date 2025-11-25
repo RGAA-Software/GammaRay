@@ -503,6 +503,7 @@ int main(int argc, char** argv) {
         .relay_host_ = settings->relay_host_,
         .relay_port_ = settings->relay_port_,
         .relay_appkey_ = settings->relay_appkey_,
+        .debug_ = settings->wait_debug_,
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();

@@ -481,4 +481,8 @@ namespace tc
         return gr_data_path_;
     }
 
+    std::string GrSettings::GetGrDataCachePath() {
+        return gr_data_path_ + "/cache";
+    }
+
 }

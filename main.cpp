@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include "gflags/gflags.h"
+#include "version_config.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/auto_start.h"
 #include "tc_common_new/folder_util.h"
@@ -23,7 +24,7 @@
 #include "tc_common_new/process_util.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/file_util.h"
-#include "version_config.h"
+#include "tc_common_new/folder_util.h"
 
 using namespace tc;
 
@@ -33,20 +34,14 @@ std::shared_ptr<GrWorkspace> g_workspace = nullptr;
 
 bool PrepareDirs(const QString& base_path) {
     std::vector<QString> dirs = {
-        "gr_logs", "gr_data"
+        "gr_logs", "gr_data", "gr_data/client", "gr_data/render", "gr_data/panel",
+        "gr_data/cache", "gr_dumps"
     };
 
     bool result = true;
     for (const QString& dir : dirs) {
         auto target_dir_path = base_path + "/" + dir;
-        QDir target_dir(target_dir_path);
-        if (target_dir.exists()) {
-            continue;
-        }
-        if (!target_dir.mkpath(target_dir_path)) {
-            result = false;
-            LOGI("Make path failed: {}", target_dir_path.toStdString());
-        }
+        FolderUtil::CreateDir(target_dir_path.toStdString());
     }
     return result;
 }
