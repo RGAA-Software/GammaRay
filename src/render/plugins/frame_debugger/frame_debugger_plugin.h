@@ -12,6 +12,13 @@ namespace tc
 
     class File;
 
+    class SingleFrameInfo {
+    public:
+        std::string mon_name_;
+        QLabel* lbl_frame_ = nullptr;
+        QLabel* lbl_info_ = nullptr;
+    };
+
     class FrameDebuggerPlugin : public GrStreamPlugin {
     public:
 
@@ -47,7 +54,8 @@ namespace tc
         bool save_encoded_video_ = false;
         std::map<std::string, std::shared_ptr<File>> encoded_video_files_;
         bool new_client_in_ = false;
-        QLabel* lbl_frame_ = nullptr;
+        QHBoxLayout* content_layout_ = nullptr;
+        std::map<std::string, std::shared_ptr<SingleFrameInfo>> frames_info_;
     };
 
 }

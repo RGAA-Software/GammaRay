@@ -45,11 +45,9 @@ namespace tc
             save_encoded_video_ = GetConfigParam<bool>(key_save_encoded_video);
         }
         if (save_encoded_video_) {
-            lbl_frame_ = new QLabel(root_widget_);
-            lbl_frame_->setFixedSize(960, 540);
-            auto layout = new QVBoxLayout();
-            layout->addWidget(lbl_frame_);
-            root_widget_->setLayout(layout);
+            root_widget_->setWindowTitle(GetPluginName().c_str());
+            content_layout_ = new QHBoxLayout();
+            root_widget_->setLayout(content_layout_);
             root_widget_->show();
         }
         return true;
@@ -64,16 +62,39 @@ namespace tc
 
     static QPixmap RgbaToPixmap(const uint8_t* data, int width, int height) {
         QImage img(data, width, height, QImage::Format_RGBA8888);
-        return QPixmap::fromImage(img.copy());
+        auto pixmap = QPixmap::fromImage(img.copy());
+        return pixmap.scaled(960, 540);
     }
 
     void FrameDebuggerPlugin::OnRawVideoFrameRgba(const std::string& mon_name, uint64_t frame_idx, int frame_width, int frame_height, const std::shared_ptr<Image>& image) {
-        if (!image->data || !lbl_frame_ || !IsPluginEnabled()) {
+        if (!image->data || !IsPluginEnabled() || mon_name.empty()) {
             return;
         }
         plugin_context_->PostUITask([=, this]() {
+            if (!frames_info_.contains(mon_name)) {
+                auto layout = new QVBoxLayout();
+                auto lbl_info = new QLabel(root_widget_);
+                layout->addWidget(lbl_info);
+
+                auto lbl_frame = new QLabel(root_widget_);
+                lbl_frame->setFixedSize(960, 540);
+                layout->addWidget(lbl_frame);
+                content_layout_->addLayout(layout);
+
+                auto frame_info = std::make_shared<SingleFrameInfo>();
+                frame_info->mon_name_ = mon_name;
+                frame_info->lbl_info_ = lbl_info;
+                frame_info->lbl_frame_ = lbl_frame;
+                frames_info_.insert({mon_name, frame_info});
+            }
+
+            auto frame_info = frames_info_[mon_name];
+
+            QString msg;
+            msg += "idx: " + QString::number(frame_idx) + ", " + QString::number(frame_width) + "x" + QString::number(frame_height);
+            frame_info->lbl_info_->setText(msg);
             auto pixmap = RgbaToPixmap((uint8_t*)image->data->CStr(), image->width, image->height);
-            lbl_frame_->setPixmap(pixmap);
+            frame_info->lbl_frame_->setPixmap(pixmap);
         });
     }
 

@@ -145,6 +145,35 @@ namespace tc
         return true;
     }
 
+    static void CopyToFrame(AVFrame* frame, uint8_t* src_y, uint8_t* src_u, uint8_t* src_v) {
+        int y_h = frame->height;
+        int uv_h = frame->height / 2;
+
+        int y_w = frame->width;
+        int uv_w = frame->width / 2;
+
+        // Y plane
+        for (int i = 0; i < y_h; i++) {
+            memcpy(frame->data[0] + i * frame->linesize[0],
+                   src_y + i * y_w,
+                   y_w);
+        }
+
+        // U plane
+        for (int i = 0; i < uv_h; i++) {
+            memcpy(frame->data[1] + i * frame->linesize[1],
+                   src_u + i * uv_w,
+                   uv_w);
+        }
+
+        // V plane
+        for (int i = 0; i < uv_h; i++) {
+            memcpy(frame->data[2] + i * frame->linesize[2],
+                   src_v + i * uv_w,
+                   uv_w);
+        }
+    }
+
     bool FFmpegEncoder::Encode(std::shared_ptr<Image> image, uint64_t frame_index, const std::any & extra) {
         auto beg = TimeUtil::GetCurrentTimestamp();
         auto cap_video_frame = std::any_cast<CaptureVideoFrame>(extra);
@@ -152,7 +181,7 @@ namespace tc
         auto img_height = image->height;
         auto image_data = image->data;
 
-        LOGI("Encode frame: {}, frame index: {}", cap_video_frame.display_name_, frame_index);
+        //LOGI("Encode frame: {}, frame index: {}", cap_video_frame.display_name_, frame_index);
 
         // re-create when width/height changed
         // todo
@@ -175,9 +204,14 @@ namespace tc
             //LOGI("RawImageType::kI444");
             uv_size = img_width * img_height;
         }
-        memcpy(frame_->data[0], image_data->CStr(), y_size);
-        memcpy(frame_->data[1], image_data->CStr() + y_size, uv_size);
-        memcpy(frame_->data[2], image_data->CStr() + y_size + uv_size, uv_size);
+        //memcpy(frame_->data[0], image_data->CStr(), y_size);
+        //memcpy(frame_->data[1], image_data->CStr() + y_size, uv_size);
+        //memcpy(frame_->data[2], image_data->CStr() + y_size + uv_size, uv_size);
+
+        auto y = image_data->CStr();
+        auto u = image_data->CStr() + y_size;
+        auto v = image_data->CStr() + y_size + uv_size;
+        CopyToFrame(frame_, (uint8_t*)y, (uint8_t*)u, (uint8_t*)v);
 
         int send_result = avcodec_send_frame(codec_ctx_, frame_);
         if (send_result < 0 && send_result != AVERROR(EAGAIN)) {

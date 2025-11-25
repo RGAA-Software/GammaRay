@@ -252,6 +252,9 @@ namespace tc
 
             captures_.insert({dev_name, capture});
         }
+
+        SetCaptureMonitor(capturing_monitor_name_);
+
         return true;
     }
 
@@ -402,6 +405,10 @@ namespace tc
         }
         LOGI("OnNewClientConnected!");
         NotifyCaptureMonitorInfo();
+
+        SetCaptureMonitor(capturing_monitor_name_);
+
+        this->InsertIdr();
     }
 
     std::vector<SupportedResolution> DDACapturePlugin::GetSupportedResolutions(const std::wstring& name) {
