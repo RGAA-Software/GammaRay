@@ -18,6 +18,6 @@ namespace tc {
     private:
         QString watermark_text_ = "UnLicensed Stream";
         int watermark_count_ = 1;
-        double opacity_ = 0.5;    // 0.0 ~ 1.0
+        double opacity_ = 0.6;    // 0.0 ~ 1.0
     };
 }

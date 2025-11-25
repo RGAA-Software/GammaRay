@@ -164,7 +164,7 @@ add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(src/tests)
 add_subdirectory(src/service)
-add_subdirectory(src/uninstall)
+add_subdirectory(src/uninstall) # use nsis default uninstaller, I don't need to use this program for the time being
 add_subdirectory(src/client)
 
 message("--==> Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
