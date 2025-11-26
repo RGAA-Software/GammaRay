@@ -715,6 +715,7 @@ namespace tc
             }
             auto avatar_url_path = std::format("https://{}:{}{}?appkey={}", settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), avatar_path, grApp->GetAppkey());
             auto target_avatar_path = settings_->GetGrDataCachePath() + "/" + user_mgr_->GetUserId() + + "." + FileUtil::GetFileSuffix(avatar_path);
+            LOGI("Cached avatar path: {}", target_avatar_path);
             if (File::Exists(target_avatar_path)) {
                 LOGI("Load local avatar first");
                 context_->PostUITask([=, this]() {
@@ -722,15 +723,23 @@ namespace tc
                 });
             }
 
-            auto file = File::OpenForWriteB(target_avatar_path);
+            auto target_avatar_cache_path = settings_->GetGrDataCachePath() + "/" + user_mgr_->GetUserId() + + "_cache." + FileUtil::GetFileSuffix(avatar_path);
+            auto file = File::OpenForWriteB(target_avatar_cache_path);
             auto r = HttpClient::Download(avatar_url_path, [=, this](const std::string& d) {
                 file->Append(d);
             });
             if (r.status == 200) {
                 LOGI("Load avatar from server and refresh it!");
+                file->Close();
+                File::Delete(target_avatar_path);
+                FileUtil::ReName(target_avatar_cache_path, target_avatar_path);
+                File::Delete(target_avatar_cache_path);
                 context_->PostUITask([=, this]() {
                     this->SetAvatar(target_avatar_path);
                 });
+            }
+            else {
+                file->Close();
             }
         });
     }

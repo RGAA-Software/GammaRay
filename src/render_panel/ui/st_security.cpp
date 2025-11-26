@@ -325,10 +325,17 @@ namespace tc
                 connect(edit, &QPushButton::clicked, this, [=, this]() {
                     auto desktop_path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
                     auto target_dir = TcDialogUtil::SelectDirectory(tcTr("id_save_path"), desktop_path, nullptr);
+                    LOGI("Select target dir: {}", target_dir.toStdString());
+                    if (target_dir.isEmpty()) {
+                        return;
+                    }
                     target_dir += "/gr_dat_logs.zip";
 
                     auto from = FolderUtil::GetProgramDataPath();
                     auto to = from + L"/../back";
+
+                    // delete old backup files
+                    FolderUtil::DeleteDir(to);
 
                     auto dialog = std::make_shared<InfiniteLoading>(context_, tcTr("id_collecting"));
                     dialog->show();
@@ -339,7 +346,10 @@ namespace tc
                     };
 
                     context_->PostTask([=, this]() {
-                        if (!FolderUtil::CopyDirectory(from, to, true)) {
+                        std::vector<std::string> ignore_suffix = {
+                            "h264", "h265", "jpg", "png"
+                        };
+                        if (!FolderUtil::CopyDir(from, to, ignore_suffix, true)) {
                             LOGE("CopyDirectory failed: {} -> {}", QString::fromStdWString(from).toStdString(), QString::fromStdWString(to).toStdString());
                             return;
                         }
