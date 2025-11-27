@@ -161,11 +161,21 @@ namespace tc
         if (username.empty() || password.empty()) {
             return;
         }
+
+        // register it
         auto r = user_mgr->Register(username, password);
         if (!r) {
             LOGI("Register user failed!");
             return;
         }
+
+        // try to log in
+        r = user_mgr->Login(username, password);
+        if (!r) {
+            LOGI("Login user failed!");
+            return;
+        }
+
         LOGI("Register success: {}, {}", user_mgr->GetUsername(), user_mgr->GetUserId());
         done(0);
     }

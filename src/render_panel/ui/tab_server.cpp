@@ -59,6 +59,7 @@
 #include "render_panel/companion/panel_companion.h"
 #include "client/ct_stream_item_net_type.h"
 #include "render_panel/gr_statistics.h"
+#include "render_panel/devices/gr_device_manager.h"
 
 namespace tc
 {
@@ -633,17 +634,18 @@ namespace tc
 
     void TabServer::UpdateQRCode() {
         auto broadcast_msg = context_->MakeBroadcastMessage();
-
+        auto desktop_link_raw = broadcast_msg;
+        auto b64_msg = Base64::Base64Encode(broadcast_msg);
         // companion
-        if (grApp->GetCompanion()) {
-            std::vector<uint8_t> enc_data;
-            if (grApp->GetCompanion()->EncQRCode(broadcast_msg, enc_data)) {
-                broadcast_msg = Base64::Base64Encode(enc_data.data(), enc_data.size());
-            }
-        }
+        //if (grApp->GetCompanion()) {
+            //std::vector<uint8_t> enc_data;
+            //if (grApp->GetCompanion()->EncQRCode(broadcast_msg, enc_data)) {
+            //    broadcast_msg = Base64::Base64Encode(enc_data.data(), enc_data.size());
+            //}
+        //}
 
-        qr_pixmap_ = QrGenerator::GenQRPixmap(broadcast_msg.c_str(), -1);
-        LOGI("QR str: {}", broadcast_msg);
+        qr_pixmap_ = QrGenerator::GenQRPixmap(b64_msg.c_str(), -1);
+        LOGI("QR str: {}", b64_msg);
         LOGI("QR pixmap size: {}x{}", qr_pixmap_.width(), qr_pixmap_.height());
         //qr_pixmap_ = qr_pixmap_.scaled(60, 60, Qt::KeepAspectRatio, Qt::FastTransformation);
         if (lbl_qr_code_) {
@@ -655,11 +657,18 @@ namespace tc
                                     qr_avatar_->height());
         }
 
+
+        auto desktop_link = std::format("link://{}", b64_msg);
         if (lbl_detailed_info_) {
-            auto info = std::format("link://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
-            lbl_detailed_info_->setText(info.c_str());
+            lbl_detailed_info_->setText(desktop_link.c_str());
             lbl_detailed_info_->setCursorPosition(0);
         }
+
+        context_->PostTask([=, this]() {
+            auto dev_mgr = grApp->GetDeviceManager();
+            dev_mgr->UpdateDesktopLink(desktop_link, desktop_link_raw);
+        });
+
     }
 
     void TabServer::resizeEvent(QResizeEvent *event) {

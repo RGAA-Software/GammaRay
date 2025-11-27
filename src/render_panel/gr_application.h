@@ -37,6 +37,7 @@ namespace tc
     class SpvrScanner;
     class SkinInterface;
     class GrUserManager;
+    class GrDeviceManager;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -101,6 +102,9 @@ namespace tc
         // device info valid or not
         bool IsDeviceInfoOk();
 
+        // device manager
+        std::shared_ptr<GrDeviceManager> GetDeviceManager();
+
     private:
         void RegisterMessageListener();
         void RegisterFirewall();
@@ -161,6 +165,9 @@ namespace tc
 
         // user manager
         std::shared_ptr<GrUserManager> user_mgr_ = nullptr;
+
+        // device manager
+        std::shared_ptr<GrDeviceManager> device_mgr_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;

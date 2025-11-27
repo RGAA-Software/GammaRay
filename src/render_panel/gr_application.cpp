@@ -44,6 +44,7 @@
 #include "render_panel/system/win/win_panel_message_loop.h"
 #include "render_panel/clipboard/panel_clipboard_manager.h"
 #include "render_panel/user/gr_user_manager.h"
+#include "render_panel/devices/gr_device_manager.h"
 
 #include <shellapi.h>
 #include <QLibrary>
@@ -96,6 +97,8 @@ namespace tc
         LOGI("** Context init used: {}ms", ctx_init_diff);
 
         user_mgr_ = std::make_shared<GrUserManager>(context_);
+
+        device_mgr_ = std::make_shared<GrDeviceManager>(context_);
 
         // firewall
         context_->PostTask([this]() {
@@ -508,4 +511,9 @@ namespace tc
         }
         return true;
     }
+
+    std::shared_ptr<GrDeviceManager> GrApplication::GetDeviceManager() {
+        return device_mgr_;
+    }
+
 }

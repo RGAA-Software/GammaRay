@@ -53,7 +53,20 @@ namespace tc
         auto port = settings_->GetSpvrServerPort();
         auto appkey = grApp->GetAppkey();
         auto hash_password = MD5::Hex(password);
-        auto r = spvr::SpvrUserApi::Login(host, port, appkey, username, hash_password);
+
+        auto device_id = settings_->GetDeviceId();
+        if (device_id.empty()) {
+            if (show_dialog) {
+                context_->PostUITask([=, this]() {
+                    QString msg = tcTr("id_unmanaged_device");
+                    TcDialog dialog(tcTr("id_error"), msg);
+                    dialog.exec();
+                });
+            }
+            return false;
+        }
+
+        auto r = spvr::SpvrUserApi::Login(host, port, appkey, username, hash_password, device_id);
         if (r.has_value()) {
             auto user = r.value();
             this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);

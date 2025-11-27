@@ -10,6 +10,9 @@
 #include "render_panel/gr_app_messages.h"
 #include "tc_common_new/time_util.h"
 #include "spvr_panel.pb.h"
+#include "render_panel/gr_settings.h"
+#include "tc_common_new/base64.h"
+#include "hw_info/hw_info.h"
 
 using namespace spvr_panel;
 
@@ -20,6 +23,7 @@ namespace tc
                                int port,
                                const std::string& device_id,
                                const std::string& appkey) {
+        settings_ = GrSettings::Instance();
         context_ = ctx;
         host_ = host;
         port_ = port;
@@ -31,6 +35,10 @@ namespace tc
             context_->PostTask([=, this]() {
                 this->Heartbeat();
             });
+        });
+
+        msg_listener_->Listen<MsgHWInfo>([=, this](const MsgHWInfo& info) {
+            sys_info_ = info.sys_info_;
         });
 
     }
@@ -102,10 +110,20 @@ namespace tc
         if (!IsActive()) {
             return;
         }
+
+        auto desktop_link_raw = context_->MakeBroadcastMessage();
+        auto desktop_link = std::format("link://{}", Base64::Base64Encode(desktop_link_raw));
+
         spvr_panel::SpvrPanelMessage msg;
         msg.set_msg_type(spvr_panel::SpvrPanelMessageType::kSpvrPanelHeartBeat);
         auto sub = msg.mutable_heartbeat();
         sub->set_hb_index(hb_idx_++);
+        sub->set_device_id(device_id_);
+        sub->set_desktop_link(desktop_link);
+        sub->set_desktop_link_raw(desktop_link_raw);
+        if (auto sys_info = sys_info_.Load(); sys_info != nullptr) {
+            sub->set_sys_info_raw(sys_info->raw_json_msg_);
+        }
         PostBinMessage(msg.SerializeAsString());
     }
 
