@@ -33,6 +33,9 @@ namespace tc
         // update desktop link to device
         bool UpdateDesktopLink(const std::string& desktop_link, const std::string& desktop_link_raw);
 
+        // update device name
+        Result<std::shared_ptr<spvr::SpvrDevice>, spvr::SpvrApiError> UpdateDeviceName(const std::string& device_name);
+
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;

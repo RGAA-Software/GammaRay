@@ -47,4 +47,12 @@ namespace tc
         }
     }
 
+    Result<std::shared_ptr<spvr::SpvrDevice>, spvr::SpvrApiError> GrDeviceManager::UpdateDeviceName(const std::string& device_name) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto device_id = settings_->GetDeviceId();
+        auto r = spvr::SpvrDeviceApi::UpdateDeviceName(host, port, appkey, device_id, device_name);
+        return r;
+    }
 }

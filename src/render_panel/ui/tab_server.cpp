@@ -253,7 +253,7 @@ namespace tc
                     edt_machine_name_ = msg;
                     msg->setFixedSize(160, 35);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
-                    msg->setText("WS-1002");
+                    msg->setText("");
                     msg->setStyleSheet(R"(font-size: 18px; font-weight: 700; color: #2979ff;)");
                     code_layout->addWidget(msg);
 
@@ -270,8 +270,19 @@ namespace tc
                     machine_code_qr_layout->addLayout(layout);
 
                     btn_save->SetOnImageButtonClicked([=, this]() {
-
-                        context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_update_success"));
+                        if (msg->text().isEmpty()) {
+                            return;
+                        }
+                        auto device_mgr = grApp->GetDeviceManager();
+                        auto r = device_mgr->UpdateDeviceName(msg->text().toStdString());
+                        if (r.has_value()) {
+                            settings_->SetDeviceName(r.value()->device_name_);
+                            context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_update_success"));
+                        }
+                        else {
+                            TcDialog dialog(tcTr("id_error"), tcTr("id_op_error"), this);
+                            dialog.exec();
+                        }
                     });
                 }
             }
@@ -304,7 +315,7 @@ namespace tc
                 title->SetTextId("id_connect_information");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 21px; font-weight:700;)");
-                left_root->addSpacing(20);
+                left_root->addSpacing(30);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 
@@ -363,7 +374,7 @@ namespace tc
                 title->SetTextId("id_remote_device");
                 title->setAlignment(Qt::AlignLeft);
                 title->setStyleSheet(R"(font-size: 21px; font-weight:700;)");
-                left_root->addSpacing(50);
+                left_root->addSpacing(30);
                 left_root->addWidget(title, 0, Qt::AlignLeft);
             }
 

@@ -182,6 +182,12 @@ namespace tc
         storage.remove<spvr::SpvrStream>(id);
     }
 
+    void StreamDBOperator::Clear() {
+        using Storage = decltype(db_->GetStorageTypeValue());
+        auto storage = std::any_cast<Storage>(db_->GetDbStorage());
+        storage.remove_all<spvr::SpvrStream>();
+    }
+
     std::string StreamDBOperator::GenUUID() {
         QUuid id = QUuid::createUuid();
         QString str_id = id.toString();

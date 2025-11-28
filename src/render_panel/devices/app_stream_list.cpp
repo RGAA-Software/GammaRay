@@ -268,6 +268,10 @@ namespace tc
                 this->RequestBindDevices();
             });
         });
+
+        msg_listener_->Listen<MsgForceClearProgramData>([=, this](const MsgForceClearProgramData& msg) {
+            this->LoadStreamItems();
+        });
     }
 
     void AppStreamList::RegisterActions(int index) {

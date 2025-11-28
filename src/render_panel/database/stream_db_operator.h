@@ -39,6 +39,7 @@ namespace tc
         void DeleteStream(int id);
         int RandomColor();
         bool HasStream(const std::string& stream_id);
+        void Clear();
 
     private:
         //void CreateTables();

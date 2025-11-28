@@ -33,6 +33,7 @@
 #include "tc_common_new/zip_util.h"
 #include "tc_common_new/file_util.h"
 #include "render_panel/user/gr_user_manager.h"
+#include "render_panel/database/stream_db_operator.h"
 
 namespace tc
 {
@@ -264,6 +265,7 @@ namespace tc
                         // clear
                         settings_->ClearData();
                         grApp->GetUserManager()->Clear();
+                        context_->GetStreamDBManager()->Clear();
                         context_->SendAppMessage(MsgForceClearProgramData{});
                     }
                 });
