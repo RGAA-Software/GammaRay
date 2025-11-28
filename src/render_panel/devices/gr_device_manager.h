@@ -8,6 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "expt/expected.h"
+#include "tc_spvr_client/spvr_errors.h"
+
+namespace spvr
+{
+    class SpvrDevice;
+}
+
 namespace tc
 {
 
@@ -17,7 +25,12 @@ namespace tc
     class GrDeviceManager {
     public:
         explicit GrDeviceManager(const std::shared_ptr<GrContext>& ctx);
+        // request new device
+        // def_device_name: D-{last segment of ip}
+        // info: empty
+        Result<std::shared_ptr<spvr::SpvrDevice>, spvr::SpvrApiError> RequestNewDevice(const std::string& def_device_name, const std::string& info);
 
+        // update desktop link to device
         bool UpdateDesktopLink(const std::string& desktop_link, const std::string& desktop_link_raw);
 
     private:

@@ -260,8 +260,23 @@ namespace tc
             if (!settings_->HasSpvrServerConfig()) {
                 return false;
             }
-            LOGI("Will request new device!");
-            auto opt_device = spvr::SpvrDeviceApi::RequestNewDevice(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), grApp->GetAppkey(), "");
+
+            // make a default device name
+            std::string def_device_name = "D-";
+            auto ips = context_->GetIps();
+            std::string device_suffix = "NULL";
+            if (!ips.empty()) {
+                auto ip = ips[0].ip_addr_;
+                std::vector<std::string> ip_segments;
+                StringUtil::Split(ip, ip_segments, ".");
+                if (!ip_segments.empty()) {
+                    device_suffix = ip_segments[ip_segments.size()-1];
+                }
+            }
+            def_device_name += device_suffix;
+            LOGI("Will request new device, device name: {}", def_device_name);
+
+            auto opt_device = device_mgr_->RequestNewDevice(def_device_name, "");
             if (!opt_device.has_value()) {
                 LOGE("Can't create new device, error: {}", (int)opt_device.error());
                 return false;
@@ -273,6 +288,7 @@ namespace tc
             }
 
             settings_->SetDeviceId(device->device_id_);
+            settings_->SetDeviceName(device->device_name_);
             settings_->SetDeviceRandomPwd(device->gen_random_pwd_);
 
             context_->SendAppMessage(MsgRequestedNewDevice {

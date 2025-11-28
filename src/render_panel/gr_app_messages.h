@@ -232,6 +232,18 @@ namespace tc
     public:
         std::map<std::string, std::shared_ptr<StNetworkSpvrAccessInfo>> access_info_;
     };
+
+    // user logged in
+    class MsgUserLoggedIn {
+    public:
+
+    };
+
+    // user logged out
+    class MsgUserLoggedOut {
+    public:
+
+    };
 }
 
 #endif // APP_MESSAGES_H

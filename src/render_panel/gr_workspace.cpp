@@ -703,6 +703,9 @@ namespace tc
                 // clear ui
                 ClearUserInfo();
                 // avatar
+
+                // send a logged in message
+                context_->SendAppMessage(MsgUserLoggedOut {});
             }
         }
     }

@@ -32,11 +32,16 @@
 #include "stream_state_checker.h"
 #include "tc_profile_client/profile_api.h"
 #include "tc_relay_client/relay_api.h"
+#include "tc_spvr_client/spvr_user.h"
+#include "tc_spvr_client/spvr_device.h"
+#include "tc_spvr_client/spvr_user_device.h"
 #include "render_panel/gr_application.h"
 #include "render_panel/gr_workspace.h"
 #include "render_panel/network/render_api.h"
 #include "render_panel/database/stream_db_operator.h"
 #include "client/ct_stream_item_net_type.h"
+#include "render_panel/user/gr_user_manager.h"
+#include "render_panel/util/conn_info_parser.h"
 
 namespace tc
 {
@@ -252,6 +257,15 @@ namespace tc
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
             context_->PostTask([this]() {
                 state_checker_->UpdateCurrentStreamItems(streams_);
+            });
+            //context_->PostTask([this]() {
+            //    this->RequestBindDevices();
+            //});
+        });
+
+        msg_listener_->Listen<MsgUserLoggedIn>([this](const MsgUserLoggedIn& msg) {
+            context_->PostTask([this]() {
+                this->RequestBindDevices();
             });
         });
     }
@@ -696,6 +710,20 @@ namespace tc
         context_->PostUITask([=, this]() {
             auto db_mgr = context_->GetStreamDBManager();
             streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
+
+            // bench test
+            // auto fn_rand_a_upper_char = []() -> char {
+            //     char c = 'A' + rand() % 26;
+            //     return c;
+            // };
+            // for (int i = 0; i < 100; i++) {
+            //     auto st = std::make_shared<spvr::SpvrStream>();
+            //     st->stream_name_ = std::format("Desktop: {}", i+1);
+            //     st->stream_host_ = std::format("192.168.1.{}", i+5);
+            //     st->desktop_name_ = StringUtil::ToUpperCpy(std::format("DESKTOP-{}{}{}{}{}", fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char()));
+            //     streams_.push_back(st);
+            // }
+
             int count = stream_list_->count();
             for (int i = 0; i < count; i++) {
                 auto item = stream_list_->takeItem(0);
@@ -718,6 +746,64 @@ namespace tc
             // update to stream state checker
             state_checker_->UpdateCurrentStreamItems(streams_);
         });
+    }
+
+    void AppStreamList::RequestBindDevices() {
+        auto user_mgr = grApp->GetUserManager();
+        auto user_devices = user_mgr->QueryBindDevices(1, 200, false);
+        for (const auto& ud : user_devices) {
+            if (ud->device_id_.empty() || !ud->user_ || !ud->device_) {
+                LOGE("Invalid user-device, user-device: {}", ud->Dump());
+                continue;
+            }
+
+            auto link = ud->device_->desktop_link_;
+            auto conn_info = ConnInfoParser::Parse(link);
+            if (!conn_info) {
+                LOGI("Parse link failed, user-device: {}", ud->Dump());
+                continue;
+            }
+
+            std::string direct_host;
+            int direct_port = 0;
+            if (!conn_info->hosts_.empty()) {
+                direct_host = conn_info->hosts_[0].ip_;
+                direct_port = conn_info->render_srv_port_;
+            }
+
+            auto db_mgr = context_->GetStreamDBManager();
+            auto opt_device = db_mgr->GetStreamByRemoteDeviceId(ud->device_id_);
+            if (opt_device.has_value()) {
+                // update info
+                const auto& stream = opt_device.value();
+                stream->remote_device_random_pwd_ = conn_info->random_pwd_;
+                stream->stream_name_ = ud->device_->device_name_;
+                stream->stream_host_ = direct_host;
+                stream->stream_port_ = direct_port;
+                stream->relay_host_ = conn_info->relay_host_;
+                stream->relay_port_ = conn_info->relay_port_;
+                stream->relay_appkey_ = conn_info->relay_appkey_;
+                db_mgr->UpdateStream(stream);
+            }
+            else {
+                // insert device
+                std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
+                item->remote_device_id_ = conn_info->device_id_;
+                item->remote_device_random_pwd_ = conn_info->random_pwd_;
+                item->stream_name_ = ud->device_->device_name_;
+                item->stream_host_ = direct_host;
+                item->stream_port_ = direct_port;
+                item->relay_host_ = conn_info->relay_host_;
+                item->relay_port_ = conn_info->relay_port_;
+                item->relay_appkey_ = conn_info->relay_appkey_;
+                item->encode_bps_ = 0;
+                item->encode_fps_ = 0;
+                item->clipboard_enabled_ = true;
+                db_mgr->AddStream(item);
+            }
+        }
+
+        LoadStreamItems();
     }
 
 }

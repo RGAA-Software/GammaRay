@@ -562,6 +562,7 @@ namespace tc
             && (settings_->GetSpvrServerHost() != spvr_host || settings_->GetSpvrServerPort() != std::atoi(spvr_port.c_str()))) {
             force_update_device_id = true;
             settings_->SetDeviceId("");
+            settings_->SetDeviceName("");
             settings_->SetDeviceRandomPwd("");
             LOGW("Clear old device id, force updating device id.");
         }

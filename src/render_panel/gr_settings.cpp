@@ -99,6 +99,7 @@ namespace tc
 
     void GrSettings::ClearData() {
         this->SetDeviceId("");
+        this->SetDeviceName("");
         this->SetDeviceRandomPwd("");
         this->SetDeviceSecurityPwd("");
         this->SetSpvrServerHost("");
@@ -223,6 +224,16 @@ namespace tc
     // Device ID // Get
     std::string GrSettings::GetDeviceId() {
         return sp_->Get(kStDeviceId, "");
+    }
+
+    // Device Name // Set
+    void GrSettings::SetDeviceName(const std::string& name) {
+        sp_->Put(kStDeviceName, name);
+    }
+
+    // Device Name // Get
+    std::string GrSettings::GetDeviceName() {
+        return sp_->Get(kStDeviceName, "");
     }
 
     // Device Random Pwd // Set

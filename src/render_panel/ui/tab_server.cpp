@@ -124,12 +124,12 @@ namespace tc
                     auto code_layout = new NoMarginHLayout();
 
                     auto msg = new QLabel(this);
-                    msg->setFixedWidth(140);
+                    msg->setFixedWidth(160);
                     lbl_machine_code_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
                     msg->setText(tc::SpaceId("---------").c_str());
-                    msg->setStyleSheet(R"(font-size: 21px; font-weight: 700; color: #2979ff;)");
+                    msg->setStyleSheet(R"(font-size: 18px; font-weight: 700; color: #2979ff;)");
                     code_layout->addWidget(msg);
 
                     auto btn_cpy = new TcImageButton(":/resources/image/ic_copy.svg", QSize(20, 20));
@@ -168,11 +168,11 @@ namespace tc
 
                     auto pwd_layout = new NoMarginHLayout();
                     auto msg = new QLabel(this);
-                    msg->setFixedWidth(140);
+                    msg->setFixedWidth(160);
                     lbl_machine_random_pwd_ = msg;
                     msg->setTextInteractionFlags(Qt::TextSelectableByMouse);
                     msg->setText("********");
-                    msg->setStyleSheet(R"(font-size: 21px; font-weight: 700; color: #2979ff;)");
+                    msg->setStyleSheet(R"(font-size: 18px; font-weight: 700; color: #2979ff;)");
                     pwd_layout->addWidget(msg);
 
                     auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(20, 20));
@@ -235,6 +235,43 @@ namespace tc
                         }
                         settings_->SetDisplayRandomPwd(!settings_->IsDisplayRandomPwd());
                         SetDeviceRandomPwdVisibility();
+                    });
+                }
+
+                {
+                    auto title = new TcLabel(this);
+                    title->setFixedWidth(item_width);
+                    title->SetTextId("id_device_name");
+                    title->setAlignment(Qt::AlignLeft);
+                    title->setStyleSheet(R"(font-size: 12px; font-weight:500;)");
+                    layout->addSpacing(18);
+                    layout->addWidget(title, 0, Qt::AlignLeft);
+
+                    auto code_layout = new NoMarginHLayout();
+
+                    auto msg = new QLineEdit(this);
+                    edt_machine_name_ = msg;
+                    msg->setFixedSize(160, 35);
+                    //auto uid = QString::fromStdString(tc::SpaceId(context_->GetSysUniqueId()));
+                    msg->setText("WS-1002");
+                    msg->setStyleSheet(R"(font-size: 18px; font-weight: 700; color: #2979ff;)");
+                    code_layout->addWidget(msg);
+
+                    auto btn_save = new TcImageButton(":/resources/image/ic_save.svg", QSize(20, 20));
+                    btn_save->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+                    btn_save->SetRoundRadius(15);
+                    btn_save->setFixedSize(30, 30);
+                    code_layout->addSpacing(10);
+                    code_layout->addWidget(btn_save, 0, Qt::AlignVCenter);
+                    code_layout->addStretch();
+
+                    layout->addSpacing(5);
+                    layout->addLayout(code_layout);
+                    machine_code_qr_layout->addLayout(layout);
+
+                    btn_save->SetOnImageButtonClicked([=, this]() {
+
+                        context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_update_success"));
                     });
                 }
             }
@@ -580,6 +617,8 @@ namespace tc
             SetDeviceRandomPwdVisibility();
         }
 
+        edt_machine_name_->setText(settings_->GetDeviceName().c_str());
+
         RegisterMessageListener();
     }
 
@@ -600,6 +639,7 @@ namespace tc
         msg_listener_->Listen<MsgRequestedNewDevice>([=, this](const MsgRequestedNewDevice& msg) {
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId(msg.device_id_).c_str());
+                edt_machine_name_->setText(settings_->GetDeviceName().c_str());
                 //lbl_machine_random_pwd_->setText(msg.device_random_pwd_.c_str());
                 SetDeviceRandomPwdVisibility();
                 this->UpdateQRCode();
@@ -620,6 +660,7 @@ namespace tc
         msg_listener_->Listen<MsgForceClearProgramData>([=, this](const MsgForceClearProgramData& msg) {
             context_->PostUITask([=, this]() {
                 lbl_machine_code_->setText(tc::SpaceId("---------").c_str());
+                edt_machine_name_->setText("");
                 SetDeviceRandomPwdVisibility();
                 this->UpdateQRCode();
             });

@@ -41,6 +41,7 @@ namespace tc
         ~AppStreamList() override;
 
         void LoadStreamItems();
+        void RequestBindDevices();
 
     private:
         QListWidgetItem* AddItem(const std::shared_ptr<spvr::SpvrStream>& item, int index);

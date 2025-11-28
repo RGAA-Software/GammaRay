@@ -12,6 +12,7 @@
 #include "render_panel/gr_context.h"
 #include "select_stream_type_dialog.h"
 #include "create_stream_conn_info_dialog.h"
+#include "tc_image_button.h"
 
 #include <QPainter>
 #include <QPen>
@@ -101,23 +102,43 @@ namespace tc
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
     StreamContent::StreamContent(const std::shared_ptr<GrContext>& ctx, QWidget* parent) : QWidget(parent) {
+        context_ = ctx;
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargins(root_layout);
 
         {
             auto title = new TcLabel(this);
-            title->setFixedWidth(250);
+            //title->setFixedWidth();
             title->SetTextId("id_remote_devices");
             title->setAlignment(Qt::AlignLeft);
             title->setStyleSheet(R"(font-size: 22px; font-weight:700;)");
 
             auto layout = new QHBoxLayout();
+            layout->setAlignment(Qt::AlignVCenter);
             WidgetHelper::ClearMargins(layout);
             layout->addSpacing(30);
             layout->addWidget(title);
-            layout->addStretch();
+
+            auto btn_refresh = new TcImageButton(":/resources/image/ic_refresh.svg", QSize(20, 20));
+            btn_refresh->SetColor(0xffffff, 0xdddddd, 0xbbbbbb);
+            btn_refresh->SetRoundRadius(15);
+            btn_refresh->setFixedSize(30, 30);
+            layout->addSpacing(20);
+            layout->addWidget(btn_refresh);
+
+            layout->addStretch(100);
 
             root_layout->addLayout(layout);
+
+            //
+            btn_refresh->SetOnImageButtonClicked([=, this]() {
+                if (!stream_list_) {
+                    return;
+                }
+                context_->PostTask([=, this]() {
+                    stream_list_->RequestBindDevices();
+                });
+            });
         }
 
         auto stream_list = new AppStreamList(ctx, this);

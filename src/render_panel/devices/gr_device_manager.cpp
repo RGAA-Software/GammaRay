@@ -22,6 +22,14 @@ namespace tc
         settings_ = GrSettings::Instance();
     }
 
+    Result<std::shared_ptr<spvr::SpvrDevice>, spvr::SpvrApiError> GrDeviceManager::RequestNewDevice(const std::string& def_device_name, const std::string& info) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto r = spvr::SpvrDeviceApi::RequestNewDevice(host, port, appkey, def_device_name, info);
+        return r;
+    }
+
     bool GrDeviceManager::UpdateDesktopLink(const std::string& desktop_link, const std::string& desktop_link_raw) {
         auto host = settings_->GetSpvrServerHost();
         auto port = settings_->GetSpvrServerPort();

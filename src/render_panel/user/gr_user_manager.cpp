@@ -8,9 +8,11 @@
 #include "tc_common_new/md5.h"
 #include "tc_spvr_client/spvr_user.h"
 #include "tc_spvr_client/spvr_user_api.h"
+#include "tc_spvr_client/spvr_user_device_api.h"
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_application.h"
+#include "render_panel/gr_app_messages.h"
 #include "tc_label.h"
 #include "tc_dialog.h"
 
@@ -71,6 +73,10 @@ namespace tc
             auto user = r.value();
             this->SaveUserInfo(user->uid_, user->username_, password, user->avatar_path_);
             context_->NotifyAppMessage(tcTr("id_tips"), tcTr("id_login_success"));
+
+            // send a logged in message
+            context_->SendAppMessage(MsgUserLoggedIn {});
+
             return true;
         }
         else {
@@ -179,6 +185,32 @@ namespace tc
             TcDialog dialog(tcTr("id_error"), msg);
             dialog.exec();
             return false;
+        }
+    }
+
+    std::vector<std::shared_ptr<spvr::SpvrUserDevice>> GrUserManager::QueryBindDevices(int page, int page_size, bool show_dialog) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto uid = GetUserId();
+        auto password = GetPassword();
+        auto hash_password = MD5::Hex(password);
+        if (uid.empty()) {
+            return {};
+        }
+        auto r = spvr::SpvrUserDeviceApi::QueryUserBindDevices(host, port, appkey, uid, page, page_size);
+        if (!r.has_value()) {
+            auto err = r.error();
+            if (show_dialog) {
+                grApp->GetContext()->PostUITask([=, this]() {
+
+                });
+            }
+            return {};
+        }
+        else {
+            auto v = r.value();
+            return v;
         }
     }
 

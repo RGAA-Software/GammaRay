@@ -93,6 +93,7 @@
         <file>resources/image/ic_default_avatar.svg</file>
         <file>resources/image/ic_device_normal.svg</file>
         <file>resources/image/ic_device_selected.svg</file>
+        <file>resources/image/ic_save.svg</file>
 
         <file>resources/window-bar/close.svg</file>
         <file>resources/window-bar/fullscreen.svg</file>

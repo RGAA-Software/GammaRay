@@ -7,6 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
+namespace spvr
+{
+    class SpvrUserDevice;
+}
 
 namespace tc
 {
@@ -23,6 +29,7 @@ namespace tc
         bool ModifyUsername(const std::string& username);
         bool ModifyPassword(const std::string& new_password);
         bool UpdateAvatar(const std::string& avatar_path);
+        std::vector<std::shared_ptr<spvr::SpvrUserDevice>> QueryBindDevices(int page, int page_size, bool show_dialog);
 
         bool IsLoggedIn();
         std::string GetUserId();

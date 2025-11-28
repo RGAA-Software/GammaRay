@@ -53,6 +53,7 @@ namespace tc
         void HideEmptyTip();
 
     private:
+        std::shared_ptr<GrContext> context_ = nullptr;
         AppStreamList* stream_list_ = nullptr;
         AddButton* add_btn_ = nullptr;
         QLabel* empty_tip_ = nullptr;
