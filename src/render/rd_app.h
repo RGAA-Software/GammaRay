@@ -121,6 +121,10 @@ namespace tc
         void RequestRestartMe();
 
         bool SwitchGdiCapture();
+        bool SwitchDdaCapture();
+        bool IsCurrentGdiCapture();
+        bool IsCurrentDdaCapture();
+        bool TryInitDdaCapture();
 
     protected:
         RdSettings* settings_ = nullptr;
@@ -149,6 +153,7 @@ namespace tc
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         // working capture plugin
+        std::mutex capture_plugin_mtx_;
         tc::GrMonitorCapturePlugin* capture_plugin_;
         tc::GrMonitorCapturePlugin* gdi_capture_plugin_ = nullptr;
         tc::GrMonitorCapturePlugin* dda_capture_plugin_ = nullptr;

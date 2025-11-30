@@ -44,8 +44,9 @@ namespace tc
         void SetCaptureErrorCallback(const CaptureErrorCallback& cbk);
         
         // target: monitor
-        virtual bool StartCapturing();
-        virtual void StopCapturing();
+        virtual bool TryInitSpecificCapture() = 0;
+        virtual bool StartCapturing() = 0;
+        virtual void StopCapturing() = 0;
 
         virtual std::vector<CaptureMonitorInfo> GetCaptureMonitorInfo();
         virtual VirtualDesktopBoundRectangleInfo GetVirtualDesktopBoundRectangleInfo() { return VirtualDesktopBoundRectangleInfo{}; };

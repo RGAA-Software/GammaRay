@@ -202,8 +202,34 @@ namespace tc
         return false;
     }
 
+    bool DDACapturePlugin::TryInitSpecificCapture() {
+        if (!captures_.empty()) {
+            StopCapturing();
+        }
+        monitors_.clear();
+
+        auto res_init = InitVideoCaptures();
+        if (!res_init) {
+            LOGE("TryInitSpecificCapture, InitVideoCaptures failed!");
+            return false;
+        }
+
+        for(const auto&[dev_name, monitor_info] : monitors_) {
+            auto capture = std::make_shared<DDACapture>(this, monitor_info);
+            LOGI("DDACapturePlugin capture_fps_: {}", capture_fps_);
+            capture->SetCaptureFps(capture_fps_);
+            auto init_res = capture->Init();
+            if (!init_res) {
+                captures_.clear();
+                LOGE("TryInitSpecificCapture, Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
+                return false;
+            }
+            captures_.insert({dev_name, capture});
+        }
+        return !captures_.empty();
+    }
+
     bool DDACapturePlugin::StartCapturing() {
-        GrMonitorCapturePlugin::StartCapturing();
         StopCapturing();
 
         auto res_init = InitVideoCaptures();

@@ -20,14 +20,6 @@ namespace tc
         return true;
     }
 
-    bool GrMonitorCapturePlugin::StartCapturing() {
-        return false;
-    }
-
-    void GrMonitorCapturePlugin::StopCapturing() {
-
-    }
-
     std::vector<CaptureMonitorInfo> GrMonitorCapturePlugin::GetCaptureMonitorInfo() {
         return {};
     }

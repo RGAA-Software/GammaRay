@@ -155,13 +155,17 @@ namespace tc
                     return -1;
                 }
 
+                // test only gdi begin
+                //capture_plugin_ = gdi_capture_plugin_;
+                // test only gdi end
+
                 LOGI("Use capture fps: {}", settings_->encoder_.fps_);
                 if (capture_plugin_ && capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
                     capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
                     capture_plugin_->SetCaptureErrorCallback([=, this](const MonitorCaptureError& err) {
                         LOGE("*** capture error: {}", (int)err);
-                        if (capture_plugin_->GetPluginId() == kGdiCapturePluginId) {
+                        if (IsCurrentGdiCapture()) {
                             LOGI("Already use GDI capture, ignore the error.");
                             return;
                         }
@@ -307,6 +311,7 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgModifyFps>([=, this](const MsgModifyFps& msg) {
+            std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
             if (capture_plugin_) {
                 settings_->encoder_.fps_ = msg.fps_;
                 capture_plugin_->SetCaptureFps(msg.fps_);
@@ -329,6 +334,22 @@ namespace tc
         msg_listener_->Listen<MsgPanelStreamShutdownDevice>([=, this](const MsgPanelStreamShutdownDevice& msg) {
             LOGI(" ** Panel request ShutdownDevice from device: {}", msg.from_device_);
             Hardware::ShutdownDevice();
+        });
+
+        msg_listener_->Listen<MsgTimer20S>([=, this](const MsgTimer20S& msg) {
+            context_->PostTask([=, this]() {
+                if (IsCurrentGdiCapture()) {
+                    if (auto r = this->TryInitDdaCapture(); !r) {
+                        LOGI("===> Try init dda capture result failed!");
+                        return;
+                    }
+                    LOGI("Will switch to DDA");
+                    if (auto r = SwitchDdaCapture(); r && IsCurrentDdaCapture()) {
+                        LOGI("Will start DDA capturing");
+                        capture_plugin_->StartCapturing();
+                    }
+                }
+            });
         });
 
     }
@@ -535,7 +556,6 @@ namespace tc
                     }
                 }
             }
-            //capture_plugin_->SetCaptureMonitor("");
         }
         if (data_provider_plugin) {
             data_provider_plugin->StartProviding();
@@ -612,17 +632,28 @@ namespace tc
     }
 
     void RdApplication::SendConfigurationBack() {
-        if (!capture_plugin_) {
-            LOGE("SendConfigurationBack failed, working monitor capture plugin is null.");
-            return;
+        {
+            std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+            if (!capture_plugin_) {
+                LOGE("SendConfigurationBack failed, working monitor capture plugin is null.");
+                return;
+            }
         }
+
         tc::Message m;
         m.set_type(tc::kServerConfiguration);
         auto config = m.mutable_config();
         // screen info
         auto monitors_info = config->mutable_monitors_info();
-        auto capturing_name = capture_plugin_->GetCapturingMonitorName();
-        auto monitors = capture_plugin_->GetCaptureMonitorInfo();
+        auto capturing_name = [this]() {
+            std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+            return capture_plugin_->GetCapturingMonitorName();
+        }();
+        std::vector<CaptureMonitorInfo> monitors = [this]() {
+            std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+            return capture_plugin_->GetCaptureMonitorInfo();
+        }();
+
         LOGI("Will send configuration back, monitor size: {}", monitors.size());
         for (int i = 0; i < monitors.size(); i++) {
             auto monitor = monitors[i];
@@ -682,6 +713,7 @@ namespace tc
     }
 
     tc::GrMonitorCapturePlugin* RdApplication::GetWorkingMonitorCapturePlugin() {
+        std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
         return capture_plugin_;
     }
 
@@ -775,6 +807,7 @@ namespace tc
     }
 
     bool RdApplication::SwitchGdiCapture() {
+        std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
         if (capture_plugin_) {
             capture_plugin_->StopCapturing();
         }
@@ -787,6 +820,43 @@ namespace tc
         capture_plugin_->EnablePlugin();
         LOGI("Use gdi capture plugin.");
         return true;
+    }
+
+    bool RdApplication::SwitchDdaCapture() {
+        if (IsCurrentDdaCapture()) {
+            return true;
+        }
+
+        std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+        if (capture_plugin_) {
+            capture_plugin_->StopCapturing();
+        }
+        if (!dda_capture_plugin_) {
+            LOGE("Don't have gdi plugin, ignore!");
+            return false;
+        }
+        capture_plugin_ = dda_capture_plugin_;
+        capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
+        capture_plugin_->EnablePlugin();
+        LOGI("Use dda capture plugin.");
+        return true;
+    }
+
+    bool RdApplication::IsCurrentGdiCapture() {
+        std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+        return capture_plugin_ && capture_plugin_->GetPluginId() == kGdiCapturePluginId;
+    }
+
+    bool RdApplication::IsCurrentDdaCapture() {
+        std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+        return capture_plugin_ && capture_plugin_->GetPluginId() == kDdaCapturePluginId;
+    }
+
+    bool RdApplication::TryInitDdaCapture() {
+        if (!dda_capture_plugin_) {
+            return false;
+        }
+        return dda_capture_plugin_->TryInitSpecificCapture();
     }
 
     void RdApplication::PostPanelMessage(std::shared_ptr<Data> msg) {
