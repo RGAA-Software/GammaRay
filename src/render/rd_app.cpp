@@ -159,9 +159,14 @@ namespace tc
                 if (capture_plugin_ && capture_plugin_->IsPluginEnabled()) {
                     LOGI("Use dda capture plugin.");
                     capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
-                    capture_plugin_->SetCaptureInitFailedCallback([=, this]() { // 当DDA初始化有异常发生时候, 切换为GDI
-                        capture_plugin_->StopCapturing();
-                        capture_plugin_->DisablePlugin();
+                    capture_plugin_->SetCaptureErrorCallback([=, this](const MonitorCaptureError& err) {
+                        LOGE("*** capture error: {}", (int)err);
+                        if (capture_plugin_->GetPluginId() == kGdiCapturePluginId) {
+                            LOGI("Already use GDI capture, ignore the error.");
+                            return;
+                        }
+                        // change to GDI
+                        // capture_plugin_->DisablePlugin();
                         LOGI("Don't use DDA, will switch to GDI.");
                         SwitchGdiCapture();
                         capture_plugin_->StartCapturing();
@@ -523,6 +528,12 @@ namespace tc
             auto r = capture_plugin_->StartCapturing();
             if (!r) {
                 LOGE("StartCapturing failed in : {}", capture_plugin_->GetPluginName());
+                if (capture_plugin_->GetPluginId() == kDdaCapturePluginId) {
+                    LOGW("The failed capture is DDA, will change to GDI");
+                    if (SwitchGdiCapture()) {
+                        capture_plugin_->StartCapturing();
+                    }
+                }
             }
             //capture_plugin_->SetCaptureMonitor("");
         }
@@ -763,18 +774,19 @@ namespace tc
         return desktop_mgr_;
     }
 
-    void RdApplication::SwitchGdiCapture() {
+    bool RdApplication::SwitchGdiCapture() {
         if (capture_plugin_) {
             capture_plugin_->StopCapturing();
         }
         if (!gdi_capture_plugin_) {
             LOGE("Don't have gdi plugin, ignore!");
-            return;
+            return false;
         }
         capture_plugin_ = gdi_capture_plugin_;
         capture_plugin_->SetCaptureFps(settings_->encoder_.fps_);
-        //capture_plugin_->EnablePlugin();
+        capture_plugin_->EnablePlugin();
         LOGI("Use gdi capture plugin.");
+        return true;
     }
 
     void RdApplication::PostPanelMessage(std::shared_ptr<Data> msg) {

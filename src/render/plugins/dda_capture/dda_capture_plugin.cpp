@@ -209,9 +209,6 @@ namespace tc
         auto res_init = InitVideoCaptures();
         if (!res_init) {
             LOGE("InitVideoCaptures failed!");
-            if (capture_init_failed_cbk_) {
-                capture_init_failed_cbk_();
-            }
             return false;
         }
 
@@ -225,35 +222,41 @@ namespace tc
             auto capture = std::make_shared<DDACapture>(this, monitor_info);
             LOGI("DDACapturePlugin capture_fps_: {}", capture_fps_);
             capture->SetCaptureFps(capture_fps_);
-            capture->StartCapture();
-            capture->SetDDAInitCallback([=, this](bool init_res) {
-                if (!init_res) {
-                    if (capture_init_failed_cbk_) {
-                        capture_init_failed_cbk_();
-                    }
-                    return;
-                }
+            auto init_res = capture->Init();
+            if (!init_res) {
+                captures_.clear();
+                LOGE("Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
+                return false;
+            }
 
-                if (kAllMonitorsNameSign == capturing_monitor_name_) {
-                    capture->ResumeCapture();
+            // set error callback
+            capture->SetDDAErrorCallback([=, this](const MonitorCaptureError& err) {
+                if (capture_err_callback_) {
+                    capture_err_callback_(err);
                 }
-                else if(capturing_monitor_name_.empty()) {
-                    if (capture->IsPrimaryMonitor()) {
-                        capture->ResumeCapture();
-                    }
-                    capturing_monitor_name_ = capture->GetMyMonitorInfo().name_;
-                }
-                else if (capture->GetMyMonitorInfo().name_ == capturing_monitor_name_) {
-                    capture->ResumeCapture();
-                }
-                SetCaptureMonitor(capturing_monitor_name_);
-                NotifyCaptureMonitorInfo();
             });
+
+            // init success
+            if (kAllMonitorsNameSign == capturing_monitor_name_) {
+                capture->ResumeCapture();
+            }
+            else if(capturing_monitor_name_.empty()) {
+                if (capture->IsPrimaryMonitor()) {
+                    capture->ResumeCapture();
+                }
+                capturing_monitor_name_ = capture->GetMyMonitorInfo().name_;
+            }
+            else if (capture->GetMyMonitorInfo().name_ == capturing_monitor_name_) {
+                capture->ResumeCapture();
+            }
+            SetCaptureMonitor(capturing_monitor_name_);
+            NotifyCaptureMonitorInfo();
+
+            // start capturing
+            capture->StartCapture();
 
             captures_.insert({dev_name, capture});
         }
-
-        SetCaptureMonitor(capturing_monitor_name_);
 
         return true;
     }
@@ -356,22 +359,23 @@ namespace tc
     }
 
     void DDACapturePlugin::On1Second() {
-        if (1 == captures_.size()) {
-
+        if (!captures_.empty()) {
             int32_t continuous_timeout_times = 0;
-
             for (const auto& [dev_name, capture] : captures_) {
                 auto dda_capture =  std::dynamic_pointer_cast<DDACapture>(capture);
                 if (dda_capture) {
-                    continuous_timeout_times = dda_capture->GetContinuousTimeoutTimes();
+                    auto value = dda_capture->GetContinuousTimeoutTimes();
+                    if (value > continuous_timeout_times) {
+                        continuous_timeout_times = value;
+                    }
                 }
             }
 
             if (continuous_timeout_times > kAllowedMaxContinuousTimeoutTimes) {
                 StopCapturing();
                 captures_.clear();
-                if (capture_init_failed_cbk_) {
-                    capture_init_failed_cbk_();
+                if (capture_err_callback_) {
+                    capture_err_callback_(MonitorCaptureError::kTimeoutSoManyTimes);
                 }
             }
         }

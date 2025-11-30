@@ -34,6 +34,33 @@ namespace tc
     }
 
     bool DDACapture::Init() {
+        const int kInitTryMaxCount = 3;
+        int try_count = -1;
+        bool dda_init_res = false;
+
+        do {
+            ++try_count;
+            dda_init_res = this->InitInternal();
+            if (!dda_init_res) {
+                LOGE("dda capture init failed for target: {}, will try again.", my_monitor_info_.name_);
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                continue;
+            }
+            else {
+                break;
+            }
+
+        } while (try_count < kInitTryMaxCount);
+
+        // test init failed begin //
+        //dda_init_res = false;
+        // test init failed end //
+
+        LOGI("Init DDA result: {} -> {}", my_monitor_info_.name_, dda_init_res);
+        return dda_init_res;
+    }
+
+    bool DDACapture::InitInternal() {
         HRESULT res = 0;
         int adapter_index = 0;
 
@@ -263,42 +290,6 @@ namespace tc
         return res;
     }
 
-    void DDACapture::Start() {
-        auto task = [this] {
-            const int kInitTryMaxCount = 6;
-            int try_count = -1;
-            bool dda_init_res = false;
-
-            do {
-                ++try_count;
-                dda_init_res = this->Init();
-                if (!dda_init_res) {
-                    LOGE("dda capture init failed for target: {}, will try again.", my_monitor_info_.name_);
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
-                    continue;
-                }
-                else {
-                    break;
-                }
-
-            } while (try_count < kInitTryMaxCount);
-
-            if (dda_init_callback_) {
-                dda_init_callback_(dda_init_res);
-            }
-
-            if (dda_init_res) {
-                LOGI("DDA Init success, will start capturing.");
-                Capture();
-            }
-            else {
-                LOGI("DDA Init failed, will use gdi capturing.");
-            }
-        };
-
-        capture_thread_ = Thread::MakeOnceTask(task, std::format("dda_capture:{}", my_monitor_info_.name_), false);
-    }
-
     void DDACapture::Capture() {
         while (!stop_flag_) {
             if (pausing_ || !d3d11_device_ || !d3d11_device_context_ /*|| plugin_->DontHaveConnectedClientsNow()*/) {
@@ -322,6 +313,10 @@ namespace tc
             ComPtr<ID3D11Texture2D> texture = nullptr;
             // do capture
             auto res = CaptureNextFrame(target_duration, texture);
+
+            // test timeout beg //
+            //res = DXGI_ERROR_WAIT_TIMEOUT;
+            // test timeout end //
 
             bool is_cached = false;
             if (res == S_OK) {
@@ -358,15 +353,22 @@ namespace tc
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 auto init_ok = Init();
                 if (!init_ok) {
-                    LOGE("ReInit failed!");
-                } else {
+                    LOGE("ReInit failed, can't capture.");
+                    if (err_callback_) {
+                        err_callback_(MonitorCaptureError::kCantCapture);
+                    }
+                }
+                else {
                     used_cache_times_ = 0;
                     refresh_screen_ = true;
                     LOGE("ReInit successfully.");
                 }
                 continue;
-            } else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED)) {
-                ++continuous_timeout_times_;
+            }
+            else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED)) {
+                if (res == DXGI_ERROR_WAIT_TIMEOUT) {
+                    ++continuous_timeout_times_;
+                }
                 //LOGI("CaptureNextFrame res: {:x}", (uint32_t)res);
                  if (refresh_screen_) {
                      if (cached_texture_ == nullptr) {
@@ -383,11 +385,6 @@ namespace tc
                  else {
                      continue;
                  }
-            }
-            else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                LOGE("Unknown error: {:x}", res, StringUtil::GetErrorStr(res));
-                continue;
             }
 
             if (texture) {
@@ -554,7 +551,11 @@ namespace tc
     }
 
     bool DDACapture::StartCapture() {
-        this->Start();
+        auto task = [this] {
+            Capture();
+        };
+
+        capture_thread_ = Thread::MakeOnceTask(task, std::format("dda_capture:{}", my_monitor_info_.name_), false);
         return true;
     }
 
@@ -606,6 +607,10 @@ namespace tc
 
     void DDACapture::On33MilliSecond() {
 
+    }
+
+    void DDACapture::SetDDAErrorCallback(CaptureErrorCallback&& cbk){
+        err_callback_ = std::move(cbk);
     }
 
 

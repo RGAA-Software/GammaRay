@@ -36,7 +36,7 @@ namespace tc
     protected:
         int capture_fps_ = 60;
         bool refresh_screen_ = false;
-        std::atomic_bool pausing_ = false;
+        std::atomic_bool pausing_ = true;
         CaptureMonitorInfo my_monitor_info_;
         bool is_primary_monitor_ = false;
         ConcurrentQueue<int32_t> capture_gaps_;

@@ -52,4 +52,8 @@ namespace tc
 
     }
 
+    void GrMonitorCapturePlugin::SetCaptureErrorCallback(const tc::CaptureErrorCallback& cbk) {
+        capture_err_callback_ = cbk;
+    }
+
 }

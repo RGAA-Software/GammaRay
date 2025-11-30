@@ -8,6 +8,7 @@
 #include "gr_plugin_interface.h"
 #include <optional>
 #include "tc_capture_new/monitor_util.h"
+#include "gr_monitor_capture_error.h"
 
 namespace tc
 {
@@ -40,16 +41,7 @@ namespace tc
 
         bool OnCreate(const tc::GrPluginParam &param) override;
         bool OnDestroy() override;
-
-        using CaptureInitFailedCallback = std::function<void()>;
-        CaptureInitFailedCallback capture_init_failed_cbk_;
-        void SetCaptureInitFailedCallback(CaptureInitFailedCallback&& cbk) {
-            capture_init_failed_cbk_ = std::move(cbk);
-        }
-
-        bool IsValidRect(const RECT& rect) {
-            return rect.right > rect.left && rect.bottom > rect.top;
-        }
+        void SetCaptureErrorCallback(const CaptureErrorCallback& cbk);
         
         // target: monitor
         virtual bool StartCapturing();
@@ -73,9 +65,14 @@ namespace tc
         virtual void On16MilliSecond();
         virtual void On33MilliSecond();
 
+        static bool IsValidRect(const RECT& rect) {
+            return rect.right > rect.left && rect.bottom > rect.top;
+        }
+
     protected:
         int capture_fps_ = 60;
         std::string capturing_monitor_name_;
+        CaptureErrorCallback capture_err_callback_;
     };
 }
 

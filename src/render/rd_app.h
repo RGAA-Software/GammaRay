@@ -120,7 +120,7 @@ namespace tc
         void SendConfigurationBack();
         void RequestRestartMe();
 
-        void SwitchGdiCapture();
+        bool SwitchGdiCapture();
 
     protected:
         RdSettings* settings_ = nullptr;

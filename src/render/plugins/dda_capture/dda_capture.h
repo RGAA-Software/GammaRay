@@ -16,11 +16,15 @@
 #include "tc_common_new/fps_stat.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
 #include "plugins/plugin_desktop_capture.h"
+#include "plugin_interface/gr_monitor_capture_error.h"
 
 using namespace Microsoft::WRL;
 
 namespace tc
 {
+
+    using DDAInitSuccessCallback = std::function<void()>;
+
     class Thread;
     class DDACapturePlugin;
 
@@ -87,16 +91,11 @@ namespace tc
         void TryWakeOs() override;
         void On16MilliSecond() override;
         void On33MilliSecond() override;
-
-        using DDAInitCallback = std::function<void(bool)>;
-        DDAInitCallback dda_init_callback_ = nullptr;
-        void SetDDAInitCallback(DDAInitCallback&& cbk){
-            dda_init_callback_ = std::move(cbk);
-        }
+        void SetDDAErrorCallback(CaptureErrorCallback&& cbk);
         int32_t GetContinuousTimeoutTimes();
 
     private:
-        void Start();
+        bool InitInternal();
         bool Exit();
         void Capture();
         HRESULT CaptureNextFrame(int wait_time, ComPtr<ID3D11Texture2D>& out_tex);
@@ -122,5 +121,7 @@ namespace tc
         ComPtr<ID3D11DeviceContext> d3d11_device_context_ = nullptr;
 
         std::atomic<int32_t> continuous_timeout_times_ = 0;
+
+        CaptureErrorCallback err_callback_ = nullptr;
     };
 }
