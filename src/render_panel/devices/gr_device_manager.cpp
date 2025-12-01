@@ -55,4 +55,5 @@ namespace tc
         auto r = spvr::SpvrDeviceApi::UpdateDeviceName(host, port, appkey, device_id, device_name);
         return r;
     }
+
 }

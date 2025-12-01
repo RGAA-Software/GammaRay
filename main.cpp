@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
     // init sp
     auto data_dir = base_dir + "/gr_data";
     if (!SharedPreference::Instance()->Init(data_dir.toStdString(), "gammaray.dat")) {
-        QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
+        // QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
         return -1;
     }
 

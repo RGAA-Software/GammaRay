@@ -351,7 +351,32 @@ namespace tc
                         std::vector<std::string> ignore_suffix = {
                             "h264", "h265", "jpg", "png"
                         };
-                        if (!FolderUtil::CopyDir(from, to, ignore_suffix, true)) {
+                        if (!FolderUtil::CopyDir(from, to, [&](const std::string& path, const std::string& filename) {
+                            // suffix filter
+                            auto suffix = FileUtil::GetFileSuffix(filename);
+                            suffix = StringUtil::ToLowerCpy(suffix);
+                            bool need_ignore_it = false;
+                            for (const auto& sf : ignore_suffix) {
+                                if (suffix.find(sf) != std::string::npos) {
+                                    need_ignore_it = true;
+                                    break;
+                                }
+                            }
+                            if (need_ignore_it) {
+                                return true;
+                            }
+
+                            // dump filter
+                            if (suffix.find("dmp") != std::string::npos) {
+                                need_ignore_it = true;
+                                LOGI("===> dump file: {}", filename);
+                                if (filename.find("GammaRay") != std::string::npos) {
+                                    need_ignore_it = false;
+                                }
+                            }
+
+                            return need_ignore_it;
+                        }, true)) {
                             LOGE("CopyDirectory failed: {} -> {}", QString::fromStdWString(from).toStdString(), QString::fromStdWString(to).toStdString());
                             return;
                         }
