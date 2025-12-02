@@ -1,7 +1,6 @@
 ﻿#include "ct_game_overlay.h"
-#include <qdebug.h>
-#include <qpainterpath.h>
 #include <random>
+#include <windows.h>
 
 namespace tc {
 
@@ -9,6 +8,12 @@ namespace tc {
         setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::Window);
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_TransparentForMouseEvents);
+        setFocusPolicy(Qt::NoFocus);
+
+        HWND hwnd = reinterpret_cast<HWND>(winId());
+        LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+        exStyle |= WS_EX_LAYERED | WS_EX_TRANSPARENT;
+        SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
     }
 
     void OverlayWidget::SetWatermarkText(const QString& text) {

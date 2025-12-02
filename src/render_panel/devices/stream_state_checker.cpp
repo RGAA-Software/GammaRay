@@ -74,7 +74,7 @@ namespace tc
                                                                    item->remote_device_id_);
                 if (opt_device.has_value()) {
                     auto device = opt_device.value();
-                    if (device->device_id_ == item->remote_device_id_) {
+                    if (device && device->device_id_ == item->remote_device_id_) {
                         item->spvr_online_ = true;
                     }
                 }
