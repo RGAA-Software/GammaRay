@@ -692,6 +692,10 @@ namespace tc
                         ReconnectInRelayMode();
                     });
                 }
+                else {
+                    // exit
+                    ProcessUtil::KillProcess(QApplication::applicationPid());
+                }
             }, 1000);
         });
     }
