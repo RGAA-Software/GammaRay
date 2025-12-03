@@ -166,6 +166,7 @@ add_subdirectory(src/tests)
 add_subdirectory(src/service)
 add_subdirectory(src/uninstall) # use nsis default uninstaller, I don't need to use this program for the time being
 add_subdirectory(src/client)
+add_subdirectory(src/ui/gd_gui)
 
 message("--==> Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message("--==> Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")

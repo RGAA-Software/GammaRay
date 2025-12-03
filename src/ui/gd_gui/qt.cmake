@@ -1,0 +1,1 @@
+set(QT_ROOT c:/qt6.8/6.8.3/msvc2022_64)
