@@ -186,8 +186,8 @@ namespace tc
         auto db_games = this->db_game_manager_->GetAllGames();
         //LOGI("running process: {}", running_processes_.size());
         //LOGI("db games: {}",db_games.size());
-        for (auto& rp : running_processes_) {
-            if (rp->icon_) {
+        for (const auto& rp : running_processes_) {
+            if (rp && rp->icon_) {
                 QString icons_path = qApp->applicationDirPath() + "/www/icons";
                 QDir dir;
                 if (!dir.exists(icons_path)) {

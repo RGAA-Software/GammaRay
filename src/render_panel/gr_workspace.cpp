@@ -110,16 +110,24 @@ namespace tc
 
         user_mgr_ = grApp->GetUserManager();
 
-        auto version = "";
+        std::string version = "";
 #if PREMIUM_VERSION
-        version = "Premium";
+        if (skin_) {
+            version = skin_->GetAppVersionMode().toStdString();
+        }
+        if (version == "Premium") {
+            version = tcTr("id_version_premium").toStdString();
+        }
+        else {
+            version = "Premium";
+        }
 #else
         version = "Freemium";
 #endif
         if (skin_) {
             setWindowTitle(std::format("{}(V{} {})", skin_->GetAppName().toStdString(),
                                        skin_->GetAppVersionName().toStdString(),
-                                       skin_->GetAppVersionMode().toStdString()).c_str());
+                                       version).c_str());
         }
         else {
             setWindowTitle(std::format("GammaRay(V{} {})", PROJECT_VERSION, version).c_str());
@@ -199,7 +207,7 @@ namespace tc
 #else
                 lbl_version->setStyleSheet("font-weight: 700; color: #666666; font-size: 12px;");
 #endif
-                lbl_version->setText(version);
+                lbl_version->setText(version.c_str());
                 name_layout->addWidget(lbl_version);
 
                 name_layout->addStretch();
@@ -261,7 +269,7 @@ namespace tc
                 layout->addWidget(btn, 0, Qt::AlignHCenter);
             }
 
-            {
+            if (skin_->IsCoPhoneEnabled()) {
                 auto btn = new CustomTabBtn(AppColors::kTabBtnInActiveColor, AppColors::kTabBtnHoverColor, this);
                 btn->AddIcon(":/resources/image/ic_device_selected.svg", ":/resources/image/ic_device_normal.svg", 20, 20);
                 btn_tab_cophone_ = btn;
@@ -380,7 +388,9 @@ namespace tc
             if (skin_->IsGameEnabled()) {
                 tabs_.insert({TabName::kTabGames, new TabGame(app_, this)});
             }
-            tabs_.insert({TabName::kTabCoPhone, new TabCoPhone(app_, this)});
+            if (skin_->IsCoPhoneEnabled()) {
+                tabs_.insert({TabName::kTabCoPhone, new TabCoPhone(app_, this)});
+            }
             tabs_.insert({TabName::kTabSettings, new TabSettings(app_, this)});
             tabs_.insert({TabName::kTabSecurity, new TabSecurityInternals(app_, this)});
             //tabs_.insert({TabName::kTabProfile, new TabProfile(app_, this)});
@@ -391,7 +401,9 @@ namespace tc
             if (skin_->IsGameEnabled()) {
                 tabs_[TabName::kTabGames]->SetAttach(btn_tab_games_);
             }
-            tabs_[TabName::kTabCoPhone]->SetAttach(btn_tab_cophone_);
+            if (skin_->IsCoPhoneEnabled()) {
+                tabs_[TabName::kTabCoPhone]->SetAttach(btn_tab_cophone_);
+            }
             tabs_[TabName::kTabSettings]->SetAttach(btn_tab_settings_);
             tabs_[TabName::kTabSecurity]->SetAttach(btn_security_);
             //tabs_[TabName::kTabProfile]->SetAttach(btn_tab_profile_);
@@ -405,7 +417,9 @@ namespace tc
             if (skin_->IsGameEnabled()) {
                 stack_widget->addWidget(tabs_[TabName::kTabGames]);
             }
-            stack_widget->addWidget(tabs_[TabName::kTabCoPhone]);
+            if (skin_->IsCoPhoneEnabled()) {
+                stack_widget->addWidget(tabs_[TabName::kTabCoPhone]);
+            }
             stack_widget->addWidget(tabs_[TabName::kTabSettings]);
             stack_widget->addWidget(tabs_[TabName::kTabSecurity]);
             //stack_widget->addWidget(tabs_[TabName::kTabProfile]);

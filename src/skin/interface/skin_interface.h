@@ -86,6 +86,9 @@ namespace tc
         // enable game
         virtual bool IsGameEnabled();
 
+        // enable co-phone
+        virtual bool IsCoPhoneEnabled();
+
     protected:
         bool HasParam(const std::string& k) {
             return skin_param_.cluster_.count(k) > 0;

@@ -274,6 +274,7 @@
   "id_op_error": "操作错误",
   "id_consult_admin_to_help": "聯繫您的管理員獲取幫助",
   "id_consult_admin_to_change_password": "聯繫您的管理員修改密碼",
+  "id_version_premium": "专业版",
 
   "id_client_network_disconnected": "連接已斷開, 正在重試",
   "id_gr_client": "GammaRay客戶端",

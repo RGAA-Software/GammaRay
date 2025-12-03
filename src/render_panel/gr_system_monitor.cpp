@@ -30,6 +30,7 @@
 #include "tc_qt_widget/tc_dialog.h"
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "companion/panel_companion.h"
+#include "skin/interface/skin_interface.h"
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "kernel32.lib")
@@ -77,58 +78,34 @@ namespace tc
                     if (vigem_installed) {
                         if (!TryConnectViGEmDriver()) {
                             NotifyViGEnState(false);
-                        } else {
+                        }
+                        else {
                             NotifyViGEnState(true);
                         }
-                    } else {
+                    }
+                    else {
                         NotifyViGEnState(false);
                     }
                 });
 
-                // check server alive or not
-                if (false) {
-                    auto resp = this->CheckRenderAlive();
-                    if (resp.ok_) {
-                        if (resp.value_) {
-                            //LOGI("server is already running...");
-                            context_->SendAppMessage(MsgServerAlive {
-                                .alive_ = true,
-                            });
-                        } else {
-                            LOGI("server is not running, we'll start it.");
-                            //this->StartServer();
-                            // check again
-                            context_->PostUIDelayTask([=, this]() {
-                                context_->PostTask([=, this]() {
-                                    auto resp = this->CheckRenderAlive();
-                                    auto started = resp.ok_ && resp.value_;
-                                    context_->SendAppMessage(MsgServerAlive{
-                                        .alive_ = started,
-                                    });
-                                });
-                            }, 250);
-                        }
-                    } else {
-                        // todo
-                        LOGW("Check server alive failed by process, check listening port instead.");
-                    }
-                }
-
                 // check running game
-                context_->PostTask([=, this]() {
-                    auto rgm = context_->GetRunGameManager();
-                    rgm->CheckRunningGame();
-                    auto msg = rgm->GetRunningGamesAsProto();
-                    auto ws_server = app_->GetWsPanelServer();
-                    if (ws_server) {
-                        ws_server->PostPanelMessage(msg);
-                    }
+                auto skin = grApp->GetSkin();
+                if (skin->IsGameEnabled()) {
+                    context_->PostTask([=, this]() {
+                        auto rgm = context_->GetRunGameManager();
+                        rgm->CheckRunningGame();
+                        auto msg = rgm->GetRunningGamesAsProto();
+                        auto ws_server = app_->GetWsPanelServer();
+                        if (ws_server) {
+                            ws_server->PostPanelMessage(msg);
+                        }
 
-                    auto game_ids = rgm->GetRunningGameIds();
-                    context_->SendAppMessage(MsgRunningGameIds {
-                        .game_ids_ = game_ids,
+                        auto game_ids = rgm->GetRunningGameIds();
+                        context_->SendAppMessage(MsgRunningGameIds{
+                            .game_ids_ = game_ids,
+                        });
                     });
-                });
+                }
 
                 // check service status
                 context_->PostTask([=, this]() {
@@ -141,7 +118,7 @@ namespace tc
 
                 std::this_thread::sleep_for(std::chrono::seconds(5));
             }
-        }, "", false);
+        }, "sys_monitor", false);
     }
 
     void GrSystemMonitor::Exit() {
@@ -209,9 +186,9 @@ namespace tc
         auto exe_folder_path = GrContext::GetCurrentExeFolder();
         std::string cmd;
         if (silent) {
-            cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe /passive /promptrestart", exe_folder_path);
+            cmd = std::format("{}/joystick.exe /passive /promptrestart", exe_folder_path);
         } else {
-            cmd = std::format("{}/ViGEmBus_1.22.0_x64_x86_arm64.exe", exe_folder_path);
+            cmd = std::format("{}/joystick.exe", exe_folder_path);
         }
 
         if (!ProcessUtil::StartProcessInWorkDir(exe_folder_path, cmd, {})) {

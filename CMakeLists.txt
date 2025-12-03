@@ -274,7 +274,7 @@ add_dependencies(tc_build_client GammaRayClientInner)
 
 add_custom_command(TARGET tc_build_all POST_BUILD
 # gdi 
-    COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${GR_PROJECT_BINARY_PATH}/"
+    COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_controller/vigem/driver/joystick.exe"  "${GR_PROJECT_BINARY_PATH}/"
     COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/icon.ico"  "${GR_PROJECT_BINARY_PATH}/gr_icon.ico"
     COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/src/client/icon.ico"  "${GR_PROJECT_BINARY_PATH}/gr_client_icon.ico"
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${GR_PROJECT_PATH}/package"  "${GR_PROJECT_BINARY_PATH}/package"
@@ -326,5 +326,5 @@ add_custom_command(TARGET tc_build_all POST_BUILD
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${QT_ROOT}/bin/windeployqt.exe $<TARGET_FILE:${PROJECT_NAME}> --release
-        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_controller/vigem/driver/ViGEmBus_1.22.0_x64_x86_arm64.exe"  "${GR_PROJECT_BINARY_PATH}/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${GR_PROJECT_PATH}/deps/tc_controller/vigem/driver/joystick.exe"  "${GR_PROJECT_BINARY_PATH}/"
 )

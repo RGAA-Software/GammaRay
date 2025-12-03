@@ -288,6 +288,7 @@
   "id_user_center": "用户中心",
   "id_exit_login": "退出账户",
   "id_exit_login_msg": "您确定要退出当前登录的账号吗?",
+  "id_version_premium": "专业版",
 
   "id_client_network_disconnected": "连接已断开, 正在重试",
   "id_gr_client": "GammaRay客户端",

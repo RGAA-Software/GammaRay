@@ -83,4 +83,8 @@ namespace tc
         return true;
     }
 
+    bool SkinInterface::IsCoPhoneEnabled() {
+        return false;
+    }
+
 }
