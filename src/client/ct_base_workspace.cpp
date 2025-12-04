@@ -96,6 +96,8 @@ namespace tc
                 }
             }
         });
+
+        //SetWindowDisplayAffinity((HWND)winId(), WDA_EXCLUDEFROMCAPTURE);
     }
 
     void BaseWorkspace::Init() {

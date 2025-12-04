@@ -54,7 +54,7 @@ else()
 	)
 endif()
 
-target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Core Qt6::Svg gdgui)
+target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Core Qt6::Svg gd_gui)
 
 message(QT_ROOT = ${QT_ROOT})
 

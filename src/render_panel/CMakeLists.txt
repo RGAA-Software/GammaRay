@@ -100,6 +100,8 @@ set(PANEL_SRCS
 
     ${CMAKE_CURRENT_SOURCE_DIR}/user/gr_user_manager.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/upgrade/upgrade_helper.cpp
+
     PARENT_SCOPE
 )
 

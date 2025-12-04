@@ -27,7 +27,6 @@ namespace tc
 
         setMouseTracking(true);
         grabKeyboard();
-
     }
 
     VulkanVideoWidget::~VulkanVideoWidget() {

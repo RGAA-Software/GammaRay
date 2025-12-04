@@ -52,6 +52,7 @@
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
 #include "render_panel/ui/user/modify_username_dialog.h"
 #include "render_panel/ui/user/modify_password_dialog.h"
+#include "render_panel/upgrade/upgrade_helper.h"
 
 namespace tc
 {
@@ -378,6 +379,10 @@ namespace tc
             }
 
             root_layout->addLayout(layout);
+
+            QTimer::singleShot(2000, this, [this]() {
+                //this->InitUpdate();
+            });
         }
 
         // right panels
@@ -775,4 +780,32 @@ namespace tc
         lbl_avatar_->UpdatePixmap(pixmap);
     }
 
+
+    void GrWorkspace::InitUpdate() {
+        QObject::connect(UpdateManager::GetInstance(), &UpdateManager::SigFindUpdate, [this](const QVariantMap& data) {
+            this->showNormal();
+       
+            tc::UpgradeHelperWidget upgrade_helper_widget;
+            upgrade_helper_widget.SetRemoteVersion(data["version"].toString());
+            upgrade_helper_widget.SetRemoteUpdateDesc(data["desc"].toString());
+            upgrade_helper_widget.SetForced(data["forced"].toBool());
+            upgrade_helper_widget.raise();
+            upgrade_helper_widget.exec();
+            if (upgrade_helper_widget.exit_app_) {
+                this->close();
+            }
+        });
+
+        QObject::connect(UpdateManager::GetInstance(), &UpdateManager::SigUpdateHint, [this](QString info) {
+            this->showNormal();
+            TcDialog dialog(tcTr("id_tips"), info, this);
+            dialog.exec();
+        });
+
+        UpdateManager::GetInstance()->CheckUpdate(true);
+    }
+
+    void GrWorkspace::CheckAppUpdate() {
+        tc::UpdateManager::GetInstance()->CheckUpdate(true, true);
+    }
 }

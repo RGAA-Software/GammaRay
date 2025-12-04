@@ -114,6 +114,7 @@ include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/leveldb/include)
 include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/qwindowkit)
 include_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/qwindowkit/src)
 include_directories(${GR_PROJECT_PATH}/src/render)
+include_directories(${GR_PROJECT_PATH}/src/ui/gd_gui/src)
 include_directories(${GR_PROJECT_PATH}/deps/tc_qt_widget)
 include_directories(${GR_PROJECT_PATH}/deps/tc_client_sdk_new)
 include_directories(${VCPKG_ROOT}/packages/breakpad_x64-windows-static/include)
@@ -201,7 +202,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deps/tc_message_new/" DESTINATION ${GR_PR
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network Qt6::Core Qt6::Core5Compat Qt6::WebSockets Qt6::Network Qt6::Charts Qt6::Svg sqlite35
         tc_common_new tc_steam_manager_new tc_vigem tc_message tc_cp_message tc_plugin tc_qt_widget winmm.lib SetupAPI.lib gflags::gflags#tc_signaling_sdk #lib_GammaRayClient
         tc_relay_client tc_translator tc_spvr_client Dwmapi.lib tc_widget_loadings tc_client_plugin #QWindowKit::Widgets TC_WidgetFrame
-        tc_account_sdk tc_rp_message tc_profile_client tc_hw_info tc_global_id_generator tc_server_message skin_interface skin_loader
+        tc_account_sdk tc_rp_message tc_profile_client tc_hw_info tc_global_id_generator tc_server_message skin_interface skin_loader gd_gui
 )
 set(BREAKPAD_LIB_PATH ${VCPKG_ROOT}/packages/breakpad_x64-windows-static/lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${BREAKPAD_LIB_PATH}/libbreakpad.lib ${BREAKPAD_LIB_PATH}/libbreakpad_client.lib)

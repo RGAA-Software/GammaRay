@@ -7,7 +7,7 @@ if(NOT DEFINED QT_ROOT)
 	set(CMAKE_PREFIX_PATH ${QT_ROOT}/lib/cmake)
 endif()
 
-project(gdgui VERSION 1.0.1)
+project(gd_gui VERSION 1.0.1)
 
 include(InstallRequiredSystemLibraries)
 
@@ -64,8 +64,6 @@ include_directories(
 	${CMAKE_BINARY_DIR}
 )
 
-link_directories(
-)
 
 add_library(${PROJECT_NAME} STATIC ${UILIB_SOURCES})
 

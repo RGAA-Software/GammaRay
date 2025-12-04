@@ -67,7 +67,8 @@ namespace tc
         void LoadAvatar();
         void SetAvatar(const std::string& filepath);
         void ClearAvatar();
-
+        void InitUpdate();
+        void CheckAppUpdate();
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;

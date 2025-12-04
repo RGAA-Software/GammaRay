@@ -463,5 +463,21 @@
   "id_file_trans_no_exists": "不存在",
   "id_file_trans_target_path_no_exists": "目标路径不存在",
   "id_file_trans_rename_failed_name_occypy": "重命名失败, 文件名已经被占用",
-  "id_file_trans_rename_failed_file_occypy": "重命名失败, 请检查文件是否被占用"
+  "id_file_trans_rename_failed_file_occypy": "重命名失败, 请检查文件是否被占用",
+  "id_upgrade_are_you_sure_exit" :"确定要退出更新吗",
+  "id_upgrade_download_now" :"立即下载",
+  "id_upgrade_update_later" :"稍后更新",
+  "id_upgrade_exit_app" :"退出应用",
+  "id_upgrade_exit" :"退出更新",
+  "id_upgrade_retry" :"请重试",
+  "id_upgrade_downloading" :"正在下载,请稍后.",
+  "id_upgrade_install_now" :"立即安装",
+  "id_upgrade_down_error" :"下载失败",
+  "id_upgrade_cannot_open_file_for_exit" :"因无法打开新的安装文件,退出此次更新",
+  "id_upgrade_check_error" :"检查更新失败",
+  "id_upgrade_network_error" :"网络请求失败,请稍后重试",
+  "id_upgrade_data_format_error" :"数据格式有误,请稍后重试",
+  "id_upgrade_latest" :"您当前是已经最新版本",
+  "id_upgrade_time_out" :"网络超时",
+  "id_upgrade_file_corrupted" :"文件被损坏"
 }

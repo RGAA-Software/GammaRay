@@ -462,5 +462,21 @@
   "id_file_trans_no_exists": "Does not exist",
   "id_file_trans_target_path_no_exists": "Target path does not exist",
   "id_file_trans_rename_failed_name_occypy": "Rename failed, the file name is already in use",
-  "id_file_trans_rename_failed_file_occypy": "Rename failed, please check if the file is occupied"
+  "id_file_trans_rename_failed_file_occypy": "Rename failed, please check if the file is occupied",
+  "id_upgrade_are_you_sure_exit" :"Are you sure you want to exit the update",
+  "id_upgrade_download_now" :"Download Now",
+  "id_upgrade_update_later" :"Update Later",
+  "id_upgrade_exit_app" :"Exit Application",
+  "id_upgrade_exit" :"Exit Update",
+  "id_upgrade_retry" :"Please Retry",
+  "id_upgrade_downloading" :"Downloading, please wait...",
+  "id_upgrade_install_now" :"Install Now",
+  "id_upgrade_down_error" :"Download Failed",
+  "id_upgrade_cannot_open_file_for_exit" :"Update aborted due to unopenable installation file.",
+  "id_upgrade_check_error" :"Update Check Failed",
+  "id_upgrade_network_error" :"Network request failed, please try again later.",
+  "id_upgrade_data_format_error" :"Data format error, please try again later.",
+  "id_upgrade_latest" :"You are already on the latest version.",
+  "id_upgrade_time_out" :"Network Timeout",
+  "id_upgrade_file_corrupted" :"File Corrupted"
 }
