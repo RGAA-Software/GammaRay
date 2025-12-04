@@ -16,12 +16,14 @@ namespace tc
                                const std::string& host,
                                int port,
                                const std::string& device_id,
+                               const std::string& remote_device_id,
                                const std::string& appkey) {
         sdk_ = sdk;
         context_ = ctx;
         host_ = host;
         port_ = port;
         device_id_ = device_id;
+        remote_device_id_ = remote_device_id;
         appkey_ = appkey;
     }
 
@@ -70,7 +72,7 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        auto path = std::format("/spvr/client?appkey={}&device_id={}", appkey_, device_id_);
+        auto path = std::format("/spvr/client?appkey={}&device_id={}&remote_device_id={}", appkey_, device_id_, remote_device_id_);
         LOGI("will connect => {}:{}{}", host_, port_, path);
         if (!client_->async_start(host_, port_, path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());

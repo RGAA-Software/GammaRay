@@ -20,6 +20,7 @@ namespace tc
                               const std::string& host,
                               int port,
                               const std::string& device_id,
+                              const std::string& remote_device_id,
                               const std::string& appkey);
         void Start();
         void Exit() const;
@@ -37,6 +38,7 @@ namespace tc
         std::string host_;
         int port_ = 0;
         std::string device_id_;
+        std::string remote_device_id_;
         std::string appkey_;
         int64_t hb_index_ = 0;
     };

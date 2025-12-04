@@ -131,12 +131,13 @@ namespace tc
         sdk_->Init(this->params_, nullptr, DecoderRenderType::kFFmpegI420);
 
         if (!settings_->device_id_.empty() && !settings_->spvr_host_.empty() && settings_->spvr_port_ > 0 && !settings_->appkey_.empty()) {
-            LOGI("Will start spvr client!");
+            LOGI("Will start spvr client, device_id: {}, remote device_id: {}", settings_->device_id_, settings_->remote_device_id_);
             spvr_client_ = std::make_shared<CtSpvrClient>(sdk_,
                                                           context_,
                                                           settings_->spvr_host_,
                                                           settings_->spvr_port_,
                                                           settings_->device_id_,
+                                                          settings_->remote_device_id_,
                                                           settings_->appkey_);
             spvr_client_->Start();
         }
