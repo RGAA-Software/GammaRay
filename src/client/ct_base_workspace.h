@@ -133,7 +133,7 @@ namespace tc
         // reconnect when the remote device was in relay mode
         void ReconnectInRelayMode();
         // dismiss connecting dialog
-        void DismissConnectingDialog();
+        void DismissConnectingDialog() const;
 
         // messages defined in tc_message.proto
         void ProcessNetworkMessage(const std::shared_ptr<tc::Message>& msg);
@@ -229,8 +229,11 @@ namespace tc
         // skin
         SkinInterface* skin_ = nullptr;
 
+        // overlay widget
         OverlayWidget* overlay_widget_ = nullptr;
-    private:
+
+        // game view
+        // @deprecated
         GameView* game_view_ = nullptr;
     };
 

@@ -132,7 +132,12 @@ namespace tc
 
         if (!settings_->device_id_.empty() && !settings_->spvr_host_.empty() && settings_->spvr_port_ > 0 && !settings_->appkey_.empty()) {
             LOGI("Will start spvr client!");
-            spvr_client_ = std::make_shared<CtSpvrClient>(context_, settings_->spvr_host_, settings_->spvr_port_, settings_->device_id_, settings_->appkey_);
+            spvr_client_ = std::make_shared<CtSpvrClient>(sdk_,
+                                                          context_,
+                                                          settings_->spvr_host_,
+                                                          settings_->spvr_port_,
+                                                          settings_->device_id_,
+                                                          settings_->appkey_);
             spvr_client_->Start();
         }
 
@@ -250,7 +255,7 @@ namespace tc
             this->SendSwitchFullColorMessage(msg.enable_);
         });
 
-        // step 1
+        // step 1t
         msg_listener_->Listen<SdkMsgNetworkConnected>([=, this](const SdkMsgNetworkConnected& msg) {
             //this->SendSwitchWorkModeMessage(settings_->work_mode_);
             this->SendUpdateDesktopMessage();
@@ -277,7 +282,9 @@ namespace tc
             context_->PostUITask([=, this]() {
                 if (retry_conn_dialog_->isHidden()) {
                     WidgetHelper::SetTitleBarColor((QWidget*)(retry_conn_dialog_.get()));
-                    retry_conn_dialog_->Exec();
+                    if (retry_conn_dialog_->Exec() == -1) {
+                        ProcessUtil::KillProcess(QApplication::applicationPid());
+                    }
                 }
             });
         });
@@ -428,8 +435,8 @@ namespace tc
             }
 
             if (change) {
-                QImage image((uchar*)cursor_bitmap_data_.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
-                QPixmap pixmap = QPixmap::fromImage(image);
+                const QImage image((uchar*)cursor_bitmap_data_.data(), cursor_info.width(), cursor_info.height(), QImage::Format_RGBA8888);
+                const QPixmap pixmap = QPixmap::fromImage(image);
                 QCursor cursor(pixmap, cursor_info.hotspot_x(), cursor_info.hotspot_y());
                 cursor_ = cursor;
                 this->UpdateLocalCursor();
@@ -1044,6 +1051,9 @@ namespace tc
         if (media_record_plugin_) {
             media_record_plugin_->EndRecord();
         }
+        if (spvr_client_) {
+            spvr_client_->Exit();
+        }
         if (sdk_) {
             sdk_->Exit();
             sdk_ = nullptr;
@@ -1184,11 +1194,11 @@ namespace tc
         });
     }
 
-    void BaseWorkspace::DismissConnectingDialog() {
+    void BaseWorkspace::DismissConnectingDialog() const {
         context_->PostUITask([=, this]() {
             // dismiss dialog
             if (retry_conn_dialog_ && !retry_conn_dialog_->isHidden()) {
-                retry_conn_dialog_->Done();
+                retry_conn_dialog_->Done(0);
             }
         });
     }

@@ -76,14 +76,18 @@ namespace tc
         }
     }
 
-    void RetryConnDialog::Exec() {
+    int RetryConnDialog::Exec() {
         h_loading_widget_->start();
-        this->exec();
+        return this->exec();
     }
 
-    void RetryConnDialog::Done() {
+    void RetryConnDialog::Done(int code) {
         h_loading_widget_->stop();
-        this->done(0);
+        this->done(code);
+    }
+
+    void RetryConnDialog::closeEvent(QCloseEvent *event) {
+        this->Done(-1);
     }
 
 }

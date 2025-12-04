@@ -14,9 +14,10 @@ namespace tc
 
     class RetryConnDialog : public TcCustomTitleBarDialog {
     public:
-        RetryConnDialog(const QString &title, QWidget *parent = nullptr);
-        void Exec();
-        void Done();
+        explicit RetryConnDialog(const QString &title, QWidget *parent = nullptr);
+        int Exec();
+        void Done(int code);
+        void closeEvent(QCloseEvent *event) override;
 
     private:
         Win10CircleLoadingWidget* h_loading_widget_ = nullptr;
