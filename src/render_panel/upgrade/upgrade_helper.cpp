@@ -50,7 +50,7 @@ namespace tc {
 		static QString pixmap_path = QStringLiteral(":/resources/image/update/update_bk.png");
 		static QPixmap pixmap(pixmap_path);
 		pixmap.setDevicePixelRatio(2.0);
-		QRect targetRect(0, 0, 320, 150);
+		QRect targetRect(0, 0, 310, 150);
 		painter.drawPixmap(targetRect, pixmap);
 	}
 
@@ -120,7 +120,7 @@ namespace tc {
 		setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 		setObjectName("UpgradeHelperWidget");
 		setAttribute(Qt::WA_StyledBackground);
-		setFixedSize(320, 380);
+		setFixedSize(310, 380);
 
 		QVBoxLayout* main_vbox_layout = new QVBoxLayout(this);
 		main_vbox_layout->setSpacing(0);
@@ -189,11 +189,11 @@ namespace tc {
 
 
 		stack_widget_ = new QStackedWidget(this);
-		stack_widget_->setFixedSize(320, 56);
+		stack_widget_->setFixedSize(310, 56);
 		{
 			notify_update_widget_ = new QWidget(stack_widget_);
 			stack_widget_->addWidget(notify_update_widget_);
-			notify_update_widget_->setFixedSize(320, 56);
+			notify_update_widget_->setFixedSize(310, 56);
 			QHBoxLayout* hlayout = new QHBoxLayout(notify_update_widget_);
 			hlayout->setContentsMargins(0, 0, 0, 0);
 			hlayout->setSpacing(0);
@@ -213,13 +213,13 @@ namespace tc {
 			btn_text_info.m_font_color_press = QColor(0xff, 0xff, 0xff);
 			btn_text_info.m_font_color_disable = QColor(0xff, 0xff, 0xff);
 			btn_text_info.m_text = tcTr("id_upgrade_download_now");
-			btn_text_info.m_font_size = 15;
-			btn_text_info.m_padding_left = 36;
-			btn_text_info.m_padding_top = 28;
+			btn_text_info.m_font_size = 13;
+			btn_text_info.m_padding_left = 28;
+			btn_text_info.m_padding_top = 21;
 			btn_border_info.m_border_radius = 4;
 			btn_border_info.m_border_width = 0;
 			btn_icon_info.m_have_icon = false;
-			confirm_btn_->Init(QSize(132, 44), btn_text_info, btn_bk_info, btn_icon_info,
+			confirm_btn_->Init(QSize(110, 32), btn_text_info, btn_bk_info, btn_icon_info,
 				btn_border_info);
 			confirm_btn_->setEnabled(true);
 
@@ -235,13 +235,13 @@ namespace tc {
 			btn_text_info.m_font_color_press = QColor(0x84, 0x84, 0x84);
 			btn_text_info.m_font_color_disable = QColor(0x84, 0x84, 0x84);
 
-			cancel_btn_->Init(QSize(132, 44), btn_text_info, btn_bk_info, btn_icon_info,
+			cancel_btn_->Init(QSize(110, 32), btn_text_info, btn_bk_info, btn_icon_info,
 				btn_border_info);
 			cancel_btn_->setEnabled(true);
 
 			hlayout->addStretch(1);
 			hlayout->addWidget(cancel_btn_);
-			hlayout->addSpacing(16);
+			hlayout->addSpacing(26);
 			hlayout->addWidget(confirm_btn_);
 			hlayout->addStretch(1);
 		}
@@ -249,7 +249,7 @@ namespace tc {
 		{
 			forced_update_widget_ = new QWidget(stack_widget_);
 			stack_widget_->addWidget(forced_update_widget_);
-			forced_update_widget_->setFixedSize(320, 56);
+			forced_update_widget_->setFixedSize(310, 56);
 			QHBoxLayout* hlayout = new QHBoxLayout(forced_update_widget_);
 			hlayout->setContentsMargins(0, 0, 0, 0);
 			hlayout->setSpacing(0);
@@ -269,13 +269,13 @@ namespace tc {
 			btn_text_info.m_font_color_press = QColor(0xff, 0xff, 0xff);
 			btn_text_info.m_font_color_disable = QColor(0xff, 0xff, 0xff);
 			btn_text_info.m_text = tcTr("id_upgrade_download_now");;
-			btn_text_info.m_font_size = 15;
-			btn_text_info.m_padding_left = 36;
-			btn_text_info.m_padding_top = 28;
+			btn_text_info.m_font_size = 13;
+			btn_text_info.m_padding_left = 28;
+			btn_text_info.m_padding_top = 21;
 			btn_border_info.m_border_radius = 4;
 			btn_border_info.m_border_width = 0;
 			btn_icon_info.m_have_icon = false;
-			forced_confirm_btn_->Init(QSize(132, 44), btn_text_info, btn_bk_info, btn_icon_info,
+			forced_confirm_btn_->Init(QSize(110, 32), btn_text_info, btn_bk_info, btn_icon_info,
 				btn_border_info);
 			forced_confirm_btn_->setEnabled(true);
 
@@ -291,13 +291,13 @@ namespace tc {
 			btn_text_info.m_font_color_press = QColor(0x84, 0x84, 0x84);
 			btn_text_info.m_font_color_disable = QColor(0x84, 0x84, 0x84);
 
-			exit_app_btn_->Init(QSize(132, 44), btn_text_info, btn_bk_info, btn_icon_info,
+			exit_app_btn_->Init(QSize(110, 32), btn_text_info, btn_bk_info, btn_icon_info,
 				btn_border_info);
 			exit_app_btn_->setEnabled(true);
 
 			hlayout->addStretch(1);
 			hlayout->addWidget(exit_app_btn_);
-			hlayout->addSpacing(16);
+			hlayout->addSpacing(26);
 			hlayout->addWidget(forced_confirm_btn_);
 			hlayout->addStretch(1);
 		}
@@ -305,7 +305,7 @@ namespace tc {
 		{
 			download_widget_ = new QWidget(stack_widget_);
 			stack_widget_->addWidget(download_widget_);
-			download_widget_->setFixedSize(320, 56);
+			download_widget_->setFixedSize(310, 56);
 			QVBoxLayout* main_vlayout = new QVBoxLayout(download_widget_);
 			main_vlayout->setSpacing(0);
 			main_vlayout->setContentsMargins(0, 0, 0, 0);
@@ -365,7 +365,7 @@ namespace tc {
 		{
 			install_widget_ = new QWidget(stack_widget_);
 			stack_widget_->addWidget(install_widget_);
-			install_widget_->setFixedSize(320, 56);
+			install_widget_->setFixedSize(310, 56);
 			QHBoxLayout* hlayout = new QHBoxLayout(install_widget_);
 			hlayout->setContentsMargins(0, 0, 0, 0);
 			hlayout->setSpacing(0);
@@ -385,13 +385,13 @@ namespace tc {
 			btn_text_info.m_font_color_press = QColor(0xff, 0xff, 0xff);
 			btn_text_info.m_font_color_disable = QColor(0xff, 0xff, 0xff);
 			btn_text_info.m_text = tcTr("id_upgrade_install_now");
-			btn_text_info.m_font_size = 15;
-			btn_text_info.m_padding_left = 110;
-			btn_text_info.m_padding_top = 28;
+			btn_text_info.m_font_size = 13;
+			btn_text_info.m_padding_left = 112;
+			btn_text_info.m_padding_top = 21;
 			btn_border_info.m_border_radius = 4;
 			btn_border_info.m_border_width = 0;
 			btn_icon_info.m_have_icon = false;
-			install_confirm_btn_->Init(QSize(280, 44), btn_text_info, btn_bk_info, btn_icon_info,
+			install_confirm_btn_->Init(QSize(280, 36), btn_text_info, btn_bk_info, btn_icon_info,
 				btn_border_info);
 
 			hlayout->addStretch(1);
