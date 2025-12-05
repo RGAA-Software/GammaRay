@@ -381,7 +381,7 @@ namespace tc
             root_layout->addLayout(layout);
 
             QTimer::singleShot(2000, this, [this]() {
-                //this->InitUpdate();
+                this->InitUpdate();
             });
         }
 
@@ -480,6 +480,11 @@ namespace tc
     }
 
     void GrWorkspace::closeEvent(QCloseEvent *event) {
+        if (upgrade_helper_widget_) {
+            upgrade_helper_widget_->done(QDialog::Rejected);
+            upgrade_helper_widget_->close();
+            upgrade_helper_widget_ = nullptr;
+        }
         event->ignore();
         TcDialog dialog(tcTr("id_hide"), tcTr("id_hide_gammaray_msg"), this);
         if (kDoneOk == dialog.exec()) {
@@ -527,6 +532,19 @@ namespace tc
             });
         });
 
+        // check update
+        msg_listener_->Listen<MsgCheckUpdate>([=, this](const MsgCheckUpdate& msg) {
+            app_->GetContext()->PostUITask([=, this]() {
+                this->CheckAppUpdate();
+            });
+        });
+
+        // update
+        msg_listener_->Listen<MsgGrTimer10H>([=, this](const MsgGrTimer10H& msg) {
+            app_->GetContext()->PostUITask([=, this]() {
+                this->CheckAppUpdate();
+            });
+        });
     }
 
     void GrWorkspace::ForceStopAllPrograms(bool uninstall_service) {
@@ -784,14 +802,20 @@ namespace tc
     void GrWorkspace::InitUpdate() {
         QObject::connect(UpdateManager::GetInstance(), &UpdateManager::SigFindUpdate, [this](const QVariantMap& data) {
             this->showNormal();
-       
-            tc::UpgradeHelperWidget upgrade_helper_widget;
-            upgrade_helper_widget.SetRemoteVersion(data["version"].toString());
-            upgrade_helper_widget.SetRemoteUpdateDesc(data["desc"].toString());
-            upgrade_helper_widget.SetForced(data["forced"].toBool());
-            upgrade_helper_widget.raise();
-            upgrade_helper_widget.exec();
-            if (upgrade_helper_widget.exit_app_) {
+            
+            if (upgrade_helper_widget_) {
+                upgrade_helper_widget_->done(QDialog::Rejected);
+                upgrade_helper_widget_->close();
+                upgrade_helper_widget_ = nullptr;
+            }
+            
+            upgrade_helper_widget_ = QPointer<UpgradeHelperWidget>(new UpgradeHelperWidget());
+            upgrade_helper_widget_->SetRemoteVersion(data["version"].toString());
+            upgrade_helper_widget_->SetRemoteUpdateDesc(data["desc"].toString());
+            upgrade_helper_widget_->SetForced(data["forced"].toBool());
+            upgrade_helper_widget_->raise();
+            upgrade_helper_widget_->exec();
+            if (upgrade_helper_widget_->exit_app_) {
                 this->close();
             }
         });
