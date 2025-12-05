@@ -19,6 +19,7 @@
 #include <qurl.h>
 #include <qurlquery.h>
 #include <qjsonarray.h>
+#include <qstandardpaths.h>
 #include <tc_common_new/log.h>
 #include <tc_common_new/gd_md5.h>
 #include "tc_qt_widget/tc_dialog.h"
@@ -46,10 +47,10 @@ namespace tc {
 		int oneThirdHeight = windowHeight / 10;
 		painter.fillRect(0, 0, rect().width(), oneThirdHeight, QColor(0xe0, 0xf1, 0xff));
 		painter.fillRect(0, oneThirdHeight, rect().width(), windowHeight - oneThirdHeight, QColor(0xff, 0xff, 0xff));
-		static QString pixmap_path = QStringLiteral(":/ui/update/top_bg_2x.png");
+		static QString pixmap_path = QStringLiteral(":/resources/image/update/update_bk.png");
 		static QPixmap pixmap(pixmap_path);
 		pixmap.setDevicePixelRatio(2.0);
-		QRect targetRect(0, 0, 320, 200);
+		QRect targetRect(0, 0, 320, 150);
 		painter.drawPixmap(targetRect, pixmap);
 	}
 
@@ -119,13 +120,13 @@ namespace tc {
 		setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 		setObjectName("UpgradeHelperWidget");
 		setAttribute(Qt::WA_StyledBackground);
-		setFixedSize(320, 300);
+		setFixedSize(320, 380);
 
 		QVBoxLayout* main_vbox_layout = new QVBoxLayout(this);
 		main_vbox_layout->setSpacing(0);
 		main_vbox_layout->setContentsMargins(0, 0, 0, 0);
 		main_vbox_layout->setAlignment(Qt::AlignTop);
-
+		main_vbox_layout->addStretch(1);
 		{
 			QHBoxLayout* hbox_layout = new QHBoxLayout();
 			hbox_layout->setSpacing(0);
@@ -143,7 +144,7 @@ namespace tc {
 			hbox_layout->addSpacing(20);
 			hbox_layout->addWidget(remote_version_lab_);
 			hbox_layout->addStretch(1);
-			main_vbox_layout->addSpacing(90);
+			main_vbox_layout->addSpacing(10);
 			main_vbox_layout->addLayout(hbox_layout);
 		}
 
@@ -215,7 +216,7 @@ namespace tc {
 			btn_text_info.m_font_size = 15;
 			btn_text_info.m_padding_left = 36;
 			btn_text_info.m_padding_top = 28;
-			btn_border_info.m_border_radius = 12;
+			btn_border_info.m_border_radius = 4;
 			btn_border_info.m_border_width = 0;
 			btn_icon_info.m_have_icon = false;
 			confirm_btn_->Init(QSize(132, 44), btn_text_info, btn_bk_info, btn_icon_info,
@@ -271,7 +272,7 @@ namespace tc {
 			btn_text_info.m_font_size = 15;
 			btn_text_info.m_padding_left = 36;
 			btn_text_info.m_padding_top = 28;
-			btn_border_info.m_border_radius = 12;
+			btn_border_info.m_border_radius = 4;
 			btn_border_info.m_border_width = 0;
 			btn_icon_info.m_have_icon = false;
 			forced_confirm_btn_->Init(QSize(132, 44), btn_text_info, btn_bk_info, btn_icon_info,
@@ -387,7 +388,7 @@ namespace tc {
 			btn_text_info.m_font_size = 15;
 			btn_text_info.m_padding_left = 110;
 			btn_text_info.m_padding_top = 28;
-			btn_border_info.m_border_radius = 12;
+			btn_border_info.m_border_radius = 4;
 			btn_border_info.m_border_width = 0;
 			btn_icon_info.m_have_icon = false;
 			install_confirm_btn_->Init(QSize(280, 44), btn_text_info, btn_bk_info, btn_icon_info,
@@ -402,10 +403,12 @@ namespace tc {
 		
 		main_vbox_layout->addSpacing(14);
 		main_vbox_layout->addWidget(stack_widget_);
+		main_vbox_layout->addSpacing(8);
 	}
 
 	void UpgradeHelperWidget::SetRemoteVersion(const QString& version) {
-		remote_version_lab_->setText(version);
+		QString msg = tcTr("id_upgrade_find_new_version") + ":  " + version;
+		remote_version_lab_->setText(msg);
 	}
 
 	void UpgradeHelperWidget::SetRemoteUpdateDesc(const QString& desc) {
@@ -695,23 +698,24 @@ namespace tc {
 			return;
 		}
 		
-		QString down_dir_path = QString::fromStdString(GrSettings::Instance()->GetGrDataCachePath());
-		QString save_path = down_dir_path + "/" + file_name_;
-		save_path_ = save_path;
-
-		QFileInfo file_info(save_path);
-		QDir save_dir{ file_info.absolutePath() };
-		if (!save_dir.exists()) {
-			if (!save_dir.mkpath(".")) {
-				qWarning() << "Failed to create directories for file: " << file_info.absolutePath();
-				LOGE("Failed to create directories for file:", file_info.absolutePath().toStdString());
+		QString dir_path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+		QDir dir{ dir_path };
+        if (!dir.exists()) {
+			if (!dir.mkpath(".")) {
+				qWarning() << "Failed to create directories for file: " << dir_path;
+				LOGE("Failed to create directories for file:", dir_path.toStdString());
+				emit SigDownloadComplete(false, tcTr("id_upgrade_failed_create_dir"));
 				return;
 			}
 		}
+		QString save_path = dir_path + "/" + file_name_;
+		save_path_ = save_path;
+
 		QPointer<QFile> file_ptr = new QFile(save_path);
 		if (!file_ptr->open(QIODevice::WriteOnly)) {
 			qDebug() << "open " << "" << "error";
 			LOGE("Failed to open file: {}", save_path.toStdString());
+			emit SigDownloadComplete(false, tcTr("id_upgrade_failed_open_file"));
 			return;
 		}
 		QUrl url(download_url_);
@@ -773,10 +777,10 @@ namespace tc {
 	}
 
 	void UpdateManager::OpenInstallFile() {
-		bool res = QProcess::startDetached(save_path_, {});
+		QString work_dir = QFileInfo(save_path_).absolutePath();
+		bool res = QProcess::startDetached("cmd.exe", {"/c", "start", save_path_}, work_dir);
 		if (!res) {
 			emit SigOpenInstallFileError();
 		}
 	}
-
 }

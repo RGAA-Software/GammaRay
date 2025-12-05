@@ -479,5 +479,8 @@
   "id_upgrade_data_format_error" :"数据格式有误,请稍后重试",
   "id_upgrade_latest" :"您当前是已经最新版本",
   "id_upgrade_time_out" :"网络超时",
-  "id_upgrade_file_corrupted" :"文件被损坏"
+  "id_upgrade_file_corrupted" :"文件被损坏",
+  "id_upgrade_failed_create_dir": "无法创建安装包保存目录,退出此次更新",
+  "id_upgrade_failed_open_file": "无法保存安装包文件,退出此次更新",
+  "id_upgrade_find_new_version": "发现新版本"
 }
