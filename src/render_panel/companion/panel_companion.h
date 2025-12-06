@@ -25,14 +25,14 @@ namespace tc
     class SpvrSrvConfig {
     public:
         std::string srv_name_;
-        std::string srv_type_;
         std::string srv_w3c_ip_;
-        int srv_working_port_ = 0;
+        int srv_spvr_port_ = 0;
         std::string srv_appkey_;
+        int srv_relay_port_ = 0;
 
     public:
         [[nodiscard]] bool IsValid() const {
-            return !srv_w3c_ip_.empty() && srv_working_port_ > 0 && !srv_appkey_.empty();
+            return !srv_w3c_ip_.empty() && srv_spvr_port_ > 0 && !srv_appkey_.empty() && srv_relay_port_ > 0;
         }
     };
 
@@ -54,13 +54,12 @@ namespace tc
     // Spvr Access
     class SpvrAccessInfo {
     public:
-        bool IsValid() {
-            return spvr_config_.IsValid() && !relay_configs_.empty();
+        [[nodiscard]] bool IsValid() const {
+            return spvr_config_.IsValid();
         }
 
     public:
         SpvrSrvConfig spvr_config_;
-        std::vector<RelaySrvConfig> relay_configs_;
     };
 
     //

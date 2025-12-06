@@ -438,7 +438,7 @@ namespace tc
     }
 
     void StNetwork::DisplaySpvrAccessInfo(const std::shared_ptr<SpvrAccessInfo>& info) {
-        if (!info || !info->spvr_config_.IsValid() || info->relay_configs_.empty()) {
+        if (!info || !info->spvr_config_.IsValid()) {
             if (edt_spvr_server_host_) {
                 edt_spvr_server_host_->setText("");
             }
@@ -457,13 +457,13 @@ namespace tc
             edt_spvr_server_host_->setText(info->spvr_config_.srv_w3c_ip_.c_str());
         }
         if (edt_spvr_server_port_) {
-            edt_spvr_server_port_->setText(QString::number(info->spvr_config_.srv_working_port_));
+            edt_spvr_server_port_->setText(QString::number(info->spvr_config_.srv_spvr_port_));
         }
         if (edt_relay_server_host_) {
-            edt_relay_server_host_->setText(info->relay_configs_[0].srv_w3c_ip_.c_str());
+            edt_relay_server_host_->setText(info->spvr_config_.srv_w3c_ip_.c_str());
         }
         if (edt_relay_server_port_) {
-            edt_relay_server_port_->setText(QString::number(info->relay_configs_[0].srv_working_port_));
+            edt_relay_server_port_->setText(QString::number(info->spvr_config_.srv_relay_port_));
         }
     }
 
@@ -521,9 +521,9 @@ namespace tc
             return;
         }
 
+        auto appkey = ac_info->spvr_config_.srv_appkey_;
         {
-            auto appkey = ac_info->spvr_config_.srv_appkey_;
-            auto r = spvr::SpvrDeviceApi::Ping(ac_info->spvr_config_.srv_w3c_ip_, ac_info->spvr_config_.srv_working_port_, appkey);
+            auto r = spvr::SpvrDeviceApi::Ping(ac_info->spvr_config_.srv_w3c_ip_, ac_info->spvr_config_.srv_spvr_port_, appkey);
             if (!r.has_value() || !r.value()) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_verify_spvr_failed"));
                 dialog.exec();
@@ -533,18 +533,11 @@ namespace tc
 
         // 2. verify relay server
         {
-            if (ac_info->relay_configs_.empty()) {
+            auto r = relay::RelayApi::Ping(ac_info->spvr_config_.srv_w3c_ip_, ac_info->spvr_config_.srv_relay_port_, appkey);
+            if (!r.has_value() || !r.value()) {
                 TcDialog dialog(tcTr("id_error"), tcTr("id_verify_relay_failed"));
                 dialog.exec();
                 return;
-            }
-            for (const auto& cfg : ac_info->relay_configs_) {
-                auto r = relay::RelayApi::Ping(cfg.srv_w3c_ip_, cfg.srv_working_port_, cfg.srv_appkey_);
-                if (!r.has_value() || !r.value()) {
-                    TcDialog dialog(tcTr("id_error"), tcTr("id_verify_relay_failed"));
-                    dialog.exec();
-                    return;
-                }
             }
         }
 

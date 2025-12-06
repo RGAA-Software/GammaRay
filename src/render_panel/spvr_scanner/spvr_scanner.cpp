@@ -51,9 +51,9 @@ namespace tc
                                     }
                                     auto info = std::make_shared<StNetworkSpvrAccessInfo>(StNetworkSpvrAccessInfo {
                                         .spvr_ip_ = ac->spvr_config_.srv_w3c_ip_,
-                                        .spvr_port_ = ac->spvr_config_.srv_working_port_,
-                                        .relay_ip_ =  ac->relay_configs_.empty() ? "" : ac->relay_configs_[0].srv_w3c_ip_,
-                                        .relay_port_ = ac->relay_configs_.empty() ? 0 : ac->relay_configs_[0].srv_working_port_,
+                                        .spvr_port_ = ac->spvr_config_.srv_spvr_port_,
+                                        .relay_ip_ =  ac->spvr_config_.srv_w3c_ip_,
+                                        .relay_port_ = ac->spvr_config_.srv_relay_port_,
                                         .origin_info_ = msg,
                                         .update_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
                                     });
