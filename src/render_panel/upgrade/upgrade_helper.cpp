@@ -33,9 +33,10 @@
 
 namespace tc {
 	static const int kUpgradeApiOkValue = 200;
-	static const std::string kUpgradeServerPort = "30699";
-	static const std::string kUpgradeQueryPath = "/query_update_info";
-	static const std::string kUpgradeDownloadPath = "/download";
+	//static const std::string kUpgradeServerPort = "30699";
+    static const std::string kUpgradeBaseUrl = "/api/v1/update";
+	static const std::string kUpgradeQueryPath = kUpgradeBaseUrl + "/query_update_info";
+	static const std::string kUpgradeDownloadPath = kUpgradeBaseUrl + "/download";
 
 	void UpgradeHelperWidget::paintEvent(QPaintEvent* event) {
 		QPainter painter(this);
@@ -514,8 +515,9 @@ namespace tc {
 
 	//UpdateChecker
 	std::string GetUpgradeRootAddr() {
-		std::string upgrade_host = "127.0.0.1"; //GrSettings::Instance()->GetSpvrServerHost();
-		std::string upgrade_addr = "http://" + upgrade_host + ":" + kUpgradeServerPort;
+        auto settings = GrSettings::Instance();
+		std::string upgrade_host = "127.0.0.1"; //settings->GetSpvrServerHost();
+		std::string upgrade_addr = std::format("https://{}:{}", upgrade_host, settings->GetSpvrServerPort());
 		return upgrade_addr;
 	}
 
