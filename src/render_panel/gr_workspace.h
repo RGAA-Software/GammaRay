@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QSystemTrayIcon>
+#include <qpointer.h>
 #include "theme/QtAdvancedStylesheet.h"
 
 namespace tc
@@ -43,6 +44,7 @@ namespace tc
     class SkinInterface;
     class GrUserManager;
     class RoundImageDisplay;
+    class UpgradeHelperWidget;
 
     class GrWorkspace : public QMainWindow, public std::enable_shared_from_this<GrWorkspace> {
     public:
@@ -98,6 +100,9 @@ namespace tc
         int avatar_size_ = 50;
         RoundImageDisplay* lbl_avatar_ = nullptr;
         TcLabel* lbl_username_ = nullptr;
+
+        // update
+        QPointer<UpgradeHelperWidget> upgrade_helper_widget_;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;

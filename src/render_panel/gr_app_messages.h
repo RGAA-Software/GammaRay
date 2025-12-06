@@ -76,6 +76,10 @@ namespace tc
     public:
     };
 
+    class MsgGrTimer10H {
+    public:
+    };
+
     // running game ids
     class MsgRunningGameIds {
     public:
@@ -241,6 +245,12 @@ namespace tc
 
     // user logged out
     class MsgUserLoggedOut {
+    public:
+
+    };
+
+    // check for updates
+    class MsgCheckUpdate {
     public:
 
     };

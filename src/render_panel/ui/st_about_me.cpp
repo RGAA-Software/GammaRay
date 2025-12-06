@@ -11,8 +11,10 @@
 #include "version_config.h"
 #include "tc_image_button.h"
 #include "render_panel/gr_application.h"
+#include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
+#include "tc_qt_widget/tc_pushbutton.h"
 
 namespace tc
 {
@@ -62,6 +64,20 @@ namespace tc
                 font-size: 13px;
             )");
             layout->addWidget(label);
+            layout->addStretch();
+            root_layout->addSpacing(10);
+            root_layout->addLayout(layout);
+        }
+        {
+            auto layout = new NoMarginHLayout();
+            layout->addStretch();
+            auto btn = new TcPushButton(this);
+            btn->setFixedSize(120, 35);
+            btn->SetTextId("id_upgrade_check");
+            layout->addWidget(btn);
+            connect(btn, &QPushButton::clicked, this, [=]() {
+                app->GetContext()->SendAppMessage(MsgCheckUpdate{});
+            });
             layout->addStretch();
             root_layout->addSpacing(10);
             root_layout->addLayout(layout);

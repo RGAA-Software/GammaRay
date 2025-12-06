@@ -238,6 +238,10 @@ namespace tc
         timer_->start_timer(5, 5000, [=, this]() {
             this->SendAppMessage(MsgGrTimer5S{});
         });
+
+        timer_->start_timer(6, 10 * 3600 * 1000, [=, this]() {
+            this->SendAppMessage(MsgGrTimer10H{});
+        });
     }
 
     std::shared_ptr<GrRunGameManager> GrContext::GetRunGameManager() {

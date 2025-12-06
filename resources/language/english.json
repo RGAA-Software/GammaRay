@@ -478,5 +478,9 @@
   "id_upgrade_data_format_error" :"Data format error, please try again later.",
   "id_upgrade_latest" :"You are already on the latest version.",
   "id_upgrade_time_out" :"Network Timeout",
-  "id_upgrade_file_corrupted" :"File Corrupted"
+  "id_upgrade_file_corrupted" :"File Corrupted",
+  "id_upgrade_failed_create_dir": "Unable to create the directory for saving the installation package, exiting this update",
+  "id_upgrade_failed_open_file": "Unable to save the installation package file, exiting this update",
+  "id_upgrade_find_new_version": "New version found",
+  "id_upgrade_check": "Check for updates"
 }
