@@ -189,7 +189,7 @@ namespace tc
             std::shared_ptr<spvr::SpvrStream> item = std::make_shared<spvr::SpvrStream>();
             item->remote_device_id_ = conn_info->device_id_;
             item->remote_device_random_pwd_ = conn_info->random_pwd_;
-            item->stream_name_ = name;
+            item->stream_name_ = name.empty() ? conn_info->device_name_ : name;
             item->stream_host_ = direct_host;
             item->stream_port_ = direct_port;
             item->relay_host_ = relay_host;

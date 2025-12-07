@@ -28,6 +28,10 @@ namespace tc
 
             // device_id
             conn_info->device_id_ = obj["did"].get<std::string>();
+            // device name
+            if (!obj["dn"].is_null()) {
+                conn_info->device_name_ = obj["dn"].get<std::string>();
+            }
             // random password
             conn_info->random_pwd_ = obj["rpwd"].get<std::string>();
             // icon index

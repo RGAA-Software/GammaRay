@@ -23,6 +23,7 @@ namespace tc
 
     public:
         std::string device_id_;
+        std::string device_name_;
         std::string random_pwd_;
         int icon_idx_{0};
         std::vector<GrConnectionHost> hosts_;
@@ -41,7 +42,7 @@ namespace tc
         std::string Dump() {
             std::stringstream ss;
             ss << "Connection info: " << std::endl;
-            ss << "Device Info: " << device_id_ << ", " << random_pwd_ << ", relay: " << relay_host_ << "," << relay_port_ << std::endl;
+            ss << "Device Info: " << device_id_ << ", " << device_name_ << ", " << random_pwd_ << ", relay: " << relay_host_ << "," << relay_port_ << std::endl;
             ss << "Relay appkey : " << relay_appkey_ << std::endl;
             ss << "Device IP:" << std::endl;
             for (const auto& ch : hosts_) {

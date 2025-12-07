@@ -178,6 +178,7 @@ namespace tc
         // device
         // device_id
         obj["did"] = settings_->GetDeviceId();
+        obj["dn"] = settings_->GetDeviceName();
         // random passwor
         obj["rpwd"] = settings_->GetDeviceRandomPwd();
         obj["iidx"] = this->GetIndexByUniqueId();
