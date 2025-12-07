@@ -1,5 +1,5 @@
 {
-  "app_name": "GammaRay",
+  "app_name": "GoDesk",
   "id_settings": "Settings",
   "id_refresh": "Refresh",
   "id_appearance": "Appearance",
@@ -152,7 +152,7 @@
   "id_exit_all_programs": "Exit Programs",
   "id_uninstall_all_programs": "Uninstall Programs",
   "id_hide": "To Tray Panel",
-  "id_hide_gammaray_msg": "Do you want to hide GammaRay to tray panel?",
+  "id_hide_gammaray_msg": "Do you want to hide GoDesk to tray panel?",
   "id_exit": "Exit",
   "id_uninstall": "Uninstall",
   "id_exit_gammaray_msg": "Do you want to exit all programs?",
@@ -217,7 +217,7 @@
   "id_security_password_update_local_but_failed_server": "You've already updated security password in local, but failed to update in server. Please check your Supervisor Server.",
   "id_must_input_security_password": "You must set your security password in Security Settings.",
   "id_relay": "Relay",
-  "id_about_me_desc": "GammaRay is a set of tools for streaming your games, desktop, audio to other devices, and replaying gamepad/keyboard/mouse events in the Server. You can also share your files between devices easily.",
+  "id_about_me_desc": "GoDesk is a set of tools for streaming your games, desktop, audio to other devices, and replaying gamepad/keyboard/mouse events in the Server. You can also share your files between devices easily.",
   "id_dialog_ssl_streaming_always_on": "WSS Streaming will always be enabled.",
   "id_dont_have_server_config": "Don't have server config, please input server information in Settings.",
   "id_application": "Application",
@@ -289,7 +289,7 @@
   "id_exit_login_msg": "Are you sure to exit this Account?",
 
   "id_client_network_disconnected": "Connection interrupted, attempting to reconnect",
-  "id_gr_client": "GammaRay Client",
+  "id_gr_client": "GoDesk Client",
   "id_control": "Control",
   "id_display": "Display",
   "id_file_transfer": "File Transfer",

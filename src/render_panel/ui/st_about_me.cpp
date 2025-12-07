@@ -15,6 +15,7 @@
 #include "render_panel/gr_context.h"
 #include "tc_qt_widget/no_margin_layout.h"
 #include "tc_qt_widget/tc_pushbutton.h"
+#include "skin/interface/skin_interface.h"
 
 namespace tc
 {
@@ -29,12 +30,19 @@ namespace tc
             int size = 90;
             label->setFixedSize(size, size);
             label->setScaledContents(true);
-            label->setStyleSheet(R"(
-                border: none;
-                border-image: url(:/resources/tc_trans_icon_blue.png);
-                background-repeat: no-repeat;
-                background-position: center;
-            )");
+            auto skin = grApp->GetSkin();
+            if (skin) {
+                auto pixmap = skin->GetSquarePrimaryColorLogoTransBg();
+                label->setPixmap(pixmap);
+            }
+            else {
+                label->setStyleSheet(R"(
+                    border: none;
+                    border-image: url(:/resources/tc_trans_icon_blue.png);
+                    background-repeat: no-repeat;
+                    background-position: center;
+                )");
+            }
             layout->addWidget(label);
             layout->addStretch();
             root_layout->addLayout(layout);

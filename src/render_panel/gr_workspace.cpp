@@ -131,7 +131,7 @@ namespace tc
                                        version).c_str());
         }
         else {
-            setWindowTitle(std::format("GammaRay(V{} {})", PROJECT_VERSION, version).c_str());
+            setWindowTitle(std::format("Godesk(V{} {})", PROJECT_VERSION, version).c_str());
         }
 
         qApp->installNativeEventFilter(app_.get());

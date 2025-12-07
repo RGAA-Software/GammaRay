@@ -196,7 +196,12 @@ namespace tc
     void BaseWorkspace::InitTheme() {
         WidgetHelper::SetTitleBarColor(this, this->params_->titlebar_color_);
 
-        origin_title_name_ = tcTr("id_gr_client") + "[" + this->params_->stream_name_.c_str() + "]";
+        if (this->params_->stream_name_.empty()) {
+            origin_title_name_ = tcTr("id_gr_client");
+        }
+        else {
+            origin_title_name_ = tcTr("id_gr_client") + "[" + this->params_->stream_name_.c_str() + "]";
+        }
         setWindowTitle(origin_title_name_);
         auto notifier = this->context_->GetMessageNotifier();
 
