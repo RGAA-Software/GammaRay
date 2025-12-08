@@ -804,7 +804,6 @@ namespace tc
             this->showNormal();
             
             if (upgrade_helper_widget_) {
-                upgrade_helper_widget_->done(QDialog::Rejected);
                 upgrade_helper_widget_->close();
                 upgrade_helper_widget_ = nullptr;
             }
