@@ -33,6 +33,7 @@ namespace tc {
 		void SetRemoteUpdateDesc(const QString& desc);
 		void SetForced(bool f);
 		bool exit_app_ = false;
+		bool need_exit_ = false;
 	private:
 		void InitUI();
 		void InitSigChannel();

@@ -33,7 +33,6 @@
 
 namespace tc {
 	static const int kUpgradeApiOkValue = 200;
-	//static const std::string kUpgradeServerPort = "30699";
     static const std::string kUpgradeBaseUrl = "/api/v1/update";
 	static const std::string kUpgradeQueryPath = kUpgradeBaseUrl + "/query_update_info";
 	static const std::string kUpgradeDownloadPath = kUpgradeBaseUrl + "/download";
@@ -103,6 +102,10 @@ namespace tc {
 	}
 
 	void UpgradeHelperWidget::closeEvent(QCloseEvent* event) {
+		if (need_exit_) {
+			event->accept();
+			return;
+		}
 		event->ignore();
 		if (!forced_) {
 			QMetaObject::invokeMethod(this, [this]() {
@@ -516,7 +519,7 @@ namespace tc {
 	//UpdateChecker
 	std::string GetUpgradeRootAddr() {
         auto settings = GrSettings::Instance();
-		std::string upgrade_host = "127.0.0.1"; //settings->GetSpvrServerHost();
+		std::string upgrade_host = settings->GetSpvrServerHost();
 		std::string upgrade_addr = std::format("https://{}:{}", upgrade_host, settings->GetSpvrServerPort());
 		return upgrade_addr;
 	}
