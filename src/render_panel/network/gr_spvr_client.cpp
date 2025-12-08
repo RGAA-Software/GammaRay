@@ -121,7 +121,7 @@ namespace tc
         sub->set_device_id(device_id_);
         sub->set_desktop_link(desktop_link);
         sub->set_desktop_link_raw(desktop_link_raw);
-        if (auto sys_info = sys_info_.Load(); sys_info != nullptr) {
+        if (auto sys_info = sys_info_.Clone(); sys_info != nullptr) {
             sub->set_sys_info_raw(sys_info->raw_json_msg_);
         }
         PostBinMessage(msg.SerializeAsString());

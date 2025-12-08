@@ -68,7 +68,7 @@ namespace tc
         auto menu = new QMenu(this);
         sys_tray_icon_ = new QSystemTrayIcon(this);
         sys_tray_icon_->setIcon(QIcon(":/resources/tc_icon.png"));
-        sys_tray_icon_->setToolTip(tr("GammaRay"));
+        sys_tray_icon_->setToolTip(tr("GoDesk"));
 
         auto ac_show = new QAction(tcTr("id_show_panel"), this);
         auto ac_exit = new QAction(tcTr("id_exit_all_programs"), this);

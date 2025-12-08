@@ -19,7 +19,7 @@ namespace tc
 
     // app name
     QString SkinOpenSource::GetAppName() {
-        return "GammaRay";
+        return "GoDesk";
     }
 
     // version

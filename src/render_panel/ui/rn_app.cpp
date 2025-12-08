@@ -327,12 +327,12 @@ namespace tc
 
         // column 2
         lbl_connected_clients_->setText(std::to_string(stat->connected_clients_).c_str());
-        lbl_video_capture_type_->setText(stat->video_capture_type_.Load().c_str());
-        lbl_video_encode_type_->setText(stat->video_encode_type_.Load().c_str());
+        lbl_video_capture_type_->setText(stat->video_capture_type_.Clone().c_str());
+        lbl_video_encode_type_->setText(stat->video_encode_type_.Clone().c_str());
 
         // column 3
         lbl_relay_connected_->setText(stat->relay_connected_ ? "Online" : "Offline");
-        lbl_audio_capture_type_->setText(stat->audio_capture_type_.Load().c_str());
+        lbl_audio_capture_type_->setText(stat->audio_capture_type_.Clone().c_str());
         lbl_audio_encode_type_->setText("OPUS");
 
 //        for (const auto& cp : frame_info_items_) {

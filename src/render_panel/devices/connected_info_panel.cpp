@@ -45,7 +45,7 @@ namespace tc {
 		logo_lab_->setPixmap(logo_pixmap);
 		logo_lab_->setFixedSize(20, 20);
 		logo_name_lab_ = new TcLabel(this);
-		logo_name_lab_->setText("GammaRay");
+		logo_name_lab_->setText("GoDesk");
 		logo_name_lab_->setStyleSheet("font-size: 14px; font-weight: 500; color: #2979FF;");
 		logo_hbox_layout_->addSpacing(18);
 		logo_hbox_layout_->addWidget(logo_lab_);

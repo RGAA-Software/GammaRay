@@ -16,12 +16,12 @@ BEGIN
         BLOCK "040004b0"
         BEGIN
             VALUE "CompanyName", "RGAA"
-            VALUE "FileDescription", "GammaRay Render Panel"
+            VALUE "FileDescription", "GoDesk Panel"
             VALUE "FileVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
             VALUE "InternalName", "GammaRay.exe"
             VALUE "LegalCopyright", "<https://github.com/rgaa-software> Copyright (c) 2022-2025 RGAA "
             VALUE "OriginalFilename", "GammaRay.exe"
-            VALUE "ProductName", "GammaRay"
+            VALUE "ProductName", "GoDesk"
             VALUE "ProductVersion", "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
         END
     END

@@ -107,8 +107,8 @@ namespace tc
         cp_msg.set_type(tccp::CpMessageType::kCpHeartBeat);
         cp_msg.set_stream_id(settings->stream_id_);
         auto sub = cp_msg.mutable_heartbeat();
-        sub->set_remote_device_desktop_name(stat->remote_desktop_name_.Load());
-        sub->set_remote_os_name(stat->remote_os_name_.Load());
+        sub->set_remote_device_desktop_name(stat->remote_desktop_name_.Clone());
+        sub->set_remote_os_name(stat->remote_os_name_.Clone());
         client_->async_send(cp_msg.SerializeAsString());
     }
 
