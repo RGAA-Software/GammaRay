@@ -28,6 +28,7 @@
 #include "gd_custom_progress_bar.h"
 #include "version_config.h"
 #include "render_panel/gr_settings.h"
+#include "render_panel/gr_application.h"
 
 
 
@@ -103,7 +104,7 @@ namespace tc {
 
 	void UpgradeHelperWidget::closeEvent(QCloseEvent* event) {
 		if (need_exit_) {
-			event->accept();
+			this->done(QDialog::Rejected);
 			return;
 		}
 		event->ignore();
@@ -138,7 +139,7 @@ namespace tc {
 			hbox_layout->setAlignment(Qt::AlignLeft);
 
 			remote_version_lab_ = new QLabel(this);
-			remote_version_lab_->setFixedSize(180, 20);
+			remote_version_lab_->setFixedHeight(20);
 			QString style = R"(
 				QLabel {font-size: 15px; font-family: Microsoft YaHei; color: #000000; line-height: 20px; font-weight: 500}
 			)";
@@ -411,7 +412,7 @@ namespace tc {
 	}
 
 	void UpgradeHelperWidget::SetRemoteVersion(const QString& version) {
-		QString msg = tcTr("id_upgrade_find_new_version") + ":  " + version;
+		QString msg = tcTr("id_upgrade_find_new_version") + ": " + version;
 		remote_version_lab_->setText(msg);
 	}
 
@@ -524,8 +525,13 @@ namespace tc {
 		return upgrade_addr;
 	}
 
+	void AddAppKeyQueryItem(QUrlQuery& url_query) {
+		auto appkey = QString::fromStdString(grApp->GetAppkey());
+		url_query.addQueryItem("appkey", appkey);
+	}
+
 	UpdateManager::UpdateManager(QObject* parent) : QObject(parent) {
-		
+	
 	}
 
 	void UpdateManager::CheckUpdate(bool need_notify, bool from_user_clicked) {
@@ -538,6 +544,7 @@ namespace tc {
 		url_query.addQueryItem("page", "1");
 		url_query.addQueryItem("page_size", "1");
 		url_query.addQueryItem("sort_time", "-1");
+		AddAppKeyQueryItem(url_query);
 		url.setQuery(url_query);
 
 		QNetworkRequest request(url);
@@ -726,6 +733,7 @@ namespace tc {
 		QUrl url(download_url_);
 		QUrlQuery url_query;
 		url_query.addQueryItem("down_file", file_name_);
+		AddAppKeyQueryItem(url_query);
 		url.setQuery(url_query);
 		QNetworkRequest request(url);
 
