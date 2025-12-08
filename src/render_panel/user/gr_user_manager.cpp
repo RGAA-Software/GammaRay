@@ -214,6 +214,42 @@ namespace tc
         }
     }
 
+    std::shared_ptr<spvr::SpvrUserDevice> GrUserManager::AddDeviceForUser(const std::string& device_id) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto uid = GetUserId();
+        if (uid.empty()) {
+            return nullptr;
+        }
+        auto r = spvr::SpvrUserDeviceApi::AddDeviceForUser(host, port, appkey, uid, device_id);
+        if (!r.has_value()) {
+            auto ctx = grApp->GetContext();
+            ctx->PostUITask([=, this]() {
+
+            });
+            return nullptr;
+        }
+        auto device = r.value();
+        return device;
+    }
+
+    std::shared_ptr<spvr::SpvrUserDevice> GrUserManager::RemoveDeviceFromUser(const std::string& device_id) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto uid = GetUserId();
+        if (uid.empty()) {
+            return nullptr;
+        }
+        auto r = spvr::SpvrUserDeviceApi::RemoveDeviceFromUser(host, port, appkey, uid, device_id);
+        if (!r.has_value()) {
+            return nullptr;
+        }
+        auto device = r.value();
+        return device;
+    }
+
     void GrUserManager::SaveUserInfo(const std::string& uid, const std::string& username, const std::string& password, const std::string& avatar_path) {
         // uid
         context_->SpPutString(KeyUid(), uid);

@@ -29,7 +29,10 @@ namespace tc
         bool ModifyUsername(const std::string& username);
         bool ModifyPassword(const std::string& new_password);
         bool UpdateAvatar(const std::string& avatar_path);
+        // user - device
         std::vector<std::shared_ptr<spvr::SpvrUserDevice>> QueryBindDevices(int page, int page_size, bool show_dialog);
+        std::shared_ptr<spvr::SpvrUserDevice> AddDeviceForUser(const std::string& device_id);
+        std::shared_ptr<spvr::SpvrUserDevice> RemoveDeviceFromUser(const std::string& device_id);
 
         bool IsLoggedIn();
         std::string GetUserId();

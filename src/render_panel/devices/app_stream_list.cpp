@@ -603,6 +603,14 @@ namespace tc
             auto mgr = context_->GetStreamDBManager();
             mgr->DeleteStream(item->_id);
             LoadStreamItems();
+
+            // delete from user
+            if (const auto remote_device_id = item->remote_device_id_; !remote_device_id.empty()) {
+                context_->PostTask([=]() {
+                    const auto user_mgr = grApp->GetUserManager();
+                    user_mgr->RemoveDeviceFromUser(remote_device_id);
+                });
+            }
         }
     }
 

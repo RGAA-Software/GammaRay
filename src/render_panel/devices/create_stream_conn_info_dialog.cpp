@@ -16,6 +16,8 @@
 #include "render_panel/gr_context.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_app_messages.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/user/gr_user_manager.h"
 #include "render_panel/util/conn_info_parser.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_client.h"
@@ -204,6 +206,12 @@ namespace tc
                 .auto_start_ = true,
             });
 
+            if (const auto remote_device_id = item->remote_device_id_; !remote_device_id.empty()) {
+                context_->PostTask([=]() {
+                    const auto user_mgr = grApp->GetUserManager();
+                    user_mgr->AddDeviceForUser(remote_device_id);
+                });
+            }
             context_->PostUIDelayTask([=, this]() {
                 dialog->hide();
                 dialog->Close() ;
