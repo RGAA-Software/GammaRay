@@ -212,6 +212,7 @@ namespace tc
                 std::string server_device_id;
                 std::string visitor_device_id;
                 std::string stream_id;
+                bool force_gdi = false;
                 if (params.contains("remote_device_id")) {
                     server_device_id = params["remote_device_id"];
                 }
@@ -221,6 +222,16 @@ namespace tc
                 if (params.contains("stream_id")) {
                     stream_id = params["stream_id"];
                 }
+                if (params.contains("force_gdi")) {
+                    force_gdi = [&]() {
+                        if (auto v = params["force_gdi"]; v == "true") {
+                            return true;
+                        }
+                        return false;
+                    } ();
+                }
+
+                LOGI("Force GDI : {}", force_gdi);
 
                 // TEST //
                 if (stream_id.empty()) {
@@ -234,6 +245,12 @@ namespace tc
                 auto socket_fd = fn_get_socket_fd(sess_ptr);
 
                 if (path == kUrlMedia) {
+                    // notify
+                    const auto event = std::make_shared<GrPluginReqParamsBeginStreaming>();
+                    event->stream_id_ = stream_id;
+                    event->force_gdi_ = force_gdi;
+                    plugin_->CallbackEvent(event);
+
                     auto router = WsStreamRouter::Make(ws_data_, only_audio, visitor_device_id, stream_id);
                     stream_routers_.Insert(socket_fd, router);
                     NotifyMediaClientConnected(router->conn_id_, router->stream_id_, visitor_device_id);

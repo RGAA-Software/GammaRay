@@ -455,12 +455,17 @@ int main(int argc, char** argv) {
     LOGI("relay appkey: {}", settings->relay_appkey_);
     LOGI("force software: {}", settings->force_software_);
     LOGI("show watermark: {}", settings->show_watermark_);
+    LOGI("force gdi: {}", settings->force_gdi_);
+
+    // test force gdi beg//
+    settings->force_gdi_ = true;
+    // test force gdi end//
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
     auto visitor_device_id = settings->device_id_.empty() ? settings->my_host_ : settings->device_id_;
-    auto media_path = std::format("/media?only_audio=0&remote_device_id={}&stream_id={}&visitor_device_id={}",
-                                  bare_remote_device_id, settings->stream_id_, visitor_device_id);
+    auto media_path = std::format("/media?only_audio=0&remote_device_id={}&stream_id={}&visitor_device_id={}&force_gdi={}",
+                                  bare_remote_device_id, settings->stream_id_, visitor_device_id, settings->force_gdi_);
     auto ft_path = std::format("/file/transfer?remote_device_id={}&stream_id={}&visitor_device_id={}",
                                   bare_remote_device_id, settings->stream_id_, visitor_device_id);
     auto target_device_id = settings->device_id_.empty() ? settings->my_host_ : settings->device_id_;
@@ -504,6 +509,7 @@ int main(int argc, char** argv) {
         .relay_port_ = settings->relay_port_,
         .relay_appkey_ = settings->relay_appkey_,
         .debug_ = settings->wait_debug_,
+        .force_gdi_ = settings->force_gdi_,
     });
 
     auto beg = TimeUtil::GetCurrentTimestamp();

@@ -123,7 +123,7 @@ namespace tc
                 }
             }
             else {
-                LOGI("EncoderThread target_encoder_plugin is nullptr");
+                LOGI("EncoderThread target_encoder_plugin is nullptr, will create encoder.");
             }
 
             if (full_color_mode_changed || frame_meta_info_changed || encoder_format_ != settings->encoder_.encoder_format_

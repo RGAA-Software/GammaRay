@@ -143,6 +143,9 @@ namespace tc
         // show watermark
         bool show_watermark_ = false;
 
+        // force gdi
+        bool force_gdi_ = false;
+
         ///////
         ///////
         // from render //

@@ -45,6 +45,7 @@ namespace tc
         kPluginRemoteClipboardResp,
         kPluginPanelStreamMessage,
         kPluginConfigEncoder,
+        kPluginReqParamsBeginStreaming,
     };
 
     class GrPluginBaseEvent {
@@ -350,6 +351,18 @@ namespace tc
     public:
         std::string device_id_;
     };
+
+    // kPluginReqParamsBeginStreaming
+    class GrPluginReqParamsBeginStreaming : public GrPluginBaseEvent {
+    public:
+        GrPluginReqParamsBeginStreaming() : GrPluginBaseEvent() {
+            event_type_ = GrPluginEventType::kPluginReqParamsBeginStreaming;
+        }
+    public:
+        std::string stream_id_;
+        bool force_gdi_ = false;
+    };
+
 }
 
 #endif //GAMMARAY_GR_PLUGIN_EVENTS_H
