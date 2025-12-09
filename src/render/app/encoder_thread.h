@@ -66,6 +66,8 @@ namespace tc
 
         // hardware disabled
         std::atomic_bool hardware_disabled_ = false;
+
+        std::atomic_bool clear_encoders_ = false;
     };
 
 }

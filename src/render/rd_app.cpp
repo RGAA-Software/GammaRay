@@ -338,7 +338,7 @@ namespace tc
 
         msg_listener_->Listen<MsgTimer20S>([=, this](const MsgTimer20S& msg) {
             context_->PostTask([=, this]() {
-                if (IsCurrentGdiCapture()) {
+                if (IsCurrentGdiCapture() && !force_gdi_) {
                     if (auto r = this->TryInitDdaCapture(); !r) {
                         LOGI("===> Try init dda capture result failed!");
                         return;
@@ -807,6 +807,10 @@ namespace tc
     }
 
     bool RdApplication::SwitchGdiCapture() {
+        if (IsCurrentGdiCapture()) {
+            return true;
+        }
+
         std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
         if (capture_plugin_) {
             capture_plugin_->StopCapturing();
@@ -863,6 +867,20 @@ namespace tc
         if (ws_panel_client_ && msg) {
             ws_panel_client_->PostNetMessage(msg);
         }
+    }
+
+    void RdApplication::HandleForceGdiEvent(bool force_gdi) {
+        force_gdi_ = force_gdi;
+        context_->PostTask([force_gdi, this]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+            if (force_gdi) {
+                SwitchGdiCapture();
+            }
+            else {
+                SwitchDdaCapture();
+            }
+            capture_plugin_->StartCapturing();
+        });
     }
 
     void RdApplication::Exit() {

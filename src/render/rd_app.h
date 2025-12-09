@@ -98,6 +98,7 @@ namespace tc
         // post to panel process
         void PostPanelMessage(std::shared_ptr<Data> msg);
 
+        void HandleForceGdiEvent(bool force_gdi);
     public:
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -176,6 +177,8 @@ namespace tc
 
         // timer count
         int64_t timer_count_16ms_ = 0;
+
+        std::atomic<bool> force_gdi_ = false;
     };
 
     extern std::shared_ptr<RdApplication> rdApp;

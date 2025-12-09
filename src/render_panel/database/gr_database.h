@@ -78,7 +78,8 @@ namespace tc
                     make_column("os_version", &spvr::SpvrStream::os_version_),
                     make_column("force_relay", &spvr::SpvrStream::force_relay_, default_value(false)),
                     make_column("force_software", &spvr::SpvrStream::force_software_, default_value(false)),
-                    make_column("wait_debug", &spvr::SpvrStream::wait_debug_, default_value(false))
+                    make_column("wait_debug", &spvr::SpvrStream::wait_debug_, default_value(false)),
+                    make_column("force_gdi_capture", &spvr::SpvrStream::force_gdi_capture_, default_value(false))
                 ),
                 make_table("visit_record",
                     make_column("id", &VisitRecord::id_, primary_key()),

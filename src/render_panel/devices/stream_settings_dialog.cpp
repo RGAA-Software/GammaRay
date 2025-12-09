@@ -420,7 +420,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_->wait_debug_);
+            cb->setChecked(stream_item_->force_gdi_capture_);
             cb_force_gdi_capture_ = cb;
             layout->addWidget(cb);
 

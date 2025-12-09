@@ -168,6 +168,7 @@ namespace tc
         else if (event->event_type_ == GrPluginEventType::kPluginReqParamsBeginStreaming) {
             auto target_event = std::dynamic_pointer_cast<GrPluginReqParamsBeginStreaming>(event);
             LOGI("ReqParamsBeginStreaming, stream id: {}, force gdi: {}", target_event->stream_id_, target_event->force_gdi_);
+            app_->HandleForceGdiEvent(target_event->force_gdi_);
         }
     }
 
