@@ -337,7 +337,7 @@ void ParseCommandLine(QApplication& app) {
     settings->show_watermark_ = parser.value(opt_show_watermark).toInt() == 1;
 
     // force gdi capture
-    settings->force_gdi_capture_ = parser.value(opt_force_gdi_capture).toInt() == 1;
+    settings->force_gdi_ = parser.value(opt_force_gdi_capture).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -462,10 +462,6 @@ int main(int argc, char** argv) {
     LOGI("force software: {}", settings->force_software_);
     LOGI("show watermark: {}", settings->show_watermark_);
     LOGI("force gdi: {}", settings->force_gdi_);
-
-    // test force gdi beg//
-    settings->force_gdi_ = true;
-    // test force gdi end//
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;
