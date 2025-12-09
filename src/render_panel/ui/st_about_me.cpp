@@ -80,7 +80,7 @@ namespace tc
             auto layout = new NoMarginHLayout();
             layout->addStretch();
             auto btn = new TcPushButton(this);
-            btn->setFixedSize(150, 35);
+            btn->setFixedSize(180, 35);
             btn->SetTextId("id_upgrade_check");
             layout->addWidget(btn);
             connect(btn, &QPushButton::clicked, this, [=]() {

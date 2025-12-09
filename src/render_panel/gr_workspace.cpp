@@ -535,14 +535,14 @@ namespace tc
         // check update
         msg_listener_->Listen<MsgCheckUpdate>([=, this](const MsgCheckUpdate& msg) {
             app_->GetContext()->PostUITask([=, this]() {
-                this->CheckAppUpdate();
+                this->CheckAppUpdate(true);
             });
         });
 
         // update
         msg_listener_->Listen<MsgGrTimer10H>([=, this](const MsgGrTimer10H& msg) {
             app_->GetContext()->PostUITask([=, this]() {
-                this->CheckAppUpdate();
+                this->CheckAppUpdate(false);
             });
         });
     }
@@ -825,10 +825,10 @@ namespace tc
             dialog.exec();
         });
 
-        UpdateManager::GetInstance()->CheckUpdate(true);
+        UpdateManager::GetInstance()->CheckUpdate(true, false);
     }
 
-    void GrWorkspace::CheckAppUpdate() {
-        tc::UpdateManager::GetInstance()->CheckUpdate(true, true);
+    void GrWorkspace::CheckAppUpdate(bool from_user_clicked) {
+        tc::UpdateManager::GetInstance()->CheckUpdate(true, from_user_clicked);
     }
 }
