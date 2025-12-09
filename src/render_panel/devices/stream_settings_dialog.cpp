@@ -407,6 +407,7 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
+        content_layout->addSpacing(item_gap);
         // force gdi capture
         {
             auto layout = new NoMarginHLayout();
@@ -624,7 +625,7 @@ namespace tc
             //content_layout->addSpacing(70);
             content_layout->addStretch();
             content_layout->addLayout(layout);
-            content_layout->addSpacing(50);
+            content_layout->addSpacing(35);
         }
 
         //root_layout_->addStretch();
