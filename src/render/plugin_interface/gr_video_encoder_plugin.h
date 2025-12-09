@@ -42,6 +42,7 @@ namespace tc
         kNotFound,
         kEncodeFailed,
         kInvalidInput,
+        kNotImplemented,
         kUnknown,
     };
 
@@ -72,6 +73,12 @@ namespace tc
             return err;
         }
 
+        static VideoEncoderError NotImplemented() {
+            VideoEncoderError err;
+            err.type_ = VideoEncoderErrorType::kNotImplemented;
+            return err;
+        }
+
         [[nodiscard]] bool Success() const {
             return type_ == VideoEncoderErrorType::kOk;
         }
@@ -88,6 +95,9 @@ namespace tc
             }
             else if (type_ == VideoEncoderErrorType::kInvalidInput) {
                 return "Invalid input";
+            }
+            else if (type_ == VideoEncoderErrorType::kNotImplemented) {
+                return "Not implemented";
             }
             else {
                 return "Unknown error";
