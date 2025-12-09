@@ -273,6 +273,7 @@
   "id_relay_ft_server": "中转文件服务",
   "id_force_software": "强制软解码",
   "id_wait_debug": "等待调试",
+  "id_force_gdi_capture": "强制用GDI采集",
   "id_verifying": "校验中...",
   "id_op_error": "操作错误",
   "id_consult_admin_to_help": "联系您的管理员获取帮助",

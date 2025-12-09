@@ -166,6 +166,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_show_watermark("show_watermark", "show watermark", "value", "");
     parser.addOption(opt_show_watermark);
 
+    QCommandLineOption opt_force_gdi_capture("force_gdi_capture", "force gdi capture", "value", "");
+    parser.addOption(opt_force_gdi_capture);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -332,6 +335,9 @@ void ParseCommandLine(QApplication& app) {
 
     // show watermark
     settings->show_watermark_ = parser.value(opt_show_watermark).toInt() == 1;
+
+    // force gdi capture
+    settings->force_gdi_capture_ = parser.value(opt_force_gdi_capture).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {

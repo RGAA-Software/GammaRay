@@ -1,4 +1,4 @@
-#include "gd_button.h"
+﻿#include "gd_button.h"
 
 #include <qbrush.h>
 #include <qfont.h>
@@ -136,8 +136,23 @@ void GDButton::paintEvent(QPaintEvent* event) {
 		font_pen.setColor(m_text_info.m_font_color_disable);
 	}
 	painter.setPen(font_pen);
-	painter.setFont(font);
-	painter.drawText(m_text_info.m_padding_left, m_text_info.m_padding_top, m_text_info.m_text); 
+
+	QFontMetrics fm(font);
+	if (!m_icon_info.m_have_icon) {
+		QRect text_rect = this->rect();
+		painter.drawText(text_rect, Qt::AlignCenter, m_text_info.m_text);
+	}
+	else {
+		int icon_x = m_icon_info.m_padding_left;
+		int icon_w = m_icon_info.m_icon_size.width();
+		QRect text_area(
+			icon_x + icon_w,            
+			0,
+			width() - (icon_x + icon_w),
+			height()
+		);
+		painter.drawText(text_area, Qt::AlignVCenter | Qt::AlignHCenter, m_text_info.m_text);
+	}
 }
 
 

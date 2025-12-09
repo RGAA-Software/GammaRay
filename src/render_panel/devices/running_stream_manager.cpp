@@ -121,6 +121,7 @@ namespace tc
             << std::format("--relay_appkey={}", item->relay_appkey_).c_str()
             << std::format("--force_software={}", item->force_software_ ? 1 : 0).c_str()
             << std::format("--wait_debug={}", item->wait_debug_ ? 1 : 0).c_str()
+            << std::format("--force_gdi_capture={}", item->force_gdi_capture_ ? 1 : 0).c_str()
             << std::format("--show_watermark={}", show_watermark ? 1 : 0).c_str()
             ;
         LOGI("Start client inner args:");
