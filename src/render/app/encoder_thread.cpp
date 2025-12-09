@@ -64,14 +64,10 @@ namespace tc
             return;
         }
         PostEncTask([=, this]() {
-            
-            // test
             if (clear_encoders_) {
                 clear_encoders_ = false;
-
-                //encoder_plugins_.clear();
-
-                
+                LOGW("clear all encoders!!!");
+                encoder_plugins_.clear();
             }
 
             auto adapter_uid = cap_video_msg.adapter_uid_;
@@ -457,10 +453,7 @@ namespace tc
                             if (!encode_result.Success()) {
                                 LOGE("<!!> Encode YUV failed, encoder plugin: {}, error: {}->{}, monitor: {}",
                                      target_encoder_plugin->GetPluginName(), (int)encode_result.type_, encode_result.GetReadableType(), cap_video_msg.display_name_);
-
-
                                 clear_encoders_ = true;
-
                                 return;
                             }
                         });

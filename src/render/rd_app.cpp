@@ -872,7 +872,6 @@ namespace tc
     void RdApplication::HandleForceGdiEvent(bool force_gdi) {
         force_gdi_ = force_gdi;
         context_->PostTask([force_gdi, this]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
             if (force_gdi) {
                 SwitchGdiCapture();
             }
