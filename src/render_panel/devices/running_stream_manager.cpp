@@ -16,6 +16,7 @@
 #include "start_stream_loading.h"
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "client/ct_stream_item_net_type.h"
+#include "render_panel/spvr/gr_spvr_manager.h"
 
 namespace tc
 {
@@ -41,12 +42,27 @@ namespace tc
         loading->show();
         auto stream_id = item->stream_id_;
         loading_dialogs_.insert({stream_id, loading});
-        QTimer::singleShot(5000, [=, this]() {
+        QTimer::singleShot(7000, [=, this]() {
             if (loading_dialogs_.contains(stream_id)) {
                 loading_dialogs_[stream_id]->hide();
                 loading_dialogs_.erase(stream_id);
             }
         });
+
+        if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty()) {
+            auto ac = context_->GetSpvrManager()->QueryNewConnection(true);
+            if (ac == std::nullopt) {
+                LOGE("Not available connection for : {}", item->remote_device_id_);
+                return;
+            }
+            auto c = ac.value();
+            if (!c.available_) {
+                const QString msg = tcTr("id_no_available_connection");
+                TcDialog dialog(tcTr("id_error"), msg);
+                dialog.exec();
+                return;
+            }
+        }
 
         std::string screen_recording_path = settings_->GetScreenRecordingPath();
         if (screen_recording_path.empty()) {

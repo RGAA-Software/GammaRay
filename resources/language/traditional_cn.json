@@ -344,6 +344,7 @@
   "id_user_center": "用戶中心",
   "id_exit_login": "退出帳戶",
   "id_exit_login_msg": "您确定要退出当前登录的帳戶吗?",
+  "id_no_available_connection": "暫無可用新連接，您需要提升授權限制。",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文檔",

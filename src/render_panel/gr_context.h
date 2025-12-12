@@ -34,6 +34,7 @@ namespace tc
     class GrApplication;
     class NotifyManager;
     class GrDatabase;
+    class GrSpvrManager;
 
     // Device list
     class StreamDBOperator;
@@ -77,6 +78,7 @@ namespace tc
         std::shared_ptr<DBGameOperator> GetDBGameManager();
         std::shared_ptr<ServiceManager> GetServiceManager();
         std::shared_ptr<GrApplication> GetApplication();
+        std::shared_ptr<GrSpvrManager> GetSpvrManager();
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -141,6 +143,7 @@ namespace tc
         std::shared_ptr<RunningStreamManager> running_stream_mgr_ = nullptr;
         std::shared_ptr<NotifyManager> notify_mgr_ = nullptr;
         std::shared_ptr<GrDatabase> database_ = nullptr;
+        std::shared_ptr<GrSpvrManager> spvr_manager_ = nullptr;
     };
 
 }

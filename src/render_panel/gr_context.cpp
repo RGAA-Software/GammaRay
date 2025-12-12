@@ -34,6 +34,7 @@
 #include "tc_relay_client/relay_api.h"
 #include "relay_message.pb.h"
 #include "app_config.h"
+#include "spvr/gr_spvr_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -83,6 +84,7 @@ namespace tc
         res_manager_->ExtractIconsIfNeeded();
 
         run_game_manager_ = std::make_shared<GrRunGameManager>(shared_from_this());
+        spvr_manager_ = std::make_shared<GrSpvrManager>(shared_from_this());
 
         service_manager_ = ServiceManager::Make();
         std::string base_path = qApp->applicationDirPath().toStdString();
@@ -259,6 +261,10 @@ namespace tc
 
     std::shared_ptr<GrApplication> GrContext::GetApplication() {
         return app_;
+    }
+
+    std::shared_ptr<GrSpvrManager> GrContext::GetSpvrManager() {
+        return spvr_manager_;
     }
 
     std::shared_ptr<StreamDBOperator> GrContext::GetStreamDBManager() {
