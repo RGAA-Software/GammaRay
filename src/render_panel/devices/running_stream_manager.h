@@ -19,10 +19,12 @@ namespace tc
     class GrSettings;
     class StartStreamLoading;
     class MessageListener;
+    class TcDialog;
 
     class RunningStreamManager {
     public:
         explicit RunningStreamManager(const std::shared_ptr<GrContext>& ctx);
+        ~RunningStreamManager();
         void StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type);
         void StopStream(const std::shared_ptr<spvr::SpvrStream>& item);
 
@@ -32,6 +34,7 @@ namespace tc
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         std::map<std::string, std::shared_ptr<QProcess>> running_processes_;
         std::map<std::string, std::shared_ptr<StartStreamLoading>> loading_dialogs_;
+        std::shared_ptr<TcDialog> no_conn_dialog_ = nullptr;
     };
 
 }

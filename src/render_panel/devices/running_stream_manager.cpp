@@ -33,6 +33,19 @@ namespace tc
                 }
             }, 200);
         });
+
+        msg_listener_->Listen<MsgNoAvailableConnection>([=, this](const MsgNoAvailableConnection& msg) {
+            context_->PostUITask([=, this]() {
+                if (loading_dialogs_.contains(msg.stream_id_)) {
+                    loading_dialogs_[msg.stream_id_]->hide();
+                    loading_dialogs_.erase(msg.stream_id_);
+                }
+            });
+        });
+    }
+
+    RunningStreamManager::~RunningStreamManager() {
+
     }
 
     void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type) {
@@ -50,16 +63,28 @@ namespace tc
         });
 
         if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty()) {
-            auto ac = context_->GetSpvrManager()->QueryNewConnection(true);
+            auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
             if (ac == std::nullopt) {
                 LOGE("Not available connection for : {}", item->remote_device_id_);
                 return;
             }
             auto c = ac.value();
             if (!c.available_) {
+                context_->PostTask([=, this]() {
+                    context_->SendAppMessage(MsgNoAvailableConnection {
+                        .stream_id_ = stream_id,
+                    });
+                });
+
+                if (loading_dialogs_.contains(stream_id)) {
+                    loading_dialogs_[stream_id]->hide();
+                    loading_dialogs_.erase(stream_id);
+                }
+
                 const QString msg = tcTr("id_no_available_connection");
-                TcDialog dialog(tcTr("id_error"), msg);
-                dialog.exec();
+                no_conn_dialog_ = std::make_shared<TcDialog>(tcTr("id_error"), msg);
+                no_conn_dialog_->show();
+
                 return;
             }
         }

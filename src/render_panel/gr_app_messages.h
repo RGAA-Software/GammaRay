@@ -254,6 +254,13 @@ namespace tc
     public:
 
     };
+
+    // no available connection
+    class MsgNoAvailableConnection {
+    public:
+        std::string stream_id_;
+    };
+
 }
 
 #endif // APP_MESSAGES_H
