@@ -159,7 +159,7 @@ namespace tc
         // ethernet
         uint64_t max_transmit_speed_ = 0;
         uint64_t max_receive_speed_ = 0;
-        bool license_ok_ = true;
+        int role_ = 1;
 
     private:
         const std::string kFullColorModeKey = "enable_full_color_mode";

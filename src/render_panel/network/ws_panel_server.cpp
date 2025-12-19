@@ -438,7 +438,12 @@ namespace tc
         sub->set_appkey(grApp->GetAppkey());
         sub->set_max_transmit_speed(this->max_transmit_speed_);
         sub->set_max_receive_speed(this->max_receive_speed_);
-        sub->set_license_ok(true);
+        if (auto pc = grApp->GetCompanion(); pc) {
+            sub->set_role(static_cast<int>(pc->GetAuth()->role_));
+        }
+        else {
+            sub->set_role(1);
+        }
         PostRendererMessage(tc::RpProtoAsData(&m));
     }
 

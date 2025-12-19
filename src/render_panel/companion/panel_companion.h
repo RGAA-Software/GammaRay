@@ -14,11 +14,23 @@
 namespace tc
 {
 
+    enum class AuthRole {
+        kFree = 1,
+        kPersonal = 2,
+        kEnterprise = 3,
+    };
+
     // Authorization
     class Authorization {
     public:
+        bool IsFree() const;
+        bool IsPersonal() const;
+        bool IsEnterprise() const;
+
+    public:
         std::string auth_id_;
         std::string appkey_;
+        AuthRole role_ = AuthRole::kFree;
     };
 
     // SpvrSrvConfig
@@ -78,6 +90,9 @@ namespace tc
         virtual void UpdateSpvrServerConfig(const std::string& host, int port) = 0;
         virtual std::shared_ptr<Authorization> RequestAuth() = 0;
         virtual std::shared_ptr<Authorization> GetAuth() = 0;
+        virtual bool IsAuthFree() = 0;
+        virtual bool IsAuthPersonal() = 0;
+        virtual bool IsAuthEnterprise() = 0;
 
         // enc
         virtual bool EncQRCode(std::string origin_content, std::vector<uint8_t>& cipher_data) = 0;
