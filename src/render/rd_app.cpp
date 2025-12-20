@@ -277,9 +277,17 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgClientDisconnected>([=, this](const MsgClientDisconnected& msg) {
-            this->PostGlobalTask([=, this]() {
-
-            });
+            if (HasConnectedPeer()) {
+                LOGI("Still has connected clients");
+                return;
+            }
+            LOGW("Don't have connected clients, maybe restart render in 10S");
+            this->context_->PostDelayTask([=, this]() {
+                if (!HasConnectedPeer()) {
+                    LOGW("** Don't have connected clients, will restart render now.");
+                    ProcessUtil::KillProcess(qApp->applicationPid());
+                }
+            }, 5000);
         });
 
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {

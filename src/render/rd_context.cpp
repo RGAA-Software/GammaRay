@@ -64,8 +64,10 @@ namespace tc
     }
 
     void RdContext::PostDelayTask(std::function<void()>&& task, int delay) {
-        QTimer::singleShot(delay, [t = std::move(task)]() {
-            t();
+        PostUITask([=]() {
+            QTimer::singleShot(delay, [=]() {
+                task();
+            });
         });
     }
 
