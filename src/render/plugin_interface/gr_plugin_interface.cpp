@@ -347,9 +347,9 @@ namespace tc
         sys_settings_.audio_enabled_ = settings.audio_enabled_;
         sys_settings_.appkey_ = settings.appkey_;
         sys_settings_.role_ = settings.role_;
-        LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}, relay enabled: {}, language: {}, role: {}",
-             sys_settings_.device_id_, sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.relay_host_,
-             sys_settings_.relay_port_, sys_settings_.relay_enabled_, sys_settings_.language_, sys_settings_.role_);
+        //LOGI("OnSyncSettings: device id: {}, random pwd: {}, safety pwd: {}, relay host: {}, port: {}, relay enabled: {}, language: {}, role: {}",
+        //     sys_settings_.device_id_, sys_settings_.device_random_pwd_, sys_settings_.device_safety_pwd_, sys_settings_.relay_host_,
+        //     sys_settings_.relay_port_, sys_settings_.relay_enabled_, sys_settings_.language_, sys_settings_.role_);
     }
 
     GrPluginSettingsInfo GrPluginInterface::GetPluginSettingsInfo() {

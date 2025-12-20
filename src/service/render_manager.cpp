@@ -40,10 +40,6 @@ namespace tc
                     StartDesktopRenderInternal(this->desktop_work_dir_, this->desktop_app_path_, this->desktop_app_args_);
                 }
 
-                if (!this->CheckPanelAlive(processes)) {
-
-                }
-
             });
         });
 
@@ -96,6 +92,7 @@ namespace tc
     }
 
     bool RenderManager::StopDesktopRender() {
+        LOGW(" *** StopDesktopRender ***");
         if (desktop_render_process_) {
             ProcessHelper::CloseProcess(desktop_render_process_->pid_);
             desktop_render_process_ = nullptr;
@@ -138,6 +135,7 @@ namespace tc
     }
 
     void RenderManager::CheckAliveRenders(const std::vector<std::shared_ptr<ProcessInfo>>& processes) {
+        LOGI("CheckAliveRender, process size: {}", processes.size());
         bool found_desktop_render = false;
         std::map<RenderProcessId, std::shared_ptr<RenderProcess>> ps;
         for (auto& p : processes) {
@@ -170,6 +168,7 @@ namespace tc
         if (!found_desktop_render) {
             is_desktop_render_alive_ = false;
             desktop_render_process_ = nullptr;
+            LOGW("NOT FOUND DESKTOP RENDER.");
         }
 
         render_processes_.ClearAndBatchInsert(ps);

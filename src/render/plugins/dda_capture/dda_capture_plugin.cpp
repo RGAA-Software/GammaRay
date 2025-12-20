@@ -220,6 +220,10 @@ namespace tc
             capture->SetCaptureFps(capture_fps_);
             auto init_res = capture->Init();
             if (!init_res) {
+                LOGW("Will stop & clear captures.");
+                for (const auto& [name, capture]: captures_) {
+                    capture->StopCapture();
+                }
                 captures_.clear();
                 LOGE("TryInitSpecificCapture, Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
                 return false;
