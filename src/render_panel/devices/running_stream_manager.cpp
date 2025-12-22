@@ -48,7 +48,7 @@ namespace tc
 
     }
 
-    void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type) {
+    void RunningStreamManager::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, const std::string& network_type, bool direct) {
         // loading dialog
         auto loading = std::make_shared<StartStreamLoading>(context_, item, network_type);
         loading->setWindowFlag(Qt::WindowStaysOnTopHint, true);
@@ -62,7 +62,7 @@ namespace tc
             }
         });
 
-        if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty()) {
+        if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty() && !direct) {
             auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
             if (ac == std::nullopt) {
                 LOGE("Not available connection for : {}", item->remote_device_id_);

@@ -407,7 +407,7 @@ namespace tc
             }
 
             // start via websocket
-            running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeWebSocket);
+            running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeWebSocket, true);
         }
         else {
             // we can't connect directly
@@ -511,7 +511,7 @@ namespace tc
                 }
 
                 // start via websocket
-                running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeRelay);
+                running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeRelay, false);
             }
             else {
                 LOGI("Yes, we DONT have relay info, force relay? {}, relay_host: {}, relay_port: {}, relay_appkey: {}",

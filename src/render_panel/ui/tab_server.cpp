@@ -543,7 +543,7 @@ namespace tc
                             .item_ = item,
                         });
 
-                        running_stream_mgr_->StartStream(item, kStreamItemNtTypeRelay);
+                        running_stream_mgr_->StartStream(item, kStreamItemNtTypeRelay, false);
                     });
                 }
 
