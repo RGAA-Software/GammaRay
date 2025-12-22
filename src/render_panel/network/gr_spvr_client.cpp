@@ -13,6 +13,8 @@
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/base64.h"
 #include "hw_info/hw_info.h"
+#include "render_panel/gr_application.h"
+#include "render_panel/user/gr_user_manager.h"
 
 using namespace spvr_panel;
 
@@ -80,7 +82,8 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        auto path = std::format("/spvr/panel?appkey={}&device_id={}", appkey_, device_id_);
+        auto user_id = grApp->GetUserManager()->GetUserId();
+        auto path = std::format("/spvr/panel?appkey={}&device_id={}&user_id={}", appkey_, device_id_, user_id);
         LOGI("will connect => {}:{}{}", host_, port_, path);
         if (!client_->async_start(host_, port_, path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
@@ -103,6 +106,8 @@ namespace tc
         msg.set_msg_type(spvr_panel::SpvrPanelMessageType::kSpvrPanelHello);
         auto sub = msg.mutable_hello();
         sub->set_device_id(device_id_);
+        auto user_id = grApp->GetUserManager()->GetUserId();
+        sub->set_user_id(user_id);
         PostBinMessage(msg.SerializeAsString());
     }
 
@@ -121,6 +126,8 @@ namespace tc
         sub->set_device_id(device_id_);
         sub->set_desktop_link(desktop_link);
         sub->set_desktop_link_raw(desktop_link_raw);
+        auto user_id = grApp->GetUserManager()->GetUserId();
+        sub->set_user_id(user_id);
         if (auto sys_info = sys_info_.Clone(); sys_info != nullptr) {
             sub->set_sys_info_raw(sys_info->raw_json_msg_);
         }
