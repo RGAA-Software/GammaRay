@@ -11,6 +11,7 @@
 #include <QFileInfo>
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
+#include "tc_common_new/http_client.h"
 #include "panel_cp_file_stream.h"
 #include "tc_common_new/time_util.h"
 #include "render_panel/gr_context.h"
@@ -30,6 +31,7 @@
 
 namespace tc
 {
+    static const std::string kUrlFileTransferRecord = "/api/v1/record/upload_file_transfer_info";
 
     CpVirtualFile::CpVirtualFile(const std::shared_ptr<GrContext>& ctx) {
         _cRef = 1;
@@ -311,7 +313,8 @@ namespace tc
 
             auto settings = GrSettings::Instance();
             auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
-            ft_record_op->InsertFileTransferRecord(std::make_shared<FileTransferRecord>(FileTransferRecord {
+
+            auto record = std::make_shared<FileTransferRecord>(FileTransferRecord{
                 .the_file_id_ = file_stream_->GetFileId(),
                 .begin_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
                 .end_ = 0,
@@ -319,7 +322,12 @@ namespace tc
                 .target_device_ = settings->GetDeviceId().empty() ? ip_address : settings->GetDeviceId(),
                 .direction_ = "In",
                 .file_detail_ = file_stream_->GetFileName(),
-            }));
+            });
+
+            ft_record_op->InsertFileTransferRecord(record);
+            // notify cms
+            LOGI("NotifyFileTransferRecordToCms========>");// to do: There is no execution here
+            NotifyFileTransferRecordToCms(record);
         });
     }
 
@@ -349,5 +357,22 @@ namespace tc
             LOGE("Query Clipboard DataObject failed: {:x}", hr);
         }
         return p;
+    }
+
+    void CpVirtualFile::NotifyFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record) {
+        if (!record) {
+            return;
+        }
+        auto settings = GrSettings::Instance();
+        std::string serv_host = settings->GetSpvrServerHost();
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), kUrlFileTransferRecord, 2000);
+        auto appkey = grApp->GetAppkey();
+        auto resp = client->Post({
+            {"appkey", appkey}
+            }, record->AsJson2(), "application/json");
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("NotifyFileTransferRecordToCms failed: {}", resp.status);
+        }
     }
 };

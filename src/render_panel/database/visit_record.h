@@ -18,6 +18,7 @@ namespace tc
 
         std::string AsString();
         std::string AsJson();
+        std::string AsJson2();
 
     public:
         int id_{};

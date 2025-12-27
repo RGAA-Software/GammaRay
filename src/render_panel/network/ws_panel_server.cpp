@@ -8,6 +8,8 @@
 #include "http_handler.h"
 #include "tc_message.pb.h"
 #include "render_panel/gr_settings.h"
+#include "json/json.hpp"
+#include "tc_common_new/http_client.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/data.h"
 #include "tc_common_new/file.h"
@@ -38,6 +40,9 @@ namespace tc
     static std::string kUrlPanelRenderer = "/panel/renderer";
     static std::string kUrlFileTransfer = "/file/transfer";
     static std::string kUrlSysInfo = "/sys/info";
+
+    // report visit info to cms
+    static const std::string kUrlVisitRecord  = "/api/v1/record/upload_visit_info";
 
     struct aop_log {
         bool before(http::web_request &req, http::web_response &rep) {
@@ -508,7 +513,7 @@ namespace tc
                 if (sub.visitor_device_id().empty()) {
                     return;
                 }
-                visit_record_op_->InsertVisitRecord(std::make_shared<VisitRecord>(VisitRecord {
+                auto record = std::make_shared<VisitRecord>(VisitRecord{
                     .conn_id_ = sub.conn_id(),
                     .stream_id_ = sub.stream_id(),
                     .conn_type_ = sub.conn_type(),
@@ -517,7 +522,10 @@ namespace tc
                     .duration_ = 0,
                     .visitor_device_ = sub.visitor_device_id(),
                     .target_device_ = settings_->GetDeviceId().empty() ? ip_address : settings_->GetDeviceId(),
-                }));
+                    });
+                visit_record_op_->InsertVisitRecord(record);
+                // notify cms
+                NotifyVisitRecordToCms(record);
             });
         }
         else if (proto_msg->type() == tcrp::kRpClientDisConnected) {
@@ -596,4 +604,20 @@ namespace tc
         }
     }
 
+    void WsPanelServer::NotifyVisitRecordToCms(const std::shared_ptr<VisitRecord> record) {
+        if (!record) {
+            return;
+        }
+        auto settings = GrSettings::Instance();
+        std::string serv_host = settings->GetSpvrServerHost();
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), kUrlVisitRecord, 2000);
+        auto appkey = grApp->GetAppkey();
+        auto resp = client->Post({
+            {"appkey", appkey}
+            }, record->AsJson2(), "application/json");
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("NotifyVisitRecordToCms failed: {}", resp.status);
+        }
+    }
 }

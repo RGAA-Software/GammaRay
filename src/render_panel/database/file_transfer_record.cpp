@@ -19,6 +19,7 @@ namespace tc
 
     std::string FileTransferRecord::AsJson() {
         nlohmann::json obj;
+        obj["the_file_id"] = the_file_id_;
         obj["begin"] = TimeUtil::FormatTimestamp(begin_);
         obj["end"] = TimeUtil::FormatTimestamp(end_);
         obj["visitor_device"] = visitor_device_;
@@ -28,4 +29,15 @@ namespace tc
         return obj.dump(2);
     }
 
+    std::string FileTransferRecord::AsJson2() {
+        nlohmann::json obj;
+        obj["the_file_id"] = the_file_id_;
+        obj["begin"] = begin_;
+        obj["end"] = end_;
+        obj["visitor_device"] = visitor_device_;
+        obj["target_device"] = target_device_;
+        obj["direction"] = direction_;
+        obj["file_detail"] = file_detail_;
+        return obj.dump(2);
+    }
 }

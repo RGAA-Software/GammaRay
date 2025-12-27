@@ -22,6 +22,7 @@ namespace tc
 
     class GrContext;
     class CpFileStream;
+    class FileTransferRecord;
 
     class CpVirtualFile : public IDataObject, public IDataObjectAsyncCapability {
     public:
@@ -108,6 +109,7 @@ namespace tc
         // Copy in
         void RecordFileTransferEnd();
 
+        void NotifyFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
     private:
         CLIPFORMAT clip_format_file_desc_ = 0;
         CLIPFORMAT clip_format_file_content_ = 0;

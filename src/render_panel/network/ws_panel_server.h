@@ -22,6 +22,7 @@ namespace tc
     class HttpHandler;
     class GrSettings;
     class FileTransferChannel;
+    class VisitRecord;
     class VisitRecordOperator;
     class FileTransferRecordOperator;
     class MessageListener;
@@ -79,6 +80,7 @@ namespace tc
 
         void RpSyncPanelInfo();
 
+        void NotifyVisitRecordToCms(const std::shared_ptr<VisitRecord> record);
     private:
         std::shared_ptr<asio2::http_server> server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;
