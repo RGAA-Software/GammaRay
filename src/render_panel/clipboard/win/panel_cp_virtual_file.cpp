@@ -31,8 +31,7 @@
 
 namespace tc
 {
-    static const std::string kUrlFileTransferRecord = "/api/v1/record/upload_file_transfer_info";
-
+    
     CpVirtualFile::CpVirtualFile(const std::shared_ptr<GrContext>& ctx) {
         _cRef = 1;
         context_ = ctx;
@@ -326,7 +325,7 @@ namespace tc
 
             ft_record_op->InsertFileTransferRecord(record);
             // notify cms
-            LOGI("NotifyFileTransferRecordToCms========>");// to do: There is no execution here
+            LOGI("NotifyFileTransferRecordToCms========>");
             NotifyFileTransferRecordToCms(record);
         });
     }
@@ -365,7 +364,7 @@ namespace tc
         }
         auto settings = GrSettings::Instance();
         std::string serv_host = settings->GetSpvrServerHost();
-        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), kUrlFileTransferRecord, 2000);
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlFileTransferRecord, 2000);
         auto appkey = grApp->GetAppkey();
         auto resp = client->Post({
             {"appkey", appkey}

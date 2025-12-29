@@ -406,7 +406,7 @@ namespace tc
                     ip_address = ips[0].ip_addr_;
                 }
 
-                ft_record_op_->InsertFileTransferRecord(std::make_shared<FileTransferRecord>(FileTransferRecord {
+                auto record = std::make_shared<FileTransferRecord>(FileTransferRecord{
                     .the_file_id_ = sub.the_file_id(),
                     .begin_ = sub.begin_timestamp(),
                     .end_ = 0,
@@ -414,7 +414,11 @@ namespace tc
                     .target_device_ = sub.remote_device_id(),
                     .direction_ = sub.direction(),
                     .file_detail_ = sub.file_detail(),
-                }));
+                });
+
+                ft_record_op_->InsertFileTransferRecord(record);
+
+                NotifyFileTransferRecordToCms(record);
             });
         }
         else if (proto_msg->type() == tccp::kCpFileTransferEnd) {
@@ -618,6 +622,23 @@ namespace tc
 
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("NotifyVisitRecordToCms failed: {}", resp.status);
+        }
+    }
+
+    void WsPanelServer::NotifyFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record) {
+        if (!record) {
+            return;
+        }
+        auto settings = GrSettings::Instance();
+        std::string serv_host = settings->GetSpvrServerHost();
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlFileTransferRecord, 2000);
+        auto appkey = grApp->GetAppkey();
+        auto resp = client->Post({
+            {"appkey", appkey}
+            }, record->AsJson2(), "application/json");
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("NotifyFileTransferRecordToCms failed: {}", resp.status);
         }
     }
 }
