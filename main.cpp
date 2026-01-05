@@ -15,6 +15,7 @@
 #include "render_panel/gr_workspace.h"
 #include "render_panel/gr_running_pipe.h"
 #include "render_panel/gr_settings.h"
+#include "render_panel/util/opengl_helper.h"
 #include "tc_common_new/win32/dxgi_mon_detector.h"
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "tc_qt_widget/tc_font_manager.h"
@@ -73,6 +74,36 @@ int main(int argc, char *argv[]) {
 
     auto log_path = base_dir + "/gr_logs/gammaray.log";
     Logger::InitLog(log_path.toStdString(), true);
+
+    // Check OpenGL Backend
+    EOpenGLBackend backend = DetectOpenGLBackend();
+    LOGI("Detected backend:", (int)backend);
+    QString gl_backend = "angle";
+    // 设置 QT_OPENGL 环境变量
+    switch (backend) {
+        case EOpenGLBackend::kDesktop: {
+            QString backend = "desktop";
+            gl_backend = backend;
+            break;
+        }
+        case EOpenGLBackend::kGLES: {
+            QString backend = "angle";
+            gl_backend = backend;
+            break;
+        }
+        case EOpenGLBackend::kSoftware: {
+            QString backend = "software";
+            gl_backend = backend;
+            break;
+        }
+        default: {
+            QString backend = "angle";
+            gl_backend = backend;
+            break;
+        }
+    }
+    GrSettings::Instance()->gl_backend_ = gl_backend.toStdString();
+    LOGI("gl_backed:{}", gl_backend.toStdString());
 
     // params
     gflags::ParseCommandLineFlags(&argc, &argv, true);

@@ -146,6 +146,9 @@ namespace tc
         // force gdi
         bool force_gdi_ = false;
 
+        // opengl backend
+        std::string gl_backend_;
+
         ///////
         ///////
         // from render //

@@ -287,6 +287,8 @@ namespace tc
 
         std::string gr_data_path_;
 
+        std::string gl_backend_;
+
     };
 
 }

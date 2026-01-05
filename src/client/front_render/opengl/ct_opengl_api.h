@@ -1,5 +1,5 @@
 #pragma once
 
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions>
 
-typedef QOpenGLFunctions_3_3_Core GLFuncs;
+typedef QOpenGLFunctions GLFuncs;

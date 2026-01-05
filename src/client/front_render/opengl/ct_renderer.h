@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,7 +23,7 @@ namespace tc
 		void SetTargetSize(int width, int height);
 
 	protected:
-		QOpenGLFunctions_3_3_Core* functions = nullptr;
+		QOpenGLFunctions* functions = nullptr;
 		std::shared_ptr<Director> director = nullptr;
 		std::shared_ptr<ShaderProgram> shader_program = nullptr;
 		glm::mat4 model{};

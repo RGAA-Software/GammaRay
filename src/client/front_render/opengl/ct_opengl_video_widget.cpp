@@ -46,14 +46,19 @@ namespace tc
 		format.setSwapInterval(1);  // 1表示启用V-Sync，0表示禁用
 		QSurfaceFormat::setDefaultFormat(format);
 #endif
-		initializeOpenGLFunctions();
+		vao_obj_.create();
+		vao_obj_.bind();
+		QOpenGLFunctions* f = context()->functions();
+		f->initializeOpenGLFunctions();
+		gl_func_ = f;
+		LOGI("initializeOpenGLFunctions, gl_func: 0x{:p}", (void*)gl_func_);
 
         TimeDuration duration("initializeGL");
 
-		auto functions = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
-		functions->initializeOpenGLFunctions();
+		//auto functions = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
+		//functions->initializeOpenGLFunctions();
 
-        director_ = Director::Make(functions);
+        director_ = Director::Make(gl_func_);
 
 		auto vertex_shader = kMainVertexShader;
 		char* fragment_shader = nullptr;
@@ -74,45 +79,45 @@ namespace tc
 			return;
 		}
 		
-		shader_program_ = ShaderProgram::Make(functions, vertex_shader, fragment_shader);
+		shader_program_ = ShaderProgram::Make(gl_func_, vertex_shader, fragment_shader);
 
-		float vertices[] = {
+		constexpr float vertices[] = {
 			-1.0f, -1.0f, 0.0f, 1.0f, 0, 0,  0, 0,
 			1.0f, -1.0f, 0.0f, 0, 1.0f, 0,  1, 0,
 			1.0f,  1.0f, 0.0f, 0, 0, 1.0f,  1, 1,
 			-1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0, 0, 1
 		};
 
-		int indices[] = {
+		constexpr int indices[] = {
 			0, 1, 2,
 			2, 3, 0
 		};
 
-		glGenVertexArrays(1, &vao_);
-		glBindVertexArray(vao_);
+		//gl_func_->glGenVertexArrays(1, &vao_);
+		//gl_func_->glBindVertexArray(vao_);
 
-		GLuint vbo;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		gl_func_->glGenBuffers(1, &vbo_);
+		gl_func_->glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+		gl_func_->glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 		int posLoc = shader_program_->GetAttribLocation("aPos");
-		glVertexAttribPointer(posLoc, 3, GL_FLOAT, false, 8 * 4, 0);
-		glEnableVertexAttribArray(posLoc);
+		gl_func_->glVertexAttribPointer(posLoc, 3, GL_FLOAT, false, 8 * 4, 0);
+		gl_func_->glEnableVertexAttribArray(posLoc);
 
 		int colorLoc = shader_program_->GetAttribLocation("aColor");
-		glVertexAttribPointer(colorLoc, 3, GL_FLOAT, false, 8 * 4, (void*)(3 * 4));
-		glEnableVertexAttribArray(colorLoc);
+		gl_func_->glVertexAttribPointer(colorLoc, 3, GL_FLOAT, false, 8 * 4, (void*)(3 * 4));
+		gl_func_->glEnableVertexAttribArray(colorLoc);
 
 		int texLoc = shader_program_->GetAttribLocation("aTex");
-		glVertexAttribPointer(texLoc, 2, GL_FLOAT, false, 8 * 4, (void*)(6 * 4));
-		glEnableVertexAttribArray(texLoc);
+		gl_func_->glVertexAttribPointer(texLoc, 2, GL_FLOAT, false, 8 * 4, (void*)(6 * 4));
+		gl_func_->glEnableVertexAttribArray(texLoc);
 
-		glGenBuffers(1, &ibo_);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		gl_func_->glGenBuffers(1, &ibo_);
+		gl_func_->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
+		gl_func_->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-		glBindVertexArray(0);
+		//glBindVertexArray(0);
+		vao_obj_.release();
 
         // cursor
         cursor_ = std::make_shared<Sprite>(director_);
@@ -139,10 +144,11 @@ namespace tc
 
 	void OpenGLVideoWidget::resizeEvent(QResizeEvent* event) {
 		QOpenGLWidget::resizeEvent(event);
-        if (event->size().width() <= 0 || event->size().height() <= 0) {
-            return;
-        }
-        glViewport(0, 0, event->size().width(), event->size().height());
+        //if (event->size().width() <= 0 || event->size().height() <= 0) {
+        //    return;
+        //}
+        //gl_func_->glViewport(0, 0, event->size().width(), event->size().height());
+		//LOGI("resize event, {}x{}", event->size().width(), event->size().height());
 	}
 
 	void OpenGLVideoWidget::paintGL() {
@@ -151,17 +157,23 @@ namespace tc
 			return;
 		}
 
-		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		gl_func_->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
 
-		glBindVertexArray(vao_);
+		gl_func_->glDisable(GL_SCISSOR_TEST);
+		gl_func_->glDisable(GL_DEPTH_TEST);
+
+		gl_func_->glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
+		gl_func_->glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+		vao_obj_.bind();
+		//glBindVertexArray(vao_);
 		shader_program_->Active();
 		shader_program_->SetUniform1i("haveImage", 1);
 
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		gl_func_->glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+		gl_func_->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
+		gl_func_->glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		gl_func_->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		if (raw_image_format_ == RawImageFormat::kRawImageRGBA || raw_image_format_ == RawImageFormat::kRawImageRGB) {
 			if (rgb_buffer_ && need_create_texture_) {
@@ -169,9 +181,9 @@ namespace tc
 				InitRGBATexture();
 			}
 			if (rgb_buffer_) {
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, rgb_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RGB, GL_UNSIGNED_BYTE, rgb_buffer_->DataAddr());
+				gl_func_->glActiveTexture(GL_TEXTURE0);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, rgb_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RGB, GL_UNSIGNED_BYTE, rgb_buffer_->DataAddr());
 			}
 		}
 		else if (raw_image_format_ == RawImageFormat::kRawImageI420) {
@@ -181,19 +193,19 @@ namespace tc
 			}
 
 			if (y_buffer_) {
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, y_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, y_buffer_->CStr());
+				gl_func_->glActiveTexture(GL_TEXTURE0);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, y_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, y_buffer_->CStr());
 			}
 			if (u_buffer_) {
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, u_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_/2, tex_height_/2, GL_RED, GL_UNSIGNED_BYTE, u_buffer_->CStr());
+				gl_func_->glActiveTexture(GL_TEXTURE1);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, u_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_/2, tex_height_/2, GL_RED, GL_UNSIGNED_BYTE, u_buffer_->CStr());
 			}
 			if (v_buffer_) {
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, v_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_ / 2, tex_height_ / 2, GL_RED, GL_UNSIGNED_BYTE, v_buffer_->CStr());
+				gl_func_->glActiveTexture(GL_TEXTURE2);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, v_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_ / 2, tex_height_ / 2, GL_RED, GL_UNSIGNED_BYTE, v_buffer_->CStr());
 			}
 		}
 		else if (raw_image_format_ == RawImageFormat::kRawImageI444) {
@@ -203,19 +215,19 @@ namespace tc
 			}
 
 			if (y_buffer_) {
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, y_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, y_buffer_->CStr());
+				gl_func_->glActiveTexture(GL_TEXTURE0);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, y_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, y_buffer_->CStr());
 			}
 			if (u_buffer_) {
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, u_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, u_buffer_->CStr());
+				gl_func_->glActiveTexture(GL_TEXTURE1);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, u_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, u_buffer_->CStr());
 			}
 			if (v_buffer_) {
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, v_texture_id_);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, v_buffer_->CStr());
+				gl_func_->glActiveTexture(GL_TEXTURE2);
+				gl_func_->glBindTexture(GL_TEXTURE_2D, v_texture_id_);
+				gl_func_->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width_, tex_height_, GL_RED, GL_UNSIGNED_BYTE, v_buffer_->CStr());
 			}
 		}
 
@@ -242,8 +254,10 @@ namespace tc
         shader_program_->SetUniformMatrix("view", director_->GetView());
         shader_program_->SetUniformMatrix("projection", director_->GetProjection());
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		gl_func_->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		vao_obj_.release();
+		//glBindVertexArray(0);
 		shader_program_->Release();
 
         if (cursor_) {
@@ -261,25 +275,25 @@ namespace tc
 	}
 
 	void OpenGLVideoWidget::InitRGBATexture() {
-		glGenTextures(1, &rgb_texture_id_);
-		glBindTexture(GL_TEXTURE_2D, rgb_texture_id_);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width_, tex_height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		gl_func_->glGenTextures(1, &rgb_texture_id_);
+		gl_func_->glBindTexture(GL_TEXTURE_2D, rgb_texture_id_);
+		gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		gl_func_->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width_, tex_height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	}
 
 	void OpenGLVideoWidget::InitI420Texture() {
 		auto create_luminance_texture = [this](GLuint& tex_id, int width, int height, bool is_uv) {
-			glGenTextures(1, &tex_id);
-			glBindTexture(GL_TEXTURE_2D, tex_id);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, is_uv ? width / 2 : width, is_uv ? height / 2 : height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			gl_func_->glGenTextures(1, &tex_id);
+			gl_func_->glBindTexture(GL_TEXTURE_2D, tex_id);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			gl_func_->glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, is_uv ? width / 2 : width, is_uv ? height / 2 : height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+			gl_func_->glBindTexture(GL_TEXTURE_2D, 0);
 		};
 		create_luminance_texture(y_texture_id_, tex_width_, tex_height_, false);
 		create_luminance_texture(u_texture_id_, tex_width_, tex_height_, true);
@@ -290,15 +304,15 @@ namespace tc
 
 	void OpenGLVideoWidget::InitI444Texture() {
 		auto create_luminance_texture = [this](GLuint& tex_id, int width, int height) {
-			glGenTextures(1, &tex_id);
-			glBindTexture(GL_TEXTURE_2D, tex_id);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			};
+			gl_func_->glGenTextures(1, &tex_id);
+			gl_func_->glBindTexture(GL_TEXTURE_2D, tex_id);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			gl_func_->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			gl_func_->glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+			gl_func_->glBindTexture(GL_TEXTURE_2D, 0);
+		};
 		create_luminance_texture(y_texture_id_, tex_width_, tex_height_);
 		create_luminance_texture(u_texture_id_, tex_width_, tex_height_);
 		create_luminance_texture(v_texture_id_, tex_width_, tex_height_);
@@ -348,10 +362,12 @@ namespace tc
 
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
 		VideoWidget::OnWidgetResize(width, height);
-		glViewport(0, 0, width, height);
 
-        director_->Init(width, height);
-        glViewport(0, 0, width, height);
+		gl_func_->glViewport(0, 0, width, height);
+
+		director_->Init(width, height);
+
+		LOGI("resize GL: {} x {}", width, height);
         if (cursor_) {
             cursor_->OnWindowResized(width, height);
         }
@@ -402,26 +418,27 @@ namespace tc
 
     void OpenGLVideoWidget::Exit() {
         makeCurrent();
-        glDeleteVertexArrays(1, &vao_);
-        glDeleteBuffers(1, &vbo_);
+        //glDeleteVertexArrays(1, &vao_);
+        //glDeleteBuffers(1, &vbo_);
+		vao_obj_.destroy();
         if (shader_program_) {
             shader_program_->Release();
         }
 
         if (y_texture_id_) {
-            glDeleteTextures(1, &y_texture_id_);
+            gl_func_->glDeleteTextures(1, &y_texture_id_);
         }
         if (uv_texture_id_) {
-            glDeleteTextures(1, &uv_texture_id_);
+            gl_func_->glDeleteTextures(1, &uv_texture_id_);
         }
         if (u_texture_id_) {
-            glDeleteTextures(1, &u_texture_id_);
+            gl_func_->glDeleteTextures(1, &u_texture_id_);
         }
         if (v_texture_id_) {
-            glDeleteTextures(1, &v_texture_id_);
+            gl_func_->glDeleteTextures(1, &v_texture_id_);
         }
         if (rgb_texture_id_) {
-            glDeleteTextures(1, &rgb_texture_id_);
+            gl_func_->glDeleteTextures(1, &rgb_texture_id_);
         }
         doneCurrent();
     }

@@ -577,7 +577,9 @@ namespace tc
 
     void DDACapture::StopCapture() {
         stop_flag_ = true;
-        capture_thread_->Exit();
+        if (capture_thread_) {
+            capture_thread_->Exit();
+        }
         if (capture_thread_ && capture_thread_->IsJoinable()) {
             capture_thread_->Join();
             capture_thread_ = nullptr;

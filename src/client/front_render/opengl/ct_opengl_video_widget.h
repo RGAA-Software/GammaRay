@@ -2,10 +2,11 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLWindow>
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions>
 #include <QOpenGLVersionFunctionsFactory>
 #include <QOpenGLWindow>
 #include <QResizeEvent>
+#include <QOpenGLVertexArrayObject>
 #include <mutex>
 #include <memory>
 
@@ -30,7 +31,7 @@ namespace tc
     class ThunderSdk;
     class Settings;
 
-    class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core, public VideoWidget {
+    class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions, public VideoWidget {
     public:
 
         explicit OpenGLVideoWidget(const std::shared_ptr<ClientContext> &ctx, const std::shared_ptr<ThunderSdk> &sdk,
@@ -63,6 +64,7 @@ namespace tc
         void InitI444Texture();
 
     private:
+        QOpenGLFunctions* gl_func_ = nullptr;
         Settings* settings_ = nullptr;
         std::shared_ptr<ClientContext> context_ = nullptr;
         glm::mat4 model_;
@@ -83,6 +85,7 @@ namespace tc
 
         int render_fps_ = 0;
         uint64_t last_update_fps_time_ = 0;
-        
+
+        QOpenGLVertexArrayObject vao_obj_;
     };
 }

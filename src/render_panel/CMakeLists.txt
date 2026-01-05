@@ -89,6 +89,7 @@ set(PANEL_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/devices/gr_device_manager.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/util/conn_info_parser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/opengl_helper.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/panel_clipboard_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clipboard/win/panel_cp_file_stream.cpp

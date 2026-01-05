@@ -1,4 +1,4 @@
-#include "ct_video_widget.h"
+ï»¿#include "ct_video_widget.h"
 
 #include "tc_message.pb.h"
 #include "ct_qt_key_converter.h"
@@ -23,7 +23,7 @@ namespace tc
 	VideoWidget::VideoWidget(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdk>& sdk, int dup_idx) {
         TimeDuration dr("VideoWidget");
 		this->context_ = ctx;
-        // to do, dup_idx_ ÒÑ¾­·ÏÆú£¬´ýÉ¾³ý
+        // to do, dup_idx_ å·²ç»åºŸå¼ƒï¼Œå¾…åˆ é™¤
         this->dup_idx_ = dup_idx;
         this->key_converter_ = std::make_shared<QtKeyConverter>();
         this->sdk_ = sdk;

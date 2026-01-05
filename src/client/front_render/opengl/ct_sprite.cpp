@@ -19,19 +19,19 @@ namespace tc
 	}
 
 	void Sprite::Init() {
-		functions->glGenVertexArrays(1, &render_vao);
-		functions->glBindVertexArray(render_vao);
+		//functions->glGenVertexArrays(1, &render_vao);
+		//functions->glBindVertexArray(render_vao);
 
 		shader_program = ShaderProgram::Make(functions, kOperationVertexShader, kRGBAFragmentShader);
 
-		float vertices[] = {
+		constexpr float vertices[] = {
 			0.0f, 0.0f, 0.0f, 1.0f, 0, 0,  0, 0,
 			80.0f, 0.0f, 0.0f, 0, 1.0f, 0,  1, 0,
 			80.0f,  80.0f, 0.0f, 0, 0, 1.0f,  1, 1,
 			0.0f, 80.0f, 0.0f, 1.0f, 1.0f, 0, 0, 1
 		};
 
-		int indices[] = {
+		constexpr int indices[] = {
 			0, 1, 2,
 			2, 3, 0
 		};
@@ -66,7 +66,7 @@ namespace tc
 		//functions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		//functions->glGenerateMipmap(GL_TEXTURE_2D);
 
-		functions->glBindVertexArray(0);
+		//functions->glBindVertexArray(0);
 	}
 
 	void Sprite::UpdateImage(const std::shared_ptr<RawImage>& image) {
@@ -102,7 +102,7 @@ namespace tc
 			}
 		}
 
-		functions->glBindVertexArray(render_vao);
+		//functions->glBindVertexArray(render_vao);
 		shader_program->Active();
 
 		functions->glEnable(GL_BLEND);
@@ -133,7 +133,7 @@ namespace tc
 		functions->glUniform1i(functions->glGetUniformLocation(shader_program->GetProgramId(), "image1"), 0);
 		functions->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		functions->glBindVertexArray(0);
+		//functions->glBindVertexArray(0);
 
         functions->glDisable(GL_BLEND);
 	}

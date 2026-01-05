@@ -164,6 +164,7 @@ namespace tc
             << std::format("--wait_debug={}", item->wait_debug_ ? 1 : 0).c_str()
             << std::format("--force_gdi_capture={}", item->force_gdi_capture_ ? 1 : 0).c_str()
             << std::format("--show_watermark={}", show_watermark ? 1 : 0).c_str()
+            << std::format("--gl_backend={}", settings_->gl_backend_).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

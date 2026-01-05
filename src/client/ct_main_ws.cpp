@@ -169,6 +169,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_force_gdi_capture("force_gdi_capture", "force gdi capture", "value", "");
     parser.addOption(opt_force_gdi_capture);
 
+    QCommandLineOption opt_gl_backend("gl_backend", "opengl backend", "value", "");
+    parser.addOption(opt_gl_backend);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -338,6 +341,9 @@ void ParseCommandLine(QApplication& app) {
 
     // force gdi capture
     settings->force_gdi_ = parser.value(opt_force_gdi_capture).toInt() == 1;
+
+    // opengl backend
+    settings->gl_backend_ = parser.value(opt_gl_backend).toStdString();
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -387,21 +393,36 @@ int main(int argc, char** argv) {
 #endif
     SnowflakeId::initialize(0, 104);
     //QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+
+    QApplication app(argc, argv);
+    ParseCommandLine(app);
+    auto settings = tc::Settings::Instance();
+
+    auto gl_backend = settings->gl_backend_;
+    if ("angle" == gl_backend) {
+        QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    }
+    else if ("desktop" == gl_backend) {
+        QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    }
+    else if ("software" == gl_backend) {
+        QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+    }
+    else {
+        QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+    }
+
     QSurfaceFormat myFormat;
     myFormat.setDepthBufferSize(24);
     myFormat.setSwapInterval(0);
     QSurfaceFormat::setDefaultFormat(myFormat);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
-    QApplication app(argc, argv);
-    ParseCommandLine(app);
-
     tcFontMgr()->InitFont(":/resources/font/ms_yahei.ttf");
 
     auto data_path = QString::fromStdWString(FolderUtil::GetProgramDataPath());
     PrepareDirs(data_path);
 
-    auto settings = tc::Settings::Instance();
     auto host = g_remote_host_;
     auto port = g_remote_port_;
     bool has_direct_info = !host.empty() && port > 0;
@@ -462,6 +483,7 @@ int main(int argc, char** argv) {
     LOGI("force software: {}", settings->force_software_);
     LOGI("show watermark: {}", settings->show_watermark_);
     LOGI("force gdi: {}", settings->force_gdi_);
+    LOGI("GL Backend: {}", gl_backend);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;

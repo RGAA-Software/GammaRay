@@ -8,15 +8,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions>
 
 namespace tc
 {
 
 	class ShaderProgram {
 	public:
-		static std::shared_ptr<ShaderProgram> Make(QOpenGLFunctions_3_3_Core* fk_, const std::string& vertex, const std::string& fragment);
-		ShaderProgram(QOpenGLFunctions_3_3_Core* fk_, const std::string& vertex, const std::string& fragment);
+		static std::shared_ptr<ShaderProgram> Make(QOpenGLFunctions* fk_, const std::string& vertex, const std::string& fragment);
+		ShaderProgram(QOpenGLFunctions* fk_, const std::string& vertex, const std::string& fragment);
 		~ShaderProgram();
 
 		void Active();
@@ -59,7 +59,7 @@ namespace tc
 
 	private:
 		GLuint program_id_;
-		QOpenGLFunctions_3_3_Core* fk_;
+		QOpenGLFunctions* fk_;
 
 	};
 

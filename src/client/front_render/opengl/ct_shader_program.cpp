@@ -2,14 +2,16 @@
 
 #include <iostream>
 
+#include "tc_common_new/log.h"
+
 namespace tc
 {
 
-	std::shared_ptr<ShaderProgram> ShaderProgram::Make(QOpenGLFunctions_3_3_Core* fk, const std::string& vertex, const std::string& fragment) {
+	std::shared_ptr<ShaderProgram> ShaderProgram::Make(QOpenGLFunctions* fk, const std::string& vertex, const std::string& fragment) {
 		return std::make_shared<ShaderProgram>(fk, vertex, fragment);
 	}
 
-	ShaderProgram::ShaderProgram(QOpenGLFunctions_3_3_Core* fks, const std::string& vertex, const std::string& fragment) {
+	ShaderProgram::ShaderProgram(QOpenGLFunctions* fks, const std::string& vertex, const std::string& fragment) {
 		this->fk_ = fks;
 
 		GLuint vertex_shader = fk_->glCreateShader(GL_VERTEX_SHADER);
@@ -45,14 +47,14 @@ namespace tc
 			fk_->glGetShaderiv(id, GL_COMPILE_STATUS, &check_flag);
 			if (!check_flag) {
 				fk_->glGetShaderInfoLog(id, 1024, NULL, check_info);
-				std::cout << type << " error:" << check_info << std::endl;;
+				LOGI("shader type: {}, error: {}", type, check_info);
 			}
 		}
 		else {
 			fk_->glGetShaderiv(id, GL_LINK_STATUS, &check_flag);
 			if (!check_flag) {
 				fk_->glGetProgramInfoLog(id, 1024, NULL, check_info);
-				std::cout << type << " error:" << check_info << std::endl;
+				LOGI("shader type: {}, error: {}", type, check_info);
 			}
 		}
 	}
