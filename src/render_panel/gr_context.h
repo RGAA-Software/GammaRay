@@ -131,7 +131,7 @@ namespace tc
         std::shared_ptr<GrApplication> app_ = nullptr;
         std::shared_ptr<SteamManager> steam_mgr_ = nullptr;
         std::shared_ptr<TaskRuntime> task_rt_ = nullptr;
-        std::vector<EthernetInfo> ips_;
+        //std::vector<EthernetInfo> ips_;
         std::shared_ptr<DBGameOperator> db_game_manager_ = nullptr;
         std::shared_ptr<GrResources> res_manager_ = nullptr;
         std::shared_ptr<MessageNotifier> msg_notifier_ = nullptr;

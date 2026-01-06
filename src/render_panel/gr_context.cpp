@@ -73,10 +73,10 @@ namespace tc
         msg_notifier_ = app_->GetMessageNotifier();
 
         // ips
-        ips_ = IPUtil::ScanIPs();
+        auto ips = IPUtil::ScanIPs();
 
-        LOGI("Scan IP size: {}", ips_.size());
-        for (auto& item : ips_) {
+        LOGI("Scan IP size: {}", ips.size());
+        for (auto& item : ips) {
             LOGI("IP: {} -> {}", item.ip_addr_, item.nt_type_ == IPNetworkType::kWired ? "WIRED" : "WIRELESS");
         }
 
@@ -161,7 +161,7 @@ namespace tc
     }
 
     std::vector<EthernetInfo> GrContext::GetIps() {
-        return ips_;
+        return IPUtil::ScanIPs();
     }
 
     std::string GrContext::GetDeviceIdOrIpAddress() {
