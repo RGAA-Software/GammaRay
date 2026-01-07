@@ -108,6 +108,7 @@ namespace tc
         sub->set_device_id(device_id_);
         auto user_id = grApp->GetUserManager()->GetUserId();
         sub->set_user_id(user_id);
+        sub->set_device_name(settings_->GetDeviceName());
         PostBinMessage(msg.SerializeAsString());
     }
 
@@ -116,7 +117,8 @@ namespace tc
             return;
         }
 
-        auto desktop_link_raw = context_->MakeBroadcastMessage();
+        auto ips = context_->GetIps();
+        auto desktop_link_raw = context_->MakeDesktopLinkMessage(ips);
         auto desktop_link = std::format("link://{}", Base64::Base64Encode(desktop_link_raw));
 
         spvr_panel::SpvrPanelMessage msg;
@@ -130,7 +132,12 @@ namespace tc
         sub->set_user_id(user_id);
         if (auto sys_info = sys_info_.Clone(); sys_info != nullptr) {
             sub->set_sys_info_raw(sys_info->raw_json_msg_);
+            //LOGI("Heartbeat sys infor raw: {}", sys_info->raw_json_msg_);
         }
+        if (!ips.empty()) {
+            sub->set_device_ip_addr(ips[0].ip_addr_);
+        }
+        sub->set_device_name(settings_->GetDeviceName());
         PostBinMessage(msg.SerializeAsString());
     }
 

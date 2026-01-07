@@ -40,7 +40,7 @@ namespace tc
     }
 
     void HttpHandler::HandleSimpleInfo(http::web_request &req, http::web_response &rep) {
-        auto info = this->context_->MakeBroadcastMessage();
+        auto info = this->context_->MakeDesktopLinkMessage();
         auto data = WrapBasicInfo(200, "ok", info);
         rep.fill_json(data);
     }

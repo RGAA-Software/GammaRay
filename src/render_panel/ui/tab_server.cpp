@@ -343,7 +343,7 @@ namespace tc
                 msg->setAlignment(Qt::AlignLeft);
                 msg->setFixedWidth(330);
                 msg->setFixedHeight(35);
-                auto info = std::format("link://{}", Base64::Base64Encode(context_->MakeBroadcastMessage()));
+                auto info = std::format("link://{}", Base64::Base64Encode(context_->MakeDesktopLinkMessage()));
                 msg->setText(info.c_str());
                 msg->setCursorPosition(0);
                 msg->setStyleSheet(R"(font-size: 12px; padding-left: 5px; font-weight: 500; color: #2979ff;)");
@@ -685,7 +685,7 @@ namespace tc
     }
 
     void TabServer::UpdateQRCode() {
-        auto broadcast_msg = context_->MakeBroadcastMessage();
+        auto broadcast_msg = context_->MakeDesktopLinkMessage();
         auto desktop_link_raw = broadcast_msg;
         auto b64_msg = Base64::Base64Encode(broadcast_msg);
         // companion

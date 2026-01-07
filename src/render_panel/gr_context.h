@@ -73,7 +73,7 @@ namespace tc
         int GetIndexByUniqueId();
         std::vector<EthernetInfo> GetIps();
 
-        std::string MakeBroadcastMessage();
+        std::string MakeDesktopLinkMessage(const std::vector<EthernetInfo>& info = {});
 
         std::shared_ptr<DBGameOperator> GetDBGameManager();
         std::shared_ptr<ServiceManager> GetServiceManager();

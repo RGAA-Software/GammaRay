@@ -175,7 +175,7 @@ namespace tc
         return !device_id.empty() ? device_id : ip_address;
     }
 
-    std::string GrContext::MakeBroadcastMessage() {
+    std::string GrContext::MakeDesktopLinkMessage(const std::vector<EthernetInfo>& info) {
         json obj;
         // device
         // device_id
@@ -186,7 +186,11 @@ namespace tc
         obj["iidx"] = this->GetIndexByUniqueId();
         // ips
         auto ip_array = json::array();
-        auto ips = this->GetIps();
+        std::vector<EthernetInfo> ips = info;
+        if (info.empty()) {
+            ips = this->GetIps();
+        }
+
         for (auto& item : ips) {
             json ip_obj;
             ip_obj["ip"] = item.ip_addr_;
