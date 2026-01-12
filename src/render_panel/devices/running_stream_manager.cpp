@@ -5,6 +5,8 @@
 #include "running_stream_manager.h"
 #include <QApplication>
 #include <qstandardpaths.h>
+
+#include "gr_device_manager.h"
 #include "tc_common_new/base64.h"
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_context.h"
@@ -17,6 +19,7 @@
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "client/ct_stream_item_net_type.h"
 #include "render_panel/spvr/gr_spvr_manager.h"
+#include "tc_spvr_client/spvr_device.h"
 
 namespace tc
 {
@@ -62,7 +65,15 @@ namespace tc
             }
         });
 
+        auto func_hide_loading_dialog = [=, this]() {
+            if (loading_dialogs_.contains(stream_id)) {
+                loading_dialogs_[stream_id]->hide();
+                loading_dialogs_.erase(stream_id);
+            }
+        };
+
         if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty() && !direct) {
+            // 1. check available or not
             auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
             if (ac == std::nullopt) {
                 LOGE("Not available connection for : {}", item->remote_device_id_);
@@ -76,15 +87,32 @@ namespace tc
                     });
                 });
 
-                if (loading_dialogs_.contains(stream_id)) {
-                    loading_dialogs_[stream_id]->hide();
-                    loading_dialogs_.erase(stream_id);
-                }
+                func_hide_loading_dialog();
 
                 const QString msg = tcTr("id_no_available_connection");
                 no_conn_dialog_ = std::make_shared<TcDialog>(tcTr("id_error"), msg);
                 no_conn_dialog_->show();
 
+                return;
+            }
+        }
+
+        if (!item->remote_device_id_.empty() && !settings_->GetSpvrServerHost().empty() && settings_->GetSpvrServerPort() > 0) {
+            // 2. check alive or not
+            auto device_mgr = context_->GetApplication()->GetDeviceManager();
+            if (auto r = device_mgr->QueryDevice(item->remote_device_id_); r.has_value()) {
+                auto remote_device = r.value();
+                if (!remote_device->active_) {
+                    func_hide_loading_dialog();
+                    TcDialog dialog(tcTr("id_warning"), tcTr("id_device_inactive"), nullptr);
+                    dialog.exec();
+                    return;
+                }
+            }
+            else {
+                func_hide_loading_dialog();
+                TcDialog dialog(tcTr("id_warning"), tcTr("id_cant_get_remote_device_info"), nullptr);
+                dialog.exec();
                 return;
             }
         }

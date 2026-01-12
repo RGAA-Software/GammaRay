@@ -56,4 +56,20 @@ namespace tc
         return r;
     }
 
+    Result<std::shared_ptr<spvr::SpvrDevice>, spvr::SpvrApiError> GrDeviceManager::UpdateUsedTime(int period) {
+        auto host = settings_->GetSpvrServerHost();
+        auto port = settings_->GetSpvrServerPort();
+        auto appkey = grApp->GetAppkey();
+        auto device_id = settings_->GetDeviceId();
+        auto r = spvr::SpvrDeviceApi::UpdateUsedTime(host, port, appkey, device_id, period);
+        return r;
+    }
+
+    Result<std::shared_ptr<spvr::SpvrDevice>, spvr::SpvrApiError> GrDeviceManager::QueryDevice(const std::string& device_id) {
+        return spvr::SpvrDeviceApi::QueryDevice(settings_->GetSpvrServerHost(),
+                                                settings_->GetSpvrServerPort(),
+                                                grApp->GetAppkey(),
+                                                device_id);
+    }
+
 }

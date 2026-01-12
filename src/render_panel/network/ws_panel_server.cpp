@@ -31,6 +31,7 @@
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "render_panel/companion/panel_companion.h"
 #include "render_panel/gr_statistics.h"
+#include "render_panel/devices/gr_device_manager.h"
 #include "skin/interface/skin_interface.h"
 
 namespace tc
@@ -80,6 +81,14 @@ namespace tc
         msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& msg) {
             context_->PostTask([=, this]() {
                 this->RpSyncPanelInfo();
+            });
+        });
+
+        msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
+            context_->PostTask([=, this]() {
+                if (panel_sessions_.Size() > 0) {
+                    app_->GetDeviceManager()->UpdateUsedTime(5000);
+                }
             });
         });
 
