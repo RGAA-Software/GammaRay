@@ -6,6 +6,7 @@
 #define GAMMARAY_DDA_CAPTURE_PLUGIN_H
 #include <optional>
 #include "plugin_interface/gr_monitor_capture_plugin.h"
+#include "tc_common_new/concurrent_hashmap.h"
 
 namespace tc
 {
@@ -62,7 +63,7 @@ namespace tc
 
     private:
         std::map<std::string, CaptureMonitorInfo> monitors_;
-        std::map<std::string, std::shared_ptr<PluginDesktopCapture>> captures_;
+        tc::ConcurrentHashMap<std::string, std::shared_ptr<PluginDesktopCapture>> captures_;
         std::vector<CaptureMonitorInfo> sorted_monitors_;
         std::shared_ptr<CursorCapture> cursor_capture_ = nullptr;
         std::shared_ptr<Thread> cursor_capture_thread_ = nullptr;

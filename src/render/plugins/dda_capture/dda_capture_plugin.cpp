@@ -6,6 +6,9 @@
 
 #include <memory>
 #include "dda_capture_plugin.h"
+
+#include <ranges>
+
 #include "render/plugins/plugin_ids.h"
 #include "dda_capture.h"
 #include "cursor_capture.h"
@@ -190,11 +193,11 @@ namespace tc
     }
 
     bool DDACapturePlugin::IsWorking() {
-        return !captures_.empty();
+        return !captures_.Empty();
     }
 
     bool DDACapturePlugin::ExistCaptureMonitor(const std::string& name) {
-        for (const auto& [dev_name, monitor_info] : monitors_) {
+        for (const auto &dev_name: monitors_ | std::views::keys) {
             if (dev_name == name) {
                 return true;
             }
@@ -203,7 +206,7 @@ namespace tc
     }
 
     bool DDACapturePlugin::TryInitSpecificCapture() {
-        if (!captures_.empty()) {
+        if (!captures_.Empty()) {
             StopCapturing();
         }
         monitors_.clear();
@@ -221,16 +224,18 @@ namespace tc
             auto init_res = capture->Init();
             if (!init_res) {
                 LOGW("Will stop & clear captures.");
-                for (const auto& [name, capture]: captures_) {
-                    capture->StopCapture();
-                }
-                captures_.clear();
+                captures_.ApplyAll([](const auto& k, const auto& v) {
+                    if (v) {
+                        v->StopCapture();
+                    }
+                });
+                captures_.Clear();
                 LOGE("TryInitSpecificCapture, Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
                 return false;
             }
-            captures_.insert({dev_name, capture});
+            captures_.Insert(dev_name, capture);
         }
-        return !captures_.empty();
+        return !captures_.Empty();
     }
 
     bool DDACapturePlugin::StartCapturing() {
@@ -254,7 +259,7 @@ namespace tc
             capture->SetCaptureFps(capture_fps_);
             auto init_res = capture->Init();
             if (!init_res) {
-                captures_.clear();
+                captures_.Clear();
                 LOGE("Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
                 return false;
             }
@@ -285,23 +290,25 @@ namespace tc
             // start capturing
             capture->StartCapture();
 
-            captures_.insert({dev_name, capture});
+            captures_.Insert(dev_name, capture);
         }
 
         return true;
     }
 
     void DDACapturePlugin::StopCapturing() {
-        for(const auto&[dev_name, capture] : captures_) {
-            capture->StopCapture();
-        }
-        captures_.clear();
+        captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& v) {
+            if (v) {
+                v->StopCapture();
+            }
+        });
+        captures_.Clear();
     }
 
     void DDACapturePlugin::RestartCapturing() {
         LOGI("DDACapturePlugin RestartCapturing");
         StopCapturing();
-        captures_.clear();
+        captures_.Clear();
         monitors_.clear();
         StartCapturing();
     }
@@ -329,16 +336,22 @@ namespace tc
             if (kAllMonitorsNameSign == name) {
                 capturing_monitor_name_ = name;
                 // TODO
-                for (const auto& [monitor_name, capture]: captures_) {
-                    if (!capture->IsInitSuccess()) {
-                        LOGW("Capture for: {} is not valid now.", monitor_name);
-                        continue;
+                captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+                    if (capture) {
+                        if (!capture->IsInitSuccess()) {
+                           LOGW("Capture for: {} is not valid now.", k);
+                           return;
+                       }
+                       capture->ResumeCapture();
                     }
-                    capture->ResumeCapture();
-                }
+                });
+
             }
             else {
-                for (const auto &[monitor_name, capture]: captures_) {
+                captures_.ApplyAll([name, use_default_monitor, this](const auto& monitor_name, const std::shared_ptr<PluginDesktopCapture>& capture) {
+                    if (!capture) {
+                        return;
+                    }
                     if (!name.empty()) {
                         if (monitor_name == name) {
                             capturing_monitor_name_ = name;
@@ -351,7 +364,7 @@ namespace tc
                     else {
                         if (!capture->IsInitSuccess()) {
                             LOGW("Capture for: {} is not valid now.", monitor_name);  // 如果StartCapturing后，接着执行SetCaptureMonitor，这时候 capture->IsInitSuccess () 返回 false
-                            continue;
+                            return;
                         }
                         if (use_default_monitor && capture->IsPrimaryMonitor()) {
                             LOGI("Use default monitor: {}", monitor_name);
@@ -362,16 +375,16 @@ namespace tc
                             capture->PauseCapture();
                         }
                     }
-                }
+                });
             }
         }
 
         bool has_resumed_capture = false;
-        for (const auto &[monitor_name, capture]: captures_) {
-            if (!capture->IsPausing()) {
+        captures_.ApplyAll([&](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+            if (capture && !capture->IsPausing()) {
                 has_resumed_capture = true;
             }
-        }
+        });
         if (!has_resumed_capture) {
             LOGW("Don't has resumed capture for: {}", name);
         }
@@ -382,31 +395,36 @@ namespace tc
     void DDACapturePlugin::SetCaptureFps(int fps) {
         GrMonitorCapturePlugin::SetCaptureFps(fps);
         if (IsWorking()) {
-            for (const auto& [dev_name, capture] : captures_) {
-                capture->SetCaptureFps(fps);
-            }
+            captures_.ApplyAll([fps](const auto& k, const auto& capture) {
+                if (capture) {
+                    capture->SetCaptureFps(fps);
+                }
+            });
         }
     }
 
     void DDACapturePlugin::On1Second() {
-        if (!captures_.empty()) {
-            int32_t continuous_timeout_times = 0;
-            for (const auto& [dev_name, capture] : captures_) {
-                auto dda_capture =  std::dynamic_pointer_cast<DDACapture>(capture);
-                if (dda_capture) {
-                    auto value = dda_capture->GetContinuousTimeoutTimes();
-                    if (value > continuous_timeout_times) {
-                        continuous_timeout_times = value;
-                    }
+        if (captures_.Empty()) {
+            return;
+        }
+        int32_t continuous_timeout_times = 0;
+        captures_.ApplyAll([&continuous_timeout_times](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+            if (!capture) {
+                return;
+            }
+            if (auto dda_capture =  std::dynamic_pointer_cast<DDACapture>(capture)) {
+                auto value = dda_capture->GetContinuousTimeoutTimes();
+                if (value > continuous_timeout_times) {
+                    continuous_timeout_times = value;
                 }
             }
+        });
 
-            if (continuous_timeout_times > kAllowedMaxContinuousTimeoutTimes) {
-                StopCapturing();
-                captures_.clear();
-                if (capture_err_callback_) {
-                    capture_err_callback_(MonitorCaptureError::kTimeoutSoManyTimes);
-                }
+        if (continuous_timeout_times > kAllowedMaxContinuousTimeoutTimes) {
+            StopCapturing();
+            captures_.Clear();
+            if (capture_err_callback_) {
+                capture_err_callback_(MonitorCaptureError::kTimeoutSoManyTimes);
             }
         }
 
@@ -419,24 +437,30 @@ namespace tc
     }
 
     void DDACapturePlugin::On16MilliSecond() {
-        for (const auto& [mon, capture] : captures_) {
-            capture->On16MilliSecond();
-        }
+        captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+            if (capture) {
+                capture->On16MilliSecond();
+            }
+        });
     }
 
     void DDACapturePlugin::On33MilliSecond() {
-        for (const auto& [mon, capture] : captures_) {
-            capture->On33MilliSecond();
-        }
+        captures_.ApplyAll([](const std::string &k, const std::shared_ptr<PluginDesktopCapture> &capture) {
+            if (capture) {
+                capture->On33MilliSecond();
+            }
+        });
     }
-
 
     void DDACapturePlugin::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
         GrPluginInterface::OnNewClientConnected(visitor_device_id, stream_id, conn_type);
-        for (const auto& [k, capture] : captures_) {
+        captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+            if (!capture) {
+                return;
+            }
             capture->RefreshScreen();
             capture->TryWakeOs();
-        }
+        });
         LOGI("OnNewClientConnected!");
         NotifyCaptureMonitorInfo();
 
@@ -565,9 +589,9 @@ namespace tc
 
     std::map<std::string, WorkingCaptureInfoPtr> DDACapturePlugin::GetWorkingCapturesInfo() {
         std::map<std::string, WorkingCaptureInfoPtr> result;
-        for (const auto& [name, capture] : captures_) {
+        captures_.ApplyAll([&result](const auto& name, const auto& capture) {
             if (capture->IsPausing()) {
-                continue;
+                return;
             }
             const auto& my_monitor = capture->GetMyMonitorInfo();
             result.insert({name, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
@@ -578,7 +602,7 @@ namespace tc
                 .capture_frame_height_ = my_monitor.Height(),
                 .capture_gaps_ = capture->GetCaptureGaps(),
             })});
-        }
+        });
         return result;
     }
 }
