@@ -226,7 +226,7 @@ namespace tc
             StartServer();
         });
 
-        msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& msg) {
+        msg_listener_->Listen<MsgGrTimer2S>([=, this](const MsgGrTimer2S& msg) {
             context_->PostTask([=, this]() {
                 // cpu frequency
                 auto freq = CpuFrequency::GetCurrentCpuSpeed();

@@ -13,6 +13,7 @@
 #include "render_panel/gr_settings.h"
 #include "tc_common_new/base64.h"
 #include "hw_info/hw_info.h"
+#include "json/json.hpp"
 #include "render_panel/gr_application.h"
 #include "render_panel/user/gr_user_manager.h"
 
@@ -131,7 +132,15 @@ namespace tc
         auto user_id = grApp->GetUserManager()->GetUserId();
         sub->set_user_id(user_id);
         if (auto sys_info = sys_info_.Clone(); sys_info != nullptr) {
-            sub->set_sys_info_raw(sys_info->raw_json_msg_);
+            try {
+                auto obj = nlohmann::json::parse(sys_info->raw_json_msg_);
+                obj["cpu"]["current_frequency"] = sys_info->cpu_.current_frequency_;
+                sub->set_sys_info_raw(obj.dump());
+            }
+            catch (...) {
+                sub->set_sys_info_raw(sys_info->raw_json_msg_);
+            }
+
             //LOGI("Heartbeat sys infor raw: {}", sys_info->raw_json_msg_);
         }
         if (!ips.empty()) {
