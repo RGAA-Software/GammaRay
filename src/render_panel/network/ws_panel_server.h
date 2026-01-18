@@ -81,9 +81,13 @@ namespace tc
 
         void RpSyncPanelInfo();
 
-        void NotifyVisitRecordToCms(const std::shared_ptr<VisitRecord> record);
+        void NotifyInsertVisitRecordToCms(const std::shared_ptr<VisitRecord> record);
 
-        void NotifyFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
+        void NotifyUpdateVisitRecordToCms(const std::shared_ptr<VisitRecord> record);
+
+        void NotifyInsertFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
+
+        void NotifyUpdateFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
     private:
         std::shared_ptr<asio2::http_server> server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;

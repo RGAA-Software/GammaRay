@@ -45,6 +45,8 @@ namespace tc
     // report visit info to cms
     static const std::string kUrlVisitRecord  = "/api/v1/record/upload_visit_info";
 
+    static const std::string kUrlUpdateVisitRecord = "/api/v1/record/update_visit_info";
+
     struct aop_log {
         bool before(http::web_request &req, http::web_response &rep) {
             asio2::ignore_unused(rep);
@@ -427,13 +429,21 @@ namespace tc
 
                 ft_record_op_->InsertFileTransferRecord(record);
 
-                NotifyFileTransferRecordToCms(record);
+                NotifyInsertFileTransferRecordToCms(record);
             });
         }
         else if (proto_msg->type() == tccp::kCpFileTransferEnd) {
             context_->PostDBTask([=, this]() {
                 auto sub = proto_msg->ft_transfer_end();
                 ft_record_op_->UpdateVisitRecord(sub.the_file_id(), sub.end_timestamp(), sub.success());
+
+                auto record = std::make_shared<FileTransferRecord>(FileTransferRecord{
+                    .the_file_id_ = sub.the_file_id(),
+                    .end_ = sub.end_timestamp(),
+                    .success_ = sub.success()
+                });
+
+                NotifyUpdateFileTransferRecordToCms(record);
             });
         }
         return true;
@@ -535,16 +545,23 @@ namespace tc
                     .duration_ = 0,
                     .visitor_device_ = sub.visitor_device_id(),
                     .target_device_ = settings_->GetDeviceId().empty() ? ip_address : settings_->GetDeviceId(),
-                    });
+                });
                 visit_record_op_->InsertVisitRecord(record);
                 // notify cms
-                NotifyVisitRecordToCms(record);
+                NotifyInsertVisitRecordToCms(record);
             });
         }
         else if (proto_msg->type() == tcrp::kRpClientDisConnected) {
             context_->PostDBTask([=, this]() {
                 auto sub = proto_msg->client_disconnected();
                 visit_record_op_->UpdateVisitRecord(sub.conn_id(), sub.end_timestamp(), sub.duration());
+
+                auto record = std::make_shared<VisitRecord>(VisitRecord{
+                    .conn_id_ = sub.conn_id(),
+                    .end_ = 0,
+                    .duration_ = 0,
+                });
+                NotifyUpdateVisitRecordToCms(record);
             });
             context_->SendAppMessage(MsgOneClientDisconnect{});
         }
@@ -617,7 +634,7 @@ namespace tc
         }
     }
 
-    void WsPanelServer::NotifyVisitRecordToCms(const std::shared_ptr<VisitRecord> record) {
+    void WsPanelServer::NotifyInsertVisitRecordToCms(const std::shared_ptr<VisitRecord> record) {
         if (!record) {
             return;
         }
@@ -630,11 +647,28 @@ namespace tc
             }, record->AsJson2(), "application/json");
 
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("NotifyVisitRecordToCms failed: {}", resp.status);
+            LOGE("NotifyInsertVisitRecordToCms failed: {}", resp.status);
         }
     }
 
-    void WsPanelServer::NotifyFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record) {
+    void WsPanelServer::NotifyUpdateVisitRecordToCms(const std::shared_ptr<VisitRecord> record) {
+        if (!record) {
+            return;
+        }
+        auto settings = GrSettings::Instance();
+        std::string serv_host = settings->GetSpvrServerHost();
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), kUrlUpdateVisitRecord, 2000);
+        auto appkey = grApp->GetAppkey();
+        auto resp = client->Post({
+            {"appkey", appkey}
+            }, record->AsUpdateJson(), "application/json");
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("NotifyUpdateVisitRecordToCms failed: {}", resp.status);
+        }
+    }
+
+    void WsPanelServer::NotifyInsertFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record) {
         if (!record) {
             return;
         }
@@ -647,7 +681,24 @@ namespace tc
             }, record->AsJson2(), "application/json");
 
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("NotifyFileTransferRecordToCms failed: {}", resp.status);
+            LOGE("NotifyInsertFileTransferRecordToCms failed: {}", resp.status);
+        }
+    }
+
+    void WsPanelServer::NotifyUpdateFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record) {
+        if (!record) {
+            return;
+        }
+        auto settings = GrSettings::Instance();
+        std::string serv_host = settings->GetSpvrServerHost();
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlFileTransferRecord, 2000);
+        auto appkey = grApp->GetAppkey();
+        auto resp = client->Post({
+            {"appkey", appkey}
+            }, record->AsUpdateJson(), "application/json");
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("NotifyUpdateFileTransferRecordToCms failed: {}", resp.status);
         }
     }
 }

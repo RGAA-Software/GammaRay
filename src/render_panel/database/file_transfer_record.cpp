@@ -42,4 +42,12 @@ namespace tc
         obj["file_detail"] = file_detail_;
         return obj.dump(2);
     }
+
+    std::string FileTransferRecord::AsUpdateJson() {
+        nlohmann::json obj;
+        obj["the_file_id"] = the_file_id_;
+        obj["end"] = end_;
+        obj["success"] = success_;
+        return obj.dump(2);
+    }
 }

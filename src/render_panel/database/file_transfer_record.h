@@ -19,6 +19,7 @@ namespace tc
         std::string AsString();
         std::string AsJson();
         std::string AsJson2();
+        std::string AsUpdateJson();
 
         static const std::string kUrlFileTransferRecord;
     public:

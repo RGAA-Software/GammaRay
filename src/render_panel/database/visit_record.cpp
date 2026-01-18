@@ -45,4 +45,12 @@ namespace tc
         obj["target_device"] = target_device_;
         return obj.dump();
     }
+
+    std::string VisitRecord::AsUpdateJson() {
+        nlohmann::json obj;
+        obj["conn_id"] = conn_id_;
+        obj["end"] = end_;
+        obj["duration"] = duration_;
+        return obj.dump();
+    }
 }
