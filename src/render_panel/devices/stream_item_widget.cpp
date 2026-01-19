@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
+#include <QTimer>
+
 #include "tc_spvr_client/spvr_stream.h"
 #include "tc_common_new/uid_spacer.h"
 #include "tc_qt_widget/tc_image_button.h"
@@ -55,10 +57,19 @@ namespace tc
         btn_conn_->setFixedSize(70, 25);
         btn_conn_->SetTextId("id_connect");
 
+        lbl_connecting_ = new TcLabel(this);
+        lbl_connecting_->setFixedSize(100, 25);
+        lbl_connecting_->SetTextId("id_connecting");
+        lbl_connecting_->hide();
+
         connect(btn_conn, &QPushButton::clicked, this, [=, this]() {
             if (conn_listener_) {
                 conn_listener_();
             }
+            lbl_connecting_->show();
+            QTimer::singleShot(2000, [this]() {
+                lbl_connecting_->hide();
+            });
         });
 
         auto btn_option = new TcImageButton(":/resources/image/ic_vert_dots.svg", QSize(22, 22), this);
@@ -249,6 +260,7 @@ namespace tc
         QWidget::resizeEvent(event);
         auto y = this->height() - 35;
         btn_conn_->setGeometry(15, y, btn_conn_->width(), btn_conn_->height());
+        lbl_connecting_->setGeometry(15* 2 + btn_conn_->width(), y, lbl_connecting_->width(), lbl_connecting_->height());
         btn_option_->setGeometry(this->width() - btn_option_->width() - 13, y, btn_option_->width(), btn_option_->height());
         work_mode_->setGeometry(15 + btn_conn_->width() + 15, y, btn_conn_->width(), btn_conn_->height());
     }

@@ -54,6 +54,7 @@ namespace tc
 
         void DeleteStream(const std::shared_ptr<spvr::SpvrStream>& item);
         void StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
+        void StartStreamInternal(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
         void StopStream(const std::shared_ptr<spvr::SpvrStream>& item);
         void LockDevice(const std::shared_ptr<spvr::SpvrStream>& item);
         void RestartDevice(const std::shared_ptr<spvr::SpvrStream>& item);

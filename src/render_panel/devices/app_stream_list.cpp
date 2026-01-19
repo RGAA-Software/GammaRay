@@ -347,6 +347,12 @@ namespace tc
     }
 
     void AppStreamList::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
+        context_->PostUIDelayTask([=, this]() {
+            this->StartStreamInternal(item, force_only_viewing);
+        }, 40);
+    }
+
+    void AppStreamList::StartStreamInternal(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);

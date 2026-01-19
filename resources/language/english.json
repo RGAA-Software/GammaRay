@@ -37,6 +37,7 @@
   "id_remote_device_id": "Remote Device ID",
   "id_remote_device_password": "Device Password",
   "id_connect": "Connect",
+  "id_connecting": "Connecting...",
   "id_encoder_settings": "Encoder Settings",
   "id_bitrate": "Bitrate(Mbps)",
   "id_fps": "Video FPS",

@@ -58,6 +58,7 @@ namespace tc
         QBitmap mask_;
         int radius_ = 10;
         TcPushButton* btn_conn_ = nullptr;
+        TcLabel* lbl_connecting_ = nullptr;
         QWidget* btn_option_ = nullptr;
         OnConnectListener conn_listener_;
         OnMenuListener menu_listener_;

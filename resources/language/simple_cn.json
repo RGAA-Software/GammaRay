@@ -38,6 +38,7 @@
   "id_remote_device_id": "远程设备ID",
   "id_remote_device_password": "设备密码",
   "id_connect": "连接",
+  "id_connecting": "连接中...",
   "id_encoder_settings": "编码设置",
   "id_bitrate": "比特率(Mbps)",
   "id_fps": "视频帧率",

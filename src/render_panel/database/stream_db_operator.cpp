@@ -60,7 +60,7 @@ namespace tc
         using Storage = decltype(db_->GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_->GetDbStorage());
         auto streams = storage.get_all<spvr::SpvrStream>(where(c(&spvr::SpvrStream::stream_id_) == stream->stream_id_));
-        if (streams.size() == 1) {
+        if (streams.size() >= 1) {
             storage.update(*stream);
         }
         return true;
