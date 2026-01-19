@@ -21,7 +21,8 @@ namespace tc
         std::string AsJson2();
         std::string AsUpdateJson();
 
-        static const std::string kUrlFileTransferRecord;
+        static const std::string kUrlInsertFileTransferRecord;
+        static const std::string kUrlUpdateFileTransferRecord;
     public:
         int id_{0};
         std::string the_file_id_;

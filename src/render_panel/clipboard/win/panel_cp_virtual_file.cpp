@@ -364,7 +364,7 @@ namespace tc
         }
         auto settings = GrSettings::Instance();
         std::string serv_host = settings->GetSpvrServerHost();
-        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlFileTransferRecord, 2000);
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlInsertFileTransferRecord, 2000);
         auto appkey = grApp->GetAppkey();
         auto resp = client->Post({
             {"appkey", appkey}

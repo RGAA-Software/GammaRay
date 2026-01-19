@@ -12,7 +12,9 @@ using namespace nlohmann;
 namespace tc
 {
 
-    const std::string FileTransferRecord::kUrlFileTransferRecord = "/api/v1/record/upload_file_transfer_info";
+    const std::string FileTransferRecord::kUrlInsertFileTransferRecord = "/api/v1/record/upload_file_transfer_info";
+
+    const std::string FileTransferRecord::kUrlUpdateFileTransferRecord = "/api/v1/record/update_file_transfer_info";
 
     std::string FileTransferRecord::AsString() {
         return std::format("Begin: {}, End: {}, Controller device: {}, Controlled device: {}, direction: {}, file detail: {}",

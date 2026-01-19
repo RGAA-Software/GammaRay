@@ -558,8 +558,8 @@ namespace tc
 
                 auto record = std::make_shared<VisitRecord>(VisitRecord{
                     .conn_id_ = sub.conn_id(),
-                    .end_ = 0,
-                    .duration_ = 0,
+                    .end_ = sub.end_timestamp(),
+                    .duration_ = sub.duration(),
                 });
                 NotifyUpdateVisitRecordToCms(record);
             });
@@ -674,7 +674,7 @@ namespace tc
         }
         auto settings = GrSettings::Instance();
         std::string serv_host = settings->GetSpvrServerHost();
-        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlFileTransferRecord, 2000);
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlInsertFileTransferRecord, 2000);
         auto appkey = grApp->GetAppkey();
         auto resp = client->Post({
             {"appkey", appkey}
@@ -691,7 +691,7 @@ namespace tc
         }
         auto settings = GrSettings::Instance();
         std::string serv_host = settings->GetSpvrServerHost();
-        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlFileTransferRecord, 2000);
+        auto client = HttpClient::MakeSSL(serv_host, settings->GetSpvrServerPort(), FileTransferRecord::kUrlUpdateFileTransferRecord, 2000);
         auto appkey = grApp->GetAppkey();
         auto resp = client->Post({
             {"appkey", appkey}
