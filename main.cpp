@@ -66,6 +66,7 @@ int main(int argc, char *argv[]) {
         .version_ = PROJECT_VERSION,
         .app_name_ = qApp->applicationName().toStdString(),
     };
+    ClearOldDumps();
     CaptureDumpByBreakpad(&bc);
 
     //auto base_dir = QApplication::applicationDirPath();

@@ -47,6 +47,7 @@
 #include "tc_common_new/file.h"
 #include "tc_common_new/file_util.h"
 #include "tc_common_new/http_client.h"
+#include "tc_common_new/dump_helper.h"
 #include "tc_qt_widget/tc_dialog_util.h"
 #include "tc_qt_widget/round_img_display.h"
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
@@ -543,6 +544,10 @@ namespace tc
         msg_listener_->Listen<MsgGrTimer10H>([=, this](const MsgGrTimer10H& msg) {
             app_->GetContext()->PostUITask([=, this]() {
                 this->CheckAppUpdate(false);
+            });
+
+            app_->GetContext()->PostTask([=]() {
+                tc::ClearOldDumps();
             });
         });
     }
