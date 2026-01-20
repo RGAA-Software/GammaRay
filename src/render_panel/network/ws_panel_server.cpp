@@ -466,7 +466,7 @@ namespace tc
         sub->set_appkey(grApp->GetAppkey());
         sub->set_max_transmit_speed(this->max_transmit_speed_);
         sub->set_max_receive_speed(this->max_receive_speed_);
-        if (auto pc = grApp->GetCompanion(); pc) {
+        if (auto pc = grApp->GetCompanion(); pc && pc->GetAuth()) {
             sub->set_role(static_cast<int>(pc->GetAuth()->role_));
         }
         else {
