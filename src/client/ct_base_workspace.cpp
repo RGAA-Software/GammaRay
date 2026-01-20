@@ -474,7 +474,7 @@ namespace tc
             int monitor_index = 0;
             for (const auto& item : config.monitors_info()) {
                 const std::string& monitor_name = item.name();
-                //LOGI("monitor name: {}, width: {}, height: {}", item.name(), item.current_width(), item.current_height());
+                LOGI("monitor name: {}, width: {}, height: {}", item.name(), item.current_width(), item.current_height());
                 monitor_index_map_name_[monitor_index] = monitor_name;
                 std::vector<MsgClientCaptureMonitor::Resolution> resolutions;
                 for (auto& res : item.resolutions()) {
