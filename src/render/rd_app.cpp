@@ -281,13 +281,14 @@ namespace tc
                 LOGI("Still has connected clients");
                 return;
             }
-            LOGW("Don't have connected clients, maybe restart render in 10S");
-            this->context_->PostDelayTask([=, this]() {
-                if (!HasConnectedPeer()) {
-                    LOGW("** Don't have connected clients, will restart render now.");
-                    ProcessUtil::KillProcess(qApp->applicationPid());
-                }
-            }, 5000);
+            // LOGW("Don't have connected clients, maybe restart render in 10S");
+            // // check UTC time
+            // this->context_->PostDelayTask([=, this]() {
+            //     if (!HasConnectedPeer()) {
+            //         LOGW("** Don't have connected clients, will restart render now.");
+            //         ProcessUtil::KillProcess(qApp->applicationPid());
+            //     }
+            // }, 10000);
         });
 
         msg_listener_->Listen<ClipboardMessage>([=, this](const ClipboardMessage& msg) {
