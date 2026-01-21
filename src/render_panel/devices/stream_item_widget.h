@@ -48,6 +48,7 @@ namespace tc
         void Update();
 
         std::string GetStreamId();
+        void ShowConnecting();
 
     private:
         std::shared_ptr<spvr::SpvrStream> item_;

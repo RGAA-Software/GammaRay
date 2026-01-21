@@ -46,15 +46,15 @@ namespace tc
     private:
         QListWidgetItem* AddItem(const std::shared_ptr<spvr::SpvrStream>& item, int index);
         QWidget* GetItemByStreamId(const std::string& stream_id);
-        void RegisterActions(int index);
-        void ProcessAction(int index, const std::shared_ptr<spvr::SpvrStream>& item);
+        void RegisterActions(int index, QListWidgetItem* cur_item);
+        void ProcessAction(int index, QListWidgetItem* cur_item, const std::shared_ptr<spvr::SpvrStream>& item);
 
         void CreateLayout();
         void Init();
 
         void DeleteStream(const std::shared_ptr<spvr::SpvrStream>& item);
-        void StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
-        void StartStreamInternal(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
+        void StartStream(QListWidgetItem* cur_item, const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
+        void StartStreamInternal(QListWidgetItem* cur_item, const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing);
         void StopStream(const std::shared_ptr<spvr::SpvrStream>& item);
         void LockDevice(const std::shared_ptr<spvr::SpvrStream>& item);
         void RestartDevice(const std::shared_ptr<spvr::SpvrStream>& item);

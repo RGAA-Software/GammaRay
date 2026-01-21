@@ -66,10 +66,6 @@ namespace tc
             if (conn_listener_) {
                 conn_listener_();
             }
-            lbl_connecting_->show();
-            QTimer::singleShot(2000, [this]() {
-                lbl_connecting_->hide();
-            });
         });
 
         auto btn_option = new TcImageButton(":/resources/image/ic_vert_dots.svg", QSize(22, 22), this);
@@ -99,6 +95,13 @@ namespace tc
 
     StreamItemWidget::~StreamItemWidget() {
 
+    }
+
+    void StreamItemWidget::ShowConnecting() {
+        lbl_connecting_->show();
+        QTimer::singleShot(2000, [this]() {
+            lbl_connecting_->hide();
+        });
     }
 
     void StreamItemWidget::paintEvent(QPaintEvent *event) {

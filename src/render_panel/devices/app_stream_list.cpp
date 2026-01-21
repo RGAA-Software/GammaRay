@@ -136,13 +136,13 @@ namespace tc
             QListWidgetItem* cur_item = stream_list_->itemAt(pos);
             if (cur_item == nullptr) { return; }
             int index = stream_list_->row(cur_item);
-            RegisterActions(index);
+            RegisterActions(index, cur_item);
         });
 
         connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
-            int index = stream_list_->row(item);
-            auto stream_item = streams_.at(index);
-            StartStream(stream_item, false);
+            const int index = stream_list_->row(item);
+            const auto stream_item = streams_.at(index);
+            StartStream(item, stream_item, false);
         });
 
         root_layout->addSpacing(10);
@@ -221,7 +221,7 @@ namespace tc
             LOGI("Auto start stream: {}", msg.auto_start_);
             context_->PostUIDelayTask([=, this]() {
                 if (msg.auto_start_) {
-                    StartStream(exist_stream_item, false);
+                    StartStream(nullptr, exist_stream_item, false);
                 }
             }, 70);
         });
@@ -274,7 +274,7 @@ namespace tc
         });
     }
 
-    void AppStreamList::RegisterActions(int index) {
+    void AppStreamList::RegisterActions(int index, QListWidgetItem* cur_item) {
         std::vector<QString> actions = {
             tcTr("id_start_control"),
             tcTr("id_stop_control"),
@@ -299,17 +299,17 @@ namespace tc
             auto action = new QAction(action_name, menu);
             menu->addAction(action);
             connect(action, &QAction::triggered, this, [=, this]() {
-                ProcessAction(i, streams_.at(index));
+                ProcessAction(i, cur_item, streams_.at(index));
             });
         }
         menu->exec(QCursor::pos());
         delete menu;
     }
 
-    void AppStreamList::ProcessAction(int index, const std::shared_ptr<spvr::SpvrStream>& item) {
+    void AppStreamList::ProcessAction(int index, QListWidgetItem* cur_item, const std::shared_ptr<spvr::SpvrStream>& item) {
         if (index == 0) {
             // connect
-            StartStream(item, false);
+            StartStream(cur_item, item, false);
         }
         else if (index == 1) {
             // stop
@@ -317,7 +317,7 @@ namespace tc
         }
         else if (index == 2) {
             // only viewing
-            StartStream(item, true);
+            StartStream(cur_item, item, true);
         }
         else if (index == 3) {
             // lock device
@@ -346,13 +346,18 @@ namespace tc
         }
     }
 
-    void AppStreamList::StartStream(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
+    void AppStreamList::StartStream(QListWidgetItem* cur_item, const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
+        if (cur_item) {
+            if (const auto widget = static_cast<StreamItemWidget *>(stream_list_->itemWidget(cur_item))) {
+                widget->ShowConnecting();
+            }
+        }
         context_->PostUIDelayTask([=, this]() {
-            this->StartStreamInternal(item, force_only_viewing);
+            this->StartStreamInternal(cur_item, item, force_only_viewing);
         }, 40);
     }
 
-    void AppStreamList::StartStreamInternal(const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
+    void AppStreamList::StartStreamInternal(QListWidgetItem* cur_item, const std::shared_ptr<spvr::SpvrStream>& item, bool force_only_viewing) {
         auto si = db_mgr_->GetStreamByStreamId(item->stream_id_);
         if (!si.has_value()) {
             LOGE("read stream item from db failed: {}", item->stream_id_);
@@ -498,7 +503,7 @@ namespace tc
                     db_mgr_->UpdateStreamRandomPwd(target_item->stream_id_, "");
                     db_mgr_->UpdateStreamSafetyPwd(target_item->stream_id_, "");
                     context_->PostUIDelayTask([=, this]() {
-                        StartStream(item, false);
+                        StartStream(cur_item, item, false);
                     }, 100);
                     return;
                 }
@@ -637,10 +642,10 @@ namespace tc
         widget->setObjectName(stream->stream_id_.c_str());
         WidgetHelper::AddShadow(widget, 0xbbbbbb, 8);
         widget->SetOnConnectListener([=, this]() {
-            StartStream(stream, false);
+            StartStream(item, stream, false);
         });
         widget->SetOnMenuListener([=, this]() {
-            RegisterActions(index);
+            RegisterActions(index, item);
         });
 
         auto root_layout = new QVBoxLayout();
