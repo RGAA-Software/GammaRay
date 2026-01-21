@@ -140,6 +140,7 @@ namespace tc
                                                           settings_->spvr_port_,
                                                           settings_->device_id_,
                                                           settings_->remote_device_id_,
+                                                          settings_->host_,
                                                           settings_->appkey_);
             spvr_client_->Start();
         }
