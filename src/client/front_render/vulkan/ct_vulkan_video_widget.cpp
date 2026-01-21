@@ -40,7 +40,7 @@ namespace tc
     }
 
     void VulkanVideoWidget::paintEvent(QPaintEvent* event) {
-
+        event->accept();
     }
 
     void VulkanVideoWidget::RefreshImage(const std::shared_ptr<RawImage>& image) {
