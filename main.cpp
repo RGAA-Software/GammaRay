@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QLockFile>
 #include <QMessageBox>
+#include <future>
 #include <QStandardPaths>
 #include "gflags/gflags.h"
 #include "version_config.h"
@@ -66,7 +67,10 @@ int main(int argc, char *argv[]) {
         .version_ = PROJECT_VERSION,
         .app_name_ = qApp->applicationName().toStdString(),
     };
-    ClearOldDumps();
+    
+    std::async([]() {
+        ClearOldDumps();
+    });
     CaptureDumpByBreakpad(&bc);
 
     //auto base_dir = QApplication::applicationDirPath();
