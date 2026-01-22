@@ -25,6 +25,7 @@ namespace tc
                               const std::string& device_id,
                               const std::string& appkey);
         void Start();
+        void Stop();
         bool IsStarted();
         bool IsActive();
         void PostBinMessage(const std::string& m);

@@ -91,6 +91,14 @@ namespace tc
         }
     }
 
+    void GrSpvrClient::Stop() {
+        if (client_) {
+            client_->stop_all_timers();
+            client_->stop();
+            client_.reset();
+        }
+    }
+
     bool GrSpvrClient::IsStarted() {
         return client_ != nullptr;
     }

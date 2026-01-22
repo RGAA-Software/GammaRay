@@ -188,7 +188,7 @@ namespace tc
             }
             else if (m.type() == tcrp::RpMessageType::kRpClipboardEvent) {
                 const auto& clipboard_info = m.clipboard_info();
-                LOGI("*** Clipboard type: {}, text: {}, file size: {}", (int)clipboard_info.type(), clipboard_info.msg(), clipboard_info.files_size());
+                //LOGI("*** Clipboard type: {}, text: {}, file size: {}", (int)clipboard_info.type(), clipboard_info.msg(), clipboard_info.files_size());
 
                 auto event = std::make_shared<MsgClipboardEvent>();
                 event->clipboard_type_ = [&]() {

@@ -237,6 +237,13 @@ namespace tc
             this->StartSpvrClientIfNeeded();
         });
 
+        // stop the spvr connection
+        msg_listener_->Listen<MsgForceClearProgramData>([=, this](const MsgForceClearProgramData& msg) {
+            if (spvr_client_) {
+                spvr_client_->Stop();
+            }
+        });
+
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
             if (settings_->GetDeviceId().empty()) {
                 RequestNewClientId(true);

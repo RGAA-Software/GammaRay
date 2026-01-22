@@ -584,7 +584,7 @@ namespace tc {
 
 		if (err.error != QJsonParseError::NoError) {
 			emit SigGetUpdateConfigError("JSON parse error: " + err.errorString());
-			LOGE("JSON parse error: {}", err.errorString().toStdString());
+			LOGE("JSON parse error: {}, json: {}", err.errorString().toStdString(), data.toStdString());
 			if (from_user_clicked) {
 				emit SigUpdateHint(tcTr("id_upgrade_check_error") + tcTr("id_upgrade_data_format_error") + QString("(%1)").arg(QString::number(1)));
 			}
@@ -639,7 +639,7 @@ namespace tc {
 		// --- Check required fields ---
 		if (version.isEmpty() || down_path.isEmpty() || file_md5.isEmpty()) {
 			emit SigGetUpdateConfigError("Invalid json: missing required fields");
-			LOGE("Invalid json: missing required fields");
+			LOGE("Invalid json: missing required fields, json: {}", data.toStdString());
 			if (from_user_clicked) {
 				emit SigUpdateHint(tcTr("id_upgrade_check_error") + tcTr("id_upgrade_data_format_error") + QString("(%1)").arg(QString::number(3)));
 			}
