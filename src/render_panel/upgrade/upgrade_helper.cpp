@@ -621,6 +621,12 @@ namespace tc {
 
 		if (obj.contains("data") && obj.value("data").isArray()) {
 			QJsonArray data_array = obj.value("data").toArray();
+
+			if (data_array.isEmpty() && from_user_clicked) {
+				emit SigUpdateHint(tcTr("id_upgrade_latest") + QString("(%1)").arg(QString::number(4)));
+				return;
+			}
+
 			for (const QJsonValue& value : data_array) {
 				if (value.isObject()) {
 					QJsonObject obj = value.toObject();
