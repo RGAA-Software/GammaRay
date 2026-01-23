@@ -88,6 +88,10 @@ namespace tc
         void NotifyInsertFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
 
         void NotifyUpdateFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
+
+        // notify event if needed
+        void NotifyEventIfNeeded();
+
     private:
         std::shared_ptr<asio2::http_server> server_ = nullptr;
         WsDataPtr ws_data_ = nullptr;

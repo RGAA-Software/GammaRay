@@ -35,6 +35,7 @@
 #include "relay_message.pb.h"
 #include "app_config.h"
 #include "spvr/gr_spvr_manager.h"
+#include "spvr/gr_event_manager.h"
 #include <QApplication>
 
 using namespace nlohmann;
@@ -85,7 +86,7 @@ namespace tc
 
         run_game_manager_ = std::make_shared<GrRunGameManager>(shared_from_this());
         spvr_manager_ = std::make_shared<GrSpvrManager>(shared_from_this());
-
+        event_manager_ = std::make_shared<GrEventManager>(shared_from_this());
         service_manager_ = ServiceManager::Make();
         std::string base_path = qApp->applicationDirPath().toStdString();
         std::string bin_path = std::format("{}/GammaRayService.exe {}", base_path, settings_->sys_service_port_);
@@ -162,6 +163,14 @@ namespace tc
 
     std::vector<EthernetInfo> GrContext::GetIps() {
         return IPUtil::ScanIPs();
+    }
+
+    std::string GrContext::GetFirstAvailableIp() {
+        const auto ips = IPUtil::ScanIPs();
+        for (const auto& ip : ips) {
+            return ip.ip_addr_;
+        }
+        return "";
     }
 
     std::string GrContext::GetDeviceIdOrIpAddress() {
@@ -269,6 +278,10 @@ namespace tc
 
     std::shared_ptr<GrSpvrManager> GrContext::GetSpvrManager() {
         return spvr_manager_;
+    }
+
+    std::shared_ptr<GrEventManager> GrContext::GetEventManager() {
+        return event_manager_;
     }
 
     std::shared_ptr<StreamDBOperator> GrContext::GetStreamDBManager() {

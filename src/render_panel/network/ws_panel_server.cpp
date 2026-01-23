@@ -33,6 +33,7 @@
 #include "render_panel/gr_statistics.h"
 #include "render_panel/devices/gr_device_manager.h"
 #include "skin/interface/skin_interface.h"
+#include "render_panel/spvr/gr_event_manager.h"
 
 namespace tc
 {
@@ -632,6 +633,13 @@ namespace tc
             sub->set_current_cpu_freq(companion->GetCurrentCpuFrequency());
             PostRendererMessage(tc::RpProtoAsData(&rp_msg));
         }
+
+        // notify event if needed
+        {
+            context_->PostTask([=, this]() {
+                //this->NotifyEventIfNeeded();
+            });
+        }
     }
 
     void WsPanelServer::NotifyInsertVisitRecordToCms(const std::shared_ptr<VisitRecord> record) {
@@ -701,4 +709,15 @@ namespace tc
             LOGE("NotifyUpdateFileTransferRecordToCms failed: {}", resp.status);
         }
     }
+
+    void WsPanelServer::NotifyEventIfNeeded() {
+        auto event_mgr = context_->GetEventManager();
+        if (!event_mgr) {
+            LOGE("No event manager!");
+            return;
+        }
+
+        event_mgr->AddCpuEvent(100);
+    }
+
 }

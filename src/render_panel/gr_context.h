@@ -35,6 +35,7 @@ namespace tc
     class NotifyManager;
     class GrDatabase;
     class GrSpvrManager;
+    class GrEventManager;
 
     // Device list
     class StreamDBOperator;
@@ -72,6 +73,7 @@ namespace tc
 
         int GetIndexByUniqueId();
         std::vector<EthernetInfo> GetIps();
+        std::string GetFirstAvailableIp();
 
         std::string MakeDesktopLinkMessage(const std::vector<EthernetInfo>& info = {});
 
@@ -79,6 +81,7 @@ namespace tc
         std::shared_ptr<ServiceManager> GetServiceManager();
         std::shared_ptr<GrApplication> GetApplication();
         std::shared_ptr<GrSpvrManager> GetSpvrManager();
+        std::shared_ptr<GrEventManager> GetEventManager();
 
         template<typename T>
         void SendAppMessage(const T& m) {
@@ -144,6 +147,7 @@ namespace tc
         std::shared_ptr<NotifyManager> notify_mgr_ = nullptr;
         std::shared_ptr<GrDatabase> database_ = nullptr;
         std::shared_ptr<GrSpvrManager> spvr_manager_ = nullptr;
+        std::shared_ptr<GrEventManager> event_manager_ = nullptr;
     };
 
 }

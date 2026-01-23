@@ -104,6 +104,8 @@ set(PANEL_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/upgrade/upgrade_helper.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/spvr/gr_spvr_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/spvr/gr_event_manager.cpp
+
 
     PARENT_SCOPE
 )
