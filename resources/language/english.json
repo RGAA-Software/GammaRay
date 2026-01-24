@@ -274,6 +274,7 @@
   "id_force_software": "Force Software Decode",
   "id_wait_debug": "Wait Debugger",
   "id_force_gdi_capture": "Force GDI capture",
+  "id_disable_vulkan_render": "Disable vulkan render",
   "id_verifying": "Verifying...",
   "id_op_error": "Operation Error",
   "id_consult_admin_to_help": "Consult your administrator to get help",

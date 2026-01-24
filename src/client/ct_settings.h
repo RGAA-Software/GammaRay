@@ -146,6 +146,9 @@ namespace tc
         // force gdi
         bool force_gdi_ = false;
 
+        // disable_vulkan_
+        bool disable_vulkan_ = false;
+
         // opengl backend
         std::string gl_backend_;
 

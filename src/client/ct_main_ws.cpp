@@ -169,6 +169,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_force_gdi_capture("force_gdi_capture", "force gdi capture", "value", "");
     parser.addOption(opt_force_gdi_capture);
 
+    QCommandLineOption opt_disable_vulkan_render("disable_vulkan_render", "disable vulkan render", "value", "");
+    parser.addOption(opt_disable_vulkan_render);
+
     QCommandLineOption opt_gl_backend("gl_backend", "opengl backend", "value", "");
     parser.addOption(opt_gl_backend);
 
@@ -342,6 +345,9 @@ void ParseCommandLine(QApplication& app) {
     // force gdi capture
     settings->force_gdi_ = parser.value(opt_force_gdi_capture).toInt() == 1;
 
+    // disable vulkan render
+    settings->disable_vulkan_ = parser.value(opt_disable_vulkan_render).toInt() == 1;
+    
     // opengl backend
     settings->gl_backend_ = parser.value(opt_gl_backend).toStdString();
 }
@@ -538,7 +544,7 @@ int main(int argc, char** argv) {
 
     auto beg = TimeUtil::GetCurrentTimestamp();
 
-    if (!settings->force_software_) {
+    if (!settings->force_software_ && !settings->disable_vulkan_) {
         auto vulkan_checker = VulkanChecker::Make();
         bool support_vulkan = vulkan_checker->TestDecodeAndRenderHevcYuv444Frame();
         LOGI("support vulkan(hevc decode yuv444 and render): {}", support_vulkan);

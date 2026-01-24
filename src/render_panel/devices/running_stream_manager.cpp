@@ -191,6 +191,7 @@ namespace tc
             << std::format("--force_software={}", item->force_software_ ? 1 : 0).c_str()
             << std::format("--wait_debug={}", item->wait_debug_ ? 1 : 0).c_str()
             << std::format("--force_gdi_capture={}", item->force_gdi_capture_ ? 1 : 0).c_str()
+            << std::format("--disable_vulkan_render={}", item->disable_vulkan_render_ ? 1 : 0).c_str()
             << std::format("--show_watermark={}", show_watermark ? 1 : 0).c_str()
             << std::format("--gl_backend={}", settings_->gl_backend_).c_str()
             ;

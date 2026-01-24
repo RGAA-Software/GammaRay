@@ -48,6 +48,7 @@ namespace tc
         QCheckBox* cb_force_software_ = nullptr;
         QCheckBox* cb_wait_debug_ = nullptr;
         QCheckBox* cb_force_gdi_capture_ = nullptr;
+        QCheckBox* cb_disable_vulkan_render_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
         QLineEdit* ed_remote_device_id_ = nullptr;
         QComboBox* cb_fps_ = nullptr;
