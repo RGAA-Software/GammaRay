@@ -592,6 +592,14 @@ namespace tc
         return img;
     }
 
+    int D3D11RenderManager::GetFrameWidth() {
+        return m_width;
+    }
+
+    int D3D11RenderManager::GetFrameHeight() {
+        return m_height;
+    }
+
     //
     // Set new viewport
     //

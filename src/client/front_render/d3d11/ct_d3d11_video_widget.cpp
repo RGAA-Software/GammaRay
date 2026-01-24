@@ -61,6 +61,7 @@ namespace tc
             return false;
         }
 
+        renderer_ready_ = false;
         if (auto r = render_mgr_->InitOutput((HWND)winId(), raw_format, fw, fh, device, device_context);
             r == DUPL_RETURN_SUCCESS) {
             this->init = true;
@@ -72,6 +73,7 @@ namespace tc
             LOGI("D3D output init failed: {}", (int)r);
             return false;
         }
+        renderer_ready_ = true;
         return true;
     }
 
@@ -104,10 +106,12 @@ namespace tc
 
         // LOGI("this image format: {}, image in: {}", this->raw_image_format_, image->img_format);
         if (this->tex_width_ != image->img_width || this->tex_height_ != image->img_height || this->raw_image_format_ != image->img_format) {
+            renderer_ready_ = false;
             if (render_mgr_->RecreateTexture(image->img_format, image->img_width, image->img_height) == DUPL_RETURN_SUCCESS) {
                 this->tex_width_ = image->img_width;
                 this->tex_height_ = image->img_height;
                 this->raw_image_format_ = image->img_format;
+                renderer_ready_ = true;
             }
             else {
                 LOGE("Recreate Texture failed!");
@@ -197,6 +201,15 @@ namespace tc
     }
 
     void D3D11VideoWidget::RefreshD3DImage(const std::shared_ptr<RawImage>& image) {
+        if (!renderer_ready_) {
+            LOGW("Renderer not ready !!!");
+            return;
+        }
+        if (render_mgr_->GetFrameWidth() != image->img_width || render_mgr_->GetFrameHeight() != image->img_height) {
+            LOGW("Frame size not equals, render mgr: {}x{} ==> new image: {}x{}", render_mgr_->GetFrameWidth(), render_mgr_->GetFrameHeight(),
+                 image->img_width, image->img_height);
+            return;
+        }
         D3D11_BOX srcBox;
         srcBox.left = 0;
         srcBox.top = 0;

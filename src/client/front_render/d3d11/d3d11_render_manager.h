@@ -30,6 +30,9 @@ namespace tc
         ComPtr<ID3D11Texture2D> GetVPlane() { return texture_plane_[2]; }
         QImage SaveBackBufferToImage();
 
+        int GetFrameWidth();
+        int GetFrameHeight();
+
     private:
         // Methods
         DUPL_RETURN MakeRTV();

@@ -106,6 +106,9 @@ namespace tc
         std::shared_ptr<Data> v_buffer_ = nullptr;
         // RGB Buffer
         std::shared_ptr<Data> rgb_buffer_ = nullptr;
+
+        // is renderer ready
+        std::atomic_bool renderer_ready_ = false;
 	};
 
 }
