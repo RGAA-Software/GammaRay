@@ -28,6 +28,9 @@ namespace tc
         // add disk event
         bool AddDiskEvent(int disk_usage, const std::string& disk_path);
 
+        // add gpu event
+        bool AddGpuEvent(int gpu_usage, const std::string& gpu_id, const std::string& gpu_name);
+
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;

@@ -643,7 +643,7 @@ namespace tc
             });
 
             notify_event_count_++;
-            if (notify_event_count_ >= 600) {
+            if (notify_event_count_ >= 60) {
                 notify_event_count_ = 0;
                 context_->PostTask([=, this]() {
                     this->NotifyEventIfNeeded(sys_info);
@@ -731,27 +731,31 @@ namespace tc
         }
 
         // CPU
-        if (sys_info->cpu_.usage_ > 70) {
-
+        if (sys_info->cpu_.usage_ > 80) {
+            event_mgr->AddCpuEvent(sys_info->cpu_.usage_);
         }
-        event_mgr->AddCpuEvent(sys_info->cpu_.usage_);
 
         // Memory
         auto mem_usage = sys_info->mem_.used_gb_ * 100.0f / sys_info->mem_.total_gb_;
         if (mem_usage > 80) {
-
+            event_mgr->AddMemoryEvent(mem_usage);
         }
-        event_mgr->AddMemoryEvent(mem_usage);
 
         // Disks
         for (const auto& disk : sys_info->disks_) {
             const auto path = disk.mount_on_;
             auto usage = (disk.total_gb_ - disk.available_gb_) * 100 / disk.total_gb_;
-            event_mgr->AddDiskEvent(usage, path);
+            if (usage > 90) {
+                event_mgr->AddDiskEvent(usage, path);
+            }
         }
 
         // GPU
-
+        for (const auto& gpu : sys_info->gpus_) {
+            if (gpu.gpu_utilization_ > 80) {
+                event_mgr->AddGpuEvent(gpu.gpu_utilization_, gpu.id_, gpu.brand_);
+            }
+        }
     }
 
 }
