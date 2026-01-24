@@ -104,6 +104,10 @@ namespace tc
 
         // spvr access
         virtual std::shared_ptr<SpvrAccessInfo> ParseSpvrAccessInfo(const std::string& info) = 0;
+
+        // jump to github
+        virtual void JumpToGithub() = 0;
+        virtual bool HasUpdateForOffSite() = 0;
     };
 
 }
