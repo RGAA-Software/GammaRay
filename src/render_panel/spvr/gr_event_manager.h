@@ -6,6 +6,7 @@
 #define GAMMARAYPREMIUM_GR_EVENT_MANAGER_H
 
 #include <memory>
+#include <string>
 
 namespace tc
 {
@@ -20,6 +21,12 @@ namespace tc
 
         // add cpu event
         bool AddCpuEvent(int cpu_usage);
+
+        // add memory event
+        bool AddMemoryEvent(int memory_usage);
+
+        // add disk event
+        bool AddDiskEvent(int disk_usage, const std::string& disk_path);
 
     private:
         GrSettings* settings_ = nullptr;

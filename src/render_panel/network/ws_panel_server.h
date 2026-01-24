@@ -28,6 +28,7 @@ namespace tc
     class MessageListener;
     class GrStatistics;
     class FileTransferRecord;
+    class SysInfo;
 
     class WSSession {
     public:
@@ -90,7 +91,7 @@ namespace tc
         void NotifyUpdateFileTransferRecordToCms(const std::shared_ptr<FileTransferRecord> record);
 
         // notify event if needed
-        void NotifyEventIfNeeded();
+        void NotifyEventIfNeeded(const std::shared_ptr<SysInfo>& sys_info);
 
     private:
         std::shared_ptr<asio2::http_server> server_ = nullptr;
@@ -111,6 +112,9 @@ namespace tc
         uint64_t max_receive_speed_ = 0;
         // statistics
         GrStatistics* stat_ = nullptr;
+        // notify once flag
+        std::once_flag notify_event_flag_;
+        uint64_t notify_event_count_ = 0;
     };
 }
 

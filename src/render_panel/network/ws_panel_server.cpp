@@ -636,9 +636,19 @@ namespace tc
 
         // notify event if needed
         {
-            context_->PostTask([=, this]() {
-                //this->NotifyEventIfNeeded();
+            std::call_once(notify_event_flag_, [=, this]() {
+                context_->PostTask([=, this]() {
+                    this->NotifyEventIfNeeded(sys_info);
+                });
             });
+
+            notify_event_count_++;
+            if (notify_event_count_ >= 600) {
+                notify_event_count_ = 0;
+                context_->PostTask([=, this]() {
+                    this->NotifyEventIfNeeded(sys_info);
+                });
+            }
         }
     }
 
@@ -710,14 +720,38 @@ namespace tc
         }
     }
 
-    void WsPanelServer::NotifyEventIfNeeded() {
+    void WsPanelServer::NotifyEventIfNeeded(const std::shared_ptr<SysInfo>& sys_info) {
+        if (!sys_info) {
+            return;
+        }
         auto event_mgr = context_->GetEventManager();
         if (!event_mgr) {
             LOGE("No event manager!");
             return;
         }
 
-        event_mgr->AddCpuEvent(100);
+        // CPU
+        if (sys_info->cpu_.usage_ > 70) {
+
+        }
+        event_mgr->AddCpuEvent(sys_info->cpu_.usage_);
+
+        // Memory
+        auto mem_usage = sys_info->mem_.used_gb_ * 100.0f / sys_info->mem_.total_gb_;
+        if (mem_usage > 80) {
+
+        }
+        event_mgr->AddMemoryEvent(mem_usage);
+
+        // Disks
+        for (const auto& disk : sys_info->disks_) {
+            const auto path = disk.mount_on_;
+            auto usage = (disk.total_gb_ - disk.available_gb_) * 100 / disk.total_gb_;
+            event_mgr->AddDiskEvent(usage, path);
+        }
+
+        // GPU
+
     }
 
 }

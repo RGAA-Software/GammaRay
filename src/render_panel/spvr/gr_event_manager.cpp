@@ -40,7 +40,61 @@ namespace tc
         std::string uid = user_mgr_->GetUserId();
         std::string username = user_mgr_->GetUsername();
         const auto event = SpvrEvent::CpuOverload(device_id, device_ip, device_name, uid, username, cpu_usage);
-        if (const auto r = SpvrEventApi::AddCpuEvent(host, port, appkey, event); r.has_value()) {
+        if (const auto r = SpvrEventApi::AddEvent(host, port, appkey, event); r.has_value()) {
+            return true;
+        }
+        return false;
+    }
+
+    bool GrEventManager::AddMemoryEvent(int memory_usage) {
+        const auto host = settings_->GetSpvrServerHost();
+        const auto port = settings_->GetSpvrServerPort();
+        const auto appkey = grApp->GetAppkey();
+        if (host.empty() || port <= 0 || appkey.empty()) {
+            return false;
+        }
+        if (!user_mgr_) {
+            user_mgr_ = grApp->GetUserManager();
+            if (!user_mgr_) {
+                LOGE("No user manager!");
+                return false;
+            }
+        }
+
+        std::string device_id = settings_->GetDeviceId();
+        std::string device_ip = context_->GetFirstAvailableIp();
+        std::string device_name = settings_->GetDeviceName();
+        std::string uid = user_mgr_->GetUserId();
+        std::string username = user_mgr_->GetUsername();
+        const auto event = SpvrEvent::MemoryOverload(device_id, device_ip, device_name, uid, username, memory_usage);
+        if (const auto r = SpvrEventApi::AddEvent(host, port, appkey, event); r.has_value()) {
+            return true;
+        }
+        return false;
+    }
+
+    bool GrEventManager::AddDiskEvent(int disk_usage, const std::string& disk_path) {
+        const auto host = settings_->GetSpvrServerHost();
+        const auto port = settings_->GetSpvrServerPort();
+        const auto appkey = grApp->GetAppkey();
+        if (host.empty() || port <= 0 || appkey.empty()) {
+            return false;
+        }
+        if (!user_mgr_) {
+            user_mgr_ = grApp->GetUserManager();
+            if (!user_mgr_) {
+                LOGE("No user manager!");
+                return false;
+            }
+        }
+
+        std::string device_id = settings_->GetDeviceId();
+        std::string device_ip = context_->GetFirstAvailableIp();
+        std::string device_name = settings_->GetDeviceName();
+        std::string uid = user_mgr_->GetUserId();
+        std::string username = user_mgr_->GetUsername();
+        const auto event = SpvrEvent::DiskOverload(device_id, device_ip, device_name, uid, username, disk_usage, disk_path);
+        if (const auto r = SpvrEventApi::AddEvent(host, port, appkey, event); r.has_value()) {
             return true;
         }
         return false;
