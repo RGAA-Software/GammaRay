@@ -150,6 +150,8 @@
   "id_save_path": "Save Path",
   "id_collecting": "Collecting...",
   "id_collect": "Collect",
+  "id_find_new_version": "New version found",
+  "id_click_to_down": "Click to download",
   "id_exit_all_programs": "Exit Programs",
   "id_uninstall_all_programs": "Uninstall Programs",
   "id_hide": "To Tray Panel",

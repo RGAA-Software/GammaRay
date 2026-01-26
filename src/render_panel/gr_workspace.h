@@ -103,6 +103,9 @@ namespace tc
 
         // update
         QPointer<UpgradeHelperWidget> upgrade_helper_widget_;
+
+        // jump to github
+        QWidget* jump_to_github_widget_ = nullptr;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;

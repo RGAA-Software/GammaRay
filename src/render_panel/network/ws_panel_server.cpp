@@ -756,6 +756,7 @@ namespace tc
                 event_mgr->AddGpuEvent(gpu.gpu_utilization_, gpu.id_, gpu.brand_);
             }
         }
+
     }
 
 }

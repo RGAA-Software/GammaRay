@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by RGAA on 2024/4/9.
 //
 
@@ -53,6 +53,7 @@
 #include "tc_qt_widget/image_cropper/image_cropper_dialog.h"
 #include "render_panel/ui/user/modify_username_dialog.h"
 #include "render_panel/ui/user/modify_password_dialog.h"
+#include "render_panel/companion/panel_companion.h"
 #include "render_panel/upgrade/upgrade_helper.h"
 
 namespace tc
@@ -335,6 +336,86 @@ namespace tc
             layout->addStretch(100);
 
             auto exit_btn_size = QSize(btn_size.width(), btn_size.height() - 5);
+
+            // jump to github
+            {
+                QWidget* w = new QWidget(this);
+                jump_to_github_widget_ = w;
+                w->setObjectName("jump_github");
+                w->setStyleSheet(R"(
+                    #jump_github {
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #5578E8, stop:1 #6488E8);
+                        border-radius: 5px;
+                        padding: 5px;
+                    }
+                    #jump_github:hover {
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, 
+                                                    stop:0 #5578E8, stop:1 #6488E8);
+                    }
+                    #jump_github:pressed {
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, 
+                                                    stop:0 #5578FE8, stop:1 #6488E8);
+                    }
+                )");
+
+                w->setFixedSize(btn_size.width(), btn_size.height() * 2.2);
+                
+                layout->addWidget(w, 0, Qt::AlignHCenter);
+                layout->addSpacing(10);
+
+                QVBoxLayout* vlayout = new QVBoxLayout(w);
+                vlayout->setSpacing(10);
+                vlayout->setContentsMargins(4, 4, 4, 4);
+
+                QLabel* label = new QLabel(w);
+                label->setText(tcTr("id_find_new_version"));
+                label->setStyleSheet(R"(
+                    QLabel {
+                        font-size: 16px;
+                        color: #ffffff;
+                    }
+                )");
+                vlayout->addWidget(label, 0, Qt::AlignCenter);
+
+                QPushButton* btn = new QPushButton(w);
+                btn->setText(tcTr("id_click_to_down"));
+                btn->setFixedSize(btn_size.width()-20, btn_size.height() - 6);
+                btn->setStyleSheet(R"(
+                    QPushButton{
+                        color: white;
+                        text - decoration: underline;
+                        border: none;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                    }
+                )");
+                btn->setCursor(QCursor(Qt::PointingHandCursor));
+                vlayout->addWidget(btn, 0, Qt::AlignCenter);
+
+                connect(btn, &QPushButton::clicked, this, [=, this]() {
+                    auto pc = grApp->GetCompanion();
+                    if (pc) {
+                        pc->JumpToGithub();
+                    }
+                });
+
+                app_->GetContext()->PostTask([=, this]() {
+                    auto pc = grApp->GetCompanion();
+                    if (!pc) {
+                        return;
+                    }
+                    if (pc->HasUpdateForOffSite()) {
+                        app_->GetContext()->PostUITask([=, this]() {
+                            w->show();
+                        });
+                    } else {
+                        app_->GetContext()->PostUITask([=, this]() {
+                            w->hide();
+                        });
+                    }
+                });
+            }
+           
             // stop all
             {
                 auto btn = new QPushButton(this);
@@ -542,13 +623,33 @@ namespace tc
 
         // update
         msg_listener_->Listen<MsgGrTimer10H>([=, this](const MsgGrTimer10H& msg) {
-            app_->GetContext()->PostUITask([=, this]() {
-                this->CheckAppUpdate(false);
-            });
+            {
+                app_->GetContext()->PostUITask([=, this]() {
+                    this->CheckAppUpdate(false);
+                });
 
-            app_->GetContext()->PostTask([=]() {
-                tc::ClearOldDumps();
-            });
+                app_->GetContext()->PostTask([=]() {
+                    tc::ClearOldDumps();
+                });
+            }
+
+            {
+                // jump to github
+                auto pc = grApp->GetCompanion();
+                if (!pc) {
+                    return;
+                }
+                if (pc->HasUpdateForOffSite()) {
+                    app_->GetContext()->PostUITask([=, this]() {
+                        jump_to_github_widget_->show();
+                    });
+                }
+                else {
+                    app_->GetContext()->PostUITask([=, this]() {
+                        jump_to_github_widget_->hide();
+                    });
+                }
+            }
         });
     }
 
