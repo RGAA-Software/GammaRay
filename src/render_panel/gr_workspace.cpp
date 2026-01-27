@@ -391,6 +391,7 @@ namespace tc
                 )");
                 btn->setCursor(QCursor(Qt::PointingHandCursor));
                 vlayout->addWidget(btn, 0, Qt::AlignCenter);
+                w->hide();
 
                 connect(btn, &QPushButton::clicked, this, [=, this]() {
                     auto pc = grApp->GetCompanion();
@@ -400,19 +401,7 @@ namespace tc
                 });
 
                 app_->GetContext()->PostTask([=, this]() {
-                    auto pc = grApp->GetCompanion();
-                    if (!pc) {
-                        return;
-                    }
-                    if (pc->HasUpdateForOffSite()) {
-                        app_->GetContext()->PostUITask([=, this]() {
-                            w->show();
-                        });
-                    } else {
-                        app_->GetContext()->PostUITask([=, this]() {
-                            w->hide();
-                        });
-                    }
+                    CheckOffSiteUpdate();
                 });
             }
            
@@ -634,21 +623,7 @@ namespace tc
             }
 
             {
-                // jump to github
-                auto pc = grApp->GetCompanion();
-                if (!pc) {
-                    return;
-                }
-                if (pc->HasUpdateForOffSite()) {
-                    app_->GetContext()->PostUITask([=, this]() {
-                        jump_to_github_widget_->show();
-                    });
-                }
-                else {
-                    app_->GetContext()->PostUITask([=, this]() {
-                        jump_to_github_widget_->hide();
-                    });
-                }
+                CheckOffSiteUpdate();
             }
         });
     }
@@ -936,5 +911,22 @@ namespace tc
 
     void GrWorkspace::CheckAppUpdate(bool from_user_clicked) {
         tc::UpdateManager::GetInstance()->CheckUpdate(true, from_user_clicked);
+    }
+
+    void GrWorkspace::CheckOffSiteUpdate() {
+        auto pc = grApp->GetCompanion();
+        if (!pc) {
+            return;
+        }
+        if (pc->HasUpdateForOffSite()) {
+            app_->GetContext()->PostUITask([=, this]() {
+                jump_to_github_widget_->show();
+             });
+        }
+        else {
+            app_->GetContext()->PostUITask([=, this]() {
+                jump_to_github_widget_->hide();
+            });
+        }
     }
 }

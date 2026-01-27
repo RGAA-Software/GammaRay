@@ -71,6 +71,7 @@ namespace tc
         void ClearAvatar();
         void InitUpdate();
         void CheckAppUpdate(bool from_user_clicked);
+        void CheckOffSiteUpdate();
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
