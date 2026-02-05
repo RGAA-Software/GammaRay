@@ -71,6 +71,7 @@ namespace tc
         void ClearAvatar();
         void InitUpdate();
         void CheckAppUpdate(bool from_user_clicked);
+        void CheckOffSiteUpdate();
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<GrApplication> app_ = nullptr;
@@ -103,6 +104,9 @@ namespace tc
 
         // update
         QPointer<UpgradeHelperWidget> upgrade_helper_widget_;
+
+        // jump to github
+        QWidget* jump_to_github_widget_ = nullptr;
     };
 
     extern std::shared_ptr<GrWorkspace> grWorkspace;

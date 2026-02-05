@@ -151,6 +151,8 @@
   "id_save_path": "保存目录",
   "id_collecting": "收集中...",
   "id_collect": "收集",
+  "id_find_new_version": "发现新版本",
+  "id_click_to_down": "点击去下载",
   "id_exit_all_programs": "退出程序",
   "id_uninstall_all_programs": "卸载程序",
   "id_hide": "缩小到托盘",
