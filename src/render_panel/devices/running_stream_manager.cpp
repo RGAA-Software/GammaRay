@@ -11,6 +11,7 @@
 #include "render_panel/gr_settings.h"
 #include "render_panel/gr_context.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/const_auto.h"
 #include "render_panel/gr_app_messages.h"
 #include "render_panel/gr_application.h"
 #include "tc_profile_client/profile_api.h"
@@ -18,6 +19,7 @@
 #include "start_stream_loading.h"
 #include "tc_qt_widget/translator/tc_translator.h"
 #include "client/ct_stream_item_net_type.h"
+#include "render_panel/companion/panel_companion.h"
 #include "render_panel/spvr/gr_spvr_manager.h"
 #include "tc_spvr_client/spvr_device.h"
 
@@ -72,10 +74,33 @@ namespace tc
             }
         };
 
+        bool has_spvr_info = !item->remote_device_id_.empty() && !settings_->GetSpvrServerHost().empty() && settings_->GetSpvrServerPort() > 0;
+        // check the authorization
+        if (has_spvr_info) {
+            // check network firstly
+            if (!context_->GetApplication()->CanConnectSpvrServer()) {
+                func_hide_loading_dialog();
+                TcDialog dialog(tcTr("id_error"), tcTr("id_net_error_no_cms_connection"), nullptr);
+                dialog.exec();
+                return;
+            }
+
+            // check authorization secondly
+            if (cat companion = context_->GetApplication()->GetCompanion(); companion) {
+                if (!companion->IsAuthValid()) {
+                    func_hide_loading_dialog();
+                    TcDialog dialog(tcTr("id_error"), tcTr("id_auth_invalid"), nullptr);
+                    dialog.exec();
+                    return;
+                }
+            }
+        }
+
         if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty() && !direct) {
             // 1. check available or not
             auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
             if (ac == std::nullopt) {
+                func_hide_loading_dialog();
                 LOGE("Not available connection for : {}", item->remote_device_id_);
                 return;
             }
@@ -97,11 +122,11 @@ namespace tc
             }
         }
 
-        if (!item->remote_device_id_.empty() && !settings_->GetSpvrServerHost().empty() && settings_->GetSpvrServerPort() > 0) {
+        if (has_spvr_info) {
             // 2. check alive or not
-            auto device_mgr = context_->GetApplication()->GetDeviceManager();
+            cat device_mgr = context_->GetApplication()->GetDeviceManager();
             if (auto r = device_mgr->QueryDevice(item->remote_device_id_); r.has_value()) {
-                auto remote_device = r.value();
+                cat remote_device = r.value();
                 if (!remote_device->active_) {
                     func_hide_loading_dialog();
                     TcDialog dialog(tcTr("id_warning"), tcTr("id_device_inactive"), nullptr);

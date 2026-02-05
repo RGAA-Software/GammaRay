@@ -347,6 +347,8 @@
   "id_exit_login_msg": "您确定要退出当前登录的帳戶吗?",
   "id_no_available_connection": "暫無可用新連接，您需要提升授權限制。",
   "id_device_inactive": "設備已禁用，無法連接",
+  "id_auth_invalid": "授權已失效",
+  "id_net_error_no_cms_connection": "網路錯誤，無法連線到管理後台服務",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文檔",

@@ -82,7 +82,9 @@ namespace tc
         // companion for private logics
         PanelCompanion* GetCompanion();
 
+        // get appkey from companion
         std::string GetAppkey();
+
         // refresh spvr server host/port/appkey...
         void RefreshClientManagerSettings();
 
@@ -93,7 +95,7 @@ namespace tc
         SkinInterface* GetSkin();
         std::string GetSkinName();
 
-        // spvr
+        // spvr ws client alive or not
         bool IsSpvrClientAlive();
 
         // user manager
@@ -104,6 +106,10 @@ namespace tc
 
         // device manager
         std::shared_ptr<GrDeviceManager> GetDeviceManager();
+
+        // can we connect the spvr server
+        // Attention: Block to request a net request.
+        [[nodiscard]] bool CanConnectSpvrServer();
 
     private:
         void RegisterMessageListener();

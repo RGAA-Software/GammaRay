@@ -93,6 +93,7 @@ namespace tc
         virtual bool IsAuthFree() = 0;
         virtual bool IsAuthPersonal() = 0;
         virtual bool IsAuthEnterprise() = 0;
+        virtual bool IsAuthValid() = 0;
 
         // enc
         virtual bool EncQRCode(std::string origin_content, std::vector<uint8_t>& cipher_data) = 0;

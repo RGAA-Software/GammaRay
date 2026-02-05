@@ -36,6 +36,7 @@
 #include "tc_common_new/message_notifier.h"
 #include "render_panel/gr_guard_starter.h"
 #include "tc_spvr_client/spvr_stream.h"
+#include "tc_spvr_client/spvr_device_api.h"
 #include "render_panel/gr_render_msg_processor.h"
 #include "render_panel/network/ws_panel_server.h"
 #include "render_panel/network/udp_broadcaster.h"
@@ -48,6 +49,8 @@
 
 #include <shellapi.h>
 #include <QLibrary>
+
+#include "tc_common_new/const_auto.h"
 
 using namespace nlohmann;
 
@@ -537,6 +540,11 @@ namespace tc
 
     std::shared_ptr<GrDeviceManager> GrApplication::GetDeviceManager() {
         return device_mgr_;
+    }
+
+    bool GrApplication::CanConnectSpvrServer() {
+        cat r = spvr::SpvrDeviceApi::Ping(settings_->GetSpvrServerHost(), settings_->GetSpvrServerPort(), this->GetAppkey());
+        return r.has_value() ? r.value() : false;
     }
 
 }

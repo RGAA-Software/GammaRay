@@ -352,6 +352,8 @@
   "id_cant_request_auth": "无法获取授权, 请检查您的地址和端口配置.",
   "id_no_available_connection": "暂无可用新连接，您需要提升授权限制。",
   "id_device_inactive": "设备已经禁用，无法链接",
+  "id_auth_invalid": "授权已失效",
+  "id_net_error_no_cms_connection": "网络错误，无法连接到管理后台服务",
 
   "id_file_trans_desktop": "桌面",
   "id_file_trans_my_document": "我的文档",

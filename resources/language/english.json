@@ -351,6 +351,8 @@
   "id_version_premium": "Premium",
   "id_no_available_connection": "No available new connections, you need to extend your limitation of Authorization.",
   "id_device_inactive": "Device is disabled and cannot connect",
+  "id_auth_invalid": "Authorization is invalid now",
+  "id_net_error_no_cms_connection": "Network error, can't connect to Spvr Manager Server",
 
   "id_file_trans_desktop": "Desktop",
   "id_file_trans_my_document": "My Documents",
