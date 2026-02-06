@@ -85,6 +85,7 @@ namespace tc
 		int invalid_position = -10002200;
 		int last_cursor_x_ = invalid_position;
 		int last_cursor_y_ = invalid_position;
+		uint64_t last_cursor_ts_ = 0;
         OnMouseKeyboardEventCallback event_cbk_;
         std::shared_ptr<ThunderSdk> sdk_ = nullptr;
         int dup_idx_ = 0;

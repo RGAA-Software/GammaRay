@@ -6,6 +6,7 @@
 #include "tc_common_new/data.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/thread.h"
+#include "tc_common_new/time_util.h"
 #include "tc_client_sdk_new/thunder_sdk.h"
 #include "client/ct_client_context.h"
 #include "client/ct_app_message.h"
@@ -16,6 +17,8 @@
 #include <Windows.h>
 #endif
 #include <qdebug.h>
+
+#include "tc_common_new/const_auto.h"
 
 namespace tc
 {
@@ -51,7 +54,20 @@ namespace tc
             mouse_event_desc.dx = curr_pos.x() - last_cursor_x_;
             mouse_event_desc.dy = curr_pos.y() - last_cursor_y_;
         }
+	    if (last_cursor_x_ == invalid_position) {
+	        last_cursor_x_ = curr_pos.x();
+	    }
+	    if (last_cursor_y_ == invalid_position) {
+	        last_cursor_y_ = curr_pos.y();
+	    }
+	    cat ts = TimeUtil::GetCurrentTimestamp();
+	    cat diff = ts - last_cursor_ts_;
+        if (std::abs(mouse_event_desc.dx) < 2 && std::abs(mouse_event_desc.dy) < 2 || diff < 2) {
+            LOGI("Ignore the Mouse, dx: {}, dy: {}", mouse_event_desc.dx, mouse_event_desc.dy);
+            return;
+        }
 
+	    last_cursor_ts_ = ts;
         last_cursor_x_ = curr_pos.x();
         last_cursor_y_ = curr_pos.y();
         SendMouseEvent(mouse_event_desc);
