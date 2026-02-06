@@ -1,1 +1,1 @@
-set(TC_APP_VERSION 2.1.8)
+set(TC_APP_VERSION 3.0.0)

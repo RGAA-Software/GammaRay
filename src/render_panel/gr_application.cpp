@@ -23,6 +23,7 @@
 #include "companion/panel_companion.h"
 #include "spvr_scanner/spvr_scanner.h"
 #include "ui/input_safety_pwd_dialog.h"
+#include "ui/monitor_refresher.h"
 #include "tc_3rdparty/json/json.hpp"
 #include "tc_relay_client/relay_api.h"
 #include "skin/interface/skin_interface.h"
@@ -129,6 +130,9 @@ namespace tc
         clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
         guard_starter_ = std::make_shared<GrGuardStarter>(context_);
         QCoreApplication::instance()->installNativeEventFilter(gr_connected_manager_.get());
+
+        // monitor refresher
+        monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
 
         auto conn_diff = TimeUtil::GetCurrentTimestamp() - begin_conn_ts;
         LOGI("** Connection used: {}ms", conn_diff);

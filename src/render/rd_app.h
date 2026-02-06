@@ -171,7 +171,7 @@ namespace tc
         std::shared_ptr<tc::RenderServiceClient> service_client_ = nullptr;
 
         // monitor refresher
-        std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
+        //std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
 
         std::shared_ptr<WinDesktopManager> desktop_mgr_ = nullptr;
 

@@ -197,7 +197,7 @@ namespace tc
         service_client_->Start();
 
         // monitor refresher
-        monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
+        //monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
 
         // desktop manager
         desktop_mgr_ = WinDesktopManager::Make(context_);
@@ -315,7 +315,7 @@ namespace tc
 
         msg_listener_->Listen<MsgReCreateRefresher>([=, this](const MsgReCreateRefresher& msg) {
             context_->PostUITask([=, this]() {
-                monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
+                //monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
             });
         });
 

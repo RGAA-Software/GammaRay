@@ -38,6 +38,7 @@ namespace tc
     class SkinInterface;
     class GrUserManager;
     class GrDeviceManager;
+    class MonitorRefresher;
 
     class GrApplication : public QObject, public QAbstractNativeEventFilter, public std::enable_shared_from_this<GrApplication> {
     public:
@@ -174,6 +175,9 @@ namespace tc
 
         // device manager
         std::shared_ptr<GrDeviceManager> device_mgr_ = nullptr;
+
+        // monitor refresher
+        std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
     };
 
     extern std::shared_ptr<GrApplication> grApp;
