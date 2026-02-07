@@ -61,7 +61,7 @@ namespace tc
                     make_column("stream_port", &spvr::SpvrStream::stream_port_),
                     make_column("relay_host", &spvr::SpvrStream::relay_host_, default_value("")),
                     make_column("relay_port", &spvr::SpvrStream::relay_port_, default_value(0)),
-                    make_column("relay_appkey", &spvr::SpvrStream::relay_appkey_, default_value("")),
+                    //make_column("relay_appkey", &spvr::SpvrStream::relay_appkey_, default_value("")),
                     make_column("bg_color", &spvr::SpvrStream::bg_color_),
                     make_column("encode_fps", &spvr::SpvrStream::encode_fps_),
                     make_column("connect_type", &spvr::SpvrStream::connect_type_),

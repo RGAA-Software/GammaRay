@@ -59,7 +59,7 @@ namespace tc
             item->relay_online_ = false;
             if (item->HasRelayInfo()) {
                 // to check in server
-                auto device_info = context_->GetRelayServerSideDeviceInfo(item->relay_host_, item->relay_port_, item->relay_appkey_, item->remote_device_id_, false);
+                auto device_info = context_->GetRelayServerSideDeviceInfo(item->relay_host_, item->relay_port_, grApp->GetAppkey()/*item->relay_appkey_*/, item->remote_device_id_, false);
                 if (device_info && relay::RelayApi::IsRelayDeviceValid(device_info)) {
                     item->relay_online_ = true;
                 }

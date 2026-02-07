@@ -525,7 +525,7 @@ namespace tc
                         item->stream_port_ = 0;
                         item->relay_host_ = relay_device_info->relay_server_ip();
                         item->relay_port_ = relay_device_info->relay_server_port();
-                        item->relay_appkey_ = grApp->GetAppkey();
+                        //item->relay_appkey_ = grApp->GetAppkey();
                         item->encode_bps_ = 0;
                         item->encode_fps_ = 0;
                         item->remote_device_id_ = remote_device_id;

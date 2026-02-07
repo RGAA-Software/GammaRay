@@ -205,9 +205,9 @@ namespace tc
                 if (item->relay_port_ > 0) {
                     exist_stream_item->relay_port_ = item->relay_port_;
                 }
-                if (!item->relay_appkey_.empty()) {
-                    exist_stream_item->relay_appkey_ = item->relay_appkey_;
-                }
+                //if (!item->relay_appkey_.empty()) {
+                //    exist_stream_item->relay_appkey_ = item->relay_appkey_;
+                //}
                 if (exist_stream_item->remote_device_random_pwd_ != item->remote_device_random_pwd_ && !item->remote_device_random_pwd_.empty()) {
                     exist_stream_item->remote_device_random_pwd_ = item->remote_device_random_pwd_;
                 }
@@ -427,7 +427,7 @@ namespace tc
             LOGI("origin random: {}, target random: {}", item->remote_device_random_pwd_, target_item->remote_device_random_pwd_);
             LOGI("stream host: {}, remote device id: {}", target_item->stream_host_, target_item->remote_device_id_);
             if (target_item->HasRelayInfo()) {
-                LOGI("Yes, we have relay info: {} {} {}", target_item->relay_host_, target_item->relay_port_, target_item->relay_appkey_);
+                LOGI("Yes, we have relay info: {} {}", target_item->relay_host_, target_item->relay_port_);
                 // verify my self
                 if (!grApp->CheckLocalDeviceInfoWithPopup()) {
                     return;
@@ -525,8 +525,8 @@ namespace tc
                 running_stream_mgr_->StartStream(target_item, kStreamItemNtTypeRelay, false);
             }
             else {
-                LOGI("Yes, we DONT have relay info, force relay? {}, relay_host: {}, relay_port: {}, relay_appkey: {}",
-                     target_item->force_relay_, target_item->relay_host_, target_item->relay_port_, target_item->relay_appkey_);
+                LOGI("Yes, we DONT have relay info, force relay? {}, relay_host: {}, relay_port: {}",
+                     target_item->force_relay_, target_item->relay_host_, target_item->relay_port_);
                  TcDialog dialog(tcTr("id_error"), tcTr("id_cant_get_remote_device_info"), grWorkspace.get());
                  dialog.exec();
                  return;
@@ -805,7 +805,7 @@ namespace tc
                 stream->stream_port_ = direct_port;
                 stream->relay_host_ = conn_info->relay_host_;
                 stream->relay_port_ = conn_info->relay_port_;
-                stream->relay_appkey_ = conn_info->relay_appkey_;
+                //stream->relay_appkey_ = conn_info->relay_appkey_;
                 db_mgr->UpdateStream(stream);
             }
             else {
@@ -818,7 +818,7 @@ namespace tc
                 item->stream_port_ = direct_port;
                 item->relay_host_ = conn_info->relay_host_;
                 item->relay_port_ = conn_info->relay_port_;
-                item->relay_appkey_ = conn_info->relay_appkey_;
+                //item->relay_appkey_ = conn_info->relay_appkey_;
                 item->encode_bps_ = 0;
                 item->encode_fps_ = 0;
                 item->clipboard_enabled_ = true;

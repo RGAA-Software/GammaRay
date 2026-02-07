@@ -212,7 +212,7 @@ namespace tc
             << std::format("--decoder={}", settings_->GetPreferDecoder()).c_str()
             << std::format("--relay_host={}", item->relay_host_).c_str()
             << std::format("--relay_port={}", item->relay_port_).c_str()
-            << std::format("--relay_appkey={}", item->relay_appkey_).c_str()
+            << std::format("--relay_appkey={}", grApp->GetAppkey()).c_str() //item->relay_appkey_
             << std::format("--force_software={}", item->force_software_ ? 1 : 0).c_str()
             << std::format("--wait_debug={}", item->wait_debug_ ? 1 : 0).c_str()
             << std::format("--force_gdi_capture={}", item->force_gdi_capture_ ? 1 : 0).c_str()

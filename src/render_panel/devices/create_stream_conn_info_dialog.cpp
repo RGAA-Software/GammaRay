@@ -196,7 +196,7 @@ namespace tc
             item->stream_port_ = direct_port;
             item->relay_host_ = relay_host;
             item->relay_port_ = relay_port;
-            item->relay_appkey_ = relay_appkey;
+            //item->relay_appkey_ = relay_appkey;
             item->encode_bps_ = 0;
             item->encode_fps_ = 0;
             item->clipboard_enabled_ = true;
