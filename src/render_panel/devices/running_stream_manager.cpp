@@ -96,7 +96,7 @@ namespace tc
             }
         }
 
-        if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty() && !direct) {
+        if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty()/* && !direct*/) {
             // 1. check available or not
             auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
             if (ac == std::nullopt) {
