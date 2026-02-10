@@ -19,6 +19,7 @@
 #include <QPaintEvent>
 #include <map>
 #include <QProcess>
+#include <mutex>
 
 #include "tc_spvr_client/spvr_stream.h"
 
@@ -62,10 +63,13 @@ namespace tc
         void EditStream(const std::shared_ptr<spvr::SpvrStream>& item);
         void ShowSettings(const std::shared_ptr<spvr::SpvrStream>& item);
 
+        std::vector<std::shared_ptr<spvr::SpvrStream>> CopyStreams();
+
     private:
         GrSettings* settings_ = nullptr;
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<StreamDBOperator> db_mgr_ = nullptr;
+        std::mutex streams_mtx_;
         std::vector<std::shared_ptr<spvr::SpvrStream>> streams_;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QListWidget* stream_list_ = nullptr;

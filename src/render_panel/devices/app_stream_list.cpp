@@ -42,6 +42,7 @@
 #include "client/ct_stream_item_net_type.h"
 #include "render_panel/user/gr_user_manager.h"
 #include "render_panel/util/conn_info_parser.h"
+#include "tc_common_new/const_auto.h"
 
 namespace tc
 {
@@ -93,7 +94,8 @@ namespace tc
         state_checker_->Start();
         context_->PostUIDelayTask([=, this]() {
             context_->PostTask([=, this]() {
-                state_checker_->UpdateCurrentStreamItems(streams_);
+                cat streams = CopyStreams();
+                state_checker_->UpdateCurrentStreamItems(streams);
             });
         }, 2200);
     }
@@ -233,17 +235,14 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgRemotePeerInfo>([=, this](const MsgRemotePeerInfo& msg) {
-            for (auto& stream : streams_) {
+            std::lock_guard<std::mutex> guard(streams_mtx_);
+            for (const auto& stream : streams_) {
                 if (stream->stream_id_ == msg.stream_id_) {
                     if (stream->desktop_name_ != msg.desktop_name_ || stream->os_version_ != msg.os_version_) {
                         // update it
                         stream->desktop_name_ = msg.desktop_name_;
                         stream->os_version_ = msg.os_version_;
                         db_mgr_->UpdateStream(stream);
-
-                        context_->PostUITask([=, this]() {
-
-                        });
                     }
                     break;
                 }
@@ -256,7 +255,8 @@ namespace tc
 
         msg_listener_->Listen<MsgGrTimer5S>([=, this](const MsgGrTimer5S& msg) {
             context_->PostTask([this]() {
-                state_checker_->UpdateCurrentStreamItems(streams_);
+                cat streams = CopyStreams();
+                state_checker_->UpdateCurrentStreamItems(streams);
             });
             //context_->PostTask([this]() {
             //    this->RequestBindDevices();
@@ -732,42 +732,46 @@ namespace tc
     void AppStreamList::LoadStreamItems() {
         context_->PostUITask([=, this]() {
             auto db_mgr = context_->GetStreamDBManager();
-            streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
+            {
+                std::lock_guard<std::mutex> guard(streams_mtx_);
+                streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
 
-            // bench test
-            // auto fn_rand_a_upper_char = []() -> char {
-            //     char c = 'A' + rand() % 26;
-            //     return c;
-            // };
-            // for (int i = 0; i < 100; i++) {
-            //     auto st = std::make_shared<spvr::SpvrStream>();
-            //     st->stream_name_ = std::format("Desktop: {}", i+1);
-            //     st->stream_host_ = std::format("192.168.1.{}", i+5);
-            //     st->desktop_name_ = StringUtil::ToUpperCpy(std::format("DESKTOP-{}{}{}{}{}", fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char()));
-            //     streams_.push_back(st);
-            // }
+                // bench test
+                // auto fn_rand_a_upper_char = []() -> char {
+                //     char c = 'A' + rand() % 26;
+                //     return c;
+                // };
+                // for (int i = 0; i < 100; i++) {
+                //     auto st = std::make_shared<spvr::SpvrStream>();
+                //     st->stream_name_ = std::format("Desktop: {}", i+1);
+                //     st->stream_host_ = std::format("192.168.1.{}", i+5);
+                //     st->desktop_name_ = StringUtil::ToUpperCpy(std::format("DESKTOP-{}{}{}{}{}", fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char(), fn_rand_a_upper_char()));
+                //     streams_.push_back(st);
+                // }
 
-            int count = stream_list_->count();
-            for (int i = 0; i < count; i++) {
-                auto item = stream_list_->takeItem(0);
-                delete item;
-            }
+                int count = stream_list_->count();
+                for (int i = 0; i < count; i++) {
+                    auto item = stream_list_->takeItem(0);
+                    delete item;
+                }
 
-            int index = 0;
-            for (auto& stream : streams_) {
-                stream->device_id_ = settings_->GetDeviceId();
-                AddItem(stream, index++);
-            }
+                int index = 0;
+                for (auto& stream : streams_) {
+                    stream->device_id_ = settings_->GetDeviceId();
+                    AddItem(stream, index++);
+                }
 
-            if (!streams_.empty()) {
-                stream_content_->HideEmptyTip();
-            }
-            else {
-                stream_content_->ShowEmptyTip();
+                if (!streams_.empty()) {
+                    stream_content_->HideEmptyTip();
+                }
+                else {
+                    stream_content_->ShowEmptyTip();
+                }
             }
 
             // update to stream state checker
-            state_checker_->UpdateCurrentStreamItems(streams_);
+            cat streams = CopyStreams();
+            state_checker_->UpdateCurrentStreamItems(streams);
         });
     }
 
@@ -827,6 +831,13 @@ namespace tc
         }
 
         LoadStreamItems();
+    }
+
+    std::vector<std::shared_ptr<spvr::SpvrStream>> AppStreamList::CopyStreams() {
+        std::lock_guard<std::mutex> guard(streams_mtx_);
+        std::vector<std::shared_ptr<spvr::SpvrStream>> items;
+        items.insert(items.begin(), streams_.begin(), streams_.end());
+        return items;
     }
 
 }

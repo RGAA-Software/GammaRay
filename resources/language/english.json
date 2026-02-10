@@ -270,6 +270,7 @@
   "id_username": "User Name",
   "id_re_password": "Repeat Password",
   "id_force_relay": "Force Relay",
+  "id_force_direct": "Force Direct",
   "id_manager_server": "Manager",
   "id_relay_server": "Relay",
   "id_relay_ft_server": "Relay File",

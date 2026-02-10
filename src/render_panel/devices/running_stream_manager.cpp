@@ -76,7 +76,8 @@ namespace tc
 
         bool has_spvr_info = !item->remote_device_id_.empty() && !settings_->GetSpvrServerHost().empty() && settings_->GetSpvrServerPort() > 0;
         // check the authorization
-        if (has_spvr_info) {
+        // NOT force direct
+        if (has_spvr_info && !item->force_direct_) {
             // check network firstly
             if (!context_->GetApplication()->CanConnectSpvrServer()) {
                 func_hide_loading_dialog();
@@ -96,33 +97,36 @@ namespace tc
             }
         }
 
-        if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty()/* && !direct*/) {
-            // 1. check available or not
-            auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
-            if (ac == std::nullopt) {
-                func_hide_loading_dialog();
-                LOGE("Not available connection for : {}", item->remote_device_id_);
-                return;
-            }
-            auto c = ac.value();
-            if (!c.available_) {
-                context_->PostTask([=, this]() {
-                    context_->SendAppMessage(MsgNoAvailableConnection {
-                        .stream_id_ = stream_id,
+        // NOT in force connecting directly mode, check the Spvr server.
+        if (!item->force_direct_) {
+            if (grApp->GetSkinName() != "OpenSource" && !item->remote_device_id_.empty()/* && !direct*/) {
+                // 1. check available or not
+                auto ac = context_->GetSpvrManager()->QueryNewConnection(false);
+                if (ac == std::nullopt) {
+                    func_hide_loading_dialog();
+                    LOGE("Not available connection for : {}", item->remote_device_id_);
+                    return;
+                }
+                auto c = ac.value();
+                if (!c.available_) {
+                    context_->PostTask([=, this]() {
+                        context_->SendAppMessage(MsgNoAvailableConnection {
+                            .stream_id_ = stream_id,
+                        });
                     });
-                });
 
-                func_hide_loading_dialog();
+                    func_hide_loading_dialog();
 
-                const QString msg = tcTr("id_no_available_connection");
-                no_conn_dialog_ = std::make_shared<TcDialog>(tcTr("id_error"), msg);
-                no_conn_dialog_->show();
+                    const QString msg = tcTr("id_no_available_connection");
+                    no_conn_dialog_ = std::make_shared<TcDialog>(tcTr("id_error"), msg);
+                    no_conn_dialog_->show();
 
-                return;
+                    return;
+                }
             }
         }
 
-        if (has_spvr_info) {
+        if (has_spvr_info && !item->force_direct_) {
             // 2. check alive or not
             cat device_mgr = context_->GetApplication()->GetDeviceManager();
             if (auto r = device_mgr->QueryDevice(item->remote_device_id_); r.has_value()) {
@@ -219,6 +223,7 @@ namespace tc
             << std::format("--disable_vulkan_render={}", item->disable_vulkan_render_ ? 1 : 0).c_str()
             << std::format("--show_watermark={}", show_watermark ? 1 : 0).c_str()
             << std::format("--gl_backend={}", settings_->gl_backend_).c_str()
+            << std::format("--force_direct={}", item->force_direct_ ? 1 : 0).c_str()
             ;
         LOGI("Start client inner args:");
         for (auto& arg : arguments) {

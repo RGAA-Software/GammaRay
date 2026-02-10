@@ -26,7 +26,7 @@ namespace tc
         context_ = ctx;
         db_mgr_ = context_->GetStreamDBManager();
         stream_item_ = item;
-        setFixedSize(375, 430);
+        setFixedSize(375, 470);
         CreateLayout();
     }
 
@@ -291,6 +291,11 @@ namespace tc
             auto cb = new QCheckBox(this);
             cb->setChecked(stream_item_->force_relay_);
             cb_force_relay_ = cb;
+            connect(cb, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                if (state == Qt::Checked) {
+                    cb_force_direct_->setChecked(false);
+                }
+            });
             layout->addWidget(cb);
 
             auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
@@ -302,6 +307,56 @@ namespace tc
             auto tooltip = new TcToolTip(this);
             tooltip->setFixedSize(275, 70);
             tooltip->SetText("Force using Relay Server to exchange data.");
+            tooltip->hide();
+            btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
+                auto w_pos = w->mapToGlobal(QPoint(0,0));
+                tooltip->move(w_pos.x() - tooltip->width() - 5, w_pos.y());
+                tooltip->show();
+            });
+            btn_tips->SetOnImageButtonLeaved([=](QWidget* w) {
+                tooltip->hide();
+            });
+
+            layout->addSpacing(question_gap);
+            layout->addWidget(btn_tips);
+
+            layout->addStretch();
+            content_layout->addLayout(layout);
+        }
+
+        //
+        content_layout->addSpacing(item_gap);
+        // Force Direct
+        {
+            auto layout = new NoMarginHLayout();
+
+            auto label = new TcLabel(this);
+            label->setFixedWidth(item_width);
+            label->SetTextId("id_force_direct");
+            label->setStyleSheet(R"(color: #333333; font-weight: 700; font-size:13px;)");
+            label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            layout->addWidget(label);
+            layout->addSpacing(10);
+
+            auto cb = new QCheckBox(this);
+            cb->setChecked(stream_item_->force_direct_);
+            cb_force_direct_ = cb;
+            connect(cb, &QCheckBox::checkStateChanged, this, [=, this](Qt::CheckState state) {
+                if (state == Qt::Checked) {
+                    cb_force_relay_->setChecked(false);
+                }
+            });
+            layout->addWidget(cb);
+
+            auto btn_tips = new TcImageButton(":/resources/image/ic_question.svg", QSize(20, 20));
+            btn_tips->SetColor(0xffffff, 0xf1f1f1, 0xeeeeee);
+            btn_tips->SetRoundRadius(11);
+            btn_tips->setFixedSize(22, 22);
+
+            //tooltip
+            auto tooltip = new TcToolTip(this);
+            tooltip->setFixedSize(275, 70);
+            tooltip->SetText("Force connecting directly.");
             tooltip->hide();
             btn_tips->SetOnImageButtonHovering([=](QWidget* w) {
                 auto w_pos = w->mapToGlobal(QPoint(0,0));
@@ -451,6 +506,7 @@ namespace tc
             content_layout->addLayout(layout);
         }
 
+        content_layout->addSpacing(item_gap);
         // disable vulkan render 
         {
             auto layout = new NoMarginHLayout();
@@ -655,6 +711,7 @@ namespace tc
                 //stream_item_->show_max_window_ = cb_show_max_->isChecked();
                 stream_item_->split_windows_ = cb_split_windows_->isChecked();
                 stream_item_->force_relay_ = cb_force_relay_->isChecked();
+                stream_item_->force_direct_ = cb_force_direct_->isChecked();
                 stream_item_->force_software_ = cb_force_software_->isChecked();
                 stream_item_->wait_debug_ = cb_wait_debug_->isChecked();
                 stream_item_->force_gdi_capture_ = cb_force_gdi_capture_->isChecked();
@@ -669,7 +726,7 @@ namespace tc
             //content_layout->addSpacing(70);
             content_layout->addStretch();
             content_layout->addLayout(layout);
-            content_layout->addSpacing(35);
+            content_layout->addSpacing(25);
         }
 
         //root_layout_->addStretch();

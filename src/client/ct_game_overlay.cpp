@@ -47,7 +47,7 @@ namespace tc {
         const int refHeight = 600;     // 参考高度，可改
 
         double scale = double(height()) / refHeight;
-        scale = std::clamp(scale, 0.5, 3.0);  // 防止太小或太大
+        scale = std::clamp(scale, 0.5, 1.5);  // 防止太小或太大
 
         int fontPx = int(baseFontPx * scale);
 

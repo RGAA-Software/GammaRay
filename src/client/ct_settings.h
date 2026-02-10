@@ -152,6 +152,9 @@ namespace tc
         // opengl backend
         std::string gl_backend_;
 
+        // force direct
+        bool force_direct_ = false;
+
         ///////
         ///////
         // from render //

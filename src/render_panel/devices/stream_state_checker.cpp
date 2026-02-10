@@ -34,7 +34,7 @@ namespace tc
 
     }
 
-    void StreamStateChecker::UpdateCurrentStreamItems(std::vector<std::shared_ptr<spvr::SpvrStream>> items) {
+    void StreamStateChecker::UpdateCurrentStreamItems(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items) {
         context_->PostTask([=, this]() {
             this->CheckState(items);
         });

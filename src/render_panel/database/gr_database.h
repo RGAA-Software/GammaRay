@@ -77,6 +77,7 @@ namespace tc
                     make_column("desktop_name", &spvr::SpvrStream::desktop_name_),
                     make_column("os_version", &spvr::SpvrStream::os_version_),
                     make_column("force_relay", &spvr::SpvrStream::force_relay_, default_value(false)),
+                    make_column("force_direct", &spvr::SpvrStream::force_direct_, default_value(false)),
                     make_column("force_software", &spvr::SpvrStream::force_software_, default_value(false)),
                     make_column("wait_debug", &spvr::SpvrStream::wait_debug_, default_value(false)),
                     make_column("force_gdi_capture", &spvr::SpvrStream::force_gdi_capture_, default_value(false)),

@@ -30,7 +30,7 @@ namespace tc
         void Start();
         void Exit();
         void SetOnCheckedCallback(OnStreamStateCheckedCallback&&);
-        void UpdateCurrentStreamItems(std::vector<std::shared_ptr<spvr::SpvrStream>> items);
+        void UpdateCurrentStreamItems(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items);
     private:
         void CheckState(const std::vector<std::shared_ptr<spvr::SpvrStream>>& items);
 

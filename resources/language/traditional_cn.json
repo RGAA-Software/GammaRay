@@ -266,6 +266,7 @@
   "id_username": "用戶名稱",
   "id_re_password": "重複密碼",
   "id_force_relay": "強制使用中轉服務",
+  "id_force_direct": "強制直连",
   "id_manager_server": "管理服務",
   "id_relay_server": "中轉服務",
   "id_relay_ft_server": "中轉文檔服務",

@@ -29,6 +29,8 @@ namespace tc
 
     public:
         std::string auth_id_;
+        std::string auth_name_;
+        std::string machine_code_;
         std::string appkey_;
         AuthRole role_ = AuthRole::kFree;
     };

@@ -175,6 +175,9 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_gl_backend("gl_backend", "opengl backend", "value", "");
     parser.addOption(opt_gl_backend);
 
+    QCommandLineOption opt_force_direct("force_direct", "force direct", "value", "");
+    parser.addOption(opt_force_direct);
+
     parser.process(app);
 
     g_remote_host_ = parser.value(opt_host).toStdString();
@@ -350,6 +353,9 @@ void ParseCommandLine(QApplication& app) {
     
     // opengl backend
     settings->gl_backend_ = parser.value(opt_gl_backend).toStdString();
+
+    // force direct
+    settings->force_direct_ = parser.value(opt_force_direct).toInt() == 1;
 }
 
 bool PrepareDirs(const QString& base_path) {
@@ -490,6 +496,7 @@ int main(int argc, char** argv) {
     LOGI("show watermark: {}", settings->show_watermark_);
     LOGI("force gdi: {}", settings->force_gdi_);
     LOGI("GL Backend: {}", gl_backend);
+    LOGI("Force direct: {}", settings->force_direct_);
 
     // WebSocket only
     auto bare_remote_device_id = settings->remote_device_id_.empty() ? g_remote_host_ : settings->remote_device_id_;

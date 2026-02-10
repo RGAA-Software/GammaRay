@@ -761,8 +761,8 @@ namespace tc
             tcTr("id_edit_username"),
             tcTr("id_edit_password"),
             tcTr("id_edit_avatar"),
-            "",
-            tcTr("id_user_center"),
+            // "",
+            // tcTr("id_user_center"),
             "",
             tcTr("id_exit_login"),
         };
@@ -802,10 +802,10 @@ namespace tc
             // update avatar
             ShowSelectAvatarDialog();
         }
+        // else if (index == 4) {
+        //     // user center
+        // }
         else if (index == 4) {
-            // user center
-        }
-        else if (index == 6) {
             // exit
             TcDialog dialog(tcTr("id_exit_login"), tcTr("id_exit_login_msg"));
             if (dialog.exec() == kDoneOk) {
