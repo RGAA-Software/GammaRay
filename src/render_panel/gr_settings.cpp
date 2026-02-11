@@ -5,13 +5,17 @@
 #include "gr_settings.h"
 #include <sstream>
 #include <QApplication>
+
+#include "gr_application.h"
 #include "version_config.h"
 #include "gr_app_messages.h"
+#include "companion/panel_companion.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/uuid.h"
 #include "tc_common_new/base64.h"
+#include "tc_common_new/const_auto.h"
 #include "tc_common_new/hardware.h"
 #include "tc_common_new/http_client.h"
 #include "tc_common_new/message_notifier.h"
@@ -99,6 +103,9 @@ namespace tc
 
     void GrSettings::ClearData() {
         this->SetDeviceId("");
+        if (cat comp = grApp->GetCompanion(); comp) {
+            comp->UpdateDeviceId("");
+        }
         this->SetDeviceName("");
         this->SetDeviceRandomPwd("");
         this->SetDeviceSecurityPwd("");

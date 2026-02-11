@@ -60,6 +60,7 @@
 #include "client/ct_stream_item_net_type.h"
 #include "render_panel/gr_statistics.h"
 #include "render_panel/devices/gr_device_manager.h"
+#include "tc_common_new/const_auto.h"
 
 namespace tc
 {
@@ -218,6 +219,9 @@ namespace tc
                                 return;
                             }
                             settings_->SetDeviceId(device->device_id_);
+                            if (cat comp = grApp->GetCompanion(); comp) {
+                                comp->UpdateDeviceId(device->device_id_);
+                            }
                             settings_->SetDeviceRandomPwd(device->gen_random_pwd_);
 
                             context_->SendAppMessage(MsgRandomPasswordUpdated {

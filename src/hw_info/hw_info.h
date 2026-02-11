@@ -9,6 +9,8 @@
 #include <vector>
 #include <sstream>
 
+#include "json/json.hpp"
+
 namespace tc
 {
 
@@ -109,6 +111,38 @@ namespace tc
     };
 
     class SysInfo {
+    public:
+        std::string AsSimpleInfo() const {
+            nlohmann::json obj;
+            obj["os_version"] = os_.sys_os_long_version_;
+            obj["cpu_brand"] = cpu_.brand_;
+            obj["cpu_core_size"] = cpu_.cpus_.size();
+            obj["cpu_freq"] = cpu_.base_frequency_;
+            obj["mem_total"] = mem_.total_gb_;
+
+            nlohmann::json disk_array;
+            for (const auto disk : disks_) {
+                nlohmann::json obj_disk;
+                obj_disk["mount"] = disk.mount_on_;
+                obj_disk["total"] = disk.total_gb_;
+                obj_disk["available"] = disk.available_gb_;
+                disk_array.push_back(obj_disk);
+            }
+            obj["disks"] = disk_array;
+
+            if (!gpus_.empty()) {
+                nlohmann::json gpu_array;
+                for (const auto gpu : gpus_) {
+                    nlohmann::json obj_gpu;
+                    obj_gpu["brand"] = gpu.brand_;
+                    obj_gpu["total_mem"] = gpu.mem_total_gb_;
+                    gpu_array.push_back(obj_gpu);
+                }
+                obj["gpus"] = gpu_array;
+            }
+
+            return obj.dump();
+        }
     public:
         SysCpuInfo cpu_;
         SysMemInfo mem_;

@@ -32,6 +32,8 @@
 #include <QDebug>
 #include <QFileDialog>
 
+#include "tc_common_new/const_auto.h"
+
 namespace tc
 {
 
@@ -555,6 +557,9 @@ namespace tc
             && (settings_->GetSpvrServerHost() != spvr_host || settings_->GetSpvrServerPort() != std::atoi(spvr_port.c_str()))) {
             force_update_device_id = true;
             settings_->SetDeviceId("");
+            if (cat comp = grApp->GetCompanion(); comp) {
+                comp->UpdateDeviceId("");
+            }
             settings_->SetDeviceName("");
             settings_->SetDeviceRandomPwd("");
             LOGW("Clear old device id, force updating device id.");

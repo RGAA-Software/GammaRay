@@ -143,6 +143,11 @@ namespace tc
         spvr_scanner_ = std::make_shared<SpvrScanner>(shared_from_this());
         spvr_scanner_->StartUdpReceiver(30501);
 
+        // update device id
+        if (cat comp = grApp->GetCompanion(); comp) {
+            comp->UpdateDeviceId(settings_->GetDeviceId());
+        }
+
         if (!run_automatically_) {
             context_->PostUIDelayTask([=, this]() {
                 this->UpdateServerSecurityPasswordIfNeeded();
@@ -302,6 +307,9 @@ namespace tc
             }
 
             settings_->SetDeviceId(device->device_id_);
+            if (cat comp = grApp->GetCompanion(); comp) {
+                comp->UpdateDeviceId(device->device_id_);
+            }
             settings_->SetDeviceName(device->device_name_);
             settings_->SetDeviceRandomPwd(device->gen_random_pwd_);
 

@@ -111,6 +111,10 @@ namespace tc
         // jump to github
         virtual void JumpToGithub() = 0;
         virtual bool HasUpdateForOffSite() = 0;
+
+        // update device id
+        virtual void UpdateDeviceId(const std::string& device_id) = 0;
+
     };
 
 }
