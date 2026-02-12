@@ -14,6 +14,15 @@ namespace tc {
         LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
         exStyle |= WS_EX_LAYERED | WS_EX_TRANSPARENT;
         SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
+
+#ifdef OPENSOURCE_BUILD
+        enable_watermark_ = false;
+#elif defined(OFFICIAL_BUILD)
+        enable_watermark_ = true;
+#else
+        enable_watermark_ = true;
+#endif
+
     }
 
     void OverlayWidget::SetWatermarkText(const QString& text) {
@@ -35,7 +44,12 @@ namespace tc {
     }
 
 #if 1
-    void OverlayWidget::paintEvent(QPaintEvent*) {
+    void OverlayWidget::paintEvent(QPaintEvent* e) {
+        if (!enable_watermark_) {
+            QWidget::paintEvent(e);
+            return;
+        }
+
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::TextAntialiasing);
@@ -101,6 +115,8 @@ namespace tc {
                 idx++;
             }
         }
+
+        QWidget::paintEvent(e);
     }
 #endif
 }

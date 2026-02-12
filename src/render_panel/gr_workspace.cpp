@@ -113,20 +113,29 @@ namespace tc
 
         user_mgr_ = grApp->GetUserManager();
 
-        std::string version = "";
-#if PREMIUM_VERSION
-        if (skin_) {
-            version = skin_->GetAppVersionMode().toStdString();
-        }
-        if (version == "Premium") {
-            version = tcTr("id_version_premium").toStdString();
-        }
-        else {
-            version = "Premium";
-        }
+        std::string version;
+// #if PREMIUM_VERSION
+//         if (skin_) {
+//             version = skin_->GetAppVersionMode().toStdString();
+//         }
+//         if (version == "Premium") {
+//
+//         }
+//         else {
+//             version = "Premium";
+//         }
+// #else
+//         version = "Freemium";
+// #endif
+
+#ifdef OPENSOURCE_BUILD
+        version = tcTr("id_version_opensource").toStdString();
+#elif defined(OFFICIAL_BUILD)
+        version = tcTr("id_version_premium").toStdString();
 #else
-        version = "Freemium";
+        version = tcTr("id_version_premium").toStdString();
 #endif
+
         if (skin_) {
             setWindowTitle(std::format("{}(V{} {})", skin_->GetAppName().toStdString(),
                                        skin_->GetAppVersionName().toStdString(),
@@ -205,11 +214,8 @@ namespace tc
                 name_layout->addSpacing(3);
 
                 auto lbl_version = new TcLabel(this);
-#if PREMIUM_VERSION
+
                 lbl_version->setStyleSheet("font-weight: 700; color: #2979ff; font-size: 12px;");
-#else
-                lbl_version->setStyleSheet("font-weight: 700; color: #666666; font-size: 12px;");
-#endif
                 lbl_version->setText(version.c_str());
                 name_layout->addWidget(lbl_version);
 

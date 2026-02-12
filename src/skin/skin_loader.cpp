@@ -15,21 +15,33 @@ namespace tc
 {
 
     SkinInterface* SkinLoader::LoadSkin() {
+        std::string skin_name;
+#ifdef OPENSOURCE_BUILD
+        skin_name = "skin_opensource";
+#elif defined(OFFICIAL_BUILD)
+        skin_name = "skin_official";
+#else
+        skin_name = "skin_official";
+#endif
+        LOGI("Prebuilt skin name: {}", skin_name);
+
         auto base_path = QCoreApplication::applicationDirPath();
-        auto config_path = base_path + "/gr_skins/skin_config.toml";
-
-        toml::parse_result result;
-        try {
-            result = toml::parse_file(config_path.toStdString());
-        } catch (std::exception& e) {
-            LOGE("Parse skin config failed: {}, skin path: {}", e.what(), config_path.toStdString());
-            return nullptr;
-        }
-
-        std::string skin_name = result["skin_name"].value_or("");
         if (skin_name.empty()) {
-            LOGE("Skin name is empty!");
-            return nullptr;
+            auto config_path = base_path + "/gr_skins/skin_config.toml";
+
+            toml::parse_result result;
+            try {
+                result = toml::parse_file(config_path.toStdString());
+            } catch (std::exception& e) {
+                LOGE("Parse skin config failed: {}, skin path: {}", e.what(), config_path.toStdString());
+                return nullptr;
+            }
+
+            skin_name = result["skin_name"].value_or("");
+            if (skin_name.empty()) {
+                LOGE("Skin name is empty!");
+                return nullptr;
+            }
         }
 
 #ifdef WIN32

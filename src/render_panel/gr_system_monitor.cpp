@@ -89,8 +89,8 @@ namespace tc
                 });
 
                 // check running game
-                auto skin = grApp->GetSkin();
-                if (skin->IsGameEnabled()) {
+                const auto skin = grApp->GetSkin();
+                if (skin && skin->IsGameEnabled()) {
                     context_->PostTask([=, this]() {
                         auto rgm = context_->GetRunGameManager();
                         rgm->CheckRunningGame();

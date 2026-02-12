@@ -76,7 +76,6 @@ namespace tc
                 layout->addSpacing(8);
             }
 
-#if PREMIUM_VERSION
             // driver status
             {
                 auto item_layout = new NoMarginHLayout();
@@ -122,7 +121,6 @@ namespace tc
 
                 layout->addLayout(item_layout);
             }
-#endif
 
             // server status
             {

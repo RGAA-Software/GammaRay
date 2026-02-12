@@ -352,6 +352,7 @@
   "id_run_other_service_instances":"You have already run other service instances, Now, I am about to exit the previous instance",
   "id_cant_request_auth": "Can't request Authorization! Please check your address/port.",
   "id_version_premium": "Premium",
+  "id_version_opensource": "Personal",
   "id_no_available_connection": "No available new connections, you need to extend your limitation of Authorization.",
   "id_device_inactive": "Device is disabled and cannot connect",
   "id_auth_invalid": "Authorization is invalid now",

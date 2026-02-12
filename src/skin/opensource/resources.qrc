@@ -1,5 +1,11 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/skin">
         <file>resources/abc.svg</file>
+        <file>resources/tc_icon.png</file>
+        <file>resources/tc_icon_raw.png</file>
+        <file>resources/tc_logo_text_trans_bg.png</file>
+        <file>resources/tc_logo_text_white_bg.png</file>
+        <file>resources/tc_trans_icon_blue.png</file>
+        <file>resources/tc_trans_icon_white.png</file>
 	</qresource>
 </RCC>
