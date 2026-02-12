@@ -20,7 +20,7 @@ set(GR_PROJECT_BINARY_PATH "")
 
 set(NSIS_VERSION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/package/proj_version.nsh")
 file(WRITE ${NSIS_VERSION_FILE}
-"!define PRODUCT_VERSION \"${TC_APP_VERSION}\"\n"
+    "!define PRODUCT_VERSION \"${TC_APP_VERSION}\"\n!define TARGET_TYPE \"${TARGET_TYPE}\"\n"
 )
 
 if (BUILD_PREMIUM)
