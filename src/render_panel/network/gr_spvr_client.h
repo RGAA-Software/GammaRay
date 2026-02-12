@@ -22,8 +22,7 @@ namespace tc
         explicit GrSpvrClient(const std::shared_ptr<GrContext>& ctx,
                               const std::string& host,
                               int port,
-                              const std::string& device_id,
-                              const std::string& appkey);
+                              const std::string& device_id);
         void Start();
         void Stop();
         bool IsStarted();

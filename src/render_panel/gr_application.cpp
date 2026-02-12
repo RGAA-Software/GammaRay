@@ -511,7 +511,7 @@ namespace tc
         }
 
         if (!spvr_client_) {
-            spvr_client_ = std::make_shared<GrSpvrClient>(context_, spvr_host, spvr_port, device_id, appkey);
+            spvr_client_ = std::make_shared<GrSpvrClient>(context_, spvr_host, spvr_port, device_id);
         }
         if (!spvr_client_->IsStarted()) {
             spvr_client_->Start();

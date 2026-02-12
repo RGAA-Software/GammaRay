@@ -24,14 +24,12 @@ namespace tc
     GrSpvrClient::GrSpvrClient(const std::shared_ptr<GrContext>& ctx,
                                const std::string& host,
                                int port,
-                               const std::string& device_id,
-                               const std::string& appkey) {
+                               const std::string& device_id) {
         settings_ = GrSettings::Instance();
         context_ = ctx;
         host_ = host;
         port_ = port;
         device_id_ = device_id;
-        appkey_ = appkey;
 
         msg_listener_ = context_->ObtainMessageListener();
         msg_listener_->Listen<MsgGrTimer1S>([=, this](const MsgGrTimer1S& m) {
@@ -84,7 +82,7 @@ namespace tc
 
         // the /ws is the websocket upgraged target
         auto user_id = grApp->GetUserManager()->GetUserId();
-        auto path = std::format("/spvr/panel?appkey={}&device_id={}&user_id={}", appkey_, device_id_, user_id);
+        auto path = std::format("/spvr/panel?appkey={}&device_id={}&user_id={}", grApp->GetAppkey(), device_id_, user_id);
         LOGI("will connect => {}:{}{}", host_, port_, path);
         if (!client_->async_start(host_, port_, path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());

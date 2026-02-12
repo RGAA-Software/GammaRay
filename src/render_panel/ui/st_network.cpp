@@ -470,7 +470,7 @@ namespace tc
     }
 
     void StNetwork::SaveSpvrAccessInfo() {
-        auto info = edt_spvr_access_->toPlainText().toStdString();
+        auto info = edt_spvr_access_->toPlainText().trimmed().toStdString();
         settings_->SetSpvrAccessInfo(info);
     }
 
@@ -517,7 +517,7 @@ namespace tc
 
     void StNetwork::VerifyAccessInfo() {
         // 1. verify spvr server
-        auto ac_info = ParseSpvrAccessInfo(edt_spvr_access_->toPlainText().toStdString());
+        auto ac_info = ParseSpvrAccessInfo(edt_spvr_access_->toPlainText().trimmed().toStdString());
         if (!ac_info) {
             LOGE("Parse access info failed: {}", edt_spvr_access_->toPlainText().toStdString());
             return;
