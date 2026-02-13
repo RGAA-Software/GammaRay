@@ -90,6 +90,9 @@ namespace tc
     }
 
     void GrSpvrClient::Stop() {
+        if (msg_listener_) {
+            msg_listener_->UnListenAll();
+        }
         if (client_) {
             client_->stop_all_timers();
             client_->stop();

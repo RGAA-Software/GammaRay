@@ -178,6 +178,9 @@ namespace tc
 
         // monitor refresher
         std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
+
+        // last appkey
+        std::string using_appkey_;
     };
 
     extern std::shared_ptr<GrApplication> grApp;

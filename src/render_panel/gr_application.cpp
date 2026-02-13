@@ -510,12 +510,21 @@ namespace tc
             return;
         }
 
+        if (appkey != using_appkey_) {
+            LOGW("Appkey changed,  {} => {} will release WS:SpvrClient and recreate it.", using_appkey_, appkey);
+            if (spvr_client_) {
+                spvr_client_->Stop();
+                spvr_client_ = nullptr;
+            }
+        }
+
         if (!spvr_client_) {
             spvr_client_ = std::make_shared<GrSpvrClient>(context_, spvr_host, spvr_port, device_id);
         }
         if (!spvr_client_->IsStarted()) {
             spvr_client_->Start();
         }
+        using_appkey_ = appkey;
     }
 
     std::shared_ptr<SpvrScanner> GrApplication::GetSpvrScanner() {

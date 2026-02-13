@@ -390,7 +390,7 @@ namespace tc
             auto game_id = item_widget->objectName().toStdString();
             for (auto rgid : game_ids) {
                 if (std::to_string(rgid) == game_id) {
-                    LOGI("running game id: {}", rgid);
+                    //LOGI("running game id: {}", rgid);
                     cover_widget->SetRunningStatus(true);
                 }
             }
