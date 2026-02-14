@@ -70,7 +70,7 @@ namespace tc
         }
 
         if (req_index_ != resp_buffer_->req_index()) {
-            LOGE("invalid req index, send: {}, received: {}", req_index_, resp_buffer_->req_index());
+            LOGE("invalid req index, send: {}, received: {}", req_index_.load(), resp_buffer_->req_index());
             return S_FALSE;
         }
 
@@ -91,7 +91,7 @@ namespace tc
     HRESULT STDMETHODCALLTYPE CpFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER* new_pos) {
         switch (dwOrigin) {
             case STREAM_SEEK_SET:
-                LOGI("Before clear, current position: {}, new pos: {}", current_position_, new_pos->QuadPart);
+                LOGI("Before clear, current position: {}, new pos: {}", current_position_.load(), new_pos->QuadPart);
                 current_position_ = 0;
                 if (new_pos) {
                     new_pos->QuadPart = 0;

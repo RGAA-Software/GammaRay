@@ -237,7 +237,7 @@ namespace tc
                 };
                 
                 if (!target_encoder_plugin) {
-                    LOGI("Hardware disabled? {}", hardware_disabled_);
+                    LOGI("Hardware disabled? {}", hardware_disabled_.load());
                     auto nvenc_encoder_plugin = plugin_manager_->GetNvencEncoderPlugin();
                     if (!is_mocking && !hardware_disabled_ && nvenc_encoder_plugin && nvenc_encoder_plugin->IsPluginEnabled() && nvenc_encoder_plugin->Init(encoder_config, monitor_name)) {
                         select_encoder_with_capability_func(nvenc_encoder_plugin, monitor_name);

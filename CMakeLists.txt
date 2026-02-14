@@ -122,6 +122,10 @@ include_directories(${VCPKG_ROOT}/packages/breakpad_x64-windows-static/include)
 link_directories(${VCPKG_ROOT}/installed/x64-windows/lib)
 link_directories(${GR_PROJECT_PATH}/deps/tc_3rdparty/openssl/x64/lib/VC/static)
 
+#add_compile_options(-Wno-error=missing-template-arg-list-after-template-kw)
+#add_compile_options(-Wno-error=deprecated-literal-operator)
+add_definitions(-DFMT_HEADER_ONLY)
+
 if(MSVC)
     add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
     add_compile_options("/bigobj")

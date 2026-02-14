@@ -391,7 +391,7 @@ namespace tc
                 *Occluded = true;
             }
         } else {
-            LOGE("Draw failed: {}", Ret);
+            LOGE("Draw failed: {}", (int)Ret);
         }
 
         return Ret;
