@@ -224,11 +224,12 @@ namespace tc
             auto init_res = capture->Init();
             if (!init_res) {
                 LOGW("Will stop & clear captures.");
-                captures_.ApplyAll([](const auto& k, const auto& v) {
+                auto captures = captures_.Clone();
+                for (const auto& [k, v] : captures) {
                     if (v) {
                         v->StopCapture();
                     }
-                });
+                }
                 captures_.Clear();
                 LOGE("TryInitSpecificCapture, Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
                 return false;
@@ -297,11 +298,12 @@ namespace tc
     }
 
     void DDACapturePlugin::StopCapturing() {
-        captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& v) {
+        auto captures = captures_.Clone();
+        for (const auto& [k, v] : captures) {
             if (v) {
                 v->StopCapture();
             }
-        });
+        }
         captures_.Clear();
     }
 
@@ -336,21 +338,22 @@ namespace tc
             if (kAllMonitorsNameSign == name) {
                 capturing_monitor_name_ = name;
                 // TODO
-                captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+                auto captures = captures_.Clone();
+                for (const auto& [k, capture] : captures) {
                     if (capture) {
                         if (!capture->IsInitSuccess()) {
-                           LOGW("Capture for: {} is not valid now.", k);
-                           return;
-                       }
-                       capture->ResumeCapture();
+                            LOGW("Capture for: {} is not valid now.", k);
+                            continue;
+                        }
+                        capture->ResumeCapture();
                     }
-                });
-
+                }
             }
             else {
-                captures_.ApplyAll([name, use_default_monitor, this](const auto& monitor_name, const std::shared_ptr<PluginDesktopCapture>& capture) {
+                auto captures = captures_.Clone();
+                for (const auto& [monitor_name, capture] : captures) {
                     if (!capture) {
-                        return;
+                        continue;
                     }
                     if (!name.empty()) {
                         if (monitor_name == name) {
@@ -364,7 +367,7 @@ namespace tc
                     else {
                         if (!capture->IsInitSuccess()) {
                             LOGW("Capture for: {} is not valid now.", monitor_name);  // 如果StartCapturing后，接着执行SetCaptureMonitor，这时候 capture->IsInitSuccess () 返回 false
-                            return;
+                            continue;
                         }
                         if (use_default_monitor && capture->IsPrimaryMonitor()) {
                             LOGI("Use default monitor: {}", monitor_name);
@@ -375,7 +378,7 @@ namespace tc
                             capture->PauseCapture();
                         }
                     }
-                });
+                }
             }
         }
 
@@ -454,13 +457,14 @@ namespace tc
 
     void DDACapturePlugin::OnNewClientConnected(const std::string& visitor_device_id, const std::string& stream_id, const std::string& conn_type) {
         GrPluginInterface::OnNewClientConnected(visitor_device_id, stream_id, conn_type);
-        captures_.ApplyAll([](const auto& k, const std::shared_ptr<PluginDesktopCapture>& capture) {
+        auto captures = captures_.Clone();
+        for (const auto& [monitor_name, capture] : captures) {
             if (!capture) {
-                return;
+                continue;
             }
             capture->RefreshScreen();
             capture->TryWakeOs();
-        });
+        }
         LOGI("OnNewClientConnected!");
         NotifyCaptureMonitorInfo();
 
@@ -589,9 +593,10 @@ namespace tc
 
     std::map<std::string, WorkingCaptureInfoPtr> DDACapturePlugin::GetWorkingCapturesInfo() {
         std::map<std::string, WorkingCaptureInfoPtr> result;
-        captures_.ApplyAll([&result](const auto& name, const auto& capture) {
+        auto captures = captures_.Clone();
+        for (const auto& [name, capture] : captures) {
             if (capture->IsPausing()) {
-                return;
+                continue;
             }
             const auto& my_monitor = capture->GetMyMonitorInfo();
             result.insert({name, std::make_shared<WorkingCaptureInfo>(WorkingCaptureInfo {
@@ -602,7 +607,7 @@ namespace tc
                 .capture_frame_height_ = my_monitor.Height(),
                 .capture_gaps_ = capture->GetCaptureGaps(),
             })});
-        });
+        }
         return result;
     }
 }

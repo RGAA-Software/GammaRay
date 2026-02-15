@@ -580,10 +580,10 @@ namespace tc
         if (capture_thread_) {
             capture_thread_->Exit();
         }
-        if (capture_thread_ && capture_thread_->IsJoinable()) {
-            capture_thread_->Join();
-            capture_thread_ = nullptr;
-        }
+//        if (capture_thread_ && capture_thread_->IsJoinable()) {
+//            capture_thread_->Join();
+//            capture_thread_ = nullptr;
+//        }
         this->Exit();
     }
 
