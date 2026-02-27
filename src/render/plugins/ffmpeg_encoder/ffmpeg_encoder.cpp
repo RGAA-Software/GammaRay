@@ -186,7 +186,7 @@ namespace tc
         // re-create when width/height changed
         // todo
         frame_->pts = (int64_t)frame_index;
-        if (insert_idr_) {
+        if (insert_idr_ || cap_video_frame.request_idr_) {
             insert_idr_ = false;
             frame_->key_frame = 1;
             frame_->pict_type = AV_PICTURE_TYPE_I;

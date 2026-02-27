@@ -32,6 +32,7 @@ namespace tc
         virtual void TryWakeOs();
         virtual void On16MilliSecond();
         virtual void On33MilliSecond();
+        virtual void SendCachedTexture() {}
 
     protected:
         int capture_fps_ = 60;

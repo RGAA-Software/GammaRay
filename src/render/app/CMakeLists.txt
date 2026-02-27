@@ -14,7 +14,6 @@ if (WIN32)
         win/win_render_message_window.cpp
         win/win_desktop_manager.cpp
         win/win_render_message_loop.cpp
-        monitor_refresher.cpp
     )
     target_link_libraries(app_manager tc_message libprotobuf)#frame_render
     target_link_libraries(app_manager Qt6::Core Qt6::Core5Compat Qt6::Widgets)

@@ -12,6 +12,8 @@
 #include <memory>
 #include <map>
 #include <functional>
+#include <tc_common_new/concurrent_vector.h>
+
 #include "tc_common_new/monitors.h"
 #include "tc_common_new/fps_stat.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
@@ -24,6 +26,7 @@ namespace tc
 {
 
     using DDAInitSuccessCallback = std::function<void()>;
+    using CaptureTask = std::function<void()>;
 
     class Thread;
     class DDACapturePlugin;
@@ -93,6 +96,7 @@ namespace tc
         void On33MilliSecond() override;
         void SetDDAErrorCallback(CaptureErrorCallback&& cbk);
         int32_t GetContinuousTimeoutTimes();
+        void SendCachedTexture() override;
 
     private:
         bool InitInternal();
@@ -100,7 +104,7 @@ namespace tc
         void Capture();
         HRESULT CaptureNextFrame(int wait_time, ComPtr<ID3D11Texture2D>& out_tex);
         void OnCaptureFrame(const ComPtr<ID3D11Texture2D>& texture, bool is_cached);
-        void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format);
+        void SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format, bool request_idr);
         int64_t GetFrameIndex();
 
     private:
@@ -123,5 +127,8 @@ namespace tc
         std::atomic<int32_t> continuous_timeout_times_ = 0;
 
         CaptureErrorCallback err_callback_ = nullptr;
+
+        // capture tasks
+        tc::ConcurrentVector<CaptureTask> tasks_;
     };
 }

@@ -47,7 +47,6 @@
 #include "plugin_interface/gr_data_provider_plugin.h"
 #include "plugin_interface/gr_audio_encoder_plugin.h"
 #include "tc_service_message.pb.h"
-#include "app/monitor_refresher.h"
 #include "app/win/win_desktop_manager.h"
 #include "tc_common_new/win32/d3d11_wrapper.h"
 #include "tc_message_new/proto_converter.h"

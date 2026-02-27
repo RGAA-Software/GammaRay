@@ -7,6 +7,8 @@
 #include <iostream>
 #include <thread>
 #include <QApplication>
+#include <tc_common_new/win32/win_helper.h>
+
 #include "rd_app.h"
 #include "rd_context.h"
 #include "rd_statistics.h"
@@ -63,6 +65,12 @@ namespace tc {
         plugin_manager_->VisitEncoderPlugins([=, this](GrVideoEncoderPlugin* plugin) {
             plugin->InsertIdr();
         });
+
+        // active the password inputting ui
+        if (WinHelper::IsSessionLocked()) {
+            LOGI("SessionLocked, send a ctrl+alt+delete");
+            app_->ReqCtrlAltDelete(event->visitor_device_id_, event->stream_id_);
+        }
 
         // notify
         context_->SendAppMessage(MsgClientConnected {

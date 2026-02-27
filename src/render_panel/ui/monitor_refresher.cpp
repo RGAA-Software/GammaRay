@@ -28,8 +28,9 @@ namespace tc
     void MonitorRefreshWidget::paintEvent(QPaintEvent *event) {
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(QColor(color_value_, color_value_/2, color_value_/3,5)));
+        painter.setBrush(QBrush(QColor(color_value_, color_value_/2, color_value_/3,10)));
         painter.drawRect(0, 0, this->width(), this->height());
+        painter.drawRect(10, 0, this->width(), 2);
         ++color_value_;
         color_value_ %= 255;
     }
@@ -41,7 +42,7 @@ namespace tc
         for (const QScreen* screen : screen_list) {
             LOGI("screen name: {}, x: {}, y: {}", screen->name().toStdString(), screen->geometry().x(), screen->geometry().y());
             auto w = new MonitorRefreshWidget(context_, parent);
-            int size = 5;
+            int size = 10;
             w->setFixedSize(size, size);
             w->setGeometry(screen->geometry().x(), screen->geometry().y(), size, size);
             w->show();

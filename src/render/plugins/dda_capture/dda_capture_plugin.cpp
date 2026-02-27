@@ -26,7 +26,7 @@ static void* GetInstance() {
 namespace tc
 {
 
-    static const int32_t kAllowedMaxContinuousTimeoutTimes = 600;
+    static const int32_t kAllowedMaxContinuousTimeoutTimes = 1200;
 
     DDACapturePlugin::DDACapturePlugin() : GrMonitorCapturePlugin() {
 
@@ -471,6 +471,13 @@ namespace tc
         SetCaptureMonitor(capturing_monitor_name_);
 
         this->InsertIdr();
+
+        // send cached texture if you have
+        for (const auto& capture: captures | std::views::values) {
+            if (capture) {
+                capture->SendCachedTexture();
+            }
+        }
     }
 
     std::vector<SupportedResolution> DDACapturePlugin::GetSupportedResolutions(const std::wstring& name) {

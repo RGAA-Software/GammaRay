@@ -298,6 +298,16 @@ namespace tc
 
     void DDACapture::Capture() {
         while (!stop_flag_) {
+
+            // process tasks
+            {
+                auto tasks = tasks_.Clone();
+                tasks_.Clear();
+                for (const auto& task : tasks) {
+                    task();
+                }
+            }
+
             if (pausing_ || !d3d11_device_ || !d3d11_device_context_ /*|| plugin_->DontHaveConnectedClientsNow()*/) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(17));
                 continue;
@@ -371,7 +381,7 @@ namespace tc
                 }
                 continue;
             }
-            else if ((res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED)) {
+            else if (res == DXGI_ERROR_WAIT_TIMEOUT || res == S_NOT_CHANGED) {
                 if (res == DXGI_ERROR_WAIT_TIMEOUT) {
                     ++continuous_timeout_times_;
                 }
@@ -514,11 +524,21 @@ namespace tc
         //}
 
         if (plugin_->IsPluginEnabled()) {
-            SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format);
+            bool request_idr = is_cached;
+            SendTextureHandle(last_list_texture_->shared_handle_, input_width, input_height, input_format, request_idr);
         }
     }
 
-    void DDACapture::SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format) {
+    void DDACapture::SendCachedTexture() {
+        auto task = [=, this]() {
+            if (cached_texture_ && last_list_texture_&& last_list_texture_->texture2d_) {
+                OnCaptureFrame(cached_texture_, true);
+            }
+        };
+        tasks_.PushBack(task);
+    }
+
+    void DDACapture::SendTextureHandle(const HANDLE &shared_handle, uint32_t width, uint32_t height, DXGI_FORMAT format, bool request_idr) {
         CaptureVideoFrame cap_video_frame{};
         cap_video_frame.type_ = kCaptureVideoFrame;
         cap_video_frame.capture_type_ = kCaptureVideoByHandle;
@@ -529,6 +549,7 @@ namespace tc
         cap_video_frame.handle_ = reinterpret_cast<uint64_t>(shared_handle);
         cap_video_frame.frame_format_ = format;
         cap_video_frame.adapter_uid_ = my_monitor_info_.adapter_uid_;
+        cap_video_frame.request_idr_ = request_idr;
         auto mon_index_res = plugin_->GetMonIndexByName(my_monitor_info_.name_);
         if (mon_index_res.has_value()) {
             cap_video_frame.monitor_index_ = mon_index_res.value();
