@@ -26,7 +26,7 @@ namespace tc
         setAttribute(Qt::WA_NoSystemBackground);
 
         setMouseTracking(true);
-        grabKeyboard();
+        //grabKeyboard();
     }
 
     VulkanVideoWidget::~VulkanVideoWidget() {
@@ -93,6 +93,14 @@ namespace tc
 
     void VulkanVideoWidget::closeEvent(QCloseEvent* event) {
         //QWidget::closeEvent(event);
+    }
+
+    void VulkanVideoWidget::focusInEvent(QFocusEvent *event) {
+        grabKeyboard();
+    }
+
+    void VulkanVideoWidget::focusOutEvent(QFocusEvent *event) {
+        releaseKeyboard();
     }
 
     QWidget* VulkanVideoWidget::AsWidget() {

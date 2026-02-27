@@ -129,7 +129,7 @@ namespace tc
             }
         }
 
-        root_widget_ = new QWidget();
+        root_widget_ = new QWidget(nullptr, Qt::Window);
         root_widget_->resize(960, 540);
         root_widget_->hide();
         root_widget_->installEventFilter(this);

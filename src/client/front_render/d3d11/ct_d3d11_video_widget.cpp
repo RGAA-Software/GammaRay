@@ -35,7 +35,7 @@ namespace tc
         setAttribute(Qt::WA_NoSystemBackground);
 
         setMouseTracking(true);
-        grabKeyboard();
+        //grabKeyboard();
 
         render_mgr_ = std::make_shared<D3D11RenderManager>();
 
@@ -268,6 +268,14 @@ namespace tc
 
     void D3D11VideoWidget::closeEvent(QCloseEvent* event) {
         //QWidget::closeEvent(event);
+    }
+
+    void D3D11VideoWidget::focusInEvent(QFocusEvent *event) {
+        grabKeyboard();
+    }
+
+    void D3D11VideoWidget::focusOutEvent(QFocusEvent *event) {
+        releaseKeyboard();
     }
 
     QWidget* D3D11VideoWidget::AsWidget() {

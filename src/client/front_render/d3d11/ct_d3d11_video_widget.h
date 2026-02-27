@@ -55,6 +55,8 @@ namespace tc
         void closeEvent(QCloseEvent* event) override;
         QPaintEngine * paintEngine() const override;
         void paintEvent(QPaintEvent *event) override;
+        void focusInEvent(QFocusEvent *event) override;
+        void focusOutEvent(QFocusEvent *event) override;
 
     private:
         void RefreshD3DImage(const std::shared_ptr<RawImage>& image);
