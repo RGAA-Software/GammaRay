@@ -110,6 +110,7 @@
         <file>resources/social/ic_steam.svg</file>
         <file>resources/social/ic_tiktok.svg</file>
         <file>resources/social/ic_youtube.svg</file>
+        <file>resources/social/ic_web.svg</file>
 
     </qresource>
 </RCC>
