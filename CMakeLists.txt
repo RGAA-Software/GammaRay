@@ -49,6 +49,10 @@ if (JEMALLOC_ENABLED)
     add_definitions(-DJEMALLOC_ON=1)
 endif ()
 
+if (MIMALLOC_ENABLED)
+    add_definitions(-DMIMALLOC_ON=1)
+endif ()
+
 if (MEMORY_STST_ENABLED)
     add_definitions(-DMEMORY_STST_ON=1)
 endif ()
@@ -80,6 +84,7 @@ find_package(unofficial-libvpx CONFIG REQUIRED)
 find_package(FFTW3 CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(cpr CONFIG REQUIRED)
+find_package(mimalloc CONFIG REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
