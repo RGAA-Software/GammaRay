@@ -33,7 +33,7 @@ namespace tc
             auto lbl_icon = new QLabel(this);
             lbl_icon->setFixedSize(size, size);
             lbl_icon->setScaledContents(true);
-            auto p = grApp->GetSkin()->GetSquarePrimaryColorLogoTransBg();
+            auto p = grApp->GetSkin()->GetSquareLogo();
             lbl_icon->setPixmap(p);
             root_layout->addSpacing(60);
 

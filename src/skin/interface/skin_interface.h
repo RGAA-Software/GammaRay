@@ -79,10 +79,6 @@ namespace tc
 
         virtual QPixmap GetSquareLogo() = 0;
 
-        virtual QPixmap GetSquarePrimaryColorLogoTransBg() = 0;
-
-        virtual QPixmap GetSquareWhiteLogoTransBg() = 0;
-
         // enable game
         virtual bool IsGameEnabled();
 

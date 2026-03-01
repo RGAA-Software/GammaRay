@@ -32,7 +32,7 @@ namespace tc
             label->setScaledContents(true);
             auto skin = grApp->GetSkin();
             if (skin) {
-                auto pixmap = skin->GetSquarePrimaryColorLogoTransBg();
+                auto pixmap = skin->GetSquareLogo();
                 label->setPixmap(pixmap);
             }
             else {

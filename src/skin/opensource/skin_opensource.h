@@ -42,10 +42,6 @@ namespace tc
         QPixmap GetLargeIconTextLogo() override;
 
         QPixmap GetSquareLogo() override;
-
-        QPixmap GetSquarePrimaryColorLogoTransBg() override;
-
-        QPixmap GetSquareWhiteLogoTransBg() override;
     };
 }
 
