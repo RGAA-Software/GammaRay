@@ -613,7 +613,6 @@ namespace tc
             // delete it from database
             auto mgr = context_->GetStreamDBManager();
             mgr->DeleteStream(item->_id);
-            LoadStreamItems();
 
             // delete from user
             if (const auto remote_device_id = item->remote_device_id_; !remote_device_id.empty()) {
@@ -622,6 +621,8 @@ namespace tc
                     user_mgr->RemoveDeviceFromUser(remote_device_id);
                 });
             }
+
+            LoadStreamItems();
         }
     }
 
@@ -731,8 +732,8 @@ namespace tc
 
     void AppStreamList::LoadStreamItems() {
         context_->PostUITask([=, this]() {
-            auto db_mgr = context_->GetStreamDBManager();
             {
+                auto db_mgr = context_->GetStreamDBManager();
                 std::lock_guard<std::mutex> guard(streams_mtx_);
                 streams_ = db_mgr->GetAllStreamsSortByCreatedTime();
 
