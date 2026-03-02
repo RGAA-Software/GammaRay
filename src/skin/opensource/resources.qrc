@@ -2,6 +2,6 @@
     <qresource prefix="/skin">
         <file>resources/abc.svg</file>
         <file>resources/tc_icon.png</file>
-        <file>resources/tc_logo_text_trans_bg.png</file>
+        <file>resources/tc_text_logo.png</file>
 	</qresource>
 </RCC>

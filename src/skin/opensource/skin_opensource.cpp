@@ -67,7 +67,7 @@ namespace tc
     QPixmap SkinOpenSource::GetLargeIconTextLogo() {
         static QPixmap large_icon_text_logo;
         if (large_icon_text_logo.isNull()) {
-            large_icon_text_logo.load(":/skin/resources/tc_logo_text_trans_bg.png");
+            large_icon_text_logo.load(":/skin/resources/tc_text_logo.png");
         }
         return large_icon_text_logo;
     }

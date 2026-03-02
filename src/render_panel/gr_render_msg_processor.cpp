@@ -18,9 +18,10 @@ namespace tc
 
     void GrRenderMsgProcessor::OnMessage(std::shared_ptr<tc::Message> msg) {
         // clipboard
-        {
-            auto clipboard_mgr = context_->GetApplication()->GetClipboardManager();
-            clipboard_mgr->OnRemoteClipboardInfo(msg);
+        if (context_ && context_->GetApplication()) {
+            if (const auto clipboard_mgr = context_->GetApplication()->GetClipboardManager()) {
+                clipboard_mgr->OnRemoteClipboardInfo(msg);
+            }
         }
     }
 
