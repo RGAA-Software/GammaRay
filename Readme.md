@@ -1,7 +1,7 @@
 
 ![](docs/images/GammaRay.png)
-#### 💖 This Repo is the OpenSource version of [GammaRay In Steam(Everything is Free, NOT released now)](https://store.steampowered.com/app/2947460/GammaRay/), please download at [HERE](https://github.com/RGAA-Software/GammaRay/releases)
-#### 💖 这是GammaRay的开源版, 全功能版移步[Steam(暂未开放下载)](https://store.steampowered.com/app/2947460/GammaRay/)或者[Release](https://github.com/RGAA-Software/GammaRay/releases), 免费.
+#### 💖 This Repo is the OpenSource version of [GoDesk In Steam(NOT released now)](https://store.steampowered.com/app/2947460/GoDesk/), please download at [HERE](https://github.com/RGAA-Software/GammaRay/releases)
+#### 💖 这是GoDesk的开源版, 全功能版移步[Steam(暂未开放下载)](https://store.steampowered.com/app/2947460/GoDesk/)或者[Release](https://github.com/RGAA-Software/GammaRay/releases), 免费.
 
 ### Showcases
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)  
@@ -10,7 +10,10 @@
 ## Usage
 ##### 1. [How To Use](docs/How_to_use.md)
 ##### 2. [How To Build](docs/How_to_build.md)
-##### 3. [How To Deploy](docs/How_to_deploy.md) ---------- [怎样部署服务](docs/How_to_deploy_CN.md)
+## More
+#### [Official Site (官网)](https://godesk.uk)
+#### [Documentation (文档)](https://docs.godesk.uk)
+
 ### GammaRay
 #### ⚡️Stream your game fame and desktop to other devices, and replay gamepad,keyboard,mouse events on the host PC. In a word, It's a alternative of TeamViewer, ToDesk, RustDesk, etc.
 #### ⚡️远程操作电脑，云游戏，模拟手柄等，类似ToDesk, 向日葵, RustDesk, TeamViewer的工具
@@ -23,6 +26,16 @@
 |----------|--------|---------|
 | Windows  | ✅      | ✅       |
 | Android  | ✅      | ⌛       |
+
+## Work Mode (工作模式)
+#### 1. Connect Directly (直连)
+![](docs/images/work_directly.png)
+
+#### 2. Relay (转发)
+> You can also connect directly in this mode  
+> 此模式下亦可直连  
+
+![](docs/images/work_relay.png)
 
 ## Key Features
 ### Display multiple screens of remote computers
