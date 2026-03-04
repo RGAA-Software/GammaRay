@@ -23,8 +23,8 @@ namespace tc
 
         explicit RenderServiceClient(const std::shared_ptr<RdApplication>& app);
         void Start();
-        void Exit();
-        bool IsAlive();
+        void Exit() const;
+        bool IsAlive() const;
         void PostNetMessage(const std::string& msg);
 
     private:

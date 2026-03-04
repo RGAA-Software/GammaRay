@@ -201,6 +201,7 @@ namespace tc {
                     break;
                 }
                 case kReqCtrlAltDelete: {
+                    LOGW("Request the CtrlAltDelete");
                     ProcessCtrlAltDelete(std::move(msg));
                     break;
                 }

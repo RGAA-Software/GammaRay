@@ -3,6 +3,9 @@
 //
 
 #include "render_service_client.h"
+
+#include <tc_common_new/string_util.h>
+
 #include "rd_context.h"
 #include "rd_statistics.h"
 #include "tc_common_new/log.h"
@@ -31,35 +34,50 @@ namespace tc
         client_ = std::make_shared<asio2::ws_client>();
         client_->set_auto_reconnect(true);
         client_->keep_alive(true);
-        client_->set_timeout(std::chrono::milliseconds(3000));
+        client_->set_timeout(std::chrono::milliseconds(2000));
 
         client_->bind_init([&]() {
             client_->ws_stream().binary(true);
             client_->set_no_delay(true);
-
-        }).bind_connect([&]() {
+            client_->ws_stream().set_option(
+                websocket::stream_base::decorator([](websocket::request_type &req) {
+                    req.set(http::field::authorization, "websocket-client-authorization");}
+                )
+            );
+        })
+        .bind_connect([&]() {
             if (asio2::get_last_error()) {
-                LOGE("connect failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
+                auto wstr = StringUtil::ToWString(asio2::last_error_msg());
+                auto str = QString::fromStdWString(wstr).toStdString();
+                LOGE("RenderServiceClient, connect failure : {} {}", asio2::last_error_val(), str);
             } else {
-                LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
+                LOGI("RenderServiceClient, connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }
 
             context_->PostTask([=, this]() {
                 context_->SendAppMessage(MsgRenderConnected2Service{});
             });
 
-        }).bind_upgrade([&]() {
+        })
+        .bind_disconnect([]() {
+            LOGE("RenderServiceClient disconnected");
+        })
+        .bind_upgrade([&]() {
             if (asio2::get_last_error()) {
-                LOGE("upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
+                LOGE("RenderServiceClient, upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
             }
-        }).bind_recv([=, this](std::string_view data) {
-            auto msg = std::string(data.data(), data.size());
+        })
+        .bind_recv([=, this](std::string_view data) {
+            const auto msg = std::string(data.data(), data.size());
             this->ParseMessage(msg);
         });
 
         // the /ws is the websocket upgraged target
-        if (!client_->start("127.0.0.1", 20375, "/service/message?from=panel")) {
-            LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
+        if (!client_->async_start("127.0.0.1", 20375, "/service/message?from=panel")) {
+            LOGE("RenderServiceClient, connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
+        }
+        else {
+            LOGE("RenderServiceClient, connect websocket server start successful.");
         }
     }
 
@@ -81,14 +99,14 @@ namespace tc
         }
     }
 
-    void RenderServiceClient::Exit() {
+    void RenderServiceClient::Exit() const {
         if (client_) {
             client_->stop();
         }
     }
 
-    bool RenderServiceClient::IsAlive() {
-        return client_ && client_->is_started();
+    bool RenderServiceClient::IsAlive() const {
+        return client_ != nullptr && client_->is_started();
     }
 
     void RenderServiceClient::HeartBeat() {
@@ -107,9 +125,9 @@ namespace tc
                 LOGW("too many message in queue, discard the message in RenderServiceClient");
                 return;
             }
-            queuing_message_count_++;
+            ++queuing_message_count_;
             client_->async_send(msg, [=, this]() {
-                queuing_message_count_--;
+                --queuing_message_count_;
             });
         }
     }

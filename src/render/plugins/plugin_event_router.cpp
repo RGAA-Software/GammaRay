@@ -163,11 +163,11 @@ namespace tc
         else if (event->event_type_ == GrPluginEventType::kPluginRelayAlive) {
             auto target_event = std::dynamic_pointer_cast<GrPluginRelayAlive>(event);
             ReportRelayAlive(target_event->device_id_, (int64_t)target_event->created_timestamp_);
-            LOGI("Plugin update relay alive: {} -> {}", target_event->device_id_, target_event->created_timestamp_);
+            //LOGI("Plugin update relay alive: {} -> {}", target_event->device_id_, target_event->created_timestamp_);
         }
         else if (event->event_type_ == GrPluginEventType::kPluginReqParamsBeginStreaming) {
             auto target_event = std::dynamic_pointer_cast<GrPluginReqParamsBeginStreaming>(event);
-            LOGI("ReqParamsBeginStreaming, stream id: {}, force gdi: {}", target_event->stream_id_, target_event->force_gdi_);
+            //LOGI("ReqParamsBeginStreaming, stream id: {}, force gdi: {}", target_event->stream_id_, target_event->force_gdi_);
             app_->HandleForceGdiEvent(target_event->force_gdi_);
         }
     }

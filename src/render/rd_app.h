@@ -93,7 +93,7 @@ namespace tc
         ComPtr<ID3D11Device> GetD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11DeviceContext> GetD3DContext(uint64_t adapter_uid);
         SharedPreference* GetSp() { return sp_; }
-        void ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id);
+        void ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) const;
         std::shared_ptr<WinDesktopManager> GetDesktopManager();
         // post to panel process
         void PostPanelMessage(std::shared_ptr<Data> msg);

@@ -135,7 +135,7 @@ namespace tc
     }
 
     void RenderManager::CheckAliveRenders(const std::vector<std::shared_ptr<ProcessInfo>>& processes) {
-        LOGI("CheckAliveRender, process size: {}", processes.size());
+        //LOGI("CheckAliveRender, process size: {}", processes.size());
         bool found_desktop_render = false;
         std::map<RenderProcessId, std::shared_ptr<RenderProcess>> ps;
         for (auto& p : processes) {

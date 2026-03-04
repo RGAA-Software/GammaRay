@@ -37,7 +37,7 @@ namespace tc
         void ProcessStopRender();
         void ProcessRestartRender(const std::string& work_dir, const std::string& app_path, const std::vector<std::string>& args);
         void ProcessHeartBeat(int64_t index);
-        void ProcessCtrlAltDelete();
+        void ProcessCtrlAltDelete() const;
 
     private:
         std::shared_ptr<RenderManager> render_manager_ = nullptr;

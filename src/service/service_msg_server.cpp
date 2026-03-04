@@ -104,7 +104,7 @@ namespace tc
        });
 
         bool ret = server_->start("0.0.0.0", context_->GetListeningPort());
-        LOGI("service start at: 0.0.0.0:{}/service/message, result: {}", context_->GetListeningPort(), ret);
+        LOGI("service start at: 0.0.0.0:{} /service/message, result: {}", context_->GetListeningPort(), ret);
     }
 
     void ServiceMsgServer::ParseMessage(const std::shared_ptr<SessionWrapper>& sw, std::string_view data) {
@@ -171,7 +171,7 @@ namespace tc
         PostBinaryMessage(msg.SerializeAsString());
     }
 
-    void ServiceMsgServer::ProcessCtrlAltDelete() {
+    void ServiceMsgServer::ProcessCtrlAltDelete() const {
         service_->SimulateCtrlAltDelete();
     }
 

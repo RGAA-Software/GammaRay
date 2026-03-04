@@ -3,6 +3,9 @@
 //
 
 #include "ws_panel_client.h"
+
+#include <tc_common_new/string_util.h>
+
 #include "rd_context.h"
 #include "render/app/app_messages.h"
 #include "render/rd_statistics.h"
@@ -65,9 +68,11 @@ namespace tc
         })
         .bind_connect([&]() {
             if (asio2::get_last_error()) {
-                LOGE("WsPanelClient,connect failure : {} {}", asio2::last_error_val(), QString::fromStdString(asio2::last_error_msg()).toStdString().c_str());
+                auto wstr = StringUtil::ToWString(asio2::last_error_msg());
+                auto str = QString::fromStdWString(wstr).toStdString();
+                LOGE("WsPanelClient, connect failure : {} {}", asio2::last_error_val(), str);
             } else {
-                LOGI("WsPanelClient,connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
+                LOGI("WsPanelClient, connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
             }
         })
         .bind_disconnect([]() {
@@ -84,7 +89,7 @@ namespace tc
 
         LOGI("Will connect to panel : {}", settings_->panel_server_port_);
         if (!client_->async_start("127.0.0.1", settings_->panel_server_port_, "/panel/renderer")) {
-            LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
+            LOGE("WsPanelClient, connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }
 

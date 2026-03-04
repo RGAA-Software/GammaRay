@@ -16,10 +16,14 @@ namespace tc
         context_ = ctx;
     }
 
-    void GrRenderMsgProcessor::OnMessage(std::shared_ptr<tc::Message> msg) {
+    void GrRenderMsgProcessor::OnMessage(std::shared_ptr<tc::Message> msg) const {
         // clipboard
-        if (context_ && context_->GetApplication()) {
-            if (const auto clipboard_mgr = context_->GetApplication()->GetClipboardManager()) {
+        if (const auto ctx = context_.lock()) {
+            const auto app = ctx->GetApplication();
+            if (!app) {
+                return;
+            }
+            if (const auto clipboard_mgr = app->GetClipboardManager()) {
                 clipboard_mgr->OnRemoteClipboardInfo(msg);
             }
         }

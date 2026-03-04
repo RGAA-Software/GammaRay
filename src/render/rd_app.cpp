@@ -107,6 +107,13 @@ namespace tc
         statistics_->SetApplication(shared_from_this());
         statistics_->StartMonitor();
 
+        // connect to service
+        LOGI("Will connect the service!");
+        service_client_ = std::make_shared<RenderServiceClient>(shared_from_this());
+        service_client_->Start();
+
+        // connect panel
+        LOGI("Will connect the panel!");
         ws_panel_client_ = std::make_shared<WsPanelClient>(context_);
         ws_panel_client_->Start();
 
@@ -190,13 +197,6 @@ namespace tc
                 StartProcessWithScreenCapture();
             }
         }
-
-        // connect to service
-        service_client_ = std::make_shared<RenderServiceClient>(shared_from_this());
-        service_client_->Start();
-
-        // monitor refresher
-        //monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
 
         // desktop manager
         desktop_mgr_ = WinDesktopManager::Make(context_);
@@ -648,6 +648,15 @@ namespace tc
             }
         }
 
+        std::vector<CaptureMonitorInfo> monitors = [this]() {
+            std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
+            return capture_plugin_->GetCaptureMonitorInfo();
+        }();
+        if (monitors.empty()) {
+            LOGW("Ignore this sending configuration back, 'cause there's no monitors detected.");
+            return;
+        }
+
         tc::Message m;
         m.set_type(tc::kServerConfiguration);
         auto config = m.mutable_config();
@@ -656,10 +665,6 @@ namespace tc
         auto capturing_name = [this]() {
             std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
             return capture_plugin_->GetCapturingMonitorName();
-        }();
-        std::vector<CaptureMonitorInfo> monitors = [this]() {
-            std::lock_guard<std::mutex> lk(capture_plugin_mtx_);
-            return capture_plugin_->GetCaptureMonitorInfo();
         }();
 
         LOGI("Will send configuration back, monitor size: {}", monitors.size());
@@ -799,8 +804,9 @@ namespace tc
         return d3d11_devices_[adapter_uid]->d3d11_device_context_;
     }
 
-    void RdApplication::ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) {
+    void RdApplication::ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) const {
         if (!service_client_ || !service_client_->IsAlive()) {
+            LOGE("Service client not connected, can't ReqCtrlAltDelete");
             return;
         }
         tc::ServiceMessage m;

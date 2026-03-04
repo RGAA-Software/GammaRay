@@ -260,9 +260,10 @@ namespace tc
             capture->SetCaptureFps(capture_fps_);
             auto init_res = capture->Init();
             if (!init_res) {
-                captures_.Clear();
                 LOGE("Init DDA capture [ {} ]failed, can't start DDA capture.", dev_name);
-                return false;
+                //captures_.Clear();
+                //return false;
+                continue;
             }
 
             // set error callback

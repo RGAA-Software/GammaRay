@@ -15,10 +15,10 @@ namespace tc
     class GrRenderMsgProcessor {
     public:
         explicit GrRenderMsgProcessor(const std::shared_ptr<GrContext>& ctx);
-        void OnMessage(std::shared_ptr<tc::Message> msg);
+        void OnMessage(std::shared_ptr<tc::Message> msg) const;
 
     private:
-        std::shared_ptr<GrContext> context_ = nullptr;
+        std::weak_ptr<GrContext> context_;
     };
 
 }

@@ -31,6 +31,7 @@ namespace tc
     }
 
     DDACapture::~DDACapture() {
+        stop_flag_ = true;
         if (capture_thread_) {
             capture_thread_->Exit();
             if (capture_thread_->IsJoinable()) {

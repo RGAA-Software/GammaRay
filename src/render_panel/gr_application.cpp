@@ -114,6 +114,11 @@ namespace tc
         st->SetContext(context_);
         st->RegisterEventListeners();
 
+        gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
+        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
+        rd_msg_processor_ = std::make_shared<GrRenderMsgProcessor>(context_);
+        guard_starter_ = std::make_shared<GrGuardStarter>(context_);
+
         ws_panel_server_ = WsPanelServer::Make(shared_from_this());
         ws_panel_server_->Start();
 
@@ -125,10 +130,6 @@ namespace tc
         service_client_ = std::make_shared<GrServiceClient>(shared_from_this());
         service_client_->Start();
 
-        gr_connected_manager_ = std::make_shared<GrConnectedManager>(context_);
-        clipboard_mgr_ = std::make_shared<ClipboardManager>(context_);
-        rd_msg_processor_ = std::make_shared<GrRenderMsgProcessor>(context_);
-        guard_starter_ = std::make_shared<GrGuardStarter>(context_);
         QCoreApplication::instance()->installNativeEventFilter(gr_connected_manager_.get());
 
         // monitor refresher
