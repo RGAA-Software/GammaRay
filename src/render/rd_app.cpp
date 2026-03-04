@@ -911,6 +911,7 @@ namespace tc
             .virtual_desktop_bound_rectangle_info_ = plugin->GetVirtualDesktopBoundRectangleInfo()
         };
 
+        LOGI("Config Monitors size: {}", cm_msg.monitors_.size());
         if (cm_msg.monitors_.empty()) {
             LOGE("Don't have monitors, ignore the event replayer updating.");
             return;

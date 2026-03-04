@@ -105,6 +105,16 @@ namespace tc {
     void PluginNetEventRouter::ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) const {
         LOGI("Will Update CaptureMonitorInfo to replayer plugin.");
         app_->UpdateCapturingMonitorInfo();
+
+        // Send monitor changed message
+        if (const auto plugin = app_->GetWorkingMonitorCapturePlugin()) {
+            const auto cm_msg = CaptureMonitorInfoMessage {
+                .monitors_ = plugin->GetCaptureMonitorInfo(),
+                .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+                .virtual_desktop_bound_rectangle_info_ = plugin->GetVirtualDesktopBoundRectangleInfo()
+            };
+            msg_notifier_->SendAppMessage(cm_msg);
+        }
     }
 
     void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {
