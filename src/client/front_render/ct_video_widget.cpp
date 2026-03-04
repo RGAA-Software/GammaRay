@@ -63,7 +63,7 @@ namespace tc
 	    cat ts = TimeUtil::GetCurrentTimestamp();
 	    cat diff = ts - last_cursor_ts_;
         if (std::abs(mouse_event_desc.dx) < 2 && std::abs(mouse_event_desc.dy) < 2 || diff < 2) {
-            LOGI("Ignore the Mouse, dx: {}, dy: {}", mouse_event_desc.dx, mouse_event_desc.dy);
+            //LOGI("Ignore the Mouse, dx: {}, dy: {}", mouse_event_desc.dx, mouse_event_desc.dy);
             return;
         }
 

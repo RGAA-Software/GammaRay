@@ -102,14 +102,14 @@ namespace tc
         void RegisterControllerPanelListeners();
 
         void UpdateDebugPanelPosition();
-        void SendClipboardMessage(const MsgClientClipboard& msg);
-        void SendSwitchMonitorMessage(const std::string& name);
+        void SendClipboardMessage(const MsgClientClipboard& msg) const;
+        void SendSwitchMonitorMessage(const std::string& name) const;
         void SendSwitchWorkModeMessage(SwitchWorkMode::WorkMode mode);
         void SendSwitchFullColorMessage(bool enable);
         // client->render 发送刷新桌面的消息
-        void SendUpdateDesktopMessage();
+        void SendUpdateDesktopMessage() const;
         // client->render 发送修改帧率的消息
-        void SendModifyFpsMessage();
+        void SendModifyFpsMessage() const;
         // client->render 发送退出被控端的消息
         void SendExitControlledEndMessage();
         void SendHardUpdateDesktopMessage();

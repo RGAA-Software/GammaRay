@@ -617,7 +617,6 @@ namespace tc
     }
 
     void FloatControllerPanel::UpdateCaptureMonitorInfo() {
-        //LOGI("UpdateCaptureMonitorInfo, capturing monitor: {}", capture_monitor_.capturing_monitor_name_);
         if (capture_monitor_.monitors_.size() > 1) {
             split_screen_btn_->show();
         }

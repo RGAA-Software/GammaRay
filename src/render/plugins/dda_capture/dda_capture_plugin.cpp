@@ -287,13 +287,14 @@ namespace tc
                 capture->ResumeCapture();
             }
             SetCaptureMonitor(capturing_monitor_name_);
-            NotifyCaptureMonitorInfo();
 
             // start capturing
             capture->StartCapture();
 
             captures_.Insert(dev_name, capture);
         }
+
+        NotifyCaptureMonitorInfo();
 
         return true;
     }
@@ -558,7 +559,11 @@ namespace tc
     }
 
     void DDACapturePlugin::NotifyCaptureMonitorInfo() {
-        auto event = std::make_shared<GrPluginCapturingMonitorInfoEvent>();
+        if (sorted_monitors_.empty()) {
+            LOGI("==> Sorted Monitor's empty, ignore the GrPluginCapturingMonitorInfoEvent");
+            return;
+        }
+        const auto event = std::make_shared<GrPluginCapturingMonitorInfoEvent>();
         this->CallbackEvent(event);
     }
 

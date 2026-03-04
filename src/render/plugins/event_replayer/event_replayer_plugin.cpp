@@ -103,7 +103,7 @@ namespace tc
     }
 
     void EventReplayerPlugin::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
-        if (replayer_) {
+        if (replayer_ && !msg.monitors_.empty()) {
             replayer_->UpdateCaptureMonitorInfo(msg);
         }
     }

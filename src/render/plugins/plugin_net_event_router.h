@@ -29,7 +29,7 @@ namespace tc
         void ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event);
         void ProcessClientConnectedEvent(const std::shared_ptr<GrPluginClientConnectedEvent>& event);
         void ProcessClientDisConnectedEvent(const std::shared_ptr<GrPluginClientDisConnectedEvent>& event);
-        void ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event);
+        void ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) const;
         void ProcessEncodedAudioFrameEvent(const std::shared_ptr<Data>& data, int samples, int channels, int bits, int frame_size);
         void ProcessRtcReportEvent(const std::shared_ptr<GrPluginRtcReportEvent>& event);
 

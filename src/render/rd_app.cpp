@@ -657,6 +657,9 @@ namespace tc
             return;
         }
 
+        // update capturing monitor info
+        this->UpdateCapturingMonitorInfo();
+
         tc::Message m;
         m.set_type(tc::kServerConfiguration);
         auto config = m.mutable_config();
@@ -894,6 +897,30 @@ namespace tc
             }
             capture_plugin_->StartCapturing();
         });
+    }
+
+    void RdApplication::UpdateCapturingMonitorInfo() {
+        const auto plugin = this->GetWorkingMonitorCapturePlugin();
+        if (!plugin) {
+            LOGE("ProcessCapturingMonitorInfoEvent failed, plugin is null.");
+            return;
+        }
+        const auto cm_msg = CaptureMonitorInfoMessage {
+            .monitors_ = plugin->GetCaptureMonitorInfo(),
+            .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
+            .virtual_desktop_bound_rectangle_info_ = plugin->GetVirtualDesktopBoundRectangleInfo()
+        };
+
+        if (cm_msg.monitors_.empty()) {
+            LOGE("Don't have monitors, ignore the event replayer updating.");
+            return;
+        }
+
+        // to event replayer
+        if (const auto erp_plugin = plugin_manager_->GetEventsReplayerPlugin(); erp_plugin) {
+            erp_plugin->UpdateCaptureMonitorInfo(cm_msg);
+            LOGI("Update CaptureMonitorInfo to replayer plugin finished.");
+        }
     }
 
     void RdApplication::Exit() {

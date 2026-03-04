@@ -21,7 +21,6 @@
 #include "app_global_messages.h"
 #include "settings/rd_settings.h"
 #include "network/net_message_maker.h"
-#include "app/win/win_event_replayer.h"
 #include "tc_common_new/process_util.h"
 #include "tc_render_panel_message.pb.h"
 #include "app/win/win_desktop_manager.h"
@@ -103,26 +102,9 @@ namespace tc {
         ReportClientDisConnected(event);
     }
 
-    void PluginNetEventRouter::ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) {
-        auto plugin = app_->GetWorkingMonitorCapturePlugin();
-        if (!plugin) {
-            LOGE("ProcessCapturingMonitorInfoEvent failed, plugin is null.");
-            return;
-        }
-        auto cm_msg = CaptureMonitorInfoMessage {
-            .monitors_ = plugin->GetCaptureMonitorInfo(),
-            .capturing_monitor_name_ = plugin->GetCapturingMonitorName(),
-            .virtual_desktop_bound_rectangle_info_ = plugin->GetVirtualDesktopBoundRectangleInfo()
-        };
-      
-        // to event replayer
-        //win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
-        if (auto erp_plugin = plugin_manager_->GetEventsReplayerPlugin(); erp_plugin) {
-            erp_plugin->UpdateCaptureMonitorInfo(cm_msg);
-        }
-
-        // to other listeners
-        msg_notifier_->SendAppMessage(cm_msg);
+    void PluginNetEventRouter::ProcessCapturingMonitorInfoEvent(const std::shared_ptr<GrPluginCapturingMonitorInfoEvent>& event) const {
+        LOGI("Will Update CaptureMonitorInfo to replayer plugin.");
+        app_->UpdateCapturingMonitorInfo();
     }
 
     void PluginNetEventRouter::ProcessNetEvent(const std::shared_ptr<GrPluginNetClientEvent>& event) {
@@ -402,15 +384,8 @@ namespace tc {
                 }
             }
 
-            auto cm_msg = CaptureMonitorInfoMessage {
-                .monitors_ = capture_plugin->GetCaptureMonitorInfo(),
-                .capturing_monitor_name_ = capture_plugin->GetCapturingMonitorName(),
-            };
-            //msg_notifier_->SendAppMessage(msg);
-            //win_event_replayer_->UpdateCaptureMonitorInfo(cm_msg);
-            if (auto erp_plugin = plugin_manager_->GetEventsReplayerPlugin(); erp_plugin) {
-                erp_plugin->UpdateCaptureMonitorInfo(cm_msg);
-            }
+            // capturing monitor info
+            app_->UpdateCapturingMonitorInfo();
 
             int mon_index = 0;
             auto mon_index_res = capture_plugin->GetMonIndexByName(sm.name());

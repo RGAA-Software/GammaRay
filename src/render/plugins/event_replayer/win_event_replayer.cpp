@@ -229,7 +229,7 @@ namespace tc
     void WinEventReplayer::UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) {
         monitors_ = msg.monitors_;
         virtual_desktop_bound_rectangle_info_ = msg.virtual_desktop_bound_rectangle_info_;
-        //LOGI("UpdateCaptureMonitorInfo, monitor count: {}", monitors_.size());
+        LOGI("UpdateCaptureMonitorInfo, monitor count: {}", monitors_.size());
     }
 
     void WinEventReplayer::ReplayVirtualDesktopMouseEvent(float x_ratio, float y_ratio, int buttons, int data) {

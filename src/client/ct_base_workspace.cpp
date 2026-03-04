@@ -890,7 +890,7 @@ namespace tc
 
     }
 
-    void BaseWorkspace::SendClipboardMessage(const MsgClientClipboard& msg) {
+    void BaseWorkspace::SendClipboardMessage(const MsgClientClipboard& msg) const {
         if (!sdk_ || remote_force_closed_) {
             return;
         }
@@ -918,7 +918,7 @@ namespace tc
         }
     }
 
-    void BaseWorkspace::SendSwitchMonitorMessage(const std::string& name) {
+    void BaseWorkspace::SendSwitchMonitorMessage(const std::string& name) const {
         if (!sdk_ || remote_force_closed_) {
             return;
         }
@@ -927,23 +927,23 @@ namespace tc
         m.set_device_id(settings_->device_id_);
         m.set_stream_id(settings_->stream_id_);
         m.mutable_switch_monitor()->set_name(name);
-        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+        if (const auto buffer = tc::ProtoAsData(&m); buffer) {
             sdk_->PostMediaMessage(buffer);
         }
     }
 
-    void BaseWorkspace::SendUpdateDesktopMessage() {
+    void BaseWorkspace::SendUpdateDesktopMessage() const {
         if (!sdk_ || remote_force_closed_) {
             return;
         }
         tc::Message m;
         m.set_type(tc::kUpdateDesktop);
-        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+        if (const auto buffer = tc::ProtoAsData(&m); buffer) {
             sdk_->PostMediaMessage(buffer);
         }
     }
 
-    void BaseWorkspace::SendModifyFpsMessage() {
+    void BaseWorkspace::SendModifyFpsMessage() const {
         if (!sdk_ || remote_force_closed_) {
             return;
         }
@@ -952,7 +952,7 @@ namespace tc
         m.set_type(tc::kModifyFps);
         auto mf = m.mutable_modify_fps();
         mf->set_fps(fps);
-        if (auto buffer = tc::ProtoAsData(&m); buffer) {
+        if (const auto buffer = tc::ProtoAsData(&m); buffer) {
             sdk_->PostMediaMessage(buffer);
         }
     }

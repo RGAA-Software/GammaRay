@@ -99,6 +99,10 @@ namespace tc
         void PostPanelMessage(std::shared_ptr<Data> msg);
 
         void HandleForceGdiEvent(bool force_gdi);
+
+        // update capturing monitor
+        void UpdateCapturingMonitorInfo();
+
     public:
         template<typename T>
         void SendAppMessage(const T& m) {
