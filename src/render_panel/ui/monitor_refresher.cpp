@@ -28,8 +28,8 @@ namespace tc
     void MonitorRefreshWidget::paintEvent(QPaintEvent *event) {
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(QColor(color_value_, color_value_/2, color_value_/3,10)));
-        painter.drawRect(0, 0, this->width(), this->height());
+        painter.setBrush(QBrush(QColor(color_value_, color_value_/2, color_value_/3, 8)));
+        painter.drawRect(0, 0, 10, this->height());
         painter.drawRect(10, 0, this->width(), 2);
         ++color_value_;
         color_value_ %= 255;
@@ -59,10 +59,23 @@ namespace tc
         if (!context_) {
             return;
         }
-        context_->PostUITask([=]() {
+        context_->PostUITask([=, this]() {
+            if (exit_ || widgets_.isEmpty()) {
+                return;
+            }
             for (QWidget* w : widgets_) {
                 w->update();
             }
         });
+    }
+
+    void MonitorRefresher::Exit() {
+        exit_ = true;
+        msg_listener_->UnListenAll();
+        for (QWidget* w : widgets_) {
+            w->hide();
+            w->deleteLater();
+        }
+        widgets_.clear();
     }
 }

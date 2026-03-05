@@ -14,6 +14,7 @@ namespace tc
     class PluginDesktopCapture {
     public:
         explicit PluginDesktopCapture(const CaptureMonitorInfo& my_monitor_info);
+        virtual ~PluginDesktopCapture() = default;
         virtual bool Init() = 0;
         virtual bool StartCapture() = 0;
         virtual bool PauseCapture() = 0;
@@ -33,6 +34,7 @@ namespace tc
         virtual void On16MilliSecond();
         virtual void On33MilliSecond();
         virtual void SendCachedTexture() {}
+        virtual bool IsThisMonitorExist();
 
     protected:
         int capture_fps_ = 60;
@@ -41,6 +43,10 @@ namespace tc
         CaptureMonitorInfo my_monitor_info_;
         bool is_primary_monitor_ = false;
         ConcurrentQueue<int32_t> capture_gaps_;
+
+    public:
+        // Only for IsThisMonitorExist
+        std::vector<std::wstring> monitors_name_;
     };
 }
 

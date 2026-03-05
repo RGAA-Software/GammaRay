@@ -30,12 +30,14 @@ namespace tc
     class MonitorRefresher  {
     public:
         explicit MonitorRefresher(const std::shared_ptr<GrContext>& ctx, QWidget* parent);
+        void Exit();
     private:
         void Refresh();
     private:
         std::shared_ptr<GrContext> context_ = nullptr;
         std::shared_ptr<MessageListener> msg_listener_ = nullptr;
         QList<QWidget*> widgets_;
+        std::atomic_bool exit_ = false;
     };
 
 }

@@ -261,6 +261,9 @@ namespace tc
         std::string stream_id_;
     };
 
+    // monitor changed
+    class MsgMonitorChanged {};
+
 }
 
 #endif // APP_MESSAGES_H

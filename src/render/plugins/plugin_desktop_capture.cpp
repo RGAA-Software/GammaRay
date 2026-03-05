@@ -2,6 +2,7 @@
 #include "tc_common_new/log.h"
 #include "plugin_interface/gr_plugin_events.h"
 #include <Shlobj.h>
+#include <tc_common_new/string_util.h>
 
 namespace tc
 {
@@ -63,6 +64,27 @@ namespace tc
 
     void PluginDesktopCapture::On33MilliSecond() {
 
+    }
+
+    static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+        auto capture = (PluginDesktopCapture*)dwData;
+        MONITORINFOEX monitorInfo;
+        monitorInfo.cbSize = sizeof(MONITORINFOEX);
+        GetMonitorInfoW(hMonitor, &monitorInfo);
+        const auto it_mon_name = std::wstring(monitorInfo.szDevice);
+        capture->monitors_name_.push_back(it_mon_name);
+        return TRUE;
+    }
+
+    bool PluginDesktopCapture::IsThisMonitorExist() {
+        EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, (LPARAM)this);
+        for (const auto& n : monitors_name_) {
+            const auto u8_name = StringUtil::ToUTF8(n);
+            if (u8_name == my_monitor_info_.name_) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

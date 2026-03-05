@@ -92,7 +92,7 @@ namespace tc
         bool GenerateD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11Device> GetD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11DeviceContext> GetD3DContext(uint64_t adapter_uid);
-        SharedPreference* GetSp() { return sp_; }
+        SharedPreference* GetSp() const { return sp_; }
         void ReqCtrlAltDelete(const std::string& device_id, const std::string& stream_id) const;
         std::shared_ptr<WinDesktopManager> GetDesktopManager();
         // post to panel process
@@ -179,6 +179,8 @@ namespace tc
         std::atomic<bool> force_gdi_ = false;
 
         std::atomic_uint32_t restart_counter_ = 0;
+
+        std::atomic_bool monitor_changed_ = false;
     };
 
     extern std::shared_ptr<RdApplication> rdApp;

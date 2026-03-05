@@ -175,6 +175,10 @@ namespace tc
                             LOGI("Already use GDI capture, ignore the error.");
                             return;
                         }
+                        if (monitor_changed_) {
+                            LOGI("Maybe montor changed, ignore this error now.");
+                            return;
+                        }
                         // change to GDI
                         // capture_plugin_->DisablePlugin();
                         LOGI("Don't use DDA, will switch to GDI.");
@@ -313,9 +317,16 @@ namespace tc
         });
 
         msg_listener_->Listen<MsgReCreateRefresher>([=, this](const MsgReCreateRefresher& msg) {
-            context_->PostUITask([=, this]() {
-                //monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
-            });
+            // report to Panel
+            // !! USELESS !! Just report it
+            if (ws_panel_client_) {
+                ws_panel_client_->ReportMonitorChanged();
+            }
+
+            monitor_changed_ = true;
+            context_->PostDelayTask([this]() {
+                monitor_changed_ = false;
+            }, 5000);
         });
 
         msg_listener_->Listen<MsgModifyFps>([=, this](const MsgModifyFps& msg) {

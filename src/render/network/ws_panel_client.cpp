@@ -3,9 +3,7 @@
 //
 
 #include "ws_panel_client.h"
-
 #include <tc_common_new/string_util.h>
-
 #include "rd_context.h"
 #include "render/app/app_messages.h"
 #include "render/rd_statistics.h"
@@ -24,7 +22,7 @@
 namespace tc
 {
 
-    const int kMaxClientQueuedMessage = 1024;
+    constexpr int kMaxClientQueuedMessage = 1024;
 
     WsPanelClient::WsPanelClient(const std::shared_ptr<RdContext>& ctx) {
         statistics_ = RdStatistics::Instance();
@@ -93,10 +91,14 @@ namespace tc
         }
     }
 
-    void WsPanelClient::Exit() {
+    void WsPanelClient::Exit() const {
         if (client_) {
             client_->stop();
         }
+    }
+
+    bool WsPanelClient::Alive() const {
+        return client_ && client_->is_started();
     }
 
     void WsPanelClient::ReportStatistics() {
@@ -127,14 +129,22 @@ namespace tc
         PostNetMessage(buffer);
     }
 
+    void WsPanelClient::ReportMonitorChanged() {
+        tcrp::RpMessage msg;
+        msg.set_type(tcrp::kRpMonitorChanged);
+        const auto sub = msg.mutable_monitor_changed();
+        const auto buffer = RpProtoAsData(&msg);
+        PostNetMessage(buffer);
+    }
+
     void WsPanelClient::PostNetMessage(std::shared_ptr<Data> msg) {
         if (client_ && client_->is_started()) {
             if (queuing_message_count_ > kMaxClientQueuedMessage) {
                 return;
             }
-            queuing_message_count_++;
+            ++queuing_message_count_;
             client_->async_send(msg->CStr(), msg->Size(), [=, this]() {
-                queuing_message_count_--;
+                --queuing_message_count_;
             });
         }
     }

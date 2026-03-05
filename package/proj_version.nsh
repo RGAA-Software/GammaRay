@@ -1,2 +1,2 @@
 !define PRODUCT_VERSION "3.0.1"
-!define TARGET_TYPE "OpenSource"
+!define TARGET_TYPE "Official"

@@ -173,28 +173,29 @@ namespace tc
     bool GrApplication::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) {
         if(eventType == "windows_generic_MSG" || eventType == "windows_dispatcher_MSG")
         {
-            MSG* pMsg = reinterpret_cast<MSG*>(message);
+            const auto pMsg = static_cast<MSG*>(message);
             if(pMsg->message == WM_COPYDATA) {
 
             }
             else if(pMsg->message == WM_DROPFILES) {
-                LOGI("DROP FILES.......");
-                HDROP hDrop = (HDROP)pMsg->wParam;
-                UINT fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 获取文件数量
 
-                for (UINT i = 0; i < fileCount; i++) {
-                    char filePath[MAX_PATH];
-                    DragQueryFileA(hDrop, i, filePath, MAX_PATH); // 获取文件路径
-                    LOGI("===> DROP: {}", filePath);
+            }
+            else if (pMsg->message == WM_DISPLAYCHANGE) {
+                LOGI("WM_DISPLAYCHANGE, Monitor changed!");
+                if (monitor_refresher_) {
+                    LOGW("Will exit monitor refresher and recreate it.");
+                    monitor_refresher_->Exit();
+                    monitor_refresher_.reset();
+                    context_->PostUIDelayTask([=, this]() {
+                        monitor_refresher_ = std::make_shared<MonitorRefresher>(context_, nullptr);
+                   }, 5000);
                 }
-
-                DragFinish(hDrop); // 释放资源
             }
         }
         return false;
     }
 
-    bool GrApplication::IsServiceConnected() {
+    bool GrApplication::IsServiceConnected() const {
         return service_client_ && service_client_->IsAlive();
     }
 

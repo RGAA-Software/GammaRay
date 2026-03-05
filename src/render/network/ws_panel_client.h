@@ -24,8 +24,11 @@ namespace tc
     public:
         explicit WsPanelClient(const std::shared_ptr<RdContext>& ctx);
         void Start();
-        void Exit();
+        void Exit() const;
         void PostNetMessage(std::shared_ptr<Data> msg);
+        bool Alive() const;
+
+        void ReportMonitorChanged();
 
     private:
         void ReportStatistics();

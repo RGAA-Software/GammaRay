@@ -371,6 +371,11 @@ namespace tc
                 auto init_ok = Init();
                 if (!init_ok) {
                     LOGE("ReInit failed, can't capture.");
+                    LOGI("Will check this monitor exists or not");
+                    if (!IsThisMonitorExist()) {
+                        LOGI("This monitor: {} is not exist now!", my_monitor_info_.name_);
+                        break;
+                    }
                     if (err_callback_) {
                         err_callback_(MonitorCaptureError::kCantCapture);
                     }
@@ -644,6 +649,5 @@ namespace tc
     void DDACapture::SetDDAErrorCallback(CaptureErrorCallback&& cbk){
         err_callback_ = std::move(cbk);
     }
-
 
 } // tc

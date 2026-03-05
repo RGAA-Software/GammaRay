@@ -606,6 +606,9 @@ namespace tc
             auto sub = proto_msg->relay_alive();
             stat_->UpdateRelayAlive(sub.device_id(), sub.timestamp());
         }
+        else if (proto_msg->type() == tcrp::kRpMonitorChanged) {
+            context_->SendAppMessage(MsgMonitorChanged{});
+        }
     }
 
     void WsPanelServer::ParseSysInfoMessage(uint64_t socket_fd, std::string_view msg) {

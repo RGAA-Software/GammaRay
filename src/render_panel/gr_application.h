@@ -56,7 +56,7 @@ namespace tc
         std::shared_ptr<GrServiceClient> GetServiceClient() { return service_client_; }
         std::shared_ptr<GrRenderMsgProcessor> GetRenderMsgProcessor() { return rd_msg_processor_; }
         std::shared_ptr<ClipboardManager> GetClipboardManager() { return clipboard_mgr_; }
-        bool IsServiceConnected();
+        bool IsServiceConnected() const;
         // panel -> service
         // msg: protobuf message
         bool PostMessage2Service(const std::string& msg);
