@@ -10,24 +10,24 @@
 
 #include <vector>
 #include <format>
+#include <ranges>
 
 namespace tc
 {
-
-    static FpsStat g_timer_16_fps;
 
     AppTimer::AppTimer(const std::shared_ptr<RdContext>& ctx) {
         context_ = ctx;
     }
 
     void AppTimer::StartTimers() {
-        auto durations = std::vector<AppTimerDuration>{
+        const auto durations = std::vector {
             kTimerDuration1000,
             kTimerDuration2000,
             kTimerDuration5000,
             kTimerDuration10S,
             kTimerDuration20S,
             kTimerDuration30S,
+            kTimerDuration1Minute,
             kTimerDuration500,
             kTimerDuration100,
             kTimerDuration16,
@@ -43,40 +43,41 @@ namespace tc
     }
 
     void AppTimer::StopTimers() {
-        for (const auto& [duration, timer] : timers_) {
+        for (const auto &timer: timers_ | std::views::values) {
             timer->stop();
         }
     }
 
-    void AppTimer::NotifyTimeout(AppTimerDuration duration) {
-        if (duration == AppTimerDuration::kTimerDuration1000) {
+    void AppTimer::NotifyTimeout(const AppTimerDuration duration) const {
+        if (duration == kTimerDuration1000) {
             context_->SendAppMessage(MsgTimer1000{});
-            //LOGI("16ms timer fps: {}", g_timer_16_fps.value());
         }
-        else if (duration == AppTimerDuration::kTimerDuration2000) {
+        else if (duration == kTimerDuration2000) {
             context_->SendAppMessage(MsgTimer2000{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration5000) {
+        else if (duration == kTimerDuration5000) {
             context_->SendAppMessage(MsgTimer5000{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration10S) {
+        else if (duration == kTimerDuration10S) {
             context_->SendAppMessage(MsgTimer10S{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration20S) {
+        else if (duration == kTimerDuration20S) {
             context_->SendAppMessage(MsgTimer20S{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration30S) {
+        else if (duration == kTimerDuration30S) {
             context_->SendAppMessage(MsgTimer30S{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration500) {
+        else if (duration == kTimerDuration500) {
             context_->SendAppMessage(MsgTimer500{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration100) {
+        else if (duration == kTimerDuration100) {
             context_->SendAppMessage(MsgTimer100{});
         }
-        else if (duration == AppTimerDuration::kTimerDuration16) {
+        else if (duration == kTimerDuration16) {
             context_->SendAppMessage(MsgTimer16{});
-            //g_timer_16_fps.Tick();
+        }
+        else if (duration == kTimerDuration1Minute) {
+            context_->SendAppMessage(MsgTimer1Minute{});
         }
     }
 

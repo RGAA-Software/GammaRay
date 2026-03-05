@@ -81,7 +81,7 @@ namespace tc
     }
 
     void RdApplication::Init(int argc, char** argv) {
-        qapp_ = std::make_shared<QApplication>(argc, argv);
+        app_ = std::make_shared<QApplication>(argc, argv);
 
         // sp
         sp_ = SharedPreference::Instance();
@@ -203,7 +203,7 @@ namespace tc
 
         rdApp = shared_from_this();
 
-        return qapp_->exec();
+        return app_->exec();
     }
 
     void RdApplication::InitAppTimer() {
@@ -360,6 +360,20 @@ namespace tc
             });
         });
 
+        // Restart MySelf
+        msg_listener_->Listen<MsgTimer1Minute>([=, this](const MsgTimer1Minute&) {
+            ++restart_counter_;
+            if (restart_counter_ >= 60 * 6) {
+                restart_counter_ = 0;
+
+                if (HasConnectedPeer()) {
+                    return;
+                }
+                LOGW("** Don't have connected clients, will restart render now.");
+                ProcessUtil::KillProcess(qApp->applicationPid());
+            }
+        });
+
     }
 
     void RdApplication::InitAudioCapture() {
@@ -461,13 +475,13 @@ namespace tc
 
     }
 
-    void RdApplication::PostIpcMessage(const std::string& msg) {
+    void RdApplication::PostIpcMessage(const std::string& msg) const {
         if (settings_->capture_.IsVideoInnerCapture()) {
             PostNetMessage(Data::From(msg));
         }
     }
 
-    void RdApplication::PostNetMessage(std::shared_ptr<Data> msg) {
+    void RdApplication::PostNetMessage(std::shared_ptr<Data> msg) const {
         if (!msg) {
             return;
         }
@@ -477,7 +491,7 @@ namespace tc
     }
 
     void RdApplication::StartProcessWithHook() {
-#if 0   // to do, 目前用不到暂时注释掉
+#if 0
         msg_listener_->Listen<MsgVideoFrameEncoded>([=, this](const MsgVideoFrameEncoded& msg) {
             auto net_msg = NetMessageMaker::MakeVideoFrameMsg([=]() -> tc::VideoType {
                 return (Encoder::EncoderFormat)msg.frame_encode_type_ == Encoder::EncoderFormat::kH264 ? tc::VideoType::kNetH264 : tc::VideoType::kNetHevc;
@@ -571,18 +585,18 @@ namespace tc
         app_manager_->StartProcess();
     }
 
-    void RdApplication::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) {
+    void RdApplication::OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) const {
         if (!HasConnectedPeer()) {
             return;
         }
         encoder_thread_->Encode(*msg);
     }
 
-    bool RdApplication::HasConnectedPeer() {
+    bool RdApplication::HasConnectedPeer() const {
         return plugin_manager_->GetTotalConnectedClientsCount();
     }
 
-    void RdApplication::WriteBoostUpInfoForPid(uint32_t pid) {
+    void RdApplication::WriteBoostUpInfoForPid(uint32_t pid) const {
         if (!app_shared_message_) {
             LOGE("Don't have app_shared_message_");
             return;
@@ -594,7 +608,7 @@ namespace tc
         app_shared_info_->WriteData(shm_name, shm_buffer);
     }
 
-    void RdApplication::SendAudioSpectrumMessage() {
+    void RdApplication::SendAudioSpectrumMessage() const {
         auto st = RdStatistics::Instance();
         auto msg = std::make_shared<Message>();
         msg->set_type(tc::kRendererAudioSpectrum);
@@ -607,9 +621,6 @@ namespace tc
         sas->mutable_left_spectrum()->Add(left_spectrum.begin(), left_spectrum.end());
         sas->mutable_right_spectrum()->Add(right_spectrum.begin(), right_spectrum.end());
         auto net_msg = ProtoAsData(msg);
-//        if (ws_panel_client_) {
-//            ws_panel_client_->PostNetMessage(net_msg);
-//        }
 
         // audio spectrum
         PostNetMessage(net_msg);
@@ -631,7 +642,7 @@ namespace tc
         PostPanelMessage(buffer);
     }
 
-    void RdApplication::SendClipboardMessage(const std::string& msg) {
+    void RdApplication::SendClipboardMessage(const std::string& msg) const {
         tc::Message m;
         m.set_type(tc::kClipboardInfo);
         m.mutable_clipboard_info()->set_msg(msg);
@@ -696,7 +707,7 @@ namespace tc
         PostNetMessage(buffer);
     }
 
-    void RdApplication::RequestRestartMe() {
+    void RdApplication::RequestRestartMe() const {
         tcrp::RpMessage m;
         m.set_type(tcrp::kRpRestartServer);
         m.mutable_restart_server()->set_reason("restart");
@@ -733,7 +744,7 @@ namespace tc
         return capture_plugin_;
     }
 
-    std::map<std::string, GrVideoEncoderPlugin*> RdApplication::GetWorkingVideoEncoderPlugins() {
+    std::map<std::string, GrVideoEncoderPlugin*> RdApplication::GetWorkingVideoEncoderPlugins() const {
         if (encoder_thread_) {
             return encoder_thread_->GetWorkingVideoEncoderPlugins();
         }

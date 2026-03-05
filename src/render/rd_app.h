@@ -80,15 +80,15 @@ namespace tc
         void PostGlobalAppMessage(std::shared_ptr<AppMessage>&& msg);
         void PostGlobalTask(std::function<void()>&& task);
         void PostIpcMessage(std::shared_ptr<Data>&& msg);
-        void PostIpcMessage(const std::string& msg);
-        void PostNetMessage(std::shared_ptr<Data> msg);
+        void PostIpcMessage(const std::string& msg) const;
+        void PostNetMessage(std::shared_ptr<Data> msg) const;
         std::shared_ptr<RdContext> GetContext() { return context_; }
         std::shared_ptr<AppManager> GetAppManager() { return app_manager_; }
-        void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg);
+        void OnIpcVideoFrame(const std::shared_ptr<CaptureVideoFrame>& msg) const;
         void ResetMonitorResolution(const std::string& name, int w, int h);
         std::shared_ptr<PluginManager> GetPluginManager();
         tc::GrMonitorCapturePlugin* GetWorkingMonitorCapturePlugin();
-        std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins();
+        std::map<std::string, GrVideoEncoderPlugin*> GetWorkingVideoEncoderPlugins() const;
         bool GenerateD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11Device> GetD3DDevice(uint64_t adapter_uid);
         ComPtr<ID3D11DeviceContext> GetD3DContext(uint64_t adapter_uid);
@@ -112,18 +112,18 @@ namespace tc
         void InitAppTimer();
         void InitMessages();
         void InitAudioCapture();
-        void WriteBoostUpInfoForPid(uint32_t pid);
+        void WriteBoostUpInfoForPid(uint32_t pid) const;
         void StartProcessWithHook();
         void StartProcessWithScreenCapture();
-        bool HasConnectedPeer();
+        bool HasConnectedPeer() const;
 
         // to panel
         void ReportAudioSpectrum2Panel();
         // to clients
-        void SendAudioSpectrumMessage();
-        void SendClipboardMessage(const std::string& msg);
+        void SendAudioSpectrumMessage() const;
+        void SendClipboardMessage(const std::string& msg) const;
         void SendConfigurationBack();
-        void RequestRestartMe();
+        void RequestRestartMe() const;
 
         bool SwitchGdiCapture();
         bool SwitchDdaCapture();
@@ -147,14 +147,11 @@ namespace tc
         std::shared_ptr<Thread> audio_capture_thread_ = nullptr;
         std::shared_ptr<AppSharedInfo> app_shared_info_ = nullptr;
 
-        //std::shared_ptr<Thread> control_thread_ = nullptr;
-        //std::shared_ptr<VigemController> vigem_controller_ = nullptr;
-
         uint64_t last_post_audio_time_ = 0;
         RdStatistics* statistics_ = nullptr;
         SharedPreference* sp_ = nullptr;
 
-        std::shared_ptr<QApplication> qapp_ = nullptr;
+        std::shared_ptr<QApplication> app_ = nullptr;
 
         std::shared_ptr<PluginManager> plugin_manager_ = nullptr;
         // working capture plugin
@@ -174,15 +171,14 @@ namespace tc
 
         std::shared_ptr<tc::RenderServiceClient> service_client_ = nullptr;
 
-        // monitor refresher
-        //std::shared_ptr<MonitorRefresher> monitor_refresher_ = nullptr;
-
         std::shared_ptr<WinDesktopManager> desktop_mgr_ = nullptr;
 
         // timer count
         int64_t timer_count_16ms_ = 0;
 
         std::atomic<bool> force_gdi_ = false;
+
+        std::atomic_uint32_t restart_counter_ = 0;
     };
 
     extern std::shared_ptr<RdApplication> rdApp;
@@ -195,7 +191,7 @@ namespace tc
 
         int Run() override;
         void Exit() override;
-        void CaptureControlC();
+        void CaptureControlC() override;
         void LoadDxAddress();
     };
 

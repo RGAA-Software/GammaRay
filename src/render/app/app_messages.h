@@ -96,6 +96,8 @@ namespace tc
     public:
     };
 
+    class MsgTimer1Minute {};
+
     //
     class MsgBeforeInject {
     public:

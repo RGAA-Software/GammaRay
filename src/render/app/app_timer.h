@@ -5,9 +5,8 @@
 #ifndef TC_APPLICATION_APP_TIMER_H
 #define TC_APPLICATION_APP_TIMER_H
 
+#include <map>
 #include <memory>
-#include <functional>
-#include <unordered_map>
 #include <QTimer>
 
 namespace tc
@@ -22,6 +21,7 @@ namespace tc
         kTimerDuration10S = 10'000,
         kTimerDuration20S = 20'000,
         kTimerDuration30S = 30'000,
+        kTimerDuration1Minute = 60'000,
         kTimerDuration500 = 500,
         kTimerDuration100 = 100,
         kTimerDuration16 = 16,
@@ -34,7 +34,7 @@ namespace tc
         void StopTimers();
 
     private:
-        void NotifyTimeout(AppTimerDuration duration);
+        void NotifyTimeout(AppTimerDuration duration) const;
 
     private:
         std::shared_ptr<RdContext> context_ = nullptr;

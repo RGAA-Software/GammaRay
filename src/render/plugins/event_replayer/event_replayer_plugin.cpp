@@ -77,21 +77,19 @@ namespace tc
             LOGI("recv exit controlled end msg, render will exit and restart.");
             if (replayer_) {
                 replayer_->SimulateCtrlWinShiftB();
-                plugin_context_->PostDelayTask([]() {
-                    ProcessUtil::KillProcess(QApplication::applicationPid());
-                }, 100);
+                ProcessUtil::KillProcess(QApplication::applicationPid());
             }
         }
     }
 
-    void EventReplayerPlugin::ProcessMouseEvent(std::shared_ptr<Message> msg) {
+    void EventReplayerPlugin::ProcessMouseEvent(std::shared_ptr<Message> msg) const {
         // global / inner
         if (replayer_) {
             replayer_->HandleMouseEvent(msg->mouse_event());
         }
     }
 
-    void EventReplayerPlugin::ProcessKeyboardEvent(std::shared_ptr<Message> msg) {
+    void EventReplayerPlugin::ProcessKeyboardEvent(std::shared_ptr<Message> msg) const {
         // global / inner
         if (replayer_) {
             replayer_->HandleKeyEvent(msg->key_event());

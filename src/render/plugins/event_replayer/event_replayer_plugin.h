@@ -27,8 +27,8 @@ namespace tc
         void UpdateCaptureMonitorInfo(const CaptureMonitorInfoMessage& msg) override;
 
     private:
-        void ProcessMouseEvent(std::shared_ptr<Message> msg);
-        void ProcessKeyboardEvent(std::shared_ptr<Message> msg);
+        void ProcessMouseEvent(std::shared_ptr<Message> msg) const;
+        void ProcessKeyboardEvent(std::shared_ptr<Message> msg) const;
 
     private:
         std::shared_ptr<WinEventReplayer> replayer_ = nullptr;
