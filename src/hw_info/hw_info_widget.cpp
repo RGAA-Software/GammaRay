@@ -426,7 +426,7 @@ namespace tc
         //
         chart_memory_->SetYAxisDesc(std::format("{}GB", sys_info->mem_.total_gb_).c_str());
 
-        {
+        if (sys_info->mem_.total_gb_ > 0) {
             auto percent = sys_info->mem_.used_gb_ * 100 / sys_info->mem_.total_gb_;
             lbl_memory_->setText(std::format("Used: {}GB, Total: {}GB, {}%", sys_info->mem_.used_gb_, sys_info->mem_.total_gb_, percent).c_str());
         }
@@ -443,9 +443,11 @@ namespace tc
                     auto mount = QString::fromStdString(disk.mount_on_);
                     mount = mount.replace("\\", "").replace(":", "");
                     auto used_gb = disk.total_gb_ - disk.available_gb_;
-                    auto percent = (used_gb * 100) / disk.total_gb_;
-                    lbl_disks_[index].title_->setText(std::format("{}({}[{}])", tcTr("id_hw_disk").toStdString(), mount.toStdString(), disk.disk_type_).c_str());
-                    lbl_disks_[index].value_->setText(std::format("Used: {}GB, Total: {}GB, {}%", used_gb, disk.total_gb_, percent).c_str());
+                    if (disk.total_gb_ > 0) {
+                        auto percent = (used_gb * 100) / disk.total_gb_;
+                        lbl_disks_[index].title_->setText(std::format("{}({}[{}])", tcTr("id_hw_disk").toStdString(), mount.toStdString(), disk.disk_type_).c_str());
+                        lbl_disks_[index].value_->setText(std::format("Used: {}GB, Total: {}GB, {}%", used_gb, disk.total_gb_, percent).c_str());
+                    }
                     index++;
                 }
             }
@@ -482,7 +484,9 @@ namespace tc
             for (const auto& info : sys_info_hist_) {
                 cpu_usages.push_back(info->cpu_.usage_ / 100.0f);
                 cpu_freq.push_back(info->cpu_.current_frequency_ * 1.0f / 6);
-                memory_usages.push_back(info->mem_.used_gb_ * 1.0f / info->mem_.total_gb_);
+                if (info->mem_.total_gb_ > 0) {
+                    memory_usages.push_back(info->mem_.used_gb_ * 1.0f / info->mem_.total_gb_);
+                }
             }
 
 
@@ -529,8 +533,10 @@ namespace tc
                     receive_MB_s = nt_info.max_receive_speed_ > 0 ? nt_info.max_receive_speed_ / 1000 / 1000 / 8.0f : 50;
                     receive_MB_s += append_size;
                     latest_received_speed = next_recv - recv;
-                    auto speed = latest_received_speed * 1.0f / 1000 / 1000 / receive_MB_s;
-                    received_speed.push_back(speed);
+                    if (receive_MB_s > 0) {
+                        auto speed = latest_received_speed * 1.0f / 1000 / 1000 / receive_MB_s;
+                        received_speed.push_back(speed);
+                    }
                 }
 
                 {
@@ -538,7 +544,9 @@ namespace tc
                     transmit_MB_s += append_size;
                     latest_send_speed = next_sent - sent;
                     auto speed = latest_send_speed * 1.0f / 1000 / 1000 / transmit_MB_s;
-                    send_speed.push_back(speed);
+                    if (transmit_MB_s > 0) {
+                        send_speed.push_back(speed);
+                    }
                 }
             }
 

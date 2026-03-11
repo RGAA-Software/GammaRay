@@ -739,17 +739,21 @@ namespace tc
         }
 
         // Memory
-        auto mem_usage = sys_info->mem_.used_gb_ * 100.0f / sys_info->mem_.total_gb_;
-        if (mem_usage > 80) {
-            event_mgr->AddMemoryEvent(mem_usage);
+        if (sys_info->mem_.total_gb_ > 0) {
+            auto mem_usage = sys_info->mem_.used_gb_ * 100.0f / sys_info->mem_.total_gb_;
+            if (mem_usage > 80) {
+                event_mgr->AddMemoryEvent(mem_usage);
+            }
         }
 
         // Disks
         for (const auto& disk : sys_info->disks_) {
             const auto path = disk.mount_on_;
-            auto usage = (disk.total_gb_ - disk.available_gb_) * 100 / disk.total_gb_;
-            if (usage > 90) {
-                event_mgr->AddDiskEvent(usage, path);
+            if (disk.total_gb_ > 0) {
+                auto usage = (disk.total_gb_ - disk.available_gb_) * 100 / disk.total_gb_;
+                if (usage > 90) {
+                    event_mgr->AddDiskEvent(usage, path);
+                }
             }
         }
 
