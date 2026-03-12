@@ -199,7 +199,7 @@ namespace tc
             layout->addSpacing(10);
 
             auto cb = new QCheckBox(this);
-            cb->setChecked(stream_item_->show_max_window_);
+            cb->setChecked(stream_item_->auto_layout_screens_);
             cb_show_max_ = cb;
             layout->addWidget(cb);
 
@@ -708,7 +708,7 @@ namespace tc
                 stream_item_->audio_enabled_ = cb_audio_->isChecked();
                 stream_item_->clipboard_enabled_ = cb_clipboard_->isChecked();
                 stream_item_->only_viewing_ = cb_only_viewing_->isChecked();
-                //stream_item_->show_max_window_ = cb_show_max_->isChecked();
+                //stream_item_->auto_layout_screens_ = cb_show_max_->isChecked();
                 stream_item_->split_windows_ = cb_split_windows_->isChecked();
                 stream_item_->force_relay_ = cb_force_relay_->isChecked();
                 stream_item_->force_direct_ = cb_force_direct_->isChecked();

@@ -146,8 +146,8 @@ namespace tc
 
     void GameView::resizeEvent(QResizeEvent* event) {
         auto scale_mode = settings_->scale_mode_;
-        if (scale_mode == ScaleMode::kFullWindow) {
-            SwitchToFullWindow();
+        if (scale_mode == ScaleMode::kFillWindow) {
+            SwitchToFillWindow();
         }
         else if (scale_mode == ScaleMode::kKeepAspectRatio) {
             CalculateAspectRatio();
@@ -222,7 +222,7 @@ namespace tc
         video_widget_->SendKeyEvent(vk, down);
     }
 
-    void GameView::SwitchToFullWindow() {
+    void GameView::SwitchToFillWindow() {
         auto target_title_bar_height = this->isFullScreen() ? 0 : kTitleBarHeight;
         video_widget_->AsWidget()->setGeometry(0, target_title_bar_height, this->width(), this->height() - kTitleBarHeight);
     }

@@ -136,7 +136,7 @@ namespace tc
                         }
                         if (!game_views_[info.mon_index_]->GetActiveStatus()) {
                             game_views_[info.mon_index_]->SetActiveStatus(true);
-                            UpdateGameViewsStatus();
+                            UpdateGameViewsStatus(false);
                         }
                     }
                 }
@@ -161,21 +161,23 @@ namespace tc
         }
     }
 
-    void Workspace::SwitchToFullWindow() {
+    void Workspace::SwitchToFillWindow() {
         for (auto game_view : game_views_) {
             if (game_view && !game_view->isHidden()) {
-                game_view->SwitchToFullWindow();
+                game_view->SwitchToFillWindow();
             }
         }
     }
 
-    void Workspace::UpdateGameViewsStatus() {
+    void Workspace::UpdateGameViewsStatus(bool force_layout_screens) {
         QList<QScreen*> screens = QGuiApplication::screens();
         if (EMultiMonDisplayMode::kTab ==  multi_display_mode_) {
             for (auto game_view : game_views_) {
                 if (game_view->IsMainView()) {
                     if (full_screen_) {
-                        WidgetSelectMonitor(this, screens);
+                        if (!force_layout_screens) {
+                            WidgetSelectMonitor(this, screens);
+                        }
                         this->showFullScreen();
                         game_view->showFullScreen();
                         tc::QWidgetHelper::SetBorderInFullScreen(this, true);
@@ -202,14 +204,18 @@ namespace tc
                 if (game_view->GetActiveStatus()) {
                     if (full_screen_) {
                         if (game_view->IsMainView()) {
-                            WidgetSelectMonitor(this, screens);
+                            if (!force_layout_screens) {
+                                WidgetSelectMonitor(this, screens);
+                            }
                             this->showFullScreen();
                             this->raise();
                             game_view->showFullScreen();
                             tc::QWidgetHelper::SetBorderInFullScreen(this, true);
                         }
                         else {
-                            WidgetSelectMonitor(game_view, screens);
+                            if (!force_layout_screens) {
+                                WidgetSelectMonitor(game_view, screens);
+                            }
                             game_view->showFullScreen();
                         }
                         tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
@@ -241,15 +247,15 @@ namespace tc
         if (monitors_count <= 1) {
             setWindowTitle(origin_title_name_);
         }
-        int min_temp = std::min(monitors_count, static_cast<int>(game_views_.size()));
-        for (int index = 0; index < min_temp; ++index) {
+        int real_display_monitors = std::min(monitors_count, static_cast<int>(game_views_.size()));
+        for (int index = 0; index < real_display_monitors; ++index) {
             game_views_[index]->SetActiveStatus(true);
         }
 
-        for (; min_temp < game_views_.size(); ++min_temp) {
-            game_views_[min_temp]->SetActiveStatus(false);
+        for (; real_display_monitors < game_views_.size(); ++real_display_monitors) {
+            game_views_[real_display_monitors]->SetActiveStatus(false);
         }
-        UpdateGameViewsStatus();
+        UpdateGameViewsStatus(false);
 
         if (monitors_count_ > 1) {
             std::call_once(send_split_windows_flag_, [this]() {
@@ -259,6 +265,64 @@ namespace tc
                 }
             });
         }
+
+        std::call_once(layout_windows_, [=, this]() {
+            if (monitors_count != 2) {
+                context_->PostDelayUITask([this]() {
+                    if (settings_->auto_layout_screens_) {
+                        this->showMaximized();
+                    }
+                }, 100);
+            }
+            else {
+                context_->PostDelayUITask([=, this]() {
+                    if (settings_->auto_layout_screens_) {
+                        // layout it
+                        const auto screens = qApp->screens();
+                        if (monitors_count == 2 && screens.size() == monitors_count) {
+
+                            this->showNormal();
+
+                            std::map<int, QScreen*> scs;
+                            for (const auto& sc : screens) {
+                                auto left = sc->geometry().left();
+                                scs.insert({left, sc});
+                                LOGI("===> Geometry: {},{}, {}, {}", sc->geometry().left(), sc->geometry().top(), sc->geometry().width(), sc->geometry().height());
+                            }
+
+                            if (game_views_.size() >= scs.size()) {
+                                int gv_index = 0;
+                                for (const auto& sc: scs | std::views::values) {
+                                    if (gv_index == 0) {
+                                        LOGI("===> 0 Geometry: {},{}, {}, {}", sc->geometry().left(), sc->geometry().top(), sc->geometry().width(), sc->geometry().height());
+                                        auto ml = sc->geometry().left() + (sc->geometry().width() - this->width())/2;
+                                        auto mt = (sc->geometry().height() - this->height())/2;
+                                        this->move(ml, mt);
+                                        this->windowHandle()->setScreen(sc);
+                                    }
+                                    else {
+                                        const auto view = game_views_[gv_index];
+                                        auto ml = sc->geometry().left() + (sc->geometry().width() - this->width())/2;
+                                        auto mt = (sc->geometry().height() - this->height())/2;
+                                        view->move(ml, mt);
+                                        if (const auto win = view->windowHandle()) {
+                                            LOGI("===> 1 Geometry: {},{}, {}, {}", sc->geometry().left(), sc->geometry().top(), sc->geometry().width(), sc->geometry().height());
+                                            win->setScreen(sc);
+                                        }
+                                    }
+                                    ++gv_index;
+                                }
+                            }
+
+                            context_->PostDelayUITask([=, this]() {
+                                full_screen_ = true;
+                                this->UpdateGameViewsStatus(true);
+                            }, 50);
+                        }
+                    }
+                }, 100);
+            }
+        });
     }
 
     void Workspace::OnGetCaptureMonitorName(std::string monitor_name) {

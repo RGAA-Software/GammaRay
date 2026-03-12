@@ -202,7 +202,7 @@
   "id_split_windows": "多窗口同顯",
   "id_connect_failed": "連接失敗",
   "id_general_settings": "通用設置",
-  "id_start_max_window": "以窗口最大化啟動",
+  "id_start_auto_layout_2_screens": "自動排列雙屏",
   "id_display_client_logo": "顯示Logo",
   "id_colorful_titlebar": "多彩標籤",
   "id_allow_max_num_of_screens": "最多允許的螢幕數量",

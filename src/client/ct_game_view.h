@@ -47,7 +47,7 @@ namespace tc
         void SetActiveStatus(bool active);
         bool GetActiveStatus() const;
         void SetMonitorName(const std::string& mon_name);
-        void SwitchToFullWindow();
+        void SwitchToFillWindow();
         void CalculateAspectRatio();
         void SetMainView(bool main_view);
         bool IsMainView() const;

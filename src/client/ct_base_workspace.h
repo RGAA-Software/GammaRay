@@ -115,11 +115,11 @@ namespace tc
         void SendHardUpdateDesktopMessage();
         void SwitchScaleMode(const ScaleMode& mode);
         virtual void CalculateAspectRatio();
-        virtual void SwitchToFullWindow();
+        virtual void SwitchToFillWindow();
         void SendChangeMonitorResolutionMessage(const MsgClientChangeMonitorResolution& msg);
         void UpdateFloatButtonIndicatorPosition();
         void UpdateVideoWidgetSize();
-        virtual void UpdateGameViewsStatus();
+        virtual void UpdateGameViewsStatus(bool force_layout_screens) {}
         virtual void OnGetCaptureMonitorsCount(int monitors_count);
         virtual void OnGetCaptureMonitorName(std::string monitor_name);
         virtual void InitGameView(const std::shared_ptr<ThunderSdkParams>& params);

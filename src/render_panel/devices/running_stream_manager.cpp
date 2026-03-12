@@ -180,7 +180,7 @@ namespace tc
             << std::format("--remote_device_rp={}", Base64::Base64Encode(item->remote_device_random_pwd_)).c_str()
             << std::format("--remote_device_sp={}", Base64::Base64Encode(item->remote_device_safety_pwd_)).c_str()
             << std::format("--enable_p2p={}", item->enable_p2p_).c_str()
-            << std::format("--show_max_window={}", settings_->IsMaxWindowEnabled() ? 1 : 0).c_str()
+            << std::format("--auto_layout_screens={}", settings_->IsMaxWindowEnabled() ? 1 : 0).c_str()
             << std::format("--display_name={}", [=, this]() -> std::string {
                 if (network_type == kStreamItemNtTypeRelay) {
                     return settings_->GetDeviceId();

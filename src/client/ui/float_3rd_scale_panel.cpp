@@ -49,11 +49,11 @@ namespace tc
         });
 
         listview_->SetOnItemClickListener([=, this](int idx, QWidget* w) {
-            ScaleMode mode = ScaleMode::kFullWindow;
+            ScaleMode mode = ScaleMode::kFillWindow;
             if (idx == 0) { 
                 mode = ScaleMode::kKeepAspectRatio;
             } else if (idx == 1) { 
-                mode = ScaleMode::kFullWindow; 
+                mode = ScaleMode::kFillWindow;
             } else if (idx == 2) { 
                 mode = ScaleMode::kOriginSize; 
             }
@@ -92,7 +92,7 @@ namespace tc
             if (ScaleMode::kKeepAspectRatio == settings_->scale_mode_) {
                 target_index = 0;
             }
-            else if (ScaleMode::kFullWindow == settings_->scale_mode_) {
+            else if (ScaleMode::kFillWindow == settings_->scale_mode_) {
                 target_index = 1;
             }
             else if (ScaleMode::kOriginSize == settings_->scale_mode_) {

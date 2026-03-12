@@ -106,8 +106,8 @@ void ParseCommandLine(QApplication& app) {
     QCommandLineOption opt_enable_p2p("enable_p2p", "enable p2p", "value", "0");
     parser.addOption(opt_enable_p2p);
 
-    QCommandLineOption opt_show_max_window("show_max_window", "show max window", "value", "0");
-    parser.addOption(opt_show_max_window);
+    QCommandLineOption opt_auto_layout_screens("auto_layout_screens", "auto layout screens", "value", "0");
+    parser.addOption(opt_auto_layout_screens);
 
     QCommandLineOption opt_display_name("display_name", "display name", "value", "");
     parser.addOption(opt_display_name);
@@ -239,7 +239,7 @@ void ParseCommandLine(QApplication& app) {
     }
 
     settings->enable_p2p_ = parser.value(opt_enable_p2p).toInt() == 1;
-    settings->show_max_window_ = parser.value(opt_show_max_window).toInt() == 1;
+    settings->auto_layout_screens_ = parser.value(opt_auto_layout_screens).toInt() == 1;
 
     settings->display_name_ = parser.value(opt_display_name).toStdString();
     settings->display_remote_name_ = parser.value(opt_display_remote_name).toStdString();
@@ -293,6 +293,10 @@ void ParseCommandLine(QApplication& app) {
         auto value = parser.value(opt_split_windows);
         if (!value.isEmpty()) {
             settings->split_windows_ = value.toInt() == 1;
+        }
+
+        if (settings->auto_layout_screens_) {
+            settings->split_windows_ = true;
         }
     }
 
@@ -478,7 +482,7 @@ int main(int argc, char** argv) {
     LOGI("remote device rdm pwd: {}", settings->remote_device_random_pwd_);
     LOGI("stream id: {}", settings->stream_id_);
     LOGI("network type: {} => {}", g_nt_type_, (int)settings->network_type_);
-    LOGI("show max window: {}", (int)settings->show_max_window_);
+    LOGI("show max window: {}", (int)settings->auto_layout_screens_);
     LOGI("enable p2p: {}", (int)settings->enable_p2p_);
     LOGI("display name: {}", settings->display_name_);
     LOGI("display remote name: {}", settings->display_remote_name_);
@@ -562,7 +566,7 @@ int main(int argc, char** argv) {
     ws->Init();
     ws->show();
     // ctx->PostDelayUITask([=]() {
-    //     if (settings->show_max_window_) {
+    //     if (settings->auto_layout_screens_) {
     //         ws->showMaximized();
     //     }
     // }, 100);

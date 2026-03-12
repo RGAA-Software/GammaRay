@@ -14,7 +14,7 @@ namespace tc
 
     enum class ScaleMode {
         kKeepAspectRatio,
-        kFullWindow,
+        kFillWindow,
         kOriginSize,
     };
 
@@ -59,7 +59,7 @@ namespace tc
         bool full_color_on_ = false;
         SharedPreference* sp_ = nullptr;
         SwitchWorkMode::WorkMode work_mode_ = SwitchWorkMode::kGame;
-        ScaleMode scale_mode_ = ScaleMode::kFullWindow;
+        ScaleMode scale_mode_ = ScaleMode::kFillWindow;
         // for client render process --- below
         std::string stream_id_;
         // network type
@@ -87,7 +87,7 @@ namespace tc
         // enable p2p
         bool enable_p2p_ = false;
         // show max window
-        bool show_max_window_ = false;
+        bool auto_layout_screens_ = false;
         std::string display_name_;
         std::string display_remote_name_;
         // panel ws server port

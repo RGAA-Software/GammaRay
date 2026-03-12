@@ -610,14 +610,14 @@ namespace tc
         msg_listener_->Listen<MsgClientFullscreen>([=, this](const MsgClientFullscreen& msg) {
             context_->PostUITask([=, this]() {
                 full_screen_ = true;
-                this->UpdateGameViewsStatus();
+                this->UpdateGameViewsStatus(false);
             });
         });
 
         msg_listener_->Listen<MsgClientExitFullscreen>([=, this](const MsgClientExitFullscreen& msg) {
             context_->PostUITask([=, this]() {
                 full_screen_ = false;
-                this->UpdateGameViewsStatus();
+                this->UpdateGameViewsStatus(false);
             });
         });
 
@@ -998,8 +998,8 @@ namespace tc
 
     void BaseWorkspace::SwitchScaleMode(const tc::ScaleMode& mode) {
         settings_->SetScaleMode(mode);
-        if (mode == ScaleMode::kFullWindow) {
-            SwitchToFullWindow();
+        if (mode == ScaleMode::kFillWindow) {
+            SwitchToFillWindow();
         }
         else if (mode == ScaleMode::kKeepAspectRatio) {
             CalculateAspectRatio();
@@ -1010,7 +1010,7 @@ namespace tc
 
     }
 
-    void BaseWorkspace::SwitchToFullWindow() {
+    void BaseWorkspace::SwitchToFillWindow() {
 
     }
 
@@ -1060,10 +1060,6 @@ namespace tc
             context_ = nullptr;
         }
         ProcessUtil::KillProcess(QApplication::applicationPid());
-    }
-
-    void BaseWorkspace::UpdateGameViewsStatus() {
-
     }
 
     void BaseWorkspace::OnGetCaptureMonitorsCount(int monitors_count) {

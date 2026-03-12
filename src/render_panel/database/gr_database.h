@@ -54,7 +54,7 @@ namespace tc
                     make_column("audio_enabled", &spvr::SpvrStream::audio_enabled_, default_value(0)),
                     make_column("clipboard_enabled", &spvr::SpvrStream::clipboard_enabled_, default_value(0)),
                     make_column("only_viewing", &spvr::SpvrStream::only_viewing_, default_value(0)),
-                    make_column("show_max_window", &spvr::SpvrStream::show_max_window_, default_value(0)),
+                    make_column("show_max_window", &spvr::SpvrStream::auto_layout_screens_, default_value(0)),
                     make_column("split_windows", &spvr::SpvrStream::split_windows_, default_value(0)),
                     make_column("audio_capture_mode", &spvr::SpvrStream::audio_capture_mode_),
                     make_column("stream_host", &spvr::SpvrStream::stream_host_),

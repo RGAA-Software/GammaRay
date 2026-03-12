@@ -19,6 +19,8 @@
 namespace tc
 {
 
+    class GameView;
+
     class Workspace : public BaseWorkspace {
     public:
         explicit Workspace(const std::shared_ptr<ClientContext>& ctx, const std::shared_ptr<ThunderSdkParams>& params, QWidget* parent = nullptr);
@@ -33,8 +35,8 @@ namespace tc
     private:
         void RegisterSdkMsgCallbacks() override;
         void CalculateAspectRatio() override;
-        void SwitchToFullWindow() override;
-        void UpdateGameViewsStatus() override;
+        void SwitchToFillWindow() override;
+        void UpdateGameViewsStatus(bool force_layout_screens) override;
         void OnGetCaptureMonitorsCount(int monitors_count) override;
         void OnGetCaptureMonitorName(std::string monitor_name) override;
     private:
@@ -44,7 +46,11 @@ namespace tc
     private:
         void ListenMultiMonDisplayModeMessage();
 
+        // auto split the windows
         std::once_flag send_split_windows_flag_;
+
+        // auto layout the windows
+        std::once_flag layout_windows_;
     };
 
 }

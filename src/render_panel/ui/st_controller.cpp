@@ -66,7 +66,7 @@ namespace tc
             {
                 auto layout = new NoMarginHLayout();
                 auto label = new TcLabel(this);
-                label->SetTextId("id_start_max_window");
+                label->SetTextId("id_start_auto_layout_2_screens");
                 label->setFixedSize(tips_label_size);
                 label->setStyleSheet("font-size: 14px; font-weight: 500;");
                 layout->addWidget(label);
