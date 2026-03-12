@@ -561,11 +561,11 @@ int main(int argc, char** argv) {
     static auto ws = std::make_shared<Workspace>(ctx, params);
     ws->Init();
     ws->show();
-    ctx->PostDelayUITask([=]() {
-        if (settings->show_max_window_) {
-            ws->showMaximized();
-        }
-    }, 100);
+    // ctx->PostDelayUITask([=]() {
+    //     if (settings->show_max_window_) {
+    //         ws->showMaximized();
+    //     }
+    // }, 100);
     auto end = TimeUtil::GetCurrentTimestamp();
     LOGI("Init used: {}ms", (end-beg));
 

@@ -232,9 +232,6 @@ namespace tc
         // overlay widget
         OverlayWidget* overlay_widget_ = nullptr;
 
-        // game view
-        // @deprecated
-        GameView* game_view_ = nullptr;
     };
 
     extern std::shared_ptr<BaseWorkspace> gWorkspace;

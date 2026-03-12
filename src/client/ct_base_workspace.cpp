@@ -302,6 +302,10 @@ namespace tc
         msg_listener_->Listen<SdkMsgFirstConfigInfoCallback>([=, this](const SdkMsgFirstConfigInfoCallback& msg) {
             main_progress_->StepForward();
             LOGI("Step: MsgFirstConfigInfoCallback, at: {}", main_progress_->GetCurrentProgress());
+            if (msg.msg_ && msg.msg_->type() == tc::kServerConfiguration) {
+                const auto config = msg.msg_->config();
+
+            }
         });
 
         // step 3
@@ -401,22 +405,6 @@ namespace tc
     }
 
     void BaseWorkspace::RegisterSdkMsgCallbacks() {
-#if 0
-        sdk_->SetOnVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image, const SdkCaptureMonitorInfo& info) {
-            if (!has_frame_arrived_) {
-                has_frame_arrived_ = true;
-                UpdateVideoWidgetSize();
-            }
-
-            if (game_view_) {
-                game_view_->RefreshCapturedMonitorInfo(info);
-                game_view_->RefreshImage(image);
-            }
-
-            context_->UpdateCapturingMonitorInfo(info);
-        });
-#endif
-
         // save pcm file , use ffplay.exe -ar 48000 -ac 2 -f s16le -i .\audio_48000_2.pcm
         sdk_->SetOnAudioFrameDecodedCallback([=, this](std::shared_ptr<Data> data, int samples, int channels, int bits) {
             if (!settings_->IsAudioEnabled() || remote_force_closed_) {
@@ -784,9 +772,7 @@ namespace tc
     }
 
     void BaseWorkspace::SendWindowsKey(unsigned long vk, bool down) {
-        if (game_view_) {
-            game_view_->SendKeyEvent(vk, down);
-        }
+
     }
 
     void BaseWorkspace::resizeEvent(QResizeEvent *event) {
@@ -1021,15 +1007,11 @@ namespace tc
     }
 
     void BaseWorkspace::CalculateAspectRatio() {
-        if (game_view_) {
-            game_view_->CalculateAspectRatio();
-        }
+
     }
 
     void BaseWorkspace::SwitchToFullWindow() {
-        if (game_view_) {
-            game_view_->SwitchToFullWindow();
-        }
+
     }
 
     void BaseWorkspace::SendChangeMonitorResolutionMessage(const MsgClientChangeMonitorResolution& msg) {
@@ -1081,27 +1063,7 @@ namespace tc
     }
 
     void BaseWorkspace::UpdateGameViewsStatus() {
-        if (!game_view_) {
-            return;
-        }
-        QList<QScreen*> screens = QGuiApplication::screens();
-        if (full_screen_) {
-            WidgetSelectMonitor(this, screens);
-            this->showFullScreen();
-            game_view_->showFullScreen();
-            tc::QWidgetHelper::SetBorderInFullScreen(this, true);
-            tc::QWidgetHelper::SetBorderInFullScreen(game_view_, true);
-        }
-        else {
-            if (this->isMaximized()) {
-                this->showMaximized();
-                game_view_->showMaximized();
-            }
-            else {
-                this->showNormal();
-                game_view_->showNormal();
-            }
-        }
+
     }
 
     void BaseWorkspace::OnGetCaptureMonitorsCount(int monitors_count) {
@@ -1109,32 +1071,11 @@ namespace tc
     }
 
     void BaseWorkspace::OnGetCaptureMonitorName(std::string monitor_name) {
-        if (!game_view_) {
-            return;
-        }
-        if (kCaptureAllMonitorsSign == monitor_name) {
-            if (monitor_index_map_name_.size() > 0) {
-                SendSwitchMonitorMessage(monitor_index_map_name_[0]);
-            }
-            return;
-        }
-        game_view_->SetMonitorName(monitor_name);
+
     }
 
     void BaseWorkspace::InitGameView(const std::shared_ptr<ThunderSdkParams>& params) {
         this->resize(def_window_size_);
-//        game_view_ = new GameView(context_, sdk_, params, this);
-//        game_view_->resize(def_window_size_);
-//        game_view_->show();
-//        game_view_->SetMainView(true);
-//        setCentralWidget(game_view_);
-//
-//        QTimer::singleShot(1, this, [=, this]() {
-//            QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
-//            int x = (screenGeometry.width() - this->width()) / 2;
-//            int y = (screenGeometry.height() - this->height()) / 2;
-//            this->move(x, y);
-//        });
     }
 
     bool BaseWorkspace::eventFilter(QObject* watched, QEvent* event) {
