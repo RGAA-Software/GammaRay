@@ -296,51 +296,34 @@ namespace tc
     }
 
     void CpVirtualFile::RecordFileTransferBegin() {
-        context_->PostDBTask([=, this]() {
-//            auto event = std::make_shared<GrPluginFileTransferBegin>();
-//            event->the_file_id_ = file_stream_->GetFileId();
-//            event->begin_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
-//            event->visitor_device_id_ = file_stream_->GetDeviceId();
-//            event->direction_ = "In";
-//            event->file_detail_ = file_stream_->GetFileName();
+        auto ips = context_->GetIps();
+        std::string ip_address;
+        if (!ips.empty()) {
+            ip_address = ips[0].ip_addr_;
+        }
 
-            auto ips = context_->GetIps();
-            std::string ip_address;
-            if (!ips.empty()) {
-                ip_address = ips[0].ip_addr_;
-            }
+        auto settings = GrSettings::Instance();
+        auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
 
-            auto settings = GrSettings::Instance();
-            auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
-
-            auto record = std::make_shared<FileTransferRecord>(FileTransferRecord{
-                .the_file_id_ = file_stream_->GetFileId(),
-                .begin_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
-                .end_ = 0,
-                .visitor_device_ = file_stream_->GetDeviceId(),
-                .target_device_ = settings->GetDeviceId().empty() ? ip_address : settings->GetDeviceId(),
-                .direction_ = "In",
-                .file_detail_ = file_stream_->GetFileName(),
-            });
-
-            ft_record_op->InsertFileTransferRecord(record);
-            // notify cms
-            LOGI("NotifyFileTransferRecordToCms========>");
-            NotifyFileTransferRecordToCms(record);
+        auto record = std::make_shared<FileTransferRecord>(FileTransferRecord{
+            .the_file_id_ = file_stream_->GetFileId(),
+            .begin_ = (int64_t)TimeUtil::GetCurrentTimestamp(),
+            .end_ = 0,
+            .visitor_device_ = file_stream_->GetDeviceId(),
+            .target_device_ = settings->GetDeviceId().empty() ? ip_address : settings->GetDeviceId(),
+            .direction_ = "In",
+            .file_detail_ = file_stream_->GetFileName(),
         });
+
+        ft_record_op->InsertFileTransferRecord(record);
+        // notify cms
+        LOGI("NotifyFileTransferRecordToCms========>");
+        NotifyFileTransferRecordToCms(record);
     }
 
     void CpVirtualFile::RecordFileTransferEnd() {
-        context_->PostDBTask([=, this]() {
-//            auto event = std::make_shared<GrPluginFileTransferEnd>();
-//            event->the_file_id_ = file_stream_->GetFileId();
-//            event->end_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
-//            event->success_ = true;
-
-            auto settings = GrSettings::Instance();
-            auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
-            ft_record_op->UpdateVisitRecord(file_stream_->GetFileId(), (int64_t)TimeUtil::GetCurrentTimestamp(), true);
-        });
+        const auto ft_record_op = context_->GetDatabase()->GetFileTransferRecordOp();
+        ft_record_op->UpdateVisitRecord(file_stream_->GetFileId(), (int64_t)TimeUtil::GetCurrentTimestamp(), true);
     }
 
     CpVirtualFile* CreateVirtualFile(REFIID riid, void **ppv, const std::shared_ptr<GrContext>& ctx) {

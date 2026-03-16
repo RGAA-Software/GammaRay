@@ -14,6 +14,7 @@
 #include <shlobj.h>
 #include "panel_cp_file_struct.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/concurrent_type.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
