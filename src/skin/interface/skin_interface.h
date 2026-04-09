@@ -112,7 +112,7 @@ namespace tc
         std::shared_ptr<SkinContext> skin_context_ = nullptr;
         SkinParam skin_param_;
         SkinSettings skin_settings_;
-        std::string base_path_;
+        std::wstring base_path_;
         std::string plugin_file_name_;
     };
 

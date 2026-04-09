@@ -86,8 +86,8 @@ namespace tc
         // sp
         sp_ = SharedPreference::Instance();
         auto path = QString::fromStdWString(FolderUtil::GetProgramDataPath()) + "/gr_data";
-        std::string sp_name = std::format("gammaray_render_{}.dat", settings_->transmission_.listening_port_);
-        sp_->Init(path.toStdString(), sp_name);
+        std::string sp_name = std::format("godesk_render_{}.dat", settings_->transmission_.listening_port_);
+        sp_->Init(path.toStdWString(), sp_name);
     }
 
     int RdApplication::Run() {

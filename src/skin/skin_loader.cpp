@@ -69,7 +69,12 @@ namespace tc
             return nullptr;
         }
 
-        if (!skin->OnCreate(SkinParam{})) {
+        if (!skin->OnCreate(SkinParam{
+            .cluster_ = {
+                {"name", skin_name},
+                {"base_path", base_path.toStdWString()},
+            }
+        })) {
             LOGE("Can't init skin: {}", lib_name);
             return nullptr;
         }

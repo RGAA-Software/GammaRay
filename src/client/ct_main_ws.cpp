@@ -45,7 +45,7 @@ std::string g_nt_type_;
 
 void ParseCommandLine(QApplication& app) {
     QCommandLineParser parser;
-    parser.setApplicationDescription("GammaRay Client");
+    parser.setApplicationDescription("GoDesk Client");
     parser.addHelpOption();
     parser.addVersionOption();
 

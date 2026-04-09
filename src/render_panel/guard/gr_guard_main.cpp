@@ -15,18 +15,20 @@
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
 
-    std::string base_path = QString::fromStdWString(tc::FolderUtil::GetProgramDataPath()).toStdString();
+    auto base_path = QString::fromStdWString(tc::FolderUtil::GetProgramDataPath());
     // Log
     {
-        auto path = base_path + "/gr_logs/gammaray_guard.log";
-        tc::Logger::InitLog(path, true);
+        auto path = base_path + "/gr_logs/godesk_guard.log";
+        tc::Logger::InitLog(path.toStdWString(), true);
     }
 
     // SharedPreference
     {
         auto sp_dir = base_path + "/gr_data";
-        if (!tc::SharedPreference::Instance()->Init(sp_dir, "gammaray_guard.dat")) {
+        LOGI("will create sp at: {}", sp_dir.toStdString());
+        if (!tc::SharedPreference::Instance()->Init(sp_dir.toStdWString(), "godesk_guard.dat")) {
             //QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
+            LOGE("Can't create godesk_guard.dat");
             return -1;
         }
     }

@@ -250,8 +250,8 @@ int main(int argc, char** argv) {
     settings->LoadSettingsFromDatabase();
 
     // Log
-    auto log_file_path = std::format("{}/gr_logs/gammaray_render_{}.log",
-         QString::fromStdWString(FolderUtil::GetProgramDataPath()).toStdString(), settings->transmission_.listening_port_);
+    auto log_file_path = std::format(L"{}/gr_logs/godesk_render_{}.log",
+         FolderUtil::GetProgramDataPath(), settings->transmission_.listening_port_);
     Logger::InitLog(log_file_path, FLAGS_logfile);
 
     PrintInputArgs();
@@ -264,7 +264,7 @@ int main(int argc, char** argv) {
         MessageBoxA(0, 0, 0, 0);
     }
 
-    auto lock_name = std::format("gammaray_render_lock_{}", settings->transmission_.listening_port_);
+    auto lock_name = std::format("godesk_render_lock_{}", settings->transmission_.listening_port_);
     QString lock_path = QDir::temp().absoluteFilePath(lock_name.c_str());
     auto can_we_run = CanWeRun(lock_path);
     if (!can_we_run) {

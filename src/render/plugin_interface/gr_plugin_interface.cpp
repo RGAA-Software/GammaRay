@@ -14,6 +14,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QEvent>
 #include <QStandardPaths>
+#include <tc_common_new/string_util.h>
 
 extern "C"
 {
@@ -102,11 +103,11 @@ namespace tc
             base_path_ = std::any_cast<std::string>(param.cluster_.at("base_path"));
         }
         if (param.cluster_.contains("base_data_path")) {
-            base_data_path_ = std::any_cast<std::string>(param.cluster_.at("base_data_path"));
+            base_data_path_ = std::any_cast<std::wstring>(param.cluster_.at("base_data_path"));
         }
         plugin_context_ = std::make_shared<GrPluginContext>(GetPluginName());
-
-        Logger::InitLog(base_data_path_ + "/gr_logs/" + plugin_file_name_+".log", true);
+        const auto log_path = std::format(L"{}/gr_logs/{}.log", base_data_path_, StringUtil::ToWString(plugin_file_name_));
+        Logger::InitLog(log_path, true);
         LOGI("{} OnCreate", GetPluginName());
 
         capture_audio_device_id_ = GetConfigParam<std::string>("capture_audio_device_id");

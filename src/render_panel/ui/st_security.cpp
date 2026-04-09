@@ -381,12 +381,12 @@ namespace tc
                             return;
                         }
 
-                        auto zip_folder = QString::fromStdWString(to).toStdString();
-                        auto target_zip_file = target_dir.toStdString();
-                        LOGE("Zip folder: {} -> {}", zip_folder, target_zip_file);
+                        const auto& zip_folder = to;
+                        const auto target_zip_file = target_dir.toStdWString();
+                        LOGE("Zip folder: {} -> {}", QString::fromStdWString(zip_folder).toStdString(), QString::fromStdWString(target_zip_file).toStdString());
                         if (!ZipUtil::ZipFolder(zip_folder, target_zip_file)) {
                             fn_close_dialog();
-                            LOGE("Zip folder failed: {} -> {}", zip_folder, target_zip_file);
+                            LOGE("Zip folder failed!");
                             return;
                         }
                         fn_close_dialog();

@@ -32,7 +32,7 @@ namespace tc
 
     void ClientPluginManager::LoadAllPlugins() {
         auto base_path = QCoreApplication::applicationDirPath();
-        auto base_data_path = QString::fromStdWString(FolderUtil::GetProgramDataPath()).toStdString();
+        auto base_data_path =FolderUtil::GetProgramDataPath();
         LOGI("plugin base path: {}", base_path.toStdString());
         QDir plugin_dir(base_path + R"(/gr_plugins_client)");
         QStringList filters;

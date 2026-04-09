@@ -131,8 +131,8 @@ void WINAPI ServiceMain(DWORD argc, LPWSTR* argv) {
 
 int main(int argc, char** argv) {
     auto data_path = FolderUtil::GetProgramDataPath();
-    auto path = QString::fromStdWString(data_path).toStdString() + "/gr_logs/gammaray_service.log";
-    Logger::InitLog(path, true);
+    auto path = QString::fromStdWString(data_path) + "/gr_logs/godesk_service.log";
+    Logger::InitLog(path.toStdWString(), true);
     LOGI("----------Service Start----------");
     LOGI("Args size: {}", argc);
 

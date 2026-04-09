@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         .app_name_ = qApp->applicationName().toStdString(),
     };
     
-    std::async([]() {
+    auto _r = std::async([]() {
         ClearOldDumps();
     });
     CaptureDumpByBreakpad(&bc);
@@ -77,8 +77,8 @@ int main(int argc, char *argv[]) {
     auto base_dir = QString::fromStdWString(FolderUtil::GetProgramDataPath());
     PrepareDirs(base_dir);
 
-    auto log_path = base_dir + "/gr_logs/gammaray.log";
-    Logger::InitLog(log_path.toStdString(), true);
+    auto log_path = base_dir + "/gr_logs/godesk.log";
+    Logger::InitLog(log_path.toStdWString(), true);
 
     // Check OpenGL Backend
     EOpenGLBackend backend = DetectOpenGLBackend();
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 
     // init sp
     auto data_dir = base_dir + "/gr_data";
-    if (!SharedPreference::Instance()->Init(data_dir.toStdString(), "gammaray.dat")) {
+    if (!SharedPreference::Instance()->Init(data_dir.toStdWString(), "godesk.dat")) {
         // QMessageBox::critical(nullptr, "Error", "You may already run a instance.");
         return -1;
     }

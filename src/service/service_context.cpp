@@ -25,7 +25,7 @@ namespace tc
         auto exe_path = QString::fromStdWString(FolderUtil::GetCurrentFilePath()).toStdString();
         auto folder_path = QString::fromStdWString(FolderUtil::GetProgramDataPath()) + "/gr_data";
         LOGI("Folder path: {}", folder_path.toStdString());
-        if (!sp_->Init(folder_path.toStdString(), "gammaray_service.dat")) {
+        if (!sp_->Init(folder_path.toStdWString(), "godesk_service.dat")) {
             LOGE("Init gammaray_service.data failed!");
         }
 

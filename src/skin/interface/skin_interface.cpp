@@ -11,6 +11,8 @@
 #include "snowflake/snowflake.h"
 #include <QtCore/QTimer>
 #include <QtCore/QEvent>
+#include <tc_common_new/folder_util.h>
+#include <tc_common_new/string_util.h>
 
 namespace tc
 {
@@ -28,11 +30,12 @@ namespace tc
         }
 
         if (param.cluster_.contains("base_path")) {
-            base_path_ = std::any_cast<std::string>(param.cluster_.at("base_path"));
+            base_path_ = std::any_cast<std::wstring>(param.cluster_.at("base_path"));
         }
         skin_context_ = std::make_shared<SkinContext>(GetSkinName().toStdString());
-
-        Logger::InitLog(base_path_ + "/gr_logs/skin_" + plugin_file_name_+".log", true);
+        auto data_path = FolderUtil::GetProgramDataPath();
+        const auto log_path = std::format(L"{}/gr_logs/skin_{}.log", data_path, StringUtil::ToWString(plugin_file_name_));
+        Logger::InitLog(log_path, true);
         LOGI("{} OnCreate", GetSkinName().toStdString());
 
         // print params
