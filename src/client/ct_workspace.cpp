@@ -180,8 +180,8 @@ namespace tc
                         }
                         this->showFullScreen();
                         game_view->showFullScreen();
-                        tc::QWidgetHelper::SetBorderInFullScreen(this, true);
-                        tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
+                        //tc::QWidgetHelper::SetBorderInFullScreen(this, true);
+                        //tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
                     }
                     else {
                         if (this->isMaximized()) {
@@ -210,7 +210,7 @@ namespace tc
                             this->showFullScreen();
                             this->raise();
                             game_view->showFullScreen();
-                            tc::QWidgetHelper::SetBorderInFullScreen(this, true);
+                            //tc::QWidgetHelper::SetBorderInFullScreen(this, true);
                         }
                         else {
                             if (!force_layout_screens) {
@@ -218,7 +218,7 @@ namespace tc
                             }
                             game_view->showFullScreen();
                         }
-                        tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
+                        //tc::QWidgetHelper::SetBorderInFullScreen(game_view, true);
                     }
                     else {
                         if (game_view->isMaximized()) {
