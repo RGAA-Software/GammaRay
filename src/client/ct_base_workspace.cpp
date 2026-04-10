@@ -1371,4 +1371,14 @@ namespace tc
             overlay_widget_->move(global_pos);
         }
     }
+
+    void BaseWorkspace::enterEvent(QEnterEvent *event) {
+        QMainWindow::enterEvent(event);
+        //LOGI("workspace: enterEvent");
+    }
+
+    void BaseWorkspace::leaveEvent(QEvent *event) {
+        QMainWindow::leaveEvent(event);
+        //LOGI("workspace: leaveEvent");
+    }
 }

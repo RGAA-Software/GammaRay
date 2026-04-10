@@ -336,12 +336,14 @@ namespace tc
         s_mouse_in_ = true;
         this->ctx_->SendAppMessage(MsgClientMouseEnterView{});
         QWidget::enterEvent(event);
+        //LOGI("GameView, enterEvent.");
     }
 
     void GameView::leaveEvent(QEvent* event) {
         s_mouse_in_ = false;
         this->ctx_->SendAppMessage(MsgClientMouseLeaveView{});
         QWidget::leaveEvent(event);
+        //LOGI("GameView, leaveEvent.");
     }
 
     bool GameView::eventFilter(QObject* watched, QEvent* event) {
