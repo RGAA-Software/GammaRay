@@ -33,4 +33,4 @@
     .\vcpkg.exe install mimalloc:x64-windows
 ```
 
-- 2.4 You can open the project by Visual Studio 2022 or Clion, solve the problems{mostly you need to do :), b/c it's a cpp project, you know it...} and then compile the project.
+- 2.4 You can open the project by Visual Studio 2022 or Clion, solve the problems and then compile the project.

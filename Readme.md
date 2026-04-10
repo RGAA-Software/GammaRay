@@ -1,9 +1,10 @@
 
-![](docs/images/GammaRay.png)
+![](docs/images/tc_text_logo.png)
 #### 💖 This Repo is the OpenSource version of [GoDesk In Steam(NOT released now)](https://store.steampowered.com/app/2947460/GoDesk/), please download at [HERE](https://github.com/RGAA-Software/GammaRay/releases)
 #### 💖 这是GoDesk的开源版, 全功能版移步[Steam(暂未开放下载)](https://store.steampowered.com/app/2947460/GoDesk/)或者[Release](https://github.com/RGAA-Software/GammaRay/releases), 免费.
 
 ### Showcases
+[企业功能演示](https://www.bilibili.com/video/BV1ZGDhBGEAA/)  
 [B站演示地址](https://www.bilibili.com/video/BV17mvQexELk/)  
 [B站演示地址(远程桌面)](https://www.bilibili.com/video/BV1qF5NzfENv/)  
 
